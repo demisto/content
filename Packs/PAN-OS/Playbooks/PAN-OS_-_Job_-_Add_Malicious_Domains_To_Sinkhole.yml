@@ -1522,3 +1522,7 @@ quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

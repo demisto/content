@@ -7,14 +7,14 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_base_url(xsoar_version):
     """
     Returns the url to be used to check the EDL, depends on the XSOAR version.
     """
-    url = demisto.demistoUrls().get('server')
+    url = demisto.demistoUrls().get("server")
     if xsoar_version == "6.x":
         # return the server url for xsoar 6
         return url
@@ -32,15 +32,13 @@ def edl_http_request(base_url, edl_name, verify, creds):
     response: Dict | requests.Response
     try:
         if creds:
-            username = creds.get('username')
-            password = creds.get('password')
-            response = requests.get(url=f'{base_url}/instance/execute/{edl_name}', auth=(username, password), verify=verify)
+            username = creds.get("username")
+            password = creds.get("password")
+            response = requests.get(url=f"{base_url}/instance/execute/{edl_name}", auth=(username, password), verify=verify)
         else:
-            response = requests.get(url=f'{base_url}/instance/execute/{edl_name}', verify=verify)
+            response = requests.get(url=f"{base_url}/instance/execute/{edl_name}", verify=verify)
     except requests.exceptions.RequestException as e:  # This is the correct syntax
-        response = {
-            "error": str(e)
-        }
+        response = {"error": str(e)}
     return response
 
 
@@ -50,10 +48,7 @@ def create_creds(creds):
     Returns the creds object
     """
 
-    creds = {
-        'username': creds.get('identifier'),
-        'password': creds.get('password')
-    }
+    creds = {"username": creds.get("identifier"), "password": creds.get("password")}
 
     return creds
 
@@ -62,13 +57,13 @@ def check_indicators_on_list(response, content_type):
     """
     Check the number of indicators returned based on the content-type returned (application/json or text/plain, text/csv etc.)
     """
-    if content_type == 'application/json':
+    if content_type == "application/json":
         return len(response.json())
     else:
-        return len(response.text.split('\n'))
+        return len(response.text.split("\n"))
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def get_edl_command(base_url, edl_name, verify, creds=None):
@@ -80,7 +75,7 @@ def get_edl_command(base_url, edl_name, verify, creds=None):
     response = edl_http_request(base_url, edl_name, verify, creds)
 
     # check the response
-    if type(response) == dict:
+    if type(response) is dict:
         status = 400
         edl_response = response["error"]
         edl_items_on_list = 0
@@ -89,61 +84,60 @@ def get_edl_command(base_url, edl_name, verify, creds=None):
         status = response.status_code
 
         if status == 200:
-            edl_response = f'{edl_name} returned a {status} response, all should be well'
-            edl_items_on_list = check_indicators_on_list(response, response.headers.get('Content-Type'))
+            edl_response = f"{edl_name} returned a {status} response, all should be well"
+            edl_items_on_list = check_indicators_on_list(response, response.headers.get("Content-Type"))
         elif status == 401:
-            edl_response = 'Basic authentication failed. Make sure you are using the right credentials.'
+            edl_response = "Basic authentication failed. Make sure you are using the right credentials."
             edl_items_on_list = 0
-        elif status == 400 and type(response) != dict:
-            if response.json().get('error'):
-                edl_response = response.json().get('error')
+        elif status == 400 and type(response) is not dict:
+            if response.json().get("error"):
+                edl_response = response.json().get("error")
             else:
                 edl_response = "Bad request."
             edl_items_on_list = 0
+        else:
+            edl_response = f"Bad request {status=}"
+            edl_items_on_list = 0
+            demisto.debug(f"unknown status {status}")
 
     # outputs for war room and context
-    output = {
-        'Name': edl_name,
-        'Status': status,
-        'Response': edl_response,
-        'ItemsOnList': edl_items_on_list
-    }
+    output = {"Name": edl_name, "Status": status, "Response": edl_response, "ItemsOnList": edl_items_on_list}
 
     # build and return the result.
-    readable = tableToMarkdown(f"EDL Response for {edl_name}", output, headers=['Name', 'Status', 'Response', 'ItemsOnList'])
-    result = CommandResults(readable_output=readable, outputs_prefix='EDLChecker', outputs=output, ignore_auto_extract=True)
+    readable = tableToMarkdown(f"EDL Response for {edl_name}", output, headers=["Name", "Status", "Response", "ItemsOnList"])
+    result = CommandResults(readable_output=readable, outputs_prefix="EDLChecker", outputs=output, ignore_auto_extract=True)
 
     return result, output
 
 
 def main():
-    base_url = get_base_url(demisto.params().get('xsoarversion'))
-    edl_name = demisto.params().get('edl_name')
-    verify = not demisto.params().get('insecure', False)
-    credentials = demisto.params().get('credentials', None)
+    base_url = get_base_url(demisto.params().get("xsoarversion"))
+    edl_name = demisto.params().get("edl_name")
+    verify = not demisto.params().get("insecure", False)
+    credentials = demisto.params().get("credentials", None)
 
     if credentials:
         credentials = create_creds(credentials)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             result, output = get_edl_command(base_url, edl_name, verify, credentials)
             if output.get("Status") == 200:
                 return_results("ok")
             else:
                 return_error(output.get("Response"))
 
-        elif demisto.command() == 'xsoaredlchecker-get-edl':
+        elif demisto.command() == "xsoaredlchecker-get-edl":
             result, output = get_edl_command(base_url, edl_name, verify, credentials)
             return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

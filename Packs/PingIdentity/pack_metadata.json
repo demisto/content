@@ -2,7 +2,7 @@
     "name": "PingIdentity",
     "description": "Integration with PingIdentity's PingOne identity platform",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.13",
     "author": "Ping Identity",
     "url": "https://docs.pingidentity.com/bundle/p14c/page/als1564020488261.html",
     "email": "tap-global@pingidentity.com",
@@ -36,6 +36,15 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr",
+        "cloud"
     ]
 }

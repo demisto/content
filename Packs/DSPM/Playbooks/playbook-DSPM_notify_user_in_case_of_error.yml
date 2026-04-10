@@ -1,0 +1,674 @@
+id: DSPM notify user in case of error
+version: -1
+name: DSPM notify user in case of error
+description: The DSPM Notify User in Case of Error playbook is designed to handle errors in DSPM incidents by notifying users and managing Slack notifications.
+starttaskid: "0"
+fromversion: 6.10.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 3567892c-d111-48c0-81c4-e34848980867
+    type: start
+    task:
+      id: 3567892c-d111-48c0-81c4-e34848980867
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 59a386e5-91d5-440e-8b80-77b27d0b122a
+    type: regular
+    task:
+      id: 59a386e5-91d5-440e-8b80-77b27d0b122a
+      version: -1
+      name: Sending slack notification to ${userSlackEmail}.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
+      scriptName: SlackBlockBuilder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      list_name:
+        simple: 'slack block of Incident ID : ${incident.id}'
+      user:
+        simple: ${userSlackEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 83fd1070-9451-48f1-89c2-5a9a88a80300
+    type: regular
+    task:
+      id: 83fd1070-9451-48f1-89c2-5a9a88a80300
+      version: -1
+      name: Remove slack block from XSOAR list
+      description: send an HTTP POST request.
+      script: '|||core-api-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      body:
+        simple: '{"id":${block_list_name}}'
+      uri:
+        simple: /lists/delete
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e13a8df9-5784-41d5-8dd7-095c93838c7d
+    type: regular
+    task:
+      id: e13a8df9-5784-41d5-8dd7-095c93838c7d
+      version: -1
+      name: Add incident for re-run
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+      description: "Add incident for re-run."
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      action:
+        simple: add
+      incident_data:
+        simple: ${incident_object}
+      incident_list:
+        simple: ${lists.INCIDENT_LIST2}
+      rerun_time:
+        simple: ${inputs.rerunTime}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 55328e01-0ad8-4cb1-8a58-e7094f15181a
+    type: regular
+    task:
+      id: 55328e01-0ad8-4cb1-8a58-e7094f15181a
+      version: -1
+      name: Check Error message is set or not?
+      description: Checks an object for an empty value and returns a pre-set default value.
+      scriptName: SetIfEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      applyIfEmpty:
+        simple: "true"
+      defaultValue:
+        simple: It will re-run again as per the time you have provided in lifetime for slack notification.
+      value:
+        simple: ${OnError.Message}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5ca3a01d-86c4-4a41-8e2c-b060e5d5e709
+    type: regular
+    task:
+      id: 5ca3a01d-86c4-4a41-8e2c-b060e5d5e709
+      version: -1
+      name: Create a slack block to send error notification to user
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      message:
+        simple: 'There is an error while running playbook for incident ${incident.id} . Error message: ${OnError.Message}.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b8be5cb9-2a6a-4dac-804a-b496f22de4ac
+    type: regular
+    task:
+      id: b8be5cb9-2a6a-4dac-804a-b496f22de4ac
+      version: -1
+      name: 'Check list exists for Incident ID : ${incident.id}'
+      description: Get a list from lists repository
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#error#':
+      - "8"
+      '#none#':
+      - "9"
+    scriptarguments:
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a6961fee-66dd-4300-8605-01b9f67bb78d
+    type: regular
+    task:
+      id: a6961fee-66dd-4300-8605-01b9f67bb78d
+      version: -1
+      name: 'Create a new XSOAR list for Incident ID : ${incident.id}'
+      description: Create a new list
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b88811e9-910c-4856-8913-84433503d14a
+    type: regular
+    task:
+      id: b88811e9-910c-4856-8913-84433503d14a
+      version: -1
+      name: 'Modify XSOAR list for Incident ID : ${incident.id} with new slack block.'
+      description: Set data in a list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 07c011eb-fd65-4a00-8d1f-d70938c0fce9
+    type: regular
+    task:
+      id: 07c011eb-fd65-4a00-8d1f-d70938c0fce9
+      version: -1
+      name: Deleting error message from context data.
+      description: |-
+        Delete field from context.
+
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: OnError
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2d03f86d-1933-4aba-85ef-4582c8c15075
+    type: regular
+    task:
+      id: 2d03f86d-1933-4aba-85ef-4582c8c15075
+      version: -1
+      name: Get DSPM Incident List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#error#':
+      - "14"
+      '#none#':
+      - "4"
+    scriptarguments:
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3b60079c-dfa4-4ca7-8f9e-52b9da533048
+    type: condition
+    task:
+      id: 3b60079c-dfa4-4ca7-8f9e-52b9da533048
+      version: -1
+      name: Check incident list status?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      add:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: add
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: listStatus
+            iscontext: true
+          right:
+            value:
+              simple: Successfully added incident data
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: cf1542ec-3454-4913-8fb2-490aa92b3744
+    type: regular
+    task:
+      id: cf1542ec-3454-4913-8fb2-490aa92b3744
+      version: -1
+      name: Add incident in  DSPM Incident list
+      description: commands.local.cmd.list.add
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      listData:
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident_object.incidentCreated}"}'
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 37a33068-a8fb-441d-8d40-b4b373644332
+    type: regular
+    task:
+      id: 37a33068-a8fb-441d-8d40-b4b373644332
+      version: -1
+      name: Create DSPM Incident list
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      listData:
+        simple: '{"incident_id":"${incident.id}","incident_created":"${incident_object.incidentCreated}"}'
+      listName:
+        simple: INCIDENT_LIST2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ab8cfb8b-da89-49dd-8230-85748fe9ce5f
+    type: title
+    task:
+      id: ab8cfb8b-da89-49dd-8230-85748fe9ce5f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 2044e792-6729-4817-88de-9dce7f85e853
+    type: regular
+    task:
+      id: 2044e792-6729-4817-88de-9dce7f85e853
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3538d657-ec88-4335-8410-ec407498180f
+    type: regular
+    task:
+      id: 3538d657-ec88-4335-8410-ec407498180f
+      version: -1
+      name: Deleting slack block from context after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation script runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_add": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: rerunTime
+  value: {}
+  required: false
+  description: Incident re-run time (in hours)
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - rerunTime
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)

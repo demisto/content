@@ -107,6 +107,11 @@
                         }
                      }
                   }
+               },
+               {
+                  "@name":"test-3",
+                  "variable": null
+
                }
             ]
          }

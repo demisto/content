@@ -2,7 +2,7 @@
     "name": "Atlassian Jira Service Management",
     "description": "Use this pack to manage Jira objects and attach files to Jira objects from XSOAR",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,9 +15,19 @@
         "Network Security",
         "Vulnerability Management"
     ],
-    "keywords": ["Jira", "Atlassian", "Jira Service Management", "Jira Assets"],
+    "keywords": [
+        "Jira",
+        "Atlassian",
+        "Jira Service Management",
+        "Jira Assets"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

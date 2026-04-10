@@ -1,9 +1,8 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
 import json
 import traceback
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 class IncorrectUsageError(Exception):
@@ -12,9 +11,11 @@ class IncorrectUsageError(Exception):
 
 def _version_header():
     demisto_version = get_demisto_version()
-    return f"Palo Alto XSOAR/{demisto_version.get('version')}." \
-           f"{demisto_version.get('buildNumber')} " \
-           f"Hatching Triage Pack/1.0.16"
+    return (
+        f"Palo Alto XSOAR/{demisto_version.get('version')}."
+        f"{demisto_version.get('buildNumber')} "
+        f"Hatching Triage Pack/1.0.16"
+    )
 
 
 class Client(BaseClient):
@@ -25,10 +26,7 @@ class Client(BaseClient):
         try:
             kwarg.setdefault("headers", {})["User-Agent"] = _version_header()
         except Exception as e:
-            demisto.debug(
-                f"Error creating version header: {e}. "
-                f"{traceback.format_exc(limit=10)}"
-            )
+            demisto.debug(f"Error creating version header: {e}. {traceback.format_exc(limit=10)}")
         super().__init__(base_url, *args, **kwarg)
 
 
@@ -36,20 +34,13 @@ def _get_behavioral_task_id(value):
     if str(value).startswith("behavioral"):
         return value
 
-    raise IncorrectUsageError(
-        "Task ID must be 'behavioral' followed by a number. "
-        "E.G: 'behavioral1'"
-    )
+    raise IncorrectUsageError("Task ID must be 'behavioral' followed by a number. E.G: 'behavioral1'")
 
 
 def test_module(client: Client) -> str:
-    r = client._http_request(
-        "GET", "me", resp_type="response", ok_codes=(200, 401, 404)
-    )
+    r = client._http_request("GET", "me", resp_type="response", ok_codes=(200, 401, 404))
     if r.status_code == 404:
-        r = client._http_request(
-            "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
-        )
+        r = client._http_request("GET", "users", resp_type="response", ok_codes=(200, 401, 404))
 
     if r.status_code == 404:
         return "Page not found, possibly wrong base_url"
@@ -74,25 +65,17 @@ def query_samples(client, **args) -> CommandResults:
 
     r = client._http_request("GET", "samples", params=params)
 
-    return CommandResults(
-        outputs_prefix="Triage.samples", outputs_key_field="id",
-        outputs=r["data"]
-    )
+    return CommandResults(outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r["data"])
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-    data = {
-        "kind": args.get("kind"),
-        "interactive": argToBoolean(args.get("interactive", False))
-    }
+    data = {"kind": args.get("kind"), "interactive": argToBoolean(args.get("interactive", False))}
 
     if args.get("password"):
         data["password"] = args["password"]
 
     if args.get("timeout"):
-        data.setdefault("defaults", {})["timeout"] = arg_to_number(
-            args["timeout"]
-        )
+        data.setdefault("defaults", {})["timeout"] = arg_to_number(args["timeout"])
 
     if args.get("network"):
         data.setdefault("defaults", {})["network"] = args["network"]
@@ -116,47 +99,34 @@ def submit_sample(client: Client, **args) -> CommandResults:
         filename = demisto_file.get("name") or file_id
         with open(demisto_file.get("path"), "rb") as f:
             files = {"file": (filename, f)}
-            r = client._http_request(
-                "POST", "samples",
-                data={"_json": json.dumps(data)}, files=files
-            )
+            r = client._http_request("POST", "samples", data={"_json": json.dumps(data)}, files=files)
     else:
         raise IncorrectUsageError(
-            f'Type of submission needs to be selected, either "file", "url", '
-            f'or fetch. The selected type was: {data["kind"]}'
+            f'Type of submission needs to be selected, either "file", "url", or fetch. The selected type was: {data["kind"]}'
         )
 
-    return CommandResults(
-        outputs_prefix="Triage.submissions", outputs_key_field="id", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.submissions", outputs_key_field="id", outputs=r)
 
 
 def get_sample(client: Client, **args) -> CommandResults:
     sample_id = args.get("sample_id")
     r = client._http_request("GET", f"samples/{sample_id}")
 
-    return CommandResults(
-        outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r)
 
 
 def get_sample_summary(client: Client, **args) -> CommandResults:
     outputs = []
     for sample_id in argToList(args.get("sample_id", "")):
         try:
-            res = client._http_request(
-                "GET", f"samples/{sample_id}/summary", ok_codes=(200,)
-            )
+            res = client._http_request("GET", f"samples/{sample_id}/summary", ok_codes=(200,))
         except DemistoException as e:
             e.message += f" - Sample ID: {sample_id}"
             raise
 
         outputs.append(res)
 
-    return CommandResults(
-        outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
-        outputs=outputs
-    )
+    return CommandResults(outputs_prefix="Triage.sample-summaries", outputs_key_field="sample", outputs=outputs)
 
 
 def delete_sample(client: Client, **args) -> str:
@@ -180,9 +150,7 @@ def set_sample_profile(client: Client, **args) -> str:
     if args.get("profiles"):
         data.update({"profiles": [{"profile": args.get("profiles", "")}]})
 
-    client._http_request(
-        "POST", f"samples/{sample_id}/profile", data=json.dumps(data)
-    )
+    client._http_request("POST", f"samples/{sample_id}/profile", data=json.dumps(data))
 
     return f"Profile successfully set for sample {sample_id}"
 
@@ -196,51 +164,42 @@ def get_static_report(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"samples/{sample_id}/reports/static")
 
     score = 0
-    if 'analysis' in r and 'score' in r['analysis']:
-        score = map_scores_to_dbot(r['analysis']['score'])
+    if "analysis" in r and "score" in r["analysis"]:
+        score = map_scores_to_dbot(r["analysis"]["score"])
 
     indicator: Any
-    if 'sample' in r:
-        target = r['sample']['target']
-        if r['sample']['kind'] == "file":
+    if "sample" in r:
+        target = r["sample"]["target"]
+        if r["sample"]["kind"] == "file":
             # Static can include data on multiple files e.g. in case of
             # .zip upload. sample.target identifies the actual analysis subject
             # so only get the results for that file
-            for file in r['files']:
-                if file['filename'] == target:
+            for file in r["files"]:
+                if file["filename"] == target:
                     dbot_score = Common.DBotScore(
-                        indicator=file['sha256'],
+                        indicator=file["sha256"],
                         indicator_type=DBotScoreType.FILE,
                         integration_name="Hatching Triage",
-                        score=score
+                        score=score,
                     )
                     indicator = Common.File(
-                        name=r['sample']['target'],
-                        sha256=file['sha256'],
-                        md5=file['md5'],
-                        sha1=file['sha1'],
-                        dbot_score=dbot_score
+                        name=r["sample"]["target"],
+                        sha256=file["sha256"],
+                        md5=file["md5"],
+                        sha1=file["sha1"],
+                        dbot_score=dbot_score,
                     )
         else:
             # Static often doesn't include scores for URL analyses so only
             # include results which do, rather than potentially reporting
             # false-negatives to DBot
-            if 'score' in r['analysis']:
+            if "score" in r["analysis"]:
                 dbot_score = Common.DBotScore(
-                    indicator=target,
-                    indicator_type=DBotScoreType.URL,
-                    integration_name="Hatching Triage",
-                    score=score
+                    indicator=target, indicator_type=DBotScoreType.URL, integration_name="Hatching Triage", score=score
                 )
-                indicator = Common.URL(
-                    url=target,
-                    dbot_score=dbot_score
-                )
+                indicator = Common.URL(url=target, dbot_score=dbot_score)
     results = CommandResults(
-        outputs_prefix="Triage.sample.reports.static",
-        outputs_key_field="sample.sample",
-        outputs=r,
-        indicator=indicator
+        outputs_prefix="Triage.sample.reports.static", outputs_key_field="sample.sample", outputs=r, indicator=indicator
     )
 
     return results
@@ -253,46 +212,28 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     sample_id = args.get("sample_id")
     task_id = _get_behavioral_task_id(args.get("task_id"))
 
-    r = client._http_request(
-        "GET", f"samples/{sample_id}/{task_id}/report_triage.json"
-    )
+    r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
     score = 0
     indicator: Any
-    if 'sample' in r and 'score' in r['sample']:
-        score = map_scores_to_dbot(r['sample']['score'])
+    if "sample" in r and "score" in r["sample"]:
+        score = map_scores_to_dbot(r["sample"]["score"])
 
-    target = r['sample']['target']
-    if "sha256" not in r['sample']:
+    target = r["sample"]["target"]
+    if "sha256" not in r["sample"]:
         dbot_score = Common.DBotScore(
-            indicator=target,
-            indicator_type=DBotScoreType.URL,
-            integration_name="Hatching Triage",
-            score=score
+            indicator=target, indicator_type=DBotScoreType.URL, integration_name="Hatching Triage", score=score
         )
-        indicator = Common.URL(
-            url=target,
-            dbot_score=dbot_score
-        )
+        indicator = Common.URL(url=target, dbot_score=dbot_score)
     else:
         dbot_score = Common.DBotScore(
-            indicator=r['sample']['sha256'],
-            indicator_type=DBotScoreType.FILE,
-            integration_name="Hatching Triage",
-            score=score
+            indicator=r["sample"]["sha256"], indicator_type=DBotScoreType.FILE, integration_name="Hatching Triage", score=score
         )
         indicator = Common.File(
-            name=target,
-            sha256=r['sample']['sha256'],
-            md5=r['sample']['md5'],
-            sha1=r['sample']['sha1'],
-            dbot_score=dbot_score
+            name=target, sha256=r["sample"]["sha256"], md5=r["sample"]["md5"], sha1=r["sample"]["sha1"], dbot_score=dbot_score
         )
 
     return CommandResults(
-        outputs_prefix="Triage.sample.reports.triage",
-        outputs_key_field="sample.id",
-        outputs=r,
-        indicator=indicator
+        outputs_prefix="Triage.sample.reports.triage", outputs_key_field="sample.id", outputs=r, indicator=indicator
     )
 
 
@@ -300,10 +241,7 @@ def get_kernel_monitor(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
     task_id = _get_behavioral_task_id(args.get("task_id"))
 
-    r = client._http_request(
-        "GET", f"samples/{sample_id}/{task_id}/logs/onemon.json",
-        resp_type="text"
-    )
+    r = client._http_request("GET", f"samples/{sample_id}/{task_id}/logs/onemon.json", resp_type="text")
 
     return_results("Kernel monitor results:")
     results = fileResult(f"{sample_id}-{task_id}-kernel-monitor.json", r)
@@ -315,9 +253,7 @@ def get_pcap(client: Client, **args) -> dict:
     sample_id = args.get("sample_id")
     task_id = _get_behavioral_task_id(args.get("task_id"))
 
-    r = client._http_request(
-        "GET", f"samples/{sample_id}/{task_id}/dump.pcap", resp_type="response"
-    )
+    r = client._http_request("GET", f"samples/{sample_id}/{task_id}/dump.pcap", resp_type="response")
 
     filename = f"{sample_id}.pcap"
     file_content = r.content
@@ -331,10 +267,7 @@ def get_dumped_files(client: Client, **args) -> dict:
     task_id = args.get("task_id")
     file_name = args.get("file_name")
 
-    r = client._http_request(
-        "GET", f"samples/{sample_id}/{task_id}/{file_name}",
-        resp_type="content"
-    )
+    r = client._http_request("GET", f"samples/{sample_id}/{task_id}/{file_name}", resp_type="content")
 
     return fileResult(f"{file_name}", r)
 
@@ -352,9 +285,7 @@ def get_users(client: Client, **args) -> CommandResults:
     if r.get("data"):
         r = r["data"]
 
-    return CommandResults(
-        outputs_prefix="Triage.users", outputs_key_field="id", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.users", outputs_key_field="id", outputs=r)
 
 
 def create_user(client: Client, **args) -> CommandResults:
@@ -370,9 +301,7 @@ def create_user(client: Client, **args) -> CommandResults:
 
     r = client._http_request("POST", "users", data=data)
 
-    return CommandResults(
-        outputs_prefix="Triage.users", outputs_key_field="id", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.users", outputs_key_field="id", outputs=r)
 
 
 def delete_user(client: Client, **args) -> str:
@@ -393,19 +322,14 @@ def create_apikey(client: Client, **args) -> CommandResults:
 
     r = client._http_request("POST", f"users/{userID}/apikeys", data=data)
 
-    return CommandResults(
-        outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r)
 
 
 def get_apikey(client: Client, **args) -> CommandResults:
     userID = args.get("userID")
     r = client._http_request("GET", f"users/{userID}/apikeys")
 
-    return CommandResults(
-        outputs_prefix="Triage.apikey", outputs_key_field="key",
-        outputs=r.get("data")
-    )
+    return CommandResults(outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r.get("data"))
 
 
 def delete_apikey(client: Client, **args) -> str:
@@ -430,9 +354,7 @@ def get_profile(client: Client, **args) -> CommandResults:
     if not profileID and r.get("data"):
         r = r["data"]
 
-    return CommandResults(
-        outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r)
 
 
 def create_profile(client: Client, **args) -> CommandResults:
@@ -448,9 +370,7 @@ def create_profile(client: Client, **args) -> CommandResults:
 
     r = client._http_request("POST", "profiles", data=data)
 
-    return CommandResults(
-        outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r
-    )
+    return CommandResults(outputs_prefix="Triage.profiles", outputs_key_field="id", outputs=r)
 
 
 def update_profile(client: Client, **args) -> str:
@@ -484,10 +404,7 @@ def query_search(client, **args) -> CommandResults:
 
     r = client._http_request("GET", "search", params=params)
 
-    return CommandResults(
-        outputs_prefix="Triage.samples", outputs_key_field="id",
-        outputs=r["data"]
-    )
+    return CommandResults(outputs_prefix="Triage.samples", outputs_key_field="id", outputs=r["data"])
 
 
 def main():
@@ -495,12 +412,12 @@ def main():
     args = demisto.args()
     api_key = params.get("credentials", {}).get("password") or params.get("API Key")
     if not api_key:
-        return_error('Please provide a valid API token')
+        return_error("Please provide a valid API token")
     client = Client(
         params.get("base_url"),
         verify=params.get("Verify SSL"),
-        headers={"Authorization": f'Bearer {api_key}'},
-        proxy=params.get("proxy", False)
+        headers={"Authorization": f"Bearer {api_key}"},
+        proxy=params.get("proxy", False),
     )
 
     commands = {
@@ -532,9 +449,7 @@ def main():
     command = demisto.command()
     try:
         if command not in commands:
-            raise IncorrectUsageError(
-                f"Command '{command}' is not available in this integration"
-            )
+            raise IncorrectUsageError(f"Command '{command}' is not available in this integration")
 
         return_results(commands[command](client, **args))  # type: ignore
     except Exception as e:

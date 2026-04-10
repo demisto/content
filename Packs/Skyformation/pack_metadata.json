@@ -2,7 +2,7 @@
     "name": "Skyformation (Deprecated)",
     "description": "Deprecated. Vendor has declared end of life for this product. No available replacement.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Skyformation",
     "hidden": true,
     "url": "https://support.skyformation.com/hc/en-us",
@@ -18,6 +18,10 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix"
     ]
 }

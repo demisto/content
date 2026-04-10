@@ -381,7 +381,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "24"
     scriptarguments:
       resource_arn:
         simple: ${TableArn}
@@ -423,7 +423,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "25"
     scriptarguments:
       resource_arn:
         simple: ${TableArn}
@@ -435,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
@@ -472,7 +472,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -517,7 +517,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -561,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2995
+          "y": 3345
         }
       }
     note: false
@@ -633,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -670,7 +670,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
@@ -697,7 +697,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3185
+          "y": 3535
         }
       }
     note: false
@@ -729,7 +729,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3520
         }
       }
     note: false
@@ -761,7 +761,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
@@ -866,15 +866,85 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: In the TPB, we rely on a resource ARN (which most of the
-          times is number 12) which ends with 'c' but got another.
+        simple: In the TPB, we rely on a resource ARN (which most of the times is
+          number 12) which ends with 'c' but got another.
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 1340
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1e1bd75b-1824-4a7c-81dc-57c06b3244ef
+    type: regular
+    task:
+      id: 1e1bd75b-1824-4a7c-81dc-57c06b3244ef
+      version: -1
+      name: sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 77a86692-ae6d-4193-89e0-38eb69c216f7
+    type: regular
+    task:
+      id: 77a86692-ae6d-4193-89e0-38eb69c216f7
+      version: -1
+      name: sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
@@ -889,8 +959,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3215,
-        "width": 1320,
+        "height": 3565,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
@@ -898,5 +968,5 @@ view: |-
   }
 inputs: []
 outputs: []
+dirtyInputs: true
 fromversion: 5.0.0
-description: ''

@@ -2,7 +2,7 @@
     "name": "Cymulate",
     "description": "You can now verify your security posture on-demand using the Cymulate integration, which allows you to launch simulations of cyberattacks, breach, and attacks against yourself",
     "support": "partner",
-    "currentVersion": "2.0.26",
+    "currentVersion": "2.1.1",
     "author": "Cymulate",
     "url": "",
     "email": "support@cymulate.com",
@@ -12,12 +12,21 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
-    "githubUser": [],
+    "keywords": [
+        "Cymulate"
+    ],
+    "githubUser": [
+        "benimanela"
+    ],
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "cymulate_v2"
+    "defaultDataSource": "cymulate_v2",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

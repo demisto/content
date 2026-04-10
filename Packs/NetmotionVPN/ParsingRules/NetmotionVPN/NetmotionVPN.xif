@@ -1,0 +1,3 @@
+[INGEST:vendor="netmotion", product="vpn", target_dataset="netmotion_vpn_raw" , no_hit=keep]
+  filter event -> created ~= "\d{4}-\d{1,2}-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S%Ez", to_string(event -> created), "+00:00");

@@ -12,7 +12,7 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.10.48392
 enabled: true
-deprecated: true 
+deprecated: true
 name: SnmpDetection
 outputs:
 - contextPath: SnmpDetection

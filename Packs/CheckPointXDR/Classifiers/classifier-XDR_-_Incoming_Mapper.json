@@ -1,0 +1,114 @@
+{
+    "defaultIncidentType": "Check Point XDR Incident",
+    "description": "Maps incoming CheckPoint XDR incidents to XSOAR incidents",
+    "feed": false,
+    "fromVersion": "6.10.0",
+    "id": "CheckPointXDR_Incoming_Mapper",
+    "mapping": {
+        "Check Point XDR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Indicators": {
+                    "simple": "indicators"
+                },
+                "External Confidence": {
+                    "simple": "confidence"
+                },
+                "External Severity": {
+                    "simple": "severity"
+                },
+                "External System ID": {
+                    "simple": "id"
+                },
+                "MITRE Tactic ID": {
+                    "simple": "mitre_tactics"
+                },
+                "MITRE Technique ID": {
+                    "simple": "mitre_techniques"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Tactic": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "mitre_tactics",
+                        "transformers": []
+                    }
+                },
+                "Technique": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "mitre_techniques",
+                        "transformers": []
+                    }
+                },
+                "Tenant Name": {
+                    "simple": "tenantId"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "details": {
+                    "simple": "summary"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "display_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": true
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "summary"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "created_at"
+                },
+                "owner": {
+                    "simple": "assignee"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "CheckPointXDR_Incoming_Mapper",
+    "type": "mapping-incoming",
+    "version": -1
+}

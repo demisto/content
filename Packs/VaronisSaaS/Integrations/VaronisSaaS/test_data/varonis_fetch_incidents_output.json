@@ -42,7 +42,7 @@
                 "Department": ""
             }
         ],
-        "Url": "https://test.com/#/app/analytics/entity/Alert/70FED0AD-8C95-4B52-A8EE-47F9AF72514F"
+        "Url": "https://test.com/analytics/entity/Alert/70FED0AD-8C95-4B52-A8EE-47F9AF72514F"
     },
     {
         "ID": "08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0",
@@ -87,6 +87,6 @@
                 "Department": ""
             }
         ],
-        "Url": "https://test.com/#/app/analytics/entity/Alert/08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0"
+        "Url": "https://test.com/analytics/entity/Alert/08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0"
     }
 ]

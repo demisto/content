@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Tufin - Investigate Network Alert](https://raw.githubusercontent.com/demisto/content/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Investigate%20Network%20Alert.png)
+![Tufin - Investigate Network Alert](../doc_files/playbook-Tufin_-_Investigate_Network_Alert.png)

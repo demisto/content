@@ -92,7 +92,7 @@
 <li><a href="#h_2255369916021541937938187">Delete devices: cylance-protect-delete-devices</a></li>
 <li><a href="#h_2255369916021541937938188">Create a new Instaquery: cylance-optics-create-instaquery</a></li>
 <li><a href="#h_2255369916021541937938189">Get Instaquery result: cylance-optics-get-instaquery-result</a></li>
-<li><a href="#h_2255369916021541937938190">List current Instaquery: cylance-optics-list-instaquery</a></li>   
+<li><a href="#h_2255369916021541937938190">List current Instaquery: cylance-optics-list-instaquery</a></li>
 </ol>
 <h3 id="h_2673377171530178254852">1. List console device resources for a tenant</h3>
 <hr>
@@ -1470,7 +1470,7 @@
 <h5>Context Example</h5>
 <pre>DBotScore<br>{<br>  "Indicator": "AutoitLocker.exe",<br>  "Score": 3,<br>  "Type": "file",<br>  "Vendor": "Cylance Protect"<br>}<br>File<br>{<br>  "DownloadURL":       "https://cylanceephemeralfilestore.s3.amazonaws.com/0F/42/7B/33/0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09.zip? Signature=98kI7a19I2q%2BeE7Ef1un4BjSolQ%3D&amp;Expires=1541875473&amp;AWSAccessKeyId=AKIAIAD6JC2YTYVBFRFA",<br>  "MD5": "2FC103D0D52466B63D44444CE12A5901",<br>  "Malicious": {<br>  "Description": "Score determined by get threat command",<br>  "Vendor": "Cylance Protect"<br>},<br>  "Name": "AutoitLocker.exe",<br>  "SHA256": "0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09",<br>  "Safelisted": false,<br>  "Size": 405345,<br>  "Timestamp": "0001-01-01T00:00:00"<br>}</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" alt="screen shot 2018-11-10 at 20 56 40" width="749" height="370"></a></p>
+<p><a href="../../doc_files/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" alt="screen shot 2018-11-10 at 20 56 40" width="749" height="370"></a></p>
 <h3 id="h_1161821402141541937920711">17. Add a hash to a list</h3>
 <hr>
 <p>Adds an identified threat to either the Global Quarantine list or the Global Safe list for a particular Tenant.</p>
@@ -1540,7 +1540,7 @@
 <h5>Command Example</h5>
 <pre>!cylance-protect-add-hash-to-list sha256="9ACD45F5F3F2C7629E51FE3123D31296EF763F6ABC1F895CDD1BF1AFB9A7453B" listType="GlobalQuarantine"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" alt="screen shot 2018-11-10 at 20 58 58" width="749" height="103"></a></p>
+<p><a href="../../doc_files/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" alt="screen shot 2018-11-10 at 20 58 58" width="749" height="103"></a></p>
 <h3 id="h_5039804193441541937926117">18. Remove a threat from a list</h3>
 <hr>
 <p>Removes an identified threat from either the Global Quarantine list or the Global Safe list for a particular Tenant.</p>
@@ -1595,7 +1595,7 @@
 <h5>Command Example</h5>
 <pre>!cylance-protect-delete-hash-from-lists sha256="9ACD45F5F3F2C7629E51FE3123D31296EF763F6ABC1F895CDD1BF1AFB9A7453B" listType="GlobalQuarantine"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" alt="screen shot 2018-11-10 at 21 01 23" width="748" height="111"></a></p>
+<p><a href="../../doc_files/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" alt="screen shot 2018-11-10 at 21 01 23" width="748" height="111"></a></p>
 <h3 id="h_1587684564731541937931567">19. Get details for a policy</h3>
 <hr>
 <p>Gets details for a single policy.</p>
@@ -1709,55 +1709,56 @@
 <h5>Context Example</h5>
 <pre>Cylance<br>{<br>  "Policy": {<br>  "ID": "7bcb0817-e9c9-444d-96e2-be9b59f429cb",<br>  "Name": "Test_Policy",<br>  "Timestamp": "2018-03-05T12:29:03.000000+00:00"<br>               }<br>}</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" alt="screen shot 2018-11-10 at 21 02 56" width="595" height="685"></a></p>
+<p><a href="../../doc_files/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" alt="screen shot 2018-11-10 at 21 02 56" width="595" height="685"></a></p>
 
 ### cylance-protect-get-device-by-hostname
+
 ***
 Allows a caller to request a specific device resource belonging to a Tenant by hostname
-
 
 #### Base Command
 
 `cylance-protect-get-device-by-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The hostname (DNS name). | Required | 
-
+| hostname | The hostname (DNS name). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CylanceProtect.Device.AgentVersion | String | The CylancePROTECT Agent version installed on the device. | 
-| CylanceProtect.Device.IPAddress | Unknown | The list of IP addresses for the device. | 
-| CylanceProtect.Device.MACAddress | Unknown | The list of MAC addresses for the device. | 
-| CylanceProtect.Device.Hostname | string | The hostname for the device. | 
-| CylanceProtect.Device.OSVersion | string | Device OS version. | 
-| CylanceProtect.Device.UpdateAvailable | boolean | If true, there is available update for the device. | 
-| CylanceProtect.Device.BackgroundDetection | boolean | If true, the Agent is currently running. | 
-| CylanceProtect.Device.DateFirstRegistered | date | The date and time \(in UTC\) when the device record was created. | 
-| CylanceProtect.Device.DateLastModified | date | The date and time \(in UTC\) when the device record was last modified. | 
-| CylanceProtect.Device.DateOffline | date | The date and time \(in UTC\) when the device last communicated with the Console. | 
-| CylanceProtect.Device.IsSafe | boolean | If true, there are no outstanding threats. | 
-| CylanceProtect.Device.LastLoggedInUser | string | Last logged in user. | 
-| CylanceProtect.Device.State | string | Machine state. | 
-| CylanceProtect.Device.ID | string | The unique identifier for the device. | 
-| CylanceProtect.Device.Name | string | Device name. | 
-| CylanceProtect.Device.UpdateType | string | Device update type. | 
-| CylanceProtect.Device.Policy.ID | string | Device policy ID. | 
-| CylanceProtect.Device.Policy.Name | string | Device policy name. | 
-| Endpoint.Hostname | string | Device hostname. | 
-| Endpoint.MACAddress | Unknown | The list of MAC addresses for the device. | 
-| Endpoint.IPAddress | Unknown | The list of IP addresses for the device. | 
-| Endpoint.OSVersion | string | Device OS version. | 
-
+| CylanceProtect.Device.AgentVersion | String | The CylancePROTECT Agent version installed on the device. |
+| CylanceProtect.Device.IPAddress | Unknown | The list of IP addresses for the device. |
+| CylanceProtect.Device.MACAddress | Unknown | The list of MAC addresses for the device. |
+| CylanceProtect.Device.Hostname | string | The hostname for the device. |
+| CylanceProtect.Device.OSVersion | string | Device OS version. |
+| CylanceProtect.Device.UpdateAvailable | boolean | If true, there is available update for the device. |
+| CylanceProtect.Device.BackgroundDetection | boolean | If true, the Agent is currently running. |
+| CylanceProtect.Device.DateFirstRegistered | date | The date and time \(in UTC\) when the device record was created. |
+| CylanceProtect.Device.DateLastModified | date | The date and time \(in UTC\) when the device record was last modified. |
+| CylanceProtect.Device.DateOffline | date | The date and time \(in UTC\) when the device last communicated with the Console. |
+| CylanceProtect.Device.IsSafe | boolean | If true, there are no outstanding threats. |
+| CylanceProtect.Device.LastLoggedInUser | string | Last logged in user. |
+| CylanceProtect.Device.State | string | Machine state. |
+| CylanceProtect.Device.ID | string | The unique identifier for the device. |
+| CylanceProtect.Device.Name | string | Device name. |
+| CylanceProtect.Device.UpdateType | string | Device update type. |
+| CylanceProtect.Device.Policy.ID | string | Device policy ID. |
+| CylanceProtect.Device.Policy.Name | string | Device policy name. |
+| Endpoint.Hostname | string | Device hostname. |
+| Endpoint.MACAddress | Unknown | The list of MAC addresses for the device. |
+| Endpoint.IPAddress | Unknown | The list of IP addresses for the device. |
+| Endpoint.OSVersion | string | Device OS version. |
 
 #### Command Example
+
 ```!cylance-protect-get-device-by-hostname hostname=WIN-5HMOGIEG6M5```
 
 #### Context Example
+
 ```json
 {
     "CylanceProtect": {
@@ -1803,6 +1804,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 #### Human Readable Output
 
 >### Cylance Protect Device WIN-5HMOGIEG6M5
+>
 >|AgentVersion|BackgroundDetection|DateFirstRegistered|DateOffline|DlcmStatus|HostName|Id|IpAddresses|IsSafe|MacAddresses|Name|OsKernelVersion|OsVersion|Policy|Products|State|UpdateAvailable|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
@@ -1812,38 +1814,38 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 ***
 Create a cylance InstaQuery
 
-
 #### Base Command
 
 `cylance-optics-create-instaquery`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | InstaQuery name. | Required | 
-| description | InstaQuery description. | Required | 
-| artifact | InstaQuery artifact, select from the list. Possible values are: File, Process, NetworkConnection, RegistryKey. | Required | 
-| match_value_type | InstaQuery value type to match, select from the list. Possible values are: File.Path, File.Md5, File.Sha2, File.Owner, File.CreationDateTime, Process.Name, Process.Commandline, Process.PrimaryImagePath, Process.PrimaryImageMd5, Process.StartDateTime, NetworkConnection.DestAddr, NetworkConnection.DestPort, RegistryKey.ProcessName, RegistryKey.ProcessPrimaryImagePath, RegistryKey.ValueName, RegistryKey.FilePath, RegistryKey.FileMd5, RegistryKey.IsPersistencePoint. | Required | 
-| match_values | Value to search in InstaQuery. | Required | 
-| zone | Zone of the object. | Required | 
-| match_type | Match type fuzzy or exact. Possible values are: Fuzzy, Exact. | Required | 
-
+| name | InstaQuery name. | Required |
+| description | InstaQuery description. | Required |
+| artifact | InstaQuery artifact, select from the list. Possible values are: File, Process, NetworkConnection, RegistryKey. | Required |
+| match_value_type | InstaQuery value type to match, select from the list. Possible values are: File.Path, File.Md5, File.Sha2, File.Owner, File.CreationDateTime, Process.Name, Process.Commandline, Process.PrimaryImagePath, Process.PrimaryImageMd5, Process.StartDateTime, NetworkConnection.DestAddr, NetworkConnection.DestPort, RegistryKey.ProcessName, RegistryKey.ProcessPrimaryImagePath, RegistryKey.ValueName, RegistryKey.FilePath, RegistryKey.FileMd5, RegistryKey.IsPersistencePoint. | Required |
+| match_values | Value to search in InstaQuery. | Required |
+| zone | Zone of the object. | Required |
+| match_type | Match type fuzzy or exact. Possible values are: Fuzzy, Exact. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InstaQuery.New.id | string | The unique identifier of the created InstaQuery. | 
-| InstaQuery.New.created_at | date | The Date and Time that the InstaQuery was created. | 
-| InstaQuery.New.progress | string | The progress of the InstaQuery. | 
-
+| InstaQuery.New.id | string | The unique identifier of the created InstaQuery. |
+| InstaQuery.New.created_at | date | The Date and Time that the InstaQuery was created. |
+| InstaQuery.New.progress | string | The progress of the InstaQuery. |
 
 #### Command Example
-``` 
+
+```
 !cylance-optics-create-instaquery name="Test Insta continue" description="Test only" artifact="File" match_value_type="File.Path" match_values="exe" zone="6608ca0e-88c6-4647-b276-271cc5ea4295" match_type="Fuzzy"
 ```
 
 #### Human Readable Output
+
 | Result            |                                  |
 |-------------------|----------------------------------|
 | case_sensitive    | false                            |
@@ -1859,32 +1861,30 @@ Create a cylance InstaQuery
 | results_available | false                            |
 | zones             | 6608CA0E88C64647B276271CC5EA4295 |
 
-
 <h3 id="h_2255369916021541937938189">22. Get Instaquery result</h3>
 ### cylance-optics-get-instaquery-result
 ***
 Get a cylance InstaQuery search result
 
-
 #### Base Command
 
 `cylance-optics-get-instaquery-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_id | InstaQuery ID. | Required | 
-
+| query_id | InstaQuery ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InstaQuery.Results.result | string | The InstaQuery results. | 
-
+| InstaQuery.Results.result | string | The InstaQuery results. |
 
 #### Command Example
-``` 
+
+```
 !cylance-optics-get-instaquery-result query_id=9E2CCDA5A93918C588E6865ED6FEEA70
 ```
 
@@ -1896,37 +1896,36 @@ Get a cylance InstaQuery search result
 | result | false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | status | {u'@timestamp': 1651729959.177779, u'HostName': u'windows-server-', u'DeviceId': u' 65DB26864E364409B50DDC23291A3511 ', u'@version': u'1', u'CorrelationId': u' 9E2CCDA5A93918C588E6865ED6FEEA70 ', u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", "Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": "c:\\program files\\cylance\\optics\\ cyoptics.exe ", "CreationDateTime": "2021-03-29T22:34:14.000Z", "Md5": " A081D3268531485BF95DC1A15A5BC6B0 ", "Sha256": " 256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462 ", "Owner": "NT AUTHORITY\\SYSTEM", "SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": "P3p6fdq3FlMsld6Rz95EOA=="}}'} |
 
-
 <h3 id="h_2255369916021541937938190">23. List current Instaqueries</h3>
 ### cylance-optics-list-instaquery
 ***
 Get a list of InstaQuery
 
-
 #### Base Command
 
 `cylance-optics-list-instaquery`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | number of page to collect. | Optional | 
-| page_size | number of items per page to collect. | Required | 
-
+| page | number of page to collect. | Optional |
+| page_size | number of items per page to collect. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InstaQuery.List | string | The list of InstaQuery | 
-
+| InstaQuery.List | string | The list of InstaQuery |
 
 #### Command Example
-``` 
+
+```
 !cylance-optics-list-instaquery page_size="10"
 ```
 
 #### Human Readable Output
+
 |                       | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | page_items            | {u'match_type': u'Fuzzy', u'name': u'Test Insta continue', u'created_at': u'2022-05-05T05:52:36Z', u'artifact': u'File', u'case_sensitive': False, u'zones': [u'6608CA0E88C64647B276271CC5EA4295'], u'progress': {u'queried': 0, u'responded': 0}, u'match_value_type': u'Path', u'results_available': True, u'match_values': [u'exe'], u'id': u'9E2CCDA5A93918C588E6865ED6FEEA70', u'description': u'Test only'} |
@@ -1934,4 +1933,3 @@ Get a list of InstaQuery
 | page_size             | 10                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | total_number_of_items | 8                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | total_pages           | 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-

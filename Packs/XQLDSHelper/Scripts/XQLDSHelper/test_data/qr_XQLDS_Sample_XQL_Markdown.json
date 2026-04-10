@@ -1,0 +1,19 @@
+{
+  "execution_id": "4ae2db133b2d4d_98717_inv",
+  "number_of_results": 1,
+  "query_cost": {
+    "3204872200335": 0.0004486111111111111
+  },
+  "query_name": "",
+  "remaining_quota": 64.962395,
+  "results": [
+    {
+      "_product": "Fusion",
+      "_time": 1734193084000,
+      "_vendor": "PANW",
+      "insert_timestamp": 1734193216439,
+      "text": "Sample Text"
+    }
+  ],
+  "status": "SUCCESS"
+}

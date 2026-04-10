@@ -20,11 +20,11 @@ args:
   required: true
   description: The message to the user to ask.
 - name: option1
-  description: First option for a user reply. "yes" is the default.
+  description: First option for a user reply. "yes" is the default. Options cannot contain whitespaces.
 - name: option2
-  description: Second option for the user reply. "no" is the default.
+  description: Second option for the user reply. "no" is the default. Options cannot contain whitespaces.
 - name: additionalOptions
-  description: A comma delimited list of additional options if you have more than 2.
+  description: A comma delimited list of additional options if you have more than 2. Options cannot contain whitespaces.
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: roles
@@ -73,5 +73,6 @@ marketplaces:
 - xsoar
 - marketplacev2
 - xpanse
+- platform
 tests:
 - No tests

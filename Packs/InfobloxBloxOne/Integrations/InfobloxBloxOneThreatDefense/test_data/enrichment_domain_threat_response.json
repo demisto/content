@@ -1,0 +1,28 @@
+{
+    "threat": [
+        {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "type": "HOST",
+            "host": "test.com",
+            "domain": "test.com",
+            "tld": "com",
+            "profile": "IID",
+            "property": "Phishing_Lookalike",
+            "class": "Phishing",
+            "threat_level": 100,
+            "expiration": "2025-09-05T16:39:38.959Z",
+            "detected": "2025-05-08T16:39:38.959Z",
+            "received": "2025-05-08T16:41:37.894Z",
+            "imported": "2025-05-08T16:41:37.894Z",
+            "dga": "false",
+            "up": "true",
+            "confidence": 100,
+            "batch_id": "00000000-0000-0000-0000-000000000001",
+            "extended": {
+                "cyberint_guid": "simple_cyberint_guid",
+                "notes": "cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor."
+            }
+        }
+    ],
+    "record_count": 1
+}

@@ -1,0 +1,36 @@
+{
+    "raw_response": {
+        "data": {
+            "startBulkThreatHunt": {
+                "hunts": [
+                    {
+                        "huntId": "hunt-abc",
+                        "huntName": "Test Hunt",
+                        "config": {
+                            "huntType": "THREAT_HUNT_V2",
+                            "clusterUuids": ["cluster-1"],
+                            "objectFids": ["obj-123"],
+                            "__typename": "HuntConfig"
+                        },
+                        "status": "HUNT_TRIGGER_SUCCEEDED",
+                        "__typename": "HuntResponse"
+                    }
+                ]
+            }
+        }
+    },
+    "outputs": [
+        {
+            "huntId": "hunt-abc",
+            "huntName": "Test Hunt",
+            "config": {
+                "huntType": "THREAT_HUNT_V2",
+                "clusterUuids": ["cluster-1"],
+                "objectFids": ["obj-123"],
+                "__typename": "HuntConfig"
+            },
+            "status": "HUNT_TRIGGER_SUCCEEDED",
+            "__typename": "HuntResponse"
+        }
+    ]
+}

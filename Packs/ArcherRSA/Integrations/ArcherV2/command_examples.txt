@@ -1,0 +1,23 @@
+archer-search-applications applicationId=75
+archer-get-application-fields applicationId=75
+archer-get-field fieldID=350
+archer-get-mapping-by-level level=67
+archer-get-record applicationId=75 contentId=227602
+archer-create-record applicationId=75 fieldsToValues=`{"Incident Summary":"This is the incident summary","Priority":["High"]}`
+archer-delete-record contentId=239326
+archer-update-record applicationId=75 contentId=239326 fieldsToValues=`{"Priority":["High"]}`
+archer-update-record applicationId=75 contentId=227602 fieldsToValues=`{"Supporting Documentation":[125}`
+archer-get-reports
+archer-get-valuelist fieldID=302
+archer-get-search-options-by-guid reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12
+archer-execute-statistic-search-by-report maxResults=100 reportGuid=e4b18575-52c0-4f70-b41b-3ff8b6f13b1c
+archer-reset-cache
+archer-print-cache
+archer-upload-file entryId=16027@b32fdf18-1c65-43af-8918-7f85a1fab951
+archer-get-file fileId=125
+archer-list-users
+archer-search-records applicationId=84 fullData=False fieldsToGet=`Name (Full),Id` fieldsToDisplay=`Name (Full),Id` fieldToSearchOn=`Name (Full)` searchValue=john
+archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open`
+archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Days Open` numericOperator=GreaterThan searchValue=64 maxResults=10
+archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z xmlForFiltering=`<TextFilterCondition><Operator>Contains</Operator><Field name="Incident Priority">456</Field><Value>High</Value></TextFilterCondition>` maxResults=100
+archer-search-records-by-report reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12

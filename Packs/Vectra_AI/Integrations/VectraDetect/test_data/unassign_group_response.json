@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "type": "domain",
+    "name": "xsoar-group-accout-test",
+    "description": "xsoar-group-accout-test",
+    "cognito_managed": false,
+    "members": [],
+    "rules": [],
+    "last_modified": "2023-09-04T06:30:01Z",
+    "last_modified_by": "TEST Client"
+  },
+  {
+    "id": 2,
+    "type": "host",
+    "name": "TEST RENAME",
+    "description": "TEST RENAME",
+    "members": [
+      {
+        "id": 4,
+        "name": "IP-0.0.0.4",
+        "is_key_asset": false,
+        "url": "http://vectra.test/api/v2.5/hosts/4"
+      }
+    ],
+    "rules": [],
+    "last_modified": "2023-09-04T06:27:57Z",
+    "last_modified_by": "TEST Client"
+  },
+  {
+    "id": 3,
+    "name": "xsoar-account-group-2",
+    "description": "xsoar-account-group-2",
+    "last_modified": "2023-09-04T09:22:46Z",
+    "last_modified_by": "TEST Client",
+    "type": "account",
+    "members": [
+      {
+        "uid": "account_2"
+      }
+    ],
+    "rules": [],
+    "importance": "medium"
+  },
+  {
+    "id": 4,
+    "name": "xsoar-ip-group-2",
+    "description": "xsoar-ip-group-2",
+    "last_modified": "2024-05-23T19:37:40Z",
+    "last_modified_by": "TEST Client",
+    "type": "ip",
+    "members": [],
+    "rules": [],
+    "cognito_managed": false
+  }
+]

@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Rundeck-job-execute-Generic](https://raw.githubusercontent.com/demisto/content/ab6c17a1784a8c4888cbde68854c2a22dc4893e4/docs/images/playbooks/Rundeck-job-execute-Generic.png)
+![Rundeck-job-execute-Generic](../doc_files/Rundeck-job-execute-Generic.png)

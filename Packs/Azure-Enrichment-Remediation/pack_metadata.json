@@ -2,7 +2,7 @@
     "name": "Azure Enrichment and Remediation",
     "description": "Playbooks using multiple Azure content packs for enrichment and remediation purposes",
     "support": "xsoar",
-    "currentVersion": "1.1.19",
+    "currentVersion": "1.1.31",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,7 +15,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "dependencies": {
         "AzureCompute": {
@@ -50,5 +51,12 @@
         "AzureLogAnalytics",
         "AzureNetworkSecurityGroups",
         "AzureResourceGraph"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

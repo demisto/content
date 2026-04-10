@@ -6,7 +6,7 @@ function valueToValidString(value) {
         value = JSON.stringify(value);
     }
     value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
-    if (value && value.indexOf(',') > -1) {
+    if (value && (value.includes(',') || value.includes('\r') || value.includes('\n'))) {
         value = '"' + value + '"';
     }
     return value;
@@ -66,7 +66,7 @@ function convertToCSV(objArray, headers) {
     }
 
     // create file content
-    var fileContent = headers.join() + '\r';
+    var fileContent = headers.join();
     for (var i = 0; i < rows.length;  i++) {
         var line = rows[i].join();
         fileContent += '\n' + line ;

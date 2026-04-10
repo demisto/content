@@ -1,6 +1,9 @@
-name: Jira Parsing Rule
-id: Jira_Parsing_Rule
 fromversion: 6.10.0
-tags: []
+id: Jira_Parsing_Rule
+name: Jira Parsing Rule
 rules: ''
 samples: ''
+supportedModules:
+- agentix
+- xsiam
+tags: []

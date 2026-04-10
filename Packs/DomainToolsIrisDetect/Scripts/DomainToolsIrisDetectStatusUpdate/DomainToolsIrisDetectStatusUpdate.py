@@ -1,6 +1,7 @@
 """
 Domain Tools Iris Detect Status Update
 """
+
 from CommonServerPython import *  # noqa: F401
 
 
@@ -64,8 +65,8 @@ def main():
                     demisto.error(error_message)
                     raise DemistoException(error_message)
                 for domain in domains:
-                    args = {'value': domain, 'irisdetectdomainstate': state}
-                    demisto.executeCommand('setIndicator', args)
+                    args = {"value": domain, "irisdetectdomainstate": state}
+                    demisto.executeCommand("setIndicator", args)
     except Exception as err:
         return_error(f"Failed to update state. {err}")
 

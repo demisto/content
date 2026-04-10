@@ -2,7 +2,7 @@
     "name": "Gurucul Risk Analytics",
     "description": "Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics platform.",
     "support": "partner",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.12",
     "author": "Gurucul",
     "url": "https://www.gurucul.com",
     "email": "support@gurucul.com",
@@ -29,6 +29,11 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

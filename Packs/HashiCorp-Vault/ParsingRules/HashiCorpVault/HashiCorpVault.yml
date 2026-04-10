@@ -1,0 +1,6 @@
+id: HashiCorp_Vault_ParsingRule
+name: HashiCorp Vault Parsing Rule
+fromversion: 8.5.0   
+tags: []
+rules: ''
+samples: ''

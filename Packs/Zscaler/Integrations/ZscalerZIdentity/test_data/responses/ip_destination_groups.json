@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1001,
+        "name": "Test Group 1",
+        "type": "DSTN_IP",
+        "addresses": ["10.0.0.1", "10.0.0.2"],
+        "description": "Test IP destination group",
+        "countries": [],
+        "ipCategories": [],
+        "isNonEditable": false
+    },
+    {
+        "id": 1002,
+        "name": "Test Group 2",
+        "type": "DSTN_DOMAIN",
+        "addresses": ["example.com"],
+        "description": "Test domain destination group",
+        "countries": ["US"],
+        "ipCategories": [],
+        "isNonEditable": false
+    }
+]

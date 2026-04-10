@@ -1,0 +1,25 @@
+{
+    "name": "DomainTools Feed",
+    "description": "Indicators feed from DomainTools",
+    "support": "partner",
+    "currentVersion": "1.0.6",
+    "author": "DomainTools",
+    "url": "https://www.domaintools.com/support/",
+    "email": "memberservices@domaintools.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -2,7 +2,7 @@
     "name": "JamfProtect",
     "description": "Apple Mobile and Mac endpoint protection",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,11 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

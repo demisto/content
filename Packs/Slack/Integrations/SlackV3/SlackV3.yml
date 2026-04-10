@@ -1,7 +1,8 @@
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 category: Messaging and Conferencing
+provider: Slack
 commonfields:
   id: SlackV3
   version: -1
@@ -50,6 +51,9 @@ configuration:
   name: permitted_notifications
   type: 16
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
   required: false
   options:
   - incidentAssigned
@@ -64,8 +68,9 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
+  - deprecatedContentInUse
   advanced: true
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+  additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
@@ -168,6 +173,7 @@ configuration:
   hidden:
   - marketplacev2
   - xsoar
+  - platform
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -308,7 +314,7 @@ script:
       name: threadID
     - description: A comment to add to the file.
       name: comment
-    description: 'Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists). Newly created apps (from the beginning of May 8, 2024) will be unable to use "slack_send_file" and will get an error in case of use, due to changes from the Slack API side.'
+    description: 'Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).'
     name: slack-send-file
   - arguments:
     - description: The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
@@ -379,7 +385,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (username or email).
+      description: The Slack user (username, email or user ID).
       name: user
       required: true
     description: Get details about a specified user.
@@ -445,6 +451,8 @@ script:
       required: true
     description: Reset user session token in Slack.
     name: slack-user-session-reset
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'Supply this argument to only return channels with this name.'
       name: name_filter
@@ -478,16 +486,51 @@ script:
       description: The purpose, or description, of the channel.
       type: string
   - arguments:
-    - description: The channel ID associated with the Slack channel.
+    - description: Deprecated. Use *conversation_id* instead.
       name: channel_id
-      required: true
-    - defaultValue: 100
-      description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
-      name: limit
-    - description: The conversation ID.
+      deprecated: true
+    - description: The name of the conversation. For channels, provide the channel name. For direct messages, use the username or display name. Either this or *conversation_id* is required. If both are provided, *conversation_id* takes precedence.
+      name: conversation_name
+    - description: The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.
       name: conversation_id
+    - defaultValue: 100
+      description: Set this argument to specify how many results to return.
+      name: limit
+    - description: |
+        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order.
+      name: from_time
+    - description: Token to retrieve the next page of results.
+      name: page_token
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
+    outputs:
+    - contextPath: Slack.Messages.Type
+      description: The type of the message (e.g., message, file_share, etc.).
+      type: string
+    - contextPath: Slack.Messages.Text
+      description: The text content of the message.
+      type: string
+    - contextPath: Slack.Messages.UserId
+      description: The user ID of the message sender.
+      type: string
+    - contextPath: Slack.Messages.Name
+      description: The username of the message sender.
+      type: string
+    - contextPath: Slack.Messages.FullName
+      description: The full name of the message sender.
+      type: string
+    - contextPath: Slack.Messages.TimeStamp
+      description: The timestamp of the message.
+      type: string
+    - contextPath: Slack.Messages.HasReplies
+      description: Whether the message has replies.
+      type: string
+    - contextPath: Slack.Messages.ThreadTimeStamp
+      description: The thread timestamp of the message.
+      type: string
+    - contextPath: SlackConversationHistory.NextPageToken
+      description: Token to retrieve the next page of results.
+      type: string
   - arguments:
     - name: channel_id
       description: ID of the channel.
@@ -500,13 +543,33 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.99303
+  - arguments:
+    - default: true
+      description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}”.'
+      name: message
+      prettyname: Message
+      required: true
+    - description: The name of the Slack channel to which to send the message.
+      name: channel
+      prettyname: Channel
+      required: true
+    description: Sends a message to a user, group, or channel.
+    name: slack-send-notification-quick-action
+    prettyname: Send Slack Message
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: Slack.Thread.ID
+      description: The Slack thread ID.
+      type: String
+  dockerimage: demisto/slackv3:1.0.0.6976072
   longRunning: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
   isFetchSamples: true
+supportsquickactions: true
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB

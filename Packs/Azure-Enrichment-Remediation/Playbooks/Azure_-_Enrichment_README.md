@@ -10,8 +10,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Azure Active Directory Identity And Access
-* Azure Active Directory Users
+* Entra ID Identity And Access
+* Entra ID Users
 * Azure Compute v2
 * Azure Resource Graph
 

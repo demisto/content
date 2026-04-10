@@ -1,32 +1,24 @@
 Use the JsonWhoIs integration to  enrich domain indicators.
 
+## Configure JsonWhoIs in Cortex
 
-## Configure JsonWhoIs on Cortex XSOAR
-
-1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
-2.  Search for JsonWhoIs.
-3.  Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Example** |
-    | ---------             | -----------           | -------            |
-    | Name | A meaningful name for the integration instance. | JsonWhoIs_instance_1 |
-    | API Token  |  Your [JsonWhoIs API token](https://jsonwhois.com/) |  N/A  |
-    | System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span></span>/proxyserver.com |
-    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-    | Do Not Use by Default  | If checked the commands will not be used by default (this is influenced if two command are the same). | N/A  |
-
-4.  Click **Test** to validate the new instance.
+| **Parameter** | **Description** | **Example** |
+| ---------             | -----------           | -------            |
+| Name | A meaningful name for the integration instance. | JsonWhoIs_instance_1 |
+| API Token  |  Your [JsonWhoIs API token](https://jsonwhois.com/) |  N/A  |
+| System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span></span>/proxyserver.com |
+| Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+| Do Not Use by Default  | If checked the commands will not be used by default (this is influenced if two command are the same). | N/A  |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get enriched data
 
 Returns enriched data for Domains, URLs, and IP addresses.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 ##### Base Command
 
@@ -59,11 +51,13 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Domain.WHOIS.Admin.Phone | String | The Admin phone. |
 
 ##### Command Example
+
 ```
 !whois query=demisto.com
 ```
 
 ##### Context Example
+
 ```
 {
     "Domain": {

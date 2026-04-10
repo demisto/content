@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudusergroups",
+    "version": -1,
+    "modified": "2025-09-23T12:32:42.986357844+05:30",
+    "name": "Infoblox Cloud User Groups",
+    "ownerOnly": false,
+    "description": "The user groups of the Infoblox DNS Security Event.",
+    "cliName": "infobloxcloudusergroups",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud DNS Security Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

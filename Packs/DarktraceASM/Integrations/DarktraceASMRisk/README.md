@@ -1,11 +1,7 @@
 Darktrace is a Cyber AI platform for threat detection and response across cloud, email, industrial, and the network.
 This integration was integrated and tested with version 6.0.0 of Darktrace
 
-## Configure Darktrace ASM on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Darktrace ASM.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Darktrace ASM in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,11 +14,9 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 | max_alerts | Maximum Risks per fetch | False |
 | first_fetch | First fetch time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### darktrace-asm-get-risk
@@ -51,7 +45,7 @@ Returns the Risk object associated with the given Risk ID.
 | Darktrace.risk.asset.id | string | Asset ID. |
 | Darktrace.risk.asset.updatedAt | timestamp | Last time Asset was updated. |
 | Darktrace.risk.asset.securityrating | string | Security rating of Asset. |
-| Darktrace.risk.asset.isMalicious | boolean | Malicious state of the Asset. | 
+| Darktrace.risk.asset.isMalicious | boolean | Malicious state of the Asset. |
 | Darktrace.risk.asset.createdAt | timestamp | Time Asset was created. |
 | Darktrace.risk.asset.state | string | State of Asset. |
 | Darktrace.risk.comments | dict | Dictionary of comments by comment ID. |
@@ -156,7 +150,6 @@ Returns the Asset object associated with the given Asset ID.  The output will de
 | Darktrace.asset.tags | list | List of tags applied to Asset within Darktrace UI. |
 | Darktrace.asset.type | string | Type of Asset. |
 | Darktrace.asset.updatedAt | timestamp | Last time Asset was updated. |
-
 
 #### Context Output: Application Asset type
 

@@ -1,0 +1,105 @@
+{
+    "associated_accounts": [
+        "O365:darcy@corp.example.com"
+    ],
+    "subaccounts": [
+        "O365:darcy@corp.example.com"
+    ],
+    "id": 107,
+    "url": "https://example.com/api/v2.5/accounts/107",
+    "name": "O365:darcy@corp.example.com",
+    "state": "active",
+    "threat": 30,
+    "certainty": 58,
+    "severity": "Medium",
+    "account_type": [
+        "o365"
+    ],
+    "tags": [
+        "MDR - Monitoring - 2024-07-10"
+    ],
+    "note": "MDR - 2024-07-10\n\nVectra MXDR is utilizing advanced AI-driven prioritization to more effectively determine which entities have a high potential for doing damage to business operations.",
+    "notes": [
+        {
+            "id": 1963,
+            "date_created": "2024-07-10T15:37:22Z",
+            "date_modified": null,
+            "created_by": "vectra_mdr",
+            "modified_by": null,
+            "note": "MDR - 2024-07-10\n\nVectra MXDR is utilizing advanced AI-driven prioritization to more effectively determine which entities have a high potential for doing damage to business operations."
+        }
+    ],
+    "note_modified_by": "vectra_mdr",
+    "note_modified_timestamp": "2024-07-10T15:37:22Z",
+    "privilege_level": null,
+    "privilege_category": null,
+    "last_detection_timestamp": "2024-07-10T16:12:38Z",
+    "detection_set": [
+        "https://example.com/api/v2.2/detections/14"
+    ],
+    "probable_home": null,
+    "assignment": null,
+    "past_assignments": [
+        {
+            "id": 11,
+            "assigned_by": {
+                "id": 52,
+                "username": "cds_xsoar"
+            },
+            "date_assigned": "2024-07-11T05:40:56Z",
+            "date_resolved": null,
+            "events": [
+                {
+                    "assignment_id": 11,
+                    "actor": 52,
+                    "event_type": "created",
+                    "datetime": "2024-07-11T05:40:56Z",
+                    "context": {
+                        "to": 20,
+                        "entity_t_score": 0,
+                        "entity_c_score": 0
+                    }
+                }
+            ],
+            "outcome": null,
+            "resolved_by": null,
+            "triaged_detections": {},
+            "host_id": null,
+            "account_id": 107,
+            "assigned_to": {
+                "id": 20,
+                "username": "admin"
+            }
+        }
+    ],
+    "sensors": [
+        "g7pv84nd"
+    ],
+    "detection_summaries": [
+        {
+            "detection_id": 14,
+            "detection_url": "https://example.com/api/v2.5/detections/14",
+            "detection_type": "Azure AD Newly Created Admin Account",
+            "detection_category": "example_category",
+            "is_targeting_key_asset": false,
+            "state": "active",
+            "threat": 80,
+            "certainty": 70,
+            "is_triaged": true,
+            "tags": [
+                "MDR - Monitoring - 2024-07-10"
+            ],
+            "summary": {
+                "actor_accounts": [
+                    "serviceprincipal_dummy_account"
+                ],
+                "roles": [
+                    "TenantAdmins"
+                ],
+                "description": "This account was created and given administrative roles shortly afterwards."
+            },
+            "assigned_to": "admin",
+            "assigned_date": "2024-07-11T05:40:56Z"
+        }
+    ]
+}

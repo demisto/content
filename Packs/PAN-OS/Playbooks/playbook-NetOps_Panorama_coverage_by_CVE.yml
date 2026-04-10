@@ -117,3 +117,7 @@ tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
 description: Find if there is signature coverage for a specific CVE.
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

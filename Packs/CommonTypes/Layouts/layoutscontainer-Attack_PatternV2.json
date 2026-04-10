@@ -405,6 +405,12 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
@@ -584,174 +590,6 @@
                         "w": 1,
                         "x": 0,
                         "y": 0
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "id": "indicator-quick-view-info",
-                "name": "(Deprecated)",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": false,
-                        "i": "indicator-quick-view-info-tags-section",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 22,
-                                "id": "indicator-quick-view-info-tags-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 22,
-                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Tags and TLP",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-relatedIncidents",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "static": false,
-                        "type": "relatedIncidents",
-                        "w": 1,
-                        "x": 0,
-                        "y": 5
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-comments",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 0,
-                        "y": 7
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stixid",
-                                "height": 22,
-                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
-                                "index": 0,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixaliases",
-                                "height": 22,
-                                "id": "28289290-d183-11ea-b1ee-39abdac77dba",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixkillchainphases",
-                                "height": 22,
-                                "id": "3e755110-97b6-11eb-b107-d54cb1092446",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "operatingsystemrefs",
-                                "height": 22,
-                                "id": "8afd0010-a818-11eb-8bae-034332f83c9b",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 4,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "STIX Attack Pattern Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixdescription",
-                                "height": 22,
-                                "id": "be655620-b306-11eb-941c-e725acf1fbbc",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "STIX Attack Pattern Description",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
                     }
                 ],
                 "type": "custom"

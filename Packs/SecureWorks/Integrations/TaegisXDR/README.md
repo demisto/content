@@ -1,24 +1,17 @@
 
-## Configure Taegis XDR on Cortex XSOAR
+## Configure Taegis XDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Taegis XDR
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Taegis Environment | The environment to utilize | True |
-    | Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
-    | Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
-    | Use system proxy settings | Defines whether the system proxy is used or not | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
-
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Taegis Environment | The environment to utilize | True |
+| Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
+| Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
+| Use system proxy settings | Defines whether the system proxy is used or not | False |
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### taegis-archive-investigation
 
@@ -49,7 +42,6 @@ After you successfully execute a command, a DBot message appears in the War Room
     }
 }
 ```
-
 
 ### taegis-create-comment
 
@@ -82,7 +74,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-create-investigation
 
 #### Base Command
@@ -114,10 +105,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-execute-playbook
 
 #### Base Command
+
 `!taegis-execute-playbook`
 
 #### Inputs
@@ -141,7 +132,6 @@ After you successfully execute a command, a DBot message appears in the War Room
     "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4"
 }
 ```
-
 
 ### taegis-fetch-alerts
 
@@ -182,7 +172,6 @@ After you successfully execute a command, a DBot message appears in the War Room
     }
 }
 ```
-
 
 ### taegis-fetch-assets
 
@@ -253,7 +242,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-fetch-comment
 
 #### Base Command
@@ -295,7 +283,6 @@ After you successfully execute a command, a DBot message appears in the War Room
     }
 }
 ```
-
 
 ### taegis-fetch-comments
 
@@ -356,10 +343,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-fetch-endpoint
 
 #### Base Command
+
 `!taegis-fetch-endpoint`
 
 #### Inputs
@@ -399,10 +386,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-fetch-investigation
 
 #### Base Command
+
 `!taegis-fetch-investigation`
 
 #### Inputs
@@ -441,10 +428,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-fetch-investigation-alerts
 
 #### Base Command
+
 `!taegis-fetch-investigation-alerts`
 
 #### Inputs
@@ -476,11 +463,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
-
 ### taegis-fetch-investigations
 
 #### Base Command
+
 `!taegis-fetch-investigations`
 
 #### Inputs
@@ -516,10 +502,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-fetch-playbook-execution
 
 #### Base Command
+
 `!taegis-fetch-playbook-execution`
 
 #### Inputs
@@ -562,10 +548,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-fetch-users
 
 #### Base Command
+
 `!taegis-fetch-users`
 
 #### Inputs
@@ -602,7 +588,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-isolate-asset
 
 #### Base Command
@@ -634,7 +619,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-update-alert-status
 
 #### Base Command
@@ -657,7 +641,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 * TRUE_POSITIVE_BENIGN
 * TRUE_POSITIVE_MALICIOUS
 
-
 #### Command Examples
 
 ```
@@ -676,7 +659,6 @@ After you successfully execute a command, a DBot message appears in the War Room
     }
 }
 ```
-
 
 ### taegis-update-comment
 
@@ -709,10 +691,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 }
 ```
 
-
 ### taegis-update-investigation
 
 #### Base Command
+
 `!taegis-update-investigation`
 
 #### Inputs
@@ -760,7 +742,6 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
     }
 }
 ```
-
 
 ### taegis-unarchive-investigation
 

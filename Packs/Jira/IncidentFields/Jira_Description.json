@@ -34,5 +34,9 @@
     "sla": 0,
     "threshold": 72,
     "isExtractingSpecificIndicatorTypes": false,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

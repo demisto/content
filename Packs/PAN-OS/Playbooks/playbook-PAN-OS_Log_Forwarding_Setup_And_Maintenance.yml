@@ -420,3 +420,6 @@ inputs:
 outputs: []
 tests:
 - No Tests
+supportedModules:
+- agentix
+- xsiam

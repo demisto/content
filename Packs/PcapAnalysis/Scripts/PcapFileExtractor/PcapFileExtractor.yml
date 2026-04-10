@@ -87,7 +87,9 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-miner:1.0.0.90440
+dockerimage: demisto/pcap-miner:1.0.0.2020843
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+
+

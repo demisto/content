@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The following playbooks may now return a list of IP addresses under endpoint.IPAddress rather than a single entry: Endpoint Enrichment - Generic v2.1, Get endpoint details - Generic, Entity Enrichment - Generic v2."
+}

@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Trend Micro
 commonfields:
   id: Trend Micro Apex
   version: -1
@@ -641,7 +642,7 @@ script:
     - contextPath: TrendMicroApex.InvestigationResult.errorServers
       description: Error response if server communication is unsuccessful.
       type: String
-  dockerimage: demisto/pycef:1.0.0.100362
+  dockerimage: demisto/pycef:1.0.0.117223
   runonce: false
   script: '-'
   subtype: python3

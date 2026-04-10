@@ -1,0 +1,8 @@
+[{
+    "EventName": "event_name",
+    "EventDescription": "event_description",
+    "VendorSeverity": "severity",
+    "LogTime": "1970-01-01T00:00:02",
+    "LogType": "log_type",
+    "LogSourceName": "ngfw1"
+}]

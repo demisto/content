@@ -541,5 +541,8 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test
+- No test
 deprecated: true
+supportedModules:
+- agentix
+- xsiam

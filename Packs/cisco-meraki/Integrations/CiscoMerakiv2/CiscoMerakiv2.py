@@ -5,8 +5,9 @@ from CommonServerPython import *  # noqa: F401
 import dataclasses
 import http
 import inspect
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Type, TypeVar
+from typing import Any, TypeVar
 
 """ Global Variables """
 
@@ -298,7 +299,7 @@ T = TypeVar("T", bound="FirewallRuleBase")
 @dataclasses.dataclass
 class FirewallRuleBase:
     @classmethod
-    def from_dict(cls: Type[T], env: dict) -> T:
+    def from_dict(cls: type[T], env: dict) -> T:
         return cls(**{k: v for k, v in env.items() if k in inspect.signature(cls).parameters})
 
 
@@ -958,9 +959,7 @@ class Client(BaseClient):
         )
 
         if response.status_code == http.HTTPStatus.NO_CONTENT:
-            raise DemistoException(
-                f"The MAC '{mac}' doesn't exist or have any records in the organization '{organization_id}'."
-            )
+            raise DemistoException(f"The MAC '{mac}' doesn't exist or have any records in the organization '{organization_id}'.")
 
         return response.json(), response.links
 
@@ -1253,9 +1252,7 @@ class Client(BaseClient):
             url_suffix=f"networks/{network_id}/appliance/firewall/l7FirewallRules",
             json_data={
                 "rules": (
-                    [dataclasses.asdict(l7firewall_rule) for l7firewall_rule in l7firewall_rules]
-                    if l7firewall_rules
-                    else None
+                    [dataclasses.asdict(l7firewall_rule) for l7firewall_rule in l7firewall_rules] if l7firewall_rules else None
                 ),
             },
         )
@@ -2254,7 +2251,7 @@ def get_valid_arg(args: dict[str, Any], key: str) -> str:
     return value
 
 
-def create_firewall_rules(entry_id: str, rule_type: Type[RuleType]) -> list[RuleType]:
+def create_firewall_rules(entry_id: str, rule_type: type[RuleType]) -> list[RuleType]:
     """Create a list of rules from a file.
 
     Args:
@@ -2506,9 +2503,7 @@ def list_organization_inventory_command(client: Client, args: dict[str, Any]) ->
                     "order_numbers": argToList(args.get("order_numbers")),
                     "tags": argToList(args.get("tags")),
                     "tags_filter_type": tags_filter_type and TagFilterType(tags_filter_type),
-                    "product_types": [
-                        ProductType(product_type) for product_type in argToList(args.get("product_types"))
-                    ],
+                    "product_types": [ProductType(product_type) for product_type in argToList(args.get("product_types"))],
                 }
             )
 
@@ -2581,9 +2576,7 @@ def claim_device_command(client: Client, args: dict[str, Any]) -> CommandResults
         readable_output += "\n## The device(s) couldn't be claimed for the following reason(s):"
 
         if isinstance(errors[0], dict):
-            readable_output += "".join(
-                [f"\n- {error.get('serial')} failed due to: {error.get('errors')}." for error in errors]
-            )
+            readable_output += "".join([f"\n- {error.get('serial')} failed due to: {error.get('errors')}." for error in errors])
         else:
             readable_output += "".join([f"\n- {error}" for error in errors])
 
@@ -2773,8 +2766,7 @@ def remove_device_command(client: Client, args: dict[str, Any]) -> CommandResult
 
     return CommandResults(
         readable_output=(
-            f"## The device with the serial number: '{serial}'"
-            f" was successfully removed from the network '{network_id}'."
+            f"## The device with the serial number: '{serial}' was successfully removed from the network '{network_id}'."
         )
     )
 
@@ -3879,9 +3871,7 @@ def main() -> None:
         f"{INTEGRATION_NAME}-organization-adaptive-policy-acl-list": list_organization_adaptive_policy_acl_command,
         f"{INTEGRATION_NAME}-organization-adaptive-policy-list": list_organization_adaptive_policy_command,
         f"{INTEGRATION_NAME}-organization-adaptive-policy-group-list": list_organization_adaptive_policy_group_command,
-        f"{INTEGRATION_NAME}-organization-adaptive-policy-settings-list": (
-            list_organization_adaptive_policy_settings_command
-        ),
+        f"{INTEGRATION_NAME}-organization-adaptive-policy-settings-list": (list_organization_adaptive_policy_settings_command),
         f"{INTEGRATION_NAME}-organization-branding-policy-list": list_organization_branding_policy_command,
         f"{INTEGRATION_NAME}-network-group-policy-list": list_network_group_policy_command,
         f"{INTEGRATION_NAME}-network-client-policy-list": list_network_client_policy_command,

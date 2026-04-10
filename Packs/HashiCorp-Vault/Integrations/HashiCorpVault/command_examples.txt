@@ -1,0 +1,17 @@
+!hashicorp-configure-engine type=type version=2 path=path ttl=3600
+!hashicorp-reset-configuration
+!hashicorp-list-secrets engine=secrets version=2
+!hashicorp-delete-secret engine_path=secrets secret_path=test versions=2
+!hashicorp-destroy-secret engine_path=secrets secret_path=test versions=2
+!hashicorp-undelete-secret engine_path=secrets secret_path=test versions=2
+!hashicorp-get-policy name=secrets
+!hashicorp-list-policies
+!hashicorp-get-secret-metadata engine_path=secrets secret_path=path
+!hashicorp-create-token
+!hashicorp-disable-engine path=secrets
+!hashicorp-enable-engine path=secrets type=AWS
+!hashicorp-list-secrets-engines
+!hashicorp-seal-vault
+!hashicorp-unseal-vault
+!hashicorp-get-role-id role_name=app-read-write
+!hashicorp-generate-role-secret role_name=app-read-write

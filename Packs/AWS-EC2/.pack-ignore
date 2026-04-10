@@ -10,3 +10,6 @@ ignore=PB114
 [known_words]
 ippermissionsfull
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-AWS-EC2Test_actions.yml]
+ignore=GR103

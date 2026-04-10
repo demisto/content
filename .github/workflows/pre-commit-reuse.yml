@@ -5,14 +5,14 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       pull-requests: write
       contents: write
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v9
+      uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -31,6 +31,20 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
+    - name: Cleanup Disk
+      run: |
+        USAGE=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+        df -h
+        echo "Disk usage: ${USAGE}%"
+        if [ "$USAGE" -gt 75 ]; then
+          echo "Cleaning old Docker images"
+          docker image prune -af --filter "until=24h" || true
+          echo "Disk usage after cleanup:"
+          df -h
+        else
+          echo "Disk usage below threshold, skipping cleanup."
+        fi
+
     - name: Cache Pre commit
       id: cache-pre-commit
       uses: actions/cache@v3
@@ -43,7 +57,16 @@ jobs:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
+        PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels) }}
       run: |
+        LABEL_NAMES=$(echo "$PR_LABELS_JSON" | jq -r '.[].name')
+        if echo "$LABEL_NAMES" | grep -q "Contribution"; then
+            echo "Label 'Contribution' found!"
+            export DEMISTO_SDK_XSOAR_LINTER_WARNING_ANNOTATIONS=true
+        else
+          echo "Label 'Contribution' not found."
+        fi
+
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
@@ -52,23 +75,31 @@ jobs:
           echo "In packwise branch, pre commit with ignore flag."
           demisto-sdk pre-commit -g --mode=packwise --show-diff-on-failure --verbose
         else
-          echo "Not in docker auto update branch, pre commit on CI mode."
-          demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+          echo "Not in docker auto update or packwise branch, pre-commit on CI mode."
+          echo "GITHUB_ACTIONS is: ${GITHUB_ACTIONS:-unset}"
+
+          if [[ "$GITHUB_ACTIONS" == "true" ]]; then
+            echo "Detected GitHub Actions"
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=check_private_packs
+          else
+            echo "Not in GitHub Actions mode"
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
+          fi
         fi
 
     - name: "Check coverage.xml exists"
       if: always()
       id: check-coverage-xml-exists
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
       with:
         files: "coverage_report/coverage.xml"
 
     - name: "Check pytest report exists"
       if: always()
       id: check-pytest-junit-exists
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
       with:
-        files: ".report_pytest.xml"
+        files: "report_pytest.xml"
 
     - name: Create pack-wise pytest report
       run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
@@ -78,7 +109,7 @@ jobs:
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: actions/upload-artifact@v4
+      uses: PaloAltoNetworks/upload-secure-artifact@63ccdaa66407a7684b429eac22cd0e773308d2a9 # v1.0.6
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -87,7 +118,7 @@ jobs:
         name: pytest
         path: |
           packwise_pytest_time.csv
-          .report_pytest.xml
+          report_pytest.xml
         if-no-files-found: error
 
     - name: Pytest coverage comment
@@ -96,11 +127,11 @@ jobs:
         steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
         ! github.event.pull_request.head.repo.fork
-      uses: MishaKav/pytest-coverage-comment@main
+      uses: MishaKav/pytest-coverage-comment@ef975f05ff4ca5a053e7d42ceb31000a085d17e4 # main
       continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
-        junitxml-path: .report_pytest.xml
+        junitxml-path: report_pytest.xml
     
     - uses: actions/cache/save@v3
       if: always()

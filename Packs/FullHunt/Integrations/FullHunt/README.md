@@ -1,23 +1,17 @@
 FullHunt is the attack surface database of the entire Internet. FullHunt enables companies to discover all of their attack surfaces, monitor them for exposure, and continuously scan them for the latest security vulnerabilities. All, in a single platform, and more.
 
-## Configure FullHunt on Cortex XSOAR
+## Configure FullHunt in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for FullHunt.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-
-4. Click **Test** to validate the URLs, API key, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### fullhunt-get-account-status
@@ -62,7 +56,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host | Host or list of hosts | Required | 
+| host | Host or list of hosts | Required |
 
 #### Context Output
 
@@ -82,7 +76,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | FullHunt.Host.ip_metadata.region | string | Region of the IP |  
 | FullHunt.Host.ip_metadata.country_code | string | Two letters country code |  
 | FullHunt.Host.ip_metadata.location_latitude | number | Latitude coordinate of the IP |  
-| FullHunt.Host.ip_metadata.asn | number | Autonomous System Number | 
+| FullHunt.Host.ip_metadata.asn | number | Autonomous System Number |
 | FullHunt.Host.ip_metadata.city_name | string | City name of the IP |  
 | FullHunt.Host.has_private_ip | boolean | Whether the host has a private IP listed |  
 | FullHunt.Host.is_resolvable | boolean | Whether the host is resolvable |  
@@ -96,12 +90,12 @@ Notice: Submitting indicators using this command might make the indicator data p
 | FullHunt.Host.has_ipv6 | boolean | Whether the host has an IPv6 listed |  
 | FullHunt.Host.tld | string | Top Level Domain |  
 | FullHunt.Host.cdn | string | Content Delivery Network |  
-| FullHunt.Host.is_cloudflare | boolean | Whether host uses Cloudflare or not | 
+| FullHunt.Host.is_cloudflare | boolean | Whether host uses Cloudflare or not |
 | FullHunt.Host.cloud.provider | string | Name of the cloud provider |  
 | FullHunt.Host.cloud.region | string | Region of the cloud provider |  
 | FullHunt.Host.is_cdn | boolean | Whether host uses CDN |  
 | FullHunt.Host.tags | array | Tags of the host |  
-| FullHunt.Host.ip_address | string | IP address of the host | 
+| FullHunt.Host.ip_address | string | IP address of the host |
 
 ### domain
 
@@ -118,7 +112,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | One domain to check | Required | 
+| domain | One domain to check | Required |
 
 #### Context Output
 
@@ -134,7 +128,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | FullHunt.Domain.metadata.max_results_for_user | number | Maximum results for the user |  
 | FullHunt.Domain.metadata.timestamp | number | Epoch timestamp of the API request |  
 | FullHunt.Domain.metadata.user_plan | string | Fullhunt plan |  
-| FullHunt.Domain.status | number | HTTP status code |   
+| FullHunt.Domain.status | number | HTTP status code |
 
 ### fullhunt-get-subdomain
 
@@ -151,7 +145,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Enter the domain from which you want to enumerate subdomains. | Required | 
+| domain | Enter the domain from which you want to enumerate subdomains. | Required |
 
 #### Context Output
 
@@ -167,5 +161,4 @@ Notice: Submitting indicators using this command might make the indicator data p
 | FullHunt.Subdomain.metadata.max_results_for_user | number | Maximum results for the user |  
 | FullHunt.Subdomain.metadata.timestamp | number | Epoch timestamp of the API request |  
 | FullHunt.Subdomain.metadata.user_plan | string | Fullhunt plan |  
-| FullHunt.Subdomain.status | number | HTTP status code |   
-
+| FullHunt.Subdomain.status | number | HTTP status code |

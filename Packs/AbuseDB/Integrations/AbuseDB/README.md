@@ -16,6 +16,8 @@
 <li><strong>Max reports age.</strong></li>
 <li><strong>Disable reputation lookups for private IP addresses</strong>: To reduce the number of lookups made to the AbuseIPDB API.</li>
 <li><strong>Disregard quota errors.</strong></li>
+<li><strong>Abuse.ch Hunting API URL</strong>: The base URL for the hunting API (Default: https://hunting-api.abuse.ch/api/v1/).</li>
+<li><strong>Abuse.ch Hunting API Key</strong>: A credential field for the API key.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the API Key, and connection.</li>
@@ -28,6 +30,7 @@
 <li><a href="#h_720330259911545911111279">Report an IP address: abuseipdb-report-ip</a></li>
 <li><a href="#h_5900568011321545911147791">Get a list of the most reported IP addresses: abuseipdb-get-blacklist</a></li>
 <li><a href="#h_7763511091731545911176964">Get a list of report categories: abuseipdb-get-categories</a></li>
+<li><a href="#h_8874622102842650222287075">Get the full list of false positive IP addresses: abuseipdb-get-fplist</a></li>
 </ol>
 <h3 id="h_52262055641545911025223">1. Check if an IP address is in the AbuseIP database</h3>
 <hr>
@@ -194,7 +197,7 @@
 <p><code>!ip ip=8.8.8.8 days=30 verbose=true</code></p>
 <h5>Context Example</h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" alt="image"></a></p>
+<p><a href="../../doc_files/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" alt="image"></a></p>
 <h3 id="h_130633879481545911083799">2. Query a block of IP addresses</h3>
 <hr>
 <p>Queries a block of IPs to check against the database</p>
@@ -350,7 +353,7 @@
 <p><code>!abuseipdb-check-cidr-block network="127.0.0.2/24" days="30" limit="40" threshold="80"</code></p>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" alt="image"></a></p>
+<p><a href="../../doc_files/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" alt="image"></a></p>
 <h3 id="h_720330259911545911111279">3. Report an IP address</h3>
 <hr>
 <p>Report an IP address to AbuseIPDB</p>
@@ -384,7 +387,7 @@
 <h5>Command Example</h5>
 <p><code>!abuseipdb-report-ip ip=8.8.8.8 categories="18,22,23"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" alt="image"></a></p>
+<p><a href="../../doc_files/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" alt="image"></a></p>
 <h3 id="h_5900568011321545911147791">4. Get a list of the most reported IP addresses</h3>
 <hr>
 <p>Returns a list of the most reported IP addresses</p>
@@ -440,7 +443,7 @@
 <p><code>!abuseipdb-get-blacklist days=30 limit=5</code></p>
 <h5>Context Example</h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" alt="image"></a></p>
+<p><a href="../../doc_files/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" alt="image"></a></p>
 <h3 id="h_7763511091731545911176964">5. Get a list of report categories</h3>
 <hr>
 <p>Returns a list of report categories from AbuseIPDB</p>
@@ -470,7 +473,91 @@
 <p><code>!abuseipdb-get-categories</code></p>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" alt="image"></a></p>
+<p><a href="../../doc_files/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" alt="image"></a></p>
+<h3 id="h_8874622102842650222287075">6. Get the full list of false positive IP addresses</h3>
+<hr>
+<p>Returns the False Positive List (FPL) from abuse.ch, containing indicators (IPs and domains) that have been removed from their blocklists.</p>
+<h5>Base Command</h5>
+<p><code>abuseipdb-get-fplist</code></p>
+<h5>Input</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 169px;"><strong>Argument Name</strong></th>
+<th style="width: 481px;"><strong>Description</strong></th>
+<th style="width: 90px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 169px;">format</td>
+<td style="width: 481px;">The format of the output (json, csv). Set to 'csv' to download the response as a file. The 'json' format inserts the response into the incident context.</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 169px;">limit</td>
+<td style="width: 481px;">The maximum number of results to return. Ignored when all_results is set to true or when format is set to csv.</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 169px;">all_results</td>
+<td style="width: 481px;">Whether to return all results. Ignored when format is set to csv.</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 288px;"><strong>Path</strong></th>
+<th style="width: 141px;"><strong>Type</strong></th>
+<th style="width: 311px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.id</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The unique identifier for the False Positive List entry.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.time_stamp</td>
+<td style="width: 141px;">Date</td>
+<td style="width: 311px;">The date and time (UTC) when the entry was added to the False Positive List.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.platform</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The platform or service associated with the entry.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.entry_type</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The type of the indicator (e.g., IPv4, domain).</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.entry_value</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The actual indicator value (IP address or domain) that was marked as a false positive.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.removed_by</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The entity or user who requested the removal of the indicator from the blocklist.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.removal_notes</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">Additional context or justification for why the indicator was removed.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<p><code>!abuseipdb-get-fplist format="json" limit=10</code></p>
+<p> </p>
 <h2>Additional Information</h2>
 <ul>
 <li>

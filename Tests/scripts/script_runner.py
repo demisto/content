@@ -24,7 +24,7 @@ def run_script(args, files):
 
 
 def run_command(args, directory):
-    if sys.version_info[0] < 3:
+    if sys.version_info[0] < 3:  # noqa: UP036
         return subprocess.call(args, cwd=directory)
     return subprocess.run(args, cwd=directory).returncode
 
@@ -35,7 +35,7 @@ def main():
     script_args = args[:files_index]
     files = None
     if files_index != -1:
-        files = args[files_index + 1:]
+        files = args[files_index + 1 :]
 
     # Run the script
     exit_code = run_script(script_args, files)

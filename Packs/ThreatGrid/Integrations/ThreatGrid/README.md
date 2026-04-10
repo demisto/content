@@ -212,29 +212,29 @@
     "ThreatGrid": {
         "Sample": [
             {
-                "Status": "job_done", 
-                "SHA1": "f6ed96430b54a52740d3f7a0a246d1053ba7d779", 
-                "CompletedAt": "2018-09-23T08:18:20Z", 
-                "Filename": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5.exe", 
-                "State": "succ", 
-                "SubmittedAt": "2018-09-23T08:12:05Z", 
-                "StartedAt": "2018-09-23T08:12:06Z", 
-                "SHA256": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5", 
-                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654", 
-                "ID": "4bb1e6eed595513b2c07ba9bd4598f37", 
+                "Status": "job_done",
+                "SHA1": "f6ed96430b54a52740d3f7a0a246d1053ba7d779",
+                "CompletedAt": "2018-09-23T08:18:20Z",
+                "Filename": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5.exe",
+                "State": "succ",
+                "SubmittedAt": "2018-09-23T08:12:05Z",
+                "StartedAt": "2018-09-23T08:12:06Z",
+                "SHA256": "8d3a3c399ac61a1e7ae6f6c68c67f1db2e88985066463a5ffb3dae0d552a64a5",
+                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654",
+                "ID": "4bb1e6eed595513b2c07ba9bd4598f37",
                 "MD5": "c6bdbf3765854eef4981721947beba5f"
-            }, 
+            },
             {
-                "Status": "job_done", 
-                "SHA1": "6b7808dd69ff255e982f9940d067b356f030ff14", 
-                "CompletedAt": "2018-09-23T08:18:28Z", 
-                "Filename": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03.exe", 
-                "State": "succ", 
-                "SubmittedAt": "2018-09-23T08:12:07Z", 
-                "StartedAt": "2018-09-23T08:12:08Z", 
-                "SHA256": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03", 
-                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654", 
-                "ID": "b75b886bcd4b888c2c6a779736509b12", 
+                "Status": "job_done",
+                "SHA1": "6b7808dd69ff255e982f9940d067b356f030ff14",
+                "CompletedAt": "2018-09-23T08:18:28Z",
+                "Filename": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03.exe",
+                "State": "succ",
+                "SubmittedAt": "2018-09-23T08:12:07Z",
+                "StartedAt": "2018-09-23T08:12:08Z",
+                "SHA256": "8a577adc1b387c0dfc445b4a6f9a5bb54de13018c960624c0dcf35145aa00b03",
+                "OS": "7601.18798.amd64fre.win7sp1_gdr.150316-1654",
+                "ID": "b75b886bcd4b888c2c6a779736509b12",
                 "MD5": "eb6f2ad4dcba833fd4411301ed8ae40e"
             }
         ]
@@ -242,7 +242,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47485524-e79df800-d846-11e8-8a55-d4ae00888c44.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47485524-e79df800-d846-11e8-8a55-d4ae00888c44.png" alt="image" width="752" height="110"></a></p>
+<p><a href="../../doc_files/47485524-e79df800-d846-11e8-8a55-d4ae00888c44.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47485524-e79df800-d846-11e8-8a55-d4ae00888c44.png" alt="image" width="752" height="110"></a></p>
 <h3 id="h_1561995056331540718972103">2. Get a sample by sample ID</h3>
 <hr>
 <p>Get a Threat Grid sample by sample ID.</p>
@@ -328,23 +328,23 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "Status": "filetype_not_supported", 
-            "SHA1": "a253ac433faa9ac59a9f73c540355bfe2f9fe708", 
-            "CompletedAt": "2018-07-07T10:11:06Z", 
-            "Filename": "WR Package(1).rar", 
-            "State": "fail", 
-            "SubmittedAt": "2018-07-07T10:11:04Z", 
-            "StartedAt": "2018-07-07T10:11:05Z", 
-            "SHA256": "9aa6f1189fa01f852e595d4c847a76613aa157d14addbdeb2ac011f443c811d7", 
-            "OS": null, 
-            "ID": "052de338e02c4e013a4e9f5da8a87d5b", 
+            "Status": "filetype_not_supported",
+            "SHA1": "a253ac433faa9ac59a9f73c540355bfe2f9fe708",
+            "CompletedAt": "2018-07-07T10:11:06Z",
+            "Filename": "WR Package(1).rar",
+            "State": "fail",
+            "SubmittedAt": "2018-07-07T10:11:04Z",
+            "StartedAt": "2018-07-07T10:11:05Z",
+            "SHA256": "9aa6f1189fa01f852e595d4c847a76613aa157d14addbdeb2ac011f443c811d7",
+            "OS": null,
+            "ID": "052de338e02c4e013a4e9f5da8a87d5b",
             "MD5": "69e51e9f3a5ffbf6970a754ebda56edd"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47431026-a6084100-d7a3-11e8-93ba-595783320aed.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47431026-a6084100-d7a3-11e8-93ba-595783320aed.png" alt="image" width="751" height="243"></a></p>
+<p><a href="../../doc_files/47431026-a6084100-d7a3-11e8-93ba-595783320aed.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47431026-a6084100-d7a3-11e8-93ba-595783320aed.png" alt="image" width="751" height="243"></a></p>
 <h3 id="h_19882953012581540720706470">3. Get the states of samples by sample ID</h3>
 <hr>
 <p>Get threat grid sample state by id</p>
@@ -399,14 +399,14 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "State": "fail", 
+            "State": "fail",
             "ID": "052de338e02c4e013a4e9f5da8a87d5b"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47431109-d3ed8580-d7a3-11e8-8d5e-1733cfea7209.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47431109-d3ed8580-d7a3-11e8-8d5e-1733cfea7209.png" alt="image" width="754" height="100"></a></p>
+<p><a href="../../doc_files/47431109-d3ed8580-d7a3-11e8-8d5e-1733cfea7209.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47431109-d3ed8580-d7a3-11e8-8d5e-1733cfea7209.png" alt="image" width="754" height="100"></a></p>
 <h3 id="h_19278147818811540720826262">4. Submit a sample for analysis</h3>
 <hr>
 <p>Submits a sample to Threat Grid for analysis.</p>
@@ -509,35 +509,35 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "Status": "pending", 
-            "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a", 
-            "CompletedAt": null, 
-            "Filename": "Suspicious_File_To_Be_Scanned", 
-            "State": "wait", 
-            "SubmittedAt": "2018-10-24T12:52:52Z", 
-            "StartedAt": null, 
-            "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6", 
-            "OS": "", 
-            "ID": "ec7cb57929fdf3f313f3b1238ff042ca", 
+            "Status": "pending",
+            "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a",
+            "CompletedAt": null,
+            "Filename": "Suspicious_File_To_Be_Scanned",
+            "State": "wait",
+            "SubmittedAt": "2018-10-24T12:52:52Z",
+            "StartedAt": null,
+            "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6",
+            "OS": "",
+            "ID": "ec7cb57929fdf3f313f3b1238ff042ca",
             "MD5": "653e9905e882f44015e1023dcde66451"
         }
-    }, 
+    },
     "File": {
-        "Info": "image/jpeg", 
-        "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a", 
-        "Name": "Image from iOS.jpg", 
-        "Extension": "jpg", 
-        "Size": 5405984, 
-        "EntryID": "98@16", 
-        "SSDeep": "98304:tSfriWHhyAU04siL8QOTgOZLG9CG6/2N76EUs0ELRd7xs6f2UXCpofGZ4oOBsU0:8W6B4siQtTR1GU/2No+fd2X/9J", 
-        "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6", 
-        "Type": "JPEG image data, JFIF standard 1.01, aspect ratio, density 72x72, segment length 16, Exif Standard: [TIFF image data, big-endian, direntries=2, orientation=upper-left], baseline, precision 8, 4032x3024, frames 3\n", 
+        "Info": "image/jpeg",
+        "SHA1": "bd762a2d655e174fd935cc8a5e928bea738d666a",
+        "Name": "Image from iOS.jpg",
+        "Extension": "jpg",
+        "Size": 5405984,
+        "EntryID": "98@16",
+        "SSDeep": "98304:tSfriWHhyAU04siL8QOTgOZLG9CG6/2N76EUs0ELRd7xs6f2UXCpofGZ4oOBsU0:8W6B4siQtTR1GU/2No+fd2X/9J",
+        "SHA256": "71a0ea5ebcc449feb2ab8954c239b89d9d629c77011b30f330bb61af091d2ad6",
+        "Type": "JPEG image data, JFIF standard 1.01, aspect ratio, density 72x72, segment length 16, Exif Standard: [TIFF image data, big-endian, direntries=2, orientation=upper-left], baseline, precision 8, 4032x3024, frames 3\n",
         "MD5": "653e9905e882f44015e1023dcde66451"
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47432202-48c1bf00-d7a6-11e8-8aa2-d86296c48e80.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47432202-48c1bf00-d7a6-11e8-8aa2-d86296c48e80.png" alt="image" width="755" height="63"></a></p>
+<p><a href="../../doc_files/47432202-48c1bf00-d7a6-11e8-8aa2-d86296c48e80.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47432202-48c1bf00-d7a6-11e8-8aa2-d86296c48e80.png" alt="image" width="755" height="63"></a></p>
 <h3 id="h_94143499121961540721013239">5. Search submissions</h3>
 <hr>
 <p>Search Threat Grid submissions.</p>
@@ -676,31 +676,31 @@
     "ThreatGrid": {
         "Sample": [
             {
-                "Status": "job_done", 
-                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464", 
-                "CompletedAt": null, 
-                "ThreatScore": 64, 
-                "Filename": "url_as_file", 
-                "State": "succ", 
-                "SubmittedAt": "2018-07-04T10:25:53Z", 
-                "StartedAt": null, 
-                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374", 
-                "OS": null, 
-                "ID": "47a9ca675ba509457bfd8cbe2a5b2189", 
+                "Status": "job_done",
+                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464",
+                "CompletedAt": null,
+                "ThreatScore": 64,
+                "Filename": "url_as_file",
+                "State": "succ",
+                "SubmittedAt": "2018-07-04T10:25:53Z",
+                "StartedAt": null,
+                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374",
+                "OS": null,
+                "ID": "47a9ca675ba509457bfd8cbe2a5b2189",
                 "MD5": "08db479ddee306addef0946194374795"
-            }, 
+            },
             {
-                "Status": "job_done", 
-                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464", 
-                "CompletedAt": null, 
-                "ThreatScore": 64, 
-                "Filename": "url_as_file", 
-                "State": "succ", 
-                "SubmittedAt": "2018-07-03T20:29:04Z", 
-                "StartedAt": null, 
-                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374", 
-                "OS": null, 
-                "ID": "18bbd9bd6bf3be6a2f842b72cc19668f", 
+                "Status": "job_done",
+                "SHA1": "e823f52975e7b2dff0c5873973682dd5c2eb2464",
+                "CompletedAt": null,
+                "ThreatScore": 64,
+                "Filename": "url_as_file",
+                "State": "succ",
+                "SubmittedAt": "2018-07-03T20:29:04Z",
+                "StartedAt": null,
+                "SHA256": "da6de9ab720e1c763290fdad040113881e7d7443780283ff71970d3e160aa374",
+                "OS": null,
+                "ID": "18bbd9bd6bf3be6a2f842b72cc19668f",
                 "MD5": "08db479ddee306addef0946194374795"
             }
         ]
@@ -708,7 +708,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47432285-7e66a800-d7a6-11e8-9077-477d92bc0710.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47432285-7e66a800-d7a6-11e8-9077-477d92bc0710.png" alt="image" width="751" height="117"></a></p>
+<p><a href="../../doc_files/47432285-7e66a800-d7a6-11e8-9077-477d92bc0710.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47432285-7e66a800-d7a6-11e8-9077-477d92bc0710.png" alt="image" width="751" height="117"></a></p>
 <h3 id="h_81304179325101540721063469">6. Get a sample analysis video by ID</h3>
 <hr>
 <p>Get the sample analysis video by ID.</p>
@@ -758,23 +758,23 @@
         "Sample": {
             "Id": "9798717402a40970a2d043014d9a6170"
         }
-    }, 
+    },
     "File": {
-        "Info": "video/webm", 
-        "SHA1": "28d2b83753b713e3fb40d896ca3cbff13735f8c0", 
-        "Name": "9798717402a40970a2d043014d9a6170.webm", 
-        "Extension": "webm", 
-        "Size": 1038907, 
-        "EntryID": "117@16", 
-        "SSDeep": "24576:u5/QP+OM+62I73Hi6RQ7MM4uyeL+I2zcvu3AYApDl29d9xG:u/IM+6v3HpM4rI2L3jACLG", 
-        "SHA256": "ce7c155cde9d2d637a8f0e48c5e9d183a7c9756bc02d6ee505bfcda19f01573e", 
-        "Type": ", created: Thu Jul 11 00:22:26 1974, modified: Sun Jul 17 00:26:42 2033\n", 
+        "Info": "video/webm",
+        "SHA1": "28d2b83753b713e3fb40d896ca3cbff13735f8c0",
+        "Name": "9798717402a40970a2d043014d9a6170.webm",
+        "Extension": "webm",
+        "Size": 1038907,
+        "EntryID": "117@16",
+        "SSDeep": "24576:u5/QP+OM+62I73Hi6RQ7MM4uyeL+I2zcvu3AYApDl29d9xG:u/IM+6v3HpM4rI2L3jACLG",
+        "SHA256": "ce7c155cde9d2d637a8f0e48c5e9d183a7c9756bc02d6ee505bfcda19f01573e",
+        "Type": ", created: Thu Jul 11 00:22:26 1974, modified: Sun Jul 17 00:26:42 2033\n",
         "MD5": "7aeb2b515af0c5e1c8cfca234377e44f"
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47432696-78bd9200-d7a7-11e8-9d31-7309e77f97df.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47432696-78bd9200-d7a7-11e8-9d31-7309e77f97df.png" alt="image" width="751" height="237"></a></p>
+<p><a href="../../doc_files/47432696-78bd9200-d7a7-11e8-9d31-7309e77f97df.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47432696-78bd9200-d7a7-11e8-9d31-7309e77f97df.png" alt="image" width="751" height="237"></a></p>
 <h3 id="h_50927995434311540721171927">7. Get a detailed overview of a sample</h3>
 <hr>
 <p>The detailed overview of dynamic and static analysis results for the sample.</p>
@@ -942,7 +942,7 @@
 <pre><code>{<br> "ThreatGrid": {<br> "Sample": {<br> "Id": "9798717402a40970a2d043014d9a6170"<br> }<br> }, <br> "InfoFile": {<br> "Info": "application/json", <br> "Name": "9798717402a40970a2d043014d9a6170-analysis.json", <br> "Extension": "json", <br> "EntryID": "124@16", <br> "Type": "ASCII text, with very long lines\n", <br> "Size": 132549<br> }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Threat_Grid_mceclip0.png" width="750" height="377"></p>
+<p><img src="../../doc_files/integration-Threat_Grid_mceclip0.png" width="750" height="377"></p>
 <h3 id="h_72983432240461540721271350">8. Get processes by ID</h3>
 <hr>
 <p>Returns a JSON object that contains a timeline of all process activities as determined by the dynamic analysis engine.</p>
@@ -992,23 +992,23 @@
         "Sample": {
             "Id": "9798717402a40970a2d043014d9a6170"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/json", 
-        "SHA1": "365d2e8f7d25c24040a0ea92ae2f14a49cb3a683", 
-        "Name": "9798717402a40970a2d043014d9a6170-processes.json", 
-        "Extension": "json", 
-        "Size": 526700, 
-        "EntryID": "131@16", 
-        "SSDeep": "1536:RWK0+6BL3y3bdvHruY3kvaRLERpXS2wsxWsw9I1O8PDHK1YR50l1n:RWK0+6BL3y3bdvHruY3kvaRLERpXS2w/", 
-        "SHA256": "12f9c229f0eaa2629871db1f7f61e67fa8604ec5a6674378e14c7168f6b95201", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "application/json",
+        "SHA1": "365d2e8f7d25c24040a0ea92ae2f14a49cb3a683",
+        "Name": "9798717402a40970a2d043014d9a6170-processes.json",
+        "Extension": "json",
+        "Size": 526700,
+        "EntryID": "131@16",
+        "SSDeep": "1536:RWK0+6BL3y3bdvHruY3kvaRLERpXS2wsxWsw9I1O8PDHK1YR50l1n:RWK0+6BL3y3bdvHruY3kvaRLERpXS2w/",
+        "SHA256": "12f9c229f0eaa2629871db1f7f61e67fa8604ec5a6674378e14c7168f6b95201",
+        "Type": "ASCII text, with very long lines\n",
         "MD5": "b586252a2a6b1681d07667a8c64daa70"
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47433069-4ceedc00-d7a8-11e8-9369-91f808bd5565.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47433069-4ceedc00-d7a8-11e8-9369-91f808bd5565.png" alt="image" width="752" height="236"></a></p>
+<p><a href="../../doc_files/47433069-4ceedc00-d7a8-11e8-9369-91f808bd5565.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47433069-4ceedc00-d7a8-11e8-9369-91f808bd5565.png" alt="image" width="752" height="236"></a></p>
 <h3 id="h_39054092746591540721396205">9. Get a PCAP file for a sample by sample ID</h3>
 <hr>
 <p>Get the tcpdump PCAP file for a specific sample ID, with all the network activity of the sample.</p>
@@ -1058,23 +1058,23 @@
         "Sample": {
             "Id": "a6cc7ae4e3318e98d94e8a053dd72c47"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/json", 
-        "SHA1": "21bcaf1f8cd8775225a44669f6aa41b9b926d00d", 
-        "Name": "a6cc7ae4e3318e98d94e8a053dd72c47-pcap.json", 
-        "Extension": "json", 
-        "Size": 23804, 
-        "EntryID": "138@16", 
-        "SSDeep": "192:OH03L8c+0SDn9rLLqs6xeewPVtSRhe48CawloZ8XskD5ZdPQ:l+5LweewPHoeNCRloZ8ZD9PQ", 
-        "SHA256": "23b70b0eb5e5d84b253173af6d1d4d955dd8521ff32ddbe3359ecb094d1563cb", 
-        "Type": "tcpdump capture file (little-endian) - version 2.4 (Ethernet, capture length 65536)\n", 
+        "Info": "application/json",
+        "SHA1": "21bcaf1f8cd8775225a44669f6aa41b9b926d00d",
+        "Name": "a6cc7ae4e3318e98d94e8a053dd72c47-pcap.json",
+        "Extension": "json",
+        "Size": 23804,
+        "EntryID": "138@16",
+        "SSDeep": "192:OH03L8c+0SDn9rLLqs6xeewPVtSRhe48CawloZ8XskD5ZdPQ:l+5LweewPHoeNCRloZ8ZD9PQ",
+        "SHA256": "23b70b0eb5e5d84b253173af6d1d4d955dd8521ff32ddbe3359ecb094d1563cb",
+        "Type": "tcpdump capture file (little-endian) - version 2.4 (Ethernet, capture length 65536)\n",
         "MD5": "5e95685b998cc805183bc6ff17850594"
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47433233-afe07300-d7a8-11e8-8cfb-79f8bf08941e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47433233-afe07300-d7a8-11e8-8cfb-79f8bf08941e.png" alt="image" width="750" height="236"></a></p>
+<p><a href="../../doc_files/47433233-afe07300-d7a8-11e8-8cfb-79f8bf08941e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47433233-afe07300-d7a8-11e8-8cfb-79f8bf08941e.png" alt="image" width="750" height="236"></a></p>
 <h3 id="h_63774004052701540721494707">10. Get warnings for a sample by sample ID</h3>
 <hr>
 <p>Returns a JSON structure that describes warnings that occurred during the analysis.</p>
@@ -1124,23 +1124,23 @@
         "Sample": {
             "Id": "9798717402a40970a2d043014d9a6170"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/json", 
-        "SHA1": "eac159abe40125ad1a3233ffcc127f534df7f629", 
-        "Name": "9798717402a40970a2d043014d9a6170-warnings.json", 
-        "Extension": "json", 
-        "Size": 40, 
-        "EntryID": "145@16", 
-        "SSDeep": "3:YEm4ZBg/VB6n:YEm4ZBg/VB6n", 
-        "SHA256": "1518d6dc7f181113c884b693f15ea4872fd0f1e738ddb1210016829638cd4c8a", 
-        "Type": "ASCII text, with no line terminators\n", 
+        "Info": "application/json",
+        "SHA1": "eac159abe40125ad1a3233ffcc127f534df7f629",
+        "Name": "9798717402a40970a2d043014d9a6170-warnings.json",
+        "Extension": "json",
+        "Size": 40,
+        "EntryID": "145@16",
+        "SSDeep": "3:YEm4ZBg/VB6n:YEm4ZBg/VB6n",
+        "SHA256": "1518d6dc7f181113c884b693f15ea4872fd0f1e738ddb1210016829638cd4c8a",
+        "Type": "ASCII text, with no line terminators\n",
         "MD5": "f90b597ba419030d7d4bc97b21f79c90"
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47433444-241b1680-d7a9-11e8-8055-c335ec4df33a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47433444-241b1680-d7a9-11e8-8055-c335ec4df33a.png" alt="image" width="754" height="236"></a></p>
+<p><a href="../../doc_files/47433444-241b1680-d7a9-11e8-8055-c335ec4df33a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47433444-241b1680-d7a9-11e8-8055-c335ec4df33a.png" alt="image" width="754" height="236"></a></p>
 <h3 id="h_2190211961791540721645652">11. Get a summary analysis for a sample by sample ID</h3>
 <hr>
 <p>Returns summary analysis information.</p>
@@ -1219,26 +1219,26 @@
     "ThreatGrid": {
         "Sample": {
             "ArtifactsCount": {
-                "Extracted": 1, 
-                "Disk": 3, 
-                "Network": null, 
+                "Extracted": 1,
+                "Disk": 3,
+                "Network": null,
                 "Memory": 1
-            }, 
+            },
             "AnalysisSummary": {
-                "RegistryCount": 9, 
-                "SampleType": "9798717402a40970a2d043014d9a6170", 
-                "FileName": "Suspicious_File_To_Be_Scanned.pdf", 
-                "LastSeen": "2018-08-08T10:59:45Z", 
-                "SHA256": "ad5902780a08a34af6d6b1a654fdc6a66d08bf8e7bdaf0d5fc0d0b2ca250144f", 
+                "RegistryCount": 9,
+                "SampleType": "9798717402a40970a2d043014d9a6170",
+                "FileName": "Suspicious_File_To_Be_Scanned.pdf",
+                "LastSeen": "2018-08-08T10:59:45Z",
+                "SHA256": "ad5902780a08a34af6d6b1a654fdc6a66d08bf8e7bdaf0d5fc0d0b2ca250144f",
                 "FirstSeen": "2018-08-08T10:59:45Z"
-            }, 
+            },
             "ID": "9798717402a40970a2d043014d9a6170"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47433625-7d834580-d7a9-11e8-90c5-887dc34186f3.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47433625-7d834580-d7a9-11e8-90c5-887dc34186f3.png" alt="image" width="751" height="277"></a></p>
+<p><a href="../../doc_files/47433625-7d834580-d7a9-11e8-90c5-887dc34186f3.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47433625-7d834580-d7a9-11e8-90c5-887dc34186f3.png" alt="image" width="751" height="277"></a></p>
 <h3 id="h_3510202267861540721749733">12. Get a summary of threats detected during an analysis</h3>
 <hr>
 <p>Returns a summary of the threats detected during analysis</p>
@@ -1330,25 +1330,25 @@
 <h5>Context Example</h5>
 <pre><code>{
     "DBotScore": {
-        "Vendor": "ThreatGrid", 
-        "Indicator": "58e5e66b31484a8529b80a18a33e0814", 
-        "Score": 1, 
+        "Vendor": "ThreatGrid",
+        "Indicator": "58e5e66b31484a8529b80a18a33e0814",
+        "Score": 1,
         "Type": "Sample ID"
-    }, 
+    },
     "ThreatGrid": {
         "Sample": {
-            "Count": 0, 
-            "ThreatFeeds": [], 
-            "MaxSeverity": 0, 
-            "Score": 0, 
-            "MaxConfidence": 0, 
+            "Count": 0,
+            "ThreatFeeds": [],
+            "MaxSeverity": 0,
+            "Score": 0,
+            "MaxConfidence": 0,
             "ID": "58e5e66b31484a8529b80a18a33e0814"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47433917-131ed500-d7aa-11e8-8cd8-a2964f31d24e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47433917-131ed500-d7aa-11e8-8cd8-a2964f31d24e.png" alt="image" width="752" height="266"></a></p>
+<p><a href="../../doc_files/47433917-131ed500-d7aa-11e8-8cd8-a2964f31d24e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47433917-131ed500-d7aa-11e8-8cd8-a2964f31d24e.png" alt="image" width="752" height="266"></a></p>
 <h3 id="h_64622853270931540721845547">13. Get the HTML report for a sample by sample ID</h3>
 <hr>
 <p>Get the <em>report.html</em> file for a specific sample ID. This is a stand-alone file with a complete report on the sample run. It is designed to be emailed or printed.</p>
@@ -1398,19 +1398,19 @@
         "Sample": {
             "Id": "6712d1b712dda4aa63d6073477c367c4"
         }
-    }, 
+    },
     "InfoFile": {
-        "Info": "text/html; charset=utf-8", 
-        "Name": "6712d1b712dda4aa63d6073477c367c4-report.html", 
-        "Extension": "html", 
-        "EntryID": "175@16", 
-        "Type": "HTML document text, UTF-8 Unicode text, with very long lines, with CRLF line terminators\n", 
+        "Info": "text/html; charset=utf-8",
+        "Name": "6712d1b712dda4aa63d6073477c367c4-report.html",
+        "Extension": "html",
+        "EntryID": "175@16",
+        "Type": "HTML document text, UTF-8 Unicode text, with very long lines, with CRLF line terminators\n",
         "Size": 771771
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47435252-e61ff180-d7ac-11e8-8565-4a41610e3693.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47435252-e61ff180-d7ac-11e8-8565-4a41610e3693.png" alt="image" width="749" height="75"></a></p>
+<p><a href="../../doc_files/47435252-e61ff180-d7ac-11e8-8565-4a41610e3693.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47435252-e61ff180-d7ac-11e8-8565-4a41610e3693.png" alt="image" width="749" height="75"></a></p>
 <h3 id="h_98022694076961540722069916">14. Download a sample as a ZIP file</h3>
 <hr>
 <p>Download a sample by using its ID. The downloaded file is an archive of the sample itself, in a zip format as a form of quarantine.</p>
@@ -1460,23 +1460,23 @@
         "DownloadedSamples": {
             "Id": "6712d1b712dda4aa63d6073477c367c4"
         }
-    }, 
+    },
     "File": {
-        "Info": "application/zip", 
-        "SHA1": "804ac7075ec66262cb267ad56acdff2f507e28a7", 
-        "Name": "6712d1b712dda4aa63d6073477c367c4-sample.zip", 
-        "Extension": "zip", 
-        "Size": 6972, 
-        "EntryID": "184@16", 
-        "SSDeep": "192:R56It4RdYQq8ViAAybtWGIEOV2H6ryqvA7SI0p:/6IKRdYXnyboVMuAk", 
-        "SHA256": "97ae6411493dea29497d94db876af85958d23cdccff574b86be96ad15a4a004a", 
-        "Type": "Zip archive data, at least v2.0 to extract\n", 
+        "Info": "application/zip",
+        "SHA1": "804ac7075ec66262cb267ad56acdff2f507e28a7",
+        "Name": "6712d1b712dda4aa63d6073477c367c4-sample.zip",
+        "Extension": "zip",
+        "Size": 6972,
+        "EntryID": "184@16",
+        "SSDeep": "192:R56It4RdYQq8ViAAybtWGIEOV2H6ryqvA7SI0p:/6IKRdYXnyboVMuAk",
+        "SHA256": "97ae6411493dea29497d94db876af85958d23cdccff574b86be96ad15a4a004a",
+        "Type": "Zip archive data, at least v2.0 to extract\n",
         "MD5": "6dec1a3d1e4df557c2dba87c16f75542"
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47435410-3dbe5d00-d7ad-11e8-9daf-d6d1ecb91dad.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47435410-3dbe5d00-d7ad-11e8-9daf-d6d1ecb91dad.png" alt="image" width="751" height="236"></a></p>
+<p><a href="../../doc_files/47435410-3dbe5d00-d7ad-11e8-9daf-d6d1ecb91dad.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47435410-3dbe5d00-d7ad-11e8-9daf-d6d1ecb91dad.png" alt="image" width="751" height="236"></a></p>
 <h3 id="h_22118886180011540722965084">15. Get a list of IOCs found during a sample run</h3>
 <hr>
 <p>Returns a JSON list of the Indicators of Compromise identified in this sample run.</p>
@@ -1588,511 +1588,511 @@
 <pre><code>{
     "DBotScore": [
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "antivirus-flagged-artifact", 
-            "Score": 2, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "antivirus-flagged-artifact",
+            "Score": 2,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "pe-uses-dot-net", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "pe-uses-dot-net",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "dns-dynamic-domain", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "dns-dynamic-domain",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "memory-execute-readwrite", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "memory-execute-readwrite",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "modified-executable", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "modified-executable",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "netsh-firewall-generic", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "netsh-firewall-generic",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "network-snort-malware", 
-            "Score": 3, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "network-snort-malware",
+            "Score": 3,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "registry-autorun-key-data-dir", 
-            "Score": 2, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "registry-autorun-key-data-dir",
+            "Score": 2,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "firewall-exception-user-dir", 
-            "Score": 3, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "firewall-exception-user-dir",
+            "Score": 3,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "modified-file-in-user-dir", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "modified-file-in-user-dir",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "netsh-firewall-add", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "netsh-firewall-add",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "registry-autorun-key-modified", 
-            "Score": 2, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "registry-autorun-key-modified",
+            "Score": 2,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "malware-known-trojan-av", 
-            "Score": 3, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "malware-known-trojan-av",
+            "Score": 3,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "feed-domain-rat", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "feed-domain-rat",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "network-fast-flux-domain", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "network-fast-flux-domain",
+            "Score": 1,
             "Type": "IOC"
-        }, 
+        },
         {
-            "Vendor": "ThreatGrid", 
-            "Indicator": "artifact-flagged-anomaly", 
-            "Score": 1, 
+            "Vendor": "ThreatGrid",
+            "Indicator": "artifact-flagged-anomaly",
+            "Score": 1,
             "Type": "IOC"
         }
-    ], 
+    ],
     "ThreatGrid": {
         "IOCs": [
             {
-                "Confidence": 80, 
-                "Severity": 80, 
+                "Confidence": 80,
+                "Severity": 80,
                 "Tags": [
                     "file"
-                ], 
+                ],
                 "IOCCategory": [
                     "forensics"
-                ], 
-                "Title": "Artifact Flagged by Antivirus", 
+                ],
+                "Title": "Artifact Flagged by Antivirus",
                 "Data.Path": [
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "antivirus-flagged-artifact"
-            }, 
+            },
             {
-                "Confidence": 60, 
-                "Severity": 35, 
+                "Confidence": 60,
+                "Severity": 35,
                 "Tags": [
-                    "artifact", 
-                    "library", 
+                    "artifact",
+                    "library",
                     "PE"
-                ], 
+                ],
                 "IOCCategory": [
                     "attribute"
-                ], 
-                "Title": "Executable Artifact Uses .NET", 
+                ],
+                "Title": "Executable Artifact Uses .NET",
                 "Data.Path": [
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "pe-uses-dot-net"
-            }, 
+            },
             {
-                "Confidence": 60, 
-                "Severity": 50, 
+                "Confidence": 60,
+                "Severity": 50,
                 "Tags": [
                     "evasion"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "Dynamic DNS Domain Detected", 
+                ],
+                "Title": "Dynamic DNS Domain Detected",
                 "Data.Path": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "dns-dynamic-domain"
-            }, 
+            },
             {
-                "Confidence": 50, 
-                "Severity": 50, 
+                "Confidence": 50,
+                "Severity": 50,
                 "Tags": [
                     "memory"
-                ], 
+                ],
                 "IOCCategory": [
                     "evasion"
-                ], 
-                "Title": "Potential Code Injection Detected", 
+                ],
+                "Title": "Potential Code Injection Detected",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "memory-execute-readwrite"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 60, 
+                "Confidence": 100,
+                "Severity": 60,
                 "Tags": [
-                    "executable", 
-                    "file", 
-                    "process", 
+                    "executable",
+                    "file",
+                    "process",
                     "PE"
-                ], 
+                ],
                 "IOCCategory": [
-                    "file", 
+                    "file",
                     "persistence"
-                ], 
-                "Title": "Process Modified an Executable File", 
+                ],
+                "Title": "Process Modified an Executable File",
                 "Data.Path": [
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "modified-executable"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 70, 
+                "Confidence": 100,
+                "Severity": 70,
                 "Tags": [
-                    "process", 
-                    "firewall", 
-                    "bypass", 
+                    "process",
+                    "firewall",
+                    "bypass",
                     "networking"
-                ], 
+                ],
                 "IOCCategory": [
                     "weakening"
-                ], 
-                "Title": "Netsh.exe Used to Alter Windows Firewall", 
+                ],
+                "Title": "Netsh.exe Used to Alter Windows Firewall",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "netsh-firewall-generic"
-            }, 
+            },
             {
-                "Confidence": 95, 
-                "Severity": 95, 
+                "Confidence": 95,
+                "Severity": 95,
                 "Tags": [
-                    "snort", 
+                    "snort",
                     "malware"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "Network Stream Marked as Malware by Snort", 
+                ],
+                "Title": "Network Stream Marked as Malware by Snort",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "network-snort-malware"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 90, 
+                "Confidence": 100,
+                "Severity": 90,
                 "Tags": [
-                    "process", 
-                    "autorun", 
-                    "registry", 
+                    "process",
+                    "autorun",
+                    "registry",
                     "compound"
-                ], 
+                ],
                 "IOCCategory": [
                     "persistence"
-                ], 
-                "Title": "Registry Persistence Mechanism Refers to an Executable in a User Data Directory", 
+                ],
+                "Title": "Registry Persistence Mechanism Refers to an Executable in a User Data Directory",
                 "Data.Path": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "registry-autorun-key-data-dir"
-            }, 
+            },
             {
-                "Confidence": 95, 
-                "Severity": 100, 
+                "Confidence": 95,
+                "Severity": 100,
                 "Tags": [
-                    "file", 
-                    "trojan", 
-                    "artifact", 
+                    "file",
+                    "trojan",
+                    "artifact",
                     "compound"
-                ], 
+                ],
                 "IOCCategory": [
                     "weakening"
-                ], 
-                "Title": "User Directory FireWall Exception", 
+                ],
+                "Title": "User Directory FireWall Exception",
                 "Data.Path": [
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "firewall-exception-user-dir"
-            }, 
+            },
             {
-                "Confidence": 80, 
-                "Severity": 70, 
+                "Confidence": 80,
+                "Severity": 70,
                 "Tags": [
-                    "executable", 
-                    "file", 
+                    "executable",
+                    "file",
                     "process"
-                ], 
+                ],
                 "IOCCategory": [
                     "file"
-                ], 
-                "Title": "Process Modified File in a User Directory", 
+                ],
+                "Title": "Process Modified File in a User Directory",
                 "Data.Path": [
                     "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "modified-file-in-user-dir"
-            }, 
+            },
             {
-                "Confidence": 100, 
-                "Severity": 70, 
+                "Confidence": 100,
+                "Severity": 70,
                 "Tags": [
-                    "process", 
-                    "firewall", 
-                    "bypass", 
+                    "process",
+                    "firewall",
+                    "bypass",
                     "networking"
-                ], 
+                ],
                 "IOCCategory": [
                     "weakening"
-                ], 
-                "Title": "Netsh.exe Used to Add Program to Firewall Allowed Program List", 
+                ],
+                "Title": "Netsh.exe Used to Add Program to Firewall Allowed Program List",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "netsh-firewall-add"
-            }, 
+            },
             {
-                "Confidence": 60, 
-                "Severity": 80, 
+                "Confidence": 60,
+                "Severity": 80,
                 "Tags": [
-                    "process", 
-                    "autorun", 
+                    "process",
+                    "autorun",
                     "registry"
-                ], 
+                ],
                 "IOCCategory": [
                     "persistence"
-                ], 
-                "Title": "Process Modified Autorun Registry Key Value", 
+                ],
+                "Title": "Process Modified Autorun Registry Key Value",
                 "Data.Path": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "IOC": "registry-autorun-key-modified"
-            }, 
+            },
             {
-                "Confidence": 95, 
-                "Severity": 100, 
+                "Confidence": 95,
+                "Severity": 100,
                 "Tags": [
-                    "trojan", 
+                    "trojan",
                     "RAT"
-                ], 
+                ],
                 "IOCCategory": [
                     "malware"
-                ], 
-                "Title": "Artifact Flagged as Known Trojan by Antivirus", 
+                ],
+                "Title": "Artifact Flagged as Known Trojan by Antivirus",
                 "Data.Path": [
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe"
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "malware-known-trojan-av"
-            }, 
+            },
             {
-                "Confidence": 25, 
-                "Severity": 25, 
+                "Confidence": 25,
+                "Severity": 25,
                 "Tags": [
-                    "communications", 
+                    "communications",
                     "command and control"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "RAT Queried Domain", 
+                ],
+                "Title": "RAT Queried Domain",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "feed-domain-rat"
-            }, 
+            },
             {
-                "Confidence": 20, 
-                "Severity": 35, 
+                "Confidence": 20,
+                "Severity": 35,
                 "Tags": [
-                    "network", 
-                    "ttl", 
-                    "dns", 
-                    "fast flux", 
+                    "network",
+                    "ttl",
+                    "dns",
+                    "fast flux",
                     "command and control"
-                ], 
+                ],
                 "IOCCategory": [
                     "network"
-                ], 
-                "Title": "DNS Response Contains Low Time to Live (TTL) Value", 
+                ],
+                "Title": "DNS Response Contains Low Time to Live (TTL) Value",
                 "Data.Path": [
                     null
-                ], 
+                ],
                 "Data.URL": [
                     null
-                ], 
+                ],
                 "Data.SHA256": [
                     null
-                ], 
+                ],
                 "IOC": "network-fast-flux-domain"
-            }, 
+            },
             {
-                "Confidence": 80, 
-                "Severity": 60, 
+                "Confidence": 80,
+                "Severity": 60,
                 "Tags": [
-                    "anomaly", 
+                    "anomaly",
                     "static"
-                ], 
+                ],
                 "IOCCategory": [
                     "forensics"
-                ], 
-                "Title": "Static Analysis Flagged Artifact As Anomalous", 
+                ],
+                "Title": "Static Analysis Flagged Artifact As Anomalous",
                 "Data.Path": [
-                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe", 
-                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe", 
+                    "\\TEMP\\2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe",
+                    "\\Users\\Administrator\\AppData\\Roaming\\Mmas.exe",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d.exe"
-                ], 
+                ],
                 "Data.URL": [
-                    null, 
-                    null, 
+                    null,
+                    null,
                     null
-                ], 
+                ],
                 "Data.SHA256": [
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d", 
-                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d", 
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d",
+                    "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d",
                     "2c0146af31a67ef3f8193761d710751641e67690df2599990e44af201dd71a1d"
-                ], 
+                ],
                 "IOC": "artifact-flagged-anomaly"
             }
         ]
@@ -2100,7 +2100,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47436037-62670480-d7ae-11e8-8328-7f69151fff1b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47436037-62670480-d7ae-11e8-8328-7f69151fff1b.png" alt="image" width="751" height="373"></a></p>
+<p><a href="../../doc_files/47436037-62670480-d7ae-11e8-8328-7f69151fff1b.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47436037-62670480-d7ae-11e8-8328-7f69151fff1b.png" alt="image" width="751" height="373"></a></p>
 <h3 id="h_86250776383051540723048488">16. Get information for the logged in user</h3>
 <hr>
 <p>Return information for the logged in user.</p>
@@ -2146,17 +2146,17 @@
 <pre><code>{
     "ThreatGrid": {
         "User": {
-            "Organization": 42, 
-            "Login": "String", 
-            "Role": "org-admin", 
-            "Email": "String", 
+            "Organization": 42,
+            "Login": "String",
+            "Role": "org-admin",
+            "Email": "String",
             "Name": "String"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png" alt="screen shot 2018-10-24 at 17 19 31" width="750" height="134"></a></p>
+<p><a href="../../doc_files/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png" alt="screen shot 2018-10-24 at 17 19 31" width="750" height="134"></a></p>
 <h3 id="h_14456317689011540723175792">17. Get the rate limit for a specified user</h3>
 <hr>
 <p>Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.</p>
@@ -2221,7 +2221,7 @@
         "User": {
             "RateLimit": [
                 {
-                    "SubmissionWaitSeconds": 0, 
+                    "SubmissionWaitSeconds": 0,
                     "SubmissionsAvailable": null
                 }
             ]
@@ -2230,7 +2230,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47438632-82e58d80-d7b3-11e8-962b-f5ec7b8e6bf1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47438632-82e58d80-d7b3-11e8-962b-f5ec7b8e6bf1.png" alt="screen shot 2018-10-24 at 17 36 51" width="756" height="81"></a></p>
+<p><a href="../../doc_files/47438632-82e58d80-d7b3-11e8-962b-f5ec7b8e6bf1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47438632-82e58d80-d7b3-11e8-962b-f5ec7b8e6bf1.png" alt="screen shot 2018-10-24 at 17 36 51" width="756" height="81"></a></p>
 <h3 id="h_54946164292031540723340792">18. Get a specific threat feed</h3>
 <hr>
 <p>Gets a specific threat feed.</p>
@@ -2269,7 +2269,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-specific-feed feed-name=rat-dns output-type=csv</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47441386-b971d700-d7b8-11e8-9caa-e55eae2b0932.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47441386-b971d700-d7b8-11e8-9caa-e55eae2b0932.png" alt="image" width="750" height="223"></a></p>
+<p><a href="../../doc_files/47441386-b971d700-d7b8-11e8-9caa-e55eae2b0932.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47441386-b971d700-d7b8-11e8-9caa-e55eae2b0932.png" alt="image" width="750" height="223"></a></p>
 <h3 id="h_808021630100861540723744274">19. Convert a URL to a file for detonation</h3>
 <hr>
 <p>Convert a URL into a file for Threat Grid file detonation.</p>
@@ -2298,7 +2298,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-url-to-file urls=www.google.com</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png" alt="image" width="749" height="186"></a></p>
+<p><a href="../../doc_files/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png" alt="image" width="749" height="186"></a></p>
 <h3 id="h_677431094103841540723877811">20. Get rate limits for an organization</h3>
 <hr>
 <p>Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.</p>
@@ -2363,9 +2363,9 @@
         "User": {
             "RateLimit": [
                 {
-                    "SubmissionsAvailable": 47, 
-                    "SubmissionWaitSeconds": 0, 
-                    "Minutes": 1440, 
+                    "SubmissionsAvailable": 47,
+                    "SubmissionWaitSeconds": 0,
+                    "Minutes": 1440,
                     "Samples": 50
                 }
             ]
@@ -2374,7 +2374,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47480951-c3d4b500-d83a-11e8-899c-908d7c24a5a4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47480951-c3d4b500-d83a-11e8-899c-908d7c24a5a4.png" alt="screen shot 2018-10-25 at 9 43 53" width="752" height="119"></a></p>
+<p><a href="../../doc_files/47480951-c3d4b500-d83a-11e8-899c-908d7c24a5a4.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47480951-c3d4b500-d83a-11e8-899c-908d7c24a5a4.png" alt="screen shot 2018-10-25 at 9 43 53" width="752" height="119"></a></p>
 <h3 id="h_777805090106831540723972186">21. Search IP addresses</h3>
 <hr>
 <p>Search IPs.</p>
@@ -2448,7 +2448,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-search-ips tag=malicious</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47481818-7c9bf380-d83d-11e8-9a7b-582e42a856fd.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47481818-7c9bf380-d83d-11e8-9a7b-582e42a856fd.png" alt="image" width="753" height="48"></a></p>
+<p><a href="../../doc_files/47481818-7c9bf380-d83d-11e8-9a7b-582e42a856fd.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47481818-7c9bf380-d83d-11e8-9a7b-582e42a856fd.png" alt="image" width="753" height="48"></a></p>
 <h3 id="h_260594164112681540724110178">22. Get annotation data for an analysis</h3>
 <hr>
 <p>Returns data about the annotations of the analysis.</p>
@@ -2522,48 +2522,48 @@
                 "Id": {
                     "Annotations": [
                         {
-                            "IP": "192.168.1.11", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "192.168.1.11",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "255.255.255.255", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "255.255.255.255",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "0.0.0.0", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "0.0.0.0",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "192.168.1.1", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "192.168.1.1",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
-                        }, 
+                        },
                         {
-                            "IP": "192.168.1.255", 
-                            "IP.Asn": null, 
-                            "IP.Region": null, 
-                            "IP.Timestamp": 1533726370, 
-                            "IP.City": null, 
-                            "IP.Country": null, 
+                            "IP": "192.168.1.255",
+                            "IP.Asn": null,
+                            "IP.Region": null,
+                            "IP.Timestamp": 1533726370,
+                            "IP.City": null,
+                            "IP.Country": null,
                             "IP.Org": null
                         }
                     ]
@@ -2574,7 +2574,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47482519-7e66b680-d83f-11e8-81c0-1953bc691ce5.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47482519-7e66b680-d83f-11e8-81c0-1953bc691ce5.png" alt="image" width="748" height="157"></a></p>
+<p><a href="../../doc_files/47482519-7e66b680-d83f-11e8-81c0-1953bc691ce5.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47482519-7e66b680-d83f-11e8-81c0-1953bc691ce5.png" alt="image" width="748" height="157"></a></p>
 <h3 id="h_59168991115651540724258610">23. Search samples</h3>
 <hr>
 <p>Searches samples.</p>
@@ -2704,14 +2704,14 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "Details": "/api/v2/samples/b9218ef55a1bc6d50456f32dc5e31fba", 
+            "Details": "/api/v2/samples/b9218ef55a1bc6d50456f32dc5e31fba",
             "Result": "b9218ef55a1bc6d50456f32dc5e31fba"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47482806-4449e480-d840-11e8-8f0b-d73bd18a09a4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47482806-4449e480-d840-11e8-8f0b-d73bd18a09a4.png" alt="image" width="751" height="98"></a></p>
+<p><a href="../../doc_files/47482806-4449e480-d840-11e8-8f0b-d73bd18a09a4.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47482806-4449e480-d840-11e8-8f0b-d73bd18a09a4.png" alt="image" width="751" height="98"></a></p>
 <h3 id="h_507961918121481540724544988">24. Search URLs</h3>
 <hr>
 <p>Search URLs.</p>
@@ -2858,14 +2858,14 @@
 <pre><code>{
     "ThreatGrid": {
         "Sample": {
-            "State": "succ", 
+            "State": "succ",
             "ID": "9798717402a40970a2d043014d9a6170"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47483865-f2ef2480-d842-11e8-924c-69ff668f83c1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47483865-f2ef2480-d842-11e8-924c-69ff668f83c1.png" alt="image" width="753" height="86"></a></p>
+<p><a href="../../doc_files/47483865-f2ef2480-d842-11e8-924c-69ff668f83c1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47483865-f2ef2480-d842-11e8-924c-69ff668f83c1.png" alt="image" width="753" height="86"></a></p>
 <h3 id="h_218579845127351540724864745">26. Get the threat feed for artifacts</h3>
 <hr>
 <p>Get the threat feed for artifacts.</p>
@@ -2947,7 +2947,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-artifacts after=2018-01-18T00:00:00 before=2018-01-18T00:02:07 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47484658-faafc880-d844-11e8-805f-fbe2530872ed.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47484658-faafc880-d844-11e8-805f-fbe2530872ed.png" alt="image" width="750" height="212"></a></p>
+<p><a href="../../doc_files/47484658-faafc880-d844-11e8-805f-fbe2530872ed.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47484658-faafc880-d844-11e8-805f-fbe2530872ed.png" alt="image" width="750" height="212"></a></p>
 <h3 id="h_917414666130261540724994579">27. Get the threat feed for a domain</h3>
 <hr>
 <p>Get the threat feed for a domain.</p>
@@ -3014,7 +3014,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-domain after=2018-01-18T00:00:00 before=2018-01-18T00:10:00 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47484718-1a46f100-d845-11e8-8b11-bcbce534db95.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47484718-1a46f100-d845-11e8-8b11-bcbce534db95.png" alt="image" width="753" height="216"></a></p>
+<p><a href="../../doc_files/47484718-1a46f100-d845-11e8-8b11-bcbce534db95.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47484718-1a46f100-d845-11e8-8b11-bcbce534db95.png" alt="image" width="753" height="216"></a></p>
 <h3 id="h_582901469136001540725233399">28. Get the threat feed for an IP address</h3>
 <hr>
 <p>Returns the threat feed for an IP address.</p>
@@ -3081,7 +3081,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-ip after=2018-01-18T00:00:00 before=2018-01-18T01:00:00 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47430682-be2b9080-d7a2-11e8-87b8-9749ee4c22f2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47430682-be2b9080-d7a2-11e8-87b8-9749ee4c22f2.png" alt="image" width="750" height="223"></a></p>
+<p><a href="../../doc_files/47430682-be2b9080-d7a2-11e8-87b8-9749ee4c22f2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47430682-be2b9080-d7a2-11e8-87b8-9749ee4c22f2.png" alt="image" width="750" height="223"></a></p>
 <h3 id="h_863465308141721540725372444">29. Get the threat feed for a network stream</h3>
 <hr>
 <p>Get network stream threat feed</p>
@@ -3153,7 +3153,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-network-stream after=2018-01-18T00:00:00 before=2018-01-18T00:02:10 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47486140-56c81c00-d848-11e8-8a49-abe9bb7184fa.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47486140-56c81c00-d848-11e8-8a49-abe9bb7184fa.png" alt="image" width="751" height="212"></a></p>
+<p><a href="../../doc_files/47486140-56c81c00-d848-11e8-8a49-abe9bb7184fa.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47486140-56c81c00-d848-11e8-8a49-abe9bb7184fa.png" alt="image" width="751" height="212"></a></p>
 <h3 id="h_443858322147421540725717694">30. Get the threat feed for a path</h3>
 <hr>
 <p>Returns the threat feed for a path.</p>
@@ -3222,7 +3222,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-path after=2018-01-18T00:00:00 before=2018-01-18T00:03:00 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47486645-7e6bb400-d849-11e8-84bc-ccf5aa070ebd.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47486645-7e6bb400-d849-11e8-84bc-ccf5aa070ebd.png" alt="image" width="750" height="210"></a></p>
+<p><a href="../../doc_files/47486645-7e6bb400-d849-11e8-84bc-ccf5aa070ebd.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47486645-7e6bb400-d849-11e8-84bc-ccf5aa070ebd.png" alt="image" width="750" height="210"></a></p>
 <h3 id="h_15540268150301540725757215">31. Get the threat feed for URL</h3>
 <hr>
 <p>Returns the threat feed for a URL.</p>
@@ -3291,7 +3291,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-url after=2018-01-18T00:00:00 before=2018-01-18T00:05:00 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47486691-98a59200-d849-11e8-8178-f8bdf5842b68.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47486691-98a59200-d849-11e8-8178-f8bdf5842b68.png" alt="image" width="755" height="213"></a></p>
+<p><a href="../../doc_files/47486691-98a59200-d849-11e8-8178-f8bdf5842b68.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47486691-98a59200-d849-11e8-8178-f8bdf5842b68.png" alt="image" width="755" height="213"></a></p>
 <h3 id="h_119905262158771540726200222">32. Get the artifact for a sample ID by artifact ID</h3>
 <hr>
 <p>Returns the sample ID artifact with artifact id</p>
@@ -3323,7 +3323,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-artifact id=a6cc7ae4e3318e98d94e8a053dd72c47 aid=1</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47486902-0d78cc00-d84a-11e8-9015-ad05ee52f4b3.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47486902-0d78cc00-d84a-11e8-9015-ad05ee52f4b3.png" alt="image" width="751" height="222"></a></p>
+<p><a href="../../doc_files/47486902-0d78cc00-d84a-11e8-9015-ad05ee52f4b3.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47486902-0d78cc00-d84a-11e8-9015-ad05ee52f4b3.png" alt="image" width="751" height="222"></a></p>
 <h3 id="h_545682989156031540726070486">33. Get artifacts for a sample ID</h3>
 <hr>
 <p>Returns the sample id artifacts</p>
@@ -3352,7 +3352,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-artifacts id=a6cc7ae4e3318e98d94e8a053dd72c47</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47486756-bbd04180-d849-11e8-85a4-0622a22550fc.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47486756-bbd04180-d849-11e8-85a4-0622a22550fc.png" alt="image" width="748" height="222"></a></p>
+<p><a href="../../doc_files/47486756-bbd04180-d849-11e8-85a4-0622a22550fc.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47486756-bbd04180-d849-11e8-85a4-0622a22550fc.png" alt="image" width="748" height="222"></a></p>
 <h3 id="h_668049232161671540726279174">34. Get analysis data for an IOC</h3>
 <hr>
 <p>Returns data for the specified IOC.</p>
@@ -3384,7 +3384,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-ioc id=8ee72188b95b7d8f4e1a6c4842e98566 ioc=network-communications-http-get-url</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47496245-eb3d7900-d85e-11e8-9d8c-37359b7d999f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47496245-eb3d7900-d85e-11e8-9d8c-37359b7d999f.png" alt="image" width="750" height="301"></a></p>
+<p><a href="../../doc_files/47496245-eb3d7900-d85e-11e8-9d8c-37359b7d999f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47496245-eb3d7900-d85e-11e8-9d8c-37359b7d999f.png" alt="image" width="750" height="301"></a></p>
 <h3 id="h_682537753164501540726355577">35. Get metadata for an analysis</h3>
 <hr>
 <p>Returns metadata about the analysis.</p>
@@ -3411,7 +3411,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-metadata id=58e5e66b31484a8529b80a18a33e0814</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47497034-5b4cfe80-d861-11e8-83af-34b7cea5b4b5.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47497034-5b4cfe80-d861-11e8-83af-34b7cea5b4b5.png" alt="image" width="751" height="220"></a></p>
+<p><a href="../../doc_files/47497034-5b4cfe80-d861-11e8-83af-34b7cea5b4b5.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47497034-5b4cfe80-d861-11e8-83af-34b7cea5b4b5.png" alt="image" width="751" height="220"></a></p>
 <h3 id="h_26151182170081540728061465">36. Get data for a network stream</h3>
 <hr>
 <p>Returns data regarding a specific network stream</p>
@@ -3445,7 +3445,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-network-stream id=a6cc7ae4e3318e98d94e8a053dd72c47 nsid=1</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47497188-d1516580-d861-11e8-953a-219bc6c965ef.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47497188-d1516580-d861-11e8-953a-219bc6c965ef.png" alt="image" width="750" height="221"></a></p>
+<p><a href="../../doc_files/47497188-d1516580-d861-11e8-953a-219bc6c965ef.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47497188-d1516580-d861-11e8-953a-219bc6c965ef.png" alt="image" width="750" height="221"></a></p>
 <h3 id="h_805126484175651540728192194">37. Get the analysis for a network stream</h3>
 <hr>
 <p>Returns the network stream analysis.</p>
@@ -3474,7 +3474,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-network-streams id=a6cc7ae4e3318e98d94e8a053dd72c47</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47497213-e75f2600-d861-11e8-96c5-b3257fe22e98.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47497213-e75f2600-d861-11e8-96c5-b3257fe22e98.png" alt="image" width="751" height="219"></a></p>
+<p><a href="../../doc_files/47497213-e75f2600-d861-11e8-96c5-b3257fe22e98.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47497213-e75f2600-d861-11e8-96c5-b3257fe22e98.png" alt="image" width="751" height="219"></a></p>
 <h3 id="h_462852935181201540728608321">38. Get data for a process ID in an analysis</h3>
 <hr>
 <p>Returns data regarding the specific process ID in the analysis.</p>
@@ -3508,7 +3508,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-process id=9798717402a40970a2d043014d9a6170 pid=4</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47497291-2beac180-d862-11e8-99c2-0c64a014bf66.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47497291-2beac180-d862-11e8-99c2-0c64a014bf66.png" alt="image" width="752" height="220"></a></p>
+<p><a href="../../doc_files/47497291-2beac180-d862-11e8-99c2-0c64a014bf66.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47497291-2beac180-d862-11e8-99c2-0c64a014bf66.png" alt="image" width="752" height="220"></a></p>
 <h3 id="h_601161801186731540728863204">39. Get data for an analysis process</h3>
 <hr>
 <p>Returns data regarding the analysis processes.</p>
@@ -3537,7 +3537,7 @@
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-processes id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png" alt="image" width="751" height="187"></a></p>
+<p><a href="../../doc_files/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png" alt="image" width="751" height="187"></a></p>
 <h3 id="h_601161801186731540728863304">40. Submit URLs for analysis</h3>
 <hr>
 <p>Submit the URL for Threat analysis processes.</p>

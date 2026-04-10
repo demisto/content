@@ -1,27 +1,29 @@
 """Main integration script."""
+
 import base64
 import traceback
-from typing import Any, Dict, List
+from typing import Any
 
 import urllib3
-from requests import Response
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from requests import Response
+
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # noqa # pylint: disable=no-member
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR_NAME = "Cofense Intelligence v2"
 INTEGRATION_NAME = "CofenseIntelligenceV2"
-OUTPUT_PREFIX = 'CofenseIntelligence'
-RELIABILITY = 'integration_reliability'
+OUTPUT_PREFIX = "CofenseIntelligence"
+RELIABILITY = "integration_reliability"
 
-DBOT_TO_VERDICT = {0: 'Unknown', 1: 'Benign', 2: 'Suspicious', 3: 'Malicious'}
+DBOT_TO_VERDICT = {0: "Unknown", 1: "Benign", 2: "Suspicious", 3: "Malicious"}
 
-EMAIL_REGEX = r'[^@]+@[^@]+\.[^@]+'
+EMAIL_REGEX = r"[^@]+@[^@]+\.[^@]+"
 BRAND = "Cofense Intelligence"
 BLOCK_TYPE_MAPPING = {
     "ip": "IPv4 Address",
@@ -54,13 +56,13 @@ class Client(BaseClient):
 
         :param score_mapping: custom score mapping provided by user.
         """
-        severity_score = {'None': 0, 'Minor': 1, 'Moderate': 2, 'Major': 3}
+        severity_score = {"None": 0, "Minor": 1, "Moderate": 2, "Major": 3}
         if score_mapping:
             mappings = [mapping.strip() for mapping in score_mapping.split(",") if mapping.strip()]
             for mapping in mappings:
                 if mapping:
                     attr = [score.strip() for score in mapping.split(":") if score.strip()]
-                    if len(attr) == 2 and attr[0] in severity_score.keys():
+                    if len(attr) == 2 and attr[0] in severity_score:
                         severity_score[attr[0]] = int(attr[1])
 
         return severity_score
@@ -79,28 +81,28 @@ class Client(BaseClient):
         return:
          Json: The response returned from the API call
         """
-        params = {'beginTimestamp': get_n_days_back_epoch(int(days_back))}
+        params = {"beginTimestamp": get_n_days_back_epoch(int(days_back))}
         if ip:
-            params['ip'] = ip
+            params["ip"] = ip
 
         elif email:
-            params['watchListEmail'] = email
+            params["watchListEmail"] = email
 
         elif file:
-            params['allHash'] = file
+            params["allHash"] = file
 
         elif url:
-            params['urlSearch'] = url
+            params["urlSearch"] = url
 
         elif string:
-            params['extractedString'] = string
+            params["extractedString"] = string
 
         elif domain:
-            params['domain'] = domain
+            params["domain"] = domain
 
-        return self._http_request(method='POST', url_suffix='/apiv1/threat/search', params=params)
+        return self._http_request(method="POST", url_suffix="/apiv1/threat/search", params=params)
 
-    def search_cofense(self, params: Dict) -> Dict:
+    def search_cofense(self, params: dict) -> dict:
         """
         Perform the API call to the threats-search endpoint with the requested query param.
 
@@ -109,7 +111,7 @@ class Client(BaseClient):
         return:
          Json: The response returned from the API call
         """
-        return self._http_request(method='POST', url_suffix='/apiv1/threat/search', params=params)
+        return self._http_request(method="POST", url_suffix="/apiv1/threat/search", params=params)
 
     def get_threat_report(self, report_id: str, report_format: str):
         """
@@ -121,8 +123,12 @@ class Client(BaseClient):
         return:
          Json: The response returned from the API call
         """
-        return self._http_request(method='GET', url_suffix=f'apiv1/t3/malware/{report_id}/{report_format}',
-                                  resp_type='response', error_handler=error_handler)
+        return self._http_request(
+            method="GET",
+            url_suffix=f"apiv1/t3/malware/{report_id}/{report_format}",
+            resp_type="response",
+            error_handler=error_handler,
+        )
 
 
 def error_handler(response: Response):
@@ -132,9 +138,9 @@ def error_handler(response: Response):
     Args:
          response(Response): Response object from API.
     """
-    err_msg = ''
+    err_msg = ""
     if response.status_code == 500:
-        err_msg += 'No threat report found for given report_id.'
+        err_msg += "No threat report found for given report_id."
     raise DemistoException(err_msg, res=response)
 
 
@@ -146,12 +152,12 @@ def remove_false_vendors_detections_from_threat(threats):
         - threats (Array): threats reports from cofense raw response
     """
     for threat in threats:
-        for exe in threat.get('executableSet', []):
+        for exe in threat.get("executableSet", []):
             detections = []
-            for detection in exe.get('vendorDetections', []):
-                if detection.get('detected'):
+            for detection in exe.get("vendorDetections", []):
+                if detection.get("detected"):
                     detections.append(detection)
-            exe['vendorDetections'] = detections
+            exe["vendorDetections"] = detections
 
 
 def get_n_days_back_epoch(days_back: int):
@@ -166,7 +172,7 @@ def get_n_days_back_epoch(days_back: int):
     return int((today - d).timestamp())
 
 
-def create_threat_md_row(threat: Dict, severity_level: int = None):
+def create_threat_md_row(threat: dict, severity_level: int = None):
     """
     Generate dict representing a single row in the human readable markdown format.
 
@@ -176,14 +182,15 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
     return:
      Dict: single row in the human  readable markdown format
     """
-    threat_row = {"Threat ID": threat.get("id", ""),
-                  "Threat Type": threat.get("threatType", ""),
-                  "Executive Summary": threat.get("executiveSummary", ""),
-                  "Campaign": threat.get("label", ""),
-                  "Malware Family Description": "\n".join(
-                      [m.get("description", "") for m in threat.get("malwareFamilySet", [])]),
-                  "Last Published": epochToTimestamp(threat.get("lastPublished")),
-                  "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})"}
+    threat_row = {
+        "Threat ID": threat.get("id", ""),
+        "Threat Type": threat.get("threatType", ""),
+        "Executive Summary": threat.get("executiveSummary", ""),
+        "Campaign": threat.get("label", ""),
+        "Malware Family Description": "\n".join([m.get("description", "") for m in threat.get("malwareFamilySet", [])]),
+        "Last Published": epochToTimestamp(threat.get("lastPublished")),
+        "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})",
+    }
 
     if severity_level:
         threat_row["Verdict"] = DBOT_TO_VERDICT.get(severity_level)
@@ -191,7 +198,7 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
     return threat_row
 
 
-def create_hr_for_cofense_search(threat: Dict):
+def create_hr_for_cofense_search(threat: dict):
     """
     Generate dict representing a single row in the human readable markdown format.
 
@@ -201,20 +208,18 @@ def create_hr_for_cofense_search(threat: Dict):
     return:
      Dict: single row in the human  readable markdown format
     """
-    threat_row = {"Threat ID": threat.get("id", ""),
-                  "Threat Type": threat.get("threatType", ""),
-                  "Executive Summary": threat.get("executiveSummary", ""),
-                  "Campaign": threat.get("label", ""),
-                  "Malware Family": "\n".join(
-                      [m.get("familyName", "") for m in threat.get("malwareFamilySet", [])]),
-                  "Malware File": "\n".join(
-                      [m.get("fileName", "") for m in threat.get("executableSet", [])]),
-                  "Malware Subject": "\n".join(
-                      [m.get("subject", "") for m in threat.get("subjectSet", [])]),
-                  "Malware Family Description": "\n".join(
-                      [m.get("description", "") for m in threat.get("malwareFamilySet", [])]),
-                  "Last Published": epochToTimestamp(threat.get("lastPublished")),
-                  "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})"}
+    threat_row = {
+        "Threat ID": threat.get("id", ""),
+        "Threat Type": threat.get("threatType", ""),
+        "Executive Summary": threat.get("executiveSummary", ""),
+        "Campaign": threat.get("label", ""),
+        "Malware Family": "\n".join([m.get("familyName", "") for m in threat.get("malwareFamilySet", [])]),
+        "Malware File": "\n".join([m.get("fileName", "") for m in threat.get("executableSet", [])]),
+        "Malware Subject": "\n".join([m.get("subject", "") for m in threat.get("subjectSet", [])]),
+        "Malware Family Description": "\n".join([m.get("description", "") for m in threat.get("malwareFamilySet", [])]),
+        "Last Published": epochToTimestamp(threat.get("lastPublished")),
+        "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})",
+    }
 
     return threat_row
 
@@ -240,7 +245,7 @@ def extract_indicator_from_block(block: dict, command: str) -> str:
     return data
 
 
-def threats_analysis(severity_score: dict, threats: List, indicator: str, threshold: str, command: str):
+def threats_analysis(severity_score: dict, threats: list, indicator: str, threshold: str, command: str):
     """
     Process raw response data and generate dbot score and human readable results.
 
@@ -257,8 +262,7 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
     block_type: str = BLOCK_TYPE_MAPPING.get(command, "")
     threshold_score = severity_score.get(threshold, -1)
     if threshold_score < 0 or threshold_score > 3:
-        raise Exception(
-            f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
+        raise Exception(f"Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major")
 
     md_data: list[dict] = []
     dbot_score = 0  # To maintain the dbot score across all threats
@@ -288,7 +292,7 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
     return md_data, dbot_score
 
 
-def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, dbot_score_obj):
+def ip_threats_analysis(severity_score, threats: list, ip: str, threshold: str, dbot_score_obj):
     """
     Process raw response data and generate dbot score ,human readable results, ip indicator object.
 
@@ -304,8 +308,7 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
     block_type = BLOCK_TYPE_MAPPING.get("ip")
     threshold_score = severity_score.get(threshold, -1)
     if threshold_score < 0 or threshold_score > 3:
-        raise Exception(
-            f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
+        raise Exception(f"Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major")
 
     md_data = []
     dbot_score = 0
@@ -313,19 +316,19 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
     for threat in threats:
         severity_level = 0
         indicator_found = False
-        for block in threat.get('blockSet', {}):
+        for block in threat.get("blockSet", {}):
             data_1_content = extract_indicator_from_block(block, command="ip")
             if block.get("blockType") == block_type and data_1_content == ip and block.get("impact"):
                 indicator_found = True
-                threat_score = severity_score.get(block.get('impact'), 0)
+                threat_score = severity_score.get(block.get("impact"), 0)
                 adjusted_score = 3 if threshold_score <= threat_score else threat_score
                 severity_level = max(severity_level, adjusted_score)
-                if block.get('ipDetail') and block.get('ipDetail').get('ip') == ip:
-                    ip_indicator.asn = block.get('ipDetail').get('asn')
+                if block.get("ipDetail") and block.get("ipDetail").get("ip") == ip:
+                    ip_indicator.asn = block.get("ipDetail").get("asn")
                     ip_indicator.geo_latitude = block.get("ipDetail").get("latitude")
                     ip_indicator.geo_longitude = block.get("ipDetail").get("longitude")
                     ip_indicator.geo_country = block.get("ipDetail").get("countryIsoCode")
-                    ip_indicator.malware_family = block.get('malwareFamily', {}).get('familyName')
+                    ip_indicator.malware_family = block.get("malwareFamily", {}).get("familyName")
 
         if indicator_found:
             dbot_score = max(dbot_score, severity_level)
@@ -337,7 +340,7 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
     return md_data, dbot_score, ip_indicator
 
 
-def file_threats_analysis(severity_score, threats: List, file: str, threshold: str, dbot_score_obj):
+def file_threats_analysis(severity_score, threats: list, file: str, threshold: str, dbot_score_obj):
     """
     Process raw response data and generate dbot score ,human readable results, file indicator object.
 
@@ -352,8 +355,7 @@ def file_threats_analysis(severity_score, threats: List, file: str, threshold: s
     """
     threshold_score = severity_score.get(threshold, -1)
     if threshold_score < 0 or threshold_score > 3:
-        raise Exception(
-            f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
+        raise Exception(f"Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major")
 
     file_data = []
     dbot_score = 0
@@ -362,23 +364,23 @@ def file_threats_analysis(severity_score, threats: List, file: str, threshold: s
     for threat in threats:
         severity_level = 0
         indicator_found = False
-        for es in threat.get('executableSet', {}):
+        for es in threat.get("executableSet", {}):
             for es_key, es_value in es.items():
-                if 'Hex' in es_key and isinstance(es_value, str) and es_value.lower() == file.lower():
+                if "Hex" in es_key and isinstance(es_value, str) and es_value.lower() == file.lower():
                     indicator_found = True
-                    threat_score = severity_score.get(es.get('severityLevel'), 0)
+                    threat_score = severity_score.get(es.get("severityLevel"), 0)
                     adjusted_score = 3 if threshold_score <= threat_score else threat_score
                     severity_level = max(severity_level, adjusted_score)
 
-                    file_indicator.file_type = es.get('type')
-                    file_indicator.ssdeep = es.get('ssdeep')
-                    file_indicator.md5 = es.get('md5Hex')
-                    file_indicator.sha512 = es.get('sha512Hex')
-                    file_indicator.sha1 = es.get('sha1Hex')
-                    file_indicator.sha256 = es.get('sha256Hex')
-                    file_indicator.name = es.get('fileName')
-                    file_indicator.malware_family = es.get('malwareFamily', {}).get('familyName')
-                    file_indicator.extension = es.get('fileNameExtension')
+                    file_indicator.file_type = es.get("type")
+                    file_indicator.ssdeep = es.get("ssdeep")
+                    file_indicator.md5 = es.get("md5Hex")
+                    file_indicator.sha512 = es.get("sha512Hex")
+                    file_indicator.sha1 = es.get("sha1Hex")
+                    file_indicator.sha256 = es.get("sha256Hex")
+                    file_indicator.name = es.get("fileName")
+                    file_indicator.malware_family = es.get("malwareFamily", {}).get("familyName")
+                    file_indicator.extension = es.get("fileNameExtension")
         if indicator_found:
             dbot_score = max(dbot_score, severity_level)
             threat_md_row = create_threat_md_row(threat, severity_level)
@@ -397,7 +399,7 @@ def check_indicator_type(indicator_value) -> str:
     :return: The type of the indicator.
     :rtype: ``str``
     """
-    domainRegex = r'/.+\/\/|www.|\..+/g'
+    domainRegex = r"/.+\/\/|www.|\..+/g"
 
     if re.match(domainRegex, indicator_value):
         return FeedIndicatorType.Domain
@@ -405,7 +407,7 @@ def check_indicator_type(indicator_value) -> str:
         return auto_detect_indicator_type(indicator_value)
 
 
-def create_relationship(client: Client, indicator: str, threats: List, entity_a_type: str) -> List:
+def create_relationship(client: Client, indicator: str, threats: list, entity_a_type: str) -> list:
     """
     Create relationships between indicators as part of enrichment.
 
@@ -425,22 +427,28 @@ def create_relationship(client: Client, indicator: str, threats: List, entity_a_
     relationships = []
     if client.create_relationships:
         for threat in threats:
-            for block in threat.get('blockSet', {}):
+            for block in threat.get("blockSet", {}):
                 relationships.append(
-                    EntityRelationship(name='related-to',
-                                       entity_a=indicator,
-                                       entity_a_type=entity_a_type,
-                                       entity_b=block.get('data'),
-                                       entity_b_type=check_indicator_type(block.get('data')),
-                                       brand=BRAND))
-            for exec_set in threat.get('executableSet', {}):
+                    EntityRelationship(
+                        name="related-to",
+                        entity_a=indicator,
+                        entity_a_type=entity_a_type,
+                        entity_b=block.get("data"),
+                        entity_b_type=check_indicator_type(block.get("data")),
+                        brand=BRAND,
+                    )
+                )
+            for exec_set in threat.get("executableSet", {}):
                 relationships.append(
-                    EntityRelationship(name='related-to',
-                                       entity_a=indicator,
-                                       entity_a_type=entity_a_type,
-                                       entity_b=exec_set.get('md5Hex'),
-                                       entity_b_type=FeedIndicatorType.File,
-                                       brand=BRAND))
+                    EntityRelationship(
+                        name="related-to",
+                        entity_a=indicator,
+                        entity_a_type=entity_a_type,
+                        entity_b=exec_set.get("md5Hex"),
+                        entity_b_type=FeedIndicatorType.File,
+                        brand=BRAND,
+                    )
+                )
     return relationships
 
 
@@ -460,14 +468,14 @@ def connectivity_testing(client: Client) -> str:
     """
     try:
         client.threat_search_call()
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code in [401, 403]:
-                message = 'Authorization Error: make sure Token name and password are correctly set'
+                message = "Authorization Error: make sure Token name and password are correctly set"
 
             elif e.res.status_code == 404:
-                message = 'Not Found: make sure server URL is correct'
+                message = "Not Found: make sure server URL is correct"
 
         else:
             raise e
@@ -475,7 +483,7 @@ def connectivity_testing(client: Client) -> str:
     return message
 
 
-def search_url_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def search_url_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given url.
 
@@ -488,41 +496,57 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> List[Com
     return:
      CommandResults: results of the url command including outputs, raw response, readable output
     """
-    urls = argToList(args.get('url'))
-    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
+    urls = argToList(args.get("url"))
+    days_back = args.get("days_back") if args.get("days_back") else params.get("days_back")
     if not urls:
-        raise ValueError('URL not specified')
+        raise ValueError("URL not specified")
     results_list = []
     for url in urls:
         result = client.threat_search_call(url=url, days_back=days_back)
-        threats = result.get('data', {}).get('threats', [])
+        threats = result.get("data", {}).get("threats", [])
         remove_false_vendors_detections_from_threat(threats)
-        outputs = {'Data': url, 'Threats': threats}
-        md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=url,
-                                               threshold=params.get('url_threshold'), command='url')
+        outputs = {"Data": url, "Threats": threats}
+        md_data, dbot_score = threats_analysis(
+            client.severity_score, threats, indicator=url, threshold=params.get("url_threshold"), command="url"
+        )
 
-        dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
-                                          integration_name=INTEGRATION_NAME, score=dbot_score,
-                                          reliability=params.get(RELIABILITY))
+        dbot_score_obj = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name=INTEGRATION_NAME,
+            score=dbot_score,
+            reliability=params.get(RELIABILITY),
+        )
         relationships = create_relationship(client, url, threats, FeedIndicatorType.URL)
         url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj, relationships=relationships)
 
         command_results = CommandResults(
-            outputs_prefix=f'{OUTPUT_PREFIX}.URL',
-            outputs_key_field='Data',
+            outputs_prefix=f"{OUTPUT_PREFIX}.URL",
+            outputs_key_field="Data",
             outputs=outputs,
             raw_response=result,
-            readable_output=tableToMarkdown(name=f'Cofense URL Reputation for url {url}', t=md_data,
-                                            headers=['Threat ID', 'Threat Type', 'Verdict', 'Executive Summary',
-                                                     'Campaign', 'Malware Family Description', 'Last Published',
-                                                     'Threat Report']),
+            readable_output=tableToMarkdown(
+                name=f"Cofense URL Reputation for url {url}",
+                t=md_data,
+                headers=[
+                    "Threat ID",
+                    "Threat Type",
+                    "Verdict",
+                    "Executive Summary",
+                    "Campaign",
+                    "Malware Family Description",
+                    "Last Published",
+                    "Threat Report",
+                ],
+            ),
             indicator=url_indicator,
-            relationships=relationships)
+            relationships=relationships,
+        )
         results_list.append(command_results)
     return results_list
 
 
-def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_ip_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given ip.
 
@@ -535,10 +559,10 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[Comma
     return:
      CommandResults: results of the ip command including outputs, raw response, readable output
     """
-    ips = argToList(args.get('ip'))
-    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
+    ips = argToList(args.get("ip"))
+    days_back = args.get("days_back") if args.get("days_back") else params.get("days_back")
     if not ips:
-        raise ValueError('IP not specified')
+        raise ValueError("IP not specified")
     results_list = []
     for ip in ips:
         try:
@@ -546,39 +570,57 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[Comma
             socket.inet_aton(ip)
 
         except socket.error:
-            raise ValueError(f'Invalid IP: {ip}')
+            raise ValueError(f"Invalid IP: {ip}")
 
         # Call the Client function and get the raw response
         result = client.threat_search_call(ip=ip, days_back=days_back)
-        threats = result.get('data', {}).get('threats', [])
+        threats = result.get("data", {}).get("threats", [])
         remove_false_vendors_detections_from_threat(threats)
-        outputs = {'Data': ip, 'Threats': threats}
-        dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
-                                          integration_name=INTEGRATION_NAME, score=0,
-                                          reliability=params.get(RELIABILITY))
-        md_data, dbot_score, ip_indicator = ip_threats_analysis(client.severity_score, threats=threats, ip=ip,
-                                                                threshold=params.get("ip_threshold"),
-                                                                dbot_score_obj=dbot_score_obj)
+        outputs = {"Data": ip, "Threats": threats}
+        dbot_score_obj = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name=INTEGRATION_NAME,
+            score=0,
+            reliability=params.get(RELIABILITY),
+        )
+        md_data, dbot_score, ip_indicator = ip_threats_analysis(
+            client.severity_score, threats=threats, ip=ip, threshold=params.get("ip_threshold"), dbot_score_obj=dbot_score_obj
+        )
         relationships = create_relationship(client, ip, threats, FeedIndicatorType.IP)
         dbot_score_obj.score = dbot_score
         ip_indicator.dbot_score = dbot_score_obj
         ip_indicator.relationships = relationships
 
         command_results = CommandResults(
-            outputs_prefix=f'{OUTPUT_PREFIX}.IP',
-            outputs_key_field='Data',
+            outputs_prefix=f"{OUTPUT_PREFIX}.IP",
+            outputs_key_field="Data",
             outputs=outputs,
             raw_response=result,
-            readable_output=tableToMarkdown(name=f'Cofense IP Reputation for IP {ip}', t=md_data,
-                                            headers=['Threat ID', 'Threat Type', 'Verdict', 'Executive Summary',
-                                                     'Campaign', 'Malware Family Description', 'Last Published', 'ASN',
-                                                     'Country', 'Threat Report']),
-            indicator=ip_indicator, relationships=relationships)
+            readable_output=tableToMarkdown(
+                name=f"Cofense IP Reputation for IP {ip}",
+                t=md_data,
+                headers=[
+                    "Threat ID",
+                    "Threat Type",
+                    "Verdict",
+                    "Executive Summary",
+                    "Campaign",
+                    "Malware Family Description",
+                    "Last Published",
+                    "ASN",
+                    "Country",
+                    "Threat Report",
+                ],
+            ),
+            indicator=ip_indicator,
+            relationships=relationships,
+        )
         results_list.append(command_results)
     return results_list
 
 
-def check_email_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_email_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given email.
 
@@ -591,46 +633,62 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
     return:
      CommandResults: results of the email command including outputs, raw response, readable output
     """
-    emails = argToList(args.get('email'))
-    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
+    emails = argToList(args.get("email"))
+    days_back = args.get("days_back") if args.get("days_back") else params.get("days_back")
     if not emails:
-        raise ValueError('Email not specified')
+        raise ValueError("Email not specified")
     results_list = []
     for email in emails:
         if not re.fullmatch(EMAIL_REGEX, email):
-            raise ValueError(f'Invalid email address: {email}')
+            raise ValueError(f"Invalid email address: {email}")
 
         # Call the Client function and get the raw response
         result = client.threat_search_call(email=email, days_back=days_back)
-        threats = result.get('data', {}).get('threats', [])
+        threats = result.get("data", {}).get("threats", [])
         remove_false_vendors_detections_from_threat(threats)
-        outputs = {'Data': email, 'Threats': threats}
-        md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=email,
-                                               threshold=params.get('email_threshold'), command="email")
+        outputs = {"Data": email, "Threats": threats}
+        md_data, dbot_score = threats_analysis(
+            client.severity_score, threats, indicator=email, threshold=params.get("email_threshold"), command="email"
+        )
 
-        dbot_score_obj = Common.DBotScore(indicator=email, indicator_type=DBotScoreType.EMAIL,
-                                          integration_name=INTEGRATION_NAME, score=dbot_score,
-                                          reliability=params.get(RELIABILITY))
+        dbot_score_obj = Common.DBotScore(
+            indicator=email,
+            indicator_type=DBotScoreType.EMAIL,
+            integration_name=INTEGRATION_NAME,
+            score=dbot_score,
+            reliability=params.get(RELIABILITY),
+        )
         relationships = create_relationship(client, email, threats, FeedIndicatorType.Email)
-        email_indicator = Common.EMAIL(address=email, dbot_score=dbot_score_obj, domain=email.split('@')[1],
-                                       relationships=relationships)
+        email_indicator = Common.EMAIL(
+            address=email, dbot_score=dbot_score_obj, domain=email.split("@")[1], relationships=relationships
+        )
         command_results = CommandResults(
-            outputs_prefix=f'{OUTPUT_PREFIX}.Email',
+            outputs_prefix=f"{OUTPUT_PREFIX}.Email",
             outputs=outputs,
-            outputs_key_field='Data',
+            outputs_key_field="Data",
             raw_response=result,
-            readable_output=tableToMarkdown(name=f'Cofense email Reputation for email {email}', t=md_data,
-                                            headers=['Threat ID', 'Threat Type', 'Verdict', 'Executive Summary',
-                                                     'Campaign', 'Malware Family Description', 'Last Published',
-                                                     'Threat Report']),
+            readable_output=tableToMarkdown(
+                name=f"Cofense email Reputation for email {email}",
+                t=md_data,
+                headers=[
+                    "Threat ID",
+                    "Threat Type",
+                    "Verdict",
+                    "Executive Summary",
+                    "Campaign",
+                    "Malware Family Description",
+                    "Last Published",
+                    "Threat Report",
+                ],
+            ),
             indicator=email_indicator,
-            relationships=relationships
+            relationships=relationships,
         )
         results_list.append(command_results)
     return results_list
 
 
-def check_file_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_file_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given file hash.
 
@@ -643,43 +701,62 @@ def check_file_command(client: Client, args: Dict[str, Any], params) -> List[Com
     return:
      CommandResults: results of the file command including outputs, raw response, readable output
     """
-    files = argToList(args.get('file', None))
-    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
+    files = argToList(args.get("file", None))
+    days_back = args.get("days_back") if args.get("days_back") else params.get("days_back")
     if not files:
-        raise ValueError('File not specified')
+        raise ValueError("File not specified")
     results_list = []
     for file in files:
         # Call the Client function and get the raw response
         result = client.threat_search_call(file=file, days_back=days_back)
-        threats = result.get('data', {}).get('threats', [])
+        threats = result.get("data", {}).get("threats", [])
         remove_false_vendors_detections_from_threat(threats)
-        outputs = {'Data': file, 'Threats': threats}
-        dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
-                                          integration_name=INTEGRATION_NAME, score=0,
-                                          reliability=params.get(RELIABILITY))
-        md_data, dbot_score, file_indicator = file_threats_analysis(client.severity_score, threats=threats, file=file,
-                                                                    threshold=params.get('file_threshold'),
-                                                                    dbot_score_obj=dbot_score_obj)
+        outputs = {"Data": file, "Threats": threats}
+        dbot_score_obj = Common.DBotScore(
+            indicator=file,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=INTEGRATION_NAME,
+            score=0,
+            reliability=params.get(RELIABILITY),
+        )
+        md_data, dbot_score, file_indicator = file_threats_analysis(
+            client.severity_score,
+            threats=threats,
+            file=file,
+            threshold=params.get("file_threshold"),
+            dbot_score_obj=dbot_score_obj,
+        )
         relationships = create_relationship(client, file, threats, FeedIndicatorType.File)
         file_indicator.relationships = relationships
         file_indicator.dbot_score = dbot_score_obj
         dbot_score_obj.score = dbot_score
         command_results = CommandResults(
-            outputs_prefix=f'{OUTPUT_PREFIX}.File',
-            outputs_key_field='Data',
+            outputs_prefix=f"{OUTPUT_PREFIX}.File",
+            outputs_key_field="Data",
             outputs=outputs,
             raw_response=result,
-            readable_output=tableToMarkdown(name=f'Cofense file Reputation for file {file}', t=md_data,
-                                            headers=['Threat ID', 'Threat Type', 'Verdict', 'Executive Summary',
-                                                     'Campaign', 'Malware Family Description', 'Last Published',
-                                                     'Threat Report']),
+            readable_output=tableToMarkdown(
+                name=f"Cofense file Reputation for file {file}",
+                t=md_data,
+                headers=[
+                    "Threat ID",
+                    "Threat Type",
+                    "Verdict",
+                    "Executive Summary",
+                    "Campaign",
+                    "Malware Family Description",
+                    "Last Published",
+                    "Threat Report",
+                ],
+            ),
             indicator=file_indicator,
-            relationships=relationships)
+            relationships=relationships,
+        )
         results_list.append(command_results)
     return results_list
 
 
-def extracted_string(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def extracted_string(client: Client, args: dict[str, Any], params) -> CommandResults:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given string.
 
@@ -692,48 +769,64 @@ def extracted_string(client: Client, args: Dict[str, Any], params) -> CommandRes
     return:
      CommandResults: results of the cofense-search command including outputs, raw response, readable output
     """
-    string = args.get('str')
+    string = args.get("str")
 
-    limit = arg_to_number(args.get('limit'))
+    limit = arg_to_number(args.get("limit"))
     if not limit:
         limit = 10
-    malware_family = args.get('malware_family')
-    malware_file = args.get('malware_file')
-    malware_subject = args.get('malware_subject')
-    url = args.get('url')
-    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
+    malware_family = args.get("malware_family")
+    malware_file = args.get("malware_file")
+    malware_subject = args.get("malware_subject")
+    url = args.get("url")
+    days_back = args.get("days_back") if args.get("days_back") else params.get("days_back")
     begin_time_stamp = get_n_days_back_epoch(int(days_back))  # type:ignore
-    params = assign_params(extractedString=string, malwareFamily=malware_family, malwareFile=malware_file,
-                           malwareSubject=malware_subject, urlSearch=url,
-                           beginTimestamp=begin_time_stamp)
+    params = assign_params(
+        extractedString=string,
+        malwareFamily=malware_family,
+        malwareFile=malware_file,
+        malwareSubject=malware_subject,
+        urlSearch=url,
+        beginTimestamp=begin_time_stamp,
+    )
     # Call the Client function and get the raw response
     result = client.search_cofense(params=params)
-    threats = result.get('data', {}).get('threats', [])
+    threats = result.get("data", {}).get("threats", [])
     md_data = []
     count_threats = 0
 
     if threats:
         for threat in threats:
-            if threat.get('hasReport'):
+            if threat.get("hasReport"):
                 count_threats += 1
                 md_data.append(create_hr_for_cofense_search(threat))
                 if count_threats == limit:
                     break
     remove_false_vendors_detections_from_threat(threats)
     return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Threats',
-        outputs_key_field='id',
+        outputs_prefix=f"{OUTPUT_PREFIX}.Threats",
+        outputs_key_field="id",
         outputs=threats,
         raw_response=result,
-        readable_output=tableToMarkdown(name=f'There are {count_threats} threats regarding your string search\n',
-                                        t=md_data,
-                                        headers=['Threat ID', 'Threat Type', 'Executive Summary',
-                                                 'Campaign', 'Malware Family', 'Malware File', 'Malware Subject',
-                                                 'Malware Family Description', 'Last Published',
-                                                 'Threat Report']))
+        readable_output=tableToMarkdown(
+            name=f"There are {count_threats} threats regarding your string search\n",
+            t=md_data,
+            headers=[
+                "Threat ID",
+                "Threat Type",
+                "Executive Summary",
+                "Campaign",
+                "Malware Family",
+                "Malware File",
+                "Malware Subject",
+                "Malware Family Description",
+                "Last Published",
+                "Threat Report",
+            ],
+        ),
+    )
 
 
-def check_domain_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
+def check_domain_command(client: Client, args: dict[str, Any], params) -> list[CommandResults]:
     """
     Perform the api call to cofense threts-search endpoint to get all threats associated with the given domain.
 
@@ -746,35 +839,51 @@ def check_domain_command(client: Client, args: Dict[str, Any], params) -> List[C
     return:
      CommandResults: results of the url command including outputs, raw response, readable output
     """
-    domains = argToList(args.get('domain'))
-    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
+    domains = argToList(args.get("domain"))
+    days_back = args.get("days_back") if args.get("days_back") else params.get("days_back")
     if not domains:
-        raise ValueError('Domain not specified')
+        raise ValueError("Domain not specified")
     results_list = []
     for domain in domains:
         result = client.threat_search_call(domain=domain, days_back=days_back)
-        threats = result.get('data', {}).get('threats', [])
+        threats = result.get("data", {}).get("threats", [])
         remove_false_vendors_detections_from_threat(threats)
-        outputs = {'Data': domain, 'Threats': threats}
-        md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=domain,
-                                               threshold=params.get('domain_threshold'), command='domain')
-        dbot_score_obj = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
-                                          integration_name=INTEGRATION_NAME, score=dbot_score,
-                                          reliability=params.get(RELIABILITY))
+        outputs = {"Data": domain, "Threats": threats}
+        md_data, dbot_score = threats_analysis(
+            client.severity_score, threats, indicator=domain, threshold=params.get("domain_threshold"), command="domain"
+        )
+        dbot_score_obj = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=INTEGRATION_NAME,
+            score=dbot_score,
+            reliability=params.get(RELIABILITY),
+        )
         relationships = create_relationship(client, domain, threats, FeedIndicatorType.Domain)
         domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score_obj, relationships=relationships)
 
         command_results = CommandResults(
-            outputs_prefix=f'{OUTPUT_PREFIX}.Domain',
-            outputs_key_field='Data',
+            outputs_prefix=f"{OUTPUT_PREFIX}.Domain",
+            outputs_key_field="Data",
             outputs=outputs,
             raw_response=result,
-            readable_output=tableToMarkdown(name=f'Cofense Domain Reputation for domain {domain}', t=md_data,
-                                            headers=['Threat ID', 'Threat Type', 'Verdict', 'Executive Summary',
-                                                     'Campaign', 'Malware Family Description', 'Last Published',
-                                                     'Threat Report']),
+            readable_output=tableToMarkdown(
+                name=f"Cofense Domain Reputation for domain {domain}",
+                t=md_data,
+                headers=[
+                    "Threat ID",
+                    "Threat Type",
+                    "Verdict",
+                    "Executive Summary",
+                    "Campaign",
+                    "Malware Family Description",
+                    "Last Published",
+                    "Threat Report",
+                ],
+            ),
             indicator=domain_indicator,
-            relationships=relationships)
+            relationships=relationships,
+        )
         results_list.append(command_results)
     return results_list
 
@@ -796,7 +905,7 @@ def validate_threat_report_command_args(report_id: str, report_format: str):
         raise DemistoException("Argument 'report_format' accepts only 'html' or 'pdf' as input.")
 
 
-def threat_report_command(client: Client, args: Dict[str, Any]):
+def threat_report_command(client: Client, args: dict[str, Any]):
     """
     Download threat report provided by cofense intelligence of an indicator for the given unique report id.
 
@@ -806,13 +915,13 @@ def threat_report_command(client: Client, args: Dict[str, Any]):
     return:
      CommandResults: results of the report command including outputs, raw response, readable output
     """
-    report_id = args.get('report_id', "")
+    report_id = args.get("report_id", "")
     report_format = args.get("report_format", "html")
 
     validate_threat_report_command_args(report_id, report_format)
 
     response = client.get_threat_report(report_id, report_format)
-    return fileResult(filename=f'{report_id}.{report_format}', data=response.content)
+    return fileResult(filename=f"{report_id}.{report_format}", data=response.content)
 
 
 def main() -> None:
@@ -822,18 +931,16 @@ def main() -> None:
      command results: results returned from the command that is being called
     """
     params = demisto.params()
-    username = demisto.params().get('credentials', {}).get('identifier')
-    password = demisto.params().get('credentials', {}).get('password')
-    base_url = demisto.params().get('url')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    create_relationships = argToBoolean(params.get('create_relationships', True))
-    score_mapping = params.get('scoreMapping', "None:0, Minor:1, Moderate:2, Major:3")
-    demisto.debug(f'Command being called is {demisto.command()}')
+    username = demisto.params().get("credentials", {}).get("identifier")
+    password = demisto.params().get("credentials", {}).get("password")
+    base_url = demisto.params().get("url")
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
+    create_relationships = argToBoolean(params.get("create_relationships", True))
+    score_mapping = params.get("scoreMapping", "None:0, Minor:1, Moderate:2, Major:3")
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        headers: Dict = {
-            "Authorization": f"Basic {base64.b64encode(':'.join([username, password]).encode()).decode().strip()}"
-        }
+        headers: dict = {"Authorization": f"Basic {base64.b64encode(':'.join([username, password]).encode()).decode().strip()}"}
 
         client = Client(
             base_url=base_url,
@@ -841,13 +948,13 @@ def main() -> None:
             headers=headers,
             proxy=proxy,
             score_mapping=score_mapping,
-            create_relationships=create_relationships
+            create_relationships=create_relationships,
         )
 
         command = demisto.command()
         args = demisto.args()
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             return_results(connectivity_testing(client))
 
         elif command == "url":
@@ -874,9 +981,9 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+""" ENTRY POINT """
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

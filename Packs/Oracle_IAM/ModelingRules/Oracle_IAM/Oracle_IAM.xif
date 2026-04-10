@@ -1,0 +1,59 @@
+[MODEL: dataset = "oracle_oam_raw"]
+alter
+	IAU_EVENTSTATUS_int = to_integer(IAU_EVENTSTATUS),
+	IAU_REMOTEIP_ipv4 = if(IAU_REMOTEIP ~= "(?:\d{1,3}\.){3}\d{1,3}", IAU_REMOTEIP),
+	IAU_REMOTEIP_ipv6 = if(IAU_REMOTEIP ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", IAU_REMOTEIP),
+	IAU_HOSTNWADDR_ipv4 = if(IAU_HOSTNWADDR ~= "(?:\d{1,3}\.){3}\d{1,3}", IAU_HOSTNWADDR),
+	IAU_HOSTNWADDR_ipv6 = if(IAU_HOSTNWADDR ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", IAU_HOSTNWADDR),
+	IAU_CLIENTIPADDRESS_ipv4 = if(IAU_CLIENTIPADDRESS ~= "(?:\d{1,3}\.){3}\d{1,3}", IAU_CLIENTIPADDRESS),
+	IAU_CLIENTIPADDRESS_ipv6 = if(IAU_CLIENTIPADDRESS ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", IAU_CLIENTIPADDRESS)
+| alter
+	xdm.source.application.name = coalesce(IAU_APPLICATIONNAME, IAU_APPLICATIONDOMAINNAME),
+	xdm.observer.name = IAU_COMPONENTTYPE,
+	xdm.source.zone = coalesce(IAU_IDENTITYDOMAIN, IAU_DOMAINNAME),
+	xdm.session_context_id = IAU_ECID,
+	xdm.event.original_event_type = IAU_EVENTCATEGORY,
+	xdm.event.outcome = if(IAU_EVENTSTATUS_int = 0, XDM_CONST.OUTCOME_FAILED, IAU_EVENTSTATUS_int = 1, XDM_CONST.OUTCOME_SUCCESS),
+	xdm.event.type = IAU_EVENTTYPE,
+	xdm.source.host.device_id = coalesce(IAU_RESOURCEHOST, IAU_HOSTID),
+	xdm.source.host.hostname = IAU_SERVERNAME,
+	xdm.event.id = coalesce(to_string(IAU_THREADID), to_string(IAU_REQUESTID)),
+	xdm.source.user.identifier = coalesce(IAU_INITIATOR, IAU_USERID),
+	xdm.target.resource.name = IAU_RESOURCE,
+	xdm.source.user.username = IAU_AUDITUSER,
+	xdm.event.description = coalesce(IAU_MESSAGETEXT, IAU_ADDITIONALINFO),
+	xdm.auth.auth_method = coalesce(IAU_AUTHENTICATIONMETHOD, IAU_AUTHENTICATIONSCHEMEID),
+	xdm.event.outcome_reason = if(IAU_EVENTSTATUS_int = 0, IAU_FAILURECODE),
+	xdm.alert.description = object_create("IAU_COMPONENTDATA", IAU_COMPONENTDATA, "IAU_COMPONENTID", IAU_COMPONENTID, "IAU_COMPONENTNAME", IAU_COMPONENTNAME, "IAU_CONTEXTFIELDS", IAU_CONTEXTFIELDS),
+	xdm.observer.type = IAU_ORACLEHOME,
+	xdm.source.process.pid = to_integer(IAU_PROCESSID),
+	xdm.network.session_id = IAU_SESSIONID,
+	xdm.target.user.identifier = IAU_TARGET,
+	xdm.target.resource.type = IAU_TARGETCOMPONENTTYPE,
+	xdm.target.host.device_id = IAU_TENANTID,
+	xdm.source.ipv4 = coalesce(IAU_REMOTEIP_ipv4, IAU_CLIENTIPADDRESS_ipv4),
+	xdm.source.ipv6 = coalesce(IAU_REMOTEIP_ipv6, IAU_CLIENTIPADDRESS_ipv6),
+	xdm.source.host.ipv4_addresses = if(
+	    incidr(IAU_HOSTNWADDR_ipv4, "10.0.0.0/8")
+	    or incidr(IAU_HOSTNWADDR_ipv4, "172.16.0.0/12")
+	    or incidr(IAU_HOSTNWADDR_ipv4, "192.168.0.0/16")
+	    or incidr(IAU_HOSTNWADDR_ipv4, "127.0.0.0/8")
+	    or incidr(IAU_HOSTNWADDR_ipv4, "169.254.0.0/16")
+	    or incidr(IAU_HOSTNWADDR_ipv4, "100.64.0.0/10"),
+	    arraycreate(IAU_HOSTNWADDR_ipv4)
+	),
+	xdm.source.host.ipv4_public_addresses = if(
+		incidr(IAU_HOSTNWADDR_ipv4, "10.0.0.0/8")
+		or incidr(IAU_HOSTNWADDR_ipv4, "172.16.0.0/12")
+		or incidr(IAU_HOSTNWADDR_ipv4, "192.168.0.0/16")
+		or incidr(IAU_HOSTNWADDR_ipv4, "127.0.0.0/8")
+		or incidr(IAU_HOSTNWADDR_ipv4, "169.254.0.0/16")
+		or incidr(IAU_HOSTNWADDR_ipv4, "100.64.0.0/10"),
+		null , arraycreate(IAU_HOSTNWADDR_ipv4)
+	),	 
+	xdm.source.host.ipv6_addresses = arraycreate(IAU_HOSTNWADDR_ipv6),
+	xdm.source.agent.identifier = IAU_AGENTID,
+	xdm.target.resource_before.value = coalesce(IAU_OLDATTRIBUTES, IAU_OLDSETTINGS),
+	xdm.target.resource.value = coalesce(IAU_NEWATTRIBUTES, IAU_NEWSETTINGS),
+	xdm.target.url = IAU_RESOURCEURI,
+	xdm.auth.service = IAU_SERVICEURI;

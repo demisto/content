@@ -369,3 +369,7 @@ inputs:
 outputs: []
 tests:
 - No test
+supportedModules:
+- agentix
+- cloud
+- xsiam

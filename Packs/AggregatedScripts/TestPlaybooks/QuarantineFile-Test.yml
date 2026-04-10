@@ -1,0 +1,1920 @@
+id: QuarantineFile-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: QuarantineFile-Test
+description: Test Playbook for the quarantine-file aggregated script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd66e226-af24-4903-8108-a8d827482ff9
+    type: start
+    task:
+      id: fd66e226-af24-4903-8108-a8d827482ff9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6de82cc1-f9e8-482b-9128-e455ab11d27b
+    type: regular
+    task:
+      id: 6de82cc1-f9e8-482b-9128-e455ab11d27b
+      version: -1
+      name: List 1 Core Endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      limit:
+        simple: "1"
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667.5,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 18368933-c464-400d-8e98-28a56873ae8b
+    type: regular
+    task:
+      id: 18368933-c464-400d-8e98-28a56873ae8b
+      version: -1
+      name: Create file on core endpoints
+      description: Initiate a new endpoint script execution of shell commands.
+      script: Cortex Core - IR|||core-run-script-execute-commands
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#error#':
+      - "44"
+      '#none#':
+      - "40"
+    scriptarguments:
+      command_type:
+        simple: powershell
+      commands:
+        simple: New-Item -Path "C:\\Users\\Public\\Downloads\\${file_to_quarantine}"
+          -ItemType File
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      is_raw_command:
+        simple: "true"
+      timeout:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 289e4dd4-1b2e-4e18-aaf8-80212555b2c6
+    type: condition
+    task:
+      id: 289e4dd4-1b2e-4e18-aaf8-80212555b2c6
+      version: -1
+      name: Check if XDR IR Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "48"
+      "yes":
+      - "49"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 857.5,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 54ff82cb-7628-4f88-aa72-69242b79cc9a
+    type: condition
+    task:
+      id: 54ff82cb-7628-4f88-aa72-69242b79cc9a
+      version: -1
+      name: Check if Core IR Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1633118c-375d-4707-8659-3298e4d13427
+    type: regular
+    task:
+      id: 1633118c-375d-4707-8659-3298e4d13427
+      version: -1
+      name: Sleep for 2 seconds (wait for file creation)
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "43"
+      '#none#':
+      - "21"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2575,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 91c2c985-0da3-4382-8c67-614c9e27b853
+    type: regular
+    task:
+      id: 91c2c985-0da3-4382-8c67-614c9e27b853
+      version: -1
+      name: QuarantineFile Script
+      description: This script executes the 'quarantine-file' command on a specified
+        file via the appropriate agent. This script is used to isolate files identified
+        as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "46"
+      '#none#':
+      - "35"
+    scriptarguments:
+      endpoint_id:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_hash:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      file_path:
+        simple: C:\Users\Public\Downloads\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2902.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 27043882-48c2-409c-8c4b-450e0e8e881b
+    type: regular
+    task:
+      id: 27043882-48c2-409c-8c4b-450e0e8e881b
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4e7fd76a-6c75-4226-81d0-4140fe8249a6
+    type: regular
+    task:
+      id: 4e7fd76a-6c75-4226-81d0-4140fe8249a6
+      version: -1
+      name: Set Unique File Name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: file_to_quarantine
+      value:
+        simple: file_to_quarantine_${GeneratedUUID}.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 8e8d7515-3b0d-4434-8eb7-3b3ad7e0a22a
+    type: regular
+    task:
+      id: 8e8d7515-3b0d-4434-8eb7-3b3ad7e0a22a
+      version: -1
+      name: Core - Execute File Exists Script
+      description: Initiates a new endpoint script execution to check if file exists.
+      script: '|||core-run-script-file-exists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "43"
+      '#none#':
+      - "24"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2687.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: cafdf41b-f788-4e19-807d-10f800c56074
+    type: regular
+    task:
+      id: cafdf41b-f788-4e19-807d-10f800c56074
+      version: -1
+      name: Core - Get File Check Status
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "43"
+      '#none#':
+      - "25"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2800,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: a23c1b88-772b-475d-96c2-1e9275fec7fd
+    type: condition
+    task:
+      id: a23c1b88-772b-475d-96c2-1e9275fec7fd
+      version: -1
+      name: File Successfully Created?
+      description: Check if a given value is true. Will return 'no' otherwise
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "44"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Core.ScriptResult.results.command_output
+            iscontext: true
+          right:
+            value: {}
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2912.5,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 0c5c8d01-efab-4ad0-8906-6159b01e56d2
+    type: title
+    task:
+      id: 0c5c8d01-efab-4ad0-8906-6159b01e56d2
+      version: -1
+      name: Pass
+      description: Prints a raw representation of a string or object, visualising
+        things likes tabs and newlines.  For instance, '\n' will be displayed instead
+        of a newline character, or a Windows CR will be displayed as '\r\n'.  This
+        is useful for debugging issues where things aren't behaving as expected, such
+        as when parsing a string with a regular expression.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3025,
+          "y": 3275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: cabedf91-b582-4c9f-86f2-e3c1604ad62c
+    type: regular
+    task:
+      id: cabedf91-b582-4c9f-86f2-e3c1604ad62c
+      version: -1
+      name: Core - Execute File Exists Script
+      description: Initiates a new endpoint script execution to check if file exists.
+      script: '|||core-run-script-file-exists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "43"
+      '#none#':
+      - "33"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 3127.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4c4e7e5a-176f-4c54-82ab-a1198d949ac6
+    type: regular
+    task:
+      id: 4c4e7e5a-176f-4c54-82ab-a1198d949ac6
+      version: -1
+      name: Core - Get File Check Status
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "43"
+      '#none#':
+      - "34"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a78ff9aa-5a1f-4109-8f09-0d5e77af4a35
+    type: condition
+    task:
+      id: a78ff9aa-5a1f-4109-8f09-0d5e77af4a35
+      version: -1
+      name: File Still Exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Core.ScriptResult.results.command_output
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3250,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 52744dcd-631f-4a3c-80ab-a019106f1ab1
+    type: condition
+    task:
+      id: 52744dcd-631f-4a3c-80ab-a019106f1ab1
+      version: -1
+      name: QuarantineFile status is Success?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QuarantineFile.Status
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3015,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e3f8ad4a-1b9d-4e1f-8f22-9c646e46cdfb
+    type: regular
+    task:
+      id: e3f8ad4a-1b9d-4e1f-8f22-9c646e46cdfb
+      version: -1
+      name: Cleanup - Delete File
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
+      script: Cortex Core - IR|||core-run-script-delete-file
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2462.5,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d409f9e6-054f-4221-8e9a-3399092e191d
+    type: regular
+    task:
+      id: d409f9e6-054f-4221-8e9a-3399092e191d
+      version: -1
+      name: Get UUID for quarantine file txt
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 85baa0f3-4b5b-44ac-85de-7b7aef3f7088
+    type: condition
+    task:
+      id: 85baa0f3-4b5b-44ac-85de-7b7aef3f7088
+      version: -1
+      name: Are there any available endpoints?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2667.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: bc016bad-fd94-4ea0-8c93-0cc29934c9b3
+    type: regular
+    task:
+      id: bc016bad-fd94-4ea0-8c93-0cc29934c9b3
+      version: -1
+      name: DeleteContext to clear previous actions
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Core.ScriptRun,Core.GetActionStatus
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2575,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: c181fddd-3786-42b3-8f3e-608570ebeec2
+    type: regular
+    task:
+      id: c181fddd-3786-42b3-8f3e-608570ebeec2
+      version: -1
+      name: DeleteContext to clear previous actions
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Core.ScriptRun,Core.GetActionStatus,Core.ScriptResult
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3127.5,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 23c5f69b-e7b7-44ab-8fd6-416e5cd79518
+    type: regular
+    task:
+      id: 23c5f69b-e7b7-44ab-8fd6-416e5cd79518
+      version: -1
+      name: Fail - No Available EPs
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: No online endpoints found. May be a problem with tenant
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1797.5,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8964f15f-5a03-47b1-836c-405614287530
+    type: regular
+    task:
+      id: 8964f15f-5a03-47b1-836c-405614287530
+      version: -1
+      name: Fail - General Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: Error in playbook execution, see logs
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2237.5,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2039f79d-5ce4-4d19-8f4e-037be8597967
+    type: regular
+    task:
+      id: 2039f79d-5ce4-4d19-8f4e-037be8597967
+      version: -1
+      name: Fail - Could not create file
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: 'Error in creating file on endpoint: ${Core.GetActionStatus.ErrorReasons.errorDescription}'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3792.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 329dcfc4-cc45-4e74-8f4d-fff4be0e4fad
+    type: regular
+    task:
+      id: 329dcfc4-cc45-4e74-8f4d-fff4be0e4fad
+      version: -1
+      name: Fail - Quarantine File error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: 'Error while executing QuarantineFile: ${QuarantineFile.Message}'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2472.5,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: e7817cfc-65cc-47f4-83a9-f0c69c4e97d2
+    type: regular
+    task:
+      id: e7817cfc-65cc-47f4-83a9-f0c69c4e97d2
+      version: -1
+      name: Fail - File still exists after quarantine
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: File still exists after quarantine
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3455,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 83735588-2a6b-4902-bc2d-763254677213
+    type: regular
+    task:
+      id: 83735588-2a6b-4902-bc2d-763254677213
+      version: -1
+      name: Fail - No Available Integrations
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Cortex Core - IR and Cortex XDR - IR not enabled
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: ae84e4ec-20d2-4575-af32-6a5a5f783bd3
+    type: regular
+    task:
+      id: ae84e4ec-20d2-4575-af32-6a5a5f783bd3
+      version: -1
+      name: List 1 XDR Endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set. (Start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      limit:
+        simple: "1"
+      platform:
+        simple: windows
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: da897227-1473-4fdf-9782-aa1b1d946384
+    type: condition
+    task:
+      id: da897227-1473-4fdf-9782-aa1b1d946384
+      version: -1
+      name: Are there any available endpoints?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6ffb6211-5ec6-4581-83aa-c89a88bdf925
+    type: regular
+    task:
+      id: 6ffb6211-5ec6-4581-83aa-c89a88bdf925
+      version: -1
+      name: Get UUID for quarantine file txt
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 31469bf6-793d-42f4-8637-3e619bad5f31
+    type: regular
+    task:
+      id: 31469bf6-793d-42f4-8637-3e619bad5f31
+      version: -1
+      name: Set Unique File Name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: file_to_quarantine
+      value:
+        simple: file_to_quarantine_${GeneratedUUID}.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 8a7997ff-9fee-4b4d-be24-9aa7b9fd54e7
+    type: regular
+    task:
+      id: 8a7997ff-9fee-4b4d-be24-9aa7b9fd54e7
+      version: -1
+      name: Create file on XDR endpoints
+      description: Initiates a new endpoint script execution of shell commands.
+      script: Cortex XDR - IR|||xdr-script-commands-execute
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#error#':
+      - "70"
+      '#none#':
+      - "54"
+    scriptarguments:
+      command_type:
+        simple: powershell
+      commands:
+        simple: New-Item -Path "C:\\Users\\Public\\Downloads\\${file_to_quarantine}"
+          -ItemType File
+      endpoint_ids:
+        simple: ${PaloAltoNetworksXDR.Endpoint.endpoint_id}
+      timeout:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 39f107a5-4ae3-485c-909a-4118c7bbb51f
+    type: regular
+    task:
+      id: 39f107a5-4ae3-485c-909a-4118c7bbb51f
+      version: -1
+      name: DeleteContext to clear previous actions
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: PaloAltoNetworksXDR.ScriptRun,PaloAltoNetworksXDR.GetActionStatus
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 46c6ec11-f300-44c7-8aaa-9b4df559d20c
+    type: regular
+    task:
+      id: 46c6ec11-f300-44c7-8aaa-9b4df559d20c
+      version: -1
+      name: Sleep for 2 seconds (wait for file creation)
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: ac1c0aa0-838f-4d57-9b23-e6bfbd18955c
+    type: regular
+    task:
+      id: ac1c0aa0-838f-4d57-9b23-e6bfbd18955c
+      version: -1
+      name: XDR - Execute File Exists Script
+      description: Initiates a new endpoint script execution to check if the file
+        exists.
+      script: Cortex XDR - IR|||xdr-file-exist-script-execute
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#error#':
+      - "71"
+      '#none#':
+      - "57"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${PaloAltoNetworksXDR.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 8df8f2f9-1b60-4462-91b5-67dbb8c49b57
+    type: regular
+    task:
+      id: 8df8f2f9-1b60-4462-91b5-67dbb8c49b57
+      version: -1
+      name: XDR - Get File Check Status
+      description: Retrieve the results of a script execution action.
+      script: Cortex XDR - IR|||xdr-get-script-execution-results
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#error#':
+      - "71"
+      '#none#':
+      - "58"
+    scriptarguments:
+      action_id:
+        simple: ${PaloAltoNetworksXDR.ScriptRun.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 2f140a87-72ad-4d6a-ab57-39709df8f7a6
+    type: condition
+    task:
+      id: 2f140a87-72ad-4d6a-ab57-39709df8f7a6
+      version: -1
+      name: File Successfully Created?
+      description: Check if a given value is true. Will return 'no' otherwise
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptResult.results.command_output
+            iscontext: true
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f16ebe06-9def-4d37-9ff0-12e1395cf895
+    type: regular
+    task:
+      id: f16ebe06-9def-4d37-9ff0-12e1395cf895
+      version: -1
+      name: QuarantineFile Script
+      description: This script executes the 'quarantine-file' command on a specified
+        file via the appropriate agent. This script is used to isolate files identified
+        as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "71"
+      '#none#':
+      - "60"
+    scriptarguments:
+      endpoint_id:
+        simple: ${PaloAltoNetworksXDR.Endpoint.endpoint_id}
+      file_hash:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      file_path:
+        simple: C:\Users\Public\Downloads\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 09bf6a9d-f807-4edd-89b9-72c8e8976c1c
+    type: condition
+    task:
+      id: 09bf6a9d-f807-4edd-89b9-72c8e8976c1c
+      version: -1
+      name: QuarantineFile status is Success?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QuarantineFile.Status
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6cb527fa-bede-4955-a1ba-067dfb3cea71
+    type: regular
+    task:
+      id: 6cb527fa-bede-4955-a1ba-067dfb3cea71
+      version: -1
+      name: DeleteContext to clear previous actions
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: PaloAltoNetworksXDR.ScriptRun,PaloAltoNetworksXDR.GetActionStatus,PaloAltoNetworksXDR.ScriptResult
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 216adda5-0f1a-42c1-888d-95b81724c613
+    type: regular
+    task:
+      id: 216adda5-0f1a-42c1-888d-95b81724c613
+      version: -1
+      name: XDR - Get File Check Status
+      description: Retrieve the results of a script execution action.
+      script: Cortex XDR - IR|||xdr-get-script-execution-results
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#error#':
+      - "69"
+      '#none#':
+      - "65"
+    scriptarguments:
+      action_id:
+        simple: ${PaloAltoNetworksXDR.ScriptRun.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: aabd180c-a2a4-46db-a978-5606431a5d62
+    type: condition
+    task:
+      id: aabd180c-a2a4-46db-a978-5606431a5d62
+      version: -1
+      name: File still exists?
+      description: Check if a given value is true. Will return 'no' otherwise
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptResult.results.return_value
+            iscontext: true
+          right:
+            value: {}
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 5c2b01ea-923c-448b-8055-dad15763d615
+    type: regular
+    task:
+      id: 5c2b01ea-923c-448b-8055-dad15763d615
+      version: -1
+      name: Fail - File still exists after quarantine
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      message:
+        simple: File still exists after quarantine
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 88fc264e-d133-4490-b771-a32e6e4a10b3
+    type: title
+    task:
+      id: 88fc264e-d133-4490-b771-a32e6e4a10b3
+      version: -1
+      name: Pass XDR Quarantine
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 1abb5f6f-c29d-48fd-8954-b6db9b7932bc
+    type: regular
+    task:
+      id: 1abb5f6f-c29d-48fd-8954-b6db9b7932bc
+      version: -1
+      name: XDR - Execute File Exists Script
+      description: Initiates a new endpoint script execution to check if the file
+        exists.
+      script: Cortex XDR - IR|||xdr-file-exist-script-execute
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#error#':
+      - "69"
+      '#none#':
+      - "64"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${PaloAltoNetworksXDR.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 3a1d0ee1-f0dc-4bc8-913d-084898657cce
+    type: regular
+    task:
+      id: 3a1d0ee1-f0dc-4bc8-913d-084898657cce
+      version: -1
+      name: Cleanup - Delete File
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
+      script: Cortex XDR - IR|||xdr-file-delete-script-execute
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: b43255a2-d498-4c5f-bb54-243e5ff062d0
+    type: regular
+    task:
+      id: b43255a2-d498-4c5f-bb54-243e5ff062d0
+      version: -1
+      name: Fail - Could not create file
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: ${PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: a1f5dfe3-2baf-449a-8198-f1cbbc57210c
+    type: regular
+    task:
+      id: a1f5dfe3-2baf-449a-8198-f1cbbc57210c
+      version: -1
+      name: Fail - General Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      message:
+        simple: Error in playbook execution, see logs
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1082.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_43_#error#": 0.9,
+      "24_43_#error#": 0.43,
+      "35_41_yes": 0.24,
+      "35_43_#default#": 0.16,
+      "65_66_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3630,
+        "width": 4122.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+dirtyInputs: true
+marketplaces:
+- platform
+- marketplacev2
+- xsoar

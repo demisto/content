@@ -2,7 +2,7 @@
     "name": "Securonix",
     "description": "Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists.",
     "support": "partner",
-    "currentVersion": "2.0.20",
+    "currentVersion": "2.0.30",
     "author": "Securonix",
     "url": "https://www.securonix.com",
     "email": "support@securonix.com",
@@ -15,6 +15,11 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

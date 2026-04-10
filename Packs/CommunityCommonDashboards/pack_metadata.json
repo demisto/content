@@ -2,7 +2,7 @@
     "name": "Community Common Dashboards",
     "description": "A pack that contains community dashboards",
     "support": "community",
-    "currentVersion": "2.0.3",
+    "currentVersion": "2.1.6",
     "author": "Randy Uhrlaub",
     "url": "",
     "email": "",
@@ -15,9 +15,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "rurhrlaub"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

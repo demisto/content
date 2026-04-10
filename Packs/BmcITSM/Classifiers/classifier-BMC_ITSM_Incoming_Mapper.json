@@ -1,0 +1,325 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "BMC ITSM Incoming Mapper",
+    "mapping": {
+        "BMC Change-Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Impact": {
+                    "simple": "Impact"
+                },
+                "BmcITSM Reason For Change": {
+                    "simple": "ReasonForChange"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Risk Level": {
+                    "simple": "RiskLevel"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                }
+            }
+        },
+        "BMC Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Contact Sensitivity": {
+                    "simple": "ContactSensitivity"
+                },
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Impact": {
+                    "simple": "Impact"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                },
+                "BmcITSM VIP Flag": {
+                    "simple": "VIP"
+                },
+                "Bmc Contact Sensitivity": {
+                    "simple": "ContactSensitivity"
+                },
+                "Bmc Display ID": {
+                    "simple": "DisplayID"
+                },
+                "Bmc Impact": {
+                    "simple": "Impact"
+                },
+                "Bmc Request ID": {
+                    "simple": "RequestID"
+                },
+                "Bmc Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "Bmc Sub-Type": {
+                    "simple": "SubType"
+                },
+                "Bmc Submitter": {
+                    "simple": "Submitter"
+                },
+                "Bmc VIP Flag": {
+                    "simple": "VIP"
+                },
+                "Bmc Assignee": {
+                    "simple": "Assignee"
+                },
+                "Bmc Customer": {
+                    "simple": "Customer"
+                },
+                "Bmc Reason For Change": {
+                    "simple": "ReasonForChange"
+                },
+                "Bmc Requester": {
+                    "simple": "Requester"
+                },
+                "Bmc Risk Level": {
+                    "simple": "RiskLevel"
+                },
+                "BmcITSM Assignee": {
+                    "simple": "Assignee"
+                },
+                "BmcITSM Customer": {
+                    "simple": "Customer"
+                },
+                "BmcITSM Reason For Change": {
+                    "simple": "ReasonForChange"
+                },
+                "BmcITSM Requester": {
+                    "simple": "Requester"
+                },
+                "BmcITSM Risk Level": {
+                    "simple": "RiskLevel"
+                }
+            }
+        },
+        "BMC Problem Investigation incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Impact": {
+                    "simple": "Impact"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                }
+            }
+        },
+        "BMC Problem – Known Error": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Impact": {
+                    "simple": "Impact"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                }
+            }
+        },
+        "BMC Service Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Impact": {
+                    "simple": "Impact"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                }
+            }
+        },
+        "BMC Task": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BmcITSM Assignee": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Assignee",
+                        "transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+                    }
+                },
+                "BmcITSM Customer": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Customer",
+                        "transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+                    }
+                },
+                "BmcITSM Requester": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Requester",
+                        "transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+                    }
+                },
+                "Description": {
+                    "simple": "Summary"
+                },
+                "Last Modified On": {
+                    "simple": "LastModifiedDate"
+                },
+                "Source Priority": {
+                    "simple": "Priority"
+                },
+                "Source Status": {
+                    "simple": "Status"
+                },
+                "Source Urgency": {
+                    "simple": "Urgency"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "RequestID"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "details": {
+                    "simple": "Details"
+                },
+                "name": {
+                    "simple": "Summary"
+                },
+                "sourceInstance": {
+                    "simple": "InstanceId"
+                }
+            }
+        }
+    },
+    "name": "BMC ITSM Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

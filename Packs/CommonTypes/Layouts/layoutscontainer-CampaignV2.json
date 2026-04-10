@@ -409,6 +409,12 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
@@ -583,5 +589,6 @@
     "name": "Campaign",
     "system": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "marketplaces": ["xsoar", "xsoar_saas", "xsoar_on_prem"]
 }

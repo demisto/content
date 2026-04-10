@@ -2,7 +2,7 @@
     "name": "Trello",
     "description": "Trello is a card-based activity tracker. Use this content pack to organize and prioritize your personal and work life using boards, lists, cards and so on.",
     "support": "community",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.15",
     "author": "Adam Baumeister",
     "url": "",
     "email": "",
@@ -15,6 +15,11 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

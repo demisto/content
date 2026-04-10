@@ -1,0 +1,29 @@
+{
+    "id": "USTA Stolen Credit Card",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "USTA Stolen Credit Card",
+    "prevName": "USTA Stolen Credit Card",
+    "color": "#7ADFD3",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "USTA Stolen Credit Card Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

@@ -1,9 +1,6 @@
 id: File Reputation
 version: -1
 name: File Reputation
-"marketplaces": [
-    "marketplacev2"
-]
 description: "This playbook checks the file reputation and sets the verdict as a new\
   \ context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal\
   \ detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide\
@@ -626,6 +623,37 @@ tasks:
                 root: inputs.TrustedPublishers
             iscontext: true
           ignorecase: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: processexecutionsigner
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: alert.osparentsigner
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: alert.initiatorsigner
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: alert.cgosigner
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: inputs.TrustedPublishers
+            iscontext: true
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -995,3 +1023,6 @@ outputs:
 tests:
 - No tests.
 fromversion: 6.6.0
+marketplaces:
+- marketplacev2
+- platform

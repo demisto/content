@@ -6,13 +6,13 @@ While the original exploit took advantage of the Autodiscover endpoint, the new 
 The OWASSRF exploit method involves two different vulnerabilities tracked by CVE-2022-41080 and CVE-2022-41082 that allow remote code execution (RCE) via Outlook Web Access (OWA).
 
 This playbook introduces several updates in response to the new discovery:
+
 - Hunting:
-    - Detecting possibly successful exploitation of the OWA SSRF vulnerability.
+  - Detecting possibly successful exploitation of the OWA SSRF vulnerability.
 - Mitigations:
-    - IIS URL Rewrite rule for the modified exploitation URI path.
+  - IIS URL Rewrite rule for the modified exploitation URI path.
 - Remediation:
-    - Block Indicators - Generic v3 playbook.
-  
+  - Block Indicators - Generic v3 playbook.
   
 Microsoft is investigating two reported zero-day vulnerabilities affecting Microsoft Exchange Server 2013, Exchange Server 2016, and Exchange Server 2019. The first one, identified as CVE-2022-41040, is a Server-Side Request Forgery (SSRF) vulnerability, and the second one, identified as CVE-2022-41082, allows Remote Code Execution (RCE) when PowerShell is accessible to the attacker.  
 
@@ -20,11 +20,11 @@ Currently, Microsoft is aware of limited targeted attacks using these two vulner
 
 This playbook includes the following tasks:
 
-* Collect detection rules, indicators and mitigation tools.
-* Exploitation patterns hunting using Cortex XDR - XQL Engine.
-* Exploitation patterns hunting using 3rd party SIEM products.
-* Indicators hunting.
-* Provides Microsoft mitigation and detection capabilities.
+- Collect detection rules, indicators and mitigation tools.
+- Exploitation patterns hunting using Cortex XDR - XQL Engine.
+- Exploitation patterns hunting using 3rd party SIEM products.
+- Indicators hunting.
+- Provides Microsoft mitigation and detection capabilities.
 
 **More information:**
 

@@ -15,15 +15,15 @@ def get_dbot_score(resCmd: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     results = []
     for cve in resCmd:
-        if 'Contents' in cve:
-            data = cve.get('Contents', {})
-            cvss = data.get('cvss', -1)
+        if "Contents" in cve:
+            data = cve.get("Contents", {})
+            cvss = data.get("cvss", -1)
 
             if not cvss:
                 cvss = -1
 
             elif isinstance(cvss, dict):
-                score = data.get('cvss').get('Score', -1)
+                score = data.get("cvss").get("Score", -1)
                 cvss = float(score) if score else -1
 
             if cvss == -1:
@@ -35,26 +35,21 @@ def get_dbot_score(resCmd: list[dict[str, Any]]) -> list[dict[str, Any]]:
             else:
                 res = 3
 
-            results.append({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': res,
-                'EntryContext': {
-                    'DBotScore': {
-                        'Indicator': data.get('id'),
-                        'Type': 'CVE',
-                        'Score': res,
-                        'Vendor': 'DBot'
-                    }
+            results.append(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": res,
+                    "EntryContext": {"DBotScore": {"Indicator": data.get("id"), "Type": "CVE", "Score": res, "Vendor": "DBot"}},
                 }
-            })
+            )
 
     return results
 
 
 def main():
-    cves = argToList(demisto.args().get('input'))
-    resCmd = demisto.executeCommand('cve', {'cve': cves})
+    cves = argToList(demisto.args().get("input"))
+    resCmd = demisto.executeCommand("cve", {"cve": cves})
     results = get_dbot_score(resCmd)
 
     if len(results) == 0:
@@ -65,5 +60,5 @@ def main():
         return_results(results)
 
 
-if __name__ in ('__main__', 'builtin', 'builtins'):
+if __name__ in ("__main__", "builtin", "builtins"):
     main()

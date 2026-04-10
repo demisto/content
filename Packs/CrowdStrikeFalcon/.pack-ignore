@@ -1,5 +1,5 @@
 [file:CrowdStrikeFalcon.yml]
-ignore=IN126,IN136,IN144
+ignore=IN126,IN136,IN144,BA129
 
 [file:README.md]
 ignore=RM102,RM104,RM106
@@ -29,3 +29,24 @@ ignore=BA101
 
 [file:Packs/CrowdStrikeFalcon/ReleaseNotes/1_11_1.md]
 ignore=RN115
+
+[file:incidentfield-Grand_Parent_Process.json]
+ignore=IF113
+
+[file:Test_Playbook_-_CrowdStrike_Falcon_-_Get_Detections_by_Incident.yml]
+ignore=GR103
+
+[file:playbook-Command_and_Scripting_Interpreter.yml]
+ignore=GR103
+
+[file:playbook-CrowdStrike_Falcon_-_False_Positive_Incident_Handling.yml]
+ignore=GR103
+
+[file:playbook-CrowdStrike_Falcon_-_True_Positive_Incident_Handling.yml]
+ignore=GR103
+
+[file:playbook-CrowdStrike_Falcon_-_Get_Detections_by_Incident.yml]
+ignore=GR103
+
+[file:playbook-CrowdStrike_Falcon_SIEM_ingestion_-_Get_Incident_Data.yml]
+ignore=GR103

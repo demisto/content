@@ -8,6 +8,7 @@
 		"AWS EC2 Instance Misconfiguration",
 		"NetWitness Incident",
 		"Prisma Cloud - VM Alert Prioritization",
+        "IBM QRadar SOAR Incident",
         "Exabeam Platform Case"
 	],
 	"breachScript": "",

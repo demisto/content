@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Search",
     "description": "Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.",
     "support": "community",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.25",
     "author": "randomizerxd",
     "url": "",
     "email": "",
@@ -15,9 +15,17 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "randomizerxd"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr",
+        "cloud"
     ]
 }

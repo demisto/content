@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PIICheck-BreachNotification](https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/PII_Check_-_Breach_Notification.png)
+![PIICheck-BreachNotification](../doc_files/PII_Check_-_Breach_Notification.png)

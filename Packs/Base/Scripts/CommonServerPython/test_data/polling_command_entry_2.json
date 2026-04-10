@@ -1,0 +1,14 @@
+[
+    {
+        "Type": 1,
+        "HumanReadable": "##Result\nPolling command has finished with status: DONE.",
+        "EntryContext": {
+            "Core.DemoPollingStatus": {
+                "Status": "DONE"
+            }
+        },
+        "Metadata": {
+            "polling": false
+        }
+    }
+]

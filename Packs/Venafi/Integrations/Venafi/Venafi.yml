@@ -6,6 +6,7 @@ system: true
 display: Venafi (Deprecated)
 deprecated: true
 category: IT Services
+provider: CyberArk
 description: Deprecated. Use Venafi TLS Protect instead.
 configuration:
   - display: Server URL (e.g. https://192.168.0.1)

@@ -1,7 +1,31 @@
 [INGEST:vendor="symantec", product="ep", target_dataset="symantec_ep_raw", no_hit = keep]
 // Support only date time of format: MMM dd hh:mm:ss.nnn. For example: "Dec 1 10:00:00".
 filter _raw_log ~= "[a-zA-z]{3}\s*\d*\s\d*:\d*:\d*\s"
-| alter tmp_time1 = to_string(arrayindex(regextract(_raw_log, "([a-zA-z]{3}\s*\d*\s\d*:\d*:\d*)\s"),0))
-| alter tmp_time1 = concat(format_timestamp("%Y",_insert_time)," ", tmp_time1)
-| alter _time = parse_timestamp("%Y %b %d %T", tmp_time1)
-| fields -tmp_time1;
+| alter        
+    tmp_time_without_year = to_string(arrayindex(regextract(_raw_log, "([a-zA-z]{3}\s*\d*\s\d*:\d*:\d*)\s"),0)),
+    tmp_current_year = format_timestamp("%Y",_insert_time)
+| alter 
+    tmp_time_current_year = if(tmp_time_without_year != null and tmp_time_without_year != "", concat(tmp_current_year, " ", tmp_time_without_year), null)
+// Parse timestamp with current year
+    // Set this field according to the time zone from which the log is generated.
+    // Default time zone setting is for UTC time 00:00
+| alter 
+    tmp_time_current_year = parse_timestamp("%Y %b %d %T", tmp_time_current_year, "+00:00")
+// Calculate time diff
+| alter 
+    tmp_timeDiff = timestamp_diff(tmp_time_current_year, current_time(), "MILLISECOND")
+// Check if the date is a future date
+| alter 
+    tmp_last_year = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_current_year),1)), null)
+// Create timestamp minus 1 year if the timestamp is a future one
+| alter 
+    tmp_time_last_year = if(tmp_last_year != null, concat(tmp_last_year, " ", tmp_time_without_year), null)
+// Parse timestamp with last year value
+    // Set this field according to the time zone from which the log is generated.
+    // Default time zone setting is for UTC time 00:00
+| alter
+    tmp_time_last_year = if(tmp_time_last_year != null, parse_timestamp("%Y %b %d %T", tmp_time_last_year, "+00:00"), null)
+// Adding the extracted timestamp to the _time field.
+| alter 
+    _time = coalesce(tmp_time_last_year, tmp_time_current_year)
+| fields -tmp_time_without_year, tmp_current_year, tmp_time_current_year, tmp_timeDiff, tmp_last_year, tmp_time_last_year;

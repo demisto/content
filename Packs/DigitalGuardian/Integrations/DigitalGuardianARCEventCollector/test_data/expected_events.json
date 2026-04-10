@@ -1,0 +1,34 @@
+[
+  {
+    "dg_name": "test has attached a Salesforce data to an email",
+    "inc_creator": "dg",
+    "inc_assign": "test@dgdemo",
+    "inc_state": "Created",
+    "dg_description": "This file outlook.exe was going to [demo.digitalg@gmail.com]",
+    "inc_id": "230523-WIQHA",
+    "dg_comment": null,
+    "dg_time": "2023-05-23 11:49:32",
+    "_time": "2023-05-23T11:49:32Z",
+    "dg_export_profile": "demisto",
+    "dg_guid": "1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e",
+    "inc_sev": "Critical",
+    "dg_utype": "Incident",
+    "dg_tenant": "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
+  },
+  {
+    "dg_name": "Demo 10",
+    "inc_creator": "demo@dgdemo",
+    "inc_assign": "demo@dgdemo",
+    "inc_state": "Escalated",
+    "dg_description": null,
+    "inc_id": "230523-RG0AB",
+    "dg_comment": null,
+    "dg_time": "2023-05-23 11:53:11",
+    "_time": "2023-05-23T11:53:11Z",
+    "dg_export_profile": "demisto",
+    "dg_guid": "2223c1fa-5474-4fc0-a7c3-74ff42d28e6b",
+    "inc_sev": "Critical",
+    "dg_utype": "Incident",
+    "dg_tenant": "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
+  }
+]

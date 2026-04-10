@@ -9,27 +9,27 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
-import demistomock as demisto
-from CommonServerPython import *
-import pytest
+
 import json
-import io
+
+import demistomock as demisto
+import pytest
+from CommonServerPython import *
 from SaasSecurityEventCollector import Client
 
 
 @pytest.fixture
 def mock_client():
-    return Client(base_url='https://test.com/api', client_id='', client_secret='', verify=False, proxy=False)
+    return Client(base_url="https://test.com/api", client_id="", client_secret="", verify=False, proxy=False)
 
 
 def create_events(start_id=1, end_id=100, should_dump=True):
-    events = {'events': [{'id': i} for i in range(start_id, end_id + 1)]}
+    events = {"events": [{"id": i} for i in range(start_id, end_id + 1)]}
     return json.dumps(events) if should_dump else events
 
 
 class MockedResponse:
-
-    def __init__(self, status_code, text='{}'):
+    def __init__(self, status_code, text="{}"):
         self.status_code = status_code
         self.text = text
 
@@ -38,7 +38,7 @@ class MockedResponse:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -56,42 +56,39 @@ def test_module(mocker, mock_client):
     """
     from SaasSecurityEventCollector import test_module
 
-    mocker.patch.object(Client, 'get_token_request')
-    assert test_module(client=mock_client) == 'ok'
+    mocker.patch.object(Client, "get_token_request")
+    assert test_module(client=mock_client) == "ok"
 
 
 def test_get_new_access_token(mocker, mock_client):
-    mocker.patch.object(mock_client, 'get_token_request', return_value=('123', '100'))
+    mocker.patch.object(mock_client, "get_token_request", return_value=("123", "100"))
     access_token = mock_client.get_access_token()
-    assert access_token == '123'
+    assert access_token == "123"
 
 
 def test_get_existing_access_token(mocker, mock_client):
     mocker.patch.object(
         demisto,
-        'getIntegrationContextVersioned',
+        "getIntegrationContextVersioned",
         return_value={
-            'context': {
-                'access_token': '123', 'token_initiate_time': '10000.941587', 'token_expiration_seconds': '7200'
-            }
-        }
+            "context": {"access_token": "123", "token_initiate_time": "10000.941587", "token_expiration_seconds": "7200"}
+        },
     )
-    mocker.patch.object(time, 'time', return_value=16999.941587)
+    mocker.patch.object(time, "time", return_value=16999.941587)
     access_token = mock_client.get_access_token()
-    assert access_token == '123'
+    assert access_token == "123"
 
 
 class TestFetchEvents:
-
     EVENTS_DATA = [
         (
             200,
             [
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                MockedResponse(status_code=200, text=create_events(start_id=21, end_id=30))
+                MockedResponse(status_code=200, text=create_events(start_id=21, end_id=30)),
             ],
-            create_events(start_id=1, end_id=200, should_dump=False)
+            create_events(start_id=1, end_id=200, should_dump=False),
         ),
         (
             100,
@@ -99,7 +96,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=102)),
             ],
-            create_events(start_id=1, end_id=100, should_dump=False)
+            create_events(start_id=1, end_id=100, should_dump=False),
         ),
         (
             100,
@@ -107,39 +104,31 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8)),
                 MockedResponse(status_code=204),
             ],
-            create_events(start_id=1, end_id=8, should_dump=False)
+            create_events(start_id=1, end_id=8, should_dump=False),
         ),
         (
             100,
-            [
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)),
-                MockedResponse(status_code=204)
-            ],
-            create_events(start_id=1, end_id=54, should_dump=False)
+            [MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)), MockedResponse(status_code=204)],
+            create_events(start_id=1, end_id=54, should_dump=False),
         ),
         (
             100,
-            [
-                MockedResponse(status_code=204)
-            ],
-            create_events(start_id=2, end_id=1, should_dump=False)  # empty events response
+            [MockedResponse(status_code=204)],
+            create_events(start_id=2, end_id=1, should_dump=False),  # empty events response
         ),
         (
             200,
-            [
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                MockedResponse(status_code=204)
-            ],
-            create_events(start_id=1, end_id=100, should_dump=False)
+            [MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)), MockedResponse(status_code=204)],
+            create_events(start_id=1, end_id=100, should_dump=False),
         ),
         (
             300,
             [
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                MockedResponse(status_code=204)
+                MockedResponse(status_code=204),
             ],
-            create_events(start_id=1, end_id=200, should_dump=False)
+            create_events(start_id=1, end_id=200, should_dump=False),
         ),
         (
             1000,
@@ -156,7 +145,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
                 MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1050)),
             ],
-            create_events(start_id=1, end_id=1000, should_dump=False)
+            create_events(start_id=1, end_id=1000, should_dump=False),
         ),
         (
             300,
@@ -164,19 +153,9 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
                 MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280)),
-                MockedResponse(status_code=204)
+                MockedResponse(status_code=204),
             ],
-            create_events(start_id=1, end_id=280, should_dump=False)
-        ),
-        (
-            400,
-            [
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
-                MockedResponse(status_code=204)
-            ],
-            create_events(start_id=1, end_id=300, should_dump=False)
+            create_events(start_id=1, end_id=280, should_dump=False),
         ),
         (
             400,
@@ -185,9 +164,19 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
                 MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
                 MockedResponse(status_code=204),
-                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400))
             ],
-            create_events(start_id=1, end_id=300, should_dump=False)
+            create_events(start_id=1, end_id=300, should_dump=False),
+        ),
+        (
+            400,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=204),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+            ],
+            create_events(start_id=1, end_id=300, should_dump=False),
         ),
         (
             10000,
@@ -195,9 +184,9 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=705)),
                 MockedResponse(status_code=200, text=create_events(start_id=706, end_id=950)),
                 MockedResponse(status_code=200, text=create_events(start_id=951, end_id=1678)),
-                MockedResponse(status_code=204)
+                MockedResponse(status_code=204),
             ],
-            create_events(start_id=1, end_id=1678, should_dump=False)
+            create_events(start_id=1, end_id=1678, should_dump=False),
         ),
         (
             10000,
@@ -207,9 +196,9 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=2001, end_id=3000)),
                 MockedResponse(status_code=200, text=create_events(start_id=3001, end_id=4000)),
                 MockedResponse(status_code=200, text=create_events(start_id=4001, end_id=4512)),
-                MockedResponse(status_code=204)
+                MockedResponse(status_code=204),
             ],
-            create_events(start_id=1, end_id=4512, should_dump=False)
+            create_events(start_id=1, end_id=4512, should_dump=False),
         ),
         (
             None,
@@ -218,9 +207,9 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
                 MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
                 MockedResponse(status_code=204),
-                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400))
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
             ],
-            create_events(start_id=1, end_id=300, should_dump=False)
+            create_events(start_id=1, end_id=300, should_dump=False),
         ),
         (
             None,
@@ -235,13 +224,13 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=701, end_id=800)),
                 MockedResponse(status_code=200, text=create_events(start_id=801, end_id=900)),
                 MockedResponse(status_code=200, text=create_events(start_id=901, end_id=950)),
-                MockedResponse(status_code=204)
+                MockedResponse(status_code=204),
             ],
-            create_events(start_id=1, end_id=950, should_dump=False)
+            create_events(start_id=1, end_id=950, should_dump=False),
         ),
     ]
 
-    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    @pytest.mark.parametrize("max_fetch, queue, expected_events", EVENTS_DATA)
     def test_fetch_events(self, mocker, mock_client, max_fetch, queue, expected_events):
         """
         Given
@@ -257,14 +246,13 @@ class TestFetchEvents:
 
         """
         from SaasSecurityEventCollector import fetch_events_from_saas_security
-        mocker.patch.object(Client, 'http_request', side_effect=queue)
-        events, _ = fetch_events_from_saas_security(
-            client=mock_client, max_fetch=max_fetch
-        )
 
-        assert expected_events.get('events') == events
+        mocker.patch.object(Client, "http_request", side_effect=queue)
+        events, _ = fetch_events_from_saas_security(client=mock_client, max_fetch=max_fetch)
 
-    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+        assert expected_events.get("events") == events
+
+    @pytest.mark.parametrize("max_fetch, queue, expected_events", EVENTS_DATA)
     def test_saas_security_get_events(self, mocker, mock_client, max_fetch, queue, expected_events):
         """
         Given
@@ -284,22 +272,22 @@ class TestFetchEvents:
         """
         import SaasSecurityEventCollector
 
-        should_push_events = True if max_fetch == 100 else False
-        mocker.patch.object(Client, 'http_request', side_effect=queue)
-        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
+        should_push_events = max_fetch == 100
+        mocker.patch.object(Client, "http_request", side_effect=queue)
+        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
 
         result = SaasSecurityEventCollector.get_events_command(
-            client=mock_client, args={'should_push_events': should_push_events}, max_fetch=max_fetch
+            client=mock_client, args={"should_push_events": should_push_events}, max_fetch=max_fetch
         )
 
-        if expected_events := expected_events.get('events'):
+        if expected_events := expected_events.get("events"):
             assert expected_events == result.outputs
             assert send_events_mocker.called == should_push_events
         else:
-            assert result == 'No events were found.'
+            assert result == "No events were found."
             assert not send_events_mocker.called
 
-    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    @pytest.mark.parametrize("max_fetch, queue, expected_events", EVENTS_DATA)
     def test_main_flow_fetch_events(self, mocker, max_fetch, queue, expected_events):
         """
         Given
@@ -317,22 +305,26 @@ class TestFetchEvents:
         """
         import SaasSecurityEventCollector
 
-        mocker.patch.object(Client, 'http_request', side_effect=queue)
-        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
-        mocker.patch.object(demisto, 'params', return_value={
-            "url": "https://test.com/",
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
+        mocker.patch.object(Client, "http_request", side_effect=queue)
+        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://test.com/",
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch": max_fetch,
             },
-            "max_fetch": max_fetch
-        })
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        )
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
         SaasSecurityEventCollector.main()
         assert send_events_mocker.called
-        assert send_events_mocker.call_args.kwargs.get('events') == expected_events.get('events')
+        assert send_events_mocker.call_args.kwargs.get("events") == expected_events.get("events")
 
-    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    @pytest.mark.parametrize("max_fetch, queue, expected_events", EVENTS_DATA)
     def test_main_flow_fetch_events_saved_in_integration_context(self, mocker, max_fetch, queue, expected_events):
         """
         Given
@@ -349,21 +341,23 @@ class TestFetchEvents:
         """
         import SaasSecurityEventCollector
 
-        mocker.patch.object(Client, 'http_request', side_effect=queue)
-        mocker.patch.object(
-            SaasSecurityEventCollector, 'send_events_to_xsiam', side_effect=Exception('error')
-        )
-        set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
+        mocker.patch.object(Client, "http_request", side_effect=queue)
+        mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam", side_effect=Exception("error"))
+        set_integration_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
 
-        mocker.patch.object(demisto, 'params', return_value={
-            "url": "https://test.com/",
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://test.com/",
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch": max_fetch,
             },
-            "max_fetch": max_fetch
-        })
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        )
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
         SaasSecurityEventCollector.main()
 
         assert expected_events == set_integration_context_mock.call_args.args[0]
@@ -385,34 +379,41 @@ class TestFetchEvents:
         import SaasSecurityEventCollector
 
         mocker.patch.object(
-            Client, 'http_request', side_effect=[
+            Client,
+            "http_request",
+            side_effect=[
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
                 MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
                 MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
                 MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
-            ]
+            ],
         )
-        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
-        mocker.patch.object(demisto, 'params', return_value={
-            "url": "https://test.com/",
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
+        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://test.com/",
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch": 10000,
+                "max_iterations": 3,
             },
-            "max_fetch": 10000,
-            "max_iterations": 3,
-        })
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        )
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
         SaasSecurityEventCollector.main()
         assert send_events_mocker.called
-        assert send_events_mocker.call_args.kwargs.get('events') == create_events(
-            start_id=1, end_id=300, should_dump=False
-        ).get('events')
+        assert send_events_mocker.call_args.kwargs.get("events") == create_events(start_id=1, end_id=300, should_dump=False).get(
+            "events"
+        )
 
 
 @pytest.mark.parametrize(
-    'time_mock, token_initiate_time, token_expiration_seconds, expected_result', [
+    "time_mock, token_initiate_time, token_expiration_seconds, expected_result",
+    [
         (17200.941587, 10000.941587, 7200, True),
         (16999.941587, 10000.941587, 7200, False),
         (20000.941587, 10000.941587, 9000, True),
@@ -420,7 +421,7 @@ class TestFetchEvents:
         (300, 240, 120, True),
         (300.00001, 240, 120, True),
         (299.99999, 240, 120, False),
-    ]
+    ],
 )
 def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expiration_seconds, expected_result):
     """
@@ -436,17 +437,19 @@ def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expirati
       - make sure when token expiration time has not reached, the is_token_expired will return False
     """
     import time
+
     from SaasSecurityEventCollector import is_token_expired
 
-    mocker.patch.object(time, 'time', return_value=time_mock)
+    mocker.patch.object(time, "time", return_value=time_mock)
 
-    assert is_token_expired(
-        token_initiate_time=token_initiate_time, token_expiration_seconds=token_expiration_seconds
-    ) == expected_result
+    assert (
+        is_token_expired(token_initiate_time=token_initiate_time, token_expiration_seconds=token_expiration_seconds)
+        == expected_result
+    )
 
 
 @pytest.mark.parametrize(
-    'limit, expected_limit',
+    "limit, expected_limit",
     [
         (126, 120),
         (54, 50),
@@ -463,8 +466,8 @@ def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expirati
         (120, 120),
         (1, 10),
         (4, 10),
-        (487, 480)
-    ]
+        (487, 480),
+    ],
 )
 def test_max_fetch(limit, expected_limit):
     """
@@ -492,7 +495,7 @@ def test_max_fetch_negative_number():
 
     Then
       - make sure an exception is raised
-   """
+    """
     from SaasSecurityEventCollector import get_max_fetch
 
     with pytest.raises(DemistoException):

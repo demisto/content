@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Penfield Assign Playbook](https://raw.githubusercontent.com/demisto/content/21bd874b23f776e5e9706a8e2125b9d8b78e3224/docs/images/playbooks/Penfield_Assign.png)
+![Penfield Assign Playbook](../doc_files/playbook_Penfield_Assign.png)

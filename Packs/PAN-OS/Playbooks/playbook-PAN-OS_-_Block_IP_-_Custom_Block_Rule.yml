@@ -474,3 +474,9 @@ inputs:
 outputs: []
 tests:
 - PAN-OS - Block IP - Custom Block Rule Test
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

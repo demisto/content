@@ -1,4 +1,5 @@
 import demistomock as demisto
+import pytest
 
 
 def test_main__error(mocker):
@@ -8,16 +9,14 @@ def test_main__error(mocker):
     Then: Results should be called once and return an empty str
     """
     from RegexGroups import main
-    args = {
-        'flags': 'invalidflag',
-        'value': 'test'
-    }
-    results_mock = mocker.patch.object(demisto, 'results')
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(demisto, 'args', return_value=args)
+
+    args = {"flags": "invalidflag", "value": "test"}
+    results_mock = mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "args", return_value=args)
     main()
     assert results_mock.call_count == 1
-    assert results_mock.call_args[0][0] == ''
+    assert results_mock.call_args[0][0] == ""
 
 
 def test_main__no_match(mocker):
@@ -27,15 +26,13 @@ def test_main__no_match(mocker):
     Then: Results should be called once and return empty str
     """
     from RegexGroups import main
-    args = {
-        'value': 'test',
-        'regex': '.*'
-    }
-    mocker.patch.object(demisto, 'args', return_value=args)
-    results_mock = mocker.patch.object(demisto, 'results')
+
+    args = {"value": "test", "regex": ".*"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    results_mock = mocker.patch.object(demisto, "results")
     main()
     assert results_mock.call_count == 1
-    assert results_mock.call_args[0][0] == ''
+    assert results_mock.call_args[0][0] == ""
 
 
 def test_main__match(mocker):
@@ -45,12 +42,21 @@ def test_main__match(mocker):
     Then: Results should be called once and return matched groups
     """
     from RegexGroups import main
-    args = {
-        'value': 'test',
-        'regex': '(.*)'
-    }
-    mocker.patch.object(demisto, 'args', return_value=args)
-    results_mock = mocker.patch.object(demisto, 'results')
+
+    args = {"value": "test", "regex": "(.*)"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    results_mock = mocker.patch.object(demisto, "results")
     main()
     assert results_mock.call_count == 1
-    assert results_mock.call_args[0][0] == ['test']
+    assert results_mock.call_args[0][0] == ["test"]
+
+
+def test_get_regex_matches(mocker):
+    from RegexGroups import get_regex_matches
+
+    args = {"value": "dev", "regex": "prod", "groups": "0"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    try:
+        get_regex_matches(args)
+    except ValueError:
+        pytest.fail("Should ignore groups if no matches.")

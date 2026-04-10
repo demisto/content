@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: UBIRCH GmbH
 commonfields:
   id: UBIRCH
   version: -1
@@ -42,7 +43,7 @@ script:
   commands:
   - description: Create a list of sample incidents.
     name: create-sample-incidents
-  dockerimage: demisto/py3-tools:1.0.0.102774
+  dockerimage: demisto/py3-tools:1.0.0.114656
   longRunning: true
   runonce: false
   script: '-'

@@ -1,5 +1,4 @@
 {
-
     "description": "Classifier for GenericSQL Record",
     "feed": false,
     "id": "GenericSQL Classifier",
@@ -15,5 +14,13 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture"
+    ]
 }

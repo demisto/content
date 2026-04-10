@@ -7,24 +7,22 @@ sectionorder:
 name: Active Directory Query v2
 display: Active Directory Query v2
 category: Authentication & Identity Management
+provider: Microsoft
 description: The Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
-  defaultvalue: ""
   type: 0
   required: true
   section: Connect
-- display: Port. If not specified, the default port is 389, or 636 for LDAPS.
+- display: Server port. If not specified, the default port is 389 for LDAP, 636 for LDAPS, or 3268 for global catalog servers.
   name: port
-  defaultvalue: ""
   type: 0
   section: Connect
   advanced: true
   required: false
 - display: Username
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
   section: Connect
@@ -37,7 +35,6 @@ configuration:
   required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
-  defaultvalue: ""
   type: 0
   required: true
   section: Connect
@@ -45,7 +42,7 @@ configuration:
   name: page_size
   defaultvalue: "500"
   type: 0
-  required: true
+  required: false
   section: Collect
 - display: Secure Connection
   name: secure_connection
@@ -95,7 +92,6 @@ configuration:
   section: Connect
 - display: Group CN for terminated employees
   name: group-cn
-  defaultvalue: ""
   type: 0
   section: Connect
   required: false
@@ -107,19 +103,34 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Default base query to use in the ad-get-user command
+  additionalinfo: This value will only be used when no arguments were given to the ad-get-user command.
+  name: default_base_query
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: '(&(objectClass=User)(objectCategory=person))'
 script:
   script: ''
   type: python
   subtype: python3
   commands:
   - name: ad-expire-password
+    prettyname: Force Password Reset [ActiveDirectory]
+    quickaction: false
+    quickaction:platform: true
     arguments:
     - name: username
       required: true
       description: The username (samAccountName) of the user to modify.
+      prettyname: username
     - name: base-dn
+      prettyname: Base DN
       description: Root (for example, DC=domain,DC=com).
     description: Expires the password of an Active Directory user.
+    compliantpolicies:
+    - User Soft Remediation
   - name: ad-create-user
     arguments:
     - name: username
@@ -183,7 +194,7 @@ script:
   - name: ad-add-to-group
     arguments:
     - name: username
-      description: "The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified."
+      description: "The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified.\\n Supports single or comma delimited list of usernames."
     - name: computer-name
       description: The name of the computer to add to the group. If this argument is not specified, the username argument must be specified.
     - name: group-cn
@@ -191,6 +202,8 @@ script:
       description: The name of the group to add the user to.
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
+    - description: The name of the group to add as a member of the group specified group-cn.
+      name: nested_group_cn
     description: Adds an Active Directory user or computer to a group.
   - name: ad-remove-from-group
     arguments:
@@ -218,12 +231,16 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
     description: Updates attributes of an existing Active Directory user.
+    compliantpolicies:
+    - User Hard Remediation
   - name: ad-delete-user
     arguments:
     - name: user-dn
       required: true
       description: The DN of the user to delete.
     description: Deletes an Active Directory user.
+    compliantpolicies:
+    - User Hard Remediation
   - name: ad-create-contact
     arguments:
     - name: contact-dn
@@ -255,19 +272,31 @@ script:
       description: "The attribute value to update."
     description: Updates attributes of an existing Active Directory contact.
   - name: ad-disable-account
+    quickaction: false
+    quickaction:platform: true
+    prettyname: Disable User Account [ActiveDirectory]
     arguments:
-    - name: username
+    - description: "The username of the account to disable (sAMAccountName)."
+      name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      prettyname: username
     - name: base-dn
+      prettyname: Base DN
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Disables an Active Directory user account.
+    compliantpolicies:
+    - User Hard Remediation
   - name: ad-enable-account
+    quickaction: false
+    quickaction:platform: true
+    prettyname: Enable User Account [ActiveDirectory]
     arguments:
     - name: username
+      prettyname: username
       required: true
       description: "The username of the account to enable (sAMAccountName)."
     - name: base-dn
+      prettyname: Base DN
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
       auto: PREDEFINED
@@ -276,6 +305,8 @@ script:
       - 'false'
       description: "If true, the command will enable the user with his restored options."
     description: Enables a previously disabled Active Directory account.
+    compliantpolicies:
+    - User Hard Remediation
   - name: ad-unlock-account
     arguments:
     - name: username
@@ -284,17 +315,22 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
     description: Unlocks a previously locked Active Directory user account.
+    compliantpolicies:
+    - User Soft Remediation
   - name: ad-set-new-password
     arguments:
     - name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      description: "The username whose password will be changed."
     - name: password
+      secret: true
       required: true
       description: "The password to set for the user."
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. Base DN configured for the instance is used as default.
     description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
+    compliantpolicies:
+    - User Soft Remediation
   - name: ad-modify-computer-ou
     arguments:
     - name: computer-name
@@ -311,6 +347,8 @@ script:
     - name: full-superior-dn
       description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
     description: Modifies the user organizational unit within a domain.
+    compliantpolicies:
+    - User Hard Remediation
   - name: ad-get-user
     arguments:
     - name: dn
@@ -713,6 +751,8 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - name: user-profile
       required: true
@@ -757,10 +797,11 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-    deprecated: false
+    compliantpolicies:
+    - User Hard Remediation
   - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
     name: get-mapping-fields
-    execution: false
+    arguments: []
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
       name: groupname
@@ -788,6 +829,8 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: Username to test. By itself or formatted like SERVER_IP\\USERNAME.
       name: username
@@ -800,10 +843,11 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.98188
+  dockerimage: demisto/ldap:2.9.1.6911241
   ismappable: true
   isremotesyncout: true
   runonce: false
+supportsquickactions: true
 fromversion: 5.0.0
 tests:
 - Active Directory Test

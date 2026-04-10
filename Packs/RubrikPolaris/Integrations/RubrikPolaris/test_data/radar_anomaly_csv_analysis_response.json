@@ -5,7 +5,7 @@
   "raw_response": {
     "data": {
       "investigationCsvDownloadLink": {
-        "downloadLink": "dummy_link"
+        "downloadLink": "https://dummy_link/snapshot_000-000-000.csv"
       }
     }
   },
@@ -14,7 +14,7 @@
     "snapshotId": "dummy",
     "objectId": "dummy",
     "investigationCsvDownloadLink": {
-      "downloadLink": "dummy_link"
+      "downloadLink": "https://dummy_link/snapshot_000-000-000.csv"
     }
   }
 }

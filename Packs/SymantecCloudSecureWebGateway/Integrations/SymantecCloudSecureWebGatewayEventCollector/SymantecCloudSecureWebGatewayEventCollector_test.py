@@ -1,30 +1,30 @@
 import gzip
 import tempfile
 import zipfile
-from freezegun import freeze_time
+from pathlib import Path
+
+import demistomock as demisto
 import pytest
 from CommonServerPython import DemistoException
-
+from freezegun import freeze_time
 from SymantecCloudSecureWebGatewayEventCollector import (
     DEFAULT_FETCH_SLEEP,
+    Client,
     HandlingDuplicates,
     LastRun,
+    calculate_next_fetch,
     extract_logs_and_push_to_XSIAM,
+    extract_logs_from_zip_file,
     get_events_and_write_to_file_system,
-    Client,
     get_fetch_interval,
     get_size_gzip_file,
     get_start_and_end_date,
     get_start_date_for_next_fetch,
     get_status_and_token_from_file,
     get_the_last_row_that_incomplete,
-    calculate_next_fetch,
     parse_events,
-    extract_logs_from_zip_file,
     perform_long_running_loop,
 )
-import demistomock as demisto
-from pathlib import Path
 
 
 @pytest.fixture()
@@ -35,14 +35,14 @@ def client():
 @pytest.fixture
 def tmp_zip_file(tmpdir):
     file_contents = b""
-    for _ in range(0, 10):
+    for _ in range(10):
         file_contents += b"Hello, this is some data for the gzip file.\n"
 
     # Create a zip file
     zip_file_name = Path(tmpdir / "example.zip")
     with zipfile.ZipFile(zip_file_name, "w") as zip_file:
         # Create and add gzip files to the zip file
-        for i in range(0, 4):  # Create three gzip files for demonstration
+        for i in range(4):  # Create three gzip files for demonstration
             gzip_file_name = Path(f"file{i}.gz")
 
             with gzip.open(gzip_file_name, "wb") as f:
@@ -57,9 +57,7 @@ def tmp_zip_file(tmpdir):
 
 
 def test_get_events_and_write_to_file_system(requests_mock, client):
-    requests_mock.get(
-        "https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2"
-    )
+    requests_mock.get("https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2")
 
     params = {}
     tmp_file_path = get_events_and_write_to_file_system(client, params)
@@ -102,19 +100,14 @@ def test_get_start_and_end_date(start_date, expected_start, expected_end):
     [
         (b"X-sync-status: more\r\nX-sync-token: abc123\r\n", "more", "abc123"),
         (
-            (
-                "".join(["abc" for i in range(700)])
-                + "X-sync-status: more\r\nX-sync-token: abc123\r\n"
-            ).encode(),
+            ("".join(["abc" for i in range(700)]) + "X-sync-status: more\r\nX-sync-token: abc123\r\n").encode(),
             "more",
             "abc123",
         ),
         (b"", "", ""),
     ],
 )
-def test_get_status_and_token_from_file(
-    tmpdir, content_file: bytes, expected_status: str, expected_token: str
-):
+def test_get_status_and_token_from_file(tmpdir, content_file: bytes, expected_status: str, expected_token: str):
     """
     Given:
         - A file containing a status and a token
@@ -141,9 +134,7 @@ def test_get_status_and_token_from_file(
         ([b"line1"], 0, b""),
     ],
 )
-def test_get_the_last_row_that_incomplete(
-    lines: list[bytes], file_size: int, expected_line: bytes
-):
+def test_get_the_last_row_that_incomplete(lines: list[bytes], file_size: int, expected_line: bytes):
     """
     Given:
         - A list with last incomplete log line and file size > 0.
@@ -210,9 +201,7 @@ def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
         - Case 3: Ensure the method returns False,
           since the cur_time is greater than last_time.
     """
-    handling_duplicates = HandlingDuplicates(
-        max_time=last_time, events_suspected_duplicates=dup_ids
-    )
+    handling_duplicates = HandlingDuplicates(max_time=last_time, events_suspected_duplicates=dup_ids)
     assert handling_duplicates.is_duplicate(id_, cur_time) == expected
 
 
@@ -225,9 +214,7 @@ def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
         (1000, None, 1000),
     ],
 )
-def test_get_start_date_for_next_fetch(
-    start_time: int, time_of_last_fetched_event: str | None, expected
-):
+def test_get_start_date_for_next_fetch(start_time: int, time_of_last_fetched_event: str | None, expected):
     """
     Given:
         - A start time and a time of last fetched event.
@@ -314,13 +301,8 @@ def test_calculate_next_fetch(
         token_expired=True,
     )
 
-    assert (
-        last_run_model.time_of_last_fetched_event == expected_time_of_last_fetched_event
-    )
-    assert (
-        last_run_model.events_suspected_duplicates
-        == expected_events_suspected_duplicates
-    )
+    assert last_run_model.time_of_last_fetched_event == expected_time_of_last_fetched_event
+    assert last_run_model.events_suspected_duplicates == expected_events_suspected_duplicates
     assert last_run_model.token_expired == expected_token_expired
 
 
@@ -331,9 +313,7 @@ def test_calculate_next_fetch(
         ([], 0),
     ],
 )
-def test_extract_logs_and_push_to_XSIAM(
-    mocker, mock_events: list[bytes], expected_call: int
-):
+def test_extract_logs_and_push_to_XSIAM(mocker, mock_events: list[bytes], expected_call: int):
     """
     Given:
         - args for extract_logs_and_push_to_XSIAM function
@@ -351,9 +331,7 @@ def test_extract_logs_and_push_to_XSIAM(
         "SymantecCloudSecureWebGatewayEventCollector.parse_events",
         return_value=(mock_events, ""),
     )
-    mock_send_events_to_xsiam = mocker.patch(
-        "SymantecCloudSecureWebGatewayEventCollector.send_events_to_xsiam"
-    )
+    mock_send_events_to_xsiam = mocker.patch("SymantecCloudSecureWebGatewayEventCollector.send_events_to_xsiam")
 
     extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
     assert mock_send_events_to_xsiam.call_count == expected_call
@@ -634,9 +612,7 @@ def test_get_fetch_interval(fetch_interval: str | None, expected_fetch_interval:
         ([0, DEFAULT_FETCH_SLEEP + 5, 10], 0),
     ],
 )
-def test_perform_long_running_loop(
-    mocker, client: Client, mock_current_time: list[int], expected_mock_sleep: int
-):
+def test_perform_long_running_loop(mocker, client: Client, mock_current_time: list[int], expected_mock_sleep: int):
     """
     Given:
         - client with default value
@@ -681,9 +657,7 @@ def test_test_module(requests_mock, client: Client):
     """
     import SymantecCloudSecureWebGatewayEventCollector
 
-    requests_mock.get(
-        "https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2"
-    )
+    requests_mock.get("https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2")
 
     assert SymantecCloudSecureWebGatewayEventCollector.test_module(client, "60") == "ok"
 
@@ -692,9 +666,7 @@ def test_test_module(requests_mock, client: Client):
     "mock_status_code",
     [423, 429],
 )
-def test_test_module_blocked_and_rate_limit_exception(
-    mocker, client: Client, mock_status_code: int
-):
+def test_test_module_blocked_and_rate_limit_exception(mocker, client: Client, mock_status_code: int):
     """
     Given:
         - client with default value
@@ -709,9 +681,7 @@ def test_test_module_blocked_and_rate_limit_exception(
     class MockException:
         status_code = mock_status_code
 
-    mocker.patch.object(
-        client, "get_logs", side_effect=DemistoException("Test", res=MockException())
-    )
+    mocker.patch.object(client, "get_logs", side_effect=DemistoException("Test", res=MockException()))
 
     assert SymantecCloudSecureWebGatewayEventCollector.test_module(client, "60") == "ok"
 

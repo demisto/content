@@ -3,3 +3,7 @@ ignore=IM111
 
 [file:IronPort_1_3.yml]
 ignore=MR108
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-CiscoESA_Layout.json]
+ignore=GR103

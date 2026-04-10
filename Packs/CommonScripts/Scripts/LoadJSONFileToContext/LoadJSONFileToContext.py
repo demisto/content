@@ -9,10 +9,10 @@ res = demisto.getFilePath(file_id)
 if not res:
     return_error(f"Entry {file_id} not found")
 
-file_path = res.get('path')
+file_path = res.get("path")
 
 # open the file, and try and load the JSON, error if it's invalid.
-with open(file_path, 'r') as f:
+with open(file_path) as f:
     try:
         data = json.load(f)
     except ValueError as e:
@@ -25,6 +25,7 @@ results = CommandResults(
     readable_output=f"Loaded JSON to context key: {context_key} from file.",
     outputs_prefix=context_key,
     outputs=data,
-    ignore_auto_extract=True)
+    ignore_auto_extract=True,
+)
 
 return_results(results)

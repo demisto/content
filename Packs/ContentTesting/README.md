@@ -20,7 +20,7 @@ This content pack provides tools for creating automated tests and test cases for
 
 ### Getting Started
 
-The quickest way to get started is to create a new incident of the type **UnitTesting**. From there, execute the assessment tools, review the results in each tab of the incident layout, and from the **Content Testing** tab, exercise the content testing tools with the mock playbooks and lists. 
+The quickest way to get started is to create a new incident of the type **UnitTesting**. From there, execute the assessment tools, review the results in each tab of the incident layout, and from the **Content Testing** tab, exercise the content testing tools with the mock playbooks and lists.
 
 XSOAR prerequesits are:
   
@@ -71,7 +71,7 @@ The test case XSOAR list to create for the example:
   - Review the **Commit History** tab for history of XSOAR content local changes (when using dev to prod)
   - Review the **Playbook Automations** tab
 - Update **UnitTestTopLevel** playbook or create a testing playbook with section headers where test tasks are assigned
-- In the **UnitTesting** incident layout and the **Content Testing** tab 
+- In the **UnitTesting** incident layout and the **Content Testing** tab
   - In the **Execute Tests** section add buttons or multi-select fields and configure the script arguments
     - For buttons, use the **UnitTest** automation
     - For multi-select fields with an array of playbooks, use the **UnitTestMultiSelect** automation
@@ -102,6 +102,7 @@ The test case XSOAR list to create for the example:
   - Review the **Test Results** section, **Work Plan** tab, and **War Room** tab to verify test results
 
 ### Test Case Execution
+
 - Create and save XSOAR lists with incident fields and context needed for the test case
   - Example uses **TestFields**
   - Example uses **TestContext**
@@ -113,12 +114,15 @@ The test case XSOAR list to create for the example:
 ### Testing List Formats
 
 #### Automation Unit Test List Format
+
 - \<automation name/command name\>,\<JSON command arguments\>
 
 #### Subplaybook Unit Test List Format
+
 - \<subplaybook name\>,\<JSON subplaybook inputs\>
 
 #### Test Case List Format
+
 Test cases are defined by content testing commands in an XSOAR list. The following test commands are supported:
 
 - **LoadFields**|\<XSOAR list name where test incident fields are saved\>
@@ -136,14 +140,17 @@ Test cases are defined by content testing commands in an XSOAR list. The followi
 ### Content Testing Objects Included in the Content Pack
 
 #### Playbook
+
 - **UnitTestTopLevel**
 - **MockPlaybook**
 - **MockSubplaybook**
 
 #### Incident Type
+
 - **UnitTesting**
 
 #### Incident Layout
+
 - **UnitTestLayout**
 
 #### Incident Fields
@@ -159,11 +166,13 @@ Test cases are defined by content testing commands in an XSOAR list. The followi
 - **contenttestingunittestplaybooks**
 
 #### Assessment Automations
+
 - **ChangeHistory**
 - **ListPlaybookAutomationsCommands**
 - **UpgradeCheck**
 
 #### Content Testing Automations
+
 - **UnitTest**
 - **UnitTestCase**
 - **UnitTestCasePrep**
@@ -180,6 +189,7 @@ Test cases are defined by content testing commands in an XSOAR list. The followi
 - **UnitTestSubplaybookPrep**
 
 #### Playbook Analysis Automations
+
 - **UnitTestPBAStats**
 - **UnitTestPBATaskAvg**
 - **UnitTestPBATaskMax**
@@ -188,6 +198,7 @@ Test cases are defined by content testing commands in an XSOAR list. The followi
 ### Assessment Automations
 
 #### UpgradeCheck
+
 This automation looks at Marketplace content packs requiring updates and assesses impacts on existing custom content.  The assessment results are stored in a field (**contenttestingcontentimpacts**) and displayed in a tab of in the testing incident's layout. Upgraded content pack details are summarized in another field (**contenttestingcontentdetails**) and displayed in a tab for copying to test documentation.
 
 ##### Inputs
@@ -199,6 +210,7 @@ None
 None
 
 #### ChangeHistory
+
 This automation searchs for the version history of all current local changes in XSOAR when using dev to prod and a remote repository.  The version history is stored in a field (**contenttestingcommithistory**) and displayed in a tab of in the testing incident's layout.  Version history is created when an XSOAR object such as a playbook is saved using the **Save Version** button.
 
 ##### Inputs
@@ -210,6 +222,7 @@ None
 None
 
 #### ListPlaybookAutomationsCommand
+
 This automation searches playbooks for automation or integration commands used by a playbook and stores them in a field (**contenttestingcontentautomations**) for display in the testing incident layout. This assists identifying playbooks and automations requiring testing as part of a change to XSOAR content.
 
 ##### Inputs
@@ -223,6 +236,7 @@ None
 ### Content Testing Automations
 
 #### UnitTest
+
 This automation runs each type of test, dynamically adds tasks to the testing playbook, and displays the results in the testing incident's layout.
 
 ##### Inputs
@@ -239,6 +253,7 @@ This automation runs each type of test, dynamically adds tasks to the testing pl
 None
 
 #### UnitTestCoverage
+
 Looks at all the content tests that have been executed using the specified playbook and whether each executable (regular, conditional, sub-playbook, and data collection) task was executed. Places Markdown formatted results in the **contenttestingcoverage** field for display in the incident layout.
 
 ##### Inputs
@@ -252,6 +267,7 @@ Looks at all the content tests that have been executed using the specified playb
 None
 
 #### UnitTestResults
+
 This automation displays the results in the testing incident layout and must be executed within a Demisto lock to avoid concurrent updates the the test results grid field. It is invoked by **UnitTest**.
 
 ##### Inputs
@@ -266,6 +282,7 @@ This automation displays the results in the testing incident layout and must be 
 ##### Outputs
 
 #### UnitTestLoadContext
+
 This automation loads context from an existing incident into the current testing incident.
 
 ##### Inputs
@@ -279,6 +296,7 @@ This automation loads context from an existing incident into the current testing
 None
 
 #### UnitTestSaveContextList
+
 This automation saves context from the current testing incident to an XSOAR list.
 
 ##### Inputs
@@ -292,6 +310,7 @@ This automation saves context from the current testing incident to an XSOAR list
 None
 
 #### UnitTestLoadContextList
+
 This automation loads context from an XSOAR list into the current testing incident.
 
 ##### Inputs
@@ -305,6 +324,7 @@ This automation loads context from an XSOAR list into the current testing incide
 None
 
 #### UnitTestLoadFields
+
 This automation loads incident fields from an existing incident into the current testing incident.
 
 ##### Inputs
@@ -318,6 +338,7 @@ This automation loads incident fields from an existing incident into the current
 None
 
 #### UnitTestSaveFieldsList
+
 This automation saves incident fields from the current testing incident to an XSOAR list.
 
 ##### Inputs
@@ -331,6 +352,7 @@ This automation saves incident fields from the current testing incident to an XS
 None
 
 #### UnitTestLoadFieldsList
+
 This automation loads incident fields from an XSOAR list into the current testing incident.
 
 ##### Inputs
@@ -344,6 +366,7 @@ This automation loads incident fields from an XSOAR list into the current testin
 None
 
 #### UnitTestSetField
+
 This automation sets an incident field value in the current testing incident.
 
 ##### Inputs
@@ -358,7 +381,8 @@ This automation sets an incident field value in the current testing incident.
 None
 
 #### UnitTestMultiSelect
-This automation is used if a set of playbooks are provided in a multi-select incident field. The selected playbooks are passed to the **UnitTest** automation. **UnitTestMultiSelect** hard codes the testing playbook task numeric ID to add these tasks after and assumes the **TopLevelUnitTesting** playbook is used. If using another testing playbook, edit the **MULTISELECT** constant in this automation to specify the task location to add the playbook testing task. 
+
+This automation is used if a set of playbooks are provided in a multi-select incident field. The selected playbooks are passed to the **UnitTest** automation. **UnitTestMultiSelect** hard codes the testing playbook task numeric ID to add these tasks after and assumes the **TopLevelUnitTesting** playbook is used. If using another testing playbook, edit the **MULTISELECT** constant in this automation to specify the task location to add the playbook testing task.
 
 ##### Inputs
 
@@ -371,6 +395,7 @@ This automation is used if a set of playbooks are provided in a multi-select inc
 None
 
 #### UnitTestSubplaybookPrep
+
 This automation loads context providing sub-playbook inputs.  The sub-playbook testing list used is the same as used by **UnitTesting**. Context must be preloaded since caching of context updates does not occur until an automation exits. This automation must execute prior to **UnitTesting** executing against the "Subplaybook" type of test that requires playbook inputs.
 
 ##### Inputs
@@ -384,6 +409,7 @@ This automation loads context providing sub-playbook inputs.  The sub-playbook t
 None
 
 #### UnitTestCase
+
 This automation is used to execute a test case defined in an XSOAR list.
 
 ##### Inputs
@@ -399,6 +425,7 @@ This automation is used to execute a test case defined in an XSOAR list.
 None
 
 #### UnitTestCasePrep
+
 These automation loads context and incident fields defined in a test case XSOAR list to configure it for the test case.  Context must be preloaded since caching of context updates does not occur until an automation exits - this automation must execute prior to executing **UnitTestCase**.
 
 ##### Inputs
@@ -413,6 +440,7 @@ These automation loads context and incident fields defined in a test case XSOAR 
 None
 
 #### UnitTestLoadContext
+
 This automation loads context from an existing incident into the current testing incident.
 
 ##### Inputs

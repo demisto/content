@@ -4,3 +4,12 @@ ignore=IM111
 [file:DelineaSS_1_3.yml]
 ignore=MR108
 
+# GR103 is temporary, see CIAC-11656
+[file:Delinea-Test.yml]
+ignore=GR103
+
+[file:Example-Delinea-User_object_operations.yml]
+ignore=RM116
+
+[file:README.md]
+ignore=RM110

@@ -1,18 +1,32 @@
 {
-    "name": "Oracle",
-    "description": "The modeling rules for Oracle event collectors.",
+    "name": "Oracle Database",
+    "description": "A database management system designed for high performance, scalability, and secure data storage across cloud and on-premises environments.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Database"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "oracle",
+        "db",
+        "Database"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

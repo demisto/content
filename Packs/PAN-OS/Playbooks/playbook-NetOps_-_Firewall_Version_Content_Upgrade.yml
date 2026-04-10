@@ -589,4 +589,8 @@ inputs:
   description: Target PAN-OS version to which to upgrade.
 outputs: []
 tests:
-  - No Tests
+- No Tests
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture

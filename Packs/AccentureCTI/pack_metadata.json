@@ -2,7 +2,7 @@
     "name": "Accenture CTI v2",
     "description": "Accenture CTI provides intelligence regarding security threats and vulnerabilities.",
     "support": "partner",
-    "currentVersion": "2.2.36",
+    "currentVersion": "2.2.48",
     "author": "Accenture",
     "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",
@@ -18,6 +18,11 @@
     "githubUser": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

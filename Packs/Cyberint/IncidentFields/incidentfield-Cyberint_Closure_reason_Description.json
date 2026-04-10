@@ -13,7 +13,7 @@
     "id": "incident_cyberintclosurereasondescription",
     "isReadOnly": false,
     "locked": false,
-    "name": "CyberInt Closure reason Description",
+    "name": "Cyberint Alert Close Reason Description",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -24,7 +24,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"

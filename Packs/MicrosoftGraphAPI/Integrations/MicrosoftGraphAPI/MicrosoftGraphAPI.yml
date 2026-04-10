@@ -1,5 +1,6 @@
 category: Utilities
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -77,6 +78,7 @@ configuration:
   hidden: true
 - display: Use a self-deployed Azure Application
   name: self_deployed
+  section: Connect
   required: false
   type: 8
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
@@ -102,7 +104,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: https://login.microsoftonline.com
-  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: Use this option when required to customize the URL to the Entra ID endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Scope (Required for using Cortex XSOAR Azure app)
   name: scope
   type: 12
@@ -167,6 +169,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: headers
+      description: 'A comma-separated list of headers to send in the request, for example: ConsistencyLevel:eventual,User-Agent:MyApp/1.0.'
+      isArray: true
     description: Run a Microsoft Graph API query.
     name: msgraph-api-request
   - description: Run this command to start the authorization process and follow the instructions in the command results.
@@ -182,7 +187,7 @@ script:
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-api-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.100307
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

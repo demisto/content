@@ -92,9 +92,9 @@
 </table>
 <h4> </h4>
 <h4>Human Readable Output (extended = false)</h4>
-<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_Titanium_Cloud_mceclip0.png"></p>
+<p><img src="../../doc_files/integration-ReversingLabs_Titanium_Cloud_mceclip0.png"></p>
 <h4>Human Readable Output (extended = true)</h4>
-<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_Titanium_Cloud_mceclip1.png"></p>
+<p><img src="../../doc_files/integration-ReversingLabs_Titanium_Cloud_mceclip1.png"></p>
 <h4> </h4>
 <h4>Context Output</h4>
 <table width="624">

@@ -1,4 +1,8 @@
 category: Data Enrichment & Threat Intelligence
+provider: NIST
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: FeedNVDv2
   version: -1
@@ -8,17 +12,20 @@ configuration:
   name: feed
   required: false
   type: 8
+  section: Collect
 - display: ""
   displaypassword: API Key
   hiddenusername: true
   name: apiKey
   required: false
   type: 9
+  section: Connect
 - name: keyword_search
   display: Keyword Search
   type: 0
   additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
   required: false
+  section: Collect
 - name: cvssv3severity
   display: CVSS 3 Severity Filter
   additionalinfo: Select the severities you wish to get back from the feed.
@@ -30,18 +37,59 @@ configuration:
   defaultvalue:
   required: false
   type: 16
+  section: Connect
+  hidden: true
+- name: cvss_severity
+  display: CVSS Severity Filter
+  additionalinfo: Filter CVEs by severity. Queries each CVSS version selected in 'CVSS Versions'.
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  defaultvalue:
+  required: false
+  type: 16
+  section: Collect
+- name: cvss_versions
+  display: CVSS Versions
+  additionalinfo: CVSS versions to query when the severity filter is set. By default, covers most modern CVEs.
+  options:
+  - CVSS v4
+  - CVSS v3
+  - CVSS v2
+  defaultvalue: CVSS v4,CVSS v3
+  required: false
+  type: 16
+  section: Collect
+- name: max_indicators
+  display: Max Indicators Per Fetch
+  additionalinfo: The maximum number of indicators to fetch in a single interval. While not a strict limit, a lower value helps prevent timeouts during initial syncs with large lookback windows. The fetch will automatically resume from where it left off in the next interval. If you experience timeouts, reduce this value. Recommended maximum 40,000 (without API key) or 200,000 (with API key).
+  defaultvalue: '10000'
+  required: true
+  type: 0
+  section: Collect
 - defaultvalue: 90 days
   display: First fetch time
   additionalinfo: How far back should the integration fetch in its first run (1 day, 2 weeks, 3 months, etc.)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: "See the following for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection."
   defaultvalue: "false"
   display: Return Known Exploited Vulnerabilities (KEV) only.
   name: hasKev
   required: false
   type: 8
+  section: Collect
+- additionalinfo: When enabled, CVEs with a REJECTED status are included in the feed. By default, rejected CVEs are excluded because they have no CVSS scores or useful threat intelligence data.
+  defaultvalue: "false"
+  display: Include Rejected CVEs
+  name: include_rejected
+  required: false
+  type: 8
+  section: Collect
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
@@ -49,6 +97,7 @@ configuration:
   name: feedIncremental
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -62,6 +111,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Connect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
@@ -72,6 +122,7 @@ configuration:
   - Bad
   required: false
   type: 18
+  section: Connect
 - defaultvalue: never
   display: ""
   name: feedExpirationPolicy
@@ -81,36 +132,43 @@ configuration:
   - indicatorType
   required: false
   type: 17
+  section: Connect
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+  section: Collect
 - display: ""
   name: feedExpirationInterval
   required: false
   type: 1
+  section: Connect
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: "true"
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
+  section: Connect
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
+  section: Connect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -121,13 +179,14 @@ configuration:
   - WHITE
   type: 15
   required: false
-description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023."
+  section: Connect
+description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nBy default, CVEs with a REJECTED status are excluded. Enable 'Include Rejected CVEs' to ingest them.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023."
 display: National Vulnerability Database Feed v2
 image: ''
 name: FeedNVDv2
 script:
   commands:
-  - description: Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
+  - description: Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch. CVSS severity and version filters can be overridden for this command.
     name: nvd-get-indicators
     arguments:
     - auto: PREDEFINED
@@ -138,6 +197,26 @@ script:
       required: true
     - name: keyword
       description: Keywords to query CVEs by.
+    - name: limit
+      description: The maximum number of CVEs to return. Use a lower value to avoid timeouts due to large lookback windows.
+      defaultValue: '50'
+    - auto: PREDEFINED
+      name: cvss_severity
+      description: A comma-separated list of CVSS severities to use for this command. This overrides the instance-level CVSS Severity Filter. If left blank, the instance-level filter is used.
+      isArray: true
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+    - auto: PREDEFINED
+      name: cvss_versions
+      description: Override the instance-level CVSS Versions for this command. Comma-separated list. Note that the CVSS SeverityFilter only filters on Primary scores.
+      isArray: true
+      predefined:
+      - CVSS v4
+      - CVSS v3
+      - CVSS v2
     outputs:
     - contextPath: CVE.ID
       description: The ID of the CVE.
@@ -154,7 +233,13 @@ script:
     - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.11.9.107902
+    - contextPath: CVE.CVSSVersion
+      description: The CVSS version used for scoring (e.g. 4.0, 3.1, 2.0).
+      type: String
+    - contextPath: CVE.Severity
+      description: The CVSS severity level (e.g. CRITICAL, HIGH, MEDIUM, LOW).
+      type: String
+  dockerimage: demisto/python3:3.12.13.7444307
   feed: true
   runonce: false
   script: ''

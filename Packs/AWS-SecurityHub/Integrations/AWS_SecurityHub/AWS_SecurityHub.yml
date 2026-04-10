@@ -1,5 +1,6 @@
 category: IT Services
-sectionOrder:
+provider: Amazon
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -37,6 +38,7 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - il-central-1
   - us-gov-east-1
   - us-gov-west-1
   type: 15
@@ -53,6 +55,7 @@ configuration:
   name: credentials
   type: 9
   displaypassword: Secret Key
+  section: Connect
   required: false
 - display: Access Key
   name: access_key
@@ -171,6 +174,7 @@ configuration:
   defaultvalue: None
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Resolve findings of closed incidents from XSOAR in AWS Security Hub
   additionalinfo: 'After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved'
@@ -180,6 +184,7 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Finding Type
   name: finding_type
@@ -2077,7 +2082,7 @@ script:
       description: The UTC timestamp in seconds since the last update. The incident is only updated if it was modified after the last update time.
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-  dockerimage: demisto/boto3py3:1.0.0.100468
+  dockerimage: demisto/boto3py3:1.0.0.7704170
   isfetch: true
   ismappable: true
   isremotesyncin: true

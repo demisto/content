@@ -3,7 +3,7 @@
     "description": "Deprecated. Vendor has declared end of life for this integration. No available replacement.",
     "support": "partner",
     "hidden": true,
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Phish.AI",
     "url": "",
     "email": "info@phish.ai",
@@ -20,6 +20,10 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix"
     ]
 }

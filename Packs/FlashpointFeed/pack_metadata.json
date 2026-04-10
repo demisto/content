@@ -1,8 +1,8 @@
 {
-    "name": "FlashpointFeed",
-    "description": "Ingest indicator feeds from Flashpoint.",
+    "name": "Flashpoint Feed",
+    "description": "Ingest indicators of compromise from Flashpoint Ignite.",
     "support": "partner",
-    "currentVersion": "2.0.1",
+    "currentVersion": "3.0.1",
     "author": "Flashpoint",
     "url": "https://flashpoint.my.site.com/helpcenter/s/",
     "email": "support@flashpoint-intel.com",
@@ -23,6 +23,20 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes"
     ]
 }

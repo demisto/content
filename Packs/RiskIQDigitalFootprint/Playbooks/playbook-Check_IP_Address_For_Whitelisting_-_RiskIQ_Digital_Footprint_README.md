@@ -34,4 +34,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Check IP Address For Whitelisting - RiskIQ Digital Footprint](https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Check_IP_Address_For_Whitelisting_-_RiskIQ_Digital_Footprint.png)
+![Check IP Address For Whitelisting - RiskIQ Digital Footprint](../doc_files/Check_IP_Address_For_Whitelisting_-_RiskIQ_Digital_Footprint.png)

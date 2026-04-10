@@ -1,4 +1,4 @@
-Detonates one or more URLs using the Anomali ThreatStream v2 sandbox integration.
+Detonates one or more URLs using the Anomali ThreatStream sandbox integration.
 Returns relevant reports to the War Room and URL reputations to the context data.
 
 ## Dependencies

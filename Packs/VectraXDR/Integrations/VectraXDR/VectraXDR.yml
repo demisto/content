@@ -1,4 +1,8 @@
 category: Network Security
+provider: Vectra AI
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: VectraXDR
   version: -1
@@ -8,25 +12,30 @@ configuration:
   name: server_url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   displaypassword: Client Secret Key
   name: credentials
   type: 9
   required: true
+  section: Connect
 - additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra XDR API. It's insecure. (Default - unchecked)
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - additionalinfo: Use the system proxy settings to reach with the Vectra XDR API.
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - additionalinfo: The maximum number of entities to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
   defaultvalue: '50'
   display: Max Fetch
@@ -34,6 +43,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n    \nFor example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z."
   defaultvalue: 1 hour
   display: First Fetch Time
@@ -41,6 +51,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
   hidden: false
@@ -51,6 +62,14 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  section: Collect
+- additionalinfo: "If selected, new incidents will be created (via Outgoing Mirroring). If not selected, it reopens previously closed incidents (via Incoming Mirroring).\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
+  defaultvalue: "false"
+  display: Re-Fetch closed incidents via mirroring
+  name: refetch_closed_incidents
+  required: false
+  type: 8
+  section: Collect
 - additionalinfo: The tag value should be used to mirror the entity note by adding the same tag in the notes.
   defaultvalue: note
   display: Mirror tag for notes
@@ -58,6 +77,7 @@ configuration:
   name: note_tag
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Entity Type(Host, Account).
   display: Entity Type
   hidden: false
@@ -67,6 +87,7 @@ configuration:
   - Host
   required: false
   type: 16
+  section: Collect
 - additionalinfo: Retrieve only prioritize entities based on the configuration on the Vectra platform. If not selected will fetch all entities.
   defaultvalue: 'Yes'
   display: Prioritized
@@ -77,12 +98,14 @@ configuration:
   - 'No'
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Retrieve entities that contain any of the tags specified. Supports comma-separated values.
   display: Tags
   hidden: false
   name: tags
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Retrieve detections belonging to a specified category.
   display: Detection Category
   hidden: false
@@ -96,12 +119,14 @@ configuration:
   - Info
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Retrieve detections belonging to a specified detection type.
   display: Detection Type
   hidden: false
   name: detection_type
   required: false
   type: 0
+  section: Collect
 - additionalinfo: If the entity's urgency score is equal to or less than the configured threshold, it would be considered as a "Low" Severity Incident. Default is 30.
   defaultvalue: '30'
   display: Specify the numeric value of "Urgency Score" for mapping the Low Incident Severity.
@@ -109,6 +134,7 @@ configuration:
   name: urgency_score_low_threshold
   required: false
   type: 0
+  section: Collect
 - additionalinfo: If the entity's urgency score is equal to or less than the configured threshold, it would be considered as a "Medium" Severity Incident.Default is 50.
   defaultvalue: '50'
   display: Specify the numeric value of "Urgency Score" for mapping the Medium Incident Severity.
@@ -116,6 +142,7 @@ configuration:
   name: urgency_score_medium_threshold
   required: false
   type: 0
+  section: Collect
 - additionalinfo: "If the entity's urgency score is equal to or less than the configured threshold, \nit would be considered as a \"High\" Severity Incident and if urgency score greater than threshold, it would be considered as a \"Critical\" Severity Incident. Default is 80."
   defaultvalue: '80'
   display: Specify the numeric value of "Urgency Score" for mapping the High Incident Severity.
@@ -123,10 +150,12 @@ configuration:
   name: urgency_score_high_threshold
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Collect
 description: This integration allows to create incidents based on Vectra XDR Entities.
 display: Vectra XDR
 name: VectraXDR
@@ -211,6 +240,8 @@ script:
       - host
       required: false
       secret: false
+    - description: Filter by matching entity name.
+      name: name
     - default: false
       description: Filter by a tag or a comma-separated list of tags.
       isArray: false
@@ -357,7 +388,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -463,7 +494,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -984,7 +1015,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1033,7 +1064,43 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Note to be added in the specified detection_id.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a note to the detection.
+    execution: false
+    name: vectra-detection-note-add
+    outputs:
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created  (ISO8601).
+      type: Date
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1088,6 +1155,54 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Specify the ID of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the note.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    - default: false
+      description: Note to be updated for the specified note_id.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a note in the detection.
+    execution: false
+    name: vectra-detection-note-update
+    outputs:
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created (ISO8601).
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified (ISO8601).
+      type: Date
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+  - arguments:
+    - default: false
       description: Specify the ID of the entity.
       isArray: false
       name: entity_id
@@ -1115,6 +1230,23 @@ script:
     name: vectra-entity-note-remove
   - arguments:
     - default: false
+      description: Specify the ID of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the note.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a note from the detection.
+    execution: false
+    name: vectra-detection-note-remove
+  - arguments:
+    - default: false
       description: Provide a list of detection IDs separated by commas or a single detection ID.
       isArray: false
       name: detection_ids
@@ -1137,7 +1269,7 @@ script:
     name: vectra-detections-unmark-fixed
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1177,21 +1309,21 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Specify the type of the entity.
       isArray: false
       name: entity_type
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - account
       - host
-      required: true
-      secret: false
     - default: false
       description: Comma-separated values of tags to be removed from the entity.
       isArray: true
@@ -1217,7 +1349,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Specify the id of the entity.
+      description: Specify the ID of the entity.
       isArray: false
       name: entity_id
       required: true
@@ -1467,12 +1599,12 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: Updated by XSOAR.
       description: A note to be added for resolving an assignment in the entity.
       isArray: false
       name: note
       required: false
       secret: false
+      defaultValue: Updated by XSOAR.
     - default: false
       description: Triage rule for resolving an assignment in the entity.
       isArray: false
@@ -1650,34 +1782,38 @@ script:
       name: entity_ids
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Specify the type of the entity.
+    - default: false
+      description: |-
+        Specify the type of the entity.
       isArray: false
       name: entity_type
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - account
       - host
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filter by resolved status.
+    - default: false
+      description: |-
+        Filter by resolved status.
       isArray: false
       name: resolved
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - default: false
-      description: Filter by user ids of the assignment. Comma-separated values supported.
+      description: |-
+        Filter by user ids of the assignment. Comma-separated values supported.
       isArray: false
       name: assignees
       required: false
       secret: false
     - default: false
-      description: Filter by outcome ids of the resolution. Comma-separated values supported.
+      description: |-
+        Filter by outcome ids of the resolution. Comma-separated values supported.
       isArray: false
       name: resolution
       required: false
@@ -1689,19 +1825,20 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '1'
-      description: Enables the caller to specify a particular page of results.
+      description: |-
+        Enables the caller to specify a particular page of results.
       isArray: false
       name: page
       required: false
       secret: false
+      defaultValue: '1'
     - default: false
-      defaultValue: '50'
       description: Specify the desired page size for the request.
       isArray: false
       name: page_size
       required: false
       secret: false
+      defaultValue: '50'
     deprecated: false
     description: Returns a list of all assignments.
     execution: false
@@ -1796,19 +1933,19 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '1'
       description: Enables the caller to specify a particular page of results.
       isArray: false
       name: page
       required: false
       secret: false
+      defaultValue: '1'
     - default: false
-      defaultValue: '50'
-      description: Specify the desired page size for the request.
+      description: "Specify the desired page size for the request."
       isArray: false
       name: page_size
       required: false
       secret: false
+      defaultValue: '50'
     deprecated: false
     description: Returns a list of all entity assignment outcomes.
     execution: false
@@ -1836,16 +1973,16 @@ script:
       name: entity_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Specify the type of the entity.
+    - default: false
+      description: "Specify the type of the entity."
       isArray: false
       name: entity_type
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - host
       - account
-      required: true
-      secret: false
     deprecated: false
     description: Returns a list of notes for a specified entity.
     execution: false
@@ -1858,10 +1995,10 @@ script:
       description: ID of the note.
       type: Number
     - contextPath: Vectra.Entity.Notes.date_created
-      description: Date when the note was created.
+      description: Date when the note was created (ISO8601).
       type: Date
     - contextPath: Vectra.Entity.Notes.date_modified
-      description: Date when the note was last modified.
+      description: Date when the note was last modified (ISO8601).
       type: Unknown
     - contextPath: Vectra.Entity.Notes.created_by
       description: User who created the note.
@@ -1879,26 +2016,62 @@ script:
       description: Type of the entity associated with the note.
       type: String
   - arguments:
-    - auto: PREDEFINED
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
       default: false
-      description: Filter by group type.
+      isArray: false
+      secret: false
+    description: Returns a list of notes for a specified detection.
+    execution: false
+    name: vectra-detection-note-list
+    deprecated: false
+    outputs:
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created (ISO8601).
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified (ISO8601).
+      type: Date
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
+      type: String
+  - arguments:
+    - description: Filter by group type.
       isArray: false
       name: group_type
+      required: false
+      auto: PREDEFINED
+      default: false
       predefined:
       - account
       - host
       - ip
       - domain
-      required: false
       secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter by Account Names. Supports comma-separated values.
 
         Note: Only valid when the group_type parameter is set to "account".
-      isArray: true
       name: account_names
       required: false
+      default: false
+      isArray: true
       secret: false
     - default: false
       description: |-
@@ -1966,7 +2139,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters by the user id who made the most recent modification to the group.
+      description: Filters by the user ID who made the most recent modification to the group.
       isArray: false
       name: last_modified_by
       required: false
@@ -1977,10 +2150,10 @@ script:
       name: group_name
       required: false
       secret: false
-    deprecated: false
     description: Returns a list of all groups.
     execution: false
     name: vectra-group-list
+    deprecated: false
     outputs:
     - contextPath: Vectra.Group.group_id
       description: ID of the group.
@@ -2037,11 +2210,11 @@ script:
       description: Whether the group is managed by Cognito or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: Specify Group ID to unassign members.
+    - description: Specify Group ID to unassign members.
       isArray: false
       name: group_id
       required: true
+      default: false
       secret: false
     - default: false
       description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\" ."
@@ -2049,10 +2222,10 @@ script:
       name: members
       required: true
       secret: false
-    deprecated: false
     description: Unassign members from the specified group.
     execution: false
     name: vectra-group-unassign
+    deprecated: false
     outputs:
     - contextPath: Vectra.Group.group_id
       description: ID of the group.
@@ -2103,11 +2276,11 @@ script:
       description: Description of the rule.
       type: String
   - arguments:
-    - default: false
-      description: Specify Group ID to assign members.
-      isArray: false
+    - description: Specify Group ID to assign members.
       name: group_id
       required: true
+      default: false
+      isArray: false
       secret: false
     - default: false
       description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\" ."
@@ -2168,7 +2341,134 @@ script:
     - contextPath: Vectra.Group.rules.description
       description: Description of the rule.
       type: String
-  dockerimage: demisto/python3:3.10.14.96411
+  - arguments:
+    - description: Specify the ID of the entity.
+      name: entity_id
+      required: true
+    - description: Specify the type of the entity.
+      name: entity_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - account
+      - host
+    - auto: PREDEFINED
+      description: Specify the close reason.
+      name: close_reason
+      predefined:
+      - benign
+      - remediated
+      required: true
+    description: Mark the detections of the entity as closed with the provided entity ID in the argument.
+    execution: false
+    name: vectra-entity-detections-mark-asclosed
+  - arguments:
+    - description: Provide a list of detection IDs separated by commas or a single detection ID.
+      name: detection_ids
+      required: true
+      isArray: true
+    - description: Specify the close reason.
+      name: close_reason
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - benign
+      - remediated
+    description: Mark detections as close with provided detection IDs in the argument.
+    execution: false
+    name: vectra-detections-mark-asclosed
+  - arguments:
+    - description: Provide a list of detection IDs separated by commas or a single detection ID.
+      isArray: true
+      name: detection_ids
+      required: true
+    description: Open detections with provided detection IDs in the argument.
+    execution: false
+    name: vectra-detections-mark-asopen
+  - arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    deprecated: false
+    description: Returns a list of tags for a specified detection.
+    execution: false
+    name: vectra-detection-tag-list
+    outputs:
+    - contextPath: Vectra.Detection.Tags.tag_id
+      description: The ID of the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.detection_id
+      description: The ID of the Detection associated with the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.tags
+      description: A list of tags linked to a detection.
+      type: Unknown
+  - arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: Comma-separated values of tags to be added to the detection.
+      isArray: true
+      name: tags
+      required: true
+    description: Add tags to a detection.
+    execution: false
+    name: vectra-detection-tag-add
+    outputs:
+    - contextPath: Vectra.Detection.Tags.tag_id
+      description: The ID of the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.detection_id
+      description: The ID of the detection associated with the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.tags
+      description: A list of tags linked to a detection.
+      type: Unknown
+  - arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: Comma-separated values of tags to be removed from the detection.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove tags from the detection.
+    execution: false
+    name: vectra-detection-tag-remove
+    outputs:
+    - contextPath: Vectra.Detection.Tags.tag_id
+      description: The ID of the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.detection_id
+      description: The ID of the detection associated with the tag.
+      type: String
+    - contextPath: Vectra.Detection.Tags.tags
+      description: A list of tags linked to a detection.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Specify the ID of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    deprecated: false
+    description: Resets the given entity to refetch incidents.
+    execution: false
+    name: vectra-entity-reset-fetch
+  dockerimage: demisto/python3:3.12.12.6391686
   feed: false
   isfetch: true
   isremotesyncin: true
@@ -2184,4 +2484,5 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 fromversion: 6.8.0

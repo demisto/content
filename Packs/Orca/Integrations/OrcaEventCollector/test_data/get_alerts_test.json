@@ -1,309 +1,1217 @@
-{"test_1": {
-    "version": "0.1.0",
-    "status": "success",
-    "data_grouped": true,
-    "total_supported_items": 10000,
-    "total_ungrouped_items": 644,
-    "total_items": 644,
-    "next_page_token": "next_page_token",
-    "data": [
-        {
-            "group_val": "nongroup",
-            "asset_type_string": "AwsUser",
-            "data": {
-                "remediation_cli": [
-                    "How to remove AwsUser:",
-                    ">1.",
-                    ">2."
-                ],
-                "mitre_category": "initial access",
-                "recommendation": "Remove {AwsUser} user.",
-                "details": "Remove unused IAM users",
-                "auto_remediation_actions": [
-                    "AWS-IAM-002"
-                ],
-                "title": "Inactive User",
-                "remediation_console": [
-                    "**Instructions**.",
-                    ">1.",
-                    ">2.",
-                    ">3."
-                ],
-                "mitre_technique": [
-                    "Valid Accounts (T1078)"
-                ]
-            },
-            "alert_labels": [
-                "mitre: initial access"
-            ],
-            "configuration": {},
-            "is_compliance": false,
-            "group_type_string": "NonGroup",
-            "description": "Inactive User",
-            "recommendation": "Remove Trent user.",
-            "source": "Trent",
-            "group_type": "AwsUser",
-            "cluster_type": "AwsUser",
-            "type": "aws_inactive_user",
-            "group_unique_id": "group_unique_id",
-            "cloud_account_id": "cloud_account_id",
-            "type_string": "Inactive User",
-            "asset_name": "Trent",
-            "account_name": "account_name",
-            "asset_type": "AwsUser",
-            "context": "control",
-            "details": "Remove unused IAM users.",
-            "model": {
+{
+    "test_1": {
+        "status": "success",
+        "data": [
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-001",
+                "type": "Alert",
                 "data": {
-                    "User": {
-                        "MfaActive": false,
-                        "PasswordEnabled": false,
-                        "UserId": "UserId",
-                        "CreationTime": "2022-07-14T00:00:00+00:00",
-                        "Name": "Trent"
+                    "AlertId": {
+                        "value": "vendor-alert-001"
                     },
-                    "AwsUser": {
-                        "Policies": {
-                            "models": [],
-                            "remaining": 0
+                    "AlertType": {
+                        "value": "Lambda function shares its IAM role"
+                    },
+                    "Category": {
+                        "value": "IAM misconfigurations"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:00:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "mitre: discovery",
+                        "CSPM",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:00:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 1.0
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 5.8,
+                                "Features": [
+                                    {
+                                        "score": 0.7,
+                                        "value": "Remote",
+                                        "weight": 1,
+                                        "category": "Attack Probability",
+                                        "display_name": "Required Access",
+                                        "effect_level": 3,
+                                        "impact_level": 1.1,
+                                        "feature_description": "The network access type required by the attacker to take advantage of this risk"
+                                }
+                            ],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 1.7,
+                                "Features": [
+                                    {
+                                        "score": 0,
+                                        "value": "None",
+                                        "weight": 2,
+                                        "category": "Attack Probability",
+                                        "display_name": "External Exposure",
+                                        "effect_level": 0,
+                                        "impact_level": 0.0
+                                }
+                            ],
+                                "display_name": "Asset Context Score"
+                            },
+                            "User adjusted the Alert score": 1.0
+                        }
+                    },
+                    "Source": {
+                        "value": "my-test-lambda-function-xyz789"
+                    },
+                    "Status": {
+                        "value": "dismissed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "function_123456789012_us-east-1_my-test-lambda-function-xyz789"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "aws"
+                            },
+                            "Name": {
+                                "value": "123456789012"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                            }
                         },
-                        "AccessKey1Active": true,
-                        "Cert1Active": false,
-                        "AccessKey1RecentlyRotated": false,
-                        "AccessKey2RecentlyUsed": false,
-                        "Name": "Trent",
-                        "AuthorizedServices": {
-                            "models": [],
-                            "remaining": 0
-                        },
-                        "AccessKey1RecentlyUsed": false,
-                        "PasswordRecentlyUsed": false,
-                        "Cert2Active": false,
-                        "CreationTime": "2022-07-14T00:00:00+00:00",
-                        "AccessKey1Id": "AccessKey1Id",
-                        "Arn": "arn",
-                        "AccessKey2Active": false,
-                        "AccessKey1LastRotated": "2022-07-14T00:00:00+00:00"
+                        "name": "123456789012",
+                        "cluster_unique_id": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
                     },
                     "Inventory": {
-                        "NewSubCategory": "Users",
-                        "OrcaScore": 3.0,
-                        "Category": "Users and Access",
-                        "UiUniqueField": "UiUniqueField",
-                        "BlastRadius": "{}",
-                        "NewCategory": "Identity and Access",
-                        "OrcaTags": "{}",
-                        "Name": "Trent",
-                        "Zones": [],
-                        "Score": 3,
-                        "DetectedCrownJewelScore": 0,
-                        "ModelTags": "{\"Category\": \"Identity and Access\", \"SubCategory\": \"Users\"}",
-                        "SubCategory": "Users",
-                        "CreationTime": "2022-07-14T00:00:00+00:00",
-                        "Region": "eu-central-1",
-                        "Observations": [],
-                        "RiskLevel": "low",
-                        "Tags": "{}",
-                        "RelatedCompliances": [],
-                        "AccessEndpoints": "[]"
+                        "id": "11111111-aaaa-bbbb-cccc-dddddddddddd",
+                        "type": "AwsLambdaFunction",
+                        "data": {
+                            "Name": {
+                                "value": "my-test-lambda-function-xyz789"
+                            },
+                            "Type": {
+                                "value": "AwsLambdaFunction"
+                            },
+                            "cluster_unique_id": {
+                                "value": "function_123456789012_us-east-1_my-test-lambda-function-xyz789"
+                            }
+                        },
+                        "name": "my-test-lambda-function-xyz789",
+                        "cluster_unique_id": "function_123456789012_us-east-1_my-test-lambda-function-xyz789"
                     }
                 },
-                "name": "Trent",
-                "asset_unique_id": "asset_unique_id",
-                "id": "id",
-                "type": "AwsUser"
-            },
-            "state": {
-                "severity": "hazardous",
-                "last_updated": "2023-03-13T00:00:00+00:00",
-                "last_seen": "2023-03-14T00:00:00+00:00",
-                "in_verification": false,
-                "low_since": null,
-                "created_at": "2023-03-13T00:00:00+00:00",
-                "score": 3,
-                "risk_level": "low",
-                "orca_score": 3.6,
-                "alert_id": "orca-91523",
-                "high_since": "2022-10-13T00:00:00+00:00",
-                "status_time": "2023-03-13T00:00:00+00:00",
-                "status": "open",
-                "verification_status": null
-            },
-            "rule_query": "[AwsUser with Name != '<root_account>' and CreationTime not in Last 90 days] without (PasswordLastUsed or AccessKey1LastUsedDate or AccessKey2LastUsedDate) in last 90 days",
-            "cluster_unique_id": "cluster_unique_id",
-            "cluster_name": "Trent",
-            "subject_type": "AwsUser",
-            "group_name": "Trent",
-            "level": 0,
-            "is_rule": true,
-            "cloud_provider": "aws",
-            "organization_name": "Partners",
-            "type_key": "type_key",
-            "cloud_vendor_id": "cloud_vendor_id",
-            "rule_id": "rule_id",
-            "asset_category": "Users and Access",
-            "asset_state": "enabled",
-            "organization_id": "organization_id",
-            "asset_unique_id": "asset_unique_id",
-            "cloud_provider_id": "cloud_provider_id",
-            "category": "IAM misconfigurations",
-            "cloud_account_type": "Regular",
-            "asset_vendor_id": "asset_vendor_id"
-        }
-    ],
-    "has_next_page_token": true
-},
-"test_2":  {
-    "version": "0.1.0",
-    "status": "success",
-    "data_grouped": true,
-    "total_supported_items": 10000,
-    "total_ungrouped_items": 644,
-    "total_items": 644,
-    "data": [
-        {
-            "group_val": "nongroup",
-            "asset_type_string": "AwsUser",
-            "data": {
-                "remediation_cli": [
-                    "How to remove AwsUser:",
-                    ">1.",
-                    ">2."
-                ],
-                "mitre_category": "initial access",
-                "recommendation": "Remove {AwsUser} user.",
-                "details": "Remove unused IAM users",
-                "auto_remediation_actions": [
-                    "AWS-IAM-002"
-                ],
-                "title": "Inactive User",
-                "remediation_console": [
-                    "**Instructions**.",
-                    ">1.",
-                    ">2.",
-                    ">3."
-                ],
-                "mitre_technique": [
-                    "Valid Accounts (T1078)"
-                ]
-            },
-            "alert_labels": [
-                "mitre: initial access"
-            ],
-            "configuration": {},
-            "is_compliance": false,
-            "group_type_string": "NonGroup",
-            "description": "Inactive User",
-            "recommendation": "Remove Trent user.",
-            "source": "Trent",
-            "group_type": "AwsUser",
-            "cluster_type": "AwsUser",
-            "type": "aws_inactive_user",
-            "group_unique_id": "group_unique_id",
-            "cloud_account_id": "cloud_account_id",
-            "type_string": "Inactive User",
-            "asset_name": "Trent",
-            "account_name": "account_name",
-            "asset_type": "AwsUser",
-            "context": "control",
-            "details": "Remove unused IAM users.",
-            "model": {
+                "cluster_unique_id": "function_123456789012_us-east-1_my-test-lambda-function-xyz789",
+                "last_seen": "2023-01-02T11:00:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-002",
+                "type": "Alert",
                 "data": {
-                    "User": {
-                        "MfaActive": false,
-                        "PasswordEnabled": false,
-                        "UserId": "UserId",
-                        "CreationTime": "2022-07-14T00:00:00+00:00",
-                        "Name": "Trent"
+                    "AlertId": {
+                        "value": "vendor-alert-002"
                     },
-                    "AwsUser": {
-                        "Policies": {
-                            "models": [],
-                            "remaining": 0
+                    "AlertType": {
+                        "value": "S3 Bucket Should Use Transfer Acceleration"
+                    },
+                    "Category": {
+                        "value": "Best practices"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:00:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "mitre: best practices",
+                        "CSPM",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:01:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 1.0
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 0.0,
+                                "Features": [],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 0.0,
+                                "Features": [],
+                                "display_name": "Asset Context Score"
+                            },
+                            "User adjusted the Alert score": 1.0
+                        }
+                    },
+                    "Source": {
+                        "value": "my-test-bucket-001"
+                    },
+                    "Status": {
+                        "value": "dismissed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "storage_123456789012_my-test-bucket-001"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "aws"
+                            },
+                            "Name": {
+                                "value": "123456789012"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                            }
                         },
-                        "AccessKey1Active": true,
-                        "Cert1Active": false,
-                        "AccessKey1RecentlyRotated": false,
-                        "AccessKey2RecentlyUsed": false,
-                        "Name": "Trent",
-                        "AuthorizedServices": {
-                            "models": [],
-                            "remaining": 0
-                        },
-                        "AccessKey1RecentlyUsed": false,
-                        "PasswordRecentlyUsed": false,
-                        "Cert2Active": false,
-                        "CreationTime": "2022-07-14T00:00:00+00:00",
-                        "AccessKey1Id": "AccessKey1Id",
-                        "Arn": "arn",
-                        "AccessKey2Active": false,
-                        "AccessKey1LastRotated": "2022-07-14T00:00:00+00:00"
+                        "name": "123456789012",
+                        "cluster_unique_id": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
                     },
                     "Inventory": {
-                        "NewSubCategory": "Users",
-                        "OrcaScore": 3.0,
-                        "Category": "Users and Access",
-                        "UiUniqueField": "UiUniqueField",
-                        "BlastRadius": "{}",
-                        "NewCategory": "Identity and Access",
-                        "OrcaTags": "{}",
-                        "Name": "Trent",
-                        "Zones": [],
-                        "Score": 3,
-                        "DetectedCrownJewelScore": 0,
-                        "ModelTags": "{\"Category\": \"Identity and Access\", \"SubCategory\": \"Users\"}",
-                        "SubCategory": "Users",
-                        "CreationTime": "2022-07-14T00:00:00+00:00",
-                        "Region": "eu-central-1",
-                        "Observations": [],
-                        "RiskLevel": "low",
-                        "Tags": "{}",
-                        "RelatedCompliances": [],
-                        "AccessEndpoints": "[]"
+                        "id": "22222222-aaaa-bbbb-cccc-dddddddddddd",
+                        "type": "AwsS3Bucket",
+                        "data": {
+                            "Name": {
+                                "value": "my-test-bucket-001"
+                            },
+                            "Type": {
+                                "value": "AwsS3Bucket"
+                            },
+                            "cluster_unique_id": {
+                                "value": "storage_123456789012_my-test-bucket-001"
+                            }
+                        },
+                        "name": "my-test-bucket-001",
+                        "cluster_unique_id": "storage_123456789012_my-test-bucket-001"
                     }
                 },
-                "name": "Trent",
-                "asset_unique_id": "asset_unique_id",
-                "id": "id",
-                "type": "AwsUser"
-            },
-            "state": {
-                "severity": "hazardous",
-                "last_updated": "2023-03-13T00:00:00+00:00",
-                "last_seen": "2023-03-14T00:00:00+00:00",
-                "in_verification": false,
-                "low_since": null,
-                "created_at": "2023-03-13T00:00:00+00:00",
-                "score": 3,
-                "risk_level": "low",
-                "orca_score": 3.6,
-                "alert_id": "orca-91523",
-                "high_since": "2022-10-13T00:00:00+00:00",
-                "status_time": "2023-03-13T00:00:00+00:00",
-                "status": "open",
-                "verification_status": null
-            },
-            "rule_query": "[AwsUser with Name != '<root_account>' and CreationTime not in Last 90 days] without (PasswordLastUsed or AccessKey1LastUsedDate or AccessKey2LastUsedDate) in last 90 days",
-            "cluster_unique_id": "cluster_unique_id",
-            "cluster_name": "Trent",
-            "subject_type": "AwsUser",
-            "group_name": "Trent",
-            "level": 0,
-            "is_rule": true,
-            "cloud_provider": "aws",
-            "organization_name": "Partners",
-            "type_key": "type_key",
-            "cloud_vendor_id": "cloud_vendor_id",
-            "rule_id": "rule_id",
-            "asset_category": "Users and Access",
-            "asset_state": "enabled",
-            "organization_id": "organization_id",
-            "asset_unique_id": "asset_unique_id",
-            "cloud_provider_id": "cloud_provider_id",
-            "category": "IAM misconfigurations",
-            "cloud_account_type": "Regular",
-            "asset_vendor_id": "asset_vendor_id"
+                "cluster_unique_id": "storage_123456789012_my-test-bucket-001",
+                "last_seen": "2023-01-02T11:01:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-003",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-003"
+                    },
+                    "AlertType": {
+                        "value": "S3 bucket data is not protected"
+                    },
+                    "Category": {
+                        "value": "Data protection"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:00:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "mitre: collection",
+                        "CSPM",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:02:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 1.0
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 5.5,
+                                "Features": [],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 0.0,
+                                "Features": [],
+                                "display_name": "Asset Context Score"
+                            },
+                            "User adjusted the Alert score": 1.0
+                        }
+                    },
+                    "Source": {
+                        "value": "my-test-bucket-002"
+                    },
+                    "Status": {
+                        "value": "dismissed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "storage_123456789012_my-test-bucket-002"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "aws"
+                            },
+                            "Name": {
+                                "value": "123456789012"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "123456789012",
+                        "cluster_unique_id": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "33333333-aaaa-bbbb-cccc-dddddddddddd",
+                        "type": "AwsS3Bucket",
+                        "data": {
+                            "Name": {
+                                "value": "my-test-bucket-002"
+                            },
+                            "Type": {
+                                "value": "AwsS3Bucket"
+                            },
+                            "cluster_unique_id": {
+                                "value": "storage_123456789012_my-test-bucket-002"
+                            }
+                        },
+                        "name": "my-test-bucket-002",
+                        "cluster_unique_id": "storage_123456789012_my-test-bucket-002"
+                    }
+                },
+                "cluster_unique_id": "storage_123456789012_my-test-bucket-002",
+                "last_seen": "2023-01-02T11:02:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-004",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-004"
+                    },
+                    "AlertType": {
+                        "value": "S3 Bucket Object-Level Logging for Read Events is Disabled"
+                    },
+                    "Category": {
+                        "value": "Logging and monitoring"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:00:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "mitre: defense evasion",
+                        "CSPM",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:03:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 1.0
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 0.5,
+                                "Features": [],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 0.0,
+                                "Features": [],
+                                "display_name": "Asset Context Score"
+                            }
+                        }
+                    },
+                    "Source": {
+                        "value": "aws-config-test-bucket-abc123"
+                    },
+                    "Status": {
+                        "value": "closed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "storage_123456789012_aws-config-test-bucket-abc123"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "aws"
+                            },
+                            "Name": {
+                                "value": "123456789012"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "123456789012",
+                        "cluster_unique_id": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "44444444-aaaa-bbbb-cccc-dddddddddddd",
+                        "type": "AwsS3Bucket",
+                        "data": {
+                            "Name": {
+                                "value": "aws-config-test-bucket-abc123"
+                            },
+                            "Type": {
+                                "value": "AwsS3Bucket"
+                            },
+                            "cluster_unique_id": {
+                                "value": "storage_123456789012_aws-config-test-bucket-abc123"
+                            }
+                        },
+                        "name": "aws-config-test-bucket-abc123",
+                        "cluster_unique_id": "storage_123456789012_aws-config-test-bucket-abc123"
+                    }
+                },
+                "cluster_unique_id": "storage_123456789012_aws-config-test-bucket-abc123",
+                "last_seen": "2023-01-02T11:03:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-005",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-005"
+                    },
+                    "AlertType": {
+                        "value": "Security group allows unrestricted outbound traffic"
+                    },
+                    "Category": {
+                        "value": "Network misconfigurations"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:00:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "mitre: exfiltration",
+                        "CSPM",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:04:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 1.0
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 4.8,
+                                "Features": [],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 0.0,
+                                "Features": [],
+                                "display_name": "Asset Context Score"
+                            },
+                            "User adjusted the Alert score": 1.0
+                        }
+                    },
+                    "Source": {
+                        "value": "default"
+                    },
+                    "Status": {
+                        "value": "dismissed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "AwsEc2SecurityGroup_123456789012_sg-00000000000000000"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "aws"
+                            },
+                            "Name": {
+                                "value": "123456789012"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "123456789012",
+                        "cluster_unique_id": "CloudAccount_123456789012_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "55555555-aaaa-bbbb-cccc-dddddddddddd",
+                        "type": "AwsEc2SecurityGroup",
+                        "data": {
+                            "Name": {
+                                "value": "default"
+                            },
+                            "Type": {
+                                "value": "AwsEc2SecurityGroup"
+                            },
+                            "cluster_unique_id": {
+                                "value": "AwsEc2SecurityGroup_123456789012_sg-00000000000000000"
+                            }
+                        },
+                        "name": "default",
+                        "cluster_unique_id": "AwsEc2SecurityGroup_123456789012_sg-00000000000000000"
+                    }
+                },
+                "cluster_unique_id": "AwsEc2SecurityGroup_123456789012_sg-00000000000000000",
+                "last_seen": "2023-01-02T11:04:00+00:00"
         }
+    ]
+    },
+    "test_2": {
+        "status": "success",
+        "data": [
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-006",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-006"
+                    },
+                    "AlertType": {
+                        "value": "Vulnerable Software"
+                    },
+                    "Category": {
+                        "value": "Vulnerabilities"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:00:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "denial_of_service",
+                        "mitre: impact",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:00:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 1.3
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 1.1,
+                                "Features": [
+                                    {
+                                        "score": 3.5,
+                                        "value": 5.9,
+                                        "weight": 6,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVSS Score"
+                                },
+                                    {
+                                        "score": 0,
+                                        "value": "CVE-2023-10001",
+                                        "weight": 0,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVE ID"
+                                }
+                            ],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 1.7,
+                                "Features": [
+                                    {
+                                        "score": 0.5,
+                                        "value": true,
+                                        "weight": 0.5,
+                                        "category": "Attack Impact",
+                                        "display_name": "Sensitive Data"
+                                }
+                            ],
+                                "display_name": "Asset Context Score",
+                                "inventory_type": "GcpGcrImage"
+                            }
+                        }
+                    },
+                    "Source": {
+                        "value": "common-lib-v1"
+                    },
+                    "Status": {
+                        "value": "closed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "containerimage_my-gcp-project-123456_us-east1_my-gcp-project-123456%2Fmy-app-service"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "gcp"
+                            },
+                            "Name": {
+                                "value": "my-gcp-project-123456"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "my-gcp-project-123456",
+                        "cluster_unique_id": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "inv-id-000001",
+                        "type": "GcpGcrImage",
+                        "data": {
+                            "Name": {
+                                "value": "my-gcp-project-123456/my-app-service:latest"
+                            },
+                            "Type": {
+                                "value": "GcpGcrImage"
+                            },
+                            "cluster_unique_id": {
+                                "value": "containerimage_my-gcp-project-123456_us-east1_my-gcp-project-123456%2Fmy-app-service"
+                            }
+                        },
+                        "name": "my-gcp-project-123456/my-app-service:latest",
+                        "cluster_unique_id": "containerimage_my-gcp-project-123456_us-east1_my-gcp-project-123456%2Fmy-app-service"
+                    }
+                },
+                "cluster_unique_id": "containerimage_my-gcp-project-123456_us-east1_my-gcp-project-123456%2Fmy-app-service",
+                "last_seen": "2023-01-02T11:00:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-007",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-007"
+                    },
+                    "AlertType": {
+                        "value": "Vulnerable Software"
+                    },
+                    "Category": {
+                        "value": "Vulnerabilities"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:01:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "denial_of_service",
+                        "mitre: impact",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:01:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 2.1
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 1.4,
+                                "Features": [
+                                    {
+                                        "score": 3.5,
+                                        "value": 5.9,
+                                        "weight": 6,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVSS Score"
+                                },
+                                    {
+                                        "score": 0,
+                                        "value": "CVE-2023-10001",
+                                        "weight": 0,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVE ID"
+                                }
+                            ],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 3.6,
+                                "Features": [
+                                    {
+                                        "score": 2.0,
+                                        "value": "Running",
+                                        "weight": 2,
+                                        "category": "Attack Probability",
+                                        "display_name": "State"
+                                }
+                            ],
+                                "display_name": "Asset Context Score",
+                                "inventory_type": "Container"
+                            }
+                        }
+                    },
+                    "Source": {
+                        "value": "common-lib-v1"
+                    },
+                    "Status": {
+                        "value": "closed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "gke_my-gcp-project-123456_hash-abc-111"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "gcp"
+                            },
+                            "Name": {
+                                "value": "my-gcp-project-123456"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "my-gcp-project-123456",
+                        "cluster_unique_id": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "inv-id-000002",
+                        "type": "Group",
+                        "data": {
+                            "Name": {
+                                "value": "my-dev-group-a"
+                            },
+                            "Type": {
+                                "value": "Group"
+                            },
+                            "cluster_unique_id": {
+                                "value": "gke_my-gcp-project-123456_hash-abc-111"
+                            }
+                        },
+                        "name": "my-dev-group-a",
+                        "cluster_unique_id": "gke_my-gcp-project-123456_hash-abc-111"
+                    }
+                },
+                "cluster_unique_id": "gke_my-gcp-project-123456_hash-abc-111",
+                "last_seen": "2023-01-02T11:01:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-008",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-008"
+                    },
+                    "AlertType": {
+                        "value": "Vulnerable Software"
+                    },
+                    "Category": {
+                        "value": "Vulnerabilities"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:01:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "denial_of_service",
+                        "mitre: impact",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:01:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 2.1
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 1.4,
+                                "Features": [
+                                    {
+                                        "score": 3.5,
+                                        "value": 5.9,
+                                        "weight": 6,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVSS Score"
+                                },
+                                    {
+                                        "score": 0,
+                                        "value": "CVE-2023-10001",
+                                        "weight": 0,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVE ID"
+                                }
+                            ],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 3.6,
+                                "Features": [
+                                    {
+                                        "score": 2.0,
+                                        "value": "Running",
+                                        "weight": 2,
+                                        "category": "Attack Probability",
+                                        "display_name": "State"
+                                }
+                            ],
+                                "display_name": "Asset Context Score",
+                                "inventory_type": "Container"
+                            }
+                        }
+                    },
+                    "Source": {
+                        "value": "common-lib-v1"
+                    },
+                    "Status": {
+                        "value": "closed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "gke_my-gcp-project-123456_hash-abc-111"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "gcp"
+                            },
+                            "Name": {
+                                "value": "my-gcp-project-123456"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "my-gcp-project-123456",
+                        "cluster_unique_id": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "inv-id-000003",
+                        "type": "Group",
+                        "data": {
+                            "Name": {
+                                "value": "my-dev-group-b"
+                            },
+                            "Type": {
+                                "value": "Group"
+                            },
+                            "cluster_unique_id": {
+                                "value": "gke_my-gcp-project-123456_hash-abc-111"
+                            }
+                        },
+                        "name": "my-dev-group-b",
+                        "cluster_unique_id": "gke_my-gcp-project-123456_hash-abc-111"
+                    }
+                },
+                "cluster_unique_id": "gke_my-gcp-project-123456_hash-abc-111",
+                "last_seen": "2023-01-02T11:02:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-009",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-009"
+                    },
+                    "AlertType": {
+                        "value": "Vulnerable Software"
+                    },
+                    "Category": {
+                        "value": "Vulnerabilities"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:02:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "denial_of_service",
+                        "mitre: impact",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:02:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 2.1
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 1.4,
+                                "Features": [
+                                    {
+                                        "score": 3.5,
+                                        "value": 5.9,
+                                        "weight": 6,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVSS Score"
+                                },
+                                    {
+                                        "score": 0,
+                                        "value": "CVE-2023-10001",
+                                        "weight": 0,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVE ID"
+                                }
+                            ],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 3.8,
+                                "Features": [
+                                    {
+                                        "score": 2.0,
+                                        "value": "Running",
+                                        "weight": 2,
+                                        "category": "Attack Probability",
+                                        "display_name": "State"
+                                }
+                            ],
+                                "display_name": "Asset Context Score",
+                                "inventory_type": "Container"
+                            }
+                        }
+                    },
+                    "Source": {
+                        "value": "common-lib-v1"
+                    },
+                    "Status": {
+                        "value": "closed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "gke_my-gcp-project-123456_hash-xyz-222"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "gcp"
+                            },
+                            "Name": {
+                                "value": "my-gcp-project-123456"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "my-gcp-project-123456",
+                        "cluster_unique_id": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "inv-id-000004",
+                        "type": "Group",
+                        "data": {
+                            "Name": {
+                                "value": "my-test-app-1"
+                            },
+                            "Type": {
+                                "value": "Group"
+                            },
+                            "cluster_unique_id": {
+                                "value": "gke_my-gcp-project-123456_hash-xyz-222"
+                            }
+                        },
+                        "name": "my-test-app-1",
+                        "cluster_unique_id": "gke_my-gcp-project-123456_hash-xyz-222"
+                    }
+                },
+                "cluster_unique_id": "gke_my-gcp-project-123456_hash-xyz-222",
+                "last_seen": "2023-01-02T11:03:00+00:00"
+        },
+            {
+                "id": "11111111-2222-3333-4444-555555555555_vendor-alert-010",
+                "type": "Alert",
+                "data": {
+                    "AlertId": {
+                        "value": "vendor-alert-010"
+                    },
+                    "AlertType": {
+                        "value": "Vulnerable Software"
+                    },
+                    "Category": {
+                        "value": "Vulnerabilities"
+                    },
+                    "CreatedAt": {
+                        "value": "2023-01-01T10:03:00+00:00"
+                    },
+                    "Labels": {
+                        "value": [
+                        "denial_of_service",
+                        "mitre: impact",
+                        "source: Vendor Scan"
+                    ]
+                    },
+                    "LastSeen": {
+                        "value": "2023-01-02T10:03:00+00:00"
+                    },
+                    "VendorScore": {
+                        "value": 2.4
+                    },
+                    "RiskLevel": {
+                        "value": "informational"
+                    },
+                    "RuleSource": {
+                        "value": "Vendor"
+                    },
+                    "ScoreVector": {
+                        "value": {
+                            "AlertBaseScore": {
+                                "score": 1.4,
+                                "Features": [
+                                    {
+                                        "score": 3.5,
+                                        "value": 5.9,
+                                        "weight": 6,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVSS Score"
+                                },
+                                    {
+                                        "score": 0,
+                                        "value": "CVE-2023-10001",
+                                        "weight": 0,
+                                        "category": "Attack Impact",
+                                        "display_name": "Top CVE ID"
+                                }
+                            ],
+                                "display_name": "Alert Base Score"
+                            },
+                            "AssetContextScore": {
+                                "score": 4.6,
+                                "Features": [
+                                    {
+                                        "score": 2.0,
+                                        "value": "Running",
+                                        "weight": 2,
+                                        "category": "Attack Probability",
+                                        "display_name": "State"
+                                },
+                                    {
+                                        "score": 0.5,
+                                        "value": true,
+                                        "weight": 0.5,
+                                        "category": "Attack Impact",
+                                        "display_name": "Sensitive Data"
+                                }
+                            ],
+                                "display_name": "Asset Context Score",
+                                "inventory_type": "Container"
+                            }
+                        }
+                    },
+                    "Source": {
+                        "value": "common-lib-v1"
+                    },
+                    "Status": {
+                        "value": "closed"
+                    },
+                    "cluster_unique_id": {
+                        "value": "gke_my-gcp-project-123456_hash-xyz-222"
+                    },
+                    "CloudAccount": {
+                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                        "type": "CloudAccount",
+                        "data": {
+                            "CloudProvider": {
+                                "value": "gcp"
+                            },
+                            "Name": {
+                                "value": "my-gcp-project-123456"
+                            },
+                            "Type": {
+                                "value": "CloudAccount"
+                            },
+                            "cluster_unique_id": {
+                                "value": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                            }
+                        },
+                        "name": "my-gcp-project-123456",
+                        "cluster_unique_id": "CloudAccount_my-gcp-project-123456_00000000-0000-0000-0000-000000000000"
+                    },
+                    "Inventory": {
+                        "id": "inv-id-000005",
+                        "type": "Group",
+                        "data": {
+                            "Name": {
+                                "value": "my-test-app-2"
+                            },
+                            "Type": {
+                                "value": "Group"
+                            },
+                            "cluster_unique_id": {
+                                "value": "gke_my-gcp-project-123456_hash-xyz-222"
+                            }
+                        },
+                        "name": "my-test-app-2",
+                        "cluster_unique_id": "gke_my-gcp-project-123456_hash-xyz-222"
+                    }
+                },
+                "cluster_unique_id": "gke_my-gcp-project-123456_hash-xyz-222",
+                "last_seen": "2023-01-02T11:04:00+00:00"
+        }
+    ]
+    },
+  "page_1_with_more": {
+    "status": "success",
+    "data": [
+      {
+        "id": "alert-001",
+        "type": "Alert",
+        "data": {
+          "AlertId": { "value": "vendor-alert-001" },
+          "CreatedAt": { "value": "2023-01-01T10:00:00Z" }
+        }
+      },
+      {
+        "id": "alert-002",
+        "type": "Alert",
+        "data": {
+          "AlertId": { "value": "vendor-alert-002" },
+          "CreatedAt": { "value": "2023-01-01T11:00:00Z" }
+        }
+      }
     ],
-    "has_next_page_token": false}
+    "next_page_token": "100"
+  },
+  "page_2_last": {
+    "status": "success",
+    "data": [
+      {
+        "id": "alert-003",
+        "type": "Alert",
+        "data": {
+          "AlertId": { "value": "vendor-alert-003" },
+          "CreatedAt": { "value": "2023-01-01T12:00:00Z" }
+        }
+      },
+      {
+        "id": "alert-004",
+        "type": "Alert",
+        "data": {
+          "AlertId": { "value": "vendor-alert-004" },
+          "CreatedAt": { "value": "2023-01-01T13:00:00Z" }
+        }
+      }
+    ],
+    "next_page_token": null
+  },
+  "empty": {
+    "status": "success",
+    "data": [],
+    "next_page_token": null
+  },
+  "single_alert_no_more": {
+    "status": "success",
+    "data": [
+      {
+        "id": "alert-005",
+        "type": "Alert",
+        "data": {
+          "AlertId": { "value": "vendor-alert-005" },
+          "CreatedAt": { "value": "2023-01-02T10:00:00Z" }
+        }
+      }
+    ],
+    "next_page_token": null
+  }
 }

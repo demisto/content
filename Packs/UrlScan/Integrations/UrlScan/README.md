@@ -12,6 +12,7 @@
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
 <li><strong>Scan Visibility</strong>: Determines the visibility level of the scan. This will override the 'public submissions' setting.</li>
 <li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
+<li><strong>Scan Country.</strong> Specify which country the scan should be performed from. If you omit this value, urlscan will try to do automatic country detection based on the TLD of the URL, GeoIP information of the server and of the user.</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
@@ -112,6 +113,7 @@
 <h5>Command Example</h5>
 <p><code>!urlscan-search searchParameter=8.8.8.8</code></p>
 <p><code>!urlscan-search searchType=advanced searchParameter="filename:logo.png AND date:>now-24h"</code></p>
+<p><code>!urlscan-search searchType=raw searchParameter="q=meta%3Asearchhit.search.04eb755f-468d-4421-ab86-210a01ee1bdd&datasource=hostnames&search_after="</code></p>
 <h3 id="h_872696191351541575062805">2. (Deprecated) Submit a URL directly to urlscan.io</h3>
 <hr>
 <p>Submits a URL to urlscan.io.</p>

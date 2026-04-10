@@ -4,6 +4,7 @@ commonfields:
 name: Zabbix
 display: Zabbix
 category: Utilities
+provider: Zabbix LLC
 description: Allow integration with Zabbix api.
 configuration:
 - display: Url
@@ -455,7 +456,7 @@ script:
       description: Whether the event is suppressed.
       type: number
     description: Get events.
-  dockerimage: demisto/py3-tools:1.0.0.87415
+  dockerimage: demisto/py3-tools:1.0.0.116158
   runonce: false
   script: '-'
   type: python

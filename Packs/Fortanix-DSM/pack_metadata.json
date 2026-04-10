@@ -2,7 +2,7 @@
     "name": "Fortanix DSM",
     "description": "Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager (Fortanix DSM)",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.9",
     "author": "Fortanix",
     "url": "https://support.fortanix.com",
     "email": "info@fortanix.com",
@@ -40,6 +40,11 @@
     "dependencies": {},
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

@@ -31,7 +31,7 @@ Click [here](https://developer.webex.com/my-apps) to create and manage the appli
 _Note:  The Admin client needs a fourth parameter: `organization ID`._\
 Run [this](https://developer.webex.com/docs/api/v1/organizations/list-organizations) HTTP request (login with admin credentials) to get the organization ID.
 
-![get_organization_id](https://github.com/demisto/content/blob/master/Packs/CiscoSpark/doc_files/get_organization_id.png)
+![get_organization_id](../../doc_files/get_organization_id.png)
 
 ### Authentication flow (Oauth)
 
@@ -43,6 +43,12 @@ In order to receive all events, You must run all three commands twice, once with
 2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`). The **code** argument should be set to the value returned in the code query parameter from the previous command.
 3. Run the ***cisco-webex-oauth-test*** command with the **user** argument. The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`) to ensure connectivity to Cisco Webex.
 
-### Fetch security audits
-This API requires Full Admin Permission.
-In order to fetch security audit events, pro pack needs to be installed on the Webex instance.
+### Fetch Security Audits  
+
+This API requires Full Admin permissions.  
+
+To fetch security audit events, the **Pro Pack** must be installed on the Webex instance. Additionally, the **Allow user authentication data** setting must be enabled:  
+
+1. Go to **Management** > **Organization Settings**.  
+2. In the **User authentication data** section, toggle **Allow user authentication data** ON.  
+For more details, refer to the [official documentation.](https://help.webex.com/en-us/article/pf66vg/Log-and-analyze-user-sign-ins-and-sign-outs)

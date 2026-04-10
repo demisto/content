@@ -482,3 +482,6 @@ tests:
 fromversion: 6.2.0
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- agentix
+- xsiam

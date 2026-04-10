@@ -12,5 +12,9 @@
     "truncated": false,
     "type": "plain_text",
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

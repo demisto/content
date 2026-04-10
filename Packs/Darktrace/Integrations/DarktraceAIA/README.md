@@ -1,11 +1,7 @@
 Darktrace is a Cyber AI platform for threat detection and response across cloud, email, industrial, and the network.
 This integration was integrated and tested with version 6.0.0 of Darktrace
 
-## Configure Darktrace on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Darktrace.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Darktrace in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,11 +15,9 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 | max_alerts | Maximum Model Breaches per Fetch | False |
 | first_fetch | First fetch time | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### darktrace-get-ai-analyst-incident-event

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the **Remove rawJSON from indicators** parameter in the integration to be enabled by default"
+}

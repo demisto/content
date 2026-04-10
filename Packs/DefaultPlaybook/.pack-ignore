@@ -10,5 +10,8 @@ ignore=BA101
 [file:pack_metadata.json]
 ignore=PA125
 
+[file:layoutscontainer-Default.json]
+ignore=LO107
+
 [known_words]
 Deduplicates

@@ -25,3 +25,7 @@ tests:
 - No test
 fromversion: 6.0.0
 dockerimage: demisto/python:2.7.18.27799
+supportedModules:
+- agentix
+- xsiam
+- edr

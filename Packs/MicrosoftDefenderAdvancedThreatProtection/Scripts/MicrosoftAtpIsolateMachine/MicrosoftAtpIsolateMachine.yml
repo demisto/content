@@ -1,0 +1,75 @@
+commonfields:
+  id: MicrosoftAtpIsolateMachine
+  version: -1
+name: MicrosoftAtpIsolateMachine
+script: ''
+type: python
+tags:
+  - Utilities
+comment: A polling wrapper script; isolates a machine from accessing external networks.
+enabled: true
+args:
+  - description: "A comma-separated list of machine IDs to be used for isolation. For example: 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424."
+    isArray: true
+    name: machine_id
+    required: true
+    default: true
+  - description: A comment to associate with the action.
+    name: comment
+    required: true
+  - description: Full isolation or selective isolation (restrict only limited set of applications from accessing the network).
+    name: isolation_type
+    auto: PREDEFINED
+    predefined:
+    - Full
+    - Selective
+    required: true
+  - deprecated: true
+    description: Flag for the rate limit retry.
+    name: ran_once_flag
+outputs:
+  - contextPath: MicrosoftATP.MachineAction.ID
+    description: The machine action ID.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.Type
+    description: The machine action type.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.Scope
+    description: The scope of the action.
+    type: Unknown
+  - contextPath: MicrosoftATP.MachineAction.Requestor
+    description: The ID of the user that executed the action.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.RequestorComment
+    description: The comment that was written when issuing the action.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.Status
+    description: The current status of the command.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.MachineID
+    description: The machine ID on which the action was executed.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+    description: The machine DNS name on which the action was executed.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+    description: The date and time when the action was created.
+    type: Date
+  - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+    description: The last date and time when the action status was updated.
+    type: Date
+  - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+    description: The file identifier.
+    type: String
+  - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+    description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
+    type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.1.0
+isInternal: true
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform

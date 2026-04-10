@@ -2,7 +2,7 @@
     "name": "Microsoft DHCP",
     "description": "Dynamic Host Configuration Protocol (DHCP) is a client/server protocol that automatically provides an Internet Protocol (IP) host with its IP address and other related configuration information such as the subnet mask and default gateway.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -13,6 +13,11 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

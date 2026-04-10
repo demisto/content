@@ -6,34 +6,40 @@ from CommonServerUserPython import *  # noqa: F401
 """IMPORTS"""
 
 import json
-import urllib3
-from datetime import datetime, timedelta, UTC
+import traceback
+from datetime import UTC, datetime, timedelta
 from typing import Any, TypeVar
+
 import pytmv1
-from pytmv1 import (
-    TiAlert,
-    SaeAlert,
-    ObjectType,
-    ResultCode,
-    ObjectRequest,
-    EmailActivity,
+import urllib3
+from pytmv1.client import Client
+from pytmv1.core import Core
+from pytmv1 import (  # noqa: E402
     AccountRequest,
-    EndpointRequest,
-    ExceptionObject,
-    EndpointActivity,
-    SuspiciousObject,
+    AlertStatus,
     CollectFileRequest,
     CollectFileTaskResp,
     CustomScriptRequest,
-    InvestigationStatus,
+    EmailActivity,
     EmailMessageIdRequest,
     EmailMessageUIdRequest,
+    EndpointActivity,
+    EndpointRequest,
+    ExceptionObject,
+    InvestigationResult,
+    ObjectRequest,
+    ObjectType,
+    ResultCode,
+    SaeAlert,
+    SuspiciousObject,
     SuspiciousObjectRequest,
     TerminateProcessRequest,
+    TiAlert,
 )
 
 """CONSTANTS"""
 VENDOR_NAME = "TrendMicroVisionOneV3"
+MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 ACCOUNT_IDENTIFIERS = "account_identifiers"
 EMAIL_IDENTIFIERS = "email_identifiers"
 ENDPOINT_IDENTIFIERS = "endpoint_identifiers"
@@ -48,6 +54,7 @@ MEDIUM = "medium"
 NAME = "name"
 PATH = "path"
 IF_MATCH = "if_match"
+INV_RESULT = "inv_result"
 FALSE = "false"
 TRUE = "true"
 POLL = "poll"
@@ -160,9 +167,7 @@ TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
 TABLE_GET_ALERT_DETAILS = "Alert details "
 TABLE_COLLECT_FILE = "Collect forensic file "
-TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = (
-    "Download information for collected forensic file "
-)
+TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = "Download information for collected forensic file "
 TABLE_SUBMIT_FILE_TO_SANDBOX = "Submit file to sandbox "
 TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX = "Submit file entry to sandbox "
 TABLE_SUBMIT_URLS_TO_SANDBOX = "Submit urls to sandbox "
@@ -194,42 +199,26 @@ ISOLATE_ENDPOINT_COMMAND = "trendmicro-visionone-isolate-endpoint"
 RESTORE_ENDPOINT_COMMAND = "trendmicro-visionone-restore-endpoint-connection"
 TERMINATE_PROCESS_COMMAND = "trendmicro-visionone-terminate-process"
 ADD_EXCEPTION_LIST_COMMAND = "trendmicro-visionone-add-objects-to-exception-list"
-DELETE_EXCEPTION_LIST_COMMAND = (
-    "trendmicro-visionone-delete-objects-from-exception-list"
-)
+DELETE_EXCEPTION_LIST_COMMAND = "trendmicro-visionone-delete-objects-from-exception-list"
 ADD_SUSPICIOUS_LIST_COMMAND = "trendmicro-visionone-add-objects-to-suspicious-list"
-DELETE_SUSPICIOUS_LIST_COMMAND = (
-    "trendmicro-visionone-delete-objects-from-suspicious-list"
-)
+DELETE_SUSPICIOUS_LIST_COMMAND = "trendmicro-visionone-delete-objects-from-suspicious-list"
 GET_FILE_ANALYSIS_STATUS_COMMAND = "trendmicro-visionone-get-file-analysis-status"
 GET_FILE_ANALYSIS_RESULT_COMMAND = "trendmicro-visionone-get-file-analysis-result"
 COLLECT_FILE_COMMAND = "trendmicro-visionone-collect-forensic-file"
-DOWNLOAD_COLLECTED_FILE_COMMAND = (
-    "trendmicro-visionone-download-information-for-collected-forensic-file"
-)
+DOWNLOAD_COLLECTED_FILE_COMMAND = "trendmicro-visionone-download-information-for-collected-forensic-file"
 DOWNLOAD_ANALYSIS_REPORT_COMMAND = "trendmicro-visionone-download-analysis-report"
-DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND = (
-    "trendmicro-visionone-download-investigation-package"
-)
-DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND = (
-    "trendmicro-visionone-download-suspicious-object-list"
-)
+DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND = "trendmicro-visionone-download-investigation-package"
+DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND = "trendmicro-visionone-download-suspicious-object-list"
 FILE_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-file-to-sandbox"
 FILE_ENTRY_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-file-entry-to-sandbox"
 URLS_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-urls-to-sandbox"
-SANDBOX_SUBMISSION_POLLING_COMMAND = (
-    "trendmicro-visionone-run-sandbox-submission-polling"
-)
+SANDBOX_SUBMISSION_POLLING_COMMAND = "trendmicro-visionone-run-sandbox-submission-polling"
 CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
 GET_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-email-activity-data"
-GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND = (
-    "trendmicro-visionone-get-email-activity-data-count"
-)
+GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND = "trendmicro-visionone-get-email-activity-data-count"
 GET_ENDPOINT_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-endpoint-activity-data"
-GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND = (
-    "trendmicro-visionone-get-endpoint-activity-data-count"
-)
+GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND = "trendmicro-visionone-get-endpoint-activity-data-count"
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
@@ -239,11 +228,13 @@ UPDATE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-update-custom-script"
 DELETE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-delete-custom-script"
 DOWNLOAD_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-download-custom-script"
 GET_CUSTOM_SCRIPT_LIST_COMMAND = "trendmicro-visionone-get-custom-script-list"
-GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = (
-    "trendmicro-visionone-get-observed-attack-techniques"
-)
+GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = "trendmicro-visionone-get-observed-attack-techniques"
 FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
+UPDATE_REMOTE_SYSTEM_COMMAND = "update-remote-system"
+GET_REMOTE_DATA_COMMAND = "get-remote-data"
+GET_MODIFIED_REMOTE_DATA_COMMAND = "get-modified-remote-data"
+GET_MAPPING_FIELDS_COMMAND = "get-mapping-fields"
 
 table_name = {
     ADD_NOTE_COMMAND: TABLE_ADD_NOTE,
@@ -290,8 +281,6 @@ table_name = {
     GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT,
     DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
 }
-# disable insecure warnings
-urllib3.disable_warnings()
 
 _T = TypeVar("_T")
 
@@ -321,7 +310,9 @@ def status_check(v1_client: pytmv1.Client, data: dict[str, Any]) -> Any:
 
     # Make rest call
     resp = v1_client.task.get_result(
-        task_id=task_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        task_id=task_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     # Check if error response is returned
     if _is_pytmv1_error(resp.result_code):
@@ -368,9 +359,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
         if _is_pytmv1_error(analysis_resp.result_code):
             error: pytmv1.Error = unwrap(analysis_resp.error)
             return_error(message=f"{error.message}", error=str(error))
-        analysis_resp_obj: pytmv1.SandboxAnalysisResultResp = unwrap(
-            analysis_resp.response
-        )
+        analysis_resp_obj: pytmv1.SandboxAnalysisResultResp = unwrap(analysis_resp.response)
         risk = analysis_resp_obj.risk_level
         risk_score = incident_severity_to_dbot_score(risk)
         digest: pytmv1.Digest = unwrap(analysis_resp_obj.digest)
@@ -385,9 +374,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
             score=risk_score,
             reliability=reliability,
         )
-        file_entry = Common.File(
-            sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
-        )
+        file_entry = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score)
         message = {
             "status_code": 200,
             "status": task_status,
@@ -438,9 +425,7 @@ def exception_list_count(v1_client: pytmv1.Client) -> int:
     #
     # Make rest call
     try:
-        v1_client.object.consume_exception(
-            lambda exception: new_exceptions.append(exception)
-        )
+        v1_client.object.consume_exception(lambda exception: new_exceptions.append(exception))
     except Exception as err:
         raise RuntimeError(f"Error while fetching exception list count.\n {err}")
     # Return length of exception list
@@ -457,9 +442,7 @@ def suspicious_list_count(v1_client: pytmv1.Client) -> int:
 
     # Make rest call
     try:
-        v1_client.object.consume_suspicious(
-            lambda suspicious: new_suspicious.append(suspicious)
-        )
+        v1_client.object.consume_suspicious(lambda suspicious: new_suspicious.append(suspicious))
     except Exception as err:
         raise RuntimeError(f"Error while fetching suspicious list count.\n {err}")
     # Return length of suspicious list
@@ -543,7 +526,17 @@ def incident_severity_to_dbot_score(severity: str) -> int:
 
 # returns initialized pytmv1 client used to make rest calls
 def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
-    return pytmv1.init(name, api_key, base_url)
+    return Client(
+        Core(
+            appname=name,
+            token=api_key,
+            url=base_url,
+            pool_connections=1,
+            pool_maxsize=1,
+            connect_timeout=10,
+            read_timeout=30,
+        )
+    )
 
 
 # Checks the api response for error
@@ -558,9 +551,7 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
     return ObjectType[obj_type.upper()]
 
 
-def run_polling_command(
-    args: dict[str, Any], cmd: str, v1_client: pytmv1.Client
-) -> str | CommandResults:
+def run_polling_command(args: dict[str, Any], cmd: str, v1_client: pytmv1.Client) -> str | CommandResults:
     """
     Performs polling interval to check status of task.
     :type args: ``args``
@@ -598,9 +589,7 @@ def run_polling_command(
     return command_results
 
 
-def get_task_status(
-    args: dict[str, Any], v1_client: pytmv1.Client
-) -> str | CommandResults:
+def get_task_status(args: dict[str, Any], v1_client: pytmv1.Client) -> str | CommandResults:
     """
     check status of task.
 
@@ -613,9 +602,7 @@ def get_task_status(
     return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, v1_client)
 
 
-def get_sandbox_submission_status(
-    args: dict[str, Any], v1_client: pytmv1.Client
-) -> str | CommandResults:
+def get_sandbox_submission_status(args: dict[str, Any], v1_client: pytmv1.Client) -> str | CommandResults:
     """
     call polling command to check status of sandbox submission.
     :type args: ``args``
@@ -634,15 +621,16 @@ def test_module(v1_client: pytmv1.Client) -> str:
     """
 
     # Make rest call
+    demisto.debug("test_module: checking connectivity")
     resp = v1_client.system.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
+        demisto.debug(f"test_module: connectivity check failed, error={resp.error}")
         return FAILED_CONNECTIVITY
+    demisto.debug("test_module: connectivity check passed")
     return "ok"
 
 
-def enable_or_disable_user_account(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def enable_or_disable_user_account(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Enable allows the user to sign in to new application and browser sessions.
     Disable signs the user out of all active application and browser sessions,
@@ -718,9 +706,7 @@ def enable_or_disable_user_account(
     )
 
 
-def force_sign_out(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def force_sign_out(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Signs the user out of all active application and browser sessions.
     Supported IAM systems: Azure AD
@@ -769,9 +755,7 @@ def force_sign_out(
     )
 
 
-def force_password_reset(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def force_password_reset(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Signs the user out of all active application and browser sessions,
     and forces the user to create a new password during the next sign-in attempt.
@@ -822,9 +806,7 @@ def force_password_reset(
     )
 
 
-def get_endpoint_info(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_endpoint_info(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve information about the endpoint queried and
     sends the result to demisto war room.
@@ -878,9 +860,7 @@ def get_endpoint_info(
     )
 
 
-def get_endpoint_activity_data(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_endpoint_activity_data(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Displays search results from the Endpoint Activity Data source
     in a paginated list and sends the result to demisto war room.
@@ -917,9 +897,7 @@ def get_endpoint_activity_data(
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
     if fetch_all == TRUE:
         if activity_count > fetch_max_count and fetch_max_count != 0:
-            return_error(
-                f"Please refine search, this query returns more than {fetch_max_count} results."
-            )
+            return_error(f"Please refine search, this query returns more than {fetch_max_count} results.")
         # Make rest call
         resp = v1_client.endpoint.consume_activity(
             lambda activity: new_endpoint_activity.append(activity),
@@ -961,9 +939,7 @@ def get_endpoint_activity_data(
     )
 
 
-def get_endpoint_activity_data_count(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_endpoint_activity_data_count(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetches endpoint activity data count.
 
@@ -1010,9 +986,7 @@ def get_endpoint_activity_data_count(
     )
 
 
-def get_email_activity_data(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_email_activity_data(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Displays search results from the Email Activity Data source
     in a paginated list and sends the result to demisto war room.
@@ -1050,9 +1024,7 @@ def get_email_activity_data(
     # Check if user would like to fetch all activity
     if fetch_all == TRUE:
         if activity_count > fetch_max_count and fetch_max_count != 0:
-            return_error(
-                f"Please refine search, this query returns more than {fetch_max_count} results."
-            )
+            return_error(f"Please refine search, this query returns more than {fetch_max_count} results.")
         # Make rest call
         resp = v1_client.email.consume_activity(
             lambda activity: new_email_activity.append(activity),
@@ -1093,9 +1065,7 @@ def get_email_activity_data(
     )
 
 
-def get_email_activity_data_count(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_email_activity_data_count(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetches email activity data count.
 
@@ -1142,9 +1112,7 @@ def get_email_activity_data_count(
     )
 
 
-def add_or_remove_from_block_list(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def add_or_remove_from_block_list(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve data from the add or remove from block list and
     sends the result to demist war room.
@@ -1220,13 +1188,31 @@ def add_or_remove_from_block_list(
     )
 
 
+def get_mirroring() -> dict[str, Any]:
+    """
+    Get mirroring configuration fields.
+    Returns mirror_direction, mirror_instance fields that will be mapped
+    to dbotMirrorDirection, dbotMirrorInstance via Incoming Mapper.
+
+    Returns:
+        dict: Dictionary containing mirror configuration fields
+    """
+    params = demisto.params()
+    mirror_direction = params.get("mirror_direction", "None")
+
+    return {
+        "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
+        "mirror_instance": demisto.integrationInstance(),
+    }
+
+
 def fetch_incidents(v1_client: pytmv1.Client):
     """
     This function executes to get all workbench alerts by using
     startDateTime, endDateTime and sends the result to war room.
     """
     end = datetime.now(UTC)
-    days = int(demisto.params().get("first_fetch", ""))
+    days = int(demisto.params().get("first_fetch", "7"))
 
     last_run = demisto.getLastRun()
     if last_run and "start_time" in last_run:
@@ -1234,31 +1220,31 @@ def fetch_incidents(v1_client: pytmv1.Client):
     else:
         start = end + timedelta(days=-days)
     # Fetch alerts
+    demisto.debug(f"fetch_incidents: querying alerts from {start.isoformat()} to {end.isoformat()}")
     alerts: list[Any] = get_workbench_histories(v1_client, start, end)
-    # list to store incidents that will be sent to the UI
+    # Sort by created_date_time ascending so oldest alerts are processed first
+    alerts.sort(key=lambda a: a.created_date_time)
     incidents: list[dict[str, Any]] = []
-    if alerts:
-        # Alerts are fetched per created_date_time in descending order
-        # Set the last_event to the created_date_time for the first alert
-        # in alert list to get the latest created_date_time
-        for record in alerts:
-            incident = {
-                "name": record.model,
-                "dbotMirrorId": record.id,
-                "details": record.description if isinstance(record, SaeAlert) else None,
-                "occurred": record.created_date_time,
-                "severity": incident_severity_to_dbot_score(record.severity),
-                "rawJSON": record.model_dump_json(),
-            }
-            incidents.append(incident)
+    for record in alerts:
+        alert_data = record.model_dump()
+
+        mirroring_fields = get_mirroring()
+        mirroring_fields["mirror_id"] = record.id
+        alert_data.update(mirroring_fields)
+
+        incident = {
+            "name": record.model,
+            "occurred": record.created_date_time,
+            "severity": incident_severity_to_dbot_score(record.severity),
+            "rawJSON": json.dumps(alert_data),
+        }
+        incidents.append(incident)
+    demisto.debug(f"fetch_incidents: {len(incidents)} incidents created, next start_time={end.isoformat()}")
     demisto.setLastRun({"start_time": end.isoformat()})
     demisto.incidents(incidents)
-    return incidents
 
 
-def quarantine_or_delete_email_message(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def quarantine_or_delete_email_message(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve data from the quarantine or delete email message and
     sends the result to demist war room.
@@ -1351,9 +1337,7 @@ def quarantine_or_delete_email_message(
     )
 
 
-def restore_email_message(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def restore_email_message(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Restores a quarantined email message and
     sends the result to demist war room.
@@ -1416,9 +1400,7 @@ def restore_email_message(
     )
 
 
-def isolate_or_restore_connection(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def isolate_or_restore_connection(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve data from the isolate or restore endpoint connection and
     sends the result to demist war room.
@@ -1508,9 +1490,7 @@ def isolate_or_restore_connection(
     )
 
 
-def terminate_process(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def terminate_process(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Terminate the process running on the end point and
     sends the result to demist war room.
@@ -1572,9 +1552,7 @@ def terminate_process(
     )
 
 
-def add_or_delete_from_exception_list(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def add_or_delete_from_exception_list(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Add or Delete the exception object to exception list and
     sends the result to demist war room.
@@ -1658,9 +1636,7 @@ def add_or_delete_from_exception_list(
     )
 
 
-def add_to_suspicious_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def add_to_suspicious_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Add suspicious object to suspicious list and
     sends the result to demist war room.
@@ -1720,9 +1696,7 @@ def add_to_suspicious_list(
     )
 
 
-def delete_from_suspicious_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def delete_from_suspicious_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Delete the suspicious object from suspicious list and
     sends the result to demist war room.
@@ -1778,9 +1752,7 @@ def delete_from_suspicious_list(
     )
 
 
-def get_file_analysis_status(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_file_analysis_status(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Get the status of file based on task id and
     sends the result to demist war room
@@ -1821,9 +1793,7 @@ def get_file_analysis_status(
     )
 
 
-def get_file_analysis_result(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_file_analysis_result(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
@@ -1888,9 +1858,7 @@ def get_file_analysis_result(
         },
     }
     return CommandResults(
-        readable_output=tableToMarkdown(
-            table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True
-        ),
+        readable_output=tableToMarkdown(table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True),
         outputs_prefix="VisionOne.File_Analysis_Result",
         outputs_key_field="id",
         outputs=message,
@@ -1898,9 +1866,7 @@ def get_file_analysis_result(
     )
 
 
-def collect_file(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def collect_file(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1957,9 +1923,7 @@ def collect_file(
     )
 
 
-def download_information_collected_file(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def download_information_collected_file(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
@@ -2002,9 +1966,7 @@ def download_information_collected_file(
     )
 
 
-def download_analysis_report(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> Any | CommandResults:
+def download_analysis_report(v1_client: pytmv1.Client, args: dict[str, Any]) -> Any | CommandResults:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
@@ -2027,7 +1989,9 @@ def download_analysis_report(
 
     # Make rest call
     resp = v1_client.sandbox.download_analysis_result(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        submit_id=submit_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     analysis_resp: pytmv1.BytesResp = unwrap(resp.response)
     # Check if an error occurred
@@ -2062,9 +2026,7 @@ def download_analysis_report(
     ]
 
 
-def download_investigation_package(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> Any | CommandResults:
+def download_investigation_package(v1_client: pytmv1.Client, args: dict[str, Any]) -> Any | CommandResults:
     """
     Downloads the Investigation Package of the specified object based on
     submission id and sends the file to demist war room where it can be downloaded.
@@ -2087,7 +2049,9 @@ def download_investigation_package(
 
     # Make rest call
     resp = v1_client.sandbox.download_investigation_package(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        submit_id=submit_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     investigation_resp: pytmv1.BytesResp = unwrap(resp.response)
     # Check if an error occurred
@@ -2123,9 +2087,7 @@ def download_investigation_package(
     ]
 
 
-def download_suspicious_object_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def download_suspicious_object_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Downloads the suspicious object list associated to the specified object
     Note: Suspicious Object lists are only available for objects with a high risk level
@@ -2145,7 +2107,9 @@ def download_suspicious_object_list(
 
     # Make rest call
     resp = v1_client.sandbox.list_suspicious(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        submit_id=submit_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     sus_list_resp: pytmv1.ListSandboxSuspiciousResp = unwrap(resp.response)
     # Check if an error occurred
@@ -2169,9 +2133,7 @@ def download_suspicious_object_list(
     )
 
 
-def submit_file_to_sandbox(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def submit_file_to_sandbox(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -2226,9 +2188,7 @@ def submit_file_to_sandbox(
     )
 
 
-def submit_file_entry_to_sandbox(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def submit_file_entry_to_sandbox(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     submit file entry to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -2290,9 +2250,7 @@ def submit_file_entry_to_sandbox(
     )
 
 
-def submit_urls_to_sandbox(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def submit_urls_to_sandbox(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     submit Urls to sandbox and send the result to demist war room
     :type client: ``Client``
@@ -2328,9 +2286,7 @@ def submit_urls_to_sandbox(
     )
 
 
-def get_alert_details(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_alert_details(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetch information for a specific alert and display in war room.
     :type client: ``Client``
@@ -2410,9 +2366,7 @@ def add_note(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandRes
     )
 
 
-def update_status(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def update_status(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``
@@ -2426,14 +2380,17 @@ def update_status(
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
+    inv_res = args.get(INV_RESULT, EMPTY_STRING)
     message: dict[str, Any] = {}
-    # Choose Status Enum
-    sts = status.upper()
     # Assign enum status
-    status = InvestigationStatus[sts]
+    sts = AlertStatus[status.upper()]
+    inv_result = InvestigationResult[inv_res.upper()]
     # Make rest call
     resp = v1_client.alert.update_status(
-        alert_id=workbench_id, status=status, if_match=if_match
+        alert_id=workbench_id,
+        status=sts,
+        etag=if_match,
+        inv_result=inv_result,
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
@@ -2458,9 +2415,342 @@ def update_status(
     )
 
 
-def run_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def xsoar_status_to_vision_one(incident_status: int) -> str:
+    """
+    Maps XSOAR incident status to Vision One alert status.
+    Returns the alert status enum name (lowercase) for enum access.
+    """
+    if incident_status == 0:  # Pending
+        return "open"
+    elif incident_status == 1:  # Active
+        return "in_progress"
+    elif incident_status == 2:  # Closed
+        return "closed"
+    return "open"
+
+
+def update_remote_system_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> str:
+    """
+    Handles outgoing mirroring - pushes XSOAR incident changes to Vision One alerts.
+    Syncs status and closeReason fields directly from incident data.
+
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client
+    :param args: Arguments containing incident data and delta
+    :return: Remote incident ID
+    """
+    # Parse arguments using UpdateRemoteSystemArgs
+    parsed_args = UpdateRemoteSystemArgs(args)
+
+    # Return early if no remote incident ID
+    if not parsed_args.remote_incident_id:
+        return EMPTY_STRING
+
+    remote_incident_id = parsed_args.remote_incident_id
+
+    try:
+        demisto.debug(
+            f"update_remote_system: remote_incident_id={remote_incident_id}, "
+            f"incident_changed={parsed_args.incident_changed}, "
+            f"delta={parsed_args.delta}, "
+            f"data_keys={list(parsed_args.data.keys()) if parsed_args.data else 'None'}, "
+            f"data={parsed_args.data}"
+        )
+
+        # Process if incident changed (regardless of delta/mapper)
+        if parsed_args.incident_changed:
+            # Get status directly from data (not from delta)
+            incident_status = parsed_args.data.get("status")
+
+            if incident_status is None:
+                return remote_incident_id
+
+            # Get alert ETag (required for updates)
+            resp = v1_client.alert.get(alert_id=remote_incident_id)
+
+            if _is_pytmv1_error(resp.result_code):
+                err: pytmv1.Error = unwrap(resp.error)
+                demisto.error(f"update_remote_system: Error fetching alert {remote_incident_id}: {err.message}")
+                return remote_incident_id
+
+            alert_resp: pytmv1.GetAlertResp = unwrap(resp.response)
+            etag = alert_resp.etag
+
+            if not etag:
+                demisto.error(f"update_remote_system: No etag returned for alert {remote_incident_id}")
+                return remote_incident_id
+
+            # Get close reason and notes from data
+            close_reason = parsed_args.data.get("closeReason", EMPTY_STRING)
+            close_notes = parsed_args.data.get("closeNotes", EMPTY_STRING)
+            closing_user_id = parsed_args.data.get("closingUserId", EMPTY_STRING)
+            xsoar_incident_id = parsed_args.data.get("id", EMPTY_STRING)
+
+            # Map XSOAR status to Vision One status
+            v1_status = xsoar_status_to_vision_one(incident_status)
+            sts = AlertStatus[v1_status.upper()]
+
+            # Map closeReason to investigation result only when incident is Closed
+            inv_result_enum = None
+            if incident_status == 2 and close_reason:  # Closed with closeReason
+                # Map XSOAR closeReason (string) to Vision One InvestigationResult
+                # XSOAR closeReason values: "False Positive", "Resolved", "Duplicate", "Other"
+                if close_reason == "False Positive":
+                    inv_result_enum = InvestigationResult.FALSE_POSITIVE
+                elif close_reason == "Resolved":
+                    inv_result_enum = InvestigationResult.TRUE_POSITIVE
+                elif close_reason == "Duplicate":
+                    inv_result_enum = InvestigationResult.NO_FINDINGS
+                elif close_reason == "Other":
+                    inv_result_enum = InvestigationResult.NOTEWORTHY
+
+            # Update status (and optionally inv_result if Closed with closeReason)
+            resp = v1_client.alert.update_status(  # type: ignore[assignment]
+                alert_id=remote_incident_id,
+                status=sts,
+                etag=etag,
+                inv_result=inv_result_enum,  # None if not Closed or no closeReason
+            )
+
+            if _is_pytmv1_error(resp.result_code):
+                err: pytmv1.Error = unwrap(resp.error)  # type: ignore[no-redef]
+                demisto.error(f"update_remote_system: Error updating status: {err.message}")
+                return remote_incident_id
+
+            if incident_status == 2 and close_notes:
+                closing_note = (
+                    f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n"
+                    f"Close Reason: {close_reason}\n\n"
+                    f"Closed By: {closing_user_id}\n\n"
+                    f"Close Notes: {close_notes}"
+                )
+
+                # Add note to Vision One alert
+                note_resp = v1_client.note.create(alert_id=remote_incident_id, note_content=closing_note)
+
+                if _is_pytmv1_error(note_resp.result_code):
+                    err_note: pytmv1.Error = unwrap(note_resp.error)
+                    demisto.error(f"update_remote_system: Error adding closing note: {err_note.message}")
+
+    except Exception as e:
+        demisto.error(f"update_remote_system: Error updating Vision One alert {remote_incident_id}: {str(e)}")
+
+    return remote_incident_id
+
+
+def vision_one_status_to_xsoar(v1_status: str) -> int:
+    """
+    Maps Vision One alert status to XSOAR incident status.
+    Vision One API returns: "Open", "In Progress", "Closed"
+    XSOAR expects: 0=Pending, 1=Active, 2=Closed
+    """
+    status_map = {
+        "Open": 0,  # Pending
+        "In Progress": 1,  # Active
+        "Closed": 2,  # Closed
+    }
+    return status_map.get(v1_status, 0)  # Default to Pending if unknown
+
+
+def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Handles incoming mirroring - detects which Vision One alerts have been modified.
+    Queries alerts updated since last_update timestamp and returns their IDs.
+
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client
+    :param args: Arguments containing last_update timestamp
+    :return: GetModifiedRemoteDataResponse with list of modified alert IDs
+    """
+    # Check if lastUpdate is provided in args before parsing
+    if "lastUpdate" not in args or not args.get("lastUpdate"):
+        demisto.debug("get_modified_remote_data: First sync, no last_update provided, returning empty list")
+        return GetModifiedRemoteDataResponse([])
+
+    # Parse arguments
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+
+    try:
+        last_update_dt = arg_to_datetime(last_update, is_utc=True, required=True)
+    except Exception as e:
+        demisto.error(f"get_modified_remote_data: Invalid last_update format: {last_update}, error: {e}")
+        last_update_dt = datetime.now(UTC) - timedelta(hours=1)
+
+    # Set end time to now
+    end_dt = datetime.now(UTC)
+
+    # Format timestamps for Vision One API (ISO 8601 format: yyyy-MM-ddThh:mm:ssZ)
+    if not check_datetime_aware(last_update_dt):
+        last_update_dt = last_update_dt.astimezone()  # type: ignore[union-attr]
+    if not check_datetime_aware(end_dt):
+        end_dt = end_dt.astimezone()
+
+    last_update_dt = last_update_dt.astimezone(UTC)  # type: ignore[union-attr]
+    end_dt = end_dt.astimezone(UTC)
+
+    # Format to ISO 8601 without milliseconds for API compatibility
+    formatted_start = last_update_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+    formatted_end = end_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+    # List to collect modified alert IDs
+    modified_incident_ids: list[str] = []
+
+    def _collect_alerts(alert: SaeAlert | TiAlert) -> None:
+        """Callback to collect alert IDs."""
+        modified_incident_ids.append(alert.id)
+
+    try:
+        # Query Vision One for alerts updated in the time range
+        # Use updatedDateTime as the date_time_target to get modified alerts
+        v1_client.alert.consume(
+            _collect_alerts,
+            start_time=formatted_start,
+            end_time=formatted_end,
+            date_time_target="updatedDateTime",
+        )
+
+    except Exception as err:
+        demisto.error(f"get_modified_remote_data: Error fetching modified alerts: {err}")
+        # Return empty list on error - XSOAR will handle gracefully
+        return GetModifiedRemoteDataResponse([])
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
+def get_remote_data_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> GetRemoteDataResponse:
+    """
+    Handles incoming mirroring - fetches updated alert data from Vision One.
+    Only returns data when changes are detected to optimize performance.
+
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client
+    :param args: Arguments containing remote_incident_id (alert ID) and last_update timestamp
+    :return: GetRemoteDataResponse with updated incident data and entries
+    """
+    # Use GetRemoteDataArgs for standardized argument parsing
+    parsed_args = GetRemoteDataArgs(args)
+    alert_id = parsed_args.remote_incident_id
+    last_update = parsed_args.last_update
+
+    if not alert_id:
+        return GetRemoteDataResponse({}, [])
+
+    try:
+        # Fetch alert data from Vision One
+        resp = v1_client.alert.get(alert_id=alert_id)
+
+        if _is_pytmv1_error(resp.result_code):
+            err: pytmv1.Error = unwrap(resp.error)
+            demisto.error(f"get_remote_data: Error fetching alert {alert_id}: {err.message}")
+            return GetRemoteDataResponse({}, [])
+
+        alert_resp: pytmv1.GetAlertResp = unwrap(resp.response)
+        alert_data = alert_resp.data.model_dump()
+
+        # Check if alert was modified after last_update (optimize performance)
+        alert_updated_time = alert_data.get("updated_date_time")
+        if last_update and alert_updated_time:
+            try:
+                last_update_dt = arg_to_datetime(last_update, is_utc=True, required=True)
+                alert_updated_dt = arg_to_datetime(alert_updated_time, is_utc=True, required=True)
+
+                if alert_updated_dt <= last_update_dt:  # type: ignore[operator]
+                    return GetRemoteDataResponse({}, [])
+            except Exception:
+                pass
+
+        # Save original Vision One status before modifying alert_data
+        v1_status = alert_data.get("status", "open")
+        v1_status_str = v1_status.value if hasattr(v1_status, "value") else str(v1_status)
+        v1_status_lower = v1_status_str.lower()
+
+        investigation_result = alert_data.get("investigation_result", "")
+        if investigation_result:
+            investigation_result = investigation_result.value if hasattr(investigation_result, "value") else investigation_result
+
+        demisto.debug(f"get_remote_data: alert_id={alert_id}, " f"v1_status_lower={v1_status_lower}")
+
+        entries = []
+
+        if v1_status_lower == "closed":
+            close_reason = "Other"
+            close_notes = f"Vision One alert status: {v1_status_str}"
+
+            if investigation_result:
+                inv_result_mapping = {
+                    "True Positive": "Resolved",
+                    "False Positive": "False Positive",
+                    "Benign True Positive": "False Positive",
+                    "No Findings": "Duplicate",
+                    "Noteworthy": "Other",
+                }
+                close_reason = inv_result_mapping.get(investigation_result, "Other")
+                close_notes = f"Vision One investigation result: {investigation_result}"
+
+            close_entry = {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": close_reason,
+                    "closeNotes": close_notes,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+            entries.append(close_entry)
+        elif v1_status_lower in ["open", "in progress"]:
+            reopen_entry = {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentReopen": True,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+            entries.append(reopen_entry)
+
+        if entries:
+            demisto.debug(f"get_remote_data: Returning entries for alert {alert_id}, entries count: {len(entries)}")
+            return GetRemoteDataResponse(alert_data, entries)
+        else:
+            demisto.debug(f"get_remote_data: No status change needed for alert {alert_id}")
+            return GetRemoteDataResponse(alert_data, [])
+
+    except Exception as e:
+        demisto.error(f"get_remote_data: Error processing alert {alert_id}: {str(e)}")
+        return GetRemoteDataResponse({}, [])
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the mapping schema for Vision One alerts to XSOAR incidents.
+    Used by XSOAR UI to show available fields when configuring mappers.
+
+    This function returns ONLY fields that are relevant for mirroring:
+    - Fields that can be synced bidirectionally or incoming-only
+    - Fields that are actually used by get_remote_data_command
+    """
+    incident_type_name = "Trend Micro Vision One XDR Incident"
+    mapping = SchemeTypeMapping(type_name=incident_type_name)
+
+    # Define ONLY mirroring-relevant fields that get_remote_data actually syncs
+    mapping_fields = {
+        # Bidirectional mirroring fields (synced both ways)
+        "status": "Alert Status - synced bidirectionally (Open/In Progress/Closed)",
+        "investigation_result": "Investigation Result - synced bidirectionally,"
+        " mapped to/from closeReason (True Positive/False Positive/No Findings/Noteworthy)",
+        # Incoming mirroring fields (Vision One → XSOAR only)
+        "severity": "Alert Severity - synced from Vision One to XSOAR",
+        "investigation_status": "Investigation Status - synced from Vision One (New/In Progress/Closed)",
+        # Mirror configuration fields (required for mirroring to work)
+        "mirror_direction": "Mirror Direction - required for mirroring",
+        "mirror_instance": "Mirror Instance - required for mirroring",
+        "mirror_id": "Mirror ID - required for mirroring",
+    }
+
+    for field_name, field_description in mapping_fields.items():
+        mapping.add_field(name=field_name, description=field_description)
+
+    return GetMappingFieldsResponse([mapping])
+
+
+def run_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Runs custom script using endpoint (hostname) or agent_guid
     :type client: ``Client``
@@ -2516,9 +2806,7 @@ def run_custom_script(
     )
 
 
-def get_custom_script_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_custom_script_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetches a list of custom scripts in Response Management under Custom Script tab
     :type client: ``Client``
@@ -2576,9 +2864,7 @@ def get_custom_script_list(
     )
 
 
-def add_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def add_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Adds a custom script to Response Management under Custom Script tab
     :type client: ``Client``
@@ -2626,9 +2912,7 @@ def add_custom_script(
     )
 
 
-def download_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def download_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Download a custom script from Response Management under Custom Script tab
     :type client: ``Client``
@@ -2645,9 +2929,7 @@ def download_custom_script(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
-        demisto.results(
-            f"The script was not found. Please check script id: {script_id} and try again."
-        )
+        demisto.results(f"The script was not found. Please check script id: {script_id} and try again.")
         return_error(message=f"{err.message}", error=str(err))
     resp_text: pytmv1.TextResp = unwrap(resp.response)
     text: str = resp_text.text
@@ -2666,9 +2948,7 @@ def download_custom_script(
     )
 
 
-def update_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def update_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Updates a custom script in Response Management under Custom Script tab
     :type client: ``Client``
@@ -2718,9 +2998,7 @@ def update_custom_script(
     )
 
 
-def delete_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def delete_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Delete a custom script from Response Management under Custom Script tab
     :type client: ``Client``
@@ -2737,9 +3015,7 @@ def delete_custom_script(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
-        demisto.results(
-            f"The script was not found. Please check script id: {script_id} and try again."
-        )
+        demisto.results(f"The script was not found. Please check script id: {script_id} and try again.")
         return_error(message=f"{err.message}", error=str(err))
     resp_code: ResultCode = unwrap(resp.result_code)
     val: str = resp_code.value
@@ -2758,9 +3034,7 @@ def delete_custom_script(
     )
 
 
-def get_observed_attack_techniques(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_observed_attack_techniques(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Displays a list of Observed Attack Techniques events that match the specified criteria
     :type client: ``Client``
@@ -2800,9 +3074,7 @@ def get_observed_attack_techniques(
         raise Exception(f"{err.message}", str(err))
     resp_type: pytmv1.ListOatsResp = unwrap(resp.response)
     if resp_type.total_count > 50:
-        raise Exception(
-            "Please refine search, this query returns more than 50 results."
-        )
+        raise Exception("Please refine search, this query returns more than 50 results.")
 
     # Add results to message to be sent to the War Room
     message: list[dict[str, Any]] = []
@@ -2844,21 +3116,30 @@ def main():  # pragma: no cover
         base_url: str = params.get(URL, "")
         api_key: str = params.get(API_TOKEN, {}).get("password")
 
+        handle_proxy()
+        if params.get("insecure", False):
+            urllib3.disable_warnings()
+
+        proxy_enabled = params.get("proxy", False)
+        demisto.debug(
+            f"Initializing client: base_url={base_url}, proxy_enabled={proxy_enabled}, "
+            f"insecure={params.get('insecure', False)}"
+        )
+
         if base_url == "":
-            raise RuntimeError(
-                "The base_url cannot be empty, please provide a valid value."
-            )
+            raise RuntimeError("The base_url cannot be empty, please provide a valid value.")
         v1_client = _get_client(VENDOR_NAME, api_key, base_url)
+        demisto.debug(f"Client initialized: proxies={v1_client._core._proxies}")
 
         command = demisto.command()
-        demisto.debug(COMMAND_CALLED.format(command=command))
         args = demisto.args()
+        demisto.debug(f"Executing command: {command}")
 
         if command == TEST_MODULE:
             return_results(test_module(v1_client))
 
         elif command == FETCH_INCIDENTS:
-            return_results(fetch_incidents(v1_client))
+            fetch_incidents(v1_client)
 
         elif command in (ENABLE_USER_ACCOUNT_COMMAND, DISABLE_USER_ACCOUNT_COMMAND):
             return_results(enable_or_disable_user_account(v1_client, command, args))
@@ -2984,14 +3265,25 @@ def main():  # pragma: no cover
         elif command == GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND:
             return_results(get_observed_attack_techniques(v1_client, args))
 
+        elif command == UPDATE_REMOTE_SYSTEM_COMMAND:
+            return_results(update_remote_system_command(v1_client, args))
+
+        elif command == GET_MODIFIED_REMOTE_DATA_COMMAND:
+            return_results(get_modified_remote_data_command(v1_client, args))
+
+        elif command == GET_REMOTE_DATA_COMMAND:
+            return_results(get_remote_data_command(v1_client, args))
+
+        elif command == GET_MAPPING_FIELDS_COMMAND:
+            return_results(get_mapping_fields_command())
+
         else:
             demisto.error(f"{command} command is not implemented.")
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as error:
-        return return_error(
-            f"Failed to execute {demisto.command()} command. Error: {str(error)}"
-        )
+        demisto.error(f"Exception in main(): command={demisto.command()}, error={error!s}, traceback={traceback.format_exc()}")
+        return return_error(f"Failed to execute {demisto.command()} command. Error: {error!s}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

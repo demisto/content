@@ -60,5 +60,9 @@
                 "extractIndicatorTypesIDs": []
             }
         }
-    }
+    },
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

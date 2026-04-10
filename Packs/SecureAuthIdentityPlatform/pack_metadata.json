@@ -2,7 +2,7 @@
     "name": "SecureAuth Identity Platform",
     "description": "The SecureAuth® Identity Platform is a flexible and adaptable identity and access management solution that helps organizations prevent the misuse of credentials and eliminate identity-related breaches.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,8 +11,20 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["Secure", "Auth", "SecureAuth", "IDP", "Identity Platform", "Identity"],
+    "keywords": [
+        "Secure",
+        "Auth",
+        "SecureAuth",
+        "IDP",
+        "Identity Platform",
+        "Identity"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

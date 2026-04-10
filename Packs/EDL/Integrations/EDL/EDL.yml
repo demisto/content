@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Palo Alto Networks
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -45,7 +46,7 @@ configuration:
   defaultvalue: '2500'
   display: List Size
   name: edl_size
-  required: true
+  required: false
   type: 0
   section: Collect
 - additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
@@ -56,14 +57,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                     "
-  display: Listen Port
-  name: longRunningPort
-  type: 0
-  section: Connect
-  required: false
-  hidden:
-  - marketplacev2
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -86,6 +79,13 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If you click the **Test** button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                     "
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Connect
+  required: true
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
@@ -154,7 +154,7 @@ configuration:
   - To Ranges
 - additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
   defaultvalue: 8
-  display: 'Maximum CIDR network prefix bits size'
+  display: 'Maximum Size of CIDR Block (by mask bit)'
   name: maximum_cidr_size
   type: 0
   section: Collect
@@ -181,6 +181,7 @@ configuration:
   name: hsts_header
   type: 8
   required: false
+  section: Collect
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   display: "McAfee Gateway: Indicator List Type"
   name: mwg_type
@@ -262,6 +263,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Extensive Logging
+  name: extensive_logging
+  type: 8
+  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
@@ -354,6 +363,7 @@ script:
     arguments:
     - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`. An empty value may load unwanted indicators.
       name: query
+      required: true
     - auto: PREDEFINED
       defaultValue: PAN-OS (text)
       description: The format of the exported list.
@@ -432,7 +442,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.96292
+  dockerimage: demisto/flask-nginx:1.0.0.7080992
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -442,3 +452,14 @@ tests:
 - Test_EDL
 - EDL Performance Test
 fromversion: 5.5.0
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

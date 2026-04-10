@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from typing import cast
-import urllib3
 import json
-from datetime import datetime
 import math
+from datetime import datetime
+from typing import cast
 
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -74,9 +75,7 @@ class Client(BaseClient):
         request_params["severity"] = severity_level
         request_params["order_by"] = "asc"
         # Querying the alerts and appending them to a list.
-        return self._http_request(
-            method="GET", url_suffix="/xdr-api", params=request_params
-        )
+        return self._http_request(method="GET", url_suffix="/xdr-api", params=request_params)
 
     def get_alert(
         self,
@@ -103,9 +102,7 @@ class Client(BaseClient):
 
         request_params["severity"] = severity_level
         request_params["order_by"] = "asc"
-        response = self._http_request(
-            method="GET", url_suffix="/xdr-api", params=request_params
-        )
+        response = self._http_request(method="GET", url_suffix="/xdr-api", params=request_params)
         return response
 
     def test_connection(self):
@@ -125,9 +122,7 @@ class Client(BaseClient):
         if max_results:
             request_params["limit"] = max_results
 
-        return self._http_request(
-            method="GET", url_suffix="/xdr-api", params=request_params
-        )
+        return self._http_request(method="GET", url_suffix="/xdr-api", params=request_params)
 
 
 """ HELPER FUNCTIONS """
@@ -215,7 +210,7 @@ def fetch_incidents(
     # A dictionary to store last fetch values for each severity.
     next_run = {}
     # Sorting the severity levels and creating a list.
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
     severity_levels.sort()
     # Initializating the incidents dictionary and setting the severity levels.
     incidents: List[Dict[str, Any]] = []
@@ -248,30 +243,23 @@ def fetch_incidents(
         if response_status != "d_not_f":
             response_data = response.get("data")
             for alert in response_data:
-                attack_time = datetime.strptime(
-                    alert.get("attack_timestamp", "0"), DATE_FORMAT
-                )
-                incident_created_time = int(
-                    (attack_time - datetime(1970, 1, 1)).total_seconds()
-                )
-                if last_fetch is not None:
-                    if incident_created_time > last_fetch:
-                        incident_name = "Zerohack XDR " + alert["ids_threat_class"]
-                        incident = {
-                            "name": incident_name,
-                            "occurred": timestamp_to_datestring(incident_created_time),
-                            "type": alert["ids_threat_class"],
-                            "movement_type": alert["type_of_threat"],
-                            "platform": alert["platform"],
-                            "attacker_rep": alert["ip_rep"],
-                            "rawJSON": json.dumps(alert),
-                            "severity": convert_to_demisto_severity(
-                                alert.get("ids_threat_severity", "Low")
-                            ),
-                        }
-                        demisto.debug(incident)
-                        incidents.append(incident)
-                        last_incident_time = incident_created_time
+                attack_time = datetime.strptime(alert.get("attack_timestamp", "0"), DATE_FORMAT)
+                incident_created_time = int((attack_time - datetime(1970, 1, 1)).total_seconds())
+                if last_fetch is not None and incident_created_time > last_fetch:
+                    incident_name = "Zerohack XDR " + alert["ids_threat_class"]
+                    incident = {
+                        "name": incident_name,
+                        "occurred": timestamp_to_datestring(incident_created_time),
+                        "type": alert["ids_threat_class"],
+                        "movement_type": alert["type_of_threat"],
+                        "platform": alert["platform"],
+                        "attacker_rep": alert["ip_rep"],
+                        "rawJSON": json.dumps(alert),
+                        "severity": convert_to_demisto_severity(alert.get("ids_threat_severity", "Low")),
+                    }
+                    demisto.debug(incident)
+                    incidents.append(incident)
+                    last_incident_time = incident_created_time
 
         # Based on the findings update the last fetch dictionary.
         if last_fetch == last_incident_time:
@@ -302,9 +290,7 @@ def get_latest_incident(client: Client, severity_level: str):
 
     # Hard coding thge max results as we only need to send the latest output.
     max_results = 1
-    alert = client.get_alert(
-        severity_level=severity_level, max_results=max_results, offset=0
-    )
+    alert = client.get_alert(severity_level=severity_level, max_results=max_results, offset=0)
     incident_data = alert["data"][0]
     incident_name = "Zerohack XDR " + incident_data["ids_threat_class"]
     incident = {
@@ -315,9 +301,7 @@ def get_latest_incident(client: Client, severity_level: str):
         "platform": incident_data["platform"],
         "attacker_rep": incident_data["ip_rep"],
         "rawJSON": json.dumps(str(incident_data)),
-        "severity": convert_to_demisto_severity(
-            incident_data.get("ids_threat_severity", "Low")
-        ),
+        "severity": convert_to_demisto_severity(incident_data.get("ids_threat_severity", "Low")),
     }
 
     return incident
@@ -342,9 +326,7 @@ def main():
 
     demisto.debug(f"The command initiated is: {demisto.command()}")
     try:
-        client = Client(
-            api_key=api_key, base_url=base_url, verify=verify_certificate, proxy=proxy
-        )
+        client = Client(api_key=api_key, base_url=base_url, verify=verify_certificate, proxy=proxy)
 
         # Integration test command.
         if demisto.command() == "test-module":
@@ -393,9 +375,7 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

@@ -1,0 +1,31 @@
+{
+    "id": "incident_ibmsecurityqradarsoarresolution",
+    "version": -1,
+    "modified": "2024-09-18T12:06:16.041691235Z",
+    "name": "IBM Security QRadar SOAR Resolution",
+    "ownerOnly": false,
+    "cliName": "ibmsecurityqradarsoarresolution",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "IBM QRadar SOAR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -3,7 +3,7 @@
     "description": "Deprecated. Use Arkime instead.",
     "hidden": true,
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,6 +16,10 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix"
     ]
 }

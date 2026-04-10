@@ -1,6 +1,7 @@
+from itertools import chain
+
 import demistomock as demisto
 from CommonServerPython import *
-from itertools import chain
 
 
 def convert_to_table(context_results: str) -> CommandResults:
@@ -15,33 +16,31 @@ def convert_to_table(context_results: str) -> CommandResults:
     comment_entries = list(json.loads(context_results))
 
     md = tableToMarkdown(
-        '',
+        "",
         comment_entries,
         headers=[*dict.fromkeys(chain.from_iterable(comment_entries))],
         removeNull=True,
         sort_headers=False,
-        headerTransform=pascalToSpace
+        headerTransform=pascalToSpace,
     )
 
-    return CommandResults(
-        readable_output=md
-    )
+    return CommandResults(readable_output=md)
 
 
 def main():  # pragma: no cover
     try:
         if context := dict_safe_get(
             demisto.callingContext,
-            ['context', 'Incidents', 0, 'CustomFields', 'jiracomment'],
+            ["context", "Incidents", 0, "CustomFields", "jiracomment"],
             {},
         ):
             return_results(convert_to_table(context))
         else:
-            return CommandResults(readable_output='No data to present')
+            return CommandResults(readable_output="No data to present")
 
     except Exception as exc:
-        return_error(f'Failed to execute JiraV3ConvertCommentsToTable. Error: {exc}')
+        return_error(f"Failed to execute JiraV3ConvertCommentsToTable. Error: {exc}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,6 +1,9 @@
-name: Microsoft Graph Security Parsing Rules
-id: Microsoft_Graph_Security_Parsing_Rules
 fromversion: 8.2.0
-tags: []
+id: Microsoft_Graph_Security_ParsingRule
+name: Microsoft Graph Security Parsing Rules
 rules: ''
 samples: ''
+supportedModules:
+- agentix
+- xsiam
+tags: []

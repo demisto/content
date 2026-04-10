@@ -6,7 +6,7 @@ It includes a large portfolio of strong authentication methods and form factors 
 
 Safewalk comes with a rich functionality for all contexts of user access management and with broad integration capabilities. It has minimal impact on your existing infrastructure and can be deployed in the cloud or on-premise.
 
-## With Safewalk you can address securely all your applications access needs:
+## With Safewalk you can address securely all your applications access needs
 
 - Protect access to your web and network
 - Deploy Strong Authentication to your cloud, on-premise and custom Mobile applications
@@ -14,8 +14,6 @@ Safewalk comes with a rich functionality for all contexts of user access managem
 - Easily integrate Safewalk within your infrastructure or in the cloud
 - Facilitate user access management
 - Choose the best licensing model for your needs (perpetual, subscription, pay per use)
-
-
 
 ## Integrations
 

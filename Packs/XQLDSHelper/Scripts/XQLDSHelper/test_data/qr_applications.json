@@ -1,0 +1,20 @@
+{
+  "execution_id": "xxxxxxxxx",
+  "number_of_results": 3,
+  "query_name": "",
+  "results": [
+    {
+      "app": "app1",
+      "count": 10
+    },
+    {
+      "app": "app2",
+      "count": 20
+    },
+    {
+      "app": "app3",
+      "count": 30
+    }
+  ],
+  "status": "SUCCESS"
+}

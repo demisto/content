@@ -180,7 +180,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703409-71463100-fc0d-11e8-81e8-96fdb7eb04fe.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703409-71463100-fc0d-11e8-81e8-96fdb7eb04fe.png" alt="image" width="753" height="232"></a></p>
+<p><a href="../../doc_files/49703409-71463100-fc0d-11e8-81e8-96fdb7eb04fe.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703409-71463100-fc0d-11e8-81e8-96fdb7eb04fe.png" alt="image" width="753" height="232"></a></p>
 <h3 id="h_9859333831101544438869332">2. Get vulnerable host data</h3>
 <hr>
 <p>Returns all vulnerable host data from VI feed for the given query. This is the API call you want to use to download the entire feed of vulnerable hosts that matches the query.</p>
@@ -390,7 +390,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703479-5cb66880-fc0e-11e8-817f-508a2b963d47.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703479-5cb66880-fc0e-11e8-817f-508a2b963d47.png" alt="image" width="750" height="881"></a></p>
+<p><a href="../../doc_files/49703479-5cb66880-fc0e-11e8-817f-508a2b963d47.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703479-5cb66880-fc0e-11e8-817f-508a2b963d47.png" alt="image" width="750" height="881"></a></p>
 <h3 id="h_4215884202141544438873779">3. Query the eCrime intelligence database</h3>
 <hr>
 <p>Queries the eCrime intelligence database. This is the API call you want to use to do a full text search on eCrime intelligence data, such as hacker chatter.</p>
@@ -508,7 +508,7 @@
         "author": "fb_official2",
         "date": "2018-12-09",
         "forum": "sky-fraud",
-        "post": "https://www.lifewire.com/thmb/3AYgoV...f77283d151.jpg\n\n\n\n\n&lt;mark&gt;NETFLIX&lt;/mark&gt; TODAY\n\nACCOUNT:  example.gmail.com\nPASS: THEdonbone",
+        "post": "https://www.lifewire.com/thmb/3AYgoVf77283d151.jpg\n\n\n\n\n&lt;mark&gt;NETFLIX&lt;/mark&gt; TODAY\n\nACCOUNT:  example.gmail.com\nPASS: THEdonbone",
         "thread_url": "https://sky-fraud.ru/showthread.php?t=28120",
         "title": "FREE &lt;mark&gt;NETFLIX&lt;/mark&gt; ACCOUNT DAILY.."
       },
@@ -533,7 +533,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703715-30e8b200-fc11-11e8-8a71-f99424e6f979.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703715-30e8b200-fc11-11e8-8a71-f99424e6f979.png" alt="image" width="751" height="318"></a></p>
+<p><a href="../../doc_files/vigilante_query_ecrime_db.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/vigilante_query_ecrime_db.png" alt="image" width="751" height="318"></a></p>
 <h3 id="h_599773643171544438878899">4. Get a list of leaks</h3>
 <hr>
 <p>Retrieves the list of leaks from database.</p>
@@ -677,128 +677,128 @@
     "VigilanteATI": {
         "Leaks": [
             {
-                "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3", 
-                "password_type": null, 
-                "description": "part of solenya collection of dumps www.shareapple.com.txt. Many smaller breaches from smaller websites. Original breach dates unknown, but most likely happened before Jan 2017. Often repacked in to larger combolists. ", 
-                "source_refs": [], 
-                "attack_method": "", 
-                "title": "www.shareapple.com.txt solenya collection leak", 
-                "import_date": "2018-03-17 00:00:00", 
-                "breach_date": "", 
+                "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3",
+                "password_type": null,
+                "description": "part of solenya collection of dumps www.shareapple.com.txt. Many smaller breaches from smaller websites. Original breach dates unknown, but most likely happened before Jan 2017. Often repacked in to larger combolists. ",
+                "source_refs": [],
+                "attack_method": "",
+                "title": "www.shareapple.com.txt solenya collection leak",
+                "import_date": "2018-03-17 00:00:00",
+                "breach_date": "",
                 "targets": [
                     "www.shareapple.com.txt"
-                ], 
-                "attackers": [], 
-                "num_entries": 5669, 
-                "score": 30, 
-                "num_domains_affected": 5669, 
-                "leak_type": "Database dump", 
-                "target_industries": "", 
-                "password_hash": "", 
-                "leak_date": "2017-01-01 00:00:00", 
+                ],
+                "attackers": [],
+                "num_entries": 5669,
+                "score": 30,
+                "num_domains_affected": 5669,
+                "leak_type": "Database dump",
+                "target_industries": "",
+                "password_hash": "",
+                "leak_date": "2017-01-01 00:00:00",
                 "media_refs": []
-            }, 
+            },
             {
-                "leak_id": "5892cc3edb5ee8463a6ebbfd54b1b2ad", 
-                "password_type": null, 
-                "description": "part of solenya collection of dumps www.applebeebook.co.kr.txt. Many smaller breaches from smaller websites. Original breach dates unknown, but most likely happened before Jan 2017. Often repacked in to larger combolists. ", 
-                "source_refs": [], 
-                "attack_method": "", 
-                "title": "www.applebeebook.co.kr.txt solenya collection leak", 
-                "import_date": "2018-03-16 00:00:00", 
-                "breach_date": "", 
+                "leak_id": "5892cc3edb5ee8463a6ebbfd54b1b2ad",
+                "password_type": null,
+                "description": "part of solenya collection of dumps www.applebeebook.co.kr.txt. Many smaller breaches from smaller websites. Original breach dates unknown, but most likely happened before Jan 2017. Often repacked in to larger combolists. ",
+                "source_refs": [],
+                "attack_method": "",
+                "title": "www.applebeebook.co.kr.txt solenya collection leak",
+                "import_date": "2018-03-16 00:00:00",
+                "breach_date": "",
                 "targets": [
                     "www.applebeebook.co.kr.txt"
-                ], 
-                "attackers": [], 
-                "num_entries": 64147, 
-                "score": 30, 
-                "num_domains_affected": 64147, 
-                "leak_type": "Database dump", 
-                "target_industries": "", 
-                "password_hash": "", 
-                "leak_date": "2017-01-01 00:00:00", 
+                ],
+                "attackers": [],
+                "num_entries": 64147,
+                "score": 30,
+                "num_domains_affected": 64147,
+                "leak_type": "Database dump",
+                "target_industries": "",
+                "password_hash": "",
+                "leak_date": "2017-01-01 00:00:00",
                 "media_refs": []
-            }, 
+            },
             {
-                "leak_id": "a6eb0ca9fb47777aa81ce58d71a30495", 
-                "password_type": "plaintext", 
-                "description": "An unknown hacker or hacker group posted what they're claiming is a listing of Apple ID accounts, with email addresses and passwords. The listing also denotes the location of the users.", 
+                "leak_id": "a6eb0ca9fb47777aa81ce58d71a30495",
+                "password_type": "plaintext",
+                "description": "An unknown hacker or hacker group posted what they're claiming is a listing of Apple ID accounts, with email addresses and passwords. The listing also denotes the location of the users.",
                 "source_refs": [
                     "http://pastebin.com/raw.php?i=E8n5cBRf"
-                ], 
-                "attack_method": "", 
-                "title": "Alleged dump of Apple accounts", 
-                "import_date": "2015-09-14 00:00:00", 
-                "breach_date": "", 
-                "targets": [], 
-                "attackers": [], 
-                "num_entries": 14, 
-                "score": 60, 
-                "num_domains_affected": 14, 
-                "leak_type": "Credentials dump", 
-                "target_industries": "", 
-                "password_hash": "", 
-                "leak_date": "2015-09-14 00:00:00", 
+                ],
+                "attack_method": "",
+                "title": "Alleged dump of Apple accounts",
+                "import_date": "2015-09-14 00:00:00",
+                "breach_date": "",
+                "targets": [],
+                "attackers": [],
+                "num_entries": 14,
+                "score": 60,
+                "num_domains_affected": 14,
+                "leak_type": "Credentials dump",
+                "target_industries": "",
+                "password_hash": "",
+                "leak_date": "2015-09-14 00:00:00",
                 "media_refs": []
-            }, 
+            },
             {
-                "leak_id": "ff2fe066c6f6289e70be0157d3b2e24e", 
-                "password_type": "hashes", 
-                "description": "A hacker group calling themselves Kim Jong-Cracks have supposedly breached the database of Insanelyi, a product of Cydia. Cydia is the jailbraker's App Store alternative for iOS apps on Apple devices. The hacker group posted a CSV file containing usernames, email addresses, MD5 password hashes, password salts and more. ", 
+                "leak_id": "ff2fe066c6f6289e70be0157d3b2e24e",
+                "password_type": "hashes",
+                "description": "A hacker group calling themselves Kim Jong-Cracks have supposedly breached the database of Insanelyi, a product of Cydia. Cydia is the jailbraker's App Store alternative for iOS apps on Apple devices. The hacker group posted a CSV file containing usernames, email addresses, MD5 password hashes, password salts and more. ",
                 "source_refs": [
                     "http://apt.ripbigboss.com/insanelyi.nfo"
-                ], 
-                "attack_method": "", 
-                "title": "Cydia database dumped", 
-                "import_date": "2014-07-30 00:00:00", 
-                "breach_date": "", 
-                "targets": [], 
-                "attackers": [], 
-                "num_entries": 104079, 
-                "score": 90, 
-                "num_domains_affected": 104079, 
-                "leak_type": "Credentials dump", 
-                "target_industries": "", 
-                "password_hash": "MD5", 
-                "leak_date": "2014-07-29 00:00:00", 
+                ],
+                "attack_method": "",
+                "title": "Cydia database dumped",
+                "import_date": "2014-07-30 00:00:00",
+                "breach_date": "",
+                "targets": [],
+                "attackers": [],
+                "num_entries": 104079,
+                "score": 90,
+                "num_domains_affected": 104079,
+                "leak_type": "Credentials dump",
+                "target_industries": "",
+                "password_hash": "MD5",
+                "leak_date": "2014-07-29 00:00:00",
                 "media_refs": [
                     "http://www.technobuffalo.com/2014/07/20/cydias-popular-bigboss-repo-allegedly-gets-hacked/"
                 ]
-            }, 
+            },
             {
-                "leak_id": "128e4664c1712016e80678dad86c7a7b", 
-                "password_type": "plaintext", 
-                "description": "A hacker or hacker group named An0nGhost posted a data dump from store.apple.com. The leak contains what appears to be emails and passwords.", 
+                "leak_id": "128e4664c1712016e80678dad86c7a7b",
+                "password_type": "plaintext",
+                "description": "A hacker or hacker group named An0nGhost posted a data dump from store.apple.com. The leak contains what appears to be emails and passwords.",
                 "source_refs": [
                     "http://pastebin.com/raw.php?i=BBXjnNxj"
-                ], 
-                "attack_method": "", 
-                "title": "store.apple.com accounts hacked", 
-                "import_date": "2014-06-02 00:00:00", 
-                "breach_date": "", 
+                ],
+                "attack_method": "",
+                "title": "store.apple.com accounts hacked",
+                "import_date": "2014-06-02 00:00:00",
+                "breach_date": "",
                 "targets": [
                     "store.apple.com"
-                ], 
+                ],
                 "attackers": [
                     "An0nGhost"
-                ], 
-                "num_entries": 210, 
-                "score": 60, 
-                "num_domains_affected": 210, 
-                "leak_type": "Credentials dump", 
-                "target_industries": "", 
-                "password_hash": "", 
-                "leak_date": "2014-06-02 00:00:00", 
+                ],
+                "num_entries": 210,
+                "score": 60,
+                "num_domains_affected": 210,
+                "leak_type": "Credentials dump",
+                "target_industries": "",
+                "password_hash": "",
+                "leak_date": "2014-06-02 00:00:00",
                 "media_refs": []
             }
-        ], 
+        ],
         "LeakInfoToken": "Bwz/okTPVNIldyAYJQ6bFanwA/VYIAjy2BjSuSuceCv0Xi/pEVbsniqOYZP61tLbSxjkTAcgTpfDdaJqy8Eu3Q=="
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703730-6d1c1280-fc11-11e8-8e08-139ff002bbcf.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703730-6d1c1280-fc11-11e8-8e08-139ff002bbcf.png" alt="image" width="874" height="283"></a></p>
+<p><a href="../../doc_files/49703730-6d1c1280-fc11-11e8-8e08-139ff002bbcf.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703730-6d1c1280-fc11-11e8-8e08-139ff002bbcf.png" alt="image" width="874" height="283"></a></p>
 <h3 id="h_8615483124191544438887298">5. Get a list of account credentials for a leak</h3>
 <hr>
 <p>Retrieves the list of account credentials that belong to a particular leak.</p>
@@ -890,29 +890,29 @@
 <h5>Context Example</h5>
 <pre><code>{
     "VigilanteATI": {
-        "LeakAccountsToken": "p2V99rXakNhn3mafVJ6WJ6MEEfcPGh+q+DY9sO1SlNo2AR3D4akFOWTY+8T53rX4FJWc4LjylGORXKKp9Zl52PYhViNR1P3+Z1Sn3pYKrvC5iDTXwXVe5eqcomd44qbx", 
+        "LeakAccountsToken": "p2V99rXakNhn3mafVJ6WJ6MEEfcPGh+q+DY9sO1SlNo2AR3D4akFOWTY+8T53rX4FJWc4LjylGORXKKp9Zl52PYhViNR1P3+Z1Sn3pYKrvC5iDTXwXVe5eqcomd44qbx",
         "Leaks": {
-            "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3", 
+            "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3",
             "accounts": [
                 {
-                    "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3", 
-                    "domain": "hotmail.com", 
-                    "password": "dummypassword", 
-                    "email": "dummy1@hotmail.com", 
+                    "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3",
+                    "domain": "hotmail.com",
+                    "password": "dummypassword",
+                    "email": "dummy1@hotmail.com",
                     "type_id": 1
-                }, 
+                },
                 {
-                    "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3", 
-                    "domain": "sina.com", 
-                    "password": "dummypassword", 
-                    "email": "dummy2@sina.com", 
+                    "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3",
+                    "domain": "sina.com",
+                    "password": "dummypassword",
+                    "email": "dummy2@sina.com",
                     "type_id": 1
-                }, 
+                },
                 {
-                    "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3", 
-                    "domain": "hotmail.com", 
-                    "password": "dummypassword", 
-                    "email": "dummy3@hotmail.com", 
+                    "leak_id": "aa66573902ed4f4bfb2ae08ebac390c3",
+                    "domain": "hotmail.com",
+                    "password": "dummypassword",
+                    "email": "dummy3@hotmail.com",
                     "type_id": 1
                 }
             ]
@@ -921,7 +921,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703770-077c5600-fc12-11e8-8f2b-372b4014f2ac.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703770-077c5600-fc12-11e8-8f2b-372b4014f2ac.png" alt="image" width="752" height="160"></a></p>
+<p><a href="../../doc_files/49703770-077c5600-fc12-11e8-8f2b-372b4014f2ac.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703770-077c5600-fc12-11e8-8f2b-372b4014f2ac.png" alt="image" width="752" height="160"></a></p>
 <h3 id="h_1539199975201544438893444">6. Search for an account in the leaked credentials database</h3>
 <hr>
 <p>Performs a query to match the given account identifier against database of leaked credentials.</p>
@@ -1030,7 +1030,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703803-7a85cc80-fc12-11e8-8dd2-96feb2ab4a44.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703803-7a85cc80-fc12-11e8-8dd2-96feb2ab4a44.png" alt="image" width="764" height="375"></a></p>
+<p><a href="../../doc_files/49703803-7a85cc80-fc12-11e8-8dd2-96feb2ab4a44.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703803-7a85cc80-fc12-11e8-8dd2-96feb2ab4a44.png" alt="image" width="764" height="375"></a></p>
 <h3 id="h_7889907516201544438899059">7. Search for a domain in the leaked credentials database</h3>
 <hr>
 <p>Performs a query to match the given domain name against our database of leaked credentials.</p>
@@ -1155,7 +1155,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703847-fc75f580-fc12-11e8-8b0b-34754ee045c7.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703847-fc75f580-fc12-11e8-8b0b-34754ee045c7.png" alt="image" width="803" height="232"></a></p>
+<p><a href="../../doc_files/49703847-fc75f580-fc12-11e8-8b0b-34754ee045c7.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703847-fc75f580-fc12-11e8-8b0b-34754ee045c7.png" alt="image" width="803" height="232"></a></p>
 <h3 id="h_6098850267191544438904644">8. Add account identifiers to a watchlist</h3>
 <hr>
 <p>Adds account identifiers to your watchlist.</p>
@@ -1196,7 +1196,7 @@
 <h5>Context Example</h5>
 <p>N/A</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703860-1e6f7800-fc13-11e8-8480-45fe81652b7f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703860-1e6f7800-fc13-11e8-8480-45fe81652b7f.png" alt="image" width="753" height="276"></a></p>
+<p><a href="../../doc_files/49703860-1e6f7800-fc13-11e8-8480-45fe81652b7f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703860-1e6f7800-fc13-11e8-8480-45fe81652b7f.png" alt="image" width="753" height="276"></a></p>
 <h3 id="h_3846228398161544438908724">9. Remove account identifiers from a watchlist</h3>
 <hr>
 <p>Removes account identifiers from your watchlist.</p>
@@ -1227,7 +1227,7 @@
 <h5>Context Example</h5>
 <p>N/A</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703867-3941ec80-fc13-11e8-9d11-26c1dc86e815.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703867-3941ec80-fc13-11e8-9d11-26c1dc86e815.png" alt="image" width="750" height="125"></a></p>
+<p><a href="../../doc_files/49703867-3941ec80-fc13-11e8-9d11-26c1dc86e815.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703867-3941ec80-fc13-11e8-9d11-26c1dc86e815.png" alt="image" width="750" height="125"></a></p>
 <h3 id="h_6117574289121544438913677">10. Get a list of account identifiers on a watchlist</h3>
 <hr>
 <p>Retrieve account identifiers on your watchlist.</p>
@@ -1332,4 +1332,4 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/49703874-4c54bc80-fc13-11e8-9cb5-688e59fecdc6.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/49703874-4c54bc80-fc13-11e8-9cb5-688e59fecdc6.png" alt="image" width="749" height="534"></a></p>
+<p><a href="../../doc_files/49703874-4c54bc80-fc13-11e8-9cb5-688e59fecdc6.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49703874-4c54bc80-fc13-11e8-9cb5-688e59fecdc6.png" alt="image" width="749" height="534"></a></p>

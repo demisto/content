@@ -1,9 +1,9 @@
-### Ignite reputation for dummy@dummy.com
+### Ignite File reputation for  00000000000000000000000000000001
 Reputation: Malicious
 
-### Events in which this IOC observed
-|Date Observed (UTC)|Name|Tags|
-|---|---|---|
-| May 26, 2024  21:16 | Observation: StrikeVariant [2024-05-26 14:04:56] | asn:as10000, infrastructure:c2, mitre:T1071, source:scan, tool:strike |
 
-All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?query=%22dummy%40dummy.com%22&sort_date=All%20Time](https://mock_dummy.com/cti/malware/iocs?query=%22dummy%40dummy.com%22&sort_date=All%20Time)
+|ID|Type|Hashes|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
+|---|---|---|---|---|---|---|---|---|---|
+| dummy_id | file | ***md5***: 00000000000000000000000000000001<br>***sha1***: 0000000000000000000000000000000000000001<br>***sha256***: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	**tactics**:<br>		***values***: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
+
+Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)

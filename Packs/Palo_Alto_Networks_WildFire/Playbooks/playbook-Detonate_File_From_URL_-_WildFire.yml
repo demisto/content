@@ -442,3 +442,6 @@ outputs:
 tests:
 - No tests (deprecated)
 deprecated: true
+supportedModules:
+- agentix
+- xsiam

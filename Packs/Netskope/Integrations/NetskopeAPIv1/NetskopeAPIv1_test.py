@@ -7,23 +7,23 @@ from urllib.parse import urljoin
 import demistomock as demisto
 from NetskopeAPIv1 import Client
 
-BASE_URL = 'https://api.com'
-FULL_BASE_URL = urljoin(BASE_URL, '/api/v1')
-TIME_ARGS = {'start_time': int(time.time() / 2), 'end_time': int(time.time())}
+BASE_URL = "https://api.com"
+FULL_BASE_URL = urljoin(BASE_URL, "/api/v1")
+TIME_ARGS = {"start_time": int(time.time() / 2), "end_time": int(time.time())}
 
 
 def load_mock_response(filename: str) -> str:
-    with open(os.path.join('test_data', f'{filename}.json')) as test_file:
+    with open(os.path.join("test_data", f"{filename}.json")) as test_file:
         return json.loads(test_file.read())
 
 
 def load_raw_mock_response(filename: str) -> bytes:
-    with open(os.path.join('test_data', filename), 'rb') as test_file:
+    with open(os.path.join("test_data", filename), "rb") as test_file:
         return test_file.read()
 
 
 def mock_client() -> Client:
-    return Client(BASE_URL, '', False, False)
+    return Client(BASE_URL, "", False, False)
 
 
 def test_list_events(requests_mock):
@@ -41,19 +41,19 @@ def test_list_events(requests_mock):
     from NetskopeAPIv1 import list_events_command
 
     client = mock_client()
-    mock_response = load_mock_response('events')
+    mock_response = load_mock_response("events")
 
-    requests_mock.post(f'{FULL_BASE_URL}/events', json=mock_response)
+    requests_mock.post(f"{FULL_BASE_URL}/events", json=mock_response)
 
-    result = list_events_command(client, {'event_type': 'page', 'limit': '1', **TIME_ARGS})
+    result = list_events_command(client, {"event_type": "page", "limit": "1", **TIME_ARGS})
 
     assert len(result.outputs) == 1
-    assert result.outputs_prefix == 'Netskope.Event'
+    assert result.outputs_prefix == "Netskope.Event"
 
-    assert result.outputs[0]['event_id'] == 'f0e9b2cadd17402b59b3938b'
-    assert result.outputs[0]['timestamp'] == '2022-01-18T19:58:07.000Z'
-    assert result.outputs[0]['type'] == 'connection'
-    assert result.outputs[0]['access_method'] == 'Client'
+    assert result.outputs[0]["event_id"] == "f0e9b2cadd17402b59b3938b"
+    assert result.outputs[0]["timestamp"] == "2022-01-18T19:58:07.000Z"
+    assert result.outputs[0]["type"] == "connection"
+    assert result.outputs[0]["access_method"] == "Client"
 
 
 def test_list_alerts(requests_mock):
@@ -71,19 +71,19 @@ def test_list_alerts(requests_mock):
     from NetskopeAPIv1 import list_alerts_command
 
     client = mock_client()
-    mock_response = load_mock_response('alerts')
+    mock_response = load_mock_response("alerts")
 
-    requests_mock.post(f'{FULL_BASE_URL}/alerts', json=mock_response)
+    requests_mock.post(f"{FULL_BASE_URL}/alerts", json=mock_response)
 
     result = list_alerts_command(client, TIME_ARGS)
 
     assert len(result.outputs) == 1
-    assert result.outputs_prefix == 'Netskope.Alert'
+    assert result.outputs_prefix == "Netskope.Alert"
 
-    assert result.outputs[0]['alert_id'] == 'a82283486949e2118d0ab197'
-    assert result.outputs[0]['timestamp'] == '2022-03-20T21:45:09.000Z'
-    assert result.outputs[0]['action'] == 'alert'
-    assert result.outputs[0]['alert_name'] == 'Gdrive - Alert on PII'
+    assert result.outputs[0]["alert_id"] == "a82283486949e2118d0ab197"
+    assert result.outputs[0]["timestamp"] == "2022-03-20T21:45:09.000Z"
+    assert result.outputs[0]["action"] == "alert"
+    assert result.outputs[0]["alert_name"] == "Gdrive - Alert on PII"
 
 
 def test_list_quarantined_files(requests_mock):
@@ -102,19 +102,19 @@ def test_list_quarantined_files(requests_mock):
     from NetskopeAPIv1 import list_quarantined_files_command
 
     client = mock_client()
-    mock_response = load_mock_response('quarantined_files')
+    mock_response = load_mock_response("quarantined_files")
 
-    requests_mock.post(f'{FULL_BASE_URL}/quarantine', json=mock_response)
+    requests_mock.post(f"{FULL_BASE_URL}/quarantine", json=mock_response)
 
     result = list_quarantined_files_command(client, {})
 
     assert len(result.outputs) == 1
-    assert result.outputs_prefix == 'Netskope.Quarantine'
+    assert result.outputs_prefix == "Netskope.Quarantine"
 
-    assert result.outputs[0]['quarantine_profile_id'] == '1'
-    assert result.outputs[0]['file_id'] == '1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr'
-    assert result.outputs[0]['original_file_name'] == 'test.xlsx'
-    assert result.outputs[0]['policy'] == '[Data Protection] - Quarantine PII Uploads to Box'
+    assert result.outputs[0]["quarantine_profile_id"] == "1"
+    assert result.outputs[0]["file_id"] == "1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr"
+    assert result.outputs[0]["original_file_name"] == "test.xlsx"
+    assert result.outputs[0]["policy"] == "[Data Protection] - Quarantine PII Uploads to Box"
 
 
 def test_get_quarantined_file(requests_mock):
@@ -132,19 +132,16 @@ def test_get_quarantined_file(requests_mock):
     from NetskopeAPIv1 import get_quarantined_file_command
 
     client = mock_client()
-    mock_response = load_raw_mock_response('quarantined_file.zip')
+    mock_response = load_raw_mock_response("quarantined_file.zip")
 
-    requests_mock.post(f'{FULL_BASE_URL}/quarantine', content=mock_response)
+    requests_mock.post(f"{FULL_BASE_URL}/quarantine", content=mock_response)
 
-    file_id = '1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr'
-    result = get_quarantined_file_command(client, {
-        'file_id': file_id,
-        'quarantine_profile_id': '1'
-    })
+    file_id = "1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr"
+    result = get_quarantined_file_command(client, {"file_id": file_id, "quarantine_profile_id": "1"})
 
     saved_filename = f'{demisto.investigation()["id"]}_{result["FileID"]}'
 
-    assert result['File'] == f'{file_id}'
+    assert result["File"] == f"{file_id}"
     assert os.path.isfile(saved_filename)
 
     os.remove(saved_filename)
@@ -165,16 +162,12 @@ def test_update_quarantined_file(requests_mock):
     from NetskopeAPIv1 import update_quarantined_file_command
 
     client = mock_client()
-    requests_mock.post(f'{FULL_BASE_URL}/quarantine', text='')
+    requests_mock.post(f"{FULL_BASE_URL}/quarantine", text="")
 
-    file_id = '1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr'
-    result = update_quarantined_file_command(client, {
-        'quarantine_profile_id': '1',
-        'file_id': file_id,
-        'action': 'allow'
-    })
+    file_id = "1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr"
+    result = update_quarantined_file_command(client, {"quarantine_profile_id": "1", "file_id": file_id, "action": "allow"})
 
-    assert result.readable_output == f'## The file {file_id} was successfully allowed!'
+    assert result.readable_output == f"## The file {file_id} was successfully allowed!"
 
 
 def test_update_url_list(requests_mock):
@@ -193,16 +186,13 @@ def test_update_url_list(requests_mock):
     from NetskopeAPIv1 import update_url_list_command
 
     client = mock_client()
-    requests_mock.post(f'{FULL_BASE_URL}/updateUrlList', json={'msg': ''})
+    requests_mock.post(f"{FULL_BASE_URL}/updateUrlList", json={"msg": ""})
 
-    result = update_url_list_command(client, {
-        'name': 'Allowed URLs',
-        'urls': 'allow.com,more.allow.com'
-    })
+    result = update_url_list_command(client, {"name": "Allowed URLs", "urls": "allow.com,more.allow.com"})
 
-    assert result.outputs_prefix == 'Netskope.URLList'
-    assert result.outputs['name'] == 'Allowed URLs'
-    assert result.outputs['URL'][0] == 'allow.com'
+    assert result.outputs_prefix == "Netskope.URLList"
+    assert result.outputs["name"] == "Allowed URLs"
+    assert result.outputs["URL"][0] == "allow.com"
 
 
 def test_update_file_hash_list(requests_mock):
@@ -221,14 +211,14 @@ def test_update_file_hash_list(requests_mock):
     from NetskopeAPIv1 import update_file_hash_list_command
 
     client = mock_client()
-    requests_mock.post(f'{FULL_BASE_URL}/updateFileHashList', json={'msg': ''})
+    requests_mock.post(f"{FULL_BASE_URL}/updateFileHashList", json={"msg": ""})
 
     expected_hash = md5().hexdigest()
-    result = update_file_hash_list_command(client, {'name': 'Allowed Files', 'hash': expected_hash})
+    result = update_file_hash_list_command(client, {"name": "Allowed Files", "hash": expected_hash})
 
-    assert result.outputs_prefix == 'Netskope.FileHashList'
-    assert result.outputs['name'] == 'Allowed Files'
-    assert result.outputs['hash'][0] == expected_hash
+    assert result.outputs_prefix == "Netskope.FileHashList"
+    assert result.outputs["name"] == "Allowed Files"
+    assert result.outputs["hash"][0] == expected_hash
 
 
 def test_list_clients(requests_mock):
@@ -247,17 +237,17 @@ def test_list_clients(requests_mock):
     from NetskopeAPIv1 import list_clients_command
 
     client = mock_client()
-    mock_response = load_mock_response('clients')
+    mock_response = load_mock_response("clients")
 
-    requests_mock.post(f'{FULL_BASE_URL}/clients', json=mock_response)
+    requests_mock.post(f"{FULL_BASE_URL}/clients", json=mock_response)
     result = list_clients_command(client, {})
 
-    assert result.outputs_prefix == 'Netskope.Client'
+    assert result.outputs_prefix == "Netskope.Client"
 
-    assert result.outputs[0]['client_id'] == 'TESTXSOAR'
-    assert result.outputs[0]['client_version'] == '91.0.6.812'
-    assert result.outputs[0]['host_info']['os'] == 'Windows'
-    assert result.outputs[0]['users'][0]['username'] == 'test@goxsoar.com'
+    assert result.outputs[0]["client_id"] == "TESTXSOAR"
+    assert result.outputs[0]["client_version"] == "91.0.6.812"
+    assert result.outputs[0]["host_info"]["os"] == "Windows"
+    assert result.outputs[0]["users"][0]["username"] == "test@goxsoar.com"
 
 
 def test_list_host_associated_user(requests_mock):
@@ -276,15 +266,15 @@ def test_list_host_associated_user(requests_mock):
     from NetskopeAPIv1 import list_host_associated_user_command
 
     client = mock_client()
-    mock_response = load_mock_response('clients')
-    requests_mock.post(f'{FULL_BASE_URL}/clients', json=mock_response)
+    mock_response = load_mock_response("clients")
+    requests_mock.post(f"{FULL_BASE_URL}/clients", json=mock_response)
 
-    result = list_host_associated_user_command(client, {'hostname': 'TESTXSOAR'})
+    result = list_host_associated_user_command(client, {"hostname": "TESTXSOAR"})
 
-    assert result.outputs_prefix == 'Netskope.User'
-    assert result.outputs[0]['user_id'] == '0c6f3f867882c2d243a83310'
-    assert result.outputs[0]['user_source'] == 'Manual'
-    assert result.outputs[0]['username'] == 'test@goxsoar.com'
+    assert result.outputs_prefix == "Netskope.User"
+    assert result.outputs[0]["user_id"] == "0c6f3f867882c2d243a83310"
+    assert result.outputs[0]["user_source"] == "Manual"
+    assert result.outputs[0]["username"] == "test@goxsoar.com"
 
 
 def test_list_user_associated_host(requests_mock):
@@ -303,14 +293,14 @@ def test_list_user_associated_host(requests_mock):
     from NetskopeAPIv1 import list_user_associated_host_command
 
     client = mock_client()
-    mock_response = load_mock_response('clients')
-    requests_mock.post(f'{FULL_BASE_URL}/clients', json=mock_response)
+    mock_response = load_mock_response("clients")
+    requests_mock.post(f"{FULL_BASE_URL}/clients", json=mock_response)
 
-    result = list_user_associated_host_command(client, {'username': 'test@goxsoar.com'})
+    result = list_user_associated_host_command(client, {"username": "test@goxsoar.com"})
 
-    assert result.outputs_prefix == 'Netskope.Host'
+    assert result.outputs_prefix == "Netskope.Host"
 
-    assert result.outputs[0]['nsdeviceuid'] == '725DAC1A-6654-3F3A-971E-C984FBE9FE5E'
-    assert result.outputs[0]['os'] == 'Windows'
-    assert result.outputs[0]['hostname'] == 'TESTXSOAR'
-    assert result.outputs[0]['agent_status'] == 'Enabled'
+    assert result.outputs[0]["nsdeviceuid"] == "725DAC1A-6654-3F3A-971E-C984FBE9FE5E"
+    assert result.outputs[0]["os"] == "Windows"
+    assert result.outputs[0]["hostname"] == "TESTXSOAR"
+    assert result.outputs[0]["agent_status"] == "Enabled"

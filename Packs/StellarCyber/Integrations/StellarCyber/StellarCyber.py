@@ -8,7 +8,7 @@ import dateparser
 import json
 import urllib3
 import base64
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 
 # Disable insecure warnings
@@ -32,7 +32,7 @@ class AccessToken:
 
     @property
     def expired(self) -> bool:
-        return self._expiration < int(datetime.now(timezone.utc).timestamp())
+        return self._expiration < int(datetime.now(UTC).timestamp())
 
 
 class Client(BaseClient):

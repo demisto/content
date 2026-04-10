@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.6.38",
+    "currentVersion": "2.7.32",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -378,6 +378,14 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr"
     ]
 }

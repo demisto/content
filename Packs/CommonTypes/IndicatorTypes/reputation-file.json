@@ -119,6 +119,24 @@
           ]
         }
       },
+      "imphash": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Imphash",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
       "md5": {
         "simple": "",
         "complex": {
@@ -476,6 +494,30 @@
             }
           ]
         }
+      },
+      "organizationprevalence": {
+        "simple": "File.OrganizationPrevalence",
+        "complex": null
+      },
+      "globalprevalence": {
+        "simple": "File.GlobalPrevalence",
+        "complex": null
+      },
+      "organizationfirstseen": {
+        "simple": "File.OrganizationFirstSeen",
+        "complex": null
+      },
+      "organizationlastseen": {
+        "simple": "File.OrganizationLastSeen",
+        "complex": null
+      },
+      "firstseenbysource": {
+        "simple": "File.FirstSeenBySource",
+        "complex": null
+      },
+      "lastseenbysource": {
+        "simple": "File.LastSeenBySource",
+        "complex": null
       }
     },
     "manualMapping": null,

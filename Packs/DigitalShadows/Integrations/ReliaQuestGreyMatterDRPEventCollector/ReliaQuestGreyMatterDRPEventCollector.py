@@ -1,19 +1,18 @@
-import dateparser
+from typing import Any
 
+import dateparser
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
+from requests.exceptions import ConnectionError, Timeout
 
 from CommonServerUserPython import *  # noqa
-
-import urllib3
-from typing import Any
-from requests.exceptions import ConnectionError, Timeout
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format
 DEFAULT_MAX_FETCH = 1000
@@ -23,11 +22,10 @@ LAST_FETCHED_EVENT_NUM = "last_fetched_event_num"
 RATE_LIMIT_LAST_RUN = "rate_limit_retry_after"
 MAX_PAGE_SIZE = 1000
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class RateLimitError(Exception):
-
     def __init__(self, message: str, retry_after: str):
         self.retry_after = retry_after
         super().__init__(message)
@@ -49,13 +47,9 @@ class ReilaQuestClient(BaseClient):
 
     @retry(times=5, exceptions=(ConnectionError, Timeout, DemistoException))
     def http_request(
-        self,
-        url_suffix: str,
-        method: str = "GET",
-        headers: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None
+        self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None
     ) -> List[dict[str, Any]]:
-        demisto.debug(f'Running http request for url: {url_suffix} with params {params}')
+        demisto.debug(f"Running http request for url: {url_suffix} with params {params}")
         try:
             response = self._http_request(
                 method,
@@ -63,13 +57,13 @@ class ReilaQuestClient(BaseClient):
                 headers=headers or {"searchlight-account-id": self.account_id},
                 params=params,
                 resp_type="response",
-                ok_codes=(200, 429)
+                ok_codes=(200, 429),
             )
             json_response = response.json()
             if response.status_code == 429:
                 raise RateLimitError(
-                    f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}',
-                    retry_after=json_response.get("retry-after", "")
+                    f"Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}",
+                    retry_after=json_response.get("retry-after", ""),
                 )
 
             return json_response
@@ -84,7 +78,7 @@ class ReilaQuestClient(BaseClient):
         event_num_after: int | None = None,
         event_created_before: str | None = None,
         event_created_after: str | None = None,
-        limit: int = MAX_PAGE_SIZE
+        limit: int = MAX_PAGE_SIZE,
     ):
         """
         A generator to retrieve the list of events according to the limit.
@@ -119,8 +113,8 @@ class ReilaQuestClient(BaseClient):
                     event["_ENTRY_STATUS"] = "new"
             if event_numbers:
                 latest_event = max(event_numbers)
-            demisto.debug(f'Fetched {len(events)} events')
-            demisto.debug(f'Fetched the following event IDs: {event_numbers}, latest event is {latest_event}')
+            demisto.debug(f"Fetched {len(events)} events")
+            demisto.debug(f"Fetched the following event IDs: {event_numbers}, latest event is {latest_event}")
             yield events, latest_event
             if len(events) < page_size:
                 break
@@ -175,11 +169,11 @@ class ReilaQuestClient(BaseClient):
         Note:
             by default the maximum size page for each request is 100.
         """
-        demisto.debug(f'Starting pagination on {url_suffix} for the following IDs {_ids} with page size {page_size}')
+        demisto.debug(f"Starting pagination on {url_suffix} for the following IDs {_ids} with page size {page_size}")
         chunk = 0
         response = []
         while chunk < len(_ids):
-            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk: chunk + page_size]}))
+            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk : chunk + page_size]}))
             chunk += page_size
         return response
 
@@ -214,7 +208,7 @@ def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, list[di
                 _triage_item_ids_to_events[triage_item_id] = []
             _triage_item_ids_to_events[triage_item_id].append(event)
         else:
-            demisto.error(f'event {event} does not have triage-item-id fields, skipping it')
+            demisto.error(f"event {event} does not have triage-item-id fields, skipping it")
 
     return _triage_item_ids_to_events, get_largest_event_num(events)
 
@@ -227,7 +221,7 @@ def get_largest_event_num(events: List[Dict]) -> int | None:
         return None
     event_maxes = [event["event-num"] for event in events]
     largest_event = max(event_maxes)
-    demisto.info(f'Largest fetched event is {largest_event}')
+    demisto.info(f"Largest fetched event is {largest_event}")
     return largest_event
 
 
@@ -300,7 +294,7 @@ def enrich_event_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[s
     return (
         list(mitre_tactic_names),
         list(mitre_technique_names),
-        list(get_mitre_attack_ids(alert_incident.get("mitre-attack-mapping") or {}))
+        list(get_mitre_attack_ids(alert_incident.get("mitre-attack-mapping") or {})),
     )
 
 
@@ -309,7 +303,7 @@ def enrich_events_with_incident_or_alert_metadata(
     triage_item_ids_to_events: dict[str, List[dict]],
     event_ids_to_triage_ids: dict[str, str],
     event_type: str,
-    assets_ids_to_triage_ids: dict[str, List[str]]
+    assets_ids_to_triage_ids: dict[str, List[str]],
 ):
     """
     Enrich events with incident/alerts metadata including mitre attack metadata
@@ -354,7 +348,7 @@ def enrich_events_with_assets_metadata(
         triage_item_ids_to_events: a mapping between the triage item IDs to events.
     """
     asset_ids = list(assets_ids_to_triage_ids.keys())
-    demisto.info(f'Fetched the following asset-IDs {asset_ids}')
+    demisto.info(f"Fetched the following asset-IDs {asset_ids}")
 
     assets = client.get_asset_ids(asset_ids)
     for asset in assets:
@@ -386,8 +380,8 @@ def enrich_events(client: ReilaQuestClient, events: list[dict]) -> list[dict]:
     alert_ids = list(alert_ids_to_triage_ids.keys())
     incident_ids = list(incident_ids_to_triage_ids.keys())
 
-    demisto.info(f'Fetched the following alerts IDs: {alert_ids}')
-    demisto.info(f'Fetched the following incidents IDs: {incident_ids}')
+    demisto.info(f"Fetched the following alerts IDs: {alert_ids}")
+    demisto.info(f"Fetched the following incidents IDs: {incident_ids}")
 
     alerts = client.get_alerts_by_ids(alert_ids)
     incidents = client.get_incident_ids(incident_ids)
@@ -399,7 +393,7 @@ def enrich_events(client: ReilaQuestClient, events: list[dict]) -> list[dict]:
         triage_item_ids_to_events=triage_item_ids_to_events,
         event_ids_to_triage_ids=alert_ids_to_triage_ids,
         event_type="alert",
-        assets_ids_to_triage_ids=assets_ids_to_triage_ids
+        assets_ids_to_triage_ids=assets_ids_to_triage_ids,
     )
 
     enrich_events_with_incident_or_alert_metadata(
@@ -407,13 +401,11 @@ def enrich_events(client: ReilaQuestClient, events: list[dict]) -> list[dict]:
         triage_item_ids_to_events=triage_item_ids_to_events,
         event_ids_to_triage_ids=incident_ids_to_triage_ids,
         event_type="incident",
-        assets_ids_to_triage_ids=assets_ids_to_triage_ids
+        assets_ids_to_triage_ids=assets_ids_to_triage_ids,
     )
 
     enrich_events_with_assets_metadata(
-        client,
-        assets_ids_to_triage_ids=assets_ids_to_triage_ids,
-        triage_item_ids_to_events=triage_item_ids_to_events
+        client, assets_ids_to_triage_ids=assets_ids_to_triage_ids, triage_item_ids_to_events=triage_item_ids_to_events
     )
 
     enriched_events = []
@@ -441,17 +433,18 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         else:
             retry_after_datetime = None
         now = datetime.now(timezone.utc).astimezone()
-        demisto.info(f'now: {now}, retry-after: {retry_after}')
+        demisto.info(f"now: {now}, retry-after: {retry_after}")
         if retry_after_datetime and now < retry_after_datetime:
             demisto.info(
-                f'Waiting for the api to recover from rate-limit, need to wait {(retry_after - now).total_seconds()} seconds'
+                f"Waiting for the api to recover from rate-limit, need to wait "  # type: ignore[operator]
+                f"{(retry_after - now).total_seconds()} seconds"  # type: ignore[operator]
             )
             return
         for events, largest_event in client.list_triage_item_events(
             event_num_after=last_run.get(LAST_FETCHED_EVENT_NUM), limit=max_fetch
         ):
             if not events:
-                demisto.info(f'There are no events to fetch when last run is {last_run}, hence exiting')
+                demisto.info(f"There are no events to fetch when last run is {last_run}, hence exiting")
                 break
             enriched_events = enrich_events(client, events=events)
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
@@ -460,13 +453,11 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
             demisto.info(f'Sent the following events {[event.get("event-num") for event in events]} successfully')
     except RateLimitError as rate_limit_error:
         demisto.error(str(rate_limit_error))
-        new_last_run.update(
-            {RATE_LIMIT_LAST_RUN: rate_limit_error.retry_after}
-        )
+        new_last_run.update({RATE_LIMIT_LAST_RUN: rate_limit_error.retry_after})
     finally:
-        demisto.updateModuleHealth({'eventsPulled': events_sent})
+        demisto.updateModuleHealth({"eventsPulled": events_sent})
         demisto.setLastRun(new_last_run)
-        demisto.info(f'Updated the last run from {last_run} to {new_last_run} successfully')
+        demisto.info(f"Updated the last run from {last_run} to {new_last_run} successfully")
 
 
 def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
@@ -475,13 +466,13 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
     if start_time := args.get("start_time"):
         start_time_datetime = dateparser.parse(start_time)
         if not start_time_datetime:
-            raise ValueError(f'Invalid value for start_time={start_time}')
+            raise ValueError(f"Invalid value for start_time={start_time}")
         start_time = start_time_datetime.strftime(DATE_FORMAT)
 
     if end_time := args.get("end_time"):
         end_time_datetime = dateparser.parse(end_time)
         if not end_time_datetime:
-            raise ValueError(f'Invalid value for end_time={end_time_datetime}')
+            raise ValueError(f"Invalid value for end_time={end_time_datetime}")
         end_time = end_time_datetime.strftime(DATE_FORMAT)
 
     events: list[dict] = []
@@ -490,19 +481,17 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
         event_num_after=arg_to_number(args.get("event_num_after")),
         event_created_after=start_time,
         event_created_before=end_time,
-        limit=limit
+        limit=limit,
     ):
         current_enriched_events = enrich_events(client, events=current_events)
         events.extend(current_enriched_events)
 
     return CommandResults(
-        outputs_prefix='ReliaQuest.Events',
-        outputs_key_field='event-num',
+        outputs_prefix="ReliaQuest.Events",
+        outputs_key_field="event-num",
         outputs=events,
         raw_response=events,
-        readable_output=tableToMarkdown(
-            "Relia Quest Events", t=events, headers=["event-num", "triage-item-id", "event-created"]
-        )
+        readable_output=tableToMarkdown("Relia Quest Events", t=events, headers=["event-num", "triage-item-id", "event-created"]),
     )
 
 
@@ -518,26 +507,25 @@ def main() -> None:
     proxy = argToBoolean(params.get("proxy", False))
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     try:
-
         client = ReilaQuestClient(
             url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy
         )
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-events":
             fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
         elif command == "relia-quest-get-events":
             return_results(get_events_command(client, args=demisto.args()))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as exc:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\ntype:{type(exc)}, error:{str(exc)}")
+        return_error(f"Failed to execute {command} command.\nError:\ntype:{type(exc)}, error:{exc!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

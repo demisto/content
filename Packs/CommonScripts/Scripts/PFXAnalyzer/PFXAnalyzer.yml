@@ -1,0 +1,62 @@
+commonfields:
+  id: PFXAnalyzer
+  version: -1
+name: PFXAnalyzer
+script: ''
+type: python
+tags: []
+comment: This script is designed to analyze a PFX (Personal Information Exchange) file for various suspicious or noteworthy characteristics from a security perspective.
+enabled: true
+args:
+- name: fileEntryId
+  required: true
+  default: true
+  description: The ID of the file entry from the incident context that contains the PFX file.
+- name: pfxPassword
+  description: Password for the PFX file (if encrypted).
+outputs:
+- contextPath: PFXAnalysis.Private_Key_Present
+  description: True if a private key was found in the PFX.
+  type: boolean
+- contextPath: PFXAnalysis.Key_Type
+  description: Type of the private key (e.g., RSA, ECC).
+  type: string
+- contextPath: PFXAnalysis.Key_Size
+  description: Size of the private key in bits (for RSA) or curve name (for ECC).
+  type: number
+- contextPath: PFXAnalysis.Certificate_Present
+  description: True if a certificate was found in the PFX.
+  type: boolean
+- contextPath: PFXAnalysis.Issuer
+  description: Common Name of the certificate's issuer.
+  type: string
+- contextPath: PFXAnalysis.Validity_Start
+  description: Certificate validity start date/time (UTC).
+  type: date
+- contextPath: PFXAnalysis.Validity_End
+  description: Certificate validity end date/time (UTC).
+  type: date
+- contextPath: PFXAnalysis.Validity_Days
+  description: Total number of days the certificate is valid for.
+  type: number
+- contextPath: PFXAnalysis.Self_Signed
+  description: True if the certificate is self-signed.
+  type: boolean
+- contextPath: PFXAnalysis.Suspicious_Keywords_in_CN
+  description: True if suspicious keywords were found in the Common Name.
+  type: boolean
+- contextPath: PFXAnalysis.Reasons
+  description: A list of all identified suspicious reasons.
+  type: string
+- contextPath: PFXAnalysis.is_pfx_suspicious
+  description: Overall boolean indicator if the PFX is considered suspicious.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: true
+dockerimage: demisto/crypto:1.0.0.5490413
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

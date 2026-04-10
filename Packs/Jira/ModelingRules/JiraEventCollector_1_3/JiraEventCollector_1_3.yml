@@ -3,3 +3,6 @@ id: JiraEventCollector
 name: JiraEventCollector
 rules: ''
 schema: ''
+supportedModules:
+- agentix
+- xsiam

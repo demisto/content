@@ -1,0 +1,98 @@
+comment: 'Processes the context output from !pan-os-get-rulehitcounts and returns data about unused local rules, unused rules from Panorama, and rules from Panorama that have hits on some firewalls but not all.'
+commonfields:
+  id: PAN-OS-AnalyzeRuleHitCounts
+  version: -1
+enabled: false
+name: PAN-OS-AnalyzeRuleHitCounts
+outputs:
+- contextPath: PANOS.UnusedRules.TotalLocalRulesAnalyzed
+  description: The total number of local rules analyzed.
+  type: Number
+- contextPath: PANOS.UnusedRules.TotalPanoramaRulesAnalyzed
+  description: The total number of analyzed rules pushed from Panorama.
+  type: Number
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.from_dg_name
+  description: Name of the device group the rule is inherited from.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_hits
+  description: Host IDs of firewalls where this rule has hits.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_hits
+  description: Hostnames of firewalls where this rule has hits.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostids_with_zero_hits
+  description: Host IDs of firewalls where this rule has zero hits.
+  type: Unknown
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.hostnames_with_zero_hits
+  description: Hostnames of firewalls where this rule has zero hits.
+  type: Unknown
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.instanceName
+  description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.name
+  description: The name of the rule.
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.position
+  description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+  type: String
+- contextPath: PANOS.UnusedRules.UsedPanoramaRules.rulebase
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.activeHAPeer
+  description: If the firewall where this rule data comes from is in an HA pair, contains the Host ID of the active device in the pair.
+  type: Unknown
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.hostid
+  description: Host ID of the firewall where the rule is configured.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.hostname
+  description: Hostname of the firewall where this rule is configured.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.vsys
+  description: The virtual system (VSYS) where the rule is configured.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.instanceName
+  description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.name
+  description: The name of the rule.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.position
+  description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedLocalRules.rulebase
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.from_dg_name
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.instanceName
+  description: Name of the PAN-OS Integration Instance used to collect rule hitcount data.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.name
+  description: The name of the rule.
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.position
+  description: The position of the rule within the Panorama device-group rulebase (pre-rulebase or post-rulebase).
+  type: String
+- contextPath: PANOS.UnusedRules.UnusedPanoramaRules.rulebase
+  description: The rulebase where the rule is configured (e.g. "Security", "NAT", etc).
+  type: String
+- contextPath: PANOS.UnusedRules.ignore_auto_extract
+  description: Instructs the system not to perform indicator extraction on returned data.
+  type: Boolean
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+marketplaces:
+- platform

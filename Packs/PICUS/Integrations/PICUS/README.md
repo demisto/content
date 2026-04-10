@@ -1,23 +1,17 @@
 Continuous Breach And Attack Simulation
 
-## Configure PICUS on Cortex XSOAR
+## Configure PICUS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PICUS.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | PICUS URL | For example : https://192.168.100.100/ | True |
-    | API Key - Refresh Token | Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and Show Token | True |
-    | Trust any certificate (not secure) |  |  |
-    | Use system proxy settings |  |  |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| PICUS URL | For example : https://192.168.100.100/ | True |
+| API Key - Refresh Token | Picus Interface  - SETTINGS -  ADVANCED - API TOKEN - Generate and Show Token | True |
+| Trust any certificate (not secure) |  |  |
+| Use system proxy settings |  |  |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### picus-vector-compare
@@ -33,14 +27,15 @@ Attack Result - Makes a comparison of the given vector's results. Example Comman
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| begin_date | Result begin date. | Required | 
-| end_date | Result end date. | Required | 
-| trusted | Victem Peer. | Required | 
-| untrusted | Attacker Peer. | Required | 
+| begin_date | Result begin date. | Required |
+| end_date | Result end date. | Required |
+| trusted | Victem Peer. | Required |
+| untrusted | Attacker Peer. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-attack-result-list
 
 ***
@@ -54,20 +49,21 @@ Returns the list of the attack results have optional parameters for pagination a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attack_result | Attack results that should be filtered. Secure or Insecure. Possible values are: secure, insecure. Default is insecure. | Required | 
-| begin_date | Threat release date filter start of the date range. | Required | 
-| console_output_info | Default: false -  Process Results of Scenario Details have console output information which can be in large sizes so this data is disabled by default. Default is False. | Optional | 
-| end_date | 	 string Default: "Today's date formatted YYYY-mm-dd" Threat release date filter end of the date range if a begin date is given and end date not, default will be used. | Required | 
-| from_time | Default: "null" allowed time formats RFC822, RFC822Z, RFC1123, RFC1123Z, RFC850, RFC3339. Default is null. | Optional | 
-| page | Default: 1 Requested page number. Default is 1. | Optional | 
-| size | Default: 50 Requested data size. Default is 50. | Optional | 
-| threat_parameters | "threat_parameters": { "begin_date": "2018-10-29", "categories": [ [ "Malicious Code" ], [ "Attack Scenario", "Defense Evasion", "Indicator Removal from Tools" ] ],. | Optional | 
-| vector1 |  Array of objects (PeerPairParams) Vectors.(Trusted Peer). | Required | 
-| vector2 |  Array of objects (PeerPairParams) Vectors.(Untrusted Peer). | Required | 
+| attack_result | Attack results that should be filtered. Secure or Insecure. Possible values are: secure, insecure. Default is insecure. | Required |
+| begin_date | Threat release date filter start of the date range. | Required |
+| console_output_info | Default: false -  Process Results of Scenario Details have console output information which can be in large sizes so this data is disabled by default. Default is False. | Optional |
+| end_date |   string Default: "Today's date formatted YYYY-mm-dd" Threat release date filter end of the date range if a begin date is given and end date not, default will be used. | Required |
+| from_time | Default: "null" allowed time formats RFC822, RFC822Z, RFC1123, RFC1123Z, RFC850, RFC3339. Default is null. | Optional |
+| page | Default: 1 Requested page number. Default is 1. | Optional |
+| size | Default: 50 Requested data size. Default is 50. | Optional |
+| threat_parameters | "threat_parameters": { "begin_date": "2018-10-29", "categories": [ [ "Malicious Code" ], [ "Attack Scenario", "Defense Evasion", "Indicator Removal from Tools" ] ],. | Optional |
+| vector1 |  Array of objects (PeerPairParams) Vectors.(Trusted Peer). | Required |
+| vector2 |  Array of objects (PeerPairParams) Vectors.(Untrusted Peer). | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-specific-threats-results
 
 ***
@@ -81,16 +77,17 @@ Returns the list of the attack results of a single threat have optional paramete
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | CVE code of the threat to be filtered. | Optional | 
-| md5 | The md5 of the threat. | Optional | 
-| page | integer &lt;int64&gt; -  Default: 1 Requested page number. Default is 1. | Optional | 
-| sha256 | SHA256 hash of the threat. | Optional | 
-| size | integer &lt;int64&gt; - Default: 50 Requested data size. Default is 50. | Optional | 
-| threat_id | integer &lt;int64&gt; PID of the threat. | Required | 
+| cve | CVE code of the threat to be filtered. | Optional |
+| md5 | The md5 of the threat. | Optional |
+| page | integer &lt;int64&gt; -  Default: 1 Requested page number. Default is 1. | Optional |
+| sha256 | SHA256 hash of the threat. | Optional |
+| size | integer &lt;int64&gt; - Default: 50 Requested data size. Default is 50. | Optional |
+| threat_id | integer &lt;int64&gt; PID of the threat. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-peer-list
 
 ***
@@ -108,6 +105,7 @@ Returns the peer list with current statuses
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-attack-all-vectors
 
 ***
@@ -121,11 +119,12 @@ Schedules given attack on all possible vectors
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | Example: threat_id=100682 PID of the threat. | Required | 
+| threat_id | Example: threat_id=100682 PID of the threat. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-attack-single
 
 ***
@@ -139,14 +138,15 @@ Schedules a single attack on requested vector
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | Example: threat_id=666059 PID of the threat. | Required | 
-| variant | Example: variant=HTTP. | Required | 
-| vector1 | Example: trusted=Trusted-Peer-Name Trusted peer name, if type is overall, it is not necessary. | Required | 
-| vector2 | Example: untrusted=Untrusted-Peer-Name Untrusted peer name, if type is overall, it is not necessary. | Required | 
+| threat_id | Example: threat_id=666059 PID of the threat. | Required |
+| variant | Example: variant=HTTP. | Required |
+| vector1 | Example: trusted=Trusted-Peer-Name Trusted peer name, if type is overall, it is not necessary. | Required |
+| vector2 | Example: untrusted=Untrusted-Peer-Name Untrusted peer name, if type is overall, it is not necessary. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-trigger-update
 
 ***
@@ -164,6 +164,7 @@ Triggers the update mechanism manually, returns if the update-command is taken s
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-version
 
 ***
@@ -181,6 +182,7 @@ Returns the current version and the update time config
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-mitigation-list
 
 ***
@@ -194,17 +196,18 @@ Returns the list of the mitigations of threats\nhave optional parameters for pag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| begin_date | Threat release date filter start of the date range. | Required | 
-| end_date | Default: "Today's date formatted YYYY-mm-dd" Threat release date filter end of the date range if a begin date is given and end date not, default will be used. | Required | 
-| page | integer &lt;int64&gt; Default: 1 Requested page number. Default is 1. | Optional | 
-| products | Array of strings - Products info of the mitigation. Possible values are: , . | Required | 
-| signature_id | ID of the signature. | Required | 
-| size | integer &lt;int64&gt; - Default: 50 Requested data size. Default is 50. | Optional | 
-| threat_id | integer &lt;int64&gt; -  PID of the threat. | Required | 
+| begin_date | Threat release date filter start of the date range. | Required |
+| end_date | Default: "Today's date formatted YYYY-mm-dd" Threat release date filter end of the date range if a begin date is given and end date not, default will be used. | Required |
+| page | integer &lt;int64&gt; Default: 1 Requested page number. Default is 1. | Optional |
+| products | Array of strings - Products info of the mitigation. Possible values are: , . | Required |
+| signature_id | ID of the signature. | Required |
+| size | integer &lt;int64&gt; - Default: 50 Requested data size. Default is 50. | Optional |
+| threat_id | integer &lt;int64&gt; -  PID of the threat. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-mitre-matrix
 
 ***
@@ -222,6 +225,7 @@ Returns the mitre matrix metadata takes no parameters
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-sigma-rules-list
 
 ***
@@ -235,12 +239,13 @@ Returns the list of the sigma rules of scenario actions have optional parameters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| size | Size of Displayed Rule. Default is 100. | Optional | 
-| page | Page of Displayed Rule. Default is 1. | Optional | 
+| size | Size of Displayed Rule. Default is 100. | Optional |
+| page | Page of Displayed Rule. Default is 1. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### picus-vector-list
 
 ***
@@ -254,9 +259,9 @@ Returns the list of the vectors all disabled and enabled ones have optional para
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| add_user_details | boolean - Add vectors' assigned user details to the response. Default is True. | Optional | 
-| page | Default: 1 Requested page number. Default is 1. | Optional | 
-| size | Default: 50 Requested data size. Default is 50. | Optional | 
+| add_user_details | boolean - Add vectors' assigned user details to the response. Default is True. | Optional |
+| page | Default: 1 Requested page number. Default is 1. | Optional |
+| size | Default: 50 Requested data size. Default is 50. | Optional |
 
 #### Context Output
 

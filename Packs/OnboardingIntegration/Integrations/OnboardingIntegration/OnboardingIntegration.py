@@ -1,34 +1,37 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
-'''IMPORTS'''
-from faker import Faker
-from faker.providers import internet, misc, lorem, user_agent
-from datetime import datetime
+
+"""IMPORTS"""
 import json
-import random
 import math
+import random
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-'''SETUP'''
+from faker import Faker
+from faker.providers import internet, lorem, misc, user_agent
+
+"""SETUP"""
 fake = Faker()
 fake.add_provider(internet)
 fake.add_provider(misc)
 fake.add_provider(lorem)
 fake.add_provider(user_agent)
 
-'''GLOBAL VARS'''
+"""GLOBAL VARS"""
 PARAMS = demisto.params()
-INCIDENT_TYPE = PARAMS.get('incidentType', 'PhishingDemo')
-INCIDENTS_PER_MINUTE = int(PARAMS.get('incidents_per_minute', '5'))
-MAX_NUM_OF_INCIDENTS = int(PARAMS.get('max_num_of_incidents', '10'))
-FREQUENCY = PARAMS.get('frequency')
+INCIDENT_TYPE = PARAMS.get("incidentType", "PhishingDemo")
+INCIDENTS_PER_MINUTE = int(PARAMS.get("incidents_per_minute", "5"))
+MAX_NUM_OF_INCIDENTS = int(PARAMS.get("max_num_of_incidents", "10"))
+FREQUENCY = PARAMS.get("frequency")
 INDICATORS_PER_INCIDENT = 5
-INDICATORS_TO_INCLUDE = ['ipv4_public', 'url', 'domain_name', 'sha1', 'sha256', 'md5']
-EMAIL_PROTOCOLS = ['POP3', 'IMAP', 'SMTP', 'ESMTP', 'HTTP', 'HTTPS']
+INDICATORS_TO_INCLUDE = ["ipv4_public", "url", "domain_name", "sha1", "sha256", "md5"]
+EMAIL_PROTOCOLS = ["POP3", "IMAP", "SMTP", "ESMTP", "HTTP", "HTTPS"]
 # About the drop some mean regex right now disable-secrets-detection-start
-TEMPLATE_1 = '''<!doctype html>
+TEMPLATE_1 = """<!doctype html>
 <html>
 
 <head>
@@ -190,8 +193,8 @@ TEMPLATE_1 = '''<!doctype html>
 </body>
 
 </html>
-'''
-TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
+"""
+TEMPLATE_2 = """<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -460,12 +463,12 @@ TEMPLATE_2 = '''<html xmlns="http://www.w3.org/1999/xhtml">
 </body>
 
 </html>
-'''
+"""
 # Drops the mic disable-secrets-detection-end
 EMAIL_TEMPLATES = [TEMPLATE_1, TEMPLATE_2]
 
 
-'''HELPER FUNCTIONS'''
+"""HELPER FUNCTIONS"""
 
 
 def update_parameters():
@@ -473,22 +476,22 @@ def update_parameters():
     Check and see if the integration parameters changed and if so update global vars
     """
     params = demisto.params()
-    incidents_per_minute = int(params.get('incidents_per_minute', '5'))
-    max_num_of_incidents = int(params.get('max_num_of_incidents', '10'))
-    frequency = int(params.get('frequency')) if params.get('frequency') else None
+    incidents_per_minute = int(params.get("incidents_per_minute", "5"))
+    max_num_of_incidents = int(params.get("max_num_of_incidents", "10"))
+    frequency = int(params.get("frequency")) if params.get("frequency") else None
     global INCIDENTS_PER_MINUTE
-    if INCIDENTS_PER_MINUTE != incidents_per_minute:
+    if incidents_per_minute != INCIDENTS_PER_MINUTE:
         INCIDENTS_PER_MINUTE = incidents_per_minute
     global MAX_NUM_OF_INCIDENTS
-    if MAX_NUM_OF_INCIDENTS != max_num_of_incidents:
+    if max_num_of_incidents != MAX_NUM_OF_INCIDENTS:
         MAX_NUM_OF_INCIDENTS = max_num_of_incidents
     global FREQUENCY
-    if FREQUENCY != frequency:
+    if frequency != FREQUENCY:
         FREQUENCY = frequency
 
 
 def generate_dbot_score(indicator):
-    """ Arbitrary (but consistent) scoring method
+    """Arbitrary (but consistent) scoring method
 
     Assign a dbot score according to the last digit of the hash of the indicator.
 
@@ -522,14 +525,14 @@ def create_content():
         The randomly generated data as a string
     """
     details = fake.text(600)  # pylint: disable=no-member
-    details += '\n'
+    details += "\n"
     for _ in range(INDICATORS_PER_INCIDENT):
         ipv4, url, domain = fake.ipv4_public(), fake.url(), fake.domain_name()  # pylint: disable=no-member
         sha1, sha256, md5 = fake.sha1(), fake.sha256(), fake.md5()  # pylint: disable=no-member
-        details += ipv4 + ' ' + url + ' ' + domain + ' ' + sha1 + ' ' + sha256 + ' ' + md5 + '\n'
+        details += str(ipv4) + " " + str(url) + " " + str(domain) + " " + str(sha1) + " " + str(sha256) + " " + str(md5) + "\n"
 
     emails = [fake.email() for _ in range(INDICATORS_PER_INCIDENT)]  # pylint: disable=no-member
-    details += ' '.join(emails)
+    details += " ".join(emails)
     return details
 
 
@@ -563,34 +566,34 @@ def create_email():
     cc = [fake.email() for _ in range(random.randint(0, 2))]  # pylint: disable=no-member
     bcc = [fake.email() for _ in range(random.randint(0, 2))]  # pylint: disable=no-member
     the_time = datetime.now()
-    received = 'from ' + fake.hostname() + ' (' + fake.ipv4_public()  # pylint: disable=no-member
-    received += ')\r\n' + 'by ' + fake.domain_word() + '.'  # pylint: disable=no-member
-    received += fake.free_email_domain() + ' with '  # pylint: disable=no-member
+    received = "from " + fake.hostname() + " (" + fake.ipv4_public()  # pylint: disable=no-member
+    received += ")" + "by " + fake.domain_word() + "."  # pylint: disable=no-member
+    received += fake.free_email_domain() + " with "  # pylint: disable=no-member
     received += EMAIL_PROTOCOLS[random.randint(0, len(EMAIL_PROTOCOLS) - 1)]
-    received += '; ' + the_time.strftime('%c')
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = fake.sentence()  # pylint: disable=no-member
-    msg['From'] = sender
-    msg['Reply-To'] = sender
-    msg['To'] = recipient
-    msg['Message-ID'] = fake.uuid4()  # pylint: disable=no-member
-    msg['CC'] = ', '.join(cc) if cc else ''
-    msg['BCC'] = ', '.join(bcc) if bcc else ''
-    msg['User-Agent'] = fake.user_agent()  # pylint: disable=no-member
-    msg['Date'] = the_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-    msg['Received'] = received
+    received += "; " + the_time.strftime("%c")
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = fake.sentence()  # pylint: disable=no-member
+    msg["From"] = sender
+    msg["Reply-To"] = sender
+    msg["To"] = recipient
+    msg["Message-ID"] = str(fake.uuid4())  # pylint: disable=no-member
+    msg["CC"] = ", ".join(cc) if cc else ""
+    msg["BCC"] = ", ".join(bcc) if bcc else ""
+    msg["User-Agent"] = fake.user_agent()  # pylint: disable=no-member
+    msg["Date"] = the_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    msg["Received"] = received
 
     plaintext = create_content()
     html = inject_content_into_template(plaintext)
-    part1 = MIMEText(plaintext, 'plain')
-    part2 = MIMEText(html, 'html')
+    part1 = MIMEText(plaintext, "plain")
+    part2 = MIMEText(html, "html")
     msg.attach(part1)
     msg.attach(part2)
     email_object = {}
     for key, val in msg.items():
         email_object[key] = val
-    email_object['Text'] = plaintext
-    email_object['Body'] = html
+    email_object["Text"] = plaintext
+    email_object["Body"] = html
     return msg, email_object
 
 
@@ -605,7 +608,7 @@ def generate_incidents(last_run):
         The number of incidents generated in the current call to fetch_incidents and the incidents themselves
     """
     if last_run > 0 and last_run > MAX_NUM_OF_INCIDENTS:
-        demisto.info('last_run is greater than MAX_NUM_OF_INCIDENTS')
+        demisto.info("last_run is greater than MAX_NUM_OF_INCIDENTS")
         return 0, []
 
     incidents = []
@@ -618,17 +621,19 @@ def generate_incidents(last_run):
 
     for _ in range(num_of_incident_to_create):
         email, email_object = create_email()
-        incidents.append({
-            'name': email_object.get('Subject'),
-            'details': email.as_string(),
-            'occurred': email_object.get('Date'),
-            'type': INCIDENT_TYPE,
-            'rawJSON': json.dumps(email_object)
-        })
+        incidents.append(
+            {
+                "name": email_object.get("Subject"),
+                "details": email.as_string(),
+                "occurred": email_object.get("Date"),
+                "type": INCIDENT_TYPE,
+                "rawJSON": json.dumps(email_object),
+            }
+        )
     return num_of_incident_to_create, incidents
 
 
-'''MAIN FUNCTIONS'''
+"""MAIN FUNCTIONS"""
 
 
 def fetch_incidents():
@@ -647,16 +652,16 @@ def fetch_incidents():
         update_parameters()
         minutes_of_generation = MAX_NUM_OF_INCIDENTS / float(INCIDENTS_PER_MINUTE)
         if not FREQUENCY or minutes_of_generation > FREQUENCY:  # Run once
-            last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
+            last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get("numOfIncidentsCreated", 0)
 
             num_of_incidents_created, incidents = generate_incidents(last_run)
 
             demisto.incidents(incidents)
-            demisto.setLastRun({'numOfIncidentsCreated': last_run + num_of_incidents_created})
+            demisto.setLastRun({"numOfIncidentsCreated": last_run + num_of_incidents_created})
             return
         else:
-            run_counter = 0 if not demisto.getLastRun() else demisto.getLastRun().get('run_count', 0)
-            last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
+            run_counter = 0 if not demisto.getLastRun() else demisto.getLastRun().get("run_count", 0)
+            last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get("numOfIncidentsCreated", 0)
             should_run = run_counter % FREQUENCY
             if should_run < math.ceil(minutes_of_generation):  # then should run
                 if should_run == 0:
@@ -667,17 +672,11 @@ def fetch_incidents():
 
                 total_incidents_created = last_run + num_of_incidents_created
                 updated_run_count = run_counter + 1
-                demisto.setLastRun({
-                    'numOfIncidentsCreated': total_incidents_created,
-                    'run_count': updated_run_count
-                })
+                demisto.setLastRun({"numOfIncidentsCreated": total_incidents_created, "run_count": updated_run_count})
                 return
             else:
                 updated_run_count = run_counter + 1
-                demisto.setLastRun({
-                    'numOfIncidentsCreated': last_run,
-                    'run_count': updated_run_count
-                })
+                demisto.setLastRun({"numOfIncidentsCreated": last_run, "run_count": updated_run_count})
                 demisto.incidents([])
     except Exception:
         raise
@@ -693,42 +692,34 @@ def demo_ip_command():
     returns:
         IP Reputation to the context
     """
-    ip = demisto.args().get('ip')
+    ip = demisto.args().get("ip")
     dbotscore = generate_dbot_score(ip)
 
-    dbotscore_output = {
-        'Indicator': ip,
-        'Type': 'ip',
-        'Vendor': 'OnboardingIntegration',
-        'Score': dbotscore
-    }
+    dbotscore_output = {"Indicator": ip, "Type": "ip", "Vendor": "OnboardingIntegration", "Score": dbotscore}
 
-    standard_ip_output = {
-        'Address': ip
-    }
+    standard_ip_output = {"Address": ip}
 
     if dbotscore == 3:
-        standard_ip_output['Malicious'] = {
-            'Vendor': 'OnboardingIntegration',
-            'Description': 'Indicator was found to be malicious.'
+        standard_ip_output["Malicious"] = {
+            "Vendor": "OnboardingIntegration",
+            "Description": "Indicator was found to be malicious.",
         }
 
-    context = {
-        'DBotScore': dbotscore_output,
-        outputPaths['ip']: standard_ip_output
-    }
+    context = {"DBotScore": dbotscore_output, outputPaths["ip"]: standard_ip_output}
 
-    title = 'OnboardingIntegration IP Reputation - {}'.format(ip)
+    title = f"OnboardingIntegration IP Reputation - {ip}"
     human_readable = tableToMarkdown(title, dbotscore_output)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': context
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": context,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": human_readable,
+            "EntryContext": context,
+        }
+    )
 
 
 def demo_url_command():
@@ -741,42 +732,34 @@ def demo_url_command():
     returns:
         URL Reputation to the context
     """
-    url = demisto.args().get('url')
+    url = demisto.args().get("url")
     dbotscore = generate_dbot_score(url)
 
-    dbotscore_output = {
-        'Indicator': url,
-        'Type': 'url',
-        'Vendor': 'OnboardingIntegration',
-        'Score': dbotscore
-    }
+    dbotscore_output = {"Indicator": url, "Type": "url", "Vendor": "OnboardingIntegration", "Score": dbotscore}
 
-    standard_url_output = {
-        'Data': url
-    }
+    standard_url_output = {"Data": url}
 
     if dbotscore == 3:
-        standard_url_output['Malicious'] = {
-            'Vendor': 'OnboardingIntegration',
-            'Description': 'Indicator was found to be malicious.'
+        standard_url_output["Malicious"] = {
+            "Vendor": "OnboardingIntegration",
+            "Description": "Indicator was found to be malicious.",
         }
 
-    context = {
-        'DBotScore': dbotscore_output,
-        outputPaths['url']: standard_url_output
-    }
+    context = {"DBotScore": dbotscore_output, outputPaths["url"]: standard_url_output}
 
-    title = 'OnboardingIntegration URL Reputation - {}'.format(url)
+    title = f"OnboardingIntegration URL Reputation - {url}"
     human_readable = tableToMarkdown(title, dbotscore_output)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': context
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": context,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": human_readable,
+            "EntryContext": context,
+        }
+    )
 
 
 def demo_domain_command():
@@ -789,42 +772,34 @@ def demo_domain_command():
     returns:
         Domain Reputation to the context
     """
-    domain = demisto.args().get('domain')
+    domain = demisto.args().get("domain")
     dbotscore = generate_dbot_score(domain)
 
-    dbotscore_output = {
-        'Indicator': domain,
-        'Type': 'domain',
-        'Vendor': 'OnboardingIntegration',
-        'Score': dbotscore
-    }
+    dbotscore_output = {"Indicator": domain, "Type": "domain", "Vendor": "OnboardingIntegration", "Score": dbotscore}
 
-    standard_domain_output = {
-        'Name': domain
-    }
+    standard_domain_output = {"Name": domain}
 
     if dbotscore == 3:
-        standard_domain_output['Malicious'] = {
-            'Vendor': 'OnboardingIntegration',
-            'Description': 'Indicator was found to be malicious.'
+        standard_domain_output["Malicious"] = {
+            "Vendor": "OnboardingIntegration",
+            "Description": "Indicator was found to be malicious.",
         }
 
-    context = {
-        'DBotScore': dbotscore_output,
-        outputPaths['domain']: standard_domain_output
-    }
+    context = {"DBotScore": dbotscore_output, outputPaths["domain"]: standard_domain_output}
 
-    title = 'OnboardingIntegration Domain Reputation - {}'.format(domain)
+    title = f"OnboardingIntegration Domain Reputation - {domain}"
     human_readable = tableToMarkdown(title, dbotscore_output)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': context
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": context,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": human_readable,
+            "EntryContext": context,
+        }
+    )
 
 
 def demo_file_command():
@@ -837,43 +812,35 @@ def demo_file_command():
     returns:
         File-Hash Reputation to the context
     """
-    file = demisto.args().get('file')
+    file = demisto.args().get("file")
     hash_type = get_hash_type(file).upper()
     dbotscore = generate_dbot_score(file)
 
-    dbotscore_output = {
-        'Indicator': file,
-        'Type': 'file',
-        'Vendor': 'OnboardingIntegration',
-        'Score': dbotscore
-    }
+    dbotscore_output = {"Indicator": file, "Type": "file", "Vendor": "OnboardingIntegration", "Score": dbotscore}
 
-    standard_file_output = {
-        hash_type: file
-    }
+    standard_file_output = {hash_type: file}
 
     if dbotscore == 3:
-        standard_file_output['Malicious'] = {
-            'Vendor': 'OnboardingIntegration',
-            'Description': 'Indicator was found to be malicious.'
+        standard_file_output["Malicious"] = {
+            "Vendor": "OnboardingIntegration",
+            "Description": "Indicator was found to be malicious.",
         }
 
-    context = {
-        'DBotScore': dbotscore_output,
-        outputPaths['file']: standard_file_output
-    }
+    context = {"DBotScore": dbotscore_output, outputPaths["file"]: standard_file_output}
 
-    title = 'OnboardingIntegration File Reputation - {}'.format(file)
+    title = f"OnboardingIntegration File Reputation - {file}"
     human_readable = tableToMarkdown(title, dbotscore_output)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': context
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": context,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": human_readable,
+            "EntryContext": context,
+        }
+    )
 
 
 def demo_email_command():
@@ -886,61 +853,53 @@ def demo_email_command():
     returns:
         Email Reputation to the context
     """
-    email = demisto.args().get('email')
+    email = demisto.args().get("email")
     dbotscore = generate_dbot_score(email)
 
-    dbotscore_output = {
-        'Indicator': email,
-        'Type': 'email',
-        'Vendor': 'OnboardingIntegration',
-        'Score': dbotscore
-    }
+    dbotscore_output = {"Indicator": email, "Type": "email", "Vendor": "OnboardingIntegration", "Score": dbotscore}
 
-    standard_email_output = {
-        'Address': email
-    }
+    standard_email_output = {"Address": email}
 
     if dbotscore == 3:
-        standard_email_output['Malicious'] = {
-            'Vendor': 'OnboardingIntegration',
-            'Description': 'Indicator was found to be malicious.'
+        standard_email_output["Malicious"] = {
+            "Vendor": "OnboardingIntegration",
+            "Description": "Indicator was found to be malicious.",
         }
 
-    context = {
-        'DBotScore': dbotscore_output,
-        outputPaths['email']: standard_email_output
-    }
+    context = {"DBotScore": dbotscore_output, outputPaths["email"]: standard_email_output}
 
-    title = 'OnboardingIntegration Email Reputation - {}'.format(email)
+    title = f"OnboardingIntegration Email Reputation - {email}"
     human_readable = tableToMarkdown(title, dbotscore_output)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': context
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": context,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": human_readable,
+            "EntryContext": context,
+        }
+    )
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 COMMANDS = {
-    'demo-url': demo_url_command,
-    'demo-ip': demo_ip_command,
-    'demo-email': demo_email_command,
-    'demo-file': demo_file_command,
-    'demo-domain': demo_domain_command,
-    'fetch-incidents': fetch_incidents
+    "demo-url": demo_url_command,
+    "demo-ip": demo_ip_command,
+    "demo-email": demo_email_command,
+    "demo-file": demo_file_command,
+    "demo-domain": demo_domain_command,
+    "fetch-incidents": fetch_incidents,
 }
 
 
 def main():
     try:
-        if demisto.command() == 'test-module':
-            demisto.results('ok')
-        elif demisto.command() in COMMANDS.keys():
+        if demisto.command() == "test-module":
+            demisto.results("ok")
+        elif demisto.command() in COMMANDS:
             COMMANDS[demisto.command()]()
     except Exception as e:
         return_error(str(e))

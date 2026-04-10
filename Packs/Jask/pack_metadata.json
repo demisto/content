@@ -2,7 +2,7 @@
     "name": "Jask (Deprecated)",
     "description": "Deprecated. Use Sumo Logic Cloud SIEM instead.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "hidden": true,
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -16,6 +16,10 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix"
     ]
 }

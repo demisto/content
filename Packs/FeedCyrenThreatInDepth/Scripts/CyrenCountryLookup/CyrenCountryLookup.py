@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
+from CommonServerUserPython import *
 
 # ISO 3166-1-derived mapping (begin)
 COUNTRIES = {
@@ -274,7 +274,7 @@ def main(args):
     try:
         return_results(lookup(args))
     except Exception as e:
-        return_error(f"Failed to execute CyrenCountryLookup. Error: {str(e)}")
+        return_error(f"Failed to execute CyrenCountryLookup. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -1,0 +1,34 @@
+[MODEL: dataset = aruba_central_raw]
+/*
+Mapping Audit events
+*/
+filter ts != null and timestamp = null
+| alter
+    xdm.event.original_event_type = "Audit",
+    xdm.event.type = classification ,
+    xdm.event.description = description ,
+    xdm.event.id = id ,
+    xdm.source.ipv4 = if(is_ipv4(ip_addr) = TRUE, ip_addr),
+    xdm.source.ipv6 = if(is_ipv6(ip_addr) = TRUE, ip_addr),
+    xdm.source.user.upn = if(user contains "@", user, null),
+    xdm.source.user.username =  if(user not contains "@", user, null),
+    xdm.source.user.groups = arraycreate(to_string(gid)),
+    xdm.target.host.device_id = `target`;
+
+/*
+Mapping Network events
+*/
+filter ts = null and timestamp != null
+| alter level = lowercase(level)
+| alter
+    xdm.event.original_event_type = "Networking",
+    xdm.event.type = event_type,
+    xdm.event.description = description, 
+    xdm.event.id = event_uuid,
+    xdm.event.log_level = if(level contains "info",XDM_CONST.LOG_LEVEL_INFORMATIONAL, level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, level contains "emergency", XDM_CONST.LOG_LEVEL_EMERGENCY, level contains "alert",XDM_CONST.LOG_LEVEL_ALERT, level contains "critical",XDM_CONST.LOG_LEVEL_CRITICAL, level contains "error",XDM_CONST.LOG_LEVEL_ERROR, level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, level contains "debug",XDM_CONST.LOG_LEVEL_DEBUG, level),
+    xdm.source.host.hostname = hostname,
+    xdm.source.host.mac_addresses = arraycreate(client_mac),
+    xdm.source.user.groups = arraycreate(to_string(group_name)),
+    xdm.intermediate.host.mac_addresses = arraycreate(coalesce(device_mac, bssid)),
+    xdm.intermediate.host.device_id = device_serial,
+    xdm.intermediate.host.device_category = device_type;

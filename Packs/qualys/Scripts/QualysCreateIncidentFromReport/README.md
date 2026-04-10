@@ -2,6 +2,7 @@ Creates incidents from a Qualys report (XML), based on the Qualys asset ID and v
 Duplicates the incidents that are not created for the same asset ID and QID.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,13 +10,15 @@ Duplicates the incidents that are not created for the same asset ID and QID.
 | Script Type | python |
 | Tags | qualys |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * qualys-host-list
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,5 +29,6 @@ This script uses the following commands and scripts.
 | incidentType | The incident type to create incidents for. The default is "Vulnerability". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

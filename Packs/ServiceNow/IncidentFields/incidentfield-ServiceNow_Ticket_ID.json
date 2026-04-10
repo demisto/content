@@ -20,7 +20,7 @@
     "openEnded": false,
     "associatedTypes": [
         "ServiceNow Ticket",
-	"ServiceNow Create Ticket and Mirror"
+        "ServiceNow Create Ticket and Mirror"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -28,5 +28,9 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

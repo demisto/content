@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-''' IMPORTS '''
+""" IMPORTS """
 
 import xml
 import tempfile
@@ -15,28 +15,30 @@ import defusedxml.ElementTree as defused_ET
 import re
 import time
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
 FETCH_MAX_INCIDENTS = 500
 SECURITY_INCIDENT_NODE_XPATH = ".//SecurityIncident"
 SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
 
-''' PREREQUISITES '''
+""" PREREQUISITES """
 
 
 @contextlib.contextmanager
 def pfx_to_pem(pfx, pfx_password):
-    """ Decrypts the .pfx file to be used with requests. """
+    """Decrypts the .pfx file to be used with requests."""
     with tempfile.NamedTemporaryFile(suffix=".pem") as t_pem:
         f_pem = open(t_pem.name, "wb")
 
         private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(pfx, str.encode(pfx_password))
         if private_key:
-            f_pem.write(private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption()
-            ))
+            f_pem.write(
+                private_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+            )
         if certificate:
             f_pem.write(certificate.public_bytes(serialization.Encoding.PEM))
 
@@ -48,7 +50,7 @@ def pfx_to_pem(pfx, pfx_password):
 
 
 def load_server_url():
-    """ Cleans and loads the server url from the configuration """
+    """Cleans and loads the server url from the configuration"""
     url = demisto.params()["server"]
     url = re.sub("/[/]+$/", "", url)
     url = re.sub("/$", "", url)
@@ -56,11 +58,11 @@ def load_server_url():
 
 
 def load_certificate():
-    """ Loads the certificate and passphrase from the configuration """
+    """Loads the certificate and passphrase from the configuration"""
     params = demisto.params()
     cert = params.get("certificate")
     cert = base64.b64decode(cert)
-    passphrase = params.get('passphrase_creds', {}).get('password') or params.get("passphrase", "")
+    passphrase = params.get("passphrase_creds", {}).get("password") or params.get("passphrase", "")
     return cert, passphrase
 
 
@@ -77,41 +79,41 @@ def load_severities():
     return ",".join(severities_list)
 
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
 SERVER_URL = load_server_url()
 CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
 FETCH_SEVERITIES = load_severities()
 DST = 1 if time.daylight else 0
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def strip_unwanted_chars(s):
-    return re.sub('&\S{1,6};', '', s)
+    return re.sub("&\S{1,6};", "", s)
 
 
 def api_call(body, headers):
-    """ Makes an HTTP Post to the SWS incidents API using the configured certificate """
+    """Makes an HTTP Post to the SWS incidents API using the configured certificate"""
     with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
         res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception(
-                "Got status code " + str(res.status_code) + " with body " + str(res.content) + " with headers " + str(
-                    res.headers))
+                "Got status code " + str(res.status_code) + " with body " + str(res.content) + " with headers " + str(res.headers)
+            )
         try:
             return defused_ET.fromstring(res.content)
         except xml.etree.ElementTree.ParseError as exc:
             # in case of a parsing error, try to remove problematic chars and try again.
-            demisto.debug(f'failed to parse request content, trying to parse without problematic chars:\n{exc}')
+            demisto.debug(f"failed to parse request content, trying to parse without problematic chars:\n{exc}")
             return defused_ET.fromstring(strip_unwanted_chars(res.content))
 
 
 def event_to_incident(event):
-    """ Converts a Symantec event to a Demisto incident """
+    """Converts a Symantec event to a Demisto incident"""
     incident = {}  # type: Dict[str, Any]
     incident["name"] = "Incident: {} ({})".format(event["IncidentNumber"], event["Classification"])
-    incident["occurred"] = event["TimeCreated"] + "+0%s:00" % DST
+    incident["occurred"] = event["TimeCreated"] + f"+0{DST}:00"
     incident["rawJSON"] = json.dumps(event)
 
     labels = []  # type: List[str]
@@ -120,11 +122,11 @@ def event_to_incident(event):
 
 
 def isoformat(date):
-    """ Convert a datetime object to asmx ISO format """
+    """Convert a datetime object to asmx ISO format"""
     return date.isoformat()[:-3] + "Z"
 
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+""" COMMANDS + REQUESTS FUNCTIONS """
 
 
 def test():
@@ -143,8 +145,9 @@ def fetch_incidents():
         last_run = isoformat(t)
 
     incidents = []
-    events = get_incidents_list_request(time=last_run, src_ip=None, severities=FETCH_SEVERITIES,
-                                        max_incidents=FETCH_MAX_INCIDENTS)
+    events = get_incidents_list_request(
+        time=last_run, src_ip=None, severities=FETCH_SEVERITIES, max_incidents=FETCH_MAX_INCIDENTS
+    )
     for event in events:
         inc = event_to_incident(event)
         incidents.append(inc)
@@ -154,9 +157,9 @@ def fetch_incidents():
 
 
 def get_incidents_list(time):
-    src_ip = demisto.args()["sourceIp"] if "sourceIp" in demisto.args() else None
-    severities = demisto.args()["severities"] if "severities" in demisto.args() else None
-    max_incidents = demisto.args()["max"] if "max" in demisto.args() else None
+    src_ip = demisto.args().get("sourceIp")
+    severities = demisto.args().get("severities")
+    max_incidents = demisto.args().get("max")
 
     # Request events
     result = get_incidents_list_request(time, src_ip, severities, max_incidents)
@@ -186,44 +189,45 @@ def get_incidents_list(time):
         "UserList",
         "Classification",
         "UpdateTimestampGMT",
-        "PrevalenceGlobally"
+        "PrevalenceGlobally",
     ]
     hr = tableToMarkdown("Incidents", result, headers)
 
     # Set context
-    context = {
-        "Symantec MSS.Incidents list(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)": result
-    }
+    context = {"Symantec MSS.Incidents list(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)": result}
 
-    demisto.results({
-        "ContentsFormat": formats["json"],
-        "Type": entryTypes["note"],
-        "Contents": result,
-        "EntryContext": context,
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": hr
-    })
+    demisto.results(
+        {
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": result,
+            "EntryContext": context,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr,
+        }
+    )
 
 
 def get_incidents_list_request(time, src_ip, severities, max_incidents):
-
-    elem = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                                          "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                          "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
+    elem = ET.Element(
+        "soap12:Envelope",
+        {
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+            "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope",
+        },
+    )
 
     body = ET.SubElement(elem, "soap12:Body")
     incident_get_list = ET.SubElement(body, "IncidentGetList", {"xmlns": "https://www.monitoredsecurity.com/"})
     ET.SubElement(incident_get_list, "StartTimeStampGMT").text = str(time)
-    ET.SubElement(incident_get_list, "SourceIP").text = str(src_ip) if src_ip else ''
-    ET.SubElement(incident_get_list, "Severity").text = severities if severities else ''
-    ET.SubElement(incident_get_list, "MaxIncidents").text = str(max_incidents) if max_incidents else ''
+    ET.SubElement(incident_get_list, "SourceIP").text = str(src_ip) if src_ip else ""
+    ET.SubElement(incident_get_list, "Severity").text = severities if severities else ""
+    ET.SubElement(incident_get_list, "MaxIncidents").text = str(max_incidents) if max_incidents else ""
 
     elem_str = ET.tostring(elem, encoding="utf-8")
 
-    headers = {
-        "content-Type": "application/soap+xml; charset=utf-8",
-        "content-Length": str(len(elem_str))
-    }
+    headers = {"content-Type": "application/soap+xml; charset=utf-8", "content-Length": str(len(elem_str))}
 
     root = api_call(body=elem_str, headers=headers)
     incident_nodes = root.findall(SECURITY_INCIDENT_SUMMARY_NODE_XPATH)
@@ -257,12 +261,12 @@ def update_incident():
         raise Exception("No current severity, please supply a severity parameter")
 
     # Optional params
-    ref = demisto.args()["reference"] if "reference" in demisto.args() else None
-    comments = demisto.args()["comments"] if "comments" in demisto.args() else None
+    ref = demisto.args().get("reference")
+    comments = demisto.args().get("comments")
 
     # Only one of them should exist
-    assign_to_org = demisto.args()["assignOrganization"] if "assignOrganization" in demisto.args() else None
-    assign_to_person = demisto.args()["assignPerson"] if "assignPerson" in demisto.args() else None
+    assign_to_org = demisto.args().get("assignOrganization")
+    assign_to_person = demisto.args().get("assignPerson")
 
     if assign_to_org and assign_to_person:
         raise Exception("Unable to assign to both organization and a person, please choose only one")
@@ -281,36 +285,40 @@ def update_incident():
     result = [{"Update status": msg}]
     hr = tableToMarkdown("", result)
 
-    demisto.results({
-        "ContentsFormat": formats["text"],
-        "Type": entryTypes["note"],
-        "Contents": msg,
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": hr
-    })
+    demisto.results(
+        {
+            "ContentsFormat": formats["text"],
+            "Type": entryTypes["note"],
+            "Contents": msg,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr,
+        }
+    )
 
 
 def update_incident_request(num, status, resolution, ref, severity, assign_to_org, assign_to_person, comments):
-    root = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                                          "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                          "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
+    root = ET.Element(
+        "soap12:Envelope",
+        {
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+            "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope",
+        },
+    )
 
     body = ET.SubElement(root, "soap12:Body")
     update_incident_workflow = ET.SubElement(body, "UpdateIncidentWorkflow", {"xmlns": "https://www.monitoredsecurity.com/"})
     ET.SubElement(update_incident_workflow, "IncidentNumber").text = str(num)
     ET.SubElement(update_incident_workflow, "Status").text = str(status)
     ET.SubElement(update_incident_workflow, "Resolution").text = str(resolution)
-    ET.SubElement(update_incident_workflow, "Reference").text = str(ref) if ref else ''
+    ET.SubElement(update_incident_workflow, "Reference").text = str(ref) if ref else ""
     ET.SubElement(update_incident_workflow, "Severity ").text = str(severity)
-    ET.SubElement(update_incident_workflow, "AssignedToOrganiztion").text = str(assign_to_org) if assign_to_org else ''
-    ET.SubElement(update_incident_workflow, "AssignedToPerson").text = str(assign_to_person) if assign_to_person else ''
-    ET.SubElement(update_incident_workflow, "Comments").text = escape(comments) if comments else ''
+    ET.SubElement(update_incident_workflow, "AssignedToOrganiztion").text = str(assign_to_org) if assign_to_org else ""
+    ET.SubElement(update_incident_workflow, "AssignedToPerson").text = str(assign_to_person) if assign_to_person else ""
+    ET.SubElement(update_incident_workflow, "Comments").text = escape(comments) if comments else ""
 
     elem_str = ET.tostring(root, encoding="utf-8")
-    headers = {
-        "content-Type": "application/soap+xml; charset=utf-8",
-        "content-Length": str(len(elem_str))
-    }
+    headers = {"content-Type": "application/soap+xml; charset=utf-8", "content-Length": str(len(elem_str))}
 
     res = api_call(body=elem_str, headers=headers)
     res_string_xml = ET.tostring(res)
@@ -338,24 +346,27 @@ def query_incident_cmd():
         sigs.append(sig_dict)
 
     # Set Human readable
-    flatten_relevant_fields = [{
-        "Incident Number": result.get("IncidentNumber", ""),
-        "Time Created": result.get("TimeCreated", ""),
-        "Status": result.get("WorkFlowDetail", {}).get("Status", ""),
-        "Classification": result.get("Classification", ""),
-        "Assigned Person": result.get("WorkFlowDetail", {}).get("AssignedPerson",
-                                                                "") if result.get("WorkFlowDetail", {}) else "",
-        "Description": result.get("Description", ""),
-        "Analyst Assessment": result.get("AnalystAssessment", ""),
-        "Number of Analyzed Signatures": result.get("NumberOfAnalyzedSignatures", ""),
-        "Signaturtes": json.dumps(sigs) or "",
-        "Related Incidents": json.dumps(result.get("RelatedIncidents",
-                                                   {}).get("IncidentNumber", "")) if result.get("RelatedIncidents",
-                                                                                                {}) else "",
-        "Comment": result.get("IncidentComments", {}).get("IncidentComment",
-                                                          {}).get("Comment", "") if result.get("IncidentComments",
-                                                                                               {}) else ""
-    }]
+    flatten_relevant_fields = [
+        {
+            "Incident Number": result.get("IncidentNumber", ""),
+            "Time Created": result.get("TimeCreated", ""),
+            "Status": result.get("WorkFlowDetail", {}).get("Status", ""),
+            "Classification": result.get("Classification", ""),
+            "Assigned Person": result.get("WorkFlowDetail", {}).get("AssignedPerson", "")
+            if result.get("WorkFlowDetail", {})
+            else "",
+            "Description": result.get("Description", ""),
+            "Analyst Assessment": result.get("AnalystAssessment", ""),
+            "Number of Analyzed Signatures": result.get("NumberOfAnalyzedSignatures", ""),
+            "Signaturtes": json.dumps(sigs) or "",
+            "Related Incidents": json.dumps(result.get("RelatedIncidents", {}).get("IncidentNumber", ""))
+            if result.get("RelatedIncidents", {})
+            else "",
+            "Comment": result.get("IncidentComments", {}).get("IncidentComment", {}).get("Comment", "")
+            if result.get("IncidentComments", {})
+            else "",
+        }
+    ]
     headers = [
         "Incident Number",
         "Time Created",
@@ -367,7 +378,7 @@ def query_incident_cmd():
         "Number of Analyzed Signatures",
         "Signaturtes",
         "Related Incidents",
-        "Comment"
+        "Comment",
     ]
     hr = tableToMarkdown("Incident query", flatten_relevant_fields, headers)
 
@@ -375,9 +386,7 @@ def query_incident_cmd():
     result_ctx = {
         "IncidentNumber": result.get("IncidentNumber", ""),
         "NumberOfAnalyzedSignatures": result.get("NumberOfAnalyzedSignatures", ""),
-        "SignatureList": {
-            "Signature": sigs
-        },
+        "SignatureList": {"Signature": sigs},
         "TimeCreated": result.get("TimeCreated", ""),
         "Classification": result.get("Classification", ""),
         "Description": result.get("Description", ""),
@@ -387,47 +396,49 @@ def query_incident_cmd():
         "RelatedTickets": result.get("RelatedTickets", ""),
         "WorkFlowDetail": {
             "Status": result.get("WorkFlowDetail", {}).get("Status", ""),
-            "AssignedPerson": result.get("WorkFlowDetail", {}).get("AssignedPerson", "")
+            "AssignedPerson": result.get("WorkFlowDetail", {}).get("AssignedPerson", ""),
         },
         "RelatedIncidents": {
             "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"] if result.get("RelatedIncidents") else ""
-        }
+        },
     }
 
-    if result.get('IncidentComments') and result.get('IncidentComments').get('IncidentComment'):
-        result_ctx["IncidentComments"] = {"IncidentComment": {
-            "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
-            "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
-            "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"]
-        }
+    if result.get("IncidentComments") and result.get("IncidentComments").get("IncidentComment"):
+        result_ctx["IncidentComments"] = {
+            "IncidentComment": {
+                "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
+                "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
+                "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"],
+            }
         }
     else:
         result_ctx["IncidentComments"] = {}
 
-    if result.get("IncidentAttachmentItems") and result.get('IncidentAttachmentItems').get('IncidentAttachmentItem'):
-        result_ctx['IncidentAttachmentItems'] = {"IncidentAttachmentItem": {
-            "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
-            "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
-            "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
-            "UploadBy": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadBy"],
-            "Comment": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["Comment"]
-        }
+    if result.get("IncidentAttachmentItems") and result.get("IncidentAttachmentItems").get("IncidentAttachmentItem"):
+        result_ctx["IncidentAttachmentItems"] = {
+            "IncidentAttachmentItem": {
+                "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
+                "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
+                "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
+                "UploadBy": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadBy"],
+                "Comment": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["Comment"],
+            }
         }
     else:
-        result_ctx['IncidentAttachmentItems'] = {}
+        result_ctx["IncidentAttachmentItems"] = {}
 
-    context = {
-        "Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)": result_ctx
-    }
+    context = {"Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)": result_ctx}
 
-    demisto.results({
-        "ContentsFormat": formats["json"],
-        "Type": entryTypes["note"],
-        "Contents": result,
-        "EntryContext": context,
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": hr
-    })
+    demisto.results(
+        {
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": result,
+            "EntryContext": context,
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": hr,
+        }
+    )
 
 
 def query_incident(num, workflow_query=False):
@@ -436,18 +447,20 @@ def query_incident(num, workflow_query=False):
 
 
 def query_incident_request(num):
-    root = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                                          "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                          "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
+    root = ET.Element(
+        "soap12:Envelope",
+        {
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+            "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope",
+        },
+    )
 
     body = ET.SubElement(root, "soap12:Body")
     incident_query = ET.SubElement(body, "IncidentQuery", {"xmlns": "https://www.monitoredsecurity.com/"})
     ET.SubElement(incident_query, "IncidentNumber").text = str(num)
     elem_str = ET.tostring(root, encoding="utf-8")
-    headers = {
-        "content-Type": "application/soap+xml; charset=utf-8",
-        "content-Length": str(len(elem_str))
-    }
+    headers = {"content-Type": "application/soap+xml; charset=utf-8", "content-Length": str(len(elem_str))}
 
     query = api_call(body=elem_str, headers=headers)
     query_node = query.find(SECURITY_INCIDENT_NODE_XPATH)
@@ -458,19 +471,21 @@ def query_incident_request(num):
 
 
 def query_incident_workflow_request(num):
-    root = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                                          "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                          "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
+    root = ET.Element(
+        "soap12:Envelope",
+        {
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+            "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope",
+        },
+    )
 
     body = ET.SubElement(root, "soap12:Body")
     incident_workflow_query = ET.SubElement(body, "IncidentWorkflowQuery", {"xmlns": "https://www.monitoredsecurity.com/"})
     ET.SubElement(incident_workflow_query, "IncidentNumber").text = str(num)
     elem_str = ET.tostring(root, encoding="utf-8")
 
-    headers = {
-        "content-Type": "application/soap+xml; charset=utf-8",
-        "content-Length": str(len(elem_str))
-    }
+    headers = {"content-Type": "application/soap+xml; charset=utf-8", "content-Length": str(len(elem_str))}
 
     query = api_call(body=elem_str, headers=headers)
     query_node = query.find(SECURITY_INCIDENT_NODE_XPATH)
@@ -480,9 +495,9 @@ def query_incident_workflow_request(num):
     return dict_query
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
-LOG('Command being called is %s' % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 
 try:
     handle_proxy()
@@ -499,8 +514,7 @@ try:
         query_incident_cmd()
 
     if demisto.command() == "symantec-mss-incidents-list":
-        time = demisto.args()["time"] if "time" in demisto.args() else isoformat(
-            datetime.utcnow() - timedelta(hours=24))
+        time = demisto.args()["time"] if "time" in demisto.args() else isoformat(datetime.utcnow() - timedelta(hours=24))
         get_incidents_list(time)
 
 # Log exceptions

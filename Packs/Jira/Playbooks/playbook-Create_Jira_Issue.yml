@@ -564,3 +564,6 @@ outputs: []
 tests:
 - No test.
 fromversion: 6.0.0
+supportedModules:
+- agentix
+- xsiam

@@ -129,7 +129,7 @@ tasks:
       method:
         simple: GET
       url:
-        simple: http://www.geoplugin.net/json.gp?ip=${inputs.sourceip}
+        simple: http://ip-api.com/json/${inputs.sourceip}
     separatecontext: false
     view: |-
       {
@@ -217,13 +217,13 @@ tasks:
       value:
         complex:
           root: Coordinates
-          accessor: geoplugin_latitude
+          accessor: lat
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Coordinates.geoplugin_longitude
+                  simple: Coordinates.lon
                 iscontext: true
           - operator: join
             args:
@@ -300,7 +300,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -352,19 +354,18 @@ tasks:
         simple: Events.ip
       value:
         complex:
-          root: Coordinates
+          root: Coordinates.query
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Coordinates.geoplugin_request
+                  simple: Coordinates.query
                 iscontext: true
               right:
                 value:
                   simple: inputs.sourceip
                 iscontext: true
               ignorecase: true
-          accessor: geoplugin_request
     separatecontext: false
     view: |-
       {
@@ -394,7 +395,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -488,7 +491,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -545,14 +550,14 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Coordinates.geoplugin_request
+                  simple: Coordinates.query
                 iscontext: true
               right:
                 value:
                   simple: inputs.sourceip
                 iscontext: true
               ignorecase: true
-          accessor: geoplugin_countryCode
+          accessor: countryCode
     separatecontext: false
     view: |-
       {
@@ -746,8 +751,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1870,
-        "width": 1950,
+        "height": 1865,
+        "width": 1951,
         "x": -340,
         "y": -865
       }
@@ -807,5 +812,16 @@ outputs:
   type: unknown
 tests:
 - Test Playbook - Impossible Traveler - Enrichment
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0
+
+
+supportedModules:
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

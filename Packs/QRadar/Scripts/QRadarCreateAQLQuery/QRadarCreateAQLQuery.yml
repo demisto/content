@@ -85,8 +85,12 @@ outputs:
   description: The resultant AQL query based on the inputs.
   type: string
 subtype: python3
-dockerimage: demisto/python3:3.10.13.78623
+dockerimage: demisto/python3:3.12.12.5490952
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam
+- edr

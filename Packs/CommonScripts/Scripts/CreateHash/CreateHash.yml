@@ -21,13 +21,13 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: CreateHash
 outputs:
 - contextPath: CreateHash
   type: string
-  description: Hash will be stored
+  description: Hash will be stored.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

@@ -2,7 +2,7 @@
     "name": "RST Threat Feed",
     "description": "High-fidelity threat intelligence database available via API to check domains, URLs, IP addresses and Hashes",
     "support": "partner",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.9",
     "author": "RST Cloud",
     "url": "https://rstcloud.net/",
     "email": "support@rstcloud.net",
@@ -45,6 +45,11 @@
     "displayedImages": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

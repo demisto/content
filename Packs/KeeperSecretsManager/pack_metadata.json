@@ -2,7 +2,7 @@
     "name": "Keeper Secrets Manager",
     "description": "Use Secrets Manager to manage secrets and protect sensitive data through Keeper Vault.",
     "support": "partner",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.28",
     "author": "Keeper Security",
     "url": "https://www.keepersecurity.com/",
     "email": "sm@keepersecurity.com",
@@ -26,7 +26,12 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Cohesity
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -45,6 +46,7 @@ name: Cohesity Helios Event Collector
 supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
+- platform
 fromversion: '8.2.0'
 script:
   commands:
@@ -79,7 +81,7 @@ script:
     description: Gets events from Cohesity Helios.
     execution: false
     name: cohesity-helios-get-events
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: '-'

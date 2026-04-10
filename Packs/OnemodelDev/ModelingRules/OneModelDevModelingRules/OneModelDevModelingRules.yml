@@ -3,4 +3,6 @@ id: OneModel
 name: OneModel
 rules: ''
 schema: ''
+supportedModules:
+- agentix
 toversion: 6.9.9

@@ -1,18 +1,27 @@
 [MODEL: dataset=proofpoint_tap_raw]
 alter
-    xdm.email.cc = arraymap(json_extract_array(ccAddresses, "$."), trim("@element", "\"")),
-    xdm.email.sender = fromAddress,
+        fromAddress_string = if(fromAddress contains "[", arraystring(arraymap(fromAddress -> [], trim("@element", "\"")), ", "), fromAddress),
+        threatID_string =  arraystring(arraymap(threatsinfomap -> [],  "@element"-> threatID), ", ")
+| alter
+    xdm.event.type = concat(_vendor," - ",_log_type),
+    xdm.alert.description = coalesce(threatsInfoMap, threatURL),
+    xdm.alert.original_threat_id = coalesce(threatID, threatID_string),
+    xdm.alert.subcategory = coalesce(arraystring(arraymap (json_extract_array (threatsInfoMap,"$."), json_extract_scalar ("@element", "$.threatType")), ", "), classification, json_extract_scalar(threatsinfomap, "$['0'].classification")),
+    xdm.alert.original_alert_id = GUID,
+    xdm.alert.original_threat_name = coalesce(classification, json_extract_scalar(threatsinfomap, "$['0'].classification")),
     xdm.event.id = GUID,
+    xdm.email.cc = arraymap(json_extract_array(ccAddresses, "$."), trim("@element", "\"")),
+    xdm.email.sender = coalesce(fromAddress_string, sender),
     xdm.email.message_id = messageID,
     xdm.email.attachment.filename = arraystring(arraymap (json_extract_array (messageParts,"$."), json_extract_scalar ("@element", "$.filename")), ","),
     xdm.email.attachment.md5 = arraystring(arraymap (json_extract_array (messageParts,"$."), json_extract_scalar ("@element", "$.md5")), ","),
     xdm.email.attachment.sha256 = arraystring(arraymap (json_extract_array (messageParts,"$."), json_extract_scalar ("@element", "$.sha256")), ","),
-    xdm.email.recipients = arraymap(json_extract_array(recipient, "$."), trim("@element", "\"")),
+    xdm.email.recipients = if(recipient contains "[", arraymap(recipient -> [], trim("@element", "\"")), arraycreate(recipient)),
     xdm.email.return_path = sender,
-    xdm.intermediate.host.ipv4_addresses = arraycreate(senderIP),
     xdm.email.subject = subject,
-    xdm.alert.original_alert_id = arraystring(arraymap (json_extract_array (threatsInfoMap,"$."), json_extract_scalar ("@element", "$.threatID")), ","),
-    xdm.alert.subcategory = arraystring(arraymap (json_extract_array (threatsInfoMap,"$."), json_extract_scalar ("@element", "$.threatType")), ","),
-    xdm.source.host.ipv4_addresses = arraycreate(clickIP)
+    xdm.intermediate.host.ipv4_addresses = arraycreate(senderIP),
+    xdm.source.host.ipv4_addresses = arraycreate(clickIP),
+    xdm.source.user_agent = userAgent,
+    xdm.target.url = url,
     // Parse message messageTime
-    | alter xdm.email.delivery_timestamp = messageTime;
+    xdm.email.delivery_timestamp = messageTime;

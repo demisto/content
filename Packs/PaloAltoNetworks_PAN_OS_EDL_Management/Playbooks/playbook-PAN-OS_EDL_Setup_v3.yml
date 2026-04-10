@@ -712,3 +712,5 @@ outputs:
 sourceplaybookid: PAN-OS EDL Setup v2
 tests:
 - PAN-OS EDL Setup v3 Test
+supportedModules:
+- agentix

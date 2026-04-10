@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-SCRIPT_NAME = 'ConfigurationSetup'
+SCRIPT_NAME = "ConfigurationSetup"
 
 
 class Pack:
@@ -12,27 +12,22 @@ class Pack:
         version (str): Version of the pack to install.
     """
 
-    def __init__(self, id_: str, version: str = '', url: str = ''):
+    def __init__(self, id_: str, version: str = "", url: str = ""):
         self.id = id_
         self._version = version
         self.url = url
 
     @property
     def version(self) -> str:
-        """The getter method for the version variable.
-        """
-        if self._version == '*':
-            return 'latest'
+        """The getter method for the version variable."""
+        if self._version == "*":
+            return "latest"
         return self._version
 
     @property
     def installation_object(self) -> Dict[str, str]:
-        """Creates the layout of an installation object in marketplace for the pack.
-        """
-        return {
-            'id': self.id,
-            'version': self.version
-        }
+        """Creates the layout of an installation object in marketplace for the pack."""
+        return {"id": self.id, "version": self.version}
 
 
 class IntegrationInstance:
@@ -42,7 +37,8 @@ class IntegrationInstance:
         brand_name (str): Integration name to be configured.
         instance_name (str): Instance name to be configured.
     """
-    INSTANCES_KEYWORDS_LIST = ['use_cases', 'brand_name', 'instance_name']
+
+    INSTANCES_KEYWORDS_LIST = ["use_cases", "brand_name", "instance_name"]
 
     def __init__(self, brand_name: str, instance_name: str):
         self.brand_name = brand_name
@@ -55,8 +51,11 @@ class IntegrationInstance:
         Returns:
             Dict. {param_name: param_value} for each configured parameter.
         """
-        return {param_name: param_value for param_name, param_value in self.__dict__.items() if
-                param_name not in IntegrationInstance.INSTANCES_KEYWORDS_LIST}
+        return {
+            param_name: param_value
+            for param_name, param_value in self.__dict__.items()
+            if param_name not in IntegrationInstance.INSTANCES_KEYWORDS_LIST
+        }
 
     def add_param(self, name: str, value: Any):
         self.__dict__[name] = value
@@ -86,7 +85,8 @@ class Job:
     Args:
         job_name (str): Job name to be configured.
     """
-    JOBS_KEYWORDS_LIST = ['use_cases', 'job_name']
+
+    JOBS_KEYWORDS_LIST = ["use_cases", "job_name"]
 
     def __init__(self, job_name: str):
         self.job_name = job_name
@@ -100,8 +100,8 @@ class Job:
         """
         return {
             param_name: param_value
-            for param_name, param_value in self.__dict__.items() if
-            param_name not in Job.JOBS_KEYWORDS_LIST
+            for param_name, param_value in self.__dict__.items()
+            if param_name not in Job.JOBS_KEYWORDS_LIST
         }
 
     def add_param(self, name: str, value: Any):
@@ -153,34 +153,31 @@ class Configuration:
         self.load_integration_instances()
 
     def load_custom_packs(self) -> None:
-        """Iterates through the Packs sections and creates a Pack object for each custom pack.
-        """
-        if 'custom_packs' in self.sections:
-            for pack in self.config['custom_packs']:
-                pack_id = pack.get('id')
-                pack_url = pack.get('url')
+        """Iterates through the Packs sections and creates a Pack object for each custom pack."""
+        if "custom_packs" in self.sections:
+            for pack in self.config["custom_packs"]:
+                pack_id = pack.get("id")
+                pack_url = pack.get("url")
                 if pack_url:
                     new_pack = Pack(pack_id, url=pack_url)
                     self.custom_packs[pack_id] = new_pack
 
     def load_marketplace_packs(self) -> None:
-        """Iterates through the Packs sections and creates a Pack object for each marketplace pack.
-        """
-        if 'marketplace_packs' in self.sections:
-            for pack in self.config['marketplace_packs']:
-                pack_id = pack.get('id')
-                pack_version = pack.get('version')
+        """Iterates through the Packs sections and creates a Pack object for each marketplace pack."""
+        if "marketplace_packs" in self.sections:
+            for pack in self.config["marketplace_packs"]:
+                pack_id = pack.get("id")
+                pack_version = pack.get("version")
                 if pack_version:
                     new_pack = Pack(pack_id, version=pack_version)
                     self.marketplace_packs[pack_id] = new_pack
 
     def load_integration_instances(self) -> None:
-        """Iterates through the instances sections, creates IntegrationInstance object for each instance.
-        """
-        if 'instances' in self.sections:
-            for instance in self.config['instances']:
-                brand_name = instance.get('brand_name')
-                instance_name = instance.get('instance_name')
+        """Iterates through the instances sections, creates IntegrationInstance object for each instance."""
+        if "instances" in self.sections:
+            for instance in self.config["instances"]:
+                brand_name = instance.get("brand_name")
+                instance_name = instance.get("instance_name")
                 new_instance = IntegrationInstance(brand_name, instance_name)
 
                 for param_name, param_value in instance.items():
@@ -189,11 +186,10 @@ class Configuration:
                 self.integration_instances[instance_name] = new_instance
 
     def load_jobs(self) -> None:
-        """Iterates through the jobs sections, creates Job object for each job.
-        """
-        if 'jobs' in self.sections:
-            for job in self.config['jobs']:
-                job_name = job.get('name')
+        """Iterates through the jobs sections, creates Job object for each job."""
+        if "jobs" in self.sections:
+            for job in self.config["jobs"]:
+                job_name = job.get("name")
                 new_job = Job(job_name)
 
                 for param_name, param_value in job.items():
@@ -202,62 +198,54 @@ class Configuration:
                 self.jobs[job_name] = new_job
 
     def load_lists(self) -> None:
-        """Iterates through the lists sections, creates Dict object for each list.
-        """
-        if 'lists' in self.sections:
-            for _list in self.config['lists']:
-                list_name = _list.get('name')
-                list_value = _list.get('value')
-                list_type = _list.get('type')
+        """Iterates through the lists sections, creates Dict object for each list."""
+        if "lists" in self.sections:
+            for _list in self.config["lists"]:
+                list_name = _list.get("name")
+                list_value = _list.get("value")
+                list_type = _list.get("type")
 
-                self.lists[list_name] = {
-                    "value": list_value,
-                    "type": list_type
-                }
+                self.lists[list_name] = {"value": list_value, "type": list_type}
 
 
 def list_exists(list_name: str) -> bool:
     res = demisto.executeCommand("getList", {"listName": list_name})[0]
-    if res['Type'] == entryTypes['error'] and "Item not found" in res['Contents']:
-        return False
-    else:
-        return True
+    return res["Type"] == entryTypes["error"] and "Item not found" in res["Contents"]
 
 
 def create_context(full_configuration: Configuration) -> Dict[str, List[Dict[str, str]]]:
     custom_packs = [
         {
-            'packid': pack.id,
-            'packurl': pack.url,
+            "packid": pack.id,
+            "packurl": pack.url,
         }
         for _, pack in full_configuration.custom_packs.items()
     ]
 
     marketplace_packs = [
         {
-            'packid': pack.id,
-            'packversion': str(pack.version),
+            "packid": pack.id,
+            "packversion": str(pack.version),
         }
         for _, pack in full_configuration.marketplace_packs.items()
     ]
 
-    jobs = [
-        job.params for _, job in full_configuration.jobs.items()
-    ]
+    jobs = [job.params for _, job in full_configuration.jobs.items()]
 
     lists = [
         {
-            'listname': list_name,
-            'listdata': pps["value"],
+            "listname": list_name,
+            "listdata": pps["value"],
         }
-        for list_name, pps in full_configuration.lists.items() if not list_exists(list_name) or pps["type"] != "dynamic"
+        for list_name, pps in full_configuration.lists.items()
+        if not list_exists(list_name) or pps["type"] != "dynamic"
     ]
 
     return {
-        'Jobs': jobs,
-        'Lists': lists,
-        'CustomPacks': custom_packs,
-        'MarketplacePacks': marketplace_packs,
+        "Jobs": jobs,
+        "Lists": lists,
+        "CustomPacks": custom_packs,
+        "MarketplacePacks": marketplace_packs,
     }
 
 
@@ -271,11 +259,11 @@ def get_data_from_war_room_file(entry_id) -> bytes:
         str. The content of the configuration file.
     """
     try:
-        file_path = demisto.getFilePath(entry_id)['path']
+        file_path = demisto.getFilePath(entry_id)["path"]
     except Exception:
-        raise DemistoException(f'Could not find a file with entry ID {entry_id}')
+        raise DemistoException(f"Could not find a file with entry ID {entry_id}")
 
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         file_content = file.read()
 
     return file_content
@@ -287,14 +275,14 @@ def get_config_data(args: Dict) -> Dict:
     Returns:
         Dict. The parsed configuration file.
     """
-    configuration_file_entry_id = args.get('configuration_file_entry_id')
+    configuration_file_entry_id = args.get("configuration_file_entry_id")
 
     config_data = get_data_from_war_room_file(configuration_file_entry_id)
 
     try:
         return json.loads(config_data)
     except json.JSONDecodeError:
-        raise DemistoException('Configuration file is not a valid JSON structure.')
+        raise DemistoException("Configuration file is not a valid JSON structure.")
 
 
 def main():
@@ -305,14 +293,14 @@ def main():
 
         return_results(
             CommandResults(
-                outputs_prefix='ConfigurationSetup',
+                outputs_prefix="ConfigurationSetup",
                 outputs=create_context(config),
             )
         )
 
     except Exception as e:
-        return_error(f'{SCRIPT_NAME} - Error occurred while setting up machine.\n{e}')
+        return_error(f"{SCRIPT_NAME} - Error occurred while setting up machine.\n{e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

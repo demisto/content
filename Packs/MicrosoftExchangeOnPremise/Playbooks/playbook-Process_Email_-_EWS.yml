@@ -245,3 +245,6 @@ outputs:
   type: unknown
 tests:
 - No test
+supportedModules:
+- agentix
+- xsiam

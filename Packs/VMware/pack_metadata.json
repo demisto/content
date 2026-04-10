@@ -1,8 +1,8 @@
 {
     "name": "VMware",
-    "description": "VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.",
+    "description": "VMware vCenter Server is a centralized management platform for managing virtual machines and ESXi hosts.",
     "support": "xsoar",
-    "currentVersion": "1.2.10",
+    "currentVersion": "1.2.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,11 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

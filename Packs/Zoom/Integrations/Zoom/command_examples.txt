@@ -1,0 +1,21 @@
+!zoom-create-meeting topic=test type=scheduled user=example@example.com start-time=2023-01-29T12:12:12Z
+!zoom-create-user email=example@example.com first_name=john last_name=smith user_type=Basic
+!zoom-delete-user user_id=example@example.com action=disassociate
+!zoom-list-users status=pending limit=10
+!zoom-meeting-get meeting_id=88949894296
+!zoom-meeting-list user_id=example@example.com type=scheduled limit=7
+!zoom-fetch-recording meeting_id=83622325727 delete_after=false
+!zoom-list-account-public-channels
+!zoom-create-channel user_id=userid member_emails=userid channel_name=ChannelName channel_type="Public channel"
+!zoom-invite-to-channel user_id=userid members=example@example.com channel_id=channelid
+!zoom-update-channel user_id=userid channel_name=Channel-Updated5 channel_id=channelid
+!zoom-list-user-channels user_id=userid channel_id=channelid
+!zoom-remove-from-channel user_id=userid member_id=example@example.com channel_id=channelid
+!zoom-delete-channel user_id=userid channel_id=channelid
+!zoom-list-user-channels user_id=userid
+!zoom-send-file user_id=userid to_contact=example@example.com entry_id=entryid
+!zoom-list-messages user_id=userid to_contact=example@example.com date=today
+!zoom-send-message user_id=userid message="message" to_contact=example@example.com
+!zoom-update-message user_id=userid message="message2" to_contact=example@example.com message_id=messageid
+!zoom-delete-message user_id=userid to_contact=example@example.com message_id=messageid
+!zoom-delete-user-token user_id=userid

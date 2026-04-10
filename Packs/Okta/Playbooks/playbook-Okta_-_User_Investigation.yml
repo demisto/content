@@ -1749,3 +1749,9 @@ quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

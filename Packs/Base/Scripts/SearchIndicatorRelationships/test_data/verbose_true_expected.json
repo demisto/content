@@ -1,62 +1,70 @@
-[
-  {
-    "EntityA": "1.1.1.1",
-    "EntityAType": "IP",
-    "EntityB": "2.2.2.2",
-    "EntityBType": "IP",
-    "Relationship": "related to",
-    "Reverse": "related to",
-    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be44",
-    "Type": "indicatorToIndicator",
-    "Reliability": "F - Reliability cannot be judged",
-    "Brand": "XSOAR",
-    "Revoked": true,
-    "FirstSeenBySource": "2021-05-02T11:03:19.191095Z",
-    "LastSeenBySource": "2021-05-02T11:03:19.191107Z",
-    "Description": "Test"
-  },
-  {
-    "EntityA": "1.1.1.1",
-    "EntityAType": "IP",
-    "EntityB": "3.3.3.3",
-    "EntityBType": "IP",
-    "Relationship": "related to",
-    "Reverse": "related to",
-    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be45",
-    "Type": "indicatorToIndicator",
-    "Reliability": "F - Reliability cannot be judged",
-    "Brand": "XSOAR"
-  },
-  {
-    "EntityA": "1.1.1.1",
-    "EntityAType": "IP",
-    "EntityB": "4.4.4.4",
-    "EntityBType": "IP",
-    "Relationship": "related to",
-    "Reverse": "related to",
-    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be46",
-    "Type": "indicatorToIndicator",
-    "Reliability": "F - Reliability cannot be judged",
-    "Brand": "XSOAR",
-    "Revoked": "",
-    "FirstSeenBySource": "2021-05-02T11:03:19.191095Z",
-    "LastSeenBySource": "2021-05-02T11:03:19.191107Z",
-    "Description": ""
-  },
-  {
-    "EntityA": "1.1.1.1",
-    "EntityAType": "IP",
-    "EntityB": "6.6.6.6",
-    "EntityBType": "IP",
-    "Relationship": "related to",
-    "Reverse": "related to",
-    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be47",
-    "Type": "indicatorToIndicator",
-    "Reliability": "",
-    "Brand": "XSOAR",
-    "Revoked": "",
-    "FirstSeenBySource": "2021-05-02T11:03:19.191095Z",
-    "LastSeenBySource": "2021-05-02T11:03:19.191107Z",
-    "Description": ""
-  }
-]
+{
+    "Relationships": [
+        {
+            "Brand": "XSOAR",
+            "Description": "Test",
+            "EntityA": "1.1.1.1",
+            "EntityAType": "IP",
+            "EntityB": "2.2.2.2",
+            "EntityBType": "IP",
+            "FirstSeenBySource": "2021-05-02T11:03:19.191095Z",
+            "ID": "7ed6656f4c2aaa8f0cbc5cb83606be44",
+            "LastSeenBySource": "2021-05-02T11:03:19.191107Z",
+            "Relationship": "related to",
+            "Reliability": "F - Reliability cannot be judged",
+            "Reverse": "related to",
+            "Revoked": true,
+            "Type": "indicatorToIndicator"
+        },
+        {
+            "Brand": "XSOAR",
+            "EntityA": "1.1.1.1",
+            "EntityAType": "IP",
+            "EntityB": "3.3.3.3",
+            "EntityBType": "IP",
+            "ID": "7ed6656f4c2aaa8f0cbc5cb83606be45",
+            "Relationship": "related to",
+            "Reliability": "F - Reliability cannot be judged",
+            "Reverse": "related to",
+            "Type": "indicatorToIndicator"
+        },
+        {
+            "Brand": "XSOAR",
+            "Description": "",
+            "EntityA": "1.1.1.1",
+            "EntityAType": "IP",
+            "EntityB": "4.4.4.4",
+            "EntityBType": "IP",
+            "FirstSeenBySource": "2021-05-02T11:03:19.191095Z",
+            "ID": "7ed6656f4c2aaa8f0cbc5cb83606be46",
+            "LastSeenBySource": "2021-05-02T11:03:19.191107Z",
+            "Relationship": "related to",
+            "Reliability": "F - Reliability cannot be judged",
+            "Reverse": "related to",
+            "Revoked": "",
+            "Type": "indicatorToIndicator"
+        },
+        {
+            "Brand": "XSOAR",
+            "Description": "",
+            "EntityA": "1.1.1.1",
+            "EntityAType": "IP",
+            "EntityB": "6.6.6.6",
+            "EntityBType": "IP",
+            "FirstSeenBySource": "2021-05-02T11:03:19.191095Z",
+            "ID": "7ed6656f4c2aaa8f0cbc5cb83606be47",
+            "LastSeenBySource": "2021-05-02T11:03:19.191107Z",
+            "Relationship": "related to",
+            "Reliability": "",
+            "Reverse": "related to",
+            "Revoked": "",
+            "Type": "indicatorToIndicator"
+        }
+    ],
+    "RelationshipsPagination": [
+        [
+            "1765209434083",
+            "6513ee23f5f3abe5115696b1e20a8e95"
+        ]
+    ]
+}

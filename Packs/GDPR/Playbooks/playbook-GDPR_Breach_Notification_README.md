@@ -31,7 +31,7 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![GDPR_Breach_Notification](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/GDPR_Breach_Notification.png)
+![GDPR_Breach_Notification](../doc_files/GDPR_Breach_Notification.png)
 
 ## Playbook Demo Video
 <video controls>

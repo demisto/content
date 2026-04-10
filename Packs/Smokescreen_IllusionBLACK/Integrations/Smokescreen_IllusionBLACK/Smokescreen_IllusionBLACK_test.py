@@ -4,38 +4,12 @@ from Smokescreen_IllusionBLACK import Client
 CLIENT = Client("", False, "", "", False)
 
 RECON_DECOYS = {
-    "items": [
-        {
-            "name": "experience.illusionblack.com",
-            "ip": "1.2.3.4",
-            "server_type": "nginx",
-            "dataset": "generic"
-        }
-    ]
+    "items": [{"name": "experience.illusionblack.com", "ip": "1.2.3.4", "server_type": "nginx", "dataset": "generic"}]
 }
 
-USERS = {
-    "items": [
-        {
-            "user_name": "foo_bar",
-            "first_name": "foo",
-            "last_name": "bar",
-            "ou": "ou",
-            "state": "success"
-        }
-    ]
-}
+USERS = {"items": [{"user_name": "foo_bar", "first_name": "foo", "last_name": "bar", "ou": "ou", "state": "success"}]}
 
-HOSTS = {
-    "items": [
-        {
-            "name": "FOO",
-            "ip": "1.2.3.4",
-            "services": ["ssh", "mariadb"],
-            "mac": "aa:bb:cc:dd:ee:ff"
-        }
-    ]
-}
+HOSTS = {"items": [{"name": "FOO", "ip": "1.2.3.4", "services": ["ssh", "mariadb"], "mac": "aa:bb:cc:dd:ee:ff"}]}
 
 EVENTS = {
     "threat_parse": [
@@ -44,10 +18,10 @@ EVENTS = {
             "title": "Files accessed from network shares",
             "type": "single",
             "description": "An adversary has tried to open a file on a decoy file share. These events can occur "
-                           "either when files or named pipes have been accessed. <br> Sensitive data can be collected "
-                           "from remote systems via shared network shared drives that are accessible on the network. "
-                           "<br> Adversaries may search network shares they have access to to discover files of "
-                           "interest.\n",
+            "either when files or named pipes have been accessed. <br> Sensitive data can be collected "
+            "from remote systems via shared network shared drives that are accessible on the network. "
+            "<br> Adversaries may search network shares they have access to to discover files of "
+            "interest.\n",
             "examples": [
                 "When it first starts, BADNEWS crawls the victim's mapped drives and collects documents with the "
                 "following extensions like .doc, .docx, .pdf, .ppt, .pptx, and .txt.",
@@ -56,25 +30,19 @@ EVENTS = {
                 "a predefined list.",
                 "menuPass has collected data from remote systems by mounting network shares with net use and using "
                 "Robocopy to transfer data.",
-                "Sowbug extracted Word documents from a file server on a victim network."
+                "Sowbug extracted Word documents from a file server on a victim network.",
             ],
             "score": 75,
-            "mitigation": [
-                "Validate whether the source system has any legitimate need to access file shares on the network."
-            ],
-            "mitre_id": [
-                "T1039"
-            ],
-            "mitre_tactic": [
-                "Collection"
-            ]
+            "mitigation": ["Validate whether the source system has any legitimate need to access file shares on the network."],
+            "mitre_id": ["T1039"],
+            "mitre_tactic": ["Collection"],
         },
         {
             "id": "web_access",
             "title": "Web application access",
             "type": "single",
             "description": "An attempt was made to access a decoy web-server. Since decoy services should never be "
-                           "accessed or enumerated, this should be investigated further.\n",
+            "accessed or enumerated, this should be investigated further.\n",
             "score": 25,
             "mitigation": [
                 "Identify the source of this connection request and verify if the user has performed this activity.",
@@ -82,10 +50,9 @@ EVENTS = {
                 "Identify the process running on the system that initiated this network connection.",
                 "If it is an authorized process, either create a whitelist, or check for and correct any "
                 "misconfigurations that may be causing it to connect to the decoy.",
-                "If not, triage the system for indications of malicious activity by obtaining a memory dump of the "
-                "machine. "
-            ]
-        }
+                "If not, triage the system for indications of malicious activity by obtaining a memory dump of the machine. ",
+            ],
+        },
     ],
     "events": [
         {
@@ -118,24 +85,13 @@ EVENTS = {
             "attacker.id": "1.2.3.4",
             "decoy.client.id": "illusionblack",
             "decoy.client.name": "illusionblack",
-            "mitre_ids": [
-                "T1039",
-                "T1135"
-            ],
-            "threat_parse_ids": [
-                "smb_file_open",
-                "shares_access"
-            ],
+            "mitre_ids": ["T1039", "T1135"],
+            "threat_parse_ids": ["smb_file_open", "shares_access"],
             "whitelisted": False,
             "id": "2020-03-16T13:02:11.097255-network-4c61c535-5239-4fe7-bd77-f6ca7040fecf",
             "record_type": "event",
             "attacker.score": 400,
-            "attacker.threat_parse_ids": [
-                "network_ntlm",
-                "shares_access",
-                "web_access",
-                "smb_file_open"
-            ]
+            "attacker.threat_parse_ids": ["network_ntlm", "shares_access", "web_access", "smb_file_open"],
         },
         {
             "type": "network",
@@ -163,22 +119,10 @@ EVENTS = {
             "id": "2020-03-16T13:02:09.189408-network-7f63759b-4308-41ef-97c5-317043622f8c",
             "record_type": "event",
             "attacker.score": 400,
-            "attacker.threat_parse_ids": [
-                "network_ntlm",
-                "shares_access",
-                "web_access",
-                "smb_file_open"
-            ]
-        }
+            "attacker.threat_parse_ids": ["network_ntlm", "shares_access", "web_access", "smb_file_open"],
+        },
     ],
-    "meta": {
-        "paging": {
-            "total": 10,
-            "offset": 0,
-            "limit": 2,
-            "amount": 2
-        }
-    }
+    "meta": {"paging": {"total": 10, "offset": 0, "limit": 2, "amount": 2}},
 }
 
 

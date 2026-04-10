@@ -1,7 +1,6 @@
 The SolarWinds integration interacts with the SWIS API to allow users to fetch alerts and events. It also provides commands to retrieve lists of alerts and events.
 This integration was integrated and tested with version 3.0.0 of SolarWinds Information Service (SWIS API).
 
-
 ## SolarWinds Help
 
 The SolarWinds integration requires installation of SolarWinds Orion Platform which consolidates the full suite of monitoring capabilities into one platform. The following products used in this integration are managed under Orion:

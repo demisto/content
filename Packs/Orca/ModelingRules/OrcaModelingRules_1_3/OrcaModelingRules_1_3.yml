@@ -4,3 +4,6 @@ name: Orca Modeling Rules
 rules: ''
 schema: ''
 tags: Orca
+supportedModules:
+- agentix
+- xsiam

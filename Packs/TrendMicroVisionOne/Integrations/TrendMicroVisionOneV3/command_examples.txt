@@ -1,0 +1,43 @@
+!trendmicro-visionone-get-endpoint-info endpoint=`{"endpointName": "test-endpoint1", "ip": "10.204.167.113"}` query_op="or"
+!trendmicro-visionone-isolate-endpoint endpoint_identifiers=`[{"endpoint":"test-endpoint","description":"isolate endpoint"}]`
+!trendmicro-visionone-restore-endpoint-connection endpoint_identifiers=`[{"endpoint":"test-endpoint","description":"restore endpoint"}]`
+!trendmicro-visionone-submit-file-entry-to-sandbox entry_id="12@1221"
+!trendmicro-visionone-check-task-status task_id="00000012" poll="true" poll_time_sec=30
+!trendmicro-visionone-get-alert-details workbench_id="WB-14-20190709-00003"
+!trendmicro-visionone-download-information-for-collected-forensic-file task_id="00000012" poll="true" poll_time_sec=30
+!trendmicro-visionone-get-file-analysis-status task_id="012e4eac-9bd9-4e89-95db-77e02f75a611"
+!trendmicro-visionone-update-status workbench_id="WB-14-20190709-00003" status="closed" if_match="d41d8cd98f00b204e9800998ecf8427e" inv_result="noteworthy"
+!trendmicro-visionone-get-file-analysis-result report_id="8559a7ce-2b85-451b-8742-4b943ad76a22" poll="true" poll_time_sec=30
+!trendmicro-visionone-collect-forensic-file collect_files=`[{"endpoint":"test-endpoint1","file_path":"c/test/test.txt","description":"collect file"}]`
+!trendmicro-visionone-add-objects-to-exception-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Add to exception list"}]`
+!trendmicro-visionone-add-note workbench_id = "WB-14-20190709-00003" content="This is a test note"
+!trendmicro-visionone-add-to-block-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Add to block list"}]`
+!trendmicro-visionone-add-objects-to-suspicious-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","scan_action":"block","risk_level":"medium","expiry_days":5,"description":"Add to suspicious list"}]`
+!trendmicro-visionone-delete-objects-from-exception-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Remove from exception list"}]`
+!trendmicro-visionone-remove-from-block-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Remove from block list"}]`
+!trendmicro-visionone-delete-objects-from-suspicious-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Remove from suspicious list"}]`
+!trendmicro-visionone-force-signout account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Force sign out user"}]`
+!trendmicro-visionone-submit-file-to-sandbox file_path="http://someurl.com/test.json" file_name="dummy_file.pdf"
+!trendmicro-visionone-download-suspicious-object-list submission_id="8559a7ce-2b85-451b-8742-4b943ad76a22" poll="true" poll_time_sec=30
+!trendmicro-visionone-enable-user-account account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Enable user account"}]`
+!trendmicro-visionone-disable-user-account account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Disable user account"}]`
+!trendmicro-visionone-force-password-reset account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Force password reset for user"}]`
+!trendmicro-visionone-run-sandbox-submission-polling task_id="012e4eac-9bd9-4e89-95db-77e02f75a611" polling="true"
+!trendmicro-visionone-get-custom-script-list fields=`[{"fileType":"powershell"}]` query_op=or
+!trendmicro-visionone-add-custom-script file_url="http://someurl.com/testscript.sh" filename="demo-script.sh" filetype="bash" description="script to update some values"
+!trendmicro-visionone-run-custom-script block_objects=`[{"filename":"test.ps1","endpoint":"custom-endpoint1","parameter":"string","description":"Run custom script"}]`
+!trendmicro-visionone-download-custom-script script_id="012e4eac-9bd9-4e89-95db-77e02f75a611"
+!trendmicro-visionone-delete-custom-script script_id="012e4eac-9bd9-4e89-95db-77e02f75a611"
+!trendmicro-visionone-update-custom-script file_url="http://someurl.com/testscript.sh" filename="demo-script.sh" filetype="bash" description="script to update some values" script_id="012e4eac-9bd9-4e89-95db-77e02f75a611"
+!trendmicro-visionone-submit-urls-to-sandbox urls=["http://www.shadywebsite.com","http://www.virus2.com","https://testurl.com"]
+!trendmicro-visionone-download-analysis-report submission_id="8559a7ce-2b85-451b-8742-4b943ad76a22" poll="true" poll_time_sec=30
+!trendmicro-visionone-restore-email-message email_identifiers=`[{"unique_id":"jto9GAHTr9V=TFqMZhRXqVnMfSqmTdAMyv9PDX3k","description":"Restore email message"}]`
+!trendmicro-visionone-download-investigation-package submission_id="8559a7ce-2b85-451b-8742-4b943ad76a22" poll="true" poll_time_sec=30
+!trendmicro-visionone-terminate-process process_identifiers=`[{"agent_guid":"cb9c8412-1f64-4fa0-a36b-76bf41a07ede","file_sha1":"1e97cca0cbefe53860a9bbc9bbbb846e6cdea911","file_name":"dummy_file.pdf","description":"Terminate process"}]`
+!trendmicro-visionone-delete-email-message email_identifiers=`[{"message_id":"<CANUJTKTjto9GAHTr9V=TFqMZhRXqVnMfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>","mailbox":"kjshdfjksahd@trendenablement.com","description":"Delete email message"}]`
+!trendmicro-visionone-quarantine-email-message email_identifiers=`[{"message_id":"<CANUJTKTjto9GAHTr9V=TFqMZhRXqVnMfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>","mailbox":"kjshdfjksahd@trendenablement.com","description":"Quarantine email message"}]`
+!trendmicro-visionone-get-endpoint-activity-data start="2022-10-04T08:22:37Z" end="2023-10-04T08:22:37Z" top=50 query_op="or" select="dpt,dst,endpointHostName" fetch_all=false fetch_max_count=50 fields=`{"dpt":"443","endpointHostName":"client1"}`
+!trendmicro-visionone-get-endpoint-activity-data-count start="2022-10-04T08:22:37Z" end="2023-10-04T08:22:37Z" top=50 query_op="or" select="dpt,dst,endpointHostName" fields=`{"dpt":"443","endpointHostName":"client1"}`
+!trendmicro-visionone-get-email-activity-data start="2022-10-04T08:22:37Z" end="2023-10-04T08:22:37Z" top=50 query_op="or" select="mailFromAddresses,mailToAddresses" fetch_all=true fetch_max_count=100 fields=`{"mailToAddresses":"testemail@gmail.com","mailMsgSubject":"spam"}`
+!trendmicro-visionone-get-email-activity-data-count start="2022-10-04T08:22:37Z" end="2023-10-04T08:22:37Z" top=50 query_op="or" select="mailFromAddresses,mailToAddresses" fields=`{"mailToAddresses":"testemail@gmail.com","mailMsgSubject":"spam"}`
+!trendmicro-visionone-get-observed-attack-techniques fields=`{"endpointName":"sample-host","riskLevel":"low"}` detected_start="2024-01-001T08:00:00Z" detected_end="2024-05-01T08:00:00Z" top=10 query_op="or" ingested_start="2024-01-001T08:00:00Z" ingested_end="2024-05-001T08:00:00Z"

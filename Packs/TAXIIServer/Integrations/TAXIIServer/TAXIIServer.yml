@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 sectionorder:
 - Connect
 - Collect
@@ -13,12 +14,6 @@ configuration:
   hidden: true
   section: Connect
   required: false
-- additionalinfo: Will run the TAXII server on this port from within Demisto. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.
-  display: Listen Port
-  name: longRunningPort
-  required: true
-  type: 0
-  section: Connect
 - display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
@@ -50,11 +45,17 @@ configuration:
   type: 0
   section: Connect
   required: false
+- additionalinfo: Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+  section: Connect
 description: This integration provides TAXII Services for system indicators (Outbound feed).
 display: TAXII Server
 name: TAXII Server
 script:
-  dockerimage: demisto/taxii-server:1.0.0.90974
+  dockerimage: demisto/taxii-server:1.0.0.3985599
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -63,3 +64,14 @@ script:
 tests:
 - TAXII_Feed_Test
 fromversion: 5.5.0
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

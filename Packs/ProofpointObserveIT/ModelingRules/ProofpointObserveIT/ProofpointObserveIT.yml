@@ -1,6 +1,6 @@
 fromversion: 8.2.0
-id: Proofpoint_ObserveIT
-name: Proofpoint ObserveIT
+id: Proofpoint_ObserveIT_ModelingRule
+name: Proofpoint ObserveIT Modeling Rule
 rules: ''
 schema: ''
 tags:

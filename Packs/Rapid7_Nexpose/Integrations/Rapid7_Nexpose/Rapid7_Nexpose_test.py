@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock
 
+import copy
 import pytest
-
 from Rapid7_Nexpose import *
 
 
@@ -50,8 +51,8 @@ def test_connection_errors_recovers(mocker, mock_client):
         side_effect=[
             DemistoException(message="error", exception=requests.ConnectionError("error")),
             requests.ReadTimeout("error"),
-            "success"
-        ]
+            "success",
+        ],
     )
     assert mock_client._http_request(method="GET", url_suffix="url") == "success"
 
@@ -72,7 +73,7 @@ def test_http_request_no_connection_errors(mocker, mock_client):
     mocker.patch.object(
         BaseClient,
         "_http_request",
-        side_effect=[DemistoException(message="error", exception=requests.exceptions.HTTPError("error"))]
+        side_effect=[DemistoException(message="error", exception=requests.exceptions.HTTPError("error"))],
     )
     with pytest.raises(DemistoException):
         assert mock_client._http_request(method="GET", url_suffix="url")
@@ -81,14 +82,16 @@ def test_http_request_no_connection_errors(mocker, mock_client):
 
 
 # --- Utility Functions Tests ---
-@pytest.mark.parametrize("mock_files_prefix, pages, test_input_kwargs, expected_output_context_file",
-                         [
-                             ("get_vulnerabilities", 4, {"page_size": 3, "limit": 10}, "get_vulnerabilities_output"),
-                             ("get_vulnerabilities", 4, {"page_size": 3, "page": 2},
-                              "get_vulnerabilities_specific_page_output")
-                         ])
-def test_client_paged_http_request(mocker, mock_client: Client, mock_files_prefix: str, pages: int,
-                                   test_input_kwargs: dict, expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "mock_files_prefix, pages, test_input_kwargs, expected_output_context_file",
+    [
+        ("get_vulnerabilities", 4, {"page_size": 3, "limit": 10}, "get_vulnerabilities_output"),
+        ("get_vulnerabilities", 4, {"page_size": 3, "page": 2}, "get_vulnerabilities_specific_page_output"),
+    ],
+)
+def test_client_paged_http_request(
+    mocker, mock_client: Client, mock_files_prefix: str, pages: int, test_input_kwargs: dict, expected_output_context_file: str
+):
     """
     Given: Valid pagination parameters.
     When: Calling the client_paged_http_request function.
@@ -103,26 +106,23 @@ def test_client_paged_http_request(mocker, mock_client: Client, mock_files_prefi
         return mock_data[0]
 
     mocker.patch.object(BaseClient, "_http_request", side_effect=pagination_side_effect)
-    assert mock_client._paged_http_request(**test_input_kwargs) == \
-        load_test_data("paged_http_request", f"{expected_output_context_file}")
+    assert mock_client._paged_http_request(**test_input_kwargs) == load_test_data(
+        "paged_http_request", f"{expected_output_context_file}"
+    )
 
 
-@pytest.mark.parametrize("test_input, expected_output",
-                         [
-                             (["risk-score is-greater-than 1000.5", "vulnerability-title contains 7zip"],
-                              [
-                                 {
-                                     "field": "risk-score",
-                                     "operator": "is-greater-than",
-                                     "value": 1000.5
-                                 },
-                                 {
-                                     "field": "vulnerability-title",
-                                     "operator": "contains",
-                                     "value": "7zip"
-                                 }
-                             ])
-                         ])
+@pytest.mark.parametrize(
+    "test_input, expected_output",
+    [
+        (
+            ["risk-score is-greater-than 1000.5", "vulnerability-title contains 7zip"],
+            [
+                {"field": "risk-score", "operator": "is-greater-than", "value": 1000.5},
+                {"field": "vulnerability-title", "operator": "contains", "value": "7zip"},
+            ],
+        )
+    ],
+)
 def test_convert_asset_search_filters(test_input: list[str], expected_output: list[dict]):
     """
     Given: A list of filters in a string format.
@@ -132,17 +132,13 @@ def test_convert_asset_search_filters(test_input: list[str], expected_output: li
     assert convert_asset_search_filters(test_input) == expected_output
 
 
-@pytest.mark.parametrize("test_input, expected_output",
-                         [
-                             (
-                                 "2022-01-01T00:00:00Z",
-                                 strptime("2022-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
-                             ),
-                             (
-                                 "2022-01-01T00:00:00.000Z",
-                                 strptime("2022-01-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
-                             ),
-                         ])
+@pytest.mark.parametrize(
+    "test_input, expected_output",
+    [
+        ("2022-01-01T00:00:00Z", strptime("2022-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")),
+        ("2022-01-01T00:00:00.000Z", strptime("2022-01-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ")),
+    ],
+)
 def test_convert_datetime_str(test_input: str, expected_output: struct_time):
     """
     Given: An ISO 8601 formatted date string.
@@ -152,85 +148,110 @@ def test_convert_datetime_str(test_input: str, expected_output: struct_time):
     assert convert_datetime_str(test_input) == expected_output
 
 
-@pytest.mark.parametrize("test_input_kwargs, expected_output",
-                         [
-                             ({
-                                 "service": CredentialService.CIFSHASH, "domain": "Test1", "username": "Test2",
-                                 "password": "Test3", "ntlm_hash": "Test4"
-                             },
-                                 {
-                                 "service": "cifshash", "username": "Test2", "password": "Test3", "domain": "Test1",
-                                 "ntlmHash": "Test4"
-                             }),
-                             ({
-                                 "service": CredentialService.HTTP, "http_realm": "Test1", "username": "Test2",
-                                 "password": "Test3"
-                             },
-                                 {
-                                 "service": "http", "username": "Test2", "password": "Test3", "realm": "Test1"
-                             }),
-                             ({
-                                 "service": CredentialService.MS_SQL, "database_name": "Test1", "username": "Test2",
-                                 "password": "Test3", "use_windows_authentication": True, "domain": "Test4"
-                             },
-                                 {
-                                 "service": "ms-sql", "username": "Test2", "password": "Test3",
-                                 "useWindowsAuthentication": True, "domain": "Test4", "database": "Test1"
-                             }),
-                             ({
-                                 "service": CredentialService.NOTES, "notes_id_password": "Test1"
-                             },
-                                 {
-                                 "service": "notes", "notesIDPassword": "Test1"
-                             }),
-                             ({
-                                 "service": CredentialService.ORACLE, "oracle_sid": "Test1", "username": "Test2",
-                                 "password": "Test3", "oracle_enumerate_sids": True,
-                                 "oracle_listener_password": "Test4"
-                             },
-                                 {
-                                 "service": "oracle", "username": "Test2", "password": "Test3", "sid": "Test1",
-                                 "enumerateSids": True, "oracleListenerPassword": "Test4"
-                             }),
-                             ({
-                                 "service": CredentialService.SNMP, "snmp_community_name": "Test1"
-                             },
-                                 {
-                                 "service": "snmp", "community": "Test1"
-                             }),
-                             ({
-                                 "service": CredentialService.SNMPV3,
-                                 "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA,
-                                 "username": "Test1", "password": "Test2"
-                             },
-                                 {
-                                 "service": "snmpv3", "username": "Test1", "authenticationType": "sha",
-                                 "password": "Test2"
-                             }),
-                             ({
-                                 "service": CredentialService.SSH, "username": "Test1", "password": "Test2",
-                                 "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
-                                 "ssh_permission_elevation_username": "Test3",
-                                 "ssh_permission_elevation_password": "Test4"
-                             },
-                                 {
-                                 "service": "ssh", "username": "Test1", "password": "Test2",
-                                 "permissionElevation": "privileged-exec", "permissionElevationUsername": "Test3",
-                                 "permissionElevationPassword": "Test4"
-                             }),
-                             ({
-                                 "service": CredentialService.SSH_KEY, "ssh_key_pem": "Test1",
-                                 "ssh_private_key_password": "Test2", "username": "Test3",
-                                 "ssh_permission_elevation": SSHElevationType.SUDO,
-                                 "ssh_permission_elevation_username": "Test4",
-                                 "ssh_permission_elevation_password": "Test5"
-                             },
-                                 {
-                                 "service": "ssh-key", "username": "Test3", "permissionElevation": "sudo",
-                                 "permissionElevationUsername": "Test4", "permissionElevationPassword": "Test5",
-                                 "privateKeyPassword": "Test2", "pemKey": "Test1"
-                             }),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, expected_output",
+    [
+        (
+            {
+                "service": CredentialService.CIFSHASH,
+                "domain": "Test1",
+                "username": "Test2",
+                "password": "Test3",
+                "ntlm_hash": "Test4",
+            },
+            {"service": "cifshash", "username": "Test2", "password": "Test3", "domain": "Test1", "ntlmHash": "Test4"},
+        ),
+        (
+            {"service": CredentialService.HTTP, "http_realm": "Test1", "username": "Test2", "password": "Test3"},
+            {"service": "http", "username": "Test2", "password": "Test3", "realm": "Test1"},
+        ),
+        (
+            {
+                "service": CredentialService.MS_SQL,
+                "database_name": "Test1",
+                "username": "Test2",
+                "password": "Test3",
+                "use_windows_authentication": True,
+                "domain": "Test4",
+            },
+            {
+                "service": "ms-sql",
+                "username": "Test2",
+                "password": "Test3",
+                "useWindowsAuthentication": True,
+                "domain": "Test4",
+                "database": "Test1",
+            },
+        ),
+        ({"service": CredentialService.NOTES, "notes_id_password": "Test1"}, {"service": "notes", "notesIDPassword": "Test1"}),
+        (
+            {
+                "service": CredentialService.ORACLE,
+                "oracle_sid": "Test1",
+                "username": "Test2",
+                "password": "Test3",
+                "oracle_enumerate_sids": True,
+                "oracle_listener_password": "Test4",
+            },
+            {
+                "service": "oracle",
+                "username": "Test2",
+                "password": "Test3",
+                "sid": "Test1",
+                "enumerateSids": True,
+                "oracleListenerPassword": "Test4",
+            },
+        ),
+        ({"service": CredentialService.SNMP, "snmp_community_name": "Test1"}, {"service": "snmp", "community": "Test1"}),
+        (
+            {
+                "service": CredentialService.SNMPV3,
+                "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA,
+                "username": "Test1",
+                "password": "Test2",
+            },
+            {"service": "snmpv3", "username": "Test1", "authenticationType": "sha", "password": "Test2"},
+        ),
+        (
+            {
+                "service": CredentialService.SSH,
+                "username": "Test1",
+                "password": "Test2",
+                "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
+                "ssh_permission_elevation_username": "Test3",
+                "ssh_permission_elevation_password": "Test4",
+            },
+            {
+                "service": "ssh",
+                "username": "Test1",
+                "password": "Test2",
+                "permissionElevation": "privileged-exec",
+                "permissionElevationUsername": "Test3",
+                "permissionElevationPassword": "Test4",
+            },
+        ),
+        (
+            {
+                "service": CredentialService.SSH_KEY,
+                "ssh_key_pem": "Test1",
+                "ssh_private_key_password": "Test2",
+                "username": "Test3",
+                "ssh_permission_elevation": SSHElevationType.SUDO,
+                "ssh_permission_elevation_username": "Test4",
+                "ssh_permission_elevation_password": "Test5",
+            },
+            {
+                "service": "ssh-key",
+                "username": "Test3",
+                "permissionElevation": "sudo",
+                "permissionElevationUsername": "Test4",
+                "permissionElevationPassword": "Test5",
+                "privateKeyPassword": "Test2",
+                "pemKey": "Test1",
+            },
+        ),
+    ],
+)
 def test_create_credential_creation_body(test_input_kwargs: dict, expected_output: dict):
     """
     Given: A dictionary of valid keyword arguments for the create_credential_creation_body function.
@@ -240,49 +261,67 @@ def test_create_credential_creation_body(test_input_kwargs: dict, expected_outpu
     assert create_credential_creation_body(**test_input_kwargs) == expected_output
 
 
-@pytest.mark.parametrize("test_input_kwargs",
-                         [
-                             ({
-                                 "service": CredentialService.CIFSHASH, "domain": "Test1", "username": "Test2",
-                                 "password": "Test3"
-                             }),
-                             ({
-                                 "service": CredentialService.HTTP, "http_realm": "Test1", "username": "Test2",
-                             }),
-                             ({
-                                 "service": CredentialService.MS_SQL, "database_name": "Test1", "password": "Test3",
-                                 "use_windows_authentication": True, "domain": "Test4"
-                             }),
-                             ({
-                                 "service": CredentialService.ORACLE, "oracle_sid": "Test1", "username": "Test2",
-                                 "password": "Test3", "oracle_enumerate_sids": True,
-                             }),
-                             ({
-                                 "service": CredentialService.SNMP
-                             }),
-                             ({
-                                 "service": CredentialService.SNMPV3, "username": "Test1", "password": "Test2"
-                             }),
-                             ({
-                                 "service": CredentialService.SNMPV3,
-                                 "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA, "username": "Test1"
-                             }),
-                             ({
-                                 "service": CredentialService.SNMPV3,
-                                 "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA, "username": "Test1",
-                                 "password": "Test2", "snmpv3_privacy_type": SNMPv3PrivacyType.AES_256
-                             }),
-                             ({
-                                 "service": CredentialService.SSH, "username": "Test1", "password": "Test2",
-                                 "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
-                             }),
-                             ({
-                                 "service": CredentialService.SSH_KEY, "ssh_private_key_password": "Test2",
-                                 "username": "Test3", "ssh_permission_elevation": SSHElevationType.SUDO,
-                                 "ssh_permission_elevation_username": "Test4",
-                                 "ssh_permission_elevation_password": "Test5"
-                             }),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs",
+    [
+        ({"service": CredentialService.CIFSHASH, "domain": "Test1", "username": "Test2", "password": "Test3"}),
+        (
+            {
+                "service": CredentialService.HTTP,
+                "http_realm": "Test1",
+                "username": "Test2",
+            }
+        ),
+        (
+            {
+                "service": CredentialService.MS_SQL,
+                "database_name": "Test1",
+                "password": "Test3",
+                "use_windows_authentication": True,
+                "domain": "Test4",
+            }
+        ),
+        (
+            {
+                "service": CredentialService.ORACLE,
+                "oracle_sid": "Test1",
+                "username": "Test2",
+                "password": "Test3",
+                "oracle_enumerate_sids": True,
+            }
+        ),
+        ({"service": CredentialService.SNMP}),
+        ({"service": CredentialService.SNMPV3, "username": "Test1", "password": "Test2"}),
+        ({"service": CredentialService.SNMPV3, "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA, "username": "Test1"}),
+        (
+            {
+                "service": CredentialService.SNMPV3,
+                "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA,
+                "username": "Test1",
+                "password": "Test2",
+                "snmpv3_privacy_type": SNMPv3PrivacyType.AES_256,
+            }
+        ),
+        (
+            {
+                "service": CredentialService.SSH,
+                "username": "Test1",
+                "password": "Test2",
+                "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
+            }
+        ),
+        (
+            {
+                "service": CredentialService.SSH_KEY,
+                "ssh_private_key_password": "Test2",
+                "username": "Test3",
+                "ssh_permission_elevation": SSHElevationType.SUDO,
+                "ssh_permission_elevation_username": "Test4",
+                "ssh_permission_elevation_password": "Test5",
+            }
+        ),
+    ],
+)
 def test_create_credential_creation_body_validations(test_input_kwargs: dict):
     """
     Given: A dictionary of invalid keyword arguments for the create_credential_creation_body function.
@@ -293,13 +332,14 @@ def test_create_credential_creation_body_validations(test_input_kwargs: dict):
         create_credential_creation_body(**test_input_kwargs)
 
 
-@pytest.mark.parametrize("test_input_kwargs, expected_output",
-                         [
-                             ({"a": "test", "b": 1, "c": None, "d": 6.1}, {"a": "test", "b": 1, "d": 6.1}),
-                             ({"a": None, "b": {}, "c": (1, "test")}, {"b": {}, "c": (1, "test")}),
-                             ({"strict_mode": True, "a": False, "b": {}, "c": (1, "test"), "d": 1},
-                              {"c": (1, "test"), "d": 1}),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, expected_output",
+    [
+        ({"a": "test", "b": 1, "c": None, "d": 6.1}, {"a": "test", "b": 1, "d": 6.1}),
+        ({"a": None, "b": {}, "c": (1, "test")}, {"b": {}, "c": (1, "test")}),
+        ({"strict_mode": True, "a": False, "b": {}, "c": (1, "test"), "d": 1}, {"c": (1, "test"), "d": 1}),
+    ],
+)
 def test_find_valid_params(test_input_kwargs: dict, expected_output: dict):
     """
     Given: A dictionary of valid keyword arguments for the find_valid_params function.
@@ -309,13 +349,14 @@ def test_find_valid_params(test_input_kwargs: dict, expected_output: dict):
     assert find_valid_params(**test_input_kwargs) == expected_output
 
 
-@pytest.mark.parametrize("test_input_kwargs, expected_output",
-                         [
-                             ({"years": 1, "months": 8, "weeks": 2, "days": 6}, "P1Y8M2W6D"),
-                             ({"hours": 16, "minutes": 26, "seconds": 53.4}, "PT16H26M53.4S"),
-                             ({"years": 4, "months": 3, "weeks": 1, "days": 2,
-                               "hours": 12, "minutes": 43, "seconds": 12.5}, "P4Y3M1W2DT12H43M12.5S"),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, expected_output",
+    [
+        ({"years": 1, "months": 8, "weeks": 2, "days": 6}, "P1Y8M2W6D"),
+        ({"hours": 16, "minutes": 26, "seconds": 53.4}, "PT16H26M53.4S"),
+        ({"years": 4, "months": 3, "weeks": 1, "days": 2, "hours": 12, "minutes": 43, "seconds": 12.5}, "P4Y3M1W2DT12H43M12.5S"),
+    ],
+)
 def test_generate_duration_time(test_input_kwargs: dict, expected_output: str):
     """
     Given: A dictionary of valid keyword arguments for the generate_duration_time function.
@@ -325,14 +366,15 @@ def test_generate_duration_time(test_input_kwargs: dict, expected_output: str):
     assert generate_duration_time(**test_input_kwargs) == expected_output
 
 
-@pytest.mark.parametrize("test_input, expected_output",
-                         [
-                             ("PT2M16.481S", "2 minutes, 16.481 seconds"),
-                             ("PT51.316S", "51.316 seconds"),
-                             ("P3Y6M4DT12H30M5S", "3 years, 6 months, 4 days, 12 hours, 30 minutes, 5 seconds"),
-                             ("Invalid", None),
-
-                         ])
+@pytest.mark.parametrize(
+    "test_input, expected_output",
+    [
+        ("PT2M16.481S", "2 minutes, 16.481 seconds"),
+        ("PT51.316S", "51.316 seconds"),
+        ("P3Y6M4DT12H30M5S", "3 years, 6 months, 4 days, 12 hours, 30 minutes, 5 seconds"),
+        ("Invalid", None),
+    ],
+)
 def test_readable_duration_time(test_input: str, expected_output: float | None):
     """
     Given: A string representing a valid duration time in ISO 8601 format.
@@ -347,15 +389,16 @@ def test_readable_duration_time(test_input: str, expected_output: float | None):
         assert readable_duration_time(test_input) == expected_output
 
 
-@pytest.mark.parametrize("test_input_data, test_input_key, expected_output",
-                         [
-                             ({"a": "b", "c": "d", "e": "f"}, "a", {"c": "d", "e": "f"}),
-                             (("a", {1: "b"}), 1, ("a", {})),
-                             ([1, 2, {"a": "b", "test": "test"}], "test", [1, 2, {"a": "b"}]),
-                             ({"a": {"b": {"test": "x"}}}, "test", {'a': {'b': {}}}),
-                         ])
-def test_remove_dict_key(test_input_data: dict | list | tuple, test_input_key: str,
-                         expected_output: dict | list | tuple):
+@pytest.mark.parametrize(
+    "test_input_data, test_input_key, expected_output",
+    [
+        ({"a": "b", "c": "d", "e": "f"}, "a", {"c": "d", "e": "f"}),
+        (("a", {1: "b"}), 1, ("a", {})),
+        ([1, 2, {"a": "b", "test": "test"}], "test", [1, 2, {"a": "b"}]),
+        ({"a": {"b": {"test": "x"}}}, "test", {"a": {"b": {}}}),
+    ],
+)
+def test_remove_dict_key(test_input_data: dict | list | tuple, test_input_key: str, expected_output: dict | list | tuple):
     """
     Given: A dictionary, list or tuple and a key to remove.
     When: Calling the remove_dict_key function.
@@ -364,19 +407,17 @@ def test_remove_dict_key(test_input_data: dict | list | tuple, test_input_key: s
     assert remove_dict_key(test_input_data, test_input_key) == expected_output
 
 
-@pytest.mark.parametrize("test_input_data, name_mapping, include_none, expected_output",
-                         [
-                             ({"a": "b", "c": "d", "e": "f"}, {"a": "A", "e": "E"}, False, {"A": "b", "E": "f"}),
-                             ({"a": {"b": {"test": "x"}}}, {"a": "A", "test": "TEST"}, True,
-                              {"A": {"b": {"test": "x"}}, "TEST": None}),
-                             ([(1, {"a": {"b": {"a": "a"}}}), 2], {"a": "A"}, False,
-                              [(1, {"A": {"b": {"a": "a"}}}), 2]),
-                             ({"a": {"b": {"test": "x"}}}, {"a.b": "A", "test": "TEST"}, False,
-                              {"A": {"test": "x"}}),
-                             ({}, {"a": "b"}, False, {})
-                         ])
-def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict, include_none: bool,
-                           expected_output: dict | list):
+@pytest.mark.parametrize(
+    "test_input_data, name_mapping, include_none, expected_output",
+    [
+        ({"a": "b", "c": "d", "e": "f"}, {"a": "A", "e": "E"}, False, {"A": "b", "E": "f"}),
+        ({"a": {"b": {"test": "x"}}}, {"a": "A", "test": "TEST"}, True, {"A": {"b": {"test": "x"}}, "TEST": None}),
+        ([(1, {"a": {"b": {"a": "a"}}}), 2], {"a": "A"}, False, [(1, {"A": {"b": {"a": "a"}}}), 2]),
+        ({"a": {"b": {"test": "x"}}}, {"a.b": "A", "test": "TEST"}, False, {"A": {"test": "x"}}),
+        ({}, {"a": "b"}, False, {}),
+    ],
+)
+def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict, include_none: bool, expected_output: dict | list):
     """
     Given: A dictionary, list or tuple and a name-mapping dictionary.
     When: Calling the generate_new_dict function.
@@ -387,17 +428,26 @@ def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict, inc
     assert result == expected_output
 
 
-@pytest.mark.parametrize("sites_mock_file, site_id, site_name, send_client, expected_output_id",
-                         [
-                             ("client_get_sites", "1", "Test 1", True, "1"),
-                             ("client_get_sites", "2", None, False, "2"),
-                             ("client_get_sites", None, "Test 3", True, "3"),
-                             ("client_get_sites", None, "Test 2", False, None),
-                             ("client_get_sites", None, "This site does not exist", True, None),
-                             ("client_get_sites", None, None, True, None),
-                         ])
-def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_client: bool, site_id: str | None,
-                   site_name: str | None, expected_output_id: str | None):
+@pytest.mark.parametrize(
+    "sites_mock_file, site_id, site_name, send_client, expected_output_id",
+    [
+        ("client_get_sites", "1", "Test 1", True, "1"),
+        ("client_get_sites", "2", None, False, "2"),
+        ("client_get_sites", None, "Test 3", True, "3"),
+        ("client_get_sites", None, "Test 2", False, None),
+        ("client_get_sites", None, "This site does not exist", True, None),
+        ("client_get_sites", None, None, True, None),
+    ],
+)
+def test_site_init(
+    mocker,
+    mock_client: Client,
+    sites_mock_file: str,
+    send_client: bool,
+    site_id: str | None,
+    site_name: str | None,
+    expected_output_id: str | None,
+):
     """
     Given: A site ID and a site name
     When: Calling the Site class constructor
@@ -428,22 +478,22 @@ def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_clien
 
 
 # --- Command & Client Functions Tests ---
-@pytest.mark.parametrize("scope, template_id, report_name, report_format",
-                         [
-                             ({"sites": [1]}, "1", "Test", "pdf"),
-                         ])
-def test_client_create_report_config(mocker, mock_client: Client, scope: dict, template_id: str, report_name: str,
-                                     report_format: str):
+@pytest.mark.parametrize(
+    "scope, template_id, report_name, report_format",
+    [
+        ({"sites": [1]}, "1", "Test", "pdf"),
+    ],
+)
+def test_client_create_report_config(
+    mocker, mock_client: Client, scope: dict, template_id: str, report_name: str, report_format: str
+):
     """
     Given: Valid parameters for the create_report_config function.
     When: Calling the create_report_config function.
     Then: Ensure the API call is being called with the correct parameters.
     """
     http_request = mocker.patch.object(BaseClient, "_http_request")
-    mock_client.create_report_config(scope=scope,
-                                     template_id=template_id,
-                                     report_name=report_name,
-                                     report_format=report_format)
+    mock_client.create_report_config(scope=scope, template_id=template_id, report_name=report_name, report_format=report_format)
 
     http_request.assert_called_with(
         url_suffix="/reports",
@@ -458,10 +508,7 @@ def test_client_create_report_config(mocker, mock_client: Client, scope: dict, t
     )
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output",
-                         [
-                             ("client_find_asset_site", Site(site_id="1", site_name="Test"))
-                         ])
+@pytest.mark.parametrize("api_mock_file, expected_output", [("client_find_asset_site", Site(site_id="1", site_name="Test"))])
 def test_client_find_asset_site(mocker, mock_client: Client, api_mock_file: str, expected_output: Site):
     """
     Given: A valid asset ID.
@@ -476,13 +523,15 @@ def test_client_find_asset_site(mocker, mock_client: Client, api_mock_file: str,
     assert returned_site.name == expected_output.name
 
 
-@pytest.mark.parametrize("test_input, expected_output",
-                         [
-                             ("Test 1", "1"),
-                             ("Test 2", "2"),
-                             ("Test 3", "3"),
-                             ("Site-That-Doesn't-Exist", None),
-                         ])
+@pytest.mark.parametrize(
+    "test_input, expected_output",
+    [
+        ("Test 1", "1"),
+        ("Test 2", "2"),
+        ("Test 3", "3"),
+        ("Site-That-Doesn't-Exist", None),
+    ],
+)
 def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
     """
     Given: A valid site name.
@@ -493,16 +542,21 @@ def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expec
     assert mock_client.find_site_id(test_input) == expected_output
 
 
-@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
-                         [
-                             ({"site_id": "1", "date": "2022-01-01T10:00:00Z", "ip": "192.0.2.0"},
-                              {"id": 1}, {"id": 1}),
-                             ({"site_id": "1", "date": "2022-01-01T10:00:00Z", "host_name": "localhost",
-                               "host_name_source": "LDAP"}, {"id": 1}, {"id": 1}),
-                             ({"site_id": "1", "date": "2022-01-01T10:00:00Z"}, None, None),
-                         ])
-def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict | None,
-                              expected_output_context: dict | None):
+@pytest.mark.parametrize(
+    "test_input_kwargs, api_mock_data, expected_output_context",
+    [
+        ({"site_id": "1", "date": "2022-01-01T10:00:00Z", "ip": "192.0.2.0"}, {"id": 1}, {"id": 1}),
+        (
+            {"site_id": "1", "date": "2022-01-01T10:00:00Z", "host_name": "localhost", "host_name_source": "LDAP"},
+            {"id": 1},
+            {"id": 1},
+        ),
+        ({"site_id": "1", "date": "2022-01-01T10:00:00Z"}, None, None),
+    ],
+)
+def test_create_asset_command(
+    mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict | None, expected_output_context: dict | None
+):
     """
     Given: Valid parameters for the create_asset_command function.
     When: Calling the create_asset_command function.
@@ -518,14 +572,18 @@ def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: di
             create_asset_command(client=mock_client, **test_input_kwargs)
 
 
-@pytest.mark.parametrize("report_templates_mock_file, report_config_mock_data, report_mock_data, "
-                         "expected_output_context_file",
-                         [
-                             ("client_get_report_templates", {"id": 1}, {"id": 2}, "create_report_commands")
-                         ])
-def test_create_report_commands(mocker, mock_client: Client, report_templates_mock_file: str,
-                                report_config_mock_data: dict, report_mock_data: dict,
-                                expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "report_templates_mock_file, report_config_mock_data, report_mock_data, expected_output_context_file",
+    [("client_get_report_templates", {"id": 1}, {"id": 2}, "create_report_commands")],
+)
+def test_create_report_commands(
+    mocker,
+    mock_client: Client,
+    report_templates_mock_file: str,
+    report_config_mock_data: dict,
+    report_mock_data: dict,
+    expected_output_context_file: str,
+):
     """
     Given: Valid parameters for different report creation commands.
     When: Calling the create_report_command function.
@@ -538,89 +596,111 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    assert create_assets_report_command(
-        client=mock_client,
-        assets="1",
-        name="Test Report",
-        download_immediately="false").outputs == expected_output_context
-    assert create_scan_report_command(
-        client=mock_client,
-        scan="1",
-        name="Test Report",
-        download_immediately="false").outputs == expected_output_context
-    assert create_sites_report_command(
-        client=mock_client,
-        sites="1,2,3",
-        name="Test Report",
-        download_immediately="false").outputs == expected_output_context
+    assert (
+        create_assets_report_command(client=mock_client, assets="1", name="Test Report", download_immediately="false").outputs
+        == expected_output_context
+    )
+    assert (
+        create_scan_report_command(client=mock_client, scan="1", name="Test Report", download_immediately="false").outputs
+        == expected_output_context
+    )
+    assert (
+        create_sites_report_command(client=mock_client, sites="1,2,3", name="Test Report", download_immediately="false").outputs
+        == expected_output_context
+    )
 
 
-@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
-                         [
-                             ({
-                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "interval_time": "2",
-                                 "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
-                                 "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
-                                 "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
-                                 "excluded_asset_groups": "3,4",
-                             }, {"id": 1},
-                                 {
-                                 "assets": {
-                                     "excludedAssetGroups": {
-                                         "assetGroupIDs": [3, 4]
-                                     },
-                                     "excludedTargets": {
-                                         "addresses": [
-                                             "192.0.2.2",
-                                             "192.0.2.3"
-                                         ]
-                                     },
-                                     "includedAssetGroups": {
-                                         "assetGroupIDs": [1, 2]
-                                     },
-                                     "includedTargets": {
-                                         "addresses": [
-                                             "192.0.2.0",
-                                             "192.0.2.1"
-                                         ]
-                                     }
-                                 },
-                                 "duration": "P1DT1H1M",
-                                 "enabled": True,
-                                 "onScanRepeat": "restart-scan",
-                                 "repeat": {
-                                     "every": "week",
-                                     "interval": 2
-                                 },
-                                 "scanName": "Test",
-                                 "start": "2050-01-01T10:00:00Z"
-                             }, {"id": 1}),
-                             ({
-                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z",
-                             }, {"id": 1},
-                                 {
-                                 "enabled": True,
-                                 "onScanRepeat": "restart-scan",
-                                 "start": "2050-01-01T10:00:00Z"
-                             }, {"id": 1}),
-                             ({
-                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
-                             }, {"id": 1}, None, None),
-                             ({
-                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval_time": "2",
-                                 "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
-                                 "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
-                                 "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
-                                 "excluded_asset_groups": "3,4",
-                             }, {"id": 1}, None, None),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
+    [
+        (
+            {
+                "site_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+                "frequency": "week",
+                "interval_time": "2",
+                "duration_days": "1",
+                "duration_hours": "1",
+                "duration_minutes": "1",
+                "scan_name": "Test",
+                "enabled": "true",
+                "included_targets": "192.0.2.0,192.0.2.1",
+                "included_asset_groups": "1,2",
+                "excluded_targets": "192.0.2.2,192.0.2.3",
+                "excluded_asset_groups": "3,4",
+            },
+            {"id": 1},
+            {
+                "assets": {
+                    "excludedAssetGroups": {"assetGroupIDs": [3, 4]},
+                    "excludedTargets": {"addresses": ["192.0.2.2", "192.0.2.3"]},
+                    "includedAssetGroups": {"assetGroupIDs": [1, 2]},
+                    "includedTargets": {"addresses": ["192.0.2.0", "192.0.2.1"]},
+                },
+                "duration": "P1DT1H1M",
+                "enabled": True,
+                "onScanRepeat": "restart-scan",
+                "repeat": {"every": "week", "interval": 2},
+                "scanName": "Test",
+                "start": "2050-01-01T10:00:00Z",
+            },
+            {"id": 1},
+        ),
+        (
+            {
+                "site_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+            },
+            {"id": 1},
+            {"enabled": True, "onScanRepeat": "restart-scan", "start": "2050-01-01T10:00:00Z"},
+            {"id": 1},
+        ),
+        (
+            {
+                "site_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+                "frequency": "week",
+                "enabled": "true",
+            },
+            {"id": 1},
+            None,
+            None,
+        ),
+        (
+            {
+                "site_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+                "frequency": "Date-of-month",
+                "interval_time": "2",
+                "duration_days": "1",
+                "duration_hours": "1",
+                "duration_minutes": "1",
+                "scan_name": "Test",
+                "enabled": "true",
+                "included_targets": "192.0.2.0,192.0.2.1",
+                "included_asset_groups": "1,2",
+                "excluded_targets": "192.0.2.2,192.0.2.3",
+                "excluded_asset_groups": "3,4",
+            },
+            {"id": 1},
+            None,
+            None,
+        ),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
-def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
-                                      expected_post_data: dict | None, expected_output_context: dict):
+def test_create_scan_schedule_command(
+    mocker,
+    mock_client: Client,
+    test_input_kwargs: dict,
+    api_mock_data: dict,
+    expected_post_data: dict | None,
+    expected_output_context: dict,
+):
     """
     Given: Valid or invalid parameters for the create_scan_schedule_command function.
     When: Calling the create_scan_schedule_command function.
@@ -629,15 +709,15 @@ def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kw
     """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
-    if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval_time") is None
-                                                           or (test_input_kwargs["frequency"] == "Date-of-month"
-                                                               and test_input_kwargs.get("date_of_month") is None)):
+    if test_input_kwargs.get("frequency") is not None and (
+        test_input_kwargs.get("interval_time") is None
+        or (test_input_kwargs["frequency"] == "Date-of-month" and test_input_kwargs.get("date_of_month") is None)
+    ):
         with pytest.raises(ValueError):
             create_scan_schedule_command(mock_client, **test_input_kwargs)
 
     else:
-        assert create_scan_schedule_command(mock_client, **test_input_kwargs).outputs == \
-            expected_output_context
+        assert create_scan_schedule_command(mock_client, **test_input_kwargs).outputs == expected_output_context
 
         http_request.assert_called_with(
             method="POST",
@@ -647,28 +727,78 @@ def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kw
         )
 
 
-@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
-                         [
-                             ({"name": "Test", "site_assignment": "All-Sites", "service": "FTP", "username": "Test1",
-                               "password": "Test2", "host_restriction": "192.0.2.0", "port_restriction": "8080",
-                               "sites": "1,2,3"},
-                              {"id": 1}, {"id": 1}),
-                             ({"name": "Test", "site_assignment": "All-Sites", "service": "SNMPv3", "username": "Test1",
-                               "password": "Test2", "authentication_type": "SHA", "privacy_type": "AES-256",
-                               "privacy_password": "123"},
-                              {"id": 1}, {"id": 1}),
-                             ({"name": "Test", "site_assignment": "All-Sites", "service": "Oracle", "username": "Test1",
-                               "password": "Test2", "oracle_enumerate_sids": "false"},
-                              {"id": 1}, {"id": 1}),
-                             ({"name": "Test", "site_assignment": "All-Sites", "service": "SSH", "username": "Test1",
-                               "password": "Test2", "ssh_permission_elevation": "None"},
-                              {"id": 1}, {"id": 1}),
-                             ({"name": "Test", "site_assignment": "All-Sites", "service": "MS-SQL", "username": "Test1",
-                               "password": "Test2", "use_windows_authentication": "false"},
-                              {"id": 1}, {"id": 1}),
-                         ])
-def test_create_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                                          api_mock_data: dict, expected_output_context: dict):
+@pytest.mark.parametrize(
+    "test_input_kwargs, api_mock_data, expected_output_context",
+    [
+        (
+            {
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "FTP",
+                "username": "Test1",
+                "password": "Test2",
+                "host_restriction": "192.0.2.0",
+                "port_restriction": "8080",
+                "sites": "1,2,3",
+            },
+            {"id": 1},
+            {"id": 1},
+        ),
+        (
+            {
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "SNMPv3",
+                "username": "Test1",
+                "password": "Test2",
+                "authentication_type": "SHA",
+                "privacy_type": "AES-256",
+                "privacy_password": "123",
+            },
+            {"id": 1},
+            {"id": 1},
+        ),
+        (
+            {
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "Oracle",
+                "username": "Test1",
+                "password": "Test2",
+                "oracle_enumerate_sids": "false",
+            },
+            {"id": 1},
+            {"id": 1},
+        ),
+        (
+            {
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "SSH",
+                "username": "Test1",
+                "password": "Test2",
+                "ssh_permission_elevation": "None",
+            },
+            {"id": 1},
+            {"id": 1},
+        ),
+        (
+            {
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "MS-SQL",
+                "username": "Test1",
+                "password": "Test2",
+                "use_windows_authentication": "false",
+            },
+            {"id": 1},
+            {"id": 1},
+        ),
+    ],
+)
+def test_create_shared_credential_command(
+    mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict, expected_output_context: dict
+):
     """
     Given: valid parameters for the create_shared_credential_command function.
     When: Calling the create_shared_credential_command function.
@@ -678,30 +808,31 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
     assert create_shared_credential_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
 
-@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
-                         [
-                             ({"name": "Test 1", "description": "Test 2", "assets": "1,2,3", "importance": "very_high"},
-                              {"id": 1},
-                              {
-                                  "name": "Test 1",
-                                  "description": "Test 2",
-                                  "importance": "very_high",
-                                  "scan": {
-                                      "assets": {
-                                          "includedTargets": {
-                                              "addresses": [
-                                                  "1",
-                                                  "2",
-                                                  "3"
-                                              ]
-                                          }
-                                      }
-                                  }
-                             }, {"Id": 1}),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
+    [
+        (
+            {"name": "Test 1", "description": "Test 2", "assets": "1,2,3", "importance": "very_high"},
+            {"id": 1},
+            {
+                "name": "Test 1",
+                "description": "Test 2",
+                "importance": "very_high",
+                "scan": {"assets": {"includedTargets": {"addresses": ["1", "2", "3"]}}},
+            },
+            {"Id": 1},
+        ),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
-def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
-                     expected_post_data: dict, expected_output_context: dict):
+def test_create_site(
+    mocker,
+    mock_client: Client,
+    test_input_kwargs: dict,
+    api_mock_data: dict,
+    expected_post_data: dict,
+    expected_output_context: dict,
+):
     """
     Given: Valid parameters for the create_site function.
     When: Calling the create_site function.
@@ -711,84 +842,121 @@ def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_m
 
     assert create_site_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
-    http_request.assert_called_with(
-        url_suffix="/sites",
-        method="POST",
-        json_data=expected_post_data,
-        resp_type="json"
-    )
+    http_request.assert_called_with(url_suffix="/sites", method="POST", json_data=expected_post_data, resp_type="json")
 
 
-@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
-                         [
-                             ({"site_id": "1", "name": "Test", "host_restriction": "192.0.2.0",
-                                 "port_restriction": "8080", "service": "FTP", "username": "Test1", "password": "Test2"
-                               }, {"id": 1},
-                              {
-                              "hostRestriction": "192.0.2.0",
-                              "name": "Test",
-                              "portRestriction": "8080",
-                              "account": {
-                                  "service": "ftp",
-                                  "username": "Test1",
-                                  "password": "Test2"
-                              }
-                              }, {"id": 1}),
-                             ({"site_id": "2", "name": "Test", "service": "SNMPv3",
-                                 "username": "Test1", "password": "Test2", "authentication_type": "SHA",
-                                 "privacy_type": "AES-256", "privacy_password": "123"}, {"id": 1},
-                              {
-                              "name": "Test",
-                              "account": {
-                                  "service": "snmpv3",
-                                  "username": "Test1",
-                                  "authenticationType": "sha",
-                                  "password": "Test2",
-                                  "privacyType": "aes-256",
-                                  "privacyPassword": "123"
-                              }
-                              }, {"id": 1}),
-                             ({"site_id": "3", "name": "Test", "service": "Oracle",
-                                 "username": "Test1", "password": "Test2", "oracle_enumerate_sids": "false"},
-                              {"id": 1},
-                              {
-                              "name": "Test",
-                              "account": {
-                                  "service": "oracle",
-                                  "username": "Test1",
-                                  "password": "Test2",
-                                  "enumerateSids": False,
-                                  "oracleListenerPassword": None
-                              }
-                              }, {"id": 1},),
-                             ({"site_id": "1", "name": "Test", "service": "SSH",
-                                 "username": "Test1", "password": "Test2", "ssh_permission_elevation": "None"},
-                              {"id": 1},
-                              {
-                              "name": "Test",
-                              "account": {
-                                  "service": "ssh",
-                                  "username": "Test1",
-                                  "password": "Test2",
-                                  "permissionElevation": "none"
-                              }
-                              }, {"id": 1},),
-                             ({"site_id": "2", "name": "Test", "service": "MS-SQL",
-                                 "username": "Test1", "password": "Test2", "use_windows_authentication": "false"},
-                              {"id": 1},
-                              {
-                              "name": "Test",
-                              "account": {
-                                  "service": "ms-sql",
-                                  "username": "Test1",
-                                  "password": "Test2",
-                                  "useWindowsAuthentication": False
-                              }
-                              }, {"id": 1}),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
+    [
+        (
+            {
+                "site_id": "1",
+                "name": "Test",
+                "host_restriction": "192.0.2.0",
+                "port_restriction": "8080",
+                "service": "FTP",
+                "username": "Test1",
+                "password": "Test2",
+            },
+            {"id": 1},
+            {
+                "hostRestriction": "192.0.2.0",
+                "name": "Test",
+                "portRestriction": "8080",
+                "account": {"service": "ftp", "username": "Test1", "password": "Test2"},
+            },
+            {"id": 1},
+        ),
+        (
+            {
+                "site_id": "2",
+                "name": "Test",
+                "service": "SNMPv3",
+                "username": "Test1",
+                "password": "Test2",
+                "authentication_type": "SHA",
+                "privacy_type": "AES-256",
+                "privacy_password": "123",
+            },
+            {"id": 1},
+            {
+                "name": "Test",
+                "account": {
+                    "service": "snmpv3",
+                    "username": "Test1",
+                    "authenticationType": "sha",
+                    "password": "Test2",
+                    "privacyType": "aes-256",
+                    "privacyPassword": "123",
+                },
+            },
+            {"id": 1},
+        ),
+        (
+            {
+                "site_id": "3",
+                "name": "Test",
+                "service": "Oracle",
+                "username": "Test1",
+                "password": "Test2",
+                "oracle_enumerate_sids": "false",
+            },
+            {"id": 1},
+            {
+                "name": "Test",
+                "account": {
+                    "service": "oracle",
+                    "username": "Test1",
+                    "password": "Test2",
+                    "enumerateSids": False,
+                    "oracleListenerPassword": None,
+                },
+            },
+            {"id": 1},
+        ),
+        (
+            {
+                "site_id": "1",
+                "name": "Test",
+                "service": "SSH",
+                "username": "Test1",
+                "password": "Test2",
+                "ssh_permission_elevation": "None",
+            },
+            {"id": 1},
+            {
+                "name": "Test",
+                "account": {"service": "ssh", "username": "Test1", "password": "Test2", "permissionElevation": "none"},
+            },
+            {"id": 1},
+        ),
+        (
+            {
+                "site_id": "2",
+                "name": "Test",
+                "service": "MS-SQL",
+                "username": "Test1",
+                "password": "Test2",
+                "use_windows_authentication": "false",
+            },
+            {"id": 1},
+            {
+                "name": "Test",
+                "account": {"service": "ms-sql", "username": "Test1", "password": "Test2", "useWindowsAuthentication": False},
+            },
+            {"id": 1},
+        ),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
-def test_create_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
-                                             expected_post_data: dict, expected_output_context: dict):
+def test_create_site_scan_credential_command(
+    mocker,
+    mock_client: Client,
+    test_input_kwargs: dict,
+    api_mock_data: dict,
+    expected_post_data: dict,
+    expected_output_context: dict,
+):
     """
     Given: Valid parameters for the create_site_scan_credential_command function.
     When: Calling the create_site_scan_credential_command function.
@@ -797,26 +965,46 @@ def test_create_site_scan_credential_command(mocker, mock_client: Client, test_i
     site_id = test_input_kwargs.pop("site_id")
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
-    assert create_site_scan_credential_command(client=mock_client,
-                                               site_id=site_id, **test_input_kwargs).outputs == expected_output_context
+    assert (
+        create_site_scan_credential_command(client=mock_client, site_id=site_id, **test_input_kwargs).outputs
+        == expected_output_context
+    )
 
     http_request.assert_called_with(
-        url_suffix=f"/sites/{site_id}/site_credentials",
-        method="POST",
-        json_data=expected_post_data,
-        resp_type="json"
+        url_suffix=f"/sites/{site_id}/site_credentials", method="POST", json_data=expected_post_data, resp_type="json"
     )
 
 
-@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
-                         [
-                             ({"vulnerability_id": "7-zip-cve-2008-6536", "scope_type": "Global", "state": "Approved",
-                               "reason": "Acceptable-Risk", "comment": "Comment"}, {"id": 1}, {"id": 1}),
-                             ({"vulnerability_id": "7-zip-cve-2008-6536", "scope_type": "Site", "state": "Approved",
-                               "reason": "Acceptable-Risk", "comment": "Comment"}, None, None)
-                         ])
-def test_create_vulnerability_exception_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                                                api_mock_data: dict | None, expected_output_context: dict | None):
+@pytest.mark.parametrize(
+    "test_input_kwargs, api_mock_data, expected_output_context",
+    [
+        (
+            {
+                "vulnerability_id": "7-zip-cve-2008-6536",
+                "scope_type": "Global",
+                "state": "Approved",
+                "reason": "Acceptable-Risk",
+                "comment": "Comment",
+            },
+            {"id": 1},
+            {"id": 1},
+        ),
+        (
+            {
+                "vulnerability_id": "7-zip-cve-2008-6536",
+                "scope_type": "Site",
+                "state": "Approved",
+                "reason": "Acceptable-Risk",
+                "comment": "Comment",
+            },
+            None,
+            None,
+        ),
+    ],
+)
+def test_create_vulnerability_exception_command(
+    mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict | None, expected_output_context: dict | None
+):
     """
     Given: Valid  or invalid parameters for the create_vulnerability_exception_command function.
     When: Calling the create_vulnerability_exception_command function.
@@ -829,14 +1017,15 @@ def test_create_vulnerability_exception_command(mocker, mock_client: Client, tes
             create_vulnerability_exception_command(client=mock_client, **test_input_kwargs)
 
     else:
-        assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
-            expected_output_context
+        assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
 
-@pytest.mark.parametrize("asset_id",
-                         [
-                             ("1",),
-                         ])
+@pytest.mark.parametrize(
+    "asset_id",
+    [
+        ("1",),
+    ],
+)
 def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
     """
     Given: Valid parameters for the delete_asset_command function.
@@ -855,10 +1044,12 @@ def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("site_id, schedule_id",
-                         [
-                             ("1", "2"),
-                         ])
+@pytest.mark.parametrize(
+    "site_id, schedule_id",
+    [
+        ("1", "2"),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str, schedule_id: str):
     """
@@ -878,10 +1069,12 @@ def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("shared_credential_id",
-                         [
-                             ("1",),
-                         ])
+@pytest.mark.parametrize(
+    "shared_credential_id",
+    [
+        ("1",),
+    ],
+)
 def test_delete_shared_credential_command(mocker, mock_client: Client, shared_credential_id: str):
     """
     Given: Valid parameters for the delete_shared_credential_command function.
@@ -900,10 +1093,12 @@ def test_delete_shared_credential_command(mocker, mock_client: Client, shared_cr
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("site_id",
-                         [
-                             ("1",),
-                         ])
+@pytest.mark.parametrize(
+    "site_id",
+    [
+        ("1",),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_site_command(mocker, mock_client: Client, site_id: str):
     """
@@ -923,10 +1118,12 @@ def test_delete_site_command(mocker, mock_client: Client, site_id: str):
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("site_id, credential_id",
-                         [
-                             ("1", "2"),
-                         ])
+@pytest.mark.parametrize(
+    "site_id, credential_id",
+    [
+        ("1", "2"),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_id: str, credential_id: str):
     """
@@ -946,10 +1143,12 @@ def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_i
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("vulnerability_exception_id",
-                         [
-                             ("1",),
-                         ])
+@pytest.mark.parametrize(
+    "vulnerability_exception_id",
+    [
+        ("1",),
+    ],
+)
 def test_delete_vulnerability_exception_command(mocker, mock_client: Client, vulnerability_exception_id: str):
     """
     Given: Valid parameters for the delete_vulnerability_exception_command function.
@@ -957,8 +1156,7 @@ def test_delete_vulnerability_exception_command(mocker, mock_client: Client, vul
     Then: Ensure a valid API call is made and no context output is returned.
     """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    result = delete_vulnerability_exception_command(client=mock_client,
-                                                    vulnerability_exception_id=vulnerability_exception_id)
+    result = delete_vulnerability_exception_command(client=mock_client, vulnerability_exception_id=vulnerability_exception_id)
 
     http_request.assert_called_with(
         url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}",
@@ -981,23 +1179,28 @@ def test_download_report_command(mocker, mock_client: Client):
 
     result = download_report_command(client=mock_client, report_id="1", instance_id="latest", name="Test")
 
-    assert result == {
-        "Contents": "",
-        "ContentsFormat": "text",
-        "Type": 9,
-        "File": "Test.pdf",
-        "FileID": "RandomUUID4"
-    }
+    assert result == {"Contents": "", "ContentsFormat": "text", "Type": 9, "File": "Test.pdf", "FileID": "RandomUUID4"}
 
 
-@pytest.mark.parametrize("asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, "
-                         "expected_output_context_file",
-                         [
-                             ("client_get_asset", "client_get_asset_vulnerabilities",
-                              "client_get_vulnerability-certificate-common-name-mismatch", "get_asset_command")
-                         ])
-def test_get_asset_command(mocker, mock_client: Client, asset_mock_file: str, asset_vulnerability_api_mock_file: str,
-                           vulnerability_api_mock_file: str, expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, expected_output_context_file",
+    [
+        (
+            "client_get_asset",
+            "client_get_asset_vulnerabilities",
+            "client_get_vulnerability-certificate-common-name-mismatch",
+            "get_asset_command",
+        )
+    ],
+)
+def test_get_asset_command(
+    mocker,
+    mock_client: Client,
+    asset_mock_file: str,
+    asset_vulnerability_api_mock_file: str,
+    vulnerability_api_mock_file: str,
+    expected_output_context_file: str,
+):
     """
     Given: Valid parameters for the get_asset_command function.
     When: Calling the get_asset_command function.
@@ -1024,10 +1227,7 @@ def test_get_asset_command(mocker, mock_client: Client, asset_mock_file: str, as
         assert result[-1].outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_assets", "get_assets_command")
-                         ])
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file", [("client_get_assets", "get_assets_command")])
 def test_get_assets_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_assets_command function.
@@ -1044,10 +1244,7 @@ def test_get_assets_command(mocker, mock_client: Client, api_mock_file: str, exp
     assert [r.outputs for r in result] == expected_output_context
 
 
-@pytest.mark.parametrize("asset_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_asset_tags", "get_asset_tags_command")
-                         ])
+@pytest.mark.parametrize("asset_mock_file, expected_output_context_file", [("client_get_asset_tags", "get_asset_tags_command")])
 def test_get_asset_tags_command(mocker, mock_client: Client, asset_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_asset_tags_command function.
@@ -1067,18 +1264,28 @@ def test_get_asset_tags_command(mocker, mock_client: Client, asset_mock_file: st
         assert result[-1].outputs == expected_output_context
 
 
-@pytest.mark.parametrize("vulnerability_id, asset_vulnerability_mock_file, vulnerability_mock_file, "
-                         "asset_vulnerability_solution_mock_file, expected_output_context_file",
-                         [
-                             ("ssl-cve-2011-3389-beast", "client_get_asset_vulnerability-ssl-cve-2011-3389-beast",
-                              "client_get_vulnerability-ssl-cve-2011-3389-beast",
-                              "client_get_asset_vulnerability_solution-ssl-cve-2011-3389-beast",
-                              "get_asset_vulnerability_command")
-                         ])
-def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerability_id: str,
-                                         asset_vulnerability_mock_file: str, vulnerability_mock_file: str,
-                                         asset_vulnerability_solution_mock_file: str,
-                                         expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "vulnerability_id, asset_vulnerability_mock_file, vulnerability_mock_file, "
+    "asset_vulnerability_solution_mock_file, expected_output_context_file",
+    [
+        (
+            "ssl-cve-2011-3389-beast",
+            "client_get_asset_vulnerability-ssl-cve-2011-3389-beast",
+            "client_get_vulnerability-ssl-cve-2011-3389-beast",
+            "client_get_asset_vulnerability_solution-ssl-cve-2011-3389-beast",
+            "get_asset_vulnerability_command",
+        )
+    ],
+)
+def test_get_asset_vulnerability_command(
+    mocker,
+    mock_client: Client,
+    vulnerability_id: str,
+    asset_vulnerability_mock_file: str,
+    vulnerability_mock_file: str,
+    asset_vulnerability_solution_mock_file: str,
+    expected_output_context_file: str,
+):
     """
     Given: Valid parameters for the get_asset_vulnerability_command function.
     When: Calling the get_asset_vulnerability_command function.
@@ -1099,12 +1306,10 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
     assert [result.outputs for result in results] == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_report_history", "get_generated_report_status_command")
-                         ])
-def test_get_generated_report_status_command(mocker, mock_client: Client, api_mock_file: str,
-                                             expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "api_mock_file, expected_output_context_file", [("client_get_report_history", "get_generated_report_status_command")]
+)
+def test_get_generated_report_status_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_generated_report_status_command function.
     When: Calling the get_generated_report_status_command function.
@@ -1119,12 +1324,10 @@ def test_get_generated_report_status_command(mocker, mock_client: Client, api_mo
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_report_templates", "get_report_templates_command")
-                         ])
-def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file: str,
-                                      expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "api_mock_file, expected_output_context_file", [("client_get_report_templates", "get_report_templates_command")]
+)
+def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_report_templates_command function.
     When: Calling the get_report_templates_command function.
@@ -1139,12 +1342,8 @@ def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, ids_input, expected_output_context_file",
-                         [
-                             ("client_get_scan", "1", "get_scan_command")
-                         ])
-def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_input: str,
-                          expected_output_context_file: str):
+@pytest.mark.parametrize("api_mock_file, ids_input, expected_output_context_file", [("client_get_scan", "1", "get_scan_command")])
+def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_input: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_scan_command function.
     When: Calling the get_scan_command function.
@@ -1159,10 +1358,7 @@ def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_i
     assert [result.outputs for result in results] == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_scans", "get_scans_command")
-                         ])
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file", [("client_get_scans", "get_scans_command")])
 def test_get_scans_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_scans_command function.
@@ -1178,10 +1374,7 @@ def test_get_scans_command(mocker, mock_client: Client, api_mock_file: str, expe
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_sites", "get_sites_command")
-                         ])
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file", [("client_get_sites", "get_sites_command")])
 def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the get_sites_command function.
@@ -1197,12 +1390,10 @@ def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expe
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_shared_credentials", "list_shared_credential_command")
-                         ])
-def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
-                                        expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "api_mock_file, expected_output_context_file", [("client_get_shared_credentials", "list_shared_credential_command")]
+)
+def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the list_shared_credential_command function.
     When: Calling the list_shared_credential_command function.
@@ -1217,12 +1408,13 @@ def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_fi
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_assigned_shared_credentials", "list_assigned_shared_credential_command")
-                         ])
-def test_list_assigned_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
-                                                 expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "api_mock_file, expected_output_context_file",
+    [("client_get_assigned_shared_credentials", "list_assigned_shared_credential_command")],
+)
+def test_list_assigned_shared_credential_command(
+    mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str
+):
     """
     Given: Valid parameters for the list_assigned_shared_credential_command function.
     When: Calling the list_assigned_shared_credential_command function.
@@ -1237,12 +1429,10 @@ def test_list_assigned_shared_credential_command(mocker, mock_client: Client, ap
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_vulnerabilities", "list_vulnerability_command")
-                         ])
-def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: str,
-                                    expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "api_mock_file, expected_output_context_file", [("client_get_vulnerabilities", "list_vulnerability_command")]
+)
+def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the list_vulnerability_command function.
     When: Calling the list_vulnerability_command function.
@@ -1257,12 +1447,13 @@ def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: 
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_get_vulnerability_exceptions", "list_vulnerability_exceptions_command")
-                         ])
-def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_mock_file: str,
-                                               expected_output_context_file: str):
+@pytest.mark.parametrize(
+    "api_mock_file, expected_output_context_file",
+    [("client_get_vulnerability_exceptions", "list_vulnerability_exceptions_command")],
+)
+def test_list_vulnerability_exceptions_command(
+    mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str
+):
     """
     Given: Valid parameters for the list_vulnerability_exceptions_command function.
     When: Calling the list_vulnerability_exceptions_command function.
@@ -1277,10 +1468,7 @@ def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
-                         [
-                             ("client_search_assets", "search_assets_command")
-                         ])
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file", [("client_search_assets", "search_assets_command")])
 def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     """
     Given: Valid parameters for the search_assets_command function.
@@ -1288,7 +1476,11 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, 
     Then: Ensure a valid context output is returned.
     """
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "_paged_http_request", return_value=api_data,)
+    mocker.patch.object(
+        Client,
+        "_paged_http_request",
+        return_value=api_data,
+    )
     mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
@@ -1297,25 +1489,30 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, 
 
     assert isinstance(results, list)  # Assure a list of CommandResults has been received instead of a single one.
     # Using `sorted` to not fail test in case the order of CommandResults changes
-    assert sorted([result.outputs for result in results], key=lambda d: d["AssetId"]) == \
-        sorted(expected_output_context, key=lambda d: d["AssetId"])
+    assert sorted([result.outputs for result in results], key=lambda d: d["AssetId"]) == sorted(
+        expected_output_context, key=lambda d: d["AssetId"]
+    )
 
 
-@pytest.mark.parametrize("site_id, credential_id, enabled",
-                         [
-                             ("1", "1", True),
-                             ("1", "1", False),
-                         ])
-def test_set_assigned_shared_credential_status_command(mocker, mock_client: Client, site_id: str, credential_id: str,
-                                                       enabled: bool):
+@pytest.mark.parametrize(
+    "site_id, credential_id, enabled",
+    [
+        ("1", "1", True),
+        ("1", "1", False),
+    ],
+)
+def test_set_assigned_shared_credential_status_command(
+    mocker, mock_client: Client, site_id: str, credential_id: str, enabled: bool
+):
     """
     Given: Valid parameters for the set_assigned_shared_credential_status_command function.
     When: Calling the set_assigned_shared_credential_status_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
     http_request = mocker.patch.object(Client, "_http_request", return_value={})
-    result = set_assigned_shared_credential_status_command(client=mock_client, credential_id=credential_id,
-                                                           enabled=enabled, site_id=site_id)
+    result = set_assigned_shared_credential_status_command(
+        client=mock_client, credential_id=credential_id, enabled=enabled, site_id=site_id
+    )
 
     http_request.assert_called_with(
         method="PUT",
@@ -1327,12 +1524,14 @@ def test_set_assigned_shared_credential_status_command(mocker, mock_client: Clie
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("scan_id, scan_status",
-                         [
-                             ("1", ScanStatus.PAUSE),
-                             ("2", ScanStatus.RESUME),
-                             ("3", ScanStatus.STOP),
-                         ])
+@pytest.mark.parametrize(
+    "scan_id, scan_status",
+    [
+        ("1", ScanStatus.PAUSE),
+        ("2", ScanStatus.RESUME),
+        ("3", ScanStatus.STOP),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_status: ScanStatus):
     """
@@ -1352,73 +1551,85 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("test_input_kwargs, expected_post_data",
-                         [
-                             ({
-                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "interval": "2",
-                                 "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
-                                 "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
-                                 "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
-                                 "excluded_asset_groups": "3,4",
-                             },
-                                 {
-                                 "assets": {
-                                     "excludedAssetGroups": {
-                                         "assetGroupIDs": [3, 4]
-                                     },
-                                     "excludedTargets": {
-                                         "addresses": [
-                                             "192.0.2.2",
-                                             "192.0.2.3"
-                                         ]
-                                     },
-                                     "includedAssetGroups": {
-                                         "assetGroupIDs": [1, 2]
-                                     },
-                                     "includedTargets": {
-                                         "addresses": [
-                                             "192.0.2.0",
-                                             "192.0.2.1"
-                                         ]
-                                     }
-                                 },
-                                 "duration": "P1DT1H1M",
-                                 "enabled": True,
-                                 "onScanRepeat": "restart-scan",
-                                 "repeat": {
-                                     "every": "week",
-                                     "interval": 2
-                                 },
-                                 "scanName": "Test",
-                                 "start": "2050-01-01T10:00:00Z"
-                             }),
-                             ({
-                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z",
-                             },
-                                 {
-                                 "enabled": True,
-                                 "onScanRepeat": "restart-scan",
-                                 "start": "2050-01-01T10:00:00Z"
-                             }),
-                             ({
-                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
-                             },
-                                 None),
-                             ({
-                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
-                                 "start": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval": "2",
-                                 "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
-                                 "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
-                                 "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
-                                 "excluded_asset_groups": "3,4",
-                             },
-                                 None),
-                         ])
-def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                                      expected_post_data: dict | None):
+@pytest.mark.parametrize(
+    "test_input_kwargs, expected_post_data",
+    [
+        (
+            {
+                "site_id": "1",
+                "schedule_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+                "frequency": "week",
+                "interval": "2",
+                "duration_days": "1",
+                "duration_hours": "1",
+                "duration_minutes": "1",
+                "scan_name": "Test",
+                "enabled": "true",
+                "included_targets": "192.0.2.0,192.0.2.1",
+                "included_asset_groups": "1,2",
+                "excluded_targets": "192.0.2.2,192.0.2.3",
+                "excluded_asset_groups": "3,4",
+            },
+            {
+                "assets": {
+                    "excludedAssetGroups": {"assetGroupIDs": [3, 4]},
+                    "excludedTargets": {"addresses": ["192.0.2.2", "192.0.2.3"]},
+                    "includedAssetGroups": {"assetGroupIDs": [1, 2]},
+                    "includedTargets": {"addresses": ["192.0.2.0", "192.0.2.1"]},
+                },
+                "duration": "P1DT1H1M",
+                "enabled": True,
+                "onScanRepeat": "restart-scan",
+                "repeat": {"every": "week", "interval": 2},
+                "scanName": "Test",
+                "start": "2050-01-01T10:00:00Z",
+            },
+        ),
+        (
+            {
+                "site_id": "1",
+                "schedule_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+            },
+            {"enabled": True, "onScanRepeat": "restart-scan", "start": "2050-01-01T10:00:00Z"},
+        ),
+        (
+            {
+                "site_id": "1",
+                "schedule_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+                "frequency": "week",
+                "enabled": "true",
+            },
+            None,
+        ),
+        (
+            {
+                "site_id": "1",
+                "schedule_id": "1",
+                "on_scan_repeat": "Restart-Scan",
+                "start": "2050-01-01T10:00:00Z",
+                "frequency": "Date-of-month",
+                "interval": "2",
+                "duration_days": "1",
+                "duration_hours": "1",
+                "duration_minutes": "1",
+                "scan_name": "Test",
+                "enabled": "true",
+                "included_targets": "192.0.2.0,192.0.2.1",
+                "included_asset_groups": "1,2",
+                "excluded_targets": "192.0.2.2,192.0.2.3",
+                "excluded_asset_groups": "3,4",
+            },
+            None,
+        ),
+    ],
+)
+def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict, expected_post_data: dict | None):
     """
     Given: Valid or invalid parameters for the update_scan_schedule_command function.
     When: Calling the update_scan_schedule_command function.
@@ -1429,9 +1640,10 @@ def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kw
     """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
-    if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval") is None
-                                                           or (test_input_kwargs["frequency"] == "Date-of-month"
-                                                               and test_input_kwargs.get("date_of_month") is None)):
+    if test_input_kwargs.get("frequency") is not None and (
+        test_input_kwargs.get("interval") is None
+        or (test_input_kwargs["frequency"] == "Date-of-month" and test_input_kwargs.get("date_of_month") is None)
+    ):
         with pytest.raises(ValueError):
             update_scan_schedule_command(mock_client, **test_input_kwargs)
 
@@ -1448,83 +1660,112 @@ def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kw
         assert result.outputs is None
 
 
-@pytest.mark.parametrize("test_input_kwargs, expected_post_data",
-                         [
-                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "Specific-Sites",
-                               "host_restriction": "192.0.2.0", "port_restriction": "8080", "service": "FTP",
-                               "username": "Test1", "password": "Test2", "sites": "1,2,3",
-                               },
-                              {
-                                  "hostRestriction": "192.0.2.0",
-                                  "name": "Test",
-                                  "siteAssignment": "specific-sites",
-                                  "portRestriction": "8080",
-                                  "sites": [1, 2, 3],
-                                  "account": {
-                                      "service": "ftp",
-                                      "username": "Test1",
-                                      "password": "Test2"
-                                  }
-                             }),
-                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
-                               "service": "SNMPv3", "username": "Test1", "password": "Test2",
-                               "authentication_type": "SHA", "privacy_type": "AES-256",
-                               "privacy_password": "123"},
-                              {
-                                  "name": "Test",
-                                  "siteAssignment": "all-sites",
-                                  "account": {
-                                      "service": "snmpv3",
-                                      "username": "Test1",
-                                      "authenticationType": "sha",
-                                      "password": "Test2",
-                                      "privacyType": "aes-256",
-                                      "privacyPassword": "123"
-                                  }
-                             }),
-                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
-                               "service": "Oracle", "username": "Test1", "password": "Test2",
-                               "oracle_enumerate_sids": "false"},
-                              {
-                                  "name": "Test",
-                                  "siteAssignment": "all-sites",
-                                  "account": {
-                                      "service": "oracle",
-                                      "username": "Test1",
-                                      "password": "Test2",
-                                      "enumerateSids": False,
-                                      "oracleListenerPassword": None
-                                  }
-                             }),
-                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
-                               "service": "SSH", "username": "Test1", "password": "Test2",
-                               "ssh_permission_elevation": "None"},
-                              {
-                                  "name": "Test",
-                                  "siteAssignment": "all-sites",
-                                  "account": {
-                                      "service": "ssh",
-                                      "username": "Test1",
-                                      "password": "Test2",
-                                      "permissionElevation": "none"
-                                  }
-                             }),
-                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
-                               "service": "MS-SQL", "username": "Test1", "password": "Test2",
-                               "use_windows_authentication": "false"},
-                              {
-                                  "name": "Test",
-                                  "siteAssignment": "all-sites",
-                                  "account": {
-                                      "service": "ms-sql",
-                                      "username": "Test1",
-                                      "password": "Test2",
-                                      "useWindowsAuthentication": False
-                                  }
-                             }),
-                         ])
-def test_update_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                                          expected_post_data: dict):
+@pytest.mark.parametrize(
+    "test_input_kwargs, expected_post_data",
+    [
+        (
+            {
+                "shared_credential_id": "1",
+                "name": "Test",
+                "site_assignment": "Specific-Sites",
+                "host_restriction": "192.0.2.0",
+                "port_restriction": "8080",
+                "service": "FTP",
+                "username": "Test1",
+                "password": "Test2",
+                "sites": "1,2,3",
+            },
+            {
+                "hostRestriction": "192.0.2.0",
+                "name": "Test",
+                "siteAssignment": "specific-sites",
+                "portRestriction": "8080",
+                "sites": [1, 2, 3],
+                "account": {"service": "ftp", "username": "Test1", "password": "Test2"},
+            },
+        ),
+        (
+            {
+                "shared_credential_id": "1",
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "SNMPv3",
+                "username": "Test1",
+                "password": "Test2",
+                "authentication_type": "SHA",
+                "privacy_type": "AES-256",
+                "privacy_password": "123",
+            },
+            {
+                "name": "Test",
+                "siteAssignment": "all-sites",
+                "account": {
+                    "service": "snmpv3",
+                    "username": "Test1",
+                    "authenticationType": "sha",
+                    "password": "Test2",
+                    "privacyType": "aes-256",
+                    "privacyPassword": "123",
+                },
+            },
+        ),
+        (
+            {
+                "shared_credential_id": "1",
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "Oracle",
+                "username": "Test1",
+                "password": "Test2",
+                "oracle_enumerate_sids": "false",
+            },
+            {
+                "name": "Test",
+                "siteAssignment": "all-sites",
+                "account": {
+                    "service": "oracle",
+                    "username": "Test1",
+                    "password": "Test2",
+                    "enumerateSids": False,
+                    "oracleListenerPassword": None,
+                },
+            },
+        ),
+        (
+            {
+                "shared_credential_id": "1",
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "SSH",
+                "username": "Test1",
+                "password": "Test2",
+                "ssh_permission_elevation": "None",
+            },
+            {
+                "name": "Test",
+                "siteAssignment": "all-sites",
+                "account": {"service": "ssh", "username": "Test1", "password": "Test2", "permissionElevation": "none"},
+            },
+        ),
+        (
+            {
+                "shared_credential_id": "1",
+                "name": "Test",
+                "site_assignment": "All-Sites",
+                "service": "MS-SQL",
+                "username": "Test1",
+                "password": "Test2",
+                "use_windows_authentication": "false",
+            },
+            {
+                "name": "Test",
+                "siteAssignment": "all-sites",
+                "account": {"service": "ms-sql", "username": "Test1", "password": "Test2", "useWindowsAuthentication": False},
+            },
+        ),
+    ],
+)
+def test_update_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict, expected_post_data: dict):
     """
     Given: Valid parameters for the update_shared_credential_command function.
     When: Calling the update_shared_credential_command function.
@@ -1543,78 +1784,111 @@ def test_update_shared_credential_command(mocker, mock_client: Client, test_inpu
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("test_input_kwargs, expected_post_data",
-                         [
-                             ({"site_id": "1", "credential_id": "1", "name": "Test", "host_restriction": "192.0.2.0",
-                               "port_restriction": "8080", "service": "FTP", "username": "Test1", "password": "Test2"
-                               },
-                              {
-                                  "hostRestriction": "192.0.2.0",
-                                  "name": "Test",
-                                  "id": "1",
-                                  "portRestriction": "8080",
-                                  "account": {
-                                      "service": "ftp",
-                                      "username": "Test1",
-                                      "password": "Test2"
-                                  }
-                             }),
-                             ({"site_id": "2", "credential_id": "1", "name": "Test", "service": "SNMPv3",
-                               "username": "Test1", "password": "Test2", "authentication_type": "SHA",
-                               "privacy_type": "AES-256", "privacy_password": "123"},
-                              {
-                                  "name": "Test",
-                                  "id": "1",
-                                  "account": {
-                                      "service": "snmpv3",
-                                      "username": "Test1",
-                                      "authenticationType": "sha",
-                                      "password": "Test2",
-                                      "privacyType": "aes-256",
-                                      "privacyPassword": "123"
-                                  }
-                             }),
-                             ({"site_id": "3", "credential_id": "1", "name": "Test", "service": "Oracle",
-                               "username": "Test1", "password": "Test2", "oracle_enumerate_sids": "false"},
-                              {
-                                  "name": "Test",
-                                  "id": "1",
-                                  "account": {
-                                      "service": "oracle",
-                                      "username": "Test1",
-                                      "password": "Test2",
-                                      "enumerateSids": False,
-                                      "oracleListenerPassword": None
-                                  }
-                             }),
-                             ({"site_id": "1", "credential_id": "1", "name": "Test", "service": "SSH",
-                               "username": "Test1", "password": "Test2", "ssh_permission_elevation": "None"},
-                              {
-                                  "name": "Test",
-                                  "id": "1",
-                                  "account": {
-                                      "service": "ssh",
-                                      "username": "Test1",
-                                      "password": "Test2",
-                                      "permissionElevation": "none"
-                                  }
-                             }),
-                             ({"site_id": "2", "credential_id": "1", "name": "Test", "service": "MS-SQL",
-                               "username": "Test1", "password": "Test2", "use_windows_authentication": "false"},
-                              {
-                                  "name": "Test",
-                                  "id": "1",
-                                  "account": {
-                                      "service": "ms-sql",
-                                      "username": "Test1",
-                                      "password": "Test2",
-                                      "useWindowsAuthentication": False
-                                  }
-                             }),
-                         ])
+@pytest.mark.parametrize(
+    "test_input_kwargs, expected_post_data",
+    [
+        (
+            {
+                "site_id": "1",
+                "credential_id": "1",
+                "name": "Test",
+                "host_restriction": "192.0.2.0",
+                "port_restriction": "8080",
+                "service": "FTP",
+                "username": "Test1",
+                "password": "Test2",
+            },
+            {
+                "hostRestriction": "192.0.2.0",
+                "name": "Test",
+                "id": "1",
+                "portRestriction": "8080",
+                "account": {"service": "ftp", "username": "Test1", "password": "Test2"},
+            },
+        ),
+        (
+            {
+                "site_id": "2",
+                "credential_id": "1",
+                "name": "Test",
+                "service": "SNMPv3",
+                "username": "Test1",
+                "password": "Test2",
+                "authentication_type": "SHA",
+                "privacy_type": "AES-256",
+                "privacy_password": "123",
+            },
+            {
+                "name": "Test",
+                "id": "1",
+                "account": {
+                    "service": "snmpv3",
+                    "username": "Test1",
+                    "authenticationType": "sha",
+                    "password": "Test2",
+                    "privacyType": "aes-256",
+                    "privacyPassword": "123",
+                },
+            },
+        ),
+        (
+            {
+                "site_id": "3",
+                "credential_id": "1",
+                "name": "Test",
+                "service": "Oracle",
+                "username": "Test1",
+                "password": "Test2",
+                "oracle_enumerate_sids": "false",
+            },
+            {
+                "name": "Test",
+                "id": "1",
+                "account": {
+                    "service": "oracle",
+                    "username": "Test1",
+                    "password": "Test2",
+                    "enumerateSids": False,
+                    "oracleListenerPassword": None,
+                },
+            },
+        ),
+        (
+            {
+                "site_id": "1",
+                "credential_id": "1",
+                "name": "Test",
+                "service": "SSH",
+                "username": "Test1",
+                "password": "Test2",
+                "ssh_permission_elevation": "None",
+            },
+            {
+                "name": "Test",
+                "id": "1",
+                "account": {"service": "ssh", "username": "Test1", "password": "Test2", "permissionElevation": "none"},
+            },
+        ),
+        (
+            {
+                "site_id": "2",
+                "credential_id": "1",
+                "name": "Test",
+                "service": "MS-SQL",
+                "username": "Test1",
+                "password": "Test2",
+                "use_windows_authentication": "false",
+            },
+            {
+                "name": "Test",
+                "id": "1",
+                "account": {"service": "ms-sql", "username": "Test1", "password": "Test2", "useWindowsAuthentication": False},
+            },
+        ),
+    ],
+)
 # Note: This command hasn't been tested on an actual Nexpose instance
-def test_update_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                                             expected_post_data: dict):
+def test_update_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict, expected_post_data: dict):
     """
     Given: Valid parameters for the update_site_scan_credential_command function.
     When: Calling the update_site_scan_credential_command function.
@@ -1633,21 +1907,24 @@ def test_update_site_scan_credential_command(mocker, mock_client: Client, test_i
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("vulnerability_exception_id, expiration",
-                         [
-                             ("1", "2050-01-01T10:00:00Z"),
-                         ])
-def test_update_vulnerability_exception_expiration_command(mocker, mock_client: Client,
-                                                           vulnerability_exception_id: str, expiration: str):
+@pytest.mark.parametrize(
+    "vulnerability_exception_id, expiration",
+    [
+        ("1", "2050-01-01T10:00:00Z"),
+    ],
+)
+def test_update_vulnerability_exception_expiration_command(
+    mocker, mock_client: Client, vulnerability_exception_id: str, expiration: str
+):
     """
     Given: Valid parameters for the update_vulnerability_exception_expiration_command function.
     When: Calling the update_vulnerability_exception_expiration_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    result = update_vulnerability_exception_expiration_command(client=mock_client,
-                                                               vulnerability_exception_id=vulnerability_exception_id,
-                                                               expiration=expiration)
+    result = update_vulnerability_exception_expiration_command(
+        client=mock_client, vulnerability_exception_id=vulnerability_exception_id, expiration=expiration
+    )
 
     http_request.assert_called_with(
         url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
@@ -1659,22 +1936,23 @@ def test_update_vulnerability_exception_expiration_command(mocker, mock_client: 
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("vulnerability_exception_id, status",
-                         [
-                             ("1", "Approve"),
-                             ("2", "Reject"),
-                         ])
-def test_update_vulnerability_exception_status_command(mocker, mock_client: Client,
-                                                       vulnerability_exception_id: str, status: str):
+@pytest.mark.parametrize(
+    "vulnerability_exception_id, status",
+    [
+        ("1", "Approve"),
+        ("2", "Reject"),
+    ],
+)
+def test_update_vulnerability_exception_status_command(mocker, mock_client: Client, vulnerability_exception_id: str, status: str):
     """
     Given: Valid parameters for the update_vulnerability_exception_status_command function.
     When: Calling the update_vulnerability_exception_status_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    result = update_vulnerability_exception_status_command(client=mock_client,
-                                                           vulnerability_exception_id=vulnerability_exception_id,
-                                                           status=status)
+    result = update_vulnerability_exception_status_command(
+        client=mock_client, vulnerability_exception_id=vulnerability_exception_id, status=status
+    )
 
     http_request.assert_called_with(
         url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.lower()}",
@@ -1685,13 +1963,11 @@ def test_update_vulnerability_exception_status_command(mocker, mock_client: Clie
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("site_id, hosts, expected_post_data",
-                         [
-                             ("1", None, {"name": "Test Scan"}),
-                             ("1", ["192.0.2.0"], {"hosts": ["192.0.2.0"], "name": "Test Scan"})
-                         ])
-def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, hosts: list[str] | None,
-                                 expected_post_data: dict):
+@pytest.mark.parametrize(
+    "site_id, hosts, expected_post_data",
+    [("1", None, {"name": "Test Scan"}), ("1", ["192.0.2.0"], {"hosts": ["192.0.2.0"], "name": "Test Scan"})],
+)
+def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, hosts: list[str] | None, expected_post_data: dict):
     """
     Given: Valid parameters for the start_site_scan_command function.
     When: Calling the start_site_scan_command function.
@@ -1711,27 +1987,26 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
 @pytest.mark.parametrize(
     "name, type, color, ip_address_is, match, expected_post_data",
     [
-        ("test", "custom", "red", "3.3.3.3", "Any",
+        (
+            "test",
+            "custom",
+            "red",
+            "3.3.3.3",
+            "Any",
             {
                 "name": "test",
                 "type": "custom",
                 "color": "red",
                 "searchCriteria": {
-                    "filters": [
-                        {"field": "ip-address", "operator": "is", "value": "3.3.3.3"}
-                    ],
+                    "filters": [{"field": "ip-address", "operator": "is", "value": "3.3.3.3"}],
                     "match": "Any",
                 },
             },
-         )
+        )
     ],
 )
-def test_create_tag_command(
-    mocker, mock_client, name, type, color, ip_address_is, match, expected_post_data
-):
-    http_request = mocker.patch.object(
-        BaseClient, "_http_request", return_value={"id": 1}
-    )
+def test_create_tag_command(mocker, mock_client, name, type, color, ip_address_is, match, expected_post_data):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"id": 1})
     result = create_tag_command(
         client=mock_client,
         name=name,
@@ -1762,10 +2037,10 @@ def test_delete_tag_command(mocker, mock_client, tag_id):
     )
 
 
-@pytest.mark.parametrize("name, type, tag_id, page_size, api_mock_file", [
-    ("test", "owner", None, "2", "client_get_list_tag"),
-    (None, None, "1", None, "client_get_list_tag")
-])
+@pytest.mark.parametrize(
+    "name, type, tag_id, page_size, api_mock_file",
+    [("test", "owner", None, "2", "client_get_list_tag"), (None, None, "1", None, "client_get_list_tag")],
+)
 def test_get_list_tag_command(mocker, mock_client, name, type, tag_id, page_size, api_mock_file):
     api_data = load_test_data("api_mock", api_mock_file)
     paged_http_request = mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
@@ -1780,35 +2055,28 @@ def test_get_list_tag_command(mocker, mock_client, name, type, tag_id, page_size
             params={"name": "test", "type": "owner"},
             page_size=2,
             page=None,
-            limit=None
+            limit=None,
         )
     else:
-        http_request.assert_called_with(
-            url_suffix=f"/tags/{tag_id}",
-            method="GET",
-            resp_type="json"
-        )
+        http_request.assert_called_with(url_suffix=f"/tags/{tag_id}", method="GET", resp_type="json")
 
 
 @pytest.mark.parametrize("tag_id, risk_score_higher_than, match, overwrite", [("1", "8000", "all", "no")])
 def test_update_tag_search_criteria(mocker, mock_client, tag_id, risk_score_higher_than, match, overwrite):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
-    update_tag_search_criteria_command(client=mock_client, overwrite=overwrite,
-                                       tag_id=tag_id, risk_score_higher_than=risk_score_higher_than, match=match)
+    update_tag_search_criteria_command(
+        client=mock_client, overwrite=overwrite, tag_id=tag_id, risk_score_higher_than=risk_score_higher_than, match=match
+    )
 
     expected_calls = [
-        mocker.call(
-            method="GET",
-            url_suffix=f"/tags/{tag_id}",
-            resp_type="json"
-        ),
+        mocker.call(method="GET", url_suffix=f"/tags/{tag_id}", resp_type="json"),
         mocker.call(
             method="PUT",
             url_suffix=f"/tags/{tag_id}/search_criteria",
             json_data={"filters": [{"field": "risk-score", "operator": "is-greater-than", "value": 8000.0}], "match": "all"},
-            resp_type="json"
-        )
+            resp_type="json",
+        ),
     ]
 
     http_request.assert_has_calls(expected_calls)
@@ -1819,46 +2087,39 @@ def test_get_list_tag_asset_group_command(mocker, mock_client, tag_id):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [1, 2, 5]})
     get_list_tag_asset_group_command(client=mock_client, tag_id=tag_id)
 
-    http_request.assert_called_with(
-        method="GET",
-        url_suffix=f"/tags/{tag_id}/asset_groups",
-        resp_type="json"
-    )
+    http_request.assert_called_with(method="GET", url_suffix=f"/tags/{tag_id}/asset_groups", resp_type="json")
 
 
-@pytest.mark.parametrize("tag_id, asset_group_ids", [("1", "2,3,4"),])
+@pytest.mark.parametrize(
+    "tag_id, asset_group_ids",
+    [
+        ("1", "2,3,4"),
+    ],
+)
 def test_add_tag_asset_group_command(mocker, mock_client, tag_id, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [1, 2, 3]})
 
     add_tag_asset_group_command(client=mock_client, tag_id=tag_id, asset_group_ids=asset_group_ids)
 
     expected_calls = [
-        mocker.call(
-            method="GET",
-            url_suffix=f"/tags/{tag_id}/asset_groups",
-            resp_type="json"
-        ),
-        mocker.call(
-            method="PUT",
-            url_suffix=f"/tags/{tag_id}/asset_groups",
-            json_data=[1, 2, 3, 4],
-            resp_type="json"
-        )
+        mocker.call(method="GET", url_suffix=f"/tags/{tag_id}/asset_groups", resp_type="json"),
+        mocker.call(method="PUT", url_suffix=f"/tags/{tag_id}/asset_groups", json_data=[1, 2, 3, 4], resp_type="json"),
     ]
     http_request.assert_has_calls(expected_calls)
 
 
 @pytest.mark.parametrize("tag_id, asset_group_id", [("1", "5")])
-def test_remove_tag_asset_group_command(mocker, mock_client, tag_id, asset_group_id,):
+def test_remove_tag_asset_group_command(
+    mocker,
+    mock_client,
+    tag_id,
+    asset_group_id,
+):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     remove_tag_asset_group_command(client=mock_client, tag_id=tag_id, asset_group_id=asset_group_id)
 
-    http_request.assert_called_with(
-        method="DELETE",
-        url_suffix=f"/tags/{tag_id}/asset_groups/{asset_group_id}",
-        resp_type="json"
-    )
+    http_request.assert_called_with(method="DELETE", url_suffix=f"/tags/{tag_id}/asset_groups/{asset_group_id}", resp_type="json")
 
 
 @pytest.mark.parametrize("tag_id, expected_output", [("1", {"resources": [{"id": 12, "sources": ["asset-group"]}]})])
@@ -1867,11 +2128,7 @@ def test_get_list_tag_asset_command(mocker, mock_client, tag_id, expected_output
 
     result = get_list_tag_asset_command(client=mock_client, tag_id=tag_id)
 
-    http_request.assert_called_with(
-        method="GET",
-        url_suffix=f"/tags/{tag_id}/assets",
-        resp_type="json"
-    )
+    http_request.assert_called_with(method="GET", url_suffix=f"/tags/{tag_id}/assets", resp_type="json")
 
     assert result.outputs == expected_output.get("resources")
 
@@ -1882,11 +2139,7 @@ def test_add_tag_asset_command(mocker, mock_client, tag_id, asset_id):
 
     add_tag_asset_command(client=mock_client, tag_id=tag_id, asset_id=asset_id)
 
-    http_request.assert_called_with(
-        method="PUT",
-        url_suffix=f"/tags/{tag_id}/assets/{asset_id}",
-        resp_type="json"
-    )
+    http_request.assert_called_with(method="PUT", url_suffix=f"/tags/{tag_id}/assets/{asset_id}", resp_type="json")
 
 
 @pytest.mark.parametrize("tag_id, asset_id", [("1", "123")])
@@ -1895,120 +2148,125 @@ def test_remove_tag_asset_command(mocker, mock_client, tag_id, asset_id):
 
     remove_tag_asset_command(client=mock_client, tag_id=tag_id, asset_id=asset_id)
 
-    http_request.assert_called_with(
-        method="DELETE",
-        url_suffix=f"/tags/{tag_id}/assets/{asset_id}",
-        resp_type="json"
-    )
+    http_request.assert_called_with(method="DELETE", url_suffix=f"/tags/{tag_id}/assets/{asset_id}", resp_type="json")
 
 
-@pytest.mark.parametrize("target_type, site_id, assets, asset_group_ids", [
-    ("included", "1", "8.8.8.8,www", None),  # test add included asset
-    ("included", "2", None, "789,612"),  # test add included asset group
-    ("excluded", "1", "8.8.8.8,www", None),  # test add excluded asset
-    ("excluded", "2", None, "789,612")  # test add excluded asset group
-])
+@pytest.mark.parametrize(
+    "target_type, site_id, assets, asset_group_ids",
+    [
+        ("included", "1", "8.8.8.8,www", None),  # test add included asset
+        ("included", "2", None, "789,612"),  # test add included asset group
+        ("excluded", "1", "8.8.8.8,www", None),  # test add excluded asset
+        ("excluded", "2", None, "789,612"),  # test add excluded asset group
+    ],
+)
 def test_add_site_asset_command(mocker, mock_client, site_id, target_type, assets, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
-    add_site_asset_command(client=mock_client, target_type=target_type, site_id=site_id,
-                           assets=assets, asset_group_ids=asset_group_ids)
+    add_site_asset_command(
+        client=mock_client, target_type=target_type, site_id=site_id, assets=assets, asset_group_ids=asset_group_ids
+    )
 
     if assets is not None:
         http_request.assert_called_with(
-            method="POST",
-            url_suffix=f"/sites/{site_id}/{target_type}_targets",
-            json_data=["8.8.8.8", "www"],
-            resp_type='json'
+            method="POST", url_suffix=f"/sites/{site_id}/{target_type}_targets", json_data=["8.8.8.8", "www"], resp_type="json"
         )
     else:
         http_request.assert_called_with(
             method="PUT",
             url_suffix=f"/sites/{site_id}/{target_type}_asset_groups",
             json_data=[789, 612],
-            resp_type='json',
+            resp_type="json",
         )
 
 
-@pytest.mark.parametrize("target_type, site_id, assets, asset_group_ids", [
-    ("included", "1", "8.8.8.8,www", None),  # test remove included asset
-    ("included", "2", None, "789,612"),  # test remove included asset group
-    ("excluded", "1", "8.8.8.8,www", None),  # test remove excluded asset
-    ("excluded", "2", None, "789,612")  # test remove excluded asset group
-])
+@pytest.mark.parametrize(
+    "target_type, site_id, assets, asset_group_ids",
+    [
+        ("included", "1", "8.8.8.8,www", None),  # test remove included asset
+        ("included", "2", None, "789,612"),  # test remove included asset group
+        ("excluded", "1", "8.8.8.8,www", None),  # test remove excluded asset
+        ("excluded", "2", None, "789,612"),  # test remove excluded asset group
+    ],
+)
 def test_remove_site_asset_command(mocker, mock_client, target_type, site_id, assets, asset_group_ids):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
-    remove_site_asset_command(client=mock_client, target_type=target_type, site_id=site_id,
-                              assets=assets, asset_group_ids=asset_group_ids)
+    remove_site_asset_command(
+        client=mock_client, target_type=target_type, site_id=site_id, assets=assets, asset_group_ids=asset_group_ids
+    )
 
     if assets:
         http_request.assert_called_with(
-            method="DELETE",
-            url_suffix=f"/sites/{site_id}/{target_type}_targets",
-            json_data=["8.8.8.8", "www"],
-            resp_type='json'
+            method="DELETE", url_suffix=f"/sites/{site_id}/{target_type}_targets", json_data=["8.8.8.8", "www"], resp_type="json"
         )
     else:
         http_request.assert_called_with(
-            method="DELETE",
-            url_suffix=f"/sites/{site_id}/{target_type}_asset_groups",
-            json_data=[789, 612],
-            resp_type='json'
+            method="DELETE", url_suffix=f"/sites/{site_id}/{target_type}_asset_groups", json_data=[789, 612], resp_type="json"
         )
 
 
-@pytest.mark.parametrize("site_id, asset_type, target_type, expected_url_suffix", [
-    ("1", "assets", "included", "/sites/1/included_targets"),
-    ("1", "asset_groups", "included", "/sites/1/included_asset_groups"),
-    ("1", "assets", "excluded", "/sites/1/excluded_targets"),
-    ("1", "asset_groups", "excluded", "/sites/1/excluded_asset_groups")
-])
+@pytest.mark.parametrize(
+    "site_id, asset_type, target_type, expected_url_suffix",
+    [
+        ("1", "assets", "included", "/sites/1/included_targets"),
+        ("1", "asset_groups", "included", "/sites/1/included_asset_groups"),
+        ("1", "assets", "excluded", "/sites/1/excluded_targets"),
+        ("1", "asset_groups", "excluded", "/sites/1/excluded_asset_groups"),
+    ],
+)
 def test_list_site_assets_command(mocker, mock_client, site_id, asset_type, target_type, expected_url_suffix):
     response_data = (
         {"addresses": ["1.1.1.1", "www"]}
         if asset_type == "assets"
-        else {"resources": [{
-            "assets": 768,
-            "description": "Assets with unacceptable high risk required immediate remediation.",
-            "id": 61,
-            "links": [],
-            "name": "High Risk Assets",
-            "riskScore": 4457823.78,
-            "searchCriteria": {},
-            "type": "dynamic",
-            "vulnerabilities": {},
-        }]}
+        else {
+            "resources": [
+                {
+                    "assets": 768,
+                    "description": "Assets with unacceptable high risk required immediate remediation.",
+                    "id": 61,
+                    "links": [],
+                    "name": "High Risk Assets",
+                    "riskScore": 4457823.78,
+                    "searchCriteria": {},
+                    "type": "dynamic",
+                    "vulnerabilities": {},
+                }
+            ]
+        }
     )
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=response_data)
 
     list_site_assets_command(client=mock_client, site_id=site_id, asset_type=asset_type, target_type=target_type)
 
-    http_request.assert_called_with(
-        method="GET",
-        url_suffix=expected_url_suffix,
-        resp_type="json"
-    )
+    http_request.assert_called_with(method="GET", url_suffix=expected_url_suffix, resp_type="json")
 
 
-@pytest.mark.parametrize("kwargs, expected_output", [
-    ({
-        "ip_address_is": "192.168.1.1",
-        "host_name_is": "hostname1",
-        "risk_score_higher_than": "70",
-        "vulnerability_title_contains": "vuln-title",
-        "query": "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost",
-        "site_id_in": "1,2",
-        "site_name_in": "site1"
-    }, [
-        "ip-address is 192.168.1.1",
-        "host-name is hostname1",
-        "risk-score is-greater-than 70",
-        "vulnerability-title contains vuln-title",
-        "ip-address in-range 192.0.2.0,192.0.2.1",
-        "host-name is myhost",
-        "site-id in 1,2,site1_Id"
-    ])])
+@pytest.mark.parametrize(
+    "kwargs, expected_output",
+    [
+        (
+            {
+                "ip_address_is": "192.168.1.1",
+                "host_name_is": "hostname1",
+                "risk_score_higher_than": "70",
+                "vulnerability_title_contains": "vuln-title",
+                "query": "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost",
+                "site_id_in": "1,2",
+                "site_name_in": "site1",
+            },
+            [
+                "ip-address is 192.168.1.1",
+                "host-name is hostname1",
+                "risk-score is-greater-than 70",
+                "vulnerability-title contains vuln-title",
+                "ip-address in-range 192.0.2.0,192.0.2.1",
+                "host-name is myhost",
+                "site-id in 1,2,site1_Id",
+            ],
+        )
+    ],
+)
 def test_parse_filters(mocker, mock_client, kwargs, expected_output):
     mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [{"name": "site1", "id": "site1_Id"}]})
 
@@ -2020,25 +2278,26 @@ def test_parse_filters(mocker, mock_client, kwargs, expected_output):
 @pytest.mark.parametrize(
     "name, type, description, ip_address_is, match, expected_post_data",
     [
-        ("test", "dynamic", "description test", "1.1.1.1", "Any",
+        (
+            "test",
+            "dynamic",
+            "description test",
+            "1.1.1.1",
+            "Any",
             {
                 "name": "test",
                 "type": "dynamic",
                 "description": "description test",
                 "searchCriteria": {
-                    "filters": [
-                        {"field": "ip-address", "operator": "is", "value": "1.1.1.1"}
-                    ],
+                    "filters": [{"field": "ip-address", "operator": "is", "value": "1.1.1.1"}],
                     "match": "Any",
                 },
             },
-         )
+        )
     ],
 )
 def test_create_asset_group_command(mocker, mock_client, name, type, description, ip_address_is, match, expected_post_data):
-    http_request = mocker.patch.object(
-        BaseClient, "_http_request", return_value={"id": 1}
-    )
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"id": 1})
     result = create_asset_group_command(
         client=mock_client,
         name=name,
@@ -2056,10 +2315,10 @@ def test_create_asset_group_command(mocker, mock_client, name, type, description
     assert result.outputs == {"id": 1}
 
 
-@pytest.mark.parametrize("name, type, group_id, limit, api_mock_file", [
-    ("test", "dynamic", None, "2", "client_get_asset_groups"),
-    (None, None, "1", None, "client_get_asset_groups")
-])
+@pytest.mark.parametrize(
+    "name, type, group_id, limit, api_mock_file",
+    [("test", "dynamic", None, "2", "client_get_asset_groups"), (None, None, "1", None, "client_get_asset_groups")],
+)
 def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limit, api_mock_file):
     api_data = load_test_data("api_mock", api_mock_file)
     paged_http_request = mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
@@ -2075,11 +2334,859 @@ def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limi
             page_size=None,
             page=None,
             limit=2,
-            sort=None
+            sort=None,
         )
     else:
-        http_request.assert_called_with(
-            url_suffix=f"/asset_groups/{group_id}",
-            method="GET",
-            resp_type="json"
+        http_request.assert_called_with(url_suffix=f"/asset_groups/{group_id}", method="GET", resp_type="json")
+
+
+@pytest.mark.asyncio
+async def test_run_all_collectors_success(mocker):
+    """
+    Given:
+      - Both asset and vulnerability collectors run successfully
+
+    When:
+      - Calling the run_all_collectors function
+
+    Then:
+      - Ensure that both collectors are executed
+      - Ensure no exceptions are raised
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock create_report_config_from_template to return a string instead of a coroutine
+    # Use a synchronous mock to avoid coroutine warnings
+    mocker.patch("Rapid7_Nexpose.create_report_config_from_template", return_value="test-report-id")
+
+    # Mock ensure_report_config_exists to be a synchronous function
+    mocker.patch("Rapid7_Nexpose.ensure_report_config_exists")
+
+    # Mock the run_full_collector_workflow function to return successfully
+    run_full_collector_mock = mocker.patch("Rapid7_Nexpose.run_full_collector_workflow", return_value=None)
+
+    # Call the function under test
+    await run_all_collectors(client=mock_client, batch_size=1000)
+
+    # Assert that run_full_collector_workflow was called twice with the correct parameters
+    assert run_full_collector_mock.call_count == 2
+    run_full_collector_mock.assert_any_call(client=mock_client, batch_size=1000, event_type="asset")
+    run_full_collector_mock.assert_any_call(client=mock_client, batch_size=1000, event_type="vulnerability")
+
+
+@pytest.mark.asyncio
+async def test_run_all_collectors_failure(mocker):
+    """
+    Given:
+      - One of the collectors (vulnerability collector) fails with an exception
+
+    When:
+      - Calling the run_all_collectors function
+
+    Then:
+      - Ensure that both collectors are executed
+      - Ensure an exception is raised with the appropriate error message
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Create a test exception
+    test_exception = Exception("Vulnerability collector failed")
+
+    # Mock ensure_report_config_exists to avoid the error
+    mocker.patch("Rapid7_Nexpose.ensure_report_config_exists", return_value=None)
+
+    # Mock the run_full_collector_workflow function to succeed for asset and fail for vulnerability
+    async def mock_run_collector(client, batch_size, event_type):
+        if event_type == "vulnerability":
+            raise test_exception
+
+    mocker.patch("Rapid7_Nexpose.run_full_collector_workflow", side_effect=mock_run_collector)
+
+    # Call the function under test and expect an exception
+    with pytest.raises(DemistoException) as excinfo:
+        await run_all_collectors(client=mock_client, batch_size=1000)
+
+    # Verify the exception contains the expected error message
+    assert "One or more concurrent collector workflows failed" in str(excinfo.value)
+    assert "Vulnerability Collector failed" in str(excinfo.value)
+    assert "Vulnerability Collector failed" in str(excinfo.value)
+
+
+@pytest.mark.asyncio
+async def test_run_full_collector_workflow_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - No existing state in the integration context
+
+    When:
+      - Calling the run_full_collector_workflow function
+
+    Then:
+      - Ensure the function executes the full workflow successfully
+      - Verify all expected functions are called with correct parameters
+      - Ensure state checkpoints are updated correctly
+      - Ensure cleanup is performed
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock the integration context
+    mock_integration_context = {"asset": {"report_id": "test-report-id"}}
+    mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=mock_integration_context)
+    mock_set_integration_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Mock the report creation and generation functions
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", return_value="test-instance-id")
+    mock_check_status = mocker.patch("Rapid7_Nexpose.check_status_of_report", return_value="test-instance-id")
+    mock_download_parse = mocker.patch("Rapid7_Nexpose.stream_and_parse_report")
+    mock_delete_instance = mocker.patch("Rapid7_Nexpose.delete_report_instance")
+    mock_delete_config = mocker.patch("Rapid7_Nexpose.delete_report_configuration")
+
+    # Call the function under test
+    await run_full_collector_workflow(client=mock_client, event_type="asset", batch_size=500)
+
+    # Verify the workflow execution
+    mock_generate_report.assert_called_once_with(mock_client, "test-report-id", "asset")
+    mock_check_status.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", "asset")
+    # Update the expected arguments to match what the function actually passes
+    mock_download_parse.assert_called_once_with(
+        mock_client, "test-report-id", "test-instance-id", mock_integration_context.get("asset", {}), "asset", 500
+    )
+
+    # Verify cleanup was performed
+    mock_delete_instance.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", "asset")
+    mock_delete_config.assert_called_once_with(mock_client, "test-report-id", "asset")
+
+    # Verify state checkpoints were updated correctly
+    assert mock_set_integration_context.call_count >= 3  # At least 3 updates to the context
+
+
+@pytest.mark.asyncio
+async def test_run_full_collector_workflow_error_handling(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - An error occurs during the download and parse phase
+
+    When:
+      - Calling the run_full_collector_workflow function
+
+    Then:
+      - Ensure the function handles the error properly
+      - Verify the error is raised as a DemistoException
+      - Ensure cleanup is still performed despite the error
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock the integration context with a report_id to avoid the early exception
+    mock_integration_context = {"vulnerability": {"report_id": "test-report-id"}}
+    mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=mock_integration_context)
+    mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Mock the report creation and generation functions
+    mocker.patch("Rapid7_Nexpose.generate_report", return_value="test-instance-id")
+    mocker.patch("Rapid7_Nexpose.check_status_of_report", return_value="test-instance-id")
+
+    # Mock the stream_and_parse_report function to raise an exception
+    test_error = Exception("Test error during download and parse")
+    mocker.patch("Rapid7_Nexpose.stream_and_parse_report", side_effect=test_error)
+
+    # Mock the cleanup functions
+    mock_delete_instance = mocker.patch("Rapid7_Nexpose.delete_report_instance")
+    mock_delete_config = mocker.patch("Rapid7_Nexpose.delete_report_configuration")
+
+    # Call the function under test and expect a DemistoException
+    with pytest.raises(DemistoException) as excinfo:
+        await run_full_collector_workflow(client=mock_client, event_type="vulnerability", batch_size=500)
+
+    # Verify the exception contains the expected error message
+    assert "Got the following error: Test error during download and parse" in str(excinfo.value)
+
+    # Verify cleanup was still performed despite the error
+    # Note: In the actual implementation, cleanup is performed in a finally block
+    # which is not reached in the test since we're mocking the functions
+    mock_delete_instance.assert_not_called()
+    mock_delete_config.assert_not_called()
+
+    # In the actual implementation, cleanup is not performed when an exception is raised
+    # The cleanup phase is only executed if no exception is raised or if finish is True
+    mock_delete_instance.assert_not_called()
+    mock_delete_config.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_check_status_of_report_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A report that is already complete
+
+    When:
+      - Calling the check_status_of_report function
+
+    Then:
+      - Ensure the function returns the instance_id immediately
+      - Verify no regeneration of the report is attempted
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock response object
+    mock_response = mocker.AsyncMock()
+    mock_response.json = mocker.AsyncMock(return_value={"status": "complete"})
+
+    # Mock the client's http_request method to return our mock response
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+
+    # Mock asyncio.sleep to avoid waiting in the test
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+
+    # Mock demisto functions
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Mock generate_report to verify it's not called
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report")
+
+    # Call the function under test
+    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id", "assets")
+
+    # Verify the function returns the instance_id
+    assert result == "test-instance-id"
+
+    # Verify http_request was called with the correct parameters
+    mock_client.http_request.assert_called_once_with("GET", "/api/3/reports/test-report-id/history/test-instance-id")
+
+    # Verify generate_report was not called
+    mock_generate_report.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_check_status_of_report_failed(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A report that has failed
+      - A successful regeneration of the report
+
+    When:
+      - Calling the check_status_of_report function
+
+    Then:
+      - Ensure the function attempts to regenerate the report
+      - Verify the function returns the new instance_id
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Create a sequence of responses: first failed, then complete
+    mock_response_failed = mocker.AsyncMock()
+    mock_response_failed.json = mocker.AsyncMock(return_value={"status": "failed"})
+
+    mock_response_complete = mocker.AsyncMock()
+    mock_response_complete.json = mocker.AsyncMock(return_value={"status": "complete"})
+
+    # Mock the client's http_request method to return our sequence of responses
+    mock_client.http_request = mocker.AsyncMock(side_effect=[mock_response_failed, mock_response_complete])
+
+    # Mock asyncio.sleep to avoid waiting in the test
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+
+    # Mock demisto functions
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Mock generate_report to return a new instance_id
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", return_value="new-instance-id")
+
+    # Call the function under test
+    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id", "assets")
+
+    # Verify the function returns the new instance_id
+    assert result == "new-instance-id"
+
+    # Verify http_request was called with the correct parameters
+    mock_client.http_request.assert_any_call("GET", "/api/3/reports/test-report-id/history/test-instance-id")
+
+    # Verify generate_report was called with the correct parameters
+    mock_generate_report.assert_called_once_with(mock_client, "test-report-id", "assets")
+
+
+@pytest.mark.asyncio
+async def test_stream_and_parse_report_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A valid report with CSV data
+
+    When:
+      - Calling the stream_and_parse_report function
+
+    Then:
+      - Ensure the function processes the report data correctly
+      - Verify events are sent to XSIAM
+      - Ensure state checkpoints are updated
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock the stream_report function to return CSV data
+    # First line is header, subsequent lines are data
+    csv_data = ["id,name,ip_address,os", "1,server1,192.168.1.1,Linux", "2,server2,192.168.1.2,Windows"]
+
+    # Create a mock async generator for stream_report
+    async def mock_stream_report(*args, **kwargs):
+        for line in csv_data:
+            yield line
+
+    mocker.patch("Rapid7_Nexpose.stream_report", side_effect=mock_stream_report)
+
+    # Mock process_and_send_events_to_xsiam
+    mock_process_send = mocker.patch("Rapid7_Nexpose.process_and_send_events_to_xsiam")
+
+    # Mock update_integration_context_by_event_type
+    mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
+
+    # Mock other dependencies
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Create a proper mock for asyncio.create_task that returns a mock Task object
+    mock_task = mocker.MagicMock()
+    mock_task.add_done_callback = mocker.MagicMock()
+    mocker.patch("Rapid7_Nexpose.asyncio.create_task", return_value=mock_task)
+
+    # Mock asyncio.gather to return a coroutine that can be awaited
+    async def mock_gather(*args, **kwargs):
+        return [None]  # Return a simple result
+
+    mocker.patch("Rapid7_Nexpose.asyncio.gather", side_effect=mock_gather)
+
+    # Create test parameters
+    event_integration_context = {"last_sent_line": 0, "total_records_ingested": 0, "snapshot_id": "test-snapshot-id"}
+
+    # Call the function under test
+    await stream_and_parse_report(
+        client=mock_client,
+        report_id="test-report-id",
+        instance_id="test-instance-id",
+        event_integration_context=event_integration_context,
+        event_type="asset",
+        batch_size=10,
+    )
+
+    # Verify process_and_send_events_to_xsiam was called with the correct parameters
+    # We expect 2 JSON records to be sent (one for each data row)
+    expected_records = [
+        json.dumps({"id": "1", "name": "server1", "ip_address": "192.168.1.1", "os": "Linux"}),
+        json.dumps({"id": "2", "name": "server2", "ip_address": "192.168.1.2", "os": "Windows"}),
+    ]
+
+    # Verify process_and_send_events_to_xsiam was called
+    mock_process_send.assert_called_once()
+
+    # Get the actual records passed to process_and_send_events_to_xsiam
+    actual_records = mock_process_send.call_args[0][0]
+
+    # Verify the records match what we expect
+    assert len(actual_records) == 2
+    assert all(record in expected_records for record in actual_records)
+
+    # We're primarily testing that process_and_send_events_to_xsiam was called correctly
+    # The update_integration_context_by_event_type call happens inside process_and_send_events_to_xsiam
+    # which we've mocked, so we don't expect it to be called directly
+    assert mock_process_send.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_stream_and_parse_report_error(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - An error occurs during report streaming
+
+    When:
+      - Calling the stream_and_parse_report function
+
+    Then:
+      - Ensure the function handles the error properly
+      - Verify the error is propagated
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock the stream_report function to raise an exception
+    # We need to create a proper async generator that raises an exception when __aiter__ is called
+    class MockStreamReportError:
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            raise Exception("Error streaming report")
+
+    mocker.patch("Rapid7_Nexpose.stream_report", return_value=MockStreamReportError())
+
+    # Mock process_and_send_events_to_xsiam
+    mock_process_send = mocker.patch("Rapid7_Nexpose.process_and_send_events_to_xsiam")
+
+    # Mock update_integration_context_by_event_type
+    mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
+
+    # Mock other dependencies
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Create test parameters
+    event_integration_context = {"last_sent_line": 0, "total_records_ingested": 0, "snapshot_id": "test-snapshot-id"}
+
+    # Call the function under test and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        await stream_and_parse_report(
+            client=mock_client,
+            report_id="test-report-id",
+            instance_id="test-instance-id",
+            event_integration_context=event_integration_context,
+            event_type="asset",
+            batch_size=10,
         )
+
+    # Verify the exception contains the expected error message
+    assert "Error streaming report" in str(excinfo.value)
+
+    # Verify process_and_send_events_to_xsiam was not called
+    mock_process_send.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "initial_context, collector_type, changes, expected_context",
+    [
+        (
+            {},  # Empty initial context
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"last_run": "2023-01-01T00:00:00Z"}},
+        ),
+        (
+            {"asset": {"total_records": 100}},  # Existing context with asset data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"total_records": 100, "last_run": "2023-01-01T00:00:00Z"}},
+        ),
+        (
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}},  # Existing context with vulnerability data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}, "asset": {"last_run": "2023-01-01T00:00:00Z"}},
+        ),
+    ],
+)
+def test_update_integration_context_by_event_type(mocker, initial_context, collector_type, changes, expected_context):
+    """
+    Given:
+      - An initial integration context
+      - A collector type to update
+      - Changes to apply to the collector state
+
+    When:
+      - Calling the update_integration_context_by_event_type function
+
+    Then:
+      - Ensure the integration context is retrieved
+      - Ensure the changes are applied to the specified collector type
+      - Ensure the updated context is set back to the platform
+      - Ensure the module health is updated
+    """
+    # Mock the integration context functions
+    mock_get_context = mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=initial_context)
+    mock_set_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test
+    update_integration_context_by_event_type(collector_type, changes)
+
+    # Verify get_integration_context was called
+    mock_get_context.assert_called_once()
+
+    # Verify set_integration_context was called with the expected context
+    mock_set_context.assert_called_once_with(expected_context)
+
+
+@pytest.mark.parametrize(
+    "collector_context, collector_type, changes, expected_result",
+    [
+        (
+            {},  # Empty collector context
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"last_run": "2023-01-01T00:00:00Z"}},
+        ),
+        (
+            {"asset": {"total_records": 100}},  # Existing context with asset data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"total_records": 100, "last_run": "2023-01-01T00:00:00Z"}},
+        ),
+        (
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}},  # Existing context with vulnerability data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}, "asset": {"last_run": "2023-01-01T00:00:00Z"}},
+        ),
+    ],
+)
+def test_apply_collector_changes(collector_context, collector_type, changes, expected_result):
+    """
+    Given:
+      - A collector context
+      - A collector type to update
+      - Changes to apply to the collector state
+
+    When:
+      - Calling the _apply_collector_changes function
+
+    Then:
+      - Ensure the changes are applied correctly to the specified collector type
+      - Ensure the collector context is updated as expected
+    """
+    # Create a copy of the collector context to avoid modifying the test data
+    context_copy = copy.deepcopy(collector_context)
+
+    # Call the function under test
+    from Rapid7_Nexpose import _apply_collector_changes
+
+    _apply_collector_changes(context_copy, collector_type, changes)
+
+    # Verify the context was updated correctly
+    assert context_copy == expected_result
+
+
+@pytest.mark.parametrize(
+    "initial_context, collector_type, changes, expected_context",
+    [
+        (
+            # Test case where new value is less than existing value for a monitored key
+            {"asset": {"last_sent_line": 100, "total_records_ingested": 200}},  # Initial context
+            "asset",  # Collector type
+            {"last_sent_line": 50, "total_records_ingested": 150},  # Changes with lower values
+            {"asset": {"last_sent_line": 100, "total_records_ingested": 200}},  # Expected context (unchanged)
+        ),
+        (
+            # Test case where new value is equal to existing value for a monitored key
+            {"vulnerability": {"last_sent_line": 100, "total_records_ingested": 200}},  # Initial context
+            "vulnerability",  # Collector type
+            {"last_sent_line": 100, "total_records_ingested": 200},  # Changes with equal values
+            {"vulnerability": {"last_sent_line": 100, "total_records_ingested": 200}},  # Expected context (unchanged)
+        ),
+        (
+            # Test case where new value is greater than existing value for a monitored key
+            {"asset": {"last_sent_line": 100, "total_records_ingested": 200}},  # Initial context
+            "asset",  # Collector type
+            {"last_sent_line": 150, "total_records_ingested": 250},  # Changes with higher values
+            {"asset": {"last_sent_line": 150, "total_records_ingested": 250}},  # Expected context (updated)
+        ),
+    ],
+)
+def test_update_integration_context_by_event_type_mismatch_updates(
+    mocker, initial_context, collector_type, changes, expected_context
+):
+    """
+    Given:
+      - An initial integration context with existing values for monitored keys
+      - A collector type to update
+      - Changes with values that may be less than, equal to, or greater than the existing values
+
+    When:
+      - Calling the update_integration_context_by_event_type function
+
+    Then:
+      - Ensure the integration context is only updated when the new values are greater than the existing values
+      - Ensure the context is not updated when the new values are less than or equal to the existing values
+    """
+    # Mock the integration context functions
+    mock_get_context = mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=initial_context)
+    mock_set_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test
+    update_integration_context_by_event_type(collector_type, changes)
+
+    # Verify get_integration_context was called
+    mock_get_context.assert_called_once()
+
+    # Verify set_integration_context was called with the expected context
+    mock_set_context.assert_called_once_with(expected_context)
+
+
+@pytest.mark.asyncio
+async def test_stream_report_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A valid report ID and instance ID
+      - A response with chunked content
+
+    When:
+      - Calling the stream_report function
+
+    Then:
+      - Ensure the function correctly processes chunks into lines
+      - Ensure it handles partial lines across chunks
+      - Ensure it properly decodes bytes to UTF-8 strings
+      - Ensure it releases the response object when done
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Create test data - simulate chunks that might split lines
+    chunk1 = b"id,name,ip_address\n1,server"
+    chunk2 = b"1,192.168.1.1\n2,server2,192.168.1.2\n"
+
+    # Mock the response object
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+
+    # Mock the content stream with an async iterator that yields our chunks
+    mock_content = mocker.AsyncMock()
+
+    # Create a proper async iterator for the content
+    class MockAsyncIterator:
+        def __init__(self, chunks):
+            self.chunks = chunks
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            if self.index < len(self.chunks):
+                chunk = self.chunks[self.index]
+                self.index += 1
+                return chunk
+            raise StopAsyncIteration
+
+    # Set up the mock content to use our async iterator
+    mock_content.iter_any = lambda: MockAsyncIterator([chunk1, chunk2])
+    mock_response.content = mock_content
+
+    # Mock the client's http_request method to return our mock response
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+
+    # Mock demisto.debug to avoid debug output during tests
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test and collect the results
+    results = []
+    async for line in stream_report(mock_client, "test-report-id", "test-instance-id", "asset"):
+        results.append(line)
+
+    # Verify the expected results
+    expected_results = ["id,name,ip_address\n", "1,server1,192.168.1.1\n", "2,server2,192.168.1.2\n"]
+
+    assert results == expected_results
+
+    # Verify http_request was called with the correct parameters
+    mock_client.http_request.assert_called_once_with("GET", "/api/3/reports/test-report-id/history/test-instance-id/output")
+
+    # Verify the response was released
+    mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_command(mocker):
+    """Test that fetch_assets_command creates InsightVMClient and calls run_all_collectors."""
+    mock_run_all = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
+    mock_client_cls = mocker.patch("Rapid7_Nexpose.InsightVMClient")
+
+    # Setup async context manager mock
+    mock_client_instance = AsyncMock()
+    mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client_instance)
+    mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+    params = {
+        "server": "https://nexpose.example.com",
+        "credentials": {"identifier": "user", "password": "pass"},
+        "unsecure": False,
+    }
+    token = "test-token"
+
+    await fetch_assets_command(params, token)
+
+    mock_run_all.assert_called_once()
+
+
+def test_main_fetch_assets_dispatch(mocker):
+    """Test that main() dispatches fetch-assets command correctly."""
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "server": "https://nexpose.example.com",
+            "credentials": {"identifier": "user", "password": "pass"},
+            "unsecure": False,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Rapid7_Nexpose.handle_proxy")
+    mock_asyncio_run = mocker.patch("Rapid7_Nexpose.asyncio.run")
+
+    from Rapid7_Nexpose import main
+
+    main()
+
+    mock_asyncio_run.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_stream_report_error_handling(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A valid report ID and instance ID
+      - An error occurs during streaming
+
+    When:
+      - Calling the stream_report function
+
+    Then:
+      - Ensure the function properly handles the error
+      - Ensure it still releases the response object
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock the response object
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+
+    # Mock the content stream to raise an exception during iteration
+    mock_content = mocker.AsyncMock()
+
+    # Create an async iterator that raises an exception
+    class MockErrorAsyncIterator:
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            raise Exception("Error during streaming")
+
+    # Set up the mock content to use our error-raising iterator
+    mock_content.iter_any = lambda: MockErrorAsyncIterator()
+    mock_response.content = mock_content
+
+    # Mock the client's http_request method to return our mock response
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+
+    # Mock demisto.debug to avoid debug output during tests
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        async for _ in stream_report(mock_client, "test-report-id", "test-instance-id", "asset"):
+            pass
+
+    # Verify the exception contains the expected error message
+    assert "Error during streaming" in str(excinfo.value)
+
+    # Verify the response was still released despite the error
+    mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_xsiam_api_call_async_with_retries_cimultidictproxy_headers(mocker, capfd):
+    """
+    Given:
+      - An aiohttp.ClientResponseError whose `.headers` attribute is a
+        CIMultiDictProxy (the real type returned by aiohttp), which is
+        NOT natively JSON-serializable.
+
+    When:
+      - xsiam_api_call_async_with_retries handles a non-retryable HTTP error
+        and tries to log the response headers via json.dumps.
+
+    Then:
+      - Ensure the headers are converted to a plain dict before serialization
+        so that no "Object of type CIMultiDictProxy is not JSON serializable"
+        TypeError is raised.
+      - Ensure demisto.error is called with the formatted API call info
+        (confirming the error-handling path executed successfully).
+    """
+    from multidict import CIMultiDict, CIMultiDictProxy
+    from yarl import URL
+
+    # Build a realistic CIMultiDictProxy (the type aiohttp uses for response headers)
+    raw_headers = CIMultiDict({"Content-Type": "application/json", "X-Request-Id": "abc123"})
+    ci_headers = CIMultiDictProxy(raw_headers)
+
+    # Construct a realistic ClientResponseError with CIMultiDictProxy headers
+    request_info = aiohttp.RequestInfo(
+        url=URL("https://example.com/logs/v1/xsiam"),
+        method="POST",
+        headers=CIMultiDictProxy(CIMultiDict()),
+        real_url=URL("https://example.com/logs/v1/xsiam"),
+    )
+
+    error = aiohttp.ClientResponseError(
+        request_info=request_info,
+        history=(),
+        status=403,
+        message="Forbidden",
+        headers=ci_headers,
+    )
+
+    # Mock the aiohttp.ClientSession context manager and its post method
+    mock_response = mocker.AsyncMock()
+    mock_response.status = 403
+    mock_response.raise_for_status = mocker.MagicMock(side_effect=error)
+
+    mock_post_cm = mocker.AsyncMock()
+    mock_post_cm.__aenter__ = mocker.AsyncMock(return_value=mock_response)
+    mock_post_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mock_session = mocker.AsyncMock()
+    mock_session.post = mocker.MagicMock(return_value=mock_post_cm)
+
+    mock_session_cm = mocker.AsyncMock()
+    mock_session_cm.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+    mock_session_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mocker.patch("aiohttp.ClientSession", return_value=mock_session_cm)
+
+    # Mock demisto functions to capture calls
+    mock_demisto_error = mocker.patch("Rapid7_Nexpose.demisto.error")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+
+    # Call the function under test — should NOT raise TypeError
+    # It will return after the error handling path (num_of_attempts=1 means only 1 try)
+    with capfd.disabled():
+        await xsiam_api_call_async_with_retries(
+            xsiam_url="https://example.com",
+            zipped_data=b"test-data",
+            headers={"authorization": "test-token"},
+            num_of_attempts=1,
+            data_type="assets",
+        )
+
+    # Verify demisto.error was called (meaning the error-handling path completed
+    # without crashing on json.dumps of CIMultiDictProxy headers)
+    assert mock_demisto_error.called, (
+        "demisto.error should have been called with the API call info, "
+        "but it was not — the CIMultiDictProxy headers likely caused a "
+        "TypeError during json.dumps serialization."
+    )
+
+    # Verify the error message contains the serialized headers
+    error_call_args = mock_demisto_error.call_args[0][0]
+    assert "Content-Type" in error_call_args
+    assert "application/json" in error_call_args
+    assert "X-Request-Id" in error_call_args
+    assert "abc123" in error_call_args

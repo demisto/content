@@ -45,7 +45,8 @@
         "FreshworksFreshservice Problem Request",
         "FreshworksFreshservice Change Request",
         "Graph Security Alert",
-        "Exabeam Notable User"
+        "Exabeam Notable User",
+        "Netskope DLP Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,

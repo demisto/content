@@ -3,5 +3,8 @@ id: github_modeling_rule
 name: Github Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- agentix
+- xsiam
 tags: github
 toversion: 6.9.9

@@ -246,7 +246,7 @@ tasks:
       RemoteProtocol:
         complex:
           root: alert
-          accessor: protocol
+          accessor: asmprotocol
       RemediationAllowRanges:
         simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
     separatecontext: true
@@ -358,7 +358,7 @@ tasks:
       Protocol:
         complex:
           root: alert
-          accessor: protocol
+          accessor: asmprotocol
           transformers:
           - operator: toLowerCase
       PublicIP:
@@ -461,7 +461,7 @@ tasks:
       RemoteProtocol:
         complex:
           root: alert
-          accessor: protocol
+          accessor: asmprotocol
     separatecontext: true
     continueonerrortype: ''
     loop:
@@ -583,7 +583,7 @@ tasks:
       Protocol:
         complex:
           root: alert
-          accessor: protocol
+          accessor: asmprotocol
           transformers:
           - operator: toLowerCase
       PublicIP:
@@ -658,7 +658,7 @@ tasks:
       RemoteProtocol:
         complex:
           root: alert
-          accessor: protocol
+          accessor: asmprotocol
           transformers:
           - operator: toLowerCase
       RuleName:

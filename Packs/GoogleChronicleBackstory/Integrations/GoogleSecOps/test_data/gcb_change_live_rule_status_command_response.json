@@ -1,0 +1,7 @@
+{
+    "name": "projects/dummy_project_id/locations/us/instances/dummy_instance_id/rules/ru_abcd",
+    "enabled": true,
+    "runFrequency": "LIVE",
+    "executionState": "DEFAULT",
+    "lastAlertStatusChangeTime": "2025-07-15T06:37:56.391910Z"
+}

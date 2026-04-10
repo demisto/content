@@ -2,7 +2,7 @@
     "name": "SecurityScorecard",
     "description": "Provides security scorecards and alerts for domains.",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.16",
     "author": "SecurityScorecard",
     "url": "https://securityscorecard.com/contact-us",
     "email": "support@securityscorecard.io",
@@ -18,6 +18,14 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "githubUser": [
+        "hx0ar"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

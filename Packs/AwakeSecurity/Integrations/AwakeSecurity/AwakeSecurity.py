@@ -1,40 +1,36 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-''' IMPORTS '''
+""" IMPORTS """
 import base64
 import re
+
 import requests
 import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS '''
+""" GLOBALS """
 handle_proxy()
 params = demisto.params()
-server = params["server"].rstrip('/')
+server = params["server"].rstrip("/")
 prefix = server + "/awakeapi/v1"
-verify = not params.get('unsecure', False)
+verify = not params.get("unsecure", False)
 credentials = params["credentials"]
 identifier = credentials["identifier"]
 password = credentials["password"]
 suspicious_threshold = params["suspicious_threshold"]
 malicious_threshold = params["malicious_threshold"]
-authTokenRequest = {
-    "loginUsername": identifier,
-    "loginPassword": password
-}
+authTokenRequest = {"loginUsername": identifier, "loginPassword": password}
 authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest, verify=verify)
 authToken = authTokenResponse.json()["token"]["value"]
-headers = {
-    "Authentication": ("access " + authToken)
-}
+headers = {"Authentication": ("access " + authToken)}
 command = demisto.command()
 args = demisto.args()
 request = {}
 
-''' HELPERS '''
+""" HELPERS """
 
 
 # Convenient utility to marshal command arguments into the request body
@@ -44,6 +40,7 @@ def slurp(fields):
     for field in fields:
         if field in args:
             request[field] = args[field]
+
 
 # Render a subset of the fields of the Contents as a markdown table
 
@@ -79,7 +76,7 @@ def displayTable(contents, fields):
             body += value + " | "
         body += "\n"
     if presentFields:
-        return (line0 + line1 + body)
+        return line0 + line1 + body
     else:
         return "Empty results"
 
@@ -103,11 +100,11 @@ def create_result_entry(contents, outerKey, innerKey, humanReadable, dbotScore, 
         entryContext.update(genericContext)
 
     return {
-        "Type": entryTypes['note'],
-        "ContentsFormat": formats['json'],
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
         "Contents": json.dumps(machineReadable),
         "HumanReadable": humanReadable,
-        "ReadableContentsFormat": formats['markdown'],
+        "ReadableContentsFormat": formats["markdown"],
         "EntryContext": entryContext,
     }
 
@@ -127,11 +124,11 @@ def toDBotScore(indicator_type, percentile, lookup_key):
         "Type": indicator_type,
         "Indicator": lookup_key,
         "Score": score,
-        "Reliability": demisto.params().get('integrationReliability')
+        "Reliability": demisto.params().get("integrationReliability"),
     }
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 def lookup(lookup_type, lookup_key):
@@ -143,8 +140,10 @@ def lookup(lookup_type, lookup_key):
     request["lookback_minutes"] = int(args["lookback_minutes"])
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error(f'Request Failed.\nStatus code: {str(response.status_code)}'
-                     f' with body {str(response.content)} with headers {response.headers}')
+        return_error(
+            f"Request Failed.\nStatus code: {response.status_code!s}"
+            f" with body {response.content!s} with headers {response.headers}"
+        )
 
     return response.json()
 
@@ -175,10 +174,10 @@ def lookupDevice():
     else:
         dbotScore = {
             "Vendor": "Awake Security",
-            "Type": 'device',
+            "Type": "device",
             "Indicator": lookup_key,
             "Score": 0,
-            "Reliability": demisto.params().get('integrationReliability')
+            "Reliability": demisto.params().get("integrationReliability"),
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["device"] = lookup_key
@@ -207,10 +206,10 @@ def lookupDomain():
         else:
             dbotScore = {
                 "Vendor": "Awake Security",
-                "Type": 'domain',
+                "Type": "domain",
                 "Indicator": lookup_key,
                 "Score": 0,
-                "Reliability": demisto.params().get('integrationReliability')
+                "Reliability": demisto.params().get("integrationReliability"),
             }
         humanReadable = displayTable([contents], humanReadableFields)
         contents["domain"] = lookup_key
@@ -242,10 +241,10 @@ def lookupEmail():
         else:
             dbotScore = {
                 "Vendor": "Awake Security",
-                "Type": 'email',
+                "Type": "email",
                 "Indicator": lookup_key,
                 "Score": 0,
-                "Reliability": demisto.params().get('integrationReliability')
+                "Reliability": demisto.params().get("integrationReliability"),
             }
         humanReadable = displayTable(contents, humanReadableFields)
         for content in contents:
@@ -267,10 +266,10 @@ def lookupIp():
         ]
         dbotScore = {
             "Vendor": "Awake Security",
-            "Type": 'ip',
+            "Type": "ip",
             "Indicator": lookup_key,
             "Score": 0,
-            "Reliability": demisto.params().get('integrationReliability')
+            "Reliability": demisto.params().get("integrationReliability"),
         }
         # Note: No DBotScore for IP addresses as we do not score them.
         # Our product scores devices rather than IP addresses.
@@ -289,20 +288,22 @@ def query(lookup_type):
         ("ipAddress", "device.ip == {}"),
         ("deviceName", "device.name like r/{}/"),
         ("domainName", "domain.name like r/{}/"),
-        ("protocol", "activity.protocol == \"{}\""),
-        ("tags", "\"{}\" in device.tags"),
+        ("protocol", 'activity.protocol == "{}"'),
+        ("tags", '"{}" in device.tags'),
     ]
-    for (name, mapping) in nameMappings:
+    for name, mapping in nameMappings:
         if name in args:
-            if "queryExpression" in request and request["queryExpression"]:
+            if request.get("queryExpression"):
                 request["queryExpression"] = request["queryExpression"] + " && " + mapping.format(args[name])
             else:
                 request["queryExpression"] = mapping.format(args[name])
     path = "/query/" + lookup_type
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error(f'Request Failed.\nStatus code: {str(response.status_code)}'
-                     f' with body {str(response.content)} with headers {response.headers}')
+        return_error(
+            f"Request Failed.\nStatus code: {response.status_code!s}"
+            f" with body {response.content!s} with headers {response.headers}"
+        )
     contents = response.json()
     return request["queryExpression"], contents
 
@@ -387,8 +388,10 @@ def pcapDownload():
     path = "/pcap/download"
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error(f"Request Failed.\nStatus code: {str(response.status_code)} "
-                     f"with body {str(response.content)} with headers {response.headers}")
+        return_error(
+            f"Request Failed.\nStatus code: {response.status_code!s} "
+            f"with body {response.content!s} with headers {response.headers}"
+        )
     b64 = response.json()["pcap"]
     bytes = base64.b64decode(b64)
     demisto.results(fileResult("download.pcap", bytes))
@@ -406,12 +409,8 @@ def fetchIncidents():
     startTime = datetime.strptime(startTimeString, formatString)
     endTime = datetime.utcnow()
     endTimeString = datetime.strftime(endTime, formatString)
-    if timedelta(minutes=int(params['fetch_interval'])) <= endTime - startTime:
-        jsonRequest = {
-            "startTime": startTimeString,
-            "endTime": endTimeString,
-            "threatBehaviors": threatBehaviors
-        }
+    if timedelta(minutes=int(params["fetch_interval"])) <= endTime - startTime:
+        jsonRequest = {"startTime": startTimeString, "endTime": endTimeString, "threatBehaviors": threatBehaviors}
         response = requests.post(prefix + "/threat-behavior/matches", json=jsonRequest, headers=headers, verify=verify)
         jsonResponse = response.json()
         matchingThreatBehaviors = jsonResponse.get("matchingThreatBehaviors", [])
@@ -431,6 +430,7 @@ def fetchIncidents():
                 "EndTime": endTimeString,
                 "rawJSON": json.dumps(matchingThreatBehavior),
             }
+
         demisto.incidents(list(map(toIncident, matchingThreatBehaviors)))
         # Don't increase the low-water-mark until we actually find incidents
         #
@@ -443,13 +443,13 @@ def fetchIncidents():
     demisto.setLastRun(lastRun)
 
 
-''' EXECUTION '''
-LOG('command is %s' % (command))
+""" EXECUTION """
+LOG(f"command is {command}")
 
 try:
     if command == "test-module":
         # If we got this far we already successfully authenticated against the server
-        demisto.results('ok')
+        demisto.results("ok")
 
     elif command == "fetch-incidents":
         fetchIncidents()

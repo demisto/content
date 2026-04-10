@@ -192,3 +192,7 @@ inputs:
 outputs: []
 tests:
 - Get EWS Folder Test
+supportedModules:
+- agentix
+- cloud
+- xsiam

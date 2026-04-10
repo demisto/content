@@ -2,10 +2,10 @@
     "name": "PicusAutomation",
     "description": "Run commands on Picus and automate security validation with playbooks.",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.8",
     "author": "Picus Security",
     "url": "http://support.picussecurity.com",
-    "email": "blueteam@picussecurity.com",
+    "email": "support@picussecurity.com",
     "categories": [
         "Vulnerability Management"
     ],
@@ -27,6 +27,11 @@
     "displayedImages": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

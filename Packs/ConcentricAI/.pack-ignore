@@ -7,3 +7,8 @@ ignore=DS107
 [file:ConcentricAI_image.png]
 ignore=IM111
 
+[file:README.md]
+ignore=RM106,RM104
+
+[file:ConcentricAI_description.md]
+ignore=DS107

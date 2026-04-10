@@ -582,3 +582,8 @@ tests:
 fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- asm
+- exposure_management
+- agentix
+- xsiam

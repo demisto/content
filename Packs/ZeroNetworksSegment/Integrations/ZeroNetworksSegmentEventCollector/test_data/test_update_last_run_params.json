@@ -1,0 +1,52 @@
+[
+    {
+        "last_run": {},
+        "log_type": "audit",
+        "last_event_time": 1000,
+        "previous_ids": [1, 2, 3],
+        "expected": {
+            "audit": {
+                "last_fetch": 1000,
+                "previous_ids": [1, 2, 3]
+            }
+        }
+    },
+    {
+        "last_run": {
+            "audit": {
+                "last_fetch": 900,
+                "previous_ids": [1]
+            }
+        },
+        "log_type": "audit",
+        "last_event_time": 1000,
+        "previous_ids": [1, 2, 3],
+        "expected": {
+            "audit": {
+                "last_fetch": 1000,
+                "previous_ids": [1, 2, 3]
+            }
+        }
+    },
+    {
+        "last_run": {
+            "network_activities": {
+                "last_fetch": 2000,
+                "previous_ids": [2, 3]
+            }
+        },
+        "log_type": "audit",
+        "last_event_time": 1000,
+        "previous_ids": [1, 2, 3],
+        "expected": {
+            "audit": {
+                "last_fetch": 1000,
+                "previous_ids": [1, 2, 3]
+            },
+            "network_activities": {
+                "last_fetch": 2000,
+                "previous_ids": [2, 3]
+            }
+        }
+    }
+]

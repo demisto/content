@@ -1,5 +1,6 @@
 category: Messaging and Conferencing
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -25,6 +26,9 @@ configuration:
   hidden: true
   required: false
 - display: Authentication Type
+  additionalinfo: |-
+    When switching from the 'Client Credentials Flow' to the 'Authorization Code Flow' do as follow: Save the instance, run the 'microsoft-teams-generate-login-url' command and follow the instructions mentioned there. Once done, test the validity of your instance by running the 'microsoft-teams-auth-test' command.
+    When switching from the 'Authorization Code Flow' to the 'Client Credentials Flow', test the validity of the instance by clicking the 'Test' button.
   name: auth_type
   type: 15
   defaultvalue: Client Credentials
@@ -77,6 +81,13 @@ configuration:
   advanced: true
   hidden: true
   required: false
+- display: Bot Type Converted to Single-Tenant
+  name: is_single_tenant_bot_type
+  type: 8
+  section: Connect
+  additionalinfo: Select this option if the bot was originally created as multi-tenant and later converted to single-tenant. The system will detect the bot type automatically in all other standard cases.
+  advanced: true
+  required: false
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   type: 15
@@ -93,6 +104,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8
@@ -126,17 +138,23 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: 'Optional - Welcome message when creating new incidents using the bot. If left empty (default option) the current default welcome message will be used, i.e., "Successfully created incident <incident_name>. View it on: <incident_link>". If the parameter is set to "no_welcome_message" value, no message will be displayed. Any non-empty string value set will be used as the custom new incident welcome message.'
+  defaultvalue: 'Successfully created incident <incident_name>. View it on: <incident_link>'
+  display: Custom New Incident Welcome Message
+  name: new_incident_welcome_message
+  required: false
+  type: 0
+  section: Connect
 - display: Long running instance
   name: longRunning
   type: 8
   section: Connect
-  advanced: true
   required: false
-- display: Listen port, e.g. 7000 (Required for investigation mirroring and direct messages)
+- display: Listen port
+  additionalinfo: E.g., 7000 (Required for investigation mirroring and direct messages).
   name: longRunningPort
   type: 0
-  section: Collect
-  advanced: true
+  section: Connect
   required: false
 - display: Incident type
   name: incidentType
@@ -157,6 +175,8 @@ script:
       name: team_member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team
+    - description: ID of the message to send the notification to as a reply when sending to a channel.
+      name: message_id
     - description: The Microsoft Teams adaptive card to send.
       name: adaptive_card
     - description: The team member to which to send the message.
@@ -167,7 +187,15 @@ script:
     description: |-
       Sends a message to the specified teams.
       To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
+
+      If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
+      the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
+      and picture to match the bot will make it appear to be from the same source.
     name: send-notification
+    outputs:
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: true
@@ -382,7 +410,7 @@ script:
     - description: The title of the chat. The chat title can be provided only if the chat is of group type.
       name: chat_name
     description: |-
-      Creates a new chat. 
+      Creates a new chat.
       Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
     name: microsoft-teams-chat-create
     outputs:
@@ -414,7 +442,7 @@ script:
       description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The content of the chat message.
@@ -427,10 +455,13 @@ script:
       - 'text'
       - 'html'
       defaultValue: 'text'
-    - description: The type of chat message.
-      name: message_type
-      defaultValue: 'message'
-    description: Sends a new chat message in the specified chat.
+    description: |-
+      Sends a new chat message in the specified chat. 
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot. 
+      - This command will fail if the consent user is not a member of the destination chat.
+      - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
+      - This command can only send messages from type 'message'.
     name: microsoft-teams-message-send-to-chat
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -503,7 +534,7 @@ script:
       description: Reactions for this chat message (for example, Like).
       type: String
   - arguments:
-    - description: The chat ID or group chat name (topic) to which to add the member.
+    - description: The chat ID or group chat name (topic) to which to add the member. Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: Display name/mail/UPN of user that should be added to the chat. Can be an array.
@@ -517,13 +548,21 @@ script:
       - 'true'
       - 'false'
       defaultValue: true
-    description: Adds a member (user) to a group chat.
+    description: |-
+      Adds a member (user) to a group chat.
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, the member will be added to the given chat by the consent user, not the bot. 
+      - This command will fail if the consent user is not a member of the destination chat.
     name: microsoft-teams-chat-add-user
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
       required: true
-    description: Retrieves a list of members from a chat.
+    description: |-
+      Retrieves a list of members from a chat.
+
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-member-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -551,7 +590,27 @@ script:
       description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: ID of the message to update. Also referred to as Activity ID.
+      name: message_id
+      required: true
+    - description: The team in which the specified message exists.
+      name: team
+    - description: The channel in which the specified message exists.
+      name: channel
+    - description: The new message content.
+      name: message
+    - description: The message recipient. Accepts the team member's email address or username.
+      name: team_member
+    - description: Whether or not an adaptive card is being updated.
+      name: format_as_card
+    outputs:
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
+    description: Updates a message.
+    name: microsoft-teams-message-update
+  - arguments:
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The number of results to retrieve.
@@ -569,7 +628,11 @@ script:
     - description: Number of results to return per page.
       name: page_size
       defaultValue: 50
-    description: Retrieves a list of messages in a chat.
+    description: |-
+      Retrieves a list of messages in a chat.
+
+       Notes:
+      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-message-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -645,7 +708,120 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat.
+      name: conversation_id
+      required: true
+    - description: The channel's team. Required if specifying a channel name in the conversation_id argument.
+      name: team_name
+    - description: The number of results to retrieve.
+      name: limit
+      defaultValue: 50
+    - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
+      name: order_by
+      auto: PREDEFINED
+      predefined:
+      - 'lastModifiedDateTime'
+      - 'createdDateTime'
+      defaultValue: 'lastModifiedDateTime'
+    - description: A link that specifies a starting point to use for subsequent calls.
+      name: next_link
+    - description: Id of a message to retrieve its replies. Supported only for channels.
+      name: message_id
+    description: |-
+      Retrieves a list of messages in a chat or channel.
+
+      Notes:
+      - When retrieving messages from a chat, this command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+    name: microsoft-teams-list-messages
+    outputs:
+    - contextPath: MicrosoftTeams.MessagesList.conversationId
+      description: The conversation's unique identifier.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.id
+      description: Unique ID of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.replyToId
+      description: ID of the parent message or root message of the thread.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.etag
+      description: Version number of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.messageType
+      description: The type of message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.createdDateTime
+      description: Timestamp of when the message was created.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.lastModifiedDateTime
+      description: Timestamp when the message is created (initial setting) or modified, including when a reaction is added or removed.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.lastEditedDateTime
+      description: Timestamp when edits to the message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.deletedDateTime
+      description: Timestamp when the message was deleted, or null if not deleted.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.subject
+      description: The subject of the message, in plaintext.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.summary
+      description: Summary text of the message that could be used for push notifications and summary views or fall back views.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.chatId
+      description: If the message was sent in a chat, represents the identity of the chat.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.importance
+      description: The importance of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.locale
+      description: Locale of the message set by the client.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.webUrl
+      description: Link to the message in Microsoft Teams.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.channelIdentity
+      description: If the message was sent in a channel, represents the identity of the channel.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.policyViolation
+      description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.eventDetail
+      description: If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.from
+      description: Details of the sender of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.body.content
+      description: The content of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.body.contentType
+      description: Plaintext/HTML representation of the content of the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.attachments
+      description: References to attached objects like files, tabs, meetings, etc.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.attachments.content
+      type: String
+      description: The content of the attachments.
+    - contextPath: MicrosoftTeams.MessagesList.messages.mentions
+      description: List of entities mentioned in the message.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesList.messages.reactions
+      description: Reactions for this message (for example, Like).
+      type: String
+    - contextPath: MicrosoftTeams.MessagesListNextLink
+      description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
+      type: String
+    - contextPath: MicrosoftTeams.MessagesListMetadata.returned_count
+      description: |-
+        The actual number of messages returned in this specific execution.
+      type: Number
+    - contextPath: MicrosoftTeams.MessagesListMetadata.filtered_count
+      description: |-
+        The total number of messages in the system that match the specified filter criteria.
+      type: Number
+  - arguments:
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
     - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. "
       name: filter
@@ -663,7 +839,9 @@ script:
     - description: Number of results to return per page.
       name: page_size
       defaultValue: 50
-    description: Retrieves a list of chats that the user is part of. If 'chat' is specified, retrieves this chat only.
+    description: |-
+      Retrieves a list of chats that the consent user is a member of. If 'chat' is specified, retrieves this chat only.
+
     name: microsoft-teams-chat-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -697,13 +875,17 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic).
+    - description: The chat ID / group chat name (topic). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The new chat name. Maximum length is 250 characters. Use of ':' is not allowed.
       name: chat_name
       required: true
-    description: Updates the chat name. It can only be set for group chats.
+    description: |-
+      Updates the chat name. It can only be set for group chats.
+
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-update
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
@@ -711,7 +893,74 @@ script:
   - description: Run this command if you need to rerun the authentication process.
     name: microsoft-teams-auth-reset
     arguments: []
-  dockerimage: demisto/teams:1.0.0.108119
+  - description: |-
+      Retrieves the API permissions associated with the used graph access token. 
+
+      Note: Use this command if you encounter insufficient permissions error when attempting to execute an integration command.
+       Compare the permissions list obtained for the token with the permissions required for the desired command (can be found in the integration documentation). If there are missing API permissions, add them to your application, and then run the `microsoft-teams-auth-reset` command (as described here - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#microsoft-teams-auth-reset).
+    name: microsoft-teams-token-permissions-list
+    arguments: []
+  - description: |-
+      Generates the messaging endpoint, based on the server URL, the server version, and the instance configurations. 
+
+      Note: The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the prerequisites of the integration's setup. For more information, see - https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams.
+    name: microsoft-teams-create-messaging-endpoint
+    arguments:
+    - description: |-
+        If your instance configuration involves a Cortex XSOAR engine, provide the engine's IP (or DNS name) and the port in use in the following format - `https://IP:port` or `http://IP:port`.
+        For example - `https://my-engine.name:443`, `http://1.1.1.1:443`.   
+      name: engine_url
+  - arguments:
+    - description: The channel to which to send messages. Supports only standard channels.
+      name: channel
+      prettyname: Channel
+      required: true
+    - description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}".'
+      name: message
+      prettyname: Message
+      required: true
+    description: |-
+      Sends a message to the specified teams.
+    name: teams-send-notification-quick-action
+    prettyname: Send Teams Message
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
+  - arguments:
+    - description: |-
+        The user to send the message to. Accepts any of the following identifiers:
+        - Email address (e.g., "john.doe@example.com")
+        - User Principal Name (e.g., "john.doe@domain.onmicrosoft.com")
+        - Display name (e.g., "John Doe")
+        - User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2").
+      name: user_id
+      required: true
+    - description: The text message to send to the user.
+      name: message
+    - description: The Microsoft Teams adaptive card to send (in JSON format).
+      name: adaptive_card
+    description: |-
+      Sends a proactive message to any Microsoft Teams user across the organization.
+      This command enables direct communication with users without requiring them to be in a specific team or channel.
+      Note: Either 'message' or 'adaptive_card' must be provided, but not both.
+    name: microsoft-teams-send-proactive-message
+    outputs:
+    - contextPath: MicrosoftTeams.Conversation.ConversationId
+      description: The ID of the conversation created or used.
+      type: String
+    - contextPath: MicrosoftTeams.Conversation.UserId
+      description: The resolved user ID.
+      type: String
+    - contextPath: MicrosoftTeams.Conversation.ActivityId
+      description: The ID of the sent message activity.
+      type: String
+    - contextPath: MicrosoftTeams.Conversation.UserIdentifier
+      description: The original user identifier provided.
+      type: String
+  dockerimage: demisto/teams:1.0.0.7529797
   longRunning: true
   longRunningPort: true
   script: ''
@@ -719,6 +968,19 @@ script:
   type: python
   resetContext: true
   isFetchSamples: true
+  runonce: false
 tests:
 - Microsoft Teams - Test
+supportsquickactions: true
 fromversion: 5.0.0
+triggers:
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false

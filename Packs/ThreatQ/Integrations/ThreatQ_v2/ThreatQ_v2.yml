@@ -1,4 +1,8 @@
 category: Data Enrichment & Threat Intelligence
+provider: Securonix
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ThreatQ v2
   version: -1
@@ -7,28 +11,34 @@ configuration:
   name: serverUrl
   required: true
   type: 0
+  section: Connect
 - display: ThreatQ client ID
   name: client_id
   required: true
   type: 0
+  section: Connect
 - display: Email
   name: credentials
   required: true
   type: 9
+  section: Connect
 - defaultvalue: '8'
   display: Indicator threshold (minimum TQ score to consider the indicator malicious).
   name: threshold
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -43,6 +53,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -53,11 +64,13 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 description: A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.
 display: ThreatQ v2
 name: ThreatQ v2
@@ -163,7 +176,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: URL to check
+      description: URL to check.
       isArray: true
       name: url
       required: true
@@ -232,7 +245,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: File MD5, SHA-1 or SHA-256
+      description: File MD5, SHA-1 or SHA-256.
       isArray: true
       name: file
       required: true
@@ -385,7 +398,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Domain or FQDN
+      description: Domain or FQDN.
       isArray: true
       name: domain
       required: true
@@ -554,6 +567,9 @@ script:
     - contextPath: ThreatQ.Indicator.Type
       description: The indicator type.
       type: String
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - description: The name of the attribute to add.
       name: name
@@ -686,7 +702,7 @@ script:
       - Login Compromise
       - Incident
       required: true
-    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd.'
       name: date
       required: true
     - description: List of sources names, separated by commas.
@@ -1614,7 +1630,7 @@ script:
       required: true
     - description: The title of the new event.
       name: title
-    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd.'
       name: date
     - auto: PREDEFINED
       description: Type of the event, such as DoS Attack, Malware, Watchlist, and so on.
@@ -1882,13 +1898,13 @@ script:
     - defaultValue: '10'
       description: The maximum number of results to return. Default is 10.
       name: limit
-    - description: 'The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer'
+    - description: 'The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer.'
       name: indicator_type
       required: true
     deprecated: true
     description: Runs an advanced indicator search.
     name: threatq-advanced-search
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.12.11.4819260
   script: ''
   subtype: python3
   type: python

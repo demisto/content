@@ -411,3 +411,6 @@ outputs:
 tests:
 - Get Original Email - Microsoft Graph Mail - test
 fromversion: 6.0.0
+supportedModules:
+- agentix
+- xsiam

@@ -2,7 +2,7 @@
     "name": "LastInfoSec",
     "description": "This integration allows to interact with the LastInfoSec API",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.5",
     "author": "Gatewatcher",
     "url": "https://www.gatewatcher.com/",
     "email": "integration@gatewatcher.com",
@@ -14,10 +14,15 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "CesarGW",
         "Liolaeus"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

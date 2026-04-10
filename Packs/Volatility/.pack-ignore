@@ -1,0 +1,24 @@
+# GR103 is temporary, see CIAC-11705
+[file:AnalyzeMemImage.yml]
+ignore=GR103
+
+[file:VolMalfind.yml]
+ignore=GR107
+
+[file:VolPSList.yml]
+ignore=GR107
+
+[file:VolLDRModules.yml]
+ignore=GR107
+
+[file:VolImageinfo.yml]
+ignore=GR107
+
+[file:VolDlllist.yml]
+ignore=GR107
+
+[file:VolApihooks.yml]
+ignore=GR107
+
+[file:VolConnscan.yml]
+ignore=GR107

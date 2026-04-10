@@ -2,18 +2,27 @@
     "name": "AWS WAF",
     "description": "Amazon Web Services Web Application Firewall (WAF)",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Network"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

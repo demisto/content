@@ -1,4 +1,4 @@
-### Indicator Detail:
+### Indicator Detail: 
  #### Asset type: Cert
 |Asset ID|Security Grade|Status|Organizations|First Seen|Last Seen|Locations|Hosting Type|
 |---|---|---|---|---|---|---|---|

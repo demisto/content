@@ -3,4 +3,6 @@ id: azure_events_hub_modeling_rule
 name: Azure Events Hub Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- agentix
 tags: Azure Events Hub

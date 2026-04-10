@@ -4,7 +4,7 @@
     "support": "xsoar",
     "hidden": true,
     "serverMinVersion": "5.5.0",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -27,6 +27,10 @@
     "displayedImages": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix"
     ]
 }

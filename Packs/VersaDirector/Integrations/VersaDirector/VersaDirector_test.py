@@ -1,29 +1,32 @@
 import pytest
 from CommonServerPython import DemistoException
-from VersaDirector import Client
-from test_data import input_data
 from requests import Response
+from test_data import input_data
+from VersaDirector import Client
+
+SERVER_URL = "some_mock_url"
+PROXY = False
+VERIFY = False
+USERNAME = "username"
+PASSWORD = "password"
 
 
 @pytest.fixture
 def client():
     return Client(
-        server_url="some_mock_url",
-        proxy=False,
+        server_url=SERVER_URL,
+        proxy=PROXY,
         headers={},
-        auth=("username", "password"),
-        verify=False,
+        auth=(USERNAME, PASSWORD),
+        verify=VERIFY,
         organization_params="",
-        client_id_param="",
-        client_secret_param="",
-        use_basic_auth_param=True,
     )
 
 
 # HEADING: """ COMMAND FUNCTIONS TESTS """
 
 
-def test_handle_auth_token_command(mocker, client):
+def test_auth_start_command(mocker):
     """
     Given:
         - token_name argument is passed as argument
@@ -36,13 +39,25 @@ def test_handle_auth_token_command(mocker, client):
         - Create Auth Token
         - Return message to user
     """
-    from VersaDirector import handle_auth_token_command
+    from VersaDirector import auth_start_command
 
-    mocker.patch.object(client, "access_token_request", return_value={"access_token": "access_token_mock"})
-    mocker.patch.object(
-        client, "auth_credentials_request", return_value={"client_id": "client_id_mock", "client_secret": "client_secret_mock"}
+    mocker.patch("VersaDirector.request_access_token", return_value={"access_token": "access_token_mock"})
+    mocker.patch(
+        "VersaDirector.request_auth_credentials",
+        return_value={"client_id": "client_id_mock", "client_secret": "client_secret_mock"},
     )
-    command_result = handle_auth_token_command(client, args={"auth_client_name": "token_name_mock"})
+
+    command_result = auth_start_command(
+        server_url=SERVER_URL,
+        verify=VERIFY,
+        proxy=PROXY,
+        username=USERNAME,
+        password=PASSWORD,
+        use_basic_auth=True,
+        client_id_param=None,
+        client_secret_param=None,
+        args={"auth_client_name": "token_name_mock"},
+    )
     assert command_result.readable_output == (
         "Auth Client Created Successfully.\nClient ID: client_id_mock, Auth Client Name: token_name_mock.\n\n"
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
@@ -51,7 +66,7 @@ def test_handle_auth_token_command(mocker, client):
     )
 
 
-def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
+def test_auth_start_command_basic_credentials_fail():
     """
     Given:
         - client._auth is invalid
@@ -62,11 +77,20 @@ def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
     Then:
         - Raise DemistoException with valid message
     """
-    from VersaDirector import handle_auth_token_command, BASIC_CREDENTIALS_COULD_NOT_START
+    from VersaDirector import BASIC_CREDENTIALS_COULD_NOT_START, auth_start_command
 
-    client._auth = ()
     with pytest.raises(DemistoException) as e:
-        handle_auth_token_command(client, args={})
+        auth_start_command(
+            server_url=SERVER_URL,
+            verify=VERIFY,
+            proxy=PROXY,
+            username="",
+            password="",
+            use_basic_auth=False,
+            client_id_param=None,
+            client_secret_param=None,
+            args={},
+        )
     assert str(e.value.message) == BASIC_CREDENTIALS_COULD_NOT_START
 
 
@@ -74,7 +98,7 @@ def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
     "status_code, args, expected_output",
     input_data.test_handle_auth_token_fail_args,
 )
-def test_handle_auth_token_fail(mocker, client, args, status_code, expected_output):
+def test_auth_start_fail(mocker, client, args, status_code, expected_output):
     """
     Given:
         - An exception is thrown from one of the HTTP requests
@@ -85,17 +109,29 @@ def test_handle_auth_token_fail(mocker, client, args, status_code, expected_outp
     Then:
         - Raise DemistoException with valid message
     """
-    from VersaDirector import handle_auth_token_command
+    from VersaDirector import auth_start_command
 
     status_code_response = Response()
     status_code_response.status_code = status_code
 
-    mocker.patch.object(
-        client, "access_token_request", return_value={}, side_effect=DemistoException(message="", res=status_code_response)
+    mocker.patch(
+        "VersaDirector.request_access_token",
+        return_value={},
+        side_effect=DemistoException(message="", res=status_code_response),
     )
 
     with pytest.raises(DemistoException) as e:
-        handle_auth_token_command(client, args)
+        auth_start_command(
+            server_url=SERVER_URL,
+            verify=VERIFY,
+            proxy=PROXY,
+            username=USERNAME,
+            password=PASSWORD,
+            use_basic_auth=True,
+            client_id_param=None,
+            client_secret_param=None,
+            args=args,
+        )
     assert str(e.value.message) == expected_output
 
 
@@ -255,10 +291,7 @@ def test_template_list_by_datastore_command(mocker, client):
     args = {"organization": "org_name"}
     template_list_by_datastore_command(client, args)
     http_request.assert_called_with(
-        "GET",
-        url_suffix="api/config/devices/template/org_name-DataStore/config/orgs/org",
-        params={},
-        headers={}
+        "GET", url_suffix="api/config/devices/template/org_name-DataStore/config/orgs/org", params={}, headers={}
     )
 
 
@@ -308,7 +341,6 @@ def test_template_custom_url_category_list_command(mocker, client):
         + "/org_name/url-filtering/user-defined-url-categories/url-category",
         params={"offset": 0},
         headers={},
-
     )
 
 
@@ -581,7 +613,6 @@ def test_appliance_custom_url_category_list_command(mocker, client, url_category
         + suffix,
         params={},
         headers={},
-
     )
 
 
@@ -717,7 +748,6 @@ def test_appliance_access_policy_rule_list_command(mocker, client):
         + "/access-policy-group/access_policy_name/rules/access-policy",
         params={},
         headers={},
-
     )
 
 
@@ -821,7 +851,6 @@ def test_template_sdwan_policy_list_command(mocker, client):
         + "org-services/org_name/sd-wan/policies/sdwan-policy-group",
         params={},
         headers={},
-
     )
 
 
@@ -853,7 +882,6 @@ def test_template_sdwan_policy_rule_list_command(mocker, client):
         + "organization/sd-wan/policies/sdwan-policy-group/sdwan_policy_name/rules/rule",
         params={},
         headers={},
-
     )
 
 
@@ -965,7 +993,6 @@ def test_appliance_sdwan_policy_list_command(mocker, client):
         + "/organization/sd-wan/policies/sdwan-policy-group",
         params={},
         headers={},
-
     )
 
 
@@ -996,7 +1023,6 @@ def test_appliance_sdwan_policy_rule_list_command(mocker, client):
         + "organization/sd-wan/policies/sdwan-policy-group/sdwan_policy_name/rules/rule",
         params={},
         headers={},
-
     )
 
 
@@ -1108,7 +1134,6 @@ def test_template_address_object_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/organization/objects/addresses/address",
         params={},
         headers={},
-
     )
 
 
@@ -1410,7 +1435,6 @@ def test_template_user_defined_application_list_command(mocker, client):
         + "application-identification/user-defined-applications/user-defined-application",
         params={},
         headers={},
-
         ok_codes=(200, 201, 204),
     )
 
@@ -1441,7 +1465,6 @@ def test_appliance_user_defined_application_list_command(mocker, client):
         + "application-identification/user-defined-applications/user-defined-application",
         params={},
         headers={},
-
         ok_codes=(200, 201),
     )
 
@@ -1472,7 +1495,6 @@ def test_template_user_modified_application_list_command(mocker, client):
         + "application-identification/application-specific-options/app-specific-option-list",
         params={},
         headers={},
-
         ok_codes=(200, 201),
     )
 
@@ -1503,7 +1525,6 @@ def test_appliance_user_modified_application_list_command(mocker, client):
         + "application-identification/application-specific-options/app-specific-option-list",
         params={},
         headers={},
-
         ok_codes=(200, 201),
     )
 

@@ -1,0 +1,45 @@
+{
+    "name": "Unit 42 Threat Intelligence by Palo Alto Networks",
+    "description": "Use the Unit 42 Threat Intelligence by Palo Alto Networks integrations to enrich indicators with threat intelligence data and fetch threat intelligence feeds.",
+    "support": "xsoar",
+    "currentVersion": "1.0.18",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2025-08-19T05:19:37Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "TIM",
+        "Threat Intelligence Management",
+        "Palo Alto Networks Products"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Feed",
+        "TIM",
+        "Unit 42",
+        "Threat Intelligence",
+        "Palo Alto Networks"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud",
+        "edr",
+        "xsiam",
+        "cloud_runtime_security",
+        "cloud_posture"
+    ]
+}

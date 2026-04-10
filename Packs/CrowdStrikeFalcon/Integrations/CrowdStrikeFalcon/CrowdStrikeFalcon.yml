@@ -1,5 +1,6 @@
 category: Endpoint
-sectionOrder:
+provider: CrowdStrike
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -12,6 +13,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  hidden: true
   additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
 - display: Server URL (e.g., https://api.crowdstrike.com)
   name: url
@@ -59,6 +61,10 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
+  additionalinfo: Supported in Cortex XSOAR only.
+  hidden:
+  - marketplacev2
+  - platform
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -66,65 +72,125 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-- display: Endpoint Detections fetch query
+  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
+  hidden:
+  - marketplacev2
+  - platform
+- display: Endpoint Detections filter query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
   required: false
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
-- display: Endpoint Incidents fetch query
-  name: incidents_fetch_query
-  required: false
-  type: 0
-  section: Collect
-  advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
-- display: IDP Detections fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: IDP Detections filter query
   name: idp_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
-- display: Mobile Detections fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Mobile Detections filter query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
-- display: IOM fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: IOM filter query
   name: iom_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
-- display: IOA fetch query
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  hidden:
+  - marketplacev2
+  - platform
+- display: IOA filter query
   name: ioa_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
-- display: Detections from On-Demand Scans fetch query
+  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
+  hidden:
+  - marketplacev2
+  - platform
+- display: Detections from On-Demand Scans filter query
   name: on_demand_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: OFP Detections filter query
+  name: ofp_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: Third Party Detection fetch query
+  name: third_party_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM Detection fetch query
+  name: ngsiem_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM automated leads fetch query
+  name: automated_leads_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM cases fetch query
+  name: ngsiem_cases_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: NGSIEM incidents fetch query
+  name: ngsiem_incidents_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
   required: false
   defaultvalue: 'true'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'true'
+  hidden:
+  - xsoar
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
@@ -137,6 +203,9 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -149,41 +218,88 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: 'false'
-  display: 'Close Mirrored XSOAR Incident'
+- display: 'Close Mirrored XSOAR Incident'
+  defaultvalue: 'false'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
-- defaultvalue: 'false'
-  display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
+  hidden:
+  - marketplacev2
+  - platform
+- display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
+  defaultvalue: 'false'
   name: close_in_cs_falcon
   type: 8
   section: Collect
   advanced: true
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
-- defaultvalue: 'Endpoint Detection'
-  display: 'Fetch types'
+  hidden:
+  - marketplacev2
+  - platform
+- display: 'Fetch types'
+  defaultvalue: 'Endpoint Detection'
   name: fetch_incidents_or_detections
   type: 16
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is not available in the legacy version.
+  additionalinfo: |-
+    Choose what to fetch -  You can choose any combination. Note:
+    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
-  - Endpoint Incident
   - Endpoint Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
   - On-Demand Scans Detection
-- additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
+  - OFP Detection
+  - Third Party Detection
+  - NGSIEM Detection
+  - NGSIEM Automated Lead
+  - NGSIEM Case
+  - NGSIEM Incident (XDR Alert)
+  hidden:
+  - marketplacev2
+  - platform
+- display: 'Fetch types'
+  defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
+  name: fetch_events_or_detections
+  type: 16
+  section: Collect
+  required: false
+  additionalinfo: |-
+    Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+  options:
+  - IDP Detection
+  - Endpoint Detection
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  hidden:
+  - xsoar
+  - xpanse
+- display: 'Fetch Asset types'
+  name: fetch_assets_type
+  defaultvalue: 'Spotlight,CNAPP Alerts'
+  type: 16
+  section: Collect
+  advanced: false
+  required: false
+  additionalinfo: |-
+      The asset sources to ingest into the Cortex Unified Asset Inventory.
+  options:
+  - Spotlight
+  - CNAPP Alerts
+  hidden:
+  - xsoar
+- display: 'Reopen Statuses'
+  additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
-  display: 'Reopen Statuses'
   name: reopen_statuses
   type: 16
   section: Collect
@@ -196,21 +312,63 @@ configuration:
   - False positive
   - Reopened
   - Ignored
-- defaultvalue: '1'
-  display: 'Incidents Fetch Interval'
+  hidden:
+  - marketplacev2
+  - platform
+- display: 'Incidents Fetch Interval'
+  defaultvalue: '1'
   name: incidentFetchInterval
+  additionalinfo: Supported in Cortex XSOAR only.
   type: 19
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 1
-  display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  hidden:
+  - marketplacev2
+  - platform
+- display: 'Events Fetch Interval'
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+- display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 2
   name: look_back
   type: 0
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
+  - platform
+- display: 'Advanced: Time in minutes to look back when fetching events and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 2
+  name: look_back_xsiam
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
+  defaultvalue: 60
+  display: Assets Fetch Interval
+  name: assetsFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -223,7 +381,7 @@ script:
       - No
       description: Whether or not to get additional data about the device.
       auto: PREDEFINED
-    - description: The query by which to filter the device.
+    - description: The query by which to filter the device. The query format should be `filter_parameter_name:'filter_value'`.
       name: filter
     - description: The maximum records to return [1-5000].
       name: limit
@@ -243,9 +401,6 @@ script:
       - lift_containment_pending
     - description: The hostname of the device.
       name: hostname
-      auto: PREDEFINED
-      predefined:
-      - ''
     - description: The platform name of the device.
       name: platform_name
       auto: PREDEFINED
@@ -370,6 +525,7 @@ script:
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
       name: filter
+      defaultValue: "product:'epp'+type:'ldt'"
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data
@@ -435,17 +591,14 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: The status to transition a detection to.
+      description: "The status to transition a detection to."
       name: status
       predefined:
       - new
       - in_progress
-      - true_positive
-      - false_positive
       - closed
       - reopened
-      - ignored
-    - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
+    - description: 'A user ID, for example: 1234567855512345678. username and assigned_to_uuid are mutually exclusive.'
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
       name: comment
@@ -468,6 +621,8 @@ script:
       required: true
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection.
       isArray: true
@@ -475,6 +630,8 @@ script:
       required: true
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
@@ -566,10 +723,11 @@ script:
     description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command).
     name: cs-falcon-upload-file
   - arguments:
-    - description: The ID of the file to delete. The ID of the file can be retrieved by running the 'cs-falcon-list-files' command.
+    - description: The ID of the file to delete. Either this argument or file_name is required. When both are specified, file_id takes precedence.
       name: file_id
-      required: true
-    description: Deletes a file based on the provided ID. Can delete only one file at a time.
+    - description: The name of the file to delete. Either this argument or file_id is required. When both are specified, file_id takes precedence.
+      name: file_name
+    description: Deletes a file based on the provided ID or name. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
     - description: A comma-separated list of file IDs to get. The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.
@@ -1531,6 +1689,9 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - description: The ID of the IOC to update. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
@@ -1873,9 +2034,6 @@ script:
     - contextPath: CrowdStrike.Detections.behaviors.timestamp
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
-    - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: 'The ID of the behavior. Note: This output exists only in the legacy version.'
-      type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The filename of the triggering process.
       type: String
@@ -1908,12 +2066,6 @@ script:
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_value
       description: The IOC value.
-      type: String
-    - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". Note: This output exist only in the legacy version.'
-      type: String
-    - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: "The IOC description. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -1993,32 +2145,11 @@ script:
     - contextPath: CrowdStrike.Detections.email_sent
       description: Whether an email is sent about this detection.
       type: Boolean
-    - contextPath: CrowdStrike.Detections.first_behavior
-      description: 'The datetime of the first behavior. Note: This output exists only in the legacy version.'
-      type: Date
-    - contextPath: CrowdStrike.Detections.last_behavior
-      description: 'The datetime of the last behavior. Note: This output exists only in the legacy version.'
-      type: Date
-    - contextPath: CrowdStrike.Detections.max_confidence
-      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exists only in the legacy version.'
-      type: Number
-    - contextPath: CrowdStrike.Detections.max_severity
-      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exists only in the legacy version.'
-      type: Number
-    - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exists only in the legacy version.'
-      type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
       type: Boolean
     - contextPath: CrowdStrike.Detections.status
       description: The status of the detection.
-      type: String
-    - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: "The UID of the user for whom the detection is assigned. Note: This output exists only in the legacy version."
-      type: String
-    - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.
@@ -2030,128 +2161,105 @@ script:
       description: The amount of time it took to move a detection from new to a resolved state ("true_positive", "false_positive", and "ignored").
       type: Number
   - arguments:
-    - description: The query used to filter the results.
-      name: fetch_query
-    - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
+    - description: A comma-separated list of case IDs.
       isArray: true
       name: ids
-    description: Lists incident summaries.
-    name: cs-falcon-list-incident-summaries
+    description: Lists case summaries.
+    name: cs-falcon-list-case-summaries
     outputs:
-    - contextPath: CrowdStrike.Incidents.incident_id
-      description: The ID of the incident.
+    - contextPath: CrowdStrike.Case.id
+      description: The ID of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.cid
-      description: The organization's customer ID (CID).
+    - contextPath: CrowdStrike.Case.name
+      description: The name of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.host_ids
-      description: The device IDs of all the hosts on which the incident occurred.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.device_id
-      description: The device ID as seen by CrowdStrike.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.cid
-      description: The host's organization's customer ID (CID).
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.agent_load_flags
-      description: The CrowdStrike agent load flags.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.agent_local_time
-      description: The local time of the sensor.
+    - contextPath: CrowdStrike.Case.created_timestamp
+      description: The date and time the case was created.
       type: Date
-    - contextPath: CrowdStrike.Incidents.hosts.agent_version
-      description: 'The version of the agent that the device is running. For example: 5.32.11406.0.'
+    - contextPath: CrowdStrike.Case.status
+      description: The status of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.hosts.bios_manufacturer
-      description: The BIOS manufacturer.
+    - contextPath: CrowdStrike.Case.version
+      description: The version of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.hosts.bios_version
-      description: The BIOS version of the device.
+    - contextPath: CrowdStrike.Case.description
+      description: The description of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.hosts.config_id_base
-      description: The base of the sensor that the device is running.
+    - contextPath: CrowdStrike.Case.severity
+      description: The severity of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.hosts.config_id_build
-      description: 'The version of the sensor that the device is running. For example: 11406.'
+    - contextPath: CrowdStrike.Case.assigned_to
+      description: The name of the user assigned to the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.hosts.config_id_platform
-      description: The platform ID of the sensor that the device is running.
+    - contextPath: CrowdStrike.Case.tags
+      description: The tags of the case.
       type: String
-    - contextPath: CrowdStrike.Incidents.hosts.external_ip
-      description: The external IP address of the host.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.hostname
-      description: The name of the host.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.first_seen
-      description: The datetime the host was first seen by CrowdStrike Falcon.
-      type: Date
-    - contextPath: CrowdStrike.Incidents.hosts.last_seen
-      description: The datetime the host was last seen by CrowdStrike Falcon.
-      type: Date
-    - contextPath: CrowdStrike.Incidents.hosts.local_ip
-      description: The device local IP address.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.mac_address
-      description: The device MAC address.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.major_version
-      description: The major version of the operating system.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.minor_version
-      description: The minor version of the operating system.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.os_version
-      description: The operating system of the host.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.platform_id
-      description: The platform ID of the device that runs the sensor.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.platform_name
-      description: The platform name of the host.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.product_type_desc
-      description: The value indicating the product type. For example, 1 = Workstation, 2 = Domain Controller, 3 = Server.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.status
-      description: The incident status as a number. For example, 20 = New, 25 = Reopened, 30 = In Progress, 40 = Closed.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.system_manufacturer
-      description: The system manufacturer of the device.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.system_product_name
-      description: The product name of the system.
-      type: String
-    - contextPath: CrowdStrike.Incidents.hosts.modified_timestamp
-      description: 'The datetime a user modified the incident in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
-    - contextPath: CrowdStrike.Incidents.created
-      description: The datetime that the incident was created.
-      type: Date
-    - contextPath: CrowdStrike.Incidents.start
-      description: The recorded datetime of the earliest incident.
-      type: Date
-    - contextPath: CrowdStrike.Incidents.end
-      description: The recorded datetime of the latest incident.
-      type: Date
-    - contextPath: CrowdStrike.Incidents.state
-      description: The state of the incident.
-      type: String
-    - contextPath: CrowdStrike.Incidents.status
-      description: The status of the incident.
-      type: Number
-    - contextPath: CrowdStrike.Incidents.name
-      description: The name of the incident.
-      type: String
-    - contextPath: CrowdStrike.Incidents.description
-      description: The description of the incident.
-      type: String
-    - contextPath: CrowdStrike.Incidents.tags
-      description: The tags of the incident.
-      type: String
-    - contextPath: CrowdStrike.Incidents.fine_score
-      description: The incident score.
-      type: Number
+  - arguments:
+    - description: The ID of the case to retrieve evidence for.
+      name: id
+      required: true
+    description: Get evidence for a specific case.
+    name: cs-falcon-get-evidence-for-case
+    outputs:
+    - contextPath: CrowdStrike.CaseEvidence.alerts
+      description: The alerts associated with the case.
+      type: Array
+    - contextPath: CrowdStrike.CaseEvidence.events
+      description: The events associated with the case.
+      type: Array
+    - contextPath: CrowdStrike.CaseEvidence.leads
+      description: The leads associated with the case.
+      type: Array
+  - arguments:
+    - description: A comma-separated list of tags.
+      isArray: true
+      name: tags
+      required: true
+    - description: The ID of the case the tags will be added to.
+      name: id
+      required: true
+    description: Adds tags to the specified case.
+    name: cs-falcon-add-case-tag
+  - arguments:
+    - description: The ID of the case the tags will be deleted from.
+      name: id
+      required: true
+    - description: The tag to delete.
+      name: tag
+      required: true
+    description: Deletes a tag from the specified case.
+    name: cs-falcon-delete-case-tag
+  - arguments:
+    - description: The ID of the case to resolve.
+      name: id
+      required: true
+    - description: The status to set for the case.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_progress
+      - closed
+      - reopened
+    - description: A UUID of a user to assign the case to.
+      name: assigned_to_uuid
+    - description: A new description for the case.
+      name: description
+    - description: "Whether to remove case assignment from the current user.\nIf set to true and assigned_to_uuid is not provided, the case becomes unassigned.\nIf set to false and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.\nIf set to true and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.\nIf this field is omitted and assigned_to_uuid is provided, the case is reassigned to the specified user UUID."
+      name: remove_user_assignment
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The new case severity rating (10-100).
+      name: severity
+    - description: The unique ID of the template to apply to the case.
+      name: template_id
+    - description: The new name for the case.
+      name: name
+    description: Resolves or updates a case.
+    name: cs-falcon-resolve-case
   - arguments:
     - description: The endpoint ID.
       name: id
@@ -2427,31 +2535,6 @@ script:
       description: 'The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
   - arguments:
-    - description: A comma-separated list of incident IDs.
-      isArray: true
-      name: ids
-      required: true
-    - auto: PREDEFINED
-      description: The new status of the incident.
-      name: status
-      predefined:
-      - New
-      - In Progress
-      - Reopened
-      - Closed
-    - description: UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument.
-      name: assigned_to_uuid
-    - description: Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user.
-      name: username
-    - description: Add a new tag to the incidents.
-      name: add_tag
-    - description: Remove a tag from the incidents.
-      name: remove_tag
-    - description: Add a comment to the incident.
-      name: add_comment
-    description: Resolve and update incidents using the specified settings.
-    name: cs-falcon-resolve-incident
-  - arguments:
     - description: A JSON object with a list of CrowdStrike Falcon indicators to upload.
       isArray: true
       name: multiple_indicators_json
@@ -2686,25 +2769,8 @@ script:
       description: The extension of the file.
       type: String
     polling: true
-  - arguments:
-    - default: true
-      description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
-      name: incident_id
-      required: true
-    description: Gets the detections for a specific incident.
-    name: cs-falcon-get-detections-for-incident
-    outputs:
-    - contextPath: CrowdStrike.IncidentDetection.incident_id
-      description: The incident ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentDetection.behavior_id
-      description: The behavior ID connected to the incident.
-      type: String
-    - contextPath: CrowdStrike.IncidentDetection.detection_ids
-      description: A list of detection IDs connected to the incident.
-      type: String
   - arguments: []
-    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported in Cortex XSOAR only.
     name: get-mapping-fields
   - arguments:
     - description: The remote incident or detection ID.
@@ -2713,15 +2779,15 @@ script:
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident or detection is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only.
+    description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
     name: get-remote-data
   - arguments:
     - description: Date string representing the local time in UTC timestamp in seconds. The incident or detection is only returned if it was modified after the last update time.
       name: lastUpdate
-    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
     name: get-modified-remote-data
   - arguments: []
-    description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+    description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
     name: update-remote-system
   - arguments:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'.
@@ -3650,17 +3716,6 @@ script:
     description: Apply action to quarantined files by file IDs or filter.
     name: cs-falcon-apply-quarantine-file-action
   - arguments:
-    - description: A comma-separated list of incident IDs.
-      isArray: true
-      name: ids
-      required: true
-    - description: A comment added to the CrowdStrike incident.
-      name: comment
-      required: true
-    description: Deprecated. Use the 'cs-falcon-resolve-incident' command using the 'add_comment' argument instead.
-    name: cs-falcon-update-incident-comment
-    deprecated: true
-  - arguments:
     - description: Whether to poll for results.
       auto: PREDEFINED
       name: wait_for_result
@@ -4110,6 +4165,33 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
       defaultValue: '600'
+    - name: cloud_pup_adware_level_detection
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+    - name: cloud_pup_adware_level_prevention
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+    - name: polling
+      description: Whether to use polling to wait for the scan result. If set to false, the command will only create the scan and return immediately without waiting for results.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
@@ -4225,6 +4307,12 @@ script:
     - contextPath: CrowdStrike.ODSScan.last_updated
       description: The timestamp when the scan job was last updated.
       type: Date
+    - contextPath: CrowdStrike.ODSScan.cloud_pup_adware_level_detection
+      description: Potentially unwanted programs (PUPs) Adware detection level.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_pup_adware_level_prevention
+      description: Potentially unwanted programs (PUPs) Adware prevention level.
+      type: Number
   - arguments:
     - description: A comma-separated list of host groups to be scanned.
       isArray: true
@@ -4283,6 +4371,26 @@ script:
       - Every other week
       - Every four weeks
       - Monthly
+    - name: cloud_pup_adware_level_detection
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+    - name: cloud_pup_adware_level_prevention
+      required: false
+      description: 'Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled).'
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
@@ -4367,6 +4475,12 @@ script:
     - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention
       description: The machine learning prevention level for the cloud.
       type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection
+      description: Potentially unwanted programs (PUPs) Adware detection level.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention
+      description: Potentially unwanted programs (PUPs) Adware prevention level.
+      type: Number
   - arguments:
     - description: Comma-separated list of scheduled scan IDs to delete.
       isArray: true
@@ -4443,34 +4557,34 @@ script:
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-    - contextPath: CrowdStrike.IDPEntity.IsHuman
+    - contextPath: CrowdStrike.IDPEntity.Ishuman
       description: Whether the identity entity is human made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+    - contextPath: CrowdStrike.IDPEntity.Isprogrammatic
       description: Whether the identity entity is programmatic made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+    - contextPath: CrowdStrike.IDPEntity.Isadmin
       description: Whether the identity entity is admin made.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Primarydisplayname
       description: The identity entity primary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Type
       description: The identity entity risk factor type.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Severity
       description: The identity entity risk factor severity.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskScore
+    - contextPath: CrowdStrike.IDPEntity.Riskscore
       description: The identity entity risk score.
       type: Number
-    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+    - contextPath: CrowdStrike.IDPEntity.Riskscoreseverity
       description: The identity entity risk score severity.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Secondarydisplayname
       description: The identity entity secondary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+    - contextPath: CrowdStrike.IDPEntity.Emailaddresses
       description: The identity entity email address.
       type: String
   - arguments:
@@ -4737,6 +4851,8 @@ script:
       required: true
     - description: Assign the specified detections to a user based on their username.
       name: assign_to_name
+    - description: Assign the specified detections to a user based on their user ID (Email).
+      name: assign_to_user_id
     - description: Assign the specified detections to a user based on their UUID.
       name: assign_to_uuid
     - description: Appends a new comment to any existing comments for the specified detections.
@@ -4774,6 +4890,8 @@ script:
       required: true
     - description: Assign the specified detections to a user based on their username.
       name: assign_to_name
+    - description: Assign the specified detections to a user based on their user ID (Email).
+      name: assign_to_user_id
     - description: Assign the specified detections to a user based on their UUID.
       name: assign_to_uuid
     - description: Appends a new comment to any existing comments for the specified detections.
@@ -4839,143 +4957,6 @@ script:
       type: String
     - contextPath: CrowdStrike.Users.created_at
       description: The timestamp of the user's creation.
-      type: String
-  - arguments:
-    - description: A comma-separated list of ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command.
-      name: behavior_ids
-      isArray: true
-      required: true
-    description: Get incident behavior information.
-    name: cs-falcon-get-incident-behavior
-    outputs:
-    - contextPath: CrowdStrike.IncidentBehavior.behavior_id
-      description: The behavior ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.cid
-      description: The customer ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.aid
-      description: The agent ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.incident_id
-      description: The incident ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.incident_ids
-      description: The incident IDs.
-      type: List
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_id
-      description: The pattern ID.
-      type: Number
-    - contextPath: CrowdStrike.IncidentBehavior.template_instance_id
-      description: The template instance ID.
-      type: Number
-    - contextPath: CrowdStrike.IncidentBehavior.timestamp
-      description: The timestamp.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.cmdline
-      description: The command line.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.filepath
-      description: The file path.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.domain
-      description: The domain.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition
-      description: The pattern disposition.
-      type: Number
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.indicator
-      description: Whether the pattern disposition is an indicator.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.detect
-      description: Whether the pattern disposition is a detect.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.inddet_mask
-      description: The pattern disposition indicator detect mask.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.sensor_only
-      description: Whether the pattern disposition is sensor only.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.rooting
-      description: Whether the pattern disposition is rooting.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_process
-      description: Whether the process was killed.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_subprocess
-      description: Whether the subprocess was killed.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_machine
-      description: Whether the machine was quarantined.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_file
-      description: Whether the file was quarantined.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.policy_disabled
-      description: Whether the policy was disabled.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_parent
-      description: Whether the parent was killed.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.operation_blocked
-      description: Whether the operation was blocked.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.process_blocked
-      description: Whether the process was blocked.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.registry_operation_blocked
-      description: Whether the registry operation was blocked.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.critical_process_disabled
-      description: Whether the critical process was disabled.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.bootup_safeguard_enabled
-      description: Whether the bootup safeguard was enabled.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.fs_operation_blocked
-      description: Whether the file system operation was blocked.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.handle_operation_downgraded
-      description: Whether the handle operation was downgraded.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_action_failed
-      description: Whether the kill action failed.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.blocking_unsupported
-      description: Whether the blocking is unsupported.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_process
-      description: Whether the process was suspended.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_parent
-      description: Whether the parent was suspended.
-      type: Boolean
-    - contextPath: CrowdStrike.IncidentBehavior.sha256
-      description: The SHA256 hash.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.user_name
-      description: The username.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.tactic
-      description: The tactic used.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.tactic_id
-      description: The tactic ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.technique
-      description: The technique used.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.technique_id
-      description: The technique ID.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.display_name
-      description: The display name.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.objective
-      description: The objective.
-      type: String
-    - contextPath: CrowdStrike.IncidentBehavior.compound_tto
-      description: The compound Time to Operate (TTO).
       type: String
   - arguments:
     - description: A comma-separated list of rule IDs to get IOA rules for.
@@ -5054,8 +5035,129 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.108682
+  - arguments:
+    - description: The filter to use for the query.
+      name: filter
+      required: false
+    description: Returns a list of CNAPP alerts. Used for debugging fetch-assets.
+    name: cs-falcon-list-cnapp-alerts
+    outputs:
+    - contextPath: CrowdStrike.CnappAlert.containers_impacted_count
+      description: The number of containers impacted by the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.containers_impacted_ids
+      description: The list of the ids of containers impacted by the alert.
+      type: Array
+    - contextPath: CrowdStrike.CnappAlert.detection_description
+      description: The description of the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.detection_event_simple_name
+      description: The simple name of the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.detection_name
+      description: The name of the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.first_seen_timestamp
+      description: The first time the alert was seen.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.last_seen_timestamp
+      description: The last time the alert was seen.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.severity
+      description: The severity of the alert.
+      type: String
+  - arguments:
+    - name: repository
+      description: |
+        The repository to run the query against.
+      auto: PREDEFINED
+      predefined:
+      - search-all
+      - third-party
+      - falcon_for_it_view
+      - forensics_view
+      - investigate_view
+      defaultValue: search-all
+    - name: query
+      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\""", For more details see: https://library.humio.com/data-analysis/syntax.html.'
+      required: true
+    - name: start
+      description: |
+        The start of the search window, based on the event timestamp.
+        Note: 'end' must be later than 'start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: end
+      description: |
+        The end of the search window, based on the event timestamp.
+        Note: 'end' must be later than 'start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: around_event_id
+      description: The ID of the event to search around. Must be provided together with around_timestamp.
+    - name: around_number_events_before
+      description: Number of events to return before the target event. Requires around_event_id and around_timestamp.
+    - name: around_number_events_after
+      description: Number of events to return after the target event. Requires around_event_id and around_timestamp.
+    - name: around_timestamp
+      description: Timestamp for around search. Must be provided together with around_event_id.
+    - name: ingest_start
+      description: |
+        The start of the search window, based on the event ingesttimestamp.
+        Note: 'ingest_end' must be later than 'ingest_start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: ingest_end
+      description: |
+        The end of the search window, based on the event ingesttimestamp.
+        Note: 'ingest_end' must be later than 'ingest_start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: use_ingest_time
+      description: When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified.
+      defaultValue: '50'
+    - name: interval_in_seconds
+      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.
+      defaultValue: '60'
+    - name: timeout_in_seconds
+      description: Timeout for polling in seconds.
+      defaultValue: '600'
+    - name: job_id
+      description: Internal argument for polling - job ID from previous run.
+      hidden: true
+    - name: wait_for_result
+      hidden: true
+      description: Whether to poll for results.
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    description: 'Search NGSIEM historical events. Requires NGSIEM scope with read and write permissions.'
+    name: cs-falcon-search-ngsiem-events
+    polling: true
+    outputs:
+    - contextPath: CrowdStrike.NGSiemEvent
+      description: The list of all events returned from the search.
+      type: Array
+    - contextPath: CrowdStrike.NGSiemEvent.id
+      description: The event ID.
+      type: String
+    - contextPath: CrowdStrike.NGSiemEvent.timestamp
+      description: Event timestamp.
+      type: String
+  dockerimage: demisto/py3-tools:1.0.0.7436613
   isfetch: true
+  isfetch:marketplacev2: false
+  isfetch:platform: false
+  isfetchevents: true
+  isfetchassets: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
@@ -5065,6 +5167,7 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+- CrowdStrike Falcon Basic Test
 defaultclassifier: CrowdStrike Falcon
 defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper

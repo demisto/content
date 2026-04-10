@@ -1,0 +1,26 @@
+{
+    "autorun": false,
+    "color": "#BA68C8",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Incident Fetch Error",
+    "locked": false,
+    "name": "Incident Fetch Error",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "weeks": 0,
+    "weeksR": 0
+}

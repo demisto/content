@@ -1,0 +1,18 @@
+{
+    "id": 1197,
+    "hostname": "srv1",
+    "cve_announcements": [
+      { "cve_code": "CVE-2025-LOW",  "score": 4.0, "epss": 0.05,
+        "ignored": false, "active": true, "prioritized": false,
+        "detected_at": "2025-06-01T00:00:00Z" },
+  
+      { "cve_code": "CVE-2025-MID",  "score": 8.0, "epss": 0.40,
+        "ignored": false, "active": true, "prioritized": false,
+        "detected_at": "2025-06-01T00:00:00Z" },
+  
+      { "cve_code": "CVE-2025-HIGH", "score": 9.5, "epss": 0.90,
+        "ignored": false, "active": true, "prioritized": false,
+        "detected_at": "2025-06-01T00:00:00Z" }
+    ]
+  }
+  

@@ -4,3 +4,6 @@ name: Workday Modeling Rule
 rules: ''
 schema: ''
 tags: workday
+supportedModules:
+- agentix
+- xsiam

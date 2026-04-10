@@ -1,16 +1,28 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+""" CONSTANTS """
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
+
+# Fetch Incidents (XSOAR)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 
+# Fetch Events (XSIAM & Platform)
+MAX_BATCH_SIZE = 3000
+FETCH_EVENTS_DEFAULT_LIMIT = 30000
+VENDOR = "Exabeam"
+PRODUCT = "Threat Center"
 
-''' CLIENT CLASS '''
+# Get events (XSIAM & Platform)
+GET_EVENTS_DEFAULT_LIMIT = 10
+GET_EVENTS_DEFAULT_FROM_DATE = "1 hour ago"
+GET_EVENTS_DEFAULT_TO_DATE = "now"
+
+
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -18,9 +30,8 @@ class Client(BaseClient):
     Exabeam Client: A Python Wrapper for Interacting with the Exabeam API
     """
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool,
-                 proxy: bool):
-        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy, timeout=20)
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
+        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=20)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
@@ -69,7 +80,7 @@ class Client(BaseClient):
             data=data,
         )
 
-        new_token = response.get('access_token')
+        new_token = response.get("access_token")
         expires_in = response.get("expires_in")
         current_time_utc = datetime.now(timezone.utc)
         expiry_time_utc = current_time_utc + timedelta(seconds=expires_in)
@@ -150,10 +161,7 @@ class Client(BaseClient):
         Retrieves details of a specific case by its ID.
         """
         full_url = f"{self._base_url}/threat-center/v1/cases/{case_id}"
-        response = self.request(
-            method="GET",
-            full_url=full_url
-        )
+        response = self.request(method="GET", full_url=full_url)
         return response
 
     def alert_search_request(self, data_dict: dict) -> dict:
@@ -162,7 +170,11 @@ class Client(BaseClient):
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/alerts"
-        response = self.request(method="POST", full_url=full_url, data=data,)
+        response = self.request(
+            method="POST",
+            full_url=full_url,
+            data=data,
+        )
         return response
 
     def create_table_record(self, table_id, json_data):
@@ -258,11 +270,12 @@ def transform_string(input_str: str) -> str:
         transform_string("status:true") -> 'status:true'
         transform_string("message:Hello World") -> 'message:"Hello World"'
     """
-    if ':' not in input_str:
+    if ":" not in input_str:
         return input_str
-    key, value = input_str.split(':', 1)
-    if value.lower() in ['true', 'false']:
-        return f'{key}:{value.lower()}'
+    key, value = input_str.split(":", 1)
+    value = value.strip()
+    if value.lower() in ["true", "false"]:
+        return f"{key}:{value.lower()}"
     else:
         return f'{key}:"{value}"'
 
@@ -277,25 +290,26 @@ def process_string(input_str: str) -> str:
     Returns:
         str: The processed string where each part is transformed using the transform_string function.
     """
-    logical_operators = ['AND', 'OR', 'NOT', 'TO']
+    # Use word boundaries to match operators only as standalone words, not as substrings
+    pattern = r"\b(AND|OR|NOT|TO)\b"
+    logical_operators = {"AND", "OR", "NOT", "TO"}
+
+    # Split the input string by logical operators while keeping the operators
+    parts = re.split(pattern, input_str)
+
     transformed_parts = []
-    start_index = 0
-
-    for end_index in range(len(input_str)):
-        if any(op in input_str[start_index:end_index] for op in logical_operators):
-            part = input_str[start_index:end_index].strip()
-            operator = next(op for op in logical_operators if op in part)
-            part = part.replace(operator, "").strip()
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        # Check if the part is a logical operator using set membership (O(1) lookup)
+        if part in logical_operators:
+            transformed_parts.append(part)
+        else:
+            # Transform non-operator parts
             transformed_parts.append(transform_string(part))
-            transformed_parts.append(operator)
-            start_index = end_index + 1
 
-    if start_index < len(input_str):
-        remaining_part = input_str[start_index:].strip()
-        if remaining_part:
-            transformed_parts.append(transform_string(remaining_part))
-
-    return ' '.join(transformed_parts)
+    return " ".join(transformed_parts)
 
 
 def _parse_entry(entry: dict, fields_to_filter: list[str] = None):  # type: ignore
@@ -385,7 +399,7 @@ def get_limit(args: dict) -> int:
         int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
     """
-    if limit := arg_to_number(args.get('limit')):
+    if limit := arg_to_number(args.get("limit")):
         return min(int(limit), MAX_LIMIT)
 
     return DEFAULT_LIMIT
@@ -393,9 +407,10 @@ def get_limit(args: dict) -> int:
 
 def error_fixes(error: str):
     new_error = ""
-    if 'not enough values to unpack' in error:
-        new_error = ("Recommendation:\nValidate the query argument "
-                     "against the syntax documentation in the integration description.")
+    if "not enough values to unpack" in error:
+        new_error = (
+            "Recommendation:\nValidate the query argument against the syntax documentation in the integration description."
+        )
 
     return new_error
 
@@ -431,22 +446,104 @@ def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
     return result
 
 
-def convert_all_timestamp_to_datestring(incident: dict) -> dict:
+def convert_all_timestamp_to_datestring(incident: dict, key_suffix: str = "") -> dict:
     """
     Converts specified timestamp fields in an incident dictionary to date strings.
 
     Args:
         incident (dict): A dictionary containing incident data with timestamp fields.
+        key_suffix (str): An optional key suffix. Defaults to an empty string.
 
     Returns:
         dict: The incident dictionary with timestamp fields converted to date strings.
     """
-    keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp',
-            'ingestTimestamp', 'approxLogTime', 'lastUpdated']
+    keys = [
+        "caseCreationTimestamp",
+        "lastModifiedTimestamp",
+        "creationTimestamp",
+        "ingestTimestamp",
+        "approxLogTime",
+        "lastUpdated",
+    ]
     for key in keys:
         if key in incident:
-            incident[key] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
+            incident[f"{key}{key_suffix}"] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
     return incident
+
+
+def get_cases_in_batches(
+    client: Client,
+    start_time: str,
+    end_time: str,
+    last_fetched_ids: list[str],
+    max_fetch: int,
+) -> tuple[list[dict], str, list[str]]:
+    """
+    Gets cases up to `max_fetch` in batches of up to `MAX_BATCH_SIZE` between the `start_time` and `end_time`
+
+    Args:
+        client (Client): API client instance.
+        start_time (str): The starting date and time for searching cases in `DATE_FORMAT`.
+        end_time (str): The end date and time for searching cases in `DATE_FORMAT`.
+        last_fetched_ids (list[str]): The list of existing case IDs to check against.
+        max_fetch (int): The maximum number of unique fetched cases.
+
+    Returns:
+        tuple[list[dict], str, list[str]]: Unique fetched cases, new start time, and last fetched case IDs.
+    """
+    all_cases: list[dict] = []
+    all_fetched_ids = set(last_fetched_ids)
+    iteration = 1
+
+    while len(all_cases) < max_fetch:
+        filter = " AND ".join(f'NOT caseId:"{case_id}"' for case_id in last_fetched_ids)
+        request_body = {
+            "limit": MAX_BATCH_SIZE,
+            "filter": filter,
+            "fields": ["*"],
+            "orderBy": ["caseCreationTimestamp ASC"],
+            "startTime": start_time,
+            "endTime": end_time,
+        }
+        demisto.debug(f"Starting {iteration=}. Searching cases using {request_body=}.")
+        response = client.case_search_request(request_body)
+
+        batch_rows = response.get("rows", [])
+        if not batch_rows:  # Empty batch indicates steam of cases has ended
+            demisto.debug("Reached the end after getting empty batch. Stopping search for cases.")
+            break
+
+        unique_batch_cases: list[dict] = []  # Deduplicated and formatted cases
+        for row in batch_rows:
+            case_id = row.get("caseId")
+            if case_id in all_fetched_ids:
+                demisto.debug(f"Skipping duplicate row with {case_id=}.")
+                continue
+
+            all_fetched_ids.add(case_id)
+            # Format case and add to list of cases
+            row["_time"] = timestamp_to_datestring(row["caseCreationTimestamp"] / 1000, date_format=DATE_FORMAT)
+            unique_batch_cases.append(row)
+            all_cases.append(row)
+
+            if len(all_cases) == max_fetch:
+                demisto.debug(f"Reached the desired {max_fetch=}. Stopping iterating over batch rows.")
+                break
+
+        if not unique_batch_cases:
+            demisto.debug("No new unique cases in this batch. Stopping search for cases.")
+            break
+
+        start_time, last_fetched_ids = get_last_case_time_and_ids(unique_batch_cases)
+
+        if len(batch_rows) < MAX_BATCH_SIZE:  # Partial batch indicates steam of cases has ended
+            demisto.debug(f"Got partial batch with {len(batch_rows)} rows. Finishing searching for cases.")
+            break
+
+        demisto.debug(f"Finished {iteration=}. Got {len(all_cases)} cases so far. New {start_time=} and {last_fetched_ids=}.")
+        iteration += 1
+
+    return all_cases, start_time, last_fetched_ids
 
 
 def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
@@ -476,6 +573,51 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     return filtered_cases
 
 
+def filter_existing_cases_lr(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
+    if ids_exists:
+        demisto.debug(f"Existing IDs in last_run: {ids_exists}")
+
+        filtered_cases = []
+        for case in cases:
+            case_id = case.get("caseId")
+            if case_id not in ids_exists:
+                filtered_cases.append(case)
+            else:
+                case_creation_timestamp = timestamp_to_datestring(
+                    case.get("caseCreationTimestamp", 0) / 1000, date_format=DATE_FORMAT
+                )
+                if case_creation_timestamp == last_run:
+                    filtered_cases.append(case)
+                else:
+                    demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+        demisto.debug(f"After filtered cases count: {len(filtered_cases)}")
+    else:
+        filtered_cases = cases
+    return filtered_cases
+
+
+def get_last_case_time_and_ids(formatted_cases: list) -> tuple[str, list]:
+    """
+    Gets the maximum `_time` value from all formatted cases along with the IDs of cases with this `_time` value.
+
+    Args:
+        formatted_cases (list): A list of cases formatted as XSIAM events with `_time` value in the `DATE_FORMAT`.
+
+    Raises:
+        ValueError: If the list of cases is empty.
+
+    Returns:
+        tuple[str, list]: Maximum `_time` value, list of IDs of cases with this `_time` value.
+    """
+    if not formatted_cases:
+        raise ValueError("Cannot get last case time and IDs from empty list.")
+
+    last_case_time = max(case["_time"] for case in formatted_cases)
+    last_case_ids = [case["caseId"] for case in formatted_cases if case["_time"] == last_case_time]
+
+    return last_case_time, last_case_ids
+
+
 def update_last_run(cases: list, end_time: str) -> dict:
     """
     Updates the last run time and list of case IDs based on the provided cases.
@@ -491,16 +633,18 @@ def update_last_run(cases: list, end_time: str) -> dict:
     """
     if cases:
         max_timestamp = max(case.get("caseCreationTimestamp", 0) for case in cases)
-        list_ids = [case.get("caseId", "") for case in cases if case.get("caseCreationTimestamp", 0) == max_timestamp]
-        last_run_time = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+        max_time_in_format = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+        list_ids = []
+        for case in cases:
+            case_time_in_format = timestamp_to_datestring(case.get("caseCreationTimestamp", 0) / 1000, date_format=DATE_FORMAT)
+            if case_time_in_format == max_time_in_format:
+                list_ids.append(case.get("caseId", ""))
+        last_run_time = max_time_in_format
     else:
         last_run_time = end_time
         list_ids = []
 
-    last_run = {
-        "time": last_run_time,
-        "last_ids": list_ids
-    }
+    last_run = {"time": last_run_time, "last_ids": list_ids}
     return last_run
 
 
@@ -520,10 +664,12 @@ def format_incidents(cases: list[dict]) -> list[dict]:
     for case in cases:
         case = convert_all_timestamp_to_datestring(case)
         alert_name = case.get("alertName", "")
-        incidents.append({
-            "Name": alert_name,
-            "rawJSON": json.dumps(case),
-        })
+        incidents.append(
+            {
+                "Name": alert_name,
+                "rawJSON": json.dumps(case),
+            }
+        )
     return incidents
 
 
@@ -532,13 +678,13 @@ def format_record_keys(dict_list):
     for input_dict in dict_list:
         new_dict = {}
         for key, value in input_dict.items():
-            new_key = key.replace('_', ' ').title()
+            new_key = key.replace("_", " ").title()
             new_dict[new_key] = value
         new_list.append(new_dict)
     return new_list
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def event_search_command(client: Client, args: dict) -> CommandResults:
@@ -552,22 +698,22 @@ def event_search_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the search results in both structured and human-readable formats.
     """
-    start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-    end_time = get_date(args.get('end_time', 'today'), "end_time")
+    start_time = get_date(args.get("start_time", "7 days ago"), "start_time")
+    end_time = get_date(args.get("end_time", "today"), "end_time")
     if start_time > end_time:
         raise DemistoException("Start time must be before end time.")
 
     kwargs = {
-        'filter': process_string(args.get('query', '')),
-        'fields': argToList(args.get('fields', '*')),
-        'limit': get_limit(args),
-        'startTime': start_time,
-        'endTime': end_time,
+        "filter": process_string(args.get("query", "")),
+        "fields": argToList(args.get("fields", "*")),
+        "limit": get_limit(args),
+        "startTime": start_time,
+        "endTime": end_time,
     }
-    group_by = args.get('group_by')
+    group_by = args.get("group_by")
     if group_by:
         group_list = argToList(group_by)
-        kwargs.update({'groupBy': group_list, 'fields': group_list})
+        kwargs.update({"groupBy": group_list, "fields": group_list})
 
     response = client.event_search_request(kwargs)
 
@@ -618,19 +764,19 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
             data_response = [client.get_alert_request(item_id)]
         table_name = f"{item_type.capitalize()}"
     else:
-        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-        end_time = get_date(args.get('end_time', 'today'), "end_time")
+        start_time = get_date(args.get("start_time", "7 days ago"), "start_time")
+        end_time = get_date(args.get("end_time", "today"), "end_time")
         if start_time > end_time:
             raise DemistoException("The start time argument must be earlier than the end time.")
         kwargs = {
-            'filter': process_string(args.get('query') or ""),
-            'fields': argToList(args.get('fields', '*')),
-            'startTime': start_time,
-            'endTime': end_time,
+            "filter": process_string(args.get("query") or ""),
+            "fields": argToList(args.get("fields", "*")),
+            "startTime": start_time,
+            "endTime": end_time,
         }
         all_results = argToBoolean(args.get("all_results", False))
         if not all_results:
-            kwargs['limit'] = get_limit(args)
+            kwargs["limit"] = get_limit(args)
         if order_by := args.get("order_by", ""):
             kwargs["orderBy"] = argToList(order_by)
 
@@ -638,12 +784,27 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
             response = client.case_search_request(kwargs)
         elif item_type == "alert":
             response = client.alert_search_request(kwargs)
+        else:
+            response = {}
+            demisto.debug(f"{item_type=} -> {response=}")
         data_response = response.get("rows", [])
         table_name = f"{item_type.capitalize()}s"
 
-    fields_to_human_readable = ["caseId", "alertId", "riskScore", "priority", "groupedbyValue", "groupedbyKey",
-                                "rules", "mitres", "useCases", "users", "stage", "queue"]
-    human_readable = [_parse_entry(row, fields_to_human_readable)for row in data_response]
+    fields_to_human_readable = [
+        "caseId",
+        "alertId",
+        "riskScore",
+        "priority",
+        "groupedbyValue",
+        "groupedbyKey",
+        "rules",
+        "mitres",
+        "useCases",
+        "users",
+        "stage",
+        "queue",
+    ]
+    human_readable = [_parse_entry(row, fields_to_human_readable) for row in data_response]
 
     include_related_rules = argToBoolean(args.get("include_related_rules", False))
     if not include_related_rules:
@@ -653,7 +814,7 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
     return CommandResults(
         outputs_prefix=f"ExabeamPlatform.{item_type.capitalize()}",
         outputs=data_response,
-        readable_output=tableToMarkdown(name=table_name, t=human_readable)
+        readable_output=tableToMarkdown(name=table_name, t=human_readable),
     )
 
 
@@ -673,7 +834,7 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
             - outputs: The raw data response from the API.
             - readable_output: A Markdown table of the context tables.
     """
-    if (table_id := args.get("table_id")):
+    if table_id := args.get("table_id"):
         response = client.get_context_table(table_id)
         readable_output = _parse_entry(response)
         table_name = "Table"
@@ -696,7 +857,7 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="ExabeamPlatform.ContextTable",
         outputs=response,
-        readable_output=tableToMarkdown(name=table_name, t=readable_output)
+        readable_output=tableToMarkdown(name=table_name, t=readable_output),
     )
 
 
@@ -720,9 +881,7 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
     response = client.delete_context_table(table_id, params)
     table_id_response = response.get("id", None)
 
-    return CommandResults(
-        readable_output=f"The context table with ID {table_id_response} has been successfully deleted."
-    )
+    return CommandResults(readable_output=f"The context table with ID {table_id_response} has been successfully deleted.")
 
 
 def table_record_list_command(client: Client, args: dict) -> CommandResults:
@@ -752,10 +911,7 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
         offset = (page - 1) * limit
 
     while len(records) < limit:
-        params = {
-            'limit': min(limit - len(records), MAX_LIMIT),
-            'offset': offset
-        }
+        params = {"limit": min(limit - len(records), MAX_LIMIT), "offset": offset}
 
         response = client.get_table_record_list(table_id, params)
         fetched_records = response.get("records", [])
@@ -770,7 +926,7 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Record",
         outputs=records,
-        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=readable_output)
+        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=readable_output),
     )
 
 
@@ -810,8 +966,10 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
 
     tracker_response = client.check_tracker_id(tracker_id)
     upload_status = tracker_response.get("uploadStatus")
-    human_readable = {"Total Uploaded": tracker_response.get(
-        "totalUploaded"), "Total Errors": tracker_response.get("totalErrors")}
+    human_readable = {
+        "Total Uploaded": tracker_response.get("totalUploaded"),
+        "Total Errors": tracker_response.get("totalErrors"),
+    }
 
     return PollResult(
         response=CommandResults(readable_output=tableToMarkdown("Completed", human_readable)),
@@ -847,8 +1005,14 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
     demisto.debug(f"Fetching incidents between start_time={start_time} and end_time={end_time}")
 
-    args = {"order_by": "caseCreationTimestamp", "query": filter_query, "start_time": start_time, "end_time": end_time,
-            "limit": limit, "include_related_rules": True}
+    args = {
+        "order_by": "caseCreationTimestamp",
+        "query": filter_query,
+        "start_time": start_time,
+        "end_time": end_time,
+        "limit": limit,
+        "include_related_rules": True,
+    }
 
     cases = case_search_command(client, args).outputs
     if not isinstance(cases, list):
@@ -856,17 +1020,77 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
-    cases = filter_existing_cases(cases, ids_exists)
-
-    last_run = update_last_run(cases, end_time)
+    cases_for_last_run = filter_existing_cases_lr(cases, ids_exists, start_time)
+    cases_for_incidents = filter_existing_cases(cases, ids_exists)
+    last_run = update_last_run(cases_for_last_run, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")
-
-    incidents = format_incidents(cases)
+    incidents = format_incidents(cases_for_incidents)
     demisto.debug(f"After the fetch incidents count: {len(incidents)}")
     return incidents, last_run
 
 
-def test_module(client: Client) -> str:    # pragma: no cover
+def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tuple[list[dict], dict]:
+    """
+    Validates the `max_fetch` value, fetches Exabeam cases as XSIAM events in batches, and updates the last run.
+
+    Args:
+        client (Client): API client instance.
+        max_fetch (int): The maximum number of cases to fetch as events.
+        last_run (dict[str, Any]): Last run object from previous fetch.
+
+    Returns:
+        tuple[list[dict], dict]: List of cases formatted as events, updated last run object.
+    """
+    demisto.debug(f"Starting to fetch events with {max_fetch=}. Got {last_run=}.")
+
+    start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch="1 minute ago", date_format=DATE_FORMAT)
+    last_fetched_ids = last_run.get("last_ids", [])
+
+    demisto.debug(f"Starting to fetch cases in batches with {start_time=}, {end_time=}, {last_fetched_ids=}.")
+    events, new_start_time, new_last_fetched_ids = get_cases_in_batches(
+        client=client,
+        start_time=start_time,
+        end_time=end_time,
+        last_fetched_ids=last_fetched_ids,
+        max_fetch=max_fetch,
+    )
+
+    next_run = {"time": new_start_time, "last_ids": new_last_fetched_ids}
+    demisto.debug(f"Fetched {len(events)} cases in batches. Updated {next_run=}.")
+
+    return events, next_run
+
+
+def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict], CommandResults]:
+    """
+    Implements `exabeam-platform-get-events`; gets Exabeam cases as XSIAM events in batches.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        tuple[list[dict], CommandResults]: The events and the command results containing a human-readable table of events.
+    """
+    demisto.debug(f"Starting to get events with {args=}.")
+    # `arg_to_datetime` does not return `None` here due to default. Added `type: ignore` to silence type checkers and linters
+    start_time = arg_to_datetime(args.get("start_time", GET_EVENTS_DEFAULT_FROM_DATE)).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+    end_time = arg_to_datetime(args.get("end_time", GET_EVENTS_DEFAULT_TO_DATE)).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+    limit = arg_to_number(args.get("limit")) or GET_EVENTS_DEFAULT_LIMIT
+
+    demisto.debug(f"Starting to get cases in batches with {start_time=}, {end_time=}, {limit=}.")
+    events, *_ = get_cases_in_batches(
+        client=client,
+        start_time=start_time,
+        end_time=end_time,
+        last_fetched_ids=[],
+        max_fetch=limit,
+    )
+
+    return events, CommandResults(readable_output=tableToMarkdown("Events", events))
+
+
+def test_module(client: Client, params: dict[str, Any]) -> str:  # pragma: no cover
     """test function
 
     Args:
@@ -878,67 +1102,201 @@ def test_module(client: Client) -> str:    # pragma: no cover
 
     """
     if client.access_token and generic_search_command(client, {}, "case"):
-        return 'ok'
+        if params.get("isFetchEvents") and (is_xsiam() or is_platform()):
+            fetch_events(client, max_fetch=1, last_run={})
+        if params.get("isFetch") and is_xsoar():
+            fetch_incidents(client, params, last_run={})
+        return "ok"
     else:
-        raise DemistoException('Access Token Generation Failure.')
+        raise DemistoException("Access Token Generation Failure.")
 
 
-''' MAIN FUNCTION '''
+def get_threat_summary(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-get-threat-summary`; gets Exabeam Threat Summary for a given ID
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing a human-readable threat summary.
+    """
+    data = json.dumps({"alertId": args.get("alert_id")})
+    full_url = f"{client._base_url}/threat-center/v1/alerts/threat-explainer/prompt"
+    response = client.request(method="POST", full_url=full_url, data=data, timeout=60)
+
+    data_response = response.get("message")
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Alert.Summary", outputs_key_field="", outputs=data_response, readable_output=data_response
+    )
+
+
+def update_case_details(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-update-case-details`; Update details for a specific case, as identified by case ID.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing human-readable case details.
+    """
+    caseId = args.pop("case_id")
+    newargs = {
+        "alertDesciption": args.get("alert_desciption"),
+        "alertName": args.get("alert_name"),
+        "priority": args.get("priority"),
+        "stage": args.get("stage"),
+        "closedReason": args.get("closed_reason"),
+        "supportingReason": args.get("supporting_reason"),
+        "assignee": args.get("assignee"),
+        "queue": args.get("queue"),
+    }
+
+    if newargs["stage"] == "CLOSED" and newargs["closedReason"] is None:
+        demisto.error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
+        return_error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
+
+    request_data = json.dumps(newargs)
+    full_url = f"{client._base_url}/threat-center/v2/cases/{caseId}"
+    response = client.request(method="POST", full_url=full_url, data=request_data)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Event",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case ID: " + caseId, t=response),
+    )
+
+
+def list_case_notes(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-platform-list-case-notes`; Retrieve a list of notes associated with the specified caseId.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing case notes
+    """
+    caseId = args.pop("case_id")
+    full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
+    response = client.request(method="GET", full_url=full_url)
+    keys_to_remove = ["case_id", "is_deleted", "is_edited", "last_modified_timestamp", "text_rt"]
+    filtered_response = []
+
+    for i in response:
+        filtered_response.append({key: value for key, value in i.items() if key not in keys_to_remove})
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Notes",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=filtered_response),
+    )
+
+
+def create_case_note(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-platform-create-case-note`; Add a new note to the specified case.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results showing the new case note
+    """
+    caseId = args.pop("case_id")
+    request_data = json.dumps(args)
+    full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
+    response = client.request(method="POST", full_url=full_url, data=request_data)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Notes",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=response[0]),
+    )
+
+
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    credentials = params.get('credentials', {})
-    client_id = credentials.get('identifier')
-    client_secret = credentials.get('password')
-    base_url = params.get('url', '')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    credentials = params.get("credentials", {})
+    client_id = credentials.get("identifier")
+    client_secret = credentials.get("password")
+    base_url = params.get("url", "")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     try:
         client = Client(
-            base_url.rstrip('/'),
-            verify=verify_certificate,
-            client_id=client_id,
-            client_secret=client_secret,
-            proxy=proxy)
+            base_url.rstrip("/"), verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
+        )
 
-        demisto.debug(f'Command being called is {demisto.command()}')
+        demisto.debug(f"Command being called is {command}")
 
-        if command == 'test-module':
-            return_results(test_module(client))
-        elif command == 'fetch-incidents':
+        if command == "test-module":
+            return_results(test_module(client, params))
+
+        elif command == "fetch-incidents" and is_xsoar():
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
-            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == 'exabeam-platform-event-search':
+            demisto.setLastRun(next_run)
+
+        elif command == "fetch-events" and (is_xsiam() or is_platform()):
+            max_fetch = arg_to_number(params.get("max_events_fetch")) or FETCH_EVENTS_DEFAULT_LIMIT
+            last_run = demisto.getLastRun()
+            events, next_run = fetch_events(client, max_fetch, last_run)
+            send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)
+            demisto.setLastRun(next_run)
+
+        elif command == "exabeam-platform-get-events" and (is_xsiam() or is_platform()):
+            should_push_events = argToBoolean(args.pop("should_push_events", "false"))
+            events, results = get_events_command(client, args)
+            return_results(results)
+            if should_push_events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == "exabeam-platform-event-search":
             return_results(event_search_command(client, args))
-        elif command == 'exabeam-platform-case-search':
+        elif command == "exabeam-platform-case-search":
             return_results(case_search_command(client, args))
-        elif command == 'exabeam-platform-alert-search':
+        elif command == "exabeam-platform-alert-search":
             return_results(alert_search_command(client, args))
-        elif command == 'exabeam-platform-context-table-list':
+        elif command == "exabeam-platform-context-table-list":
             return_results(context_table_list_command(client, args))
-        elif command == 'exabeam-platform-context-table-delete':
+        elif command == "exabeam-platform-context-table-delete":
             return_results(context_table_delete_command(client, args))
-        elif command == 'exabeam-platform-table-record-list':
+        elif command == "exabeam-platform-table-record-list":
             return_results(table_record_list_command(client, args))
-        elif command == 'exabeam-platform-table-record-create':
+        elif command == "exabeam-platform-table-record-create":
             return_results(table_record_create_command(args, client))
+        elif command == "exabeam-get-threat-summary":
+            return_results(get_threat_summary(client, args))
+        elif command == "exabeam-update-case-details":
+            return_results(update_case_details(client, args))
+        elif command == "exabeam-platform-list-case-notes":
+            return_results(list_case_notes(client, args))
+        elif command == "exabeam-platform-create-case-note":
+            return_results(create_case_note(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 
     except Exception as e:
         recommend = error_fixes(str(e))
         demisto.info(str(e))
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}\n{recommend}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}\n{recommend}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

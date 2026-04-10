@@ -7,3 +7,6 @@ ignore=IM111
 [known_words]
 Imperva
 Skyfence
+
+[file:ImpSfRevokeUnaccessedDevices.yml]
+ignore=GR107

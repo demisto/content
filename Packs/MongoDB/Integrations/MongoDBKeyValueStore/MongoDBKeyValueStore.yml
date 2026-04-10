@@ -1,4 +1,5 @@
 category: Database
+provider: MongoDB Inc.
 fromversion: 5.0.0
 commonfields:
   id: MongoDB Key Value Store
@@ -114,7 +115,7 @@ script:
     name: mongodb-get-keys-number
   - description: Lists all incidents in the collection.
     name: mongodb-list-incidents
-  dockerimage: demisto/py3-tools:1.0.0.91504
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
   type: python

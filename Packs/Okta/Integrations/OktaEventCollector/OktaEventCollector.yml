@@ -1,12 +1,13 @@
 commonfields:
   id: Okta Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Okta Event Collector
 display: Okta Event Collector
 category: Analytics & SIEM
+provider: Okta
 description: Collects the events log for authentication and Audit provided by Okta admin API.
 configuration:
 - display: Server URL
@@ -73,11 +74,15 @@ script:
       required: false
     description: Manual command to fetch events and display them.
     name: okta-get-events
-  dockerimage: demisto/fastapi:1.0.0.87576
+  dockerimage: demisto/fastapi:0.115.12.3243695
   isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- agentix
+- xsiam
 fromversion: 6.8.0
 tests:
 - No tests

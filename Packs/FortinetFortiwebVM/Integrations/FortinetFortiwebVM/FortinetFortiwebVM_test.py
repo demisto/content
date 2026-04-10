@@ -1,12 +1,12 @@
 import json
 import os
+from collections.abc import Callable
 from http import HTTPStatus
 from urllib.parse import urljoin
-from collections.abc import Callable
 
 import pytest
 from CommonServerPython import *
-from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle, ArgumentValues
+from FortinetFortiwebVM import ArgumentValues, Client, ClientV1, ClientV2, ErrorMessage, OutputTitle
 
 JSON_MIME_TYPE = "application/json"
 
@@ -20,7 +20,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -547,15 +547,14 @@ def test_protected_hostname_member_create_command(
     from FortinetFortiwebVM import protected_hostname_member_create_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "protected_hostname_member/v1_get_list_success.json"
-    )
+    json_response_get = load_mock_response("protected_hostname_member/v1_get_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     requests_mock.get(url=url, json=json_response_get, status_code=200)
     result = protected_hostname_member_create_command(mock_client, args)
     assert result.outputs_prefix == "FortiwebVM.ProtectedHostnameMember"
-    assert isinstance(result.outputs, dict) and result.outputs["id"] == expected_value
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["id"] == expected_value
 
 
 @pytest.mark.parametrize(
@@ -604,9 +603,7 @@ def test_api_fail_protected_hostname_member_create_command(
     from FortinetFortiwebVM import protected_hostname_member_create_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "protected_hostname_member/v1_get_list_success.json"
-    )
+    json_response_get = load_mock_response("protected_hostname_member/v1_get_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
         url=url,
@@ -692,9 +689,7 @@ def test_input_fail_protected_hostname_member_create_command(
     from FortinetFortiwebVM import protected_hostname_member_create_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "protected_hostname_member/v1_get_list_success.json"
-    )
+    json_response_get = load_mock_response("protected_hostname_member/v1_get_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
         url=url,
@@ -766,9 +761,7 @@ def test_protected_hostname_member_update_command(
             mock_client.base_url,
             "ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost",
         )
-        get_response = load_mock_response(
-            "protected_hostname_member/v1_get_list_success.json"
-        )
+        get_response = load_mock_response("protected_hostname_member/v1_get_list_success.json")
         requests_mock.get(url=url, json=get_response)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
@@ -834,9 +827,7 @@ def test_api_fail_protected_hostname_member_update_command(
             mock_client.base_url,
             "ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost",
         )
-        get_response = load_mock_response(
-            "protected_hostname_member/v1_get_list_success.json"
-        )
+        get_response = load_mock_response("protected_hostname_member/v1_get_list_success.json")
         requests_mock.get(url=url, json=get_response)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
@@ -935,9 +926,7 @@ def test_input_fail_protected_hostname_member_update_command(
             mock_client.base_url,
             "ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost",
         )
-        get_response = load_mock_response(
-            "protected_hostname_member/v1_get_list_success.json"
-        )
+        get_response = load_mock_response("protected_hostname_member/v1_get_list_success.json")
         requests_mock.get(url=url, json=get_response)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
@@ -1178,9 +1167,7 @@ def test_ip_list_group_create_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = ip_list_group_create_command(mock_client, args)
-    output = (
-        f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
-    )
+    output = f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
     assert output == str(result.readable_output)
 
 
@@ -1397,9 +1384,7 @@ def test_ip_list_group_upadte_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = ip_list_group_update_command(mock_client, args)
-    output = (
-        f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
-    )
+    output = f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
     assert output == str(result.readable_output)
 
 
@@ -1550,9 +1535,7 @@ def test_ip_list_group_delete_command(
     requests_mock.delete(url=url, json=json_response)
 
     result = ip_list_group_delete_command(mock_client, args)
-    output = (
-        f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
-    )
+    output = f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
     assert output == str(result.readable_output)
 
 
@@ -1731,7 +1714,8 @@ def test_ip_list_member_create_command(
 
     result = ip_list_member_create_command(mock_client, args)
     assert result.outputs_prefix == "FortiwebVM.IpListMember"
-    assert isinstance(result.outputs, dict) and result.outputs["id"] == expected_value
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["id"] == expected_value
 
 
 @pytest.mark.parametrize(
@@ -2247,9 +2231,7 @@ def test_http_content_routing_member_add_command(
     from FortinetFortiwebVM import http_content_routing_member_add_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "http_content_routing_member/v1_list_success.json"
-    )
+    json_response_get = load_mock_response("http_content_routing_member/v1_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     requests_mock.get(url=url, json=json_response_get)
@@ -2262,7 +2244,8 @@ def test_http_content_routing_member_add_command(
     }
     result = http_content_routing_member_add_command(mock_client, args)
     assert result.outputs_prefix == "FortiwebVM.HttpContentRoutingMember"
-    assert isinstance(result.outputs, dict) and expected_value == result.outputs["id"]
+    assert isinstance(result.outputs, dict)
+    assert expected_value == result.outputs["id"]
 
 
 @pytest.mark.parametrize(
@@ -2320,9 +2303,7 @@ def test_api_fail_http_content_routing_member_add_command(
     from FortinetFortiwebVM import http_content_routing_member_add_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "http_content_routing_member/v1_list_success.json"
-    )
+    json_response_get = load_mock_response("http_content_routing_member/v1_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response_get)
     requests_mock.post(
@@ -2391,9 +2372,7 @@ def test_input_fail_http_content_routing_member_add_command(
     from FortinetFortiwebVM import http_content_routing_member_add_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "http_content_routing_member/v1_list_success.json"
-    )
+    json_response_get = load_mock_response("http_content_routing_member/v1_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response_get)
     requests_mock.post(
@@ -2450,9 +2429,7 @@ def test_http_content_routing_member_update_command(
             mock_client.base_url,
             "Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting",
         )
-        get_response = load_mock_response(
-            "http_content_routing_member/v1_list_success.json"
-        )
+        get_response = load_mock_response("http_content_routing_member/v1_list_success.json")
         requests_mock.get(url=url, json=get_response)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
@@ -2519,9 +2496,7 @@ def test_api_fail_http_content_routing_member_update_command(
             mock_client.base_url,
             "Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting",
         )
-        get_response = load_mock_response(
-            "http_content_routing_member/v1_list_success.json"
-        )
+        get_response = load_mock_response("http_content_routing_member/v1_list_success.json")
         requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
@@ -2711,9 +2686,7 @@ def test_http_content_routing_member_list_command(
         ),
     ),
 )
-def test_geo_ip_group_create_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_geo_ip_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Create Geo IP group.
     Given:
@@ -2737,9 +2710,7 @@ def test_geo_ip_group_create_command(
     }
 
     result = geo_ip_group_create_command(mock_client, args)
-    output = (
-        f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
-    )
+    output = f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
     assert output == str(result.readable_output)
 
 
@@ -2906,9 +2877,7 @@ def test_input_fail_geo_ip_group_create_command(
         ),
     ),
 )
-def test_geo_ip_group_update_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_geo_ip_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Update Geo IP group.
     Given:
@@ -2936,9 +2905,7 @@ def test_geo_ip_group_update_command(
     }
 
     result = geo_ip_group_update_command(mock_client, args)
-    output = (
-        f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
-    )
+    output = f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
     assert output == str(result.readable_output)
 
 
@@ -3017,9 +2984,7 @@ def test_fail_geo_ip_group_update_command(
         ),
     ),
 )
-def test_geo_ip_group_delete_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_geo_ip_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Delete Geo IP group.
     Given:
@@ -3036,9 +3001,7 @@ def test_geo_ip_group_delete_command(
     requests_mock.delete(url=url, json=json_response)
     args = {"name": "check"}
     result = geo_ip_group_delete_command(mock_client, args)
-    output = (
-        f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
-    )
+    output = f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
     assert output == str(result.readable_output)
 
 
@@ -3208,7 +3171,7 @@ def test_geo_ip_member_add_command(
     requests_mock.post(url=post_url, json=post_json_response)
     result = geo_ip_member_add_command(mock_client, args)
     assert OutputTitle.GEO_IP_MEMBER_ADD.value in str(result.readable_output)
-    assert "FortiwebVM.GeoIpMember" == result.outputs_prefix
+    assert result.outputs_prefix == "FortiwebVM.GeoIpMember"
     if isinstance(result.outputs, list):
         assert len(result.outputs) == expected_value
 
@@ -3294,9 +3257,7 @@ def test_api_fail_geo_ip_member_add_command(
         ),
     ),
 )
-def test_geo_ip_member_delete_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_geo_ip_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Delete a Geo IP member.
     Given:
@@ -3424,9 +3385,7 @@ def test_geo_ip_member_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = geo_ip_member_list_command(mock_client, args)
-    if isinstance(result.outputs, dict) and isinstance(
-        result.outputs["countries"], list
-    ):
+    if isinstance(result.outputs, dict) and isinstance(result.outputs["countries"], list):
         assert len(result.outputs["countries"]) == expected
     assert result.outputs_prefix == "FortiwebVM.GeoIpMember"
 
@@ -3446,9 +3405,7 @@ def test_geo_ip_member_list_command(
         ),
     ),
 )
-def test_operation_status_get_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_operation_status_get_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Get operation status.
     When:
@@ -3481,9 +3438,7 @@ def test_operation_status_get_command(
         ),
     ),
 )
-def test_policy_status_get_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_policy_status_get_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Get policy status.
     When:
@@ -3515,9 +3470,7 @@ def test_policy_status_get_command(
         ),
     ),
 )
-def test_system_status_get_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_system_status_get_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Get system status.
     When:
@@ -3549,9 +3502,7 @@ def test_system_status_get_command(
         ),
     ),
 )
-def test_server_pool_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_server_pool_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the server pools.
     When:
@@ -3583,9 +3534,7 @@ def test_server_pool_list_command(
         ),
     ),
 )
-def test_http_service_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_http_service_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the HTTP services.
     When:
@@ -3617,9 +3566,7 @@ def test_http_service_list_command(
         ),
     ),
 )
-def test_inline_protection_profile_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_inline_protection_profile_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the Inline protection profiles.
     When:
@@ -3651,9 +3598,7 @@ def test_inline_protection_profile_list_command(
         ),
     ),
 )
-def test_virtual_server_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_virtual_server_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the virtual servers.
     When:
@@ -3685,9 +3630,7 @@ def test_virtual_server_list_command(
         ),
     ),
 )
-def test_http_content_routing_policy_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_http_content_routing_policy_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the HTTP content routing policies..
     When:
@@ -3773,9 +3716,7 @@ def test_server_policy_create_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = server_policy_create_command(mock_client, args)
-    output = (
-        f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.CREATED.value}'
-    )
+    output = f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.CREATED.value}'
     assert output == str(result.readable_output)
 
 
@@ -4070,16 +4011,8 @@ def test_server_policy_update_command(
     """
     from FortinetFortiwebVM import server_policy_update_command
 
-    get_endpoint = (
-        "Policy/ServerPolicy/ServerPolicy"
-        if version == ClientV1.API_VER
-        else "cmdb/server-policy/policy"
-    )
-    get_jsonpath = (
-        "server_policy/v1_list_success.json"
-        if version == ClientV1.API_VER
-        else "server_policy/v2_list_success.json"
-    )
+    get_endpoint = "Policy/ServerPolicy/ServerPolicy" if version == ClientV1.API_VER else "cmdb/server-policy/policy"
+    get_jsonpath = "server_policy/v1_list_success.json" if version == ClientV1.API_VER else "server_policy/v2_list_success.json"
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -4088,9 +4021,7 @@ def test_server_policy_update_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = server_policy_update_command(mock_client, args)
-    output = (
-        f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.UPDATED.value}'
-    )
+    output = f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.UPDATED.value}'
     assert output == str(result.readable_output)
 
 
@@ -4145,16 +4076,8 @@ def test_api_fail_server_policy_update_command(
     """
     from FortinetFortiwebVM import server_policy_update_command
 
-    get_endpoint = (
-        "Policy/ServerPolicy/ServerPolicy"
-        if version == ClientV1.API_VER
-        else "cmdb/server-policy/policy"
-    )
-    get_jsonpath = (
-        "server_policy/v1_list_success.json"
-        if version == ClientV1.API_VER
-        else "server_policy/v2_list_success.json"
-    )
+    get_endpoint = "Policy/ServerPolicy/ServerPolicy" if version == ClientV1.API_VER else "cmdb/server-policy/policy"
+    get_jsonpath = "server_policy/v1_list_success.json" if version == ClientV1.API_VER else "server_policy/v2_list_success.json"
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4188,9 +4111,7 @@ def test_api_fail_server_policy_update_command(
         ),
     ),
 )
-def test_server_policy_delete_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_server_policy_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Delete a server policy.
     Given:
@@ -4208,9 +4129,7 @@ def test_server_policy_delete_command(
     args = {"name": "check"}
 
     result = server_policy_delete_command(mock_client, args)
-    output = (
-        f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.DELETED.value}'
-    )
+    output = f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.DELETED.value}'
     assert output == str(result.readable_output)
 
 
@@ -4355,11 +4274,7 @@ def test_custom_whitelist_url_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_url_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4416,11 +4331,7 @@ def test_api_fail_custom_whitelist_url_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_url_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4485,11 +4396,7 @@ def test_input_fail_custom_whitelist_url_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_url_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4544,11 +4451,7 @@ def test_custom_whitelist_parameter_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -4592,11 +4495,7 @@ def test_api_fail_custom_whitelist_parameter_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4665,11 +4564,7 @@ def test_input_fail_custom_whitelist_parameter_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4723,11 +4618,7 @@ def test_custom_whitelist_cookie_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -4778,11 +4669,7 @@ def test_api_fail_custom_whitelist_cookie_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -4833,11 +4720,7 @@ def test_custom_whitelist_header_field_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -4881,11 +4764,7 @@ def test_api_fail_custom_whitelist_header_field_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -4947,11 +4826,7 @@ def test_input_fail_custom_whitelist_header_field_create_command(
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_create_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -5015,11 +4890,7 @@ def test_custom_whitelist_url_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_url_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5085,11 +4956,7 @@ def test_api_fail_custom_whitelist_url_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_url_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5160,11 +5027,7 @@ def test_input_fail_custom_whitelist_url_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_url_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5233,11 +5096,7 @@ def test_custom_whitelist_parameter_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5299,11 +5158,7 @@ def test_fail_custom_whitelist_parameter_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5370,11 +5225,7 @@ def test_input_fail_custom_whitelist_parameter_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5438,11 +5289,7 @@ def test_custom_whitelist_cookie_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5504,11 +5351,7 @@ def test_api_fail_custom_whitelist_cookie_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5576,11 +5419,7 @@ def test_input_fail_custom_whitelist_cookie_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5636,11 +5475,7 @@ def test_custom_whitelist_header_field_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5692,11 +5527,7 @@ def test_fail_custom_whitelist_header_field_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5775,11 +5606,7 @@ def test_input_fail_custom_whitelist_header_field_update_command(
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_update_command
 
-    get_jsonpath = (
-        "custom_whitelist/v1_list.json"
-        if version == ClientV1.API_VER
-        else "custom_whitelist/v2_list.json"
-    )
+    get_jsonpath = "custom_whitelist/v1_list.json" if version == ClientV1.API_VER else "custom_whitelist/v2_list.json"
     get_endpoint = (
         "ServerObjects/Global/CustomGlobalWhiteList"
         if version == ClientV1.API_VER
@@ -5817,9 +5644,7 @@ def test_input_fail_custom_whitelist_header_field_update_command(
         ),
     ),
 )
-def test_custom_whitelist_delete_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_custom_whitelist_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: Delete a custom whitelist member.
     Given:
@@ -5953,9 +5778,7 @@ def test_custom_whitelist_list_command(
         ),
     ),
 )
-def test_geo_exception_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_geo_exception_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the Geo IP Exceptions.
     When:
@@ -5987,9 +5810,7 @@ def test_geo_exception_list_command(
         ),
     ),
 )
-def test_trigger_policy_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_trigger_policy_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the Trigger Policies.
     When:
@@ -6068,9 +5889,7 @@ def test_custom_predifined_whitelist_update_command(
     from FortinetFortiwebVM import custom_predifined_whitelist_update_command
 
     get_jsonpath = (
-        "custom_predifined/v1_list_success.json"
-        if version == ClientV1.API_VER
-        else "custom_predifined/v2_list_success.json"
+        "custom_predifined/v1_list_success.json" if version == ClientV1.API_VER else "custom_predifined/v2_list_success.json"
     )
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
@@ -6098,9 +5917,7 @@ def test_custom_predifined_whitelist_update_command(
         ),
     ),
 )
-def test_custom_predifined_whitelist_list_command(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str
-):
+def test_custom_predifined_whitelist_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
     """
     Scenario: List the custom predifined whitelist members.
     When:
@@ -6202,13 +6019,13 @@ def test_url_access_rule_group_create_command(
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule",
             {"name": "check", "action": "Alert & Deny", "host_status": "enable"},
-            ErrorMessage.INSERT_VALUE.value.format('host'),
+            ErrorMessage.INSERT_VALUE.value.format("host"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule",
             {"name": "check", "action": "Alert & Deny", "host_status": "enable"},
-            ErrorMessage.INSERT_VALUE.value.format('host'),
+            ErrorMessage.INSERT_VALUE.value.format("host"),
         ),
     ),
 )
@@ -6377,8 +6194,8 @@ def test_url_access_rule_group_list_command(
         assert len(result.outputs) == expected
     assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"
     assert isinstance(result.outputs, list)
-    assert result.outputs[0]['count'] == 0
-    assert result.outputs[0]['host'] == 'test'
+    assert result.outputs[0]["count"] == 0
+    assert result.outputs[0]["host"] == "test"
 
 
 @pytest.mark.parametrize(
@@ -6387,8 +6204,13 @@ def test_url_access_rule_group_list_command(
         (
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "test", "url_type": "Simple String", "url_pattern": "test",
-             "meet_this_condition_if": "Object matches the URL Pattern", "source_address": "disable"},
+            {
+                "group_name": "test",
+                "url_type": "Simple String",
+                "url_pattern": "test",
+                "meet_this_condition_if": "Object matches the URL Pattern",
+                "source_address": "disable",
+            },
             "url_access_rule_condition/v1_create.json",
             "2",
         ),
@@ -6398,7 +6220,8 @@ def test_url_access_rule_group_list_command(
             {
                 "group_name": "test",
                 "url_type": "Simple String",
-                "url_pattern": "test", "meet_this_condition_if": "Object matches the URL Pattern",
+                "url_pattern": "test",
+                "meet_this_condition_if": "Object matches the URL Pattern",
                 "source_address": "disable",
             },
             "url_access_rule_condition/v2_create.json",
@@ -6427,9 +6250,7 @@ def test_url_access_rule_condition_create_command(
     from FortinetFortiwebVM import url_access_rule_condition_create_command
 
     json_response = load_mock_response(jsonpath)
-    json_response_get = load_mock_response(
-        "url_access_rule_condition/v1_list.json"
-    )
+    json_response_get = load_mock_response("url_access_rule_condition/v1_list.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     requests_mock.get(url=url, json=json_response_get, status_code=200)
@@ -6447,83 +6268,137 @@ def test_url_access_rule_condition_create_command(
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
             {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test"},
-            ErrorMessage.INSERT_VALUE.value.format('source_address_type'),
+            ErrorMessage.INSERT_VALUE.value.format("source_address_type"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
             {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test"},
-            ErrorMessage.INSERT_VALUE.value.format('source_address_type'),
+            ErrorMessage.INSERT_VALUE.value.format("source_address_type"),
         ),
         (
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": "IP"},
-            ErrorMessage.INSERT_VALUE.value.format('ip_range'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": "IP",
+            },
+            ErrorMessage.INSERT_VALUE.value.format("ip_range"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": "IP"},
-            ErrorMessage.INSERT_VALUE.value.format('ip_range'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": "IP",
+            },
+            ErrorMessage.INSERT_VALUE.value.format("ip_range"),
         ),
         (
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value},
-            ErrorMessage.INSERT_VALUE.value.format('ip'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value,
+            },
+            ErrorMessage.INSERT_VALUE.value.format("ip"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value},
-            ErrorMessage.INSERT_VALUE.value.format('ip'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value,
+            },
+            ErrorMessage.INSERT_VALUE.value.format("ip"),
         ),
         (
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value, "ip": "0.0.0.0"},
-            ErrorMessage.INSERT_VALUE.value.format('ip_type'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value,
+                "ip": "0.0.0.0",
+            },
+            ErrorMessage.INSERT_VALUE.value.format("ip_type"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value, "ip": "0.0.0.0"},
-            ErrorMessage.INSERT_VALUE.value.format('ip_type'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value,
+                "ip": "0.0.0.0",
+            },
+            ErrorMessage.INSERT_VALUE.value.format("ip_type"),
         ),
         (
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value},
-            ErrorMessage.INSERT_VALUE.value.format('source_domain'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value,
+            },
+            ErrorMessage.INSERT_VALUE.value.format("source_domain"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value},
-            ErrorMessage.INSERT_VALUE.value.format('source_domain'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value,
+            },
+            ErrorMessage.INSERT_VALUE.value.format("source_domain"),
         ),
         (
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value, "source_domain": "0.0.0.0"},
-            ErrorMessage.INSERT_VALUE.value.format('source_domain_type'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value,
+                "source_domain": "0.0.0.0",
+            },
+            ErrorMessage.INSERT_VALUE.value.format("source_domain_type"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
-            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
-             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value, "source_domain": "0.0.0.0"},
-            ErrorMessage.INSERT_VALUE.value.format('source_domain_type'),
+            {
+                "group_name": "check",
+                "url_type": "Simple String",
+                "source_address": "enable",
+                "url_pattern": "test",
+                "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value,
+                "source_domain": "0.0.0.0",
+            },
+            ErrorMessage.INSERT_VALUE.value.format("source_domain_type"),
         ),
     ),
 )
@@ -6571,8 +6446,14 @@ def test_input_fail_url_access_rule_condition_create_command(
             ClientV1.API_VER,
             "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition/1",
             "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition",
-            {"group_name": "test", "condition_id": "1", "url_type": "Simple String", "url_pattern": "test",
-             "meet_this_condition_if": "Object matches the URL Pattern", "source_address": "disable"},
+            {
+                "group_name": "test",
+                "condition_id": "1",
+                "url_type": "Simple String",
+                "url_pattern": "test",
+                "meet_this_condition_if": "Object matches the URL Pattern",
+                "source_address": "disable",
+            },
             "url_access_rule_condition/v1_create.json",
             "url_access_rule_condition/v1_list.json",
         ),
@@ -6581,9 +6462,11 @@ def test_input_fail_url_access_rule_condition_create_command(
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test&sub_mkey=1",
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test",
             {
-                "group_name": "test", "condition_id": "1",
+                "group_name": "test",
+                "condition_id": "1",
                 "url_type": "Simple String",
-                "url_pattern": "test", "meet_this_condition_if": "Object matches the URL Pattern",
+                "url_pattern": "test",
+                "meet_this_condition_if": "Object matches the URL Pattern",
                 "source_address": "disable",
             },
             "url_access_rule_condition/v2_create.json",
@@ -6718,9 +6601,9 @@ def test_url_access_rule_condition_list_command(
     result = url_access_rule_condition_list_command(mock_client, args)
     assert isinstance(result.outputs, dict)
     assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"
-    assert result.outputs.get('Condition')
-    assert isinstance(result.outputs.get('Condition'), list)
-    assert len(result.outputs['Condition']) == expected
+    assert result.outputs.get("Condition")
+    assert isinstance(result.outputs.get("Condition"), list)
+    assert len(result.outputs["Condition"]) == expected
 
 
 @pytest.mark.parametrize(
@@ -6820,8 +6703,7 @@ def test_url_access_rule_condition_list_command(
     ),
 )
 def test_dependencies_commands(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
-    outputs_prefix: str, command_name: str
+    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str, outputs_prefix: str, command_name: str
 ):
     """
     Scenario: List the dependencies commands bojects.
@@ -6838,15 +6720,18 @@ def test_dependencies_commands(
     Then:
      - Ensure that the output is correct.
     """
-    from FortinetFortiwebVM import persistence_list_command
-    from FortinetFortiwebVM import server_health_check_list_command
-    from FortinetFortiwebVM import local_certificate_list_command
-    from FortinetFortiwebVM import multi_certificate_list_command
-    from FortinetFortiwebVM import sni_certificate_list_command
-    from FortinetFortiwebVM import network_inteface_list_command
-    from FortinetFortiwebVM import virtual_ip_list_command
-    from FortinetFortiwebVM import letsencrypt_certificate_list_command
-    from FortinetFortiwebVM import sdn_connector_list_command
+    from FortinetFortiwebVM import (
+        letsencrypt_certificate_list_command,
+        local_certificate_list_command,
+        multi_certificate_list_command,
+        network_inteface_list_command,
+        persistence_list_command,
+        sdn_connector_list_command,
+        server_health_check_list_command,
+        sni_certificate_list_command,
+        virtual_ip_list_command,
+    )
+
     commands: dict[str, Callable] = {
         "fortiwebvm-persistence-policy-list": persistence_list_command,
         "fortiwebvm-server-health-check-list": server_health_check_list_command,
@@ -6865,7 +6750,7 @@ def test_dependencies_commands(
     assert result.outputs_prefix == outputs_prefix
     assert isinstance(result.outputs, list)
     assert isinstance(result.outputs[0], dict)
-    assert 'id' in result.outputs[0].keys()
+    assert "id" in result.outputs[0]
 
 
 @pytest.mark.parametrize(
@@ -6895,8 +6780,7 @@ def test_dependencies_commands(
     ),
 )
 def test_not_implemented_commands(
-    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
-    outputs_prefix: str, command_name: str
+    requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str, outputs_prefix: str, command_name: str
 ):
     """
     Scenario: Test not implemented commands.
@@ -6908,10 +6792,13 @@ def test_not_implemented_commands(
     Then:
      - Ensure relevant error raised.
     """
-    from FortinetFortiwebVM import multi_certificate_list_command
-    from FortinetFortiwebVM import sni_certificate_list_command
-    from FortinetFortiwebVM import letsencrypt_certificate_list_command
-    from FortinetFortiwebVM import sdn_connector_list_command
+    from FortinetFortiwebVM import (
+        letsencrypt_certificate_list_command,
+        multi_certificate_list_command,
+        sdn_connector_list_command,
+        sni_certificate_list_command,
+    )
+
     commands: dict[str, Callable] = {
         "fortiwebvm-multi-certificate-list": multi_certificate_list_command,
         "fortiwebvm-sni-certificate-list": sni_certificate_list_command,
@@ -6929,15 +6816,13 @@ def test_not_implemented_commands(
         (
             ClientV1.API_VER,
             "ServerObjects/Server/VirtualServer",
-            {"name": "check", "action": "Alert & Deny", "status": "disable",
-             "use_interface_ip": "enable", "interface": "port1"},
+            {"name": "check", "action": "Alert & Deny", "status": "disable", "use_interface_ip": "enable", "interface": "port1"},
             "v1_create_update_group.json",
         ),
         (
             ClientV2.API_VER,
             "cmdb/server-policy/vserver",
-            {"name": "check", "action": "Alert & Deny", "status": "disable",
-             "use_interface_ip": "enable", "interface": "port1"},
+            {"name": "check", "action": "Alert & Deny", "status": "disable", "use_interface_ip": "enable", "interface": "port1"},
             "virtual_server_group/v2_create.json",
         ),
     ),
@@ -6976,14 +6861,13 @@ def test_virtual_server_group_create_command(
             ClientV1.API_VER,
             "ServerObjects/Server/VirtualServer",
             {"name": "check", "status": "disable", "use_interface_ip": "enable"},
-            ErrorMessage.INSERT_VALUE.value.format('interface'),
+            ErrorMessage.INSERT_VALUE.value.format("interface"),
         ),
         (
             ClientV1.API_VER,
             "ServerObjects/Server/VirtualServer",
             {"name": "check", "status": "disable", "use_interface_ip": "disable", "interface": "port1"},
-            ErrorMessage.INSERT_VALUE.value.format("ipv4_address or ipv6_address")
-
+            ErrorMessage.INSERT_VALUE.value.format("ipv4_address or ipv6_address"),
         ),
     ),
 )
@@ -7023,8 +6907,7 @@ def test_input_fail_virtual_server_group_create_command(
         (
             ClientV1.API_VER,
             "ServerObjects/Server/VirtualServer/check",
-            {"name": "check", "action": "Alert & Deny", "status": "disable",
-             "use_interface_ip": "enable", "interface": "port1"},
+            {"name": "check", "action": "Alert & Deny", "status": "disable", "use_interface_ip": "enable", "interface": "port1"},
             "v1_create_update_group.json",
         ),
     ),
@@ -7196,13 +7079,13 @@ def test_virtual_server_item_create_command(
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
             {"group_name": "check", "status": "disable", "use_interface_ip": "enable"},
-            ErrorMessage.INSERT_VALUE.value.format('interface'),
+            ErrorMessage.INSERT_VALUE.value.format("interface"),
         ),
         (
             ClientV2.API_VER,
             "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
             {"group_name": "check", "status": "disable", "use_interface_ip": "disable"},
-            ErrorMessage.INSERT_VALUE.value.format('virtual_ip'),
+            ErrorMessage.INSERT_VALUE.value.format("virtual_ip"),
         ),
     ),
 )
@@ -7248,9 +7131,11 @@ def test_input_fail_virtual_server_item_create_command(
             ClientV2.API_VER,
             "cmdb/server-policy/vserver/vip-list?mkey=test&sub_mkey=1",
             {
-                "group_name": "test", "item_id": "1",
+                "group_name": "test",
+                "item_id": "1",
                 "url_type": "Simple String",
-                "url_pattern": "test", "meet_this_condition_if": "Object matches the URL Pattern",
+                "url_pattern": "test",
+                "meet_this_condition_if": "Object matches the URL Pattern",
                 "source_address": "disable",
             },
             "virtual_server_item/v2_create_update.json",
@@ -7418,13 +7303,12 @@ def test_server_pool_group_create_command(
         (
             ClientV2.API_VER,
             {"name": "check", "health_check": "test", "type": "True Transparent Proxy"},
-            ErrorMessage.INSERT_VALUE.value.format('health_check_source_ip')
+            ErrorMessage.INSERT_VALUE.value.format("health_check_source_ip"),
         ),
         (
             ClientV2.API_VER,
-            {"name": "check", "health_check": "test", "type": "True Transparent Proxy",
-             "health_check_source_ip": "test"},
-            ErrorMessage.INSERT_VALUE.value.format('health_check_source_ip_v6')
+            {"name": "check", "health_check": "test", "type": "True Transparent Proxy", "health_check_source_ip": "test"},
+            ErrorMessage.INSERT_VALUE.value.format("health_check_source_ip_v6"),
         ),
     ),
 )
@@ -7593,8 +7477,16 @@ def test_server_pool_group_list_command(
 
 
 @pytest.mark.parametrize(
-    ("version", "post_endpoint", "group_get_endpoint", "args", "post_json_path",
-     "group_get_json_path", "expected_value", "group_type"),
+    (
+        "version",
+        "post_endpoint",
+        "group_get_endpoint",
+        "args",
+        "post_json_path",
+        "group_get_json_path",
+        "expected_value",
+        "group_type",
+    ),
     (
         (
             ClientV1.API_VER,
@@ -7610,10 +7502,7 @@ def test_server_pool_group_list_command(
             ClientV2.API_VER,
             "cmdb/server-policy/server-pool/pserver-list?mkey=test",
             "cmdb/server-policy/server-pool?mkey=test",
-            {
-                "group_name": "test",
-                "ip": "test"
-            },
+            {"group_name": "test", "ip": "test"},
             "server_pool_rule/v2_create.json",
             "server_pool/v2_get_rp.json",
             "1",
@@ -7651,9 +7540,7 @@ def test_server_pool_rule_create_command(
     from FortinetFortiwebVM import server_pool_rule_create_command
 
     json_response = load_mock_response(post_json_path)
-    json_response_get = load_mock_response(
-        "server_pool_rule/v1_list.json"
-    )
+    json_response_get = load_mock_response("server_pool_rule/v1_list.json")
     group_get_response = load_mock_response(group_get_json_path)
     post_url = urljoin(mock_client.base_url, post_endpoint)
     get_url = urljoin(mock_client.base_url, group_get_endpoint)
@@ -7663,12 +7550,20 @@ def test_server_pool_rule_create_command(
     result = server_pool_rule_create_command(mock_client, args, group_type=group_type)
     assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
     assert isinstance(result.outputs, dict)
-    assert result.outputs['Rule']["id"] == expected_value
+    assert result.outputs["Rule"]["id"] == expected_value
 
 
 @pytest.mark.parametrize(
-    ("version", "post_endpoint", "group_get_endpoint", "args", "post_json_path",
-     "group_get_json_path", "expected_value", "group_type"),
+    (
+        "version",
+        "post_endpoint",
+        "group_get_endpoint",
+        "args",
+        "post_json_path",
+        "group_get_json_path",
+        "expected_value",
+        "group_type",
+    ),
     (
         (
             ClientV1.API_VER,
@@ -7684,11 +7579,7 @@ def test_server_pool_rule_create_command(
             ClientV2.API_VER,
             "cmdb/server-policy/server-pool/pserver-list?mkey=test&sub_mkey=1",
             "cmdb/server-policy/server-pool?mkey=test",
-            {
-                "group_name": "test",
-                "rule_id": "1",
-                "ip": "1.1.1.1"
-            },
+            {"group_name": "test", "rule_id": "1", "ip": "1.1.1.1"},
             "server_pool_rule/v2_create.json",
             "server_pool/v2_get_rp.json",
             "1",
@@ -7724,6 +7615,7 @@ def test_server_pool_rule_update_command(
      - Ensure that URL access rule group updated.
     """
     from FortinetFortiwebVM import server_pool_rule_update_command
+
     group_get_response = load_mock_response(group_get_json_path)
     get_url = urljoin(mock_client.base_url, group_get_endpoint)
     requests_mock.get(url=get_url, json=group_get_response, status_code=200)
@@ -7824,7 +7716,7 @@ def test_server_pool_rule_list_command(
     requests_mock.get(url=url, json=json_response)
     result = server_pool_rule_list_command(mock_client, args)
     assert isinstance(result.outputs, dict)
-    assert isinstance(result.outputs['Rule'], list)
-    assert len(result.outputs['Rule']) == expected
+    assert isinstance(result.outputs["Rule"], list)
+    assert len(result.outputs["Rule"]) == expected
     assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
-    assert result.outputs['Rule'][0]['ip'] == 'test'
+    assert result.outputs["Rule"][0]["ip"] == "test"

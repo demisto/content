@@ -1,0 +1,18 @@
+!cisco-esa-url-list limit=1
+!cisco-esa-url-list-create url_list_name=testurllist urls=test.com
+!cisco-esa-url-list-update url_list_name=testurllist urls=test2.com
+!cisco-esa-url-list-delete url_list_names=testurllist
+!cisco-esa-file-hash-list limit=1
+!cisco-esa-file-hash-create file_hash_list_name=testfilehash description=test filehashes=2286f6ffea7d0e58dcb3ecfd874041b1 list_type=any
+!cisco-esa-file-hash-update file_hash_list_name=testfilehash filehashes=2286f6ffea7d0e58dcb3ecfd874041b2
+!cisco-esa-pvo-quarantine-list limit=1
+!cisco-esa-pvo-quarantine-message-release rule_ids=12
+!cisco-esa-pvo-quarantine-message-delete rule_ids=12
+!cisco-esa-user-entry-list policy_name=test limit=1
+!cisco-esa-user-enrty-add policy_name=test receiver_domain_entries=test@ receiver_operation=and sender_domain_entries=test@
+!cisco-esa-user-entry-update policy_name=test receiver_domain_entries=test2@ receiver_operation=and sender_domain_entries=test2@
+!cisco-esa-message-connection-details-get message_ids=765,766,767 serial_number=133234 injection_connection_id=23092 limit=1
+!cisco-esa-message-remediation-details-get message_ids=765,766,767 serial_number=133234 injection_connection_id=23092
+!cisco-esa-message-amp-details-get message_ids=765,766,767 serial_number=133234 injection_connection_id=23092
+!cisco-esa-message-url-details-get message_ids=765,766,767 serial_number=133234 injection_connection_id=23092
+!cisco-esa-dictionary-words-update dictionary_name=test words=['a1',1]

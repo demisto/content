@@ -3440,3 +3440,6 @@ outputs:
 tests:
 - No test - Deprecated playbook
 deprecated: true
+supportedModules:
+- agentix
+- xsiam

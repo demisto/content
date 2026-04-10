@@ -1,7 +1,8 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import jinja2
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 """
 GenerateAsBuilt
@@ -421,13 +422,7 @@ class UseCaseDocument:
     given playbook ("use case") within a running XSOAR environment.
     """
 
-    def __init__(
-            self,
-            playbook_name,
-            dependencies,
-            author,
-            customer
-    ):  # pragma: no cover
+    def __init__(self, playbook_name, dependencies, author, customer):  # pragma: no cover
         self.playbook_name = playbook_name
         self.automations = dependencies.get("automation", NoneTableData())
         self.integrations = dependencies.get("integration", NoneTableData())
@@ -440,17 +435,11 @@ class UseCaseDocument:
 
     def markdown(self):
         template = jinja2.Template(USECASE_MD_DOCUMENT_TEMPLATE)
-        return template.render(
-            playbook_name=self.playbook_name,
-            data=self
-        )
+        return template.render(playbook_name=self.playbook_name, data=self)
 
     def html(self):
         template = jinja2.Template(USECASE_HTML_DOCUMENT_TEMPLATE)
-        return template.render(
-            playbook_name=self.playbook_name,
-            data=self
-        )
+        return template.render(playbook_name=self.playbook_name, data=self)
 
 
 class Document:
@@ -460,20 +449,20 @@ class Document:
     """
 
     def __init__(
-            self,
-            template,
-            integrations_table,
-            installed_packs_table,
-            playbooks_table,
-            automations_table,
-            system_config,
-            open_incidents,
-            closed_incidents,
-            playbook_stats,
-            reports,
-            dashboards,
-            author,
-            customer
+        self,
+        template,
+        integrations_table,
+        installed_packs_table,
+        playbooks_table,
+        automations_table,
+        system_config,
+        open_incidents,
+        closed_incidents,
+        playbook_stats,
+        reports,
+        dashboards,
+        author,
+        customer,
     ):  # pragma: no cover
         self.template = template
         self.integrations_table = integrations_table
@@ -505,7 +494,7 @@ class Document:
             customer=self.customer,
             playbook_stats=self.playbook_stats.as_html(headers=["playbook", "incidents"]),
             reports=self.reports.as_html(headers=["name", "type"]),
-            dashboards=self.dashboards.as_html(headers=["name", "shared"])
+            dashboards=self.dashboards.as_html(headers=["name", "shared"]),
         )
 
     def markdown(self):
@@ -524,21 +513,14 @@ class Document:
         )
 
 
-def build_document(
-        template,
-        integrations_table,
-        installed_packs_table,
-        playbooks_table,
-        automations_table,
-        system_config
-):
+def build_document(template, integrations_table, installed_packs_table, playbooks_table, automations_table, system_config):
     template = jinja2.Template(template)
     return template.render(
         integrations_table=integrations_table.as_html(),
         installed_packs_table=installed_packs_table,
         playbooks_table=playbooks_table,
         automations_table=automations_table,
-        system_config=system_config
+        system_config=system_config,
     )
 
 
@@ -552,18 +534,15 @@ def post_api_request(url, body):
     Returns:
         Dict: dictionary representation of the response
     """
-    api_args = {
-        "uri": url,
-        "body": body
-    }
+    api_args = {"uri": url, "body": body}
     raw_res = demisto.executeCommand("core-api-post", api_args)
     try:
-        res = raw_res[0]['Contents']['response']
+        res = raw_res[0]["Contents"]["response"]
         return res
     except KeyError:
-        return_error(f'API Request failed, no response from API call to {url}')
+        return_error(f"API Request failed, no response from API call to {url}")
     except TypeError:
-        return_error(f'API Request failed, failed to {raw_res}')
+        return_error(f"API Request failed, failed to {raw_res}")
 
 
 def get_api_request(url):
@@ -575,19 +554,17 @@ def get_api_request(url):
     Returns:
         Dict: dictionary representation of the response
     """
-    api_args = {
-        "uri": url
-    }
+    api_args = {"uri": url}
     raw_res = demisto.executeCommand("core-api-get", api_args)
 
     try:
-        res = raw_res[0]['Contents']['response']
+        res = raw_res[0]["Contents"]["response"]
         # If it's a string and not an object response, means this command has failed.
         if type(res) is str:
             return None
         return res
     except KeyError:
-        return_error(f'API Request failed, no response from API call to {url}')
+        return_error(f"API Request failed, no response from API call to {url}")
 
 
 def get_all_incidents(days=7, size=1000):
@@ -606,17 +583,9 @@ def get_all_incidents(days=7, size=1000):
             "page": 0,
             "size": int(size),
             "query": "-category:job",
-            "sort": [
-                {
-                    "field": "id",
-                    "asc": False
-                }
-            ],
-            "period": {
-                "by": "day",
-                "fromValue": int(days)
-            }
-        }
+            "sort": [{"field": "id", "asc": False}],
+            "period": {"by": "day", "fromValue": int(days)},
+        },
     }
     r = post_api_request("/incidents/search", body)
     return r.get("data")
@@ -638,17 +607,9 @@ def get_open_incidents(days=7, size=1000):
             "page": 0,
             "size": int(size),
             "query": "-status:closed -category:job",
-            "sort": [
-                {
-                    "field": "id",
-                    "asc": False
-                }
-            ],
-            "period": {
-                "by": "day",
-                "fromValue": int(days)
-            }
-        }
+            "sort": [{"field": "id", "asc": False}],
+            "period": {"by": "day", "fromValue": int(days)},
+        },
     }
     r = post_api_request("/incidents/search", body)
     total = r.get("total")
@@ -672,17 +633,9 @@ def get_closed_incidents(days=7, size=1000):
             "page": 0,
             "size": int(size),
             "query": "status:closed -category:job",
-            "sort": [
-                {
-                    "field": "id",
-                    "asc": False
-                }
-            ],
-            "period": {
-                "by": "day",
-                "fromValue": int(days)
-            }
-        }
+            "sort": [{"field": "id", "asc": False}],
+            "period": {"by": "day", "fromValue": int(days)},
+        },
     }
     r = post_api_request("/incidents/search", body)
     total = r.get("total")
@@ -810,15 +763,9 @@ def get_playbook_stats(playbooks, days=7, size=1000):
         # more info.
         playbook_data = playbooks.search("id", playbook)
         if playbook_data:
-            table.append({
-                "playbook": playbook_data.get("name"),
-                "incidents": count
-            })
+            table.append({"playbook": playbook_data.get("name"), "incidents": count})
         else:
-            table.append({
-                "playbook": playbook,
-                "incidents": count
-            })
+            table.append({"playbook": playbook, "incidents": count})
     td = TableData(table, "Playbook Stats")
     return td
 
@@ -837,15 +784,7 @@ def get_playbook_dependencies(playbook_name):
     if not playbook:
         return_error(f"Playbook {playbook_name} not found.")
     playbook_id = playbook.get("id")
-    body = {
-        "items": [
-            {
-                "id": f"{playbook_id}",
-                "type": "playbook"
-            }
-        ],
-        "dependencyLevel": "optional"
-    }
+    body = {"items": [{"id": f"{playbook_id}", "type": "playbook"}], "dependencyLevel": "optional"}
     dependencies = post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(playbook_id)
     if not dependencies:
         return_error(f"Failed to retrieve dependencies for {playbook_id}")
@@ -860,11 +799,7 @@ def get_playbook_dependencies(playbook_name):
         if not pack:
             pack = "Custom"
 
-        types[d_type].append({
-            "type": d_type,
-            "name": dependency.get("name"),
-            "pack": pack
-        })
+        types[d_type].append({"type": d_type, "name": dependency.get("name"), "pack": pack})
 
     result_table_datas = {}
     for k, v in types.items():
@@ -904,7 +839,11 @@ def playbook_use_case(playbook: str, author: str, customer: str):
     )
     fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
     return_results(fr)
-    return_results(CommandResults(readable_output=doc.markdown(),))
+    return_results(
+        CommandResults(
+            readable_output=doc.markdown(),
+        )
+    )
 
 
 def platform_as_built_use_case(max_request_size: int, max_days: int, author: str, customer: str):
@@ -942,13 +881,14 @@ def platform_as_built_use_case(max_request_size: int, max_days: int, author: str
         reports=reports,
         dashboards=dashboards,
         author=author,
-        customer=customer
-
+        customer=customer,
     )
     fr = fileResult("asbuilt.html", d.html(), file_type=EntryType.ENTRY_INFO_FILE)
-    return_results(CommandResults(
-        readable_output=d.markdown(),
-    ))
+    return_results(
+        CommandResults(
+            readable_output=d.markdown(),
+        )
+    )
     return_results(fr)
 
 
@@ -968,5 +908,5 @@ def main():  # pragma: no cover
         platform_as_built_use_case(max_request_size, max_days, author, customer)
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ("__builtin__", "builtins"):
     main()
