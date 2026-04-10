@@ -224,7 +224,6 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     # Truncate to microseconds since Python's datetime only supports up to 6 digits
     last_update_str = last_update_str[:26] + "Z"
     last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-    # last_update = arg_to_datetime(last_update_str)
     if not last_update:
         demisto.debug(f"Warning: Could not parse timestamp: {last_update_str}")
         return None, []
@@ -242,9 +241,7 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         if isinstance(most_recent_audit_log, dict):
             recent_audit_log_datetime_str = most_recent_audit_log["timestamp"]
             recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-            # recent_audit_log_datetime = arg_to_datetime(recent_audit_log_datetime_str)
             demisto.debug(f"The event was modified recently on {recent_audit_log_datetime}")
-            # if recent_audit_log_datetime > last_update:
             updated_doppel_alert["id"] = doppel_alert_id
             entries: list = [
                 {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
@@ -263,8 +260,6 @@ def _get_mirroring_fields():
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_instance": demisto.integrationInstance(),
         "incident_type": "Doppel_Incident",
-        # "dbotMirrorDirection": MIRROR_DIRECTION.get(mirror_direction),
-        # "dbotMirrorInstance": demisto.integrationInstance(),
     }
 
 
@@ -576,8 +571,6 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
                 created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
                 alert.update(mirroring_object)
 
-                # alert['dbotMirrorId'] = str(alert.get("id"))
-
                 incident = {
                     "name": f"Doppel Incident {uuid.uuid4()}",
                     "type": DOPPEL_ALERT,
@@ -620,39 +613,19 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     Checks for remote modifications since the last update timestamp
     and returns a list of modified incident IDs.
     """
-    demisto.debug("line 622 of get-modified-remote-data - ENTRY OF FUNCTION")
-    # remote_last_update = args.get("last_update")
-    # demisto.debug(f"Checking for remote modifications since: {remote_last_update}")
-
-    # last_update_formatted = format_datetime(remote_last_update)
-
-    # demisto.debug(f"Arguments Doppel: {list(args.keys())}")
-    # demisto.debug(f"remote_last_update: {remote_last_update}")
-    # demisto.debug(f"last_update_formatted: {last_update_formatted}")
 
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(  # type: ignore[union-attr]
         DOPPEL_API_DATE_FORMAT
     )
-    # DATE_FORMAT_STRICT = "%Y-%m-%dT%H:%M:%SZ"
-
-    # remote_args = GetModifiedRemoteDataArgs(args)
-    # last_update = dateparser.parse(
-    #     remote_args.last_update, 
-    #     settings={"TIMEZONE": "UTC"}
-    # ).strftime(DATE_FORMAT_STRICT) # This removes the .136764 and adds Z
-    # demisto.debug(f"Getting modified incidents from {last_update}")
-
+    
     query_params = {
         "last_activity_timestamp": last_update,
     }
 
-    demisto.debug(f"line 649 of get-modified-remote-data - QUERY PARAMS {query_params}")
-
     try:
         results = client.get_alerts(params=query_params)
         alerts = results.get("alerts", [])
-        demisto.debug(f"get-modified-remote-data alerts: {alerts}")
 
         modified_incident_ids = [str(alert.get("id")) for alert in alerts if alert.get("id")]
 
@@ -660,11 +633,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         return GetModifiedRemoteDataResponse(modified_incident_ids)
 
     except Exception as e:
-        demisto.info(f"line 662 of get-modified-remote-data - Expecetion ocrued {str(e)}")
-        demisto.debug(f"CRITICAL ERROR in get-modified-remote-data: {str(e)}")
         demisto.error(f"Error in get-modified-remote-data: {e}")
-        # raise e
-        demisto.info("line 666 of get-modified-remote-data RETURING EMPTY")
         return GetModifiedRemoteDataResponse([])
 
 
