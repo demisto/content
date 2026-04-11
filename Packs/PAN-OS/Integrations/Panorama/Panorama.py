@@ -12166,10 +12166,7 @@ class FirewallCommand:
         return vsys_to_query
 
     @staticmethod
-    def get_pushed_shared_policy_rules(
-        firewall,
-        rulebase_type: str,
-    ) -> dict[str, PushedSharedPolicy]:
+    def get_pushed_shared_policy_rules(firewall, rulebase_type: str, vsys_name: str) -> dict[str, PushedSharedPolicy]:
         """
         Retrieve Panorama pushed shared policies (pre-rulebase and post-rulebase)
         and map them by rule name for fast lookup.
@@ -12177,9 +12174,11 @@ class FirewallCommand:
         # Map by rule name for quick lookup
         pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
 
-        # Operational command to retrieve the full configuration of policies pushed from Panorama
-        pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
+        # Returns the complete set of policies that Panorama has "shared" with that specific vsys (Shared Rules and Device Group Rules)
+        pushed_config_cmd = f"<show><config><pushed-shared-policy><vsys>{vsys_name}</vsys></pushed-shared-policy></config></show>"
         pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
+
+        # print full response for debugging
         pushed_config_response_result = pushed_config_response.find("result")
         if pushed_config_response_result is not None:
             pushed_config_response_result_str = ET.tostring(pushed_config_response_result, encoding="unicode")
@@ -12190,9 +12189,13 @@ class FirewallCommand:
 
         # Panorama rules can exist in pre-rulebase or post-rulebase
         for position in ["pre-rulebase", "post-rulebase"]:
-            # 1. Handle Global Shared Rules
-            panorama_xpath = f"./result/policy/panorama/{position}/{rulebase_type}/rules/entry"
+            panorama_xpath = f".//panorama/{position}/{rulebase_type}/rules/entry"
             pushed_rules = pushed_config_response.findall(panorama_xpath)
+            if not pushed_rules:
+                demisto.debug(
+                    f"[get_pushed_shared_policy_rules] No {position} found for vsys: {vsys_name}, path: {panorama_xpath}"
+                )
+
             for pushed_rule in pushed_rules:
                 entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
                 if entry:
@@ -12200,28 +12203,6 @@ class FirewallCommand:
                     entry.position = position.replace("-", "_")
                     pushed_rulebase_results[entry.name] = entry
                     demisto.debug(f"[get_pushed_shared_policy_rules] Found pushed shared policy rule: {entry.name} in {position}")
-
-            # 2. Handle Device-Group Rules (with Parent Name Retrieval)
-            dg_entry_xpath = f"./result/policy/device-group-entry"
-            dg_entries = pushed_config_response.findall(dg_entry_xpath)
-            for dg_entry in dg_entries:
-                dg_name = dg_entry.get("name", "")
-
-                # Find the DG entry first, then its rules
-                rules_xpath = f"./{position}/{rulebase_type}/rules/entry"
-                rules_xml = dg_entry.findall(rules_xpath)
-                for rule_xml in rules_xml:
-                    entry = dataclass_from_element(firewall, PushedSharedPolicy, rule_xml)
-                    if entry:
-                        entry.policy_type = rulebase_type
-                        entry.position = position.replace("-", "_")
-                        entry.loc = (
-                            entry.loc if entry.loc else dg_name
-                        )  # If the entry itself doesn't have a 'loc', use the parent DG name
-                        pushed_rulebase_results[entry.name] = entry
-                        demisto.debug(
-                            f"[get_pushed_shared_policy_rules] Found pushed device-group policy rule: {entry.name} in {dg_name}, {position}"
-                        )
 
         return pushed_rulebase_results
 
@@ -12287,21 +12268,20 @@ class FirewallCommand:
             else:
                 vsys_to_query = FirewallCommand.get_vsys_list(firewall, f"{debug_prefix} Step 1: ")
 
-            """
-            STEP 2: Data enrichment.
-            Pre-fetch Panorama pushed policies (shared) once per firewall. (if any)
-            This is necessary because the hitcount response itself doesn't contain rule metadata 
-            (whether a rule is from Panorama or which Device Group it belongs to...)
-            """
-            demisto.debug(f"{debug_prefix} Step 2 Starting: Data enrichment")
-            pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
-            try:
-                pushed_rulebase_results = FirewallCommand.get_pushed_shared_policy_rules(firewall, rulebase_type)
-            except Exception as e:
-                demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
-
-            # STEP 3: Iterate through vsys and perform hitcount queries
             for vsys_name in vsys_to_query:
+                """
+                STEP 2: Data enrichment.
+                For each vsys, Pre-fetch Panorama Shared Rules and Device Group Rules. (if any)
+                This is necessary because the hitcount response itself doesn't contain rule metadata.
+                """
+                demisto.debug(f"{debug_prefix} Step 2 Starting: Data enrichment for vsys: {vsys_name}")
+                pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
+                try:
+                    pushed_rulebase_results = FirewallCommand.get_pushed_shared_policy_rules(firewall, rulebase_type, vsys_name)
+                except Exception as e:
+                    demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
+
+                # STEP 3: Iterate through vsys and perform hitcount queries
                 demisto.debug(f"{debug_prefix} Step 3 Starting: Iterate through vsys: {vsys_name}")
                 xml_root = FirewallCommand.build_rule_hit_count_xml(vsys_name, rulebase_type, rules_arg)
                 try:
