@@ -27,6 +27,7 @@ filter alertType != null
     xdm.source.process.command_line = primaryProcess -> commandLine,
     xdm.source.process.parent_id = primaryProcess -> parentPid,
     xdm.source.process.executable.path = primaryProcess -> artifact.filePath,
+    xdm.source.process.executable.filename = arrayindex(regextract(primaryProcess -> artifact.filePath, "[^\\]+$"),0),
     xdm.source.process.executable.sha256 = primaryProcess -> artifact.sha256,
     xdm.source.process.pid = to_integer(primaryProcess -> pid),
     xdm.source.user.identifier = primaryProcess -> userId,
