@@ -109,7 +109,7 @@ If any alerts are missing in Cortex XSIAM, check the status of the integration:
 
 ### Fewer Alerts in Cortex XSIAM Than in Prisma Cloud Compute
 
-Prisma Cloud Compute groups alerts that occur close together into a single aggregated alert before sending them to Cortex XSIAM. Each aggregated alert creates one case, even if it contains multiple individual alerts. Your alerts are not lost — they are stored inside each case in the `aggregatedAlerts` field and can be viewed with this XQL query:
+Prisma Cloud Compute aggregates alerts occurring within a specific time window into a single alert before sending them to Cortex XSIAM. This may result in fewer issues created compared to the total number of alerts in the Prisma Cloud Compute console. Your alerts are not lost — they are stored inside each issue in the `aggregatedAlerts` field and can be viewed with this XQL query:
 
 ```xql
 dataset = prisma_cloud_compute_raw
