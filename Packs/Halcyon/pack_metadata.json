@@ -10,8 +10,16 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Alerts",
+        "Compliance",
+        "Security",
+        "Malware"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Compliance"
+    ],
     "keywords": [
         "halcyon",
         "device management",
