@@ -1577,83 +1577,89 @@
             }
         },
         "CrowdStrike Falcon NGSIEM Case": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Additional Email Addresses": {
-					"simple": "last_updated_by.email"
-				},
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Email Addresses": {
+                    "simple": "last_updated_by.email"
+                },
                 "Assigned User": {
                     "simple": "assigned_to"
                 },
-                "Source Created By": {
-                    "simple": "created_by.full_name"
-                },
-				"Description": {
+                "Description": {
                     "simple": "description"
                 },
                 "Email": {
                     "simple": "created_by.email"
                 },
-				"End Time": {
-					"simple": "end_timestamp"
-				},
+                "End Time": {
+                    "simple": "end_timestamp"
+                },
+                "External Category Name": {
+                    "simple": "incident_type"
+                },
+                "External System ID": {
+                    "simple": "id"
+                },
                 "Full Name": {
                     "simple": "last_updated_by.full_name"
                 },
-				"Last Update Time": {
-					"simple": "updated_timestamp"
-				},
-				"Start Time": {
-					"simple": "start_timestamp"
-				},
-				"State": {
-					"simple": "status"
-				},
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                },
+                "Last Update Time": {
+                    "simple": "updated_timestamp"
+                },
+                "Source Created By": {
+                    "simple": "created_by.full_name"
+                },
+                "Start Time": {
+                    "simple": "start_timestamp"
+                },
+                "State": {
+                    "simple": "status"
+                },
                 "Threat Name": {
                     "simple": "name"
                 },
-				"occurred": {
-					"simple": "created_timestamp"
-				},
-				"severity": {
-					"simple": "severity"
-				},
                 "UUID": {
                     "simple": "created_by.uuid"
                 },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },
-				"dbotMirrorId": {
-					"complex": {
-						"filters": [],
-						"root": "id",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"simple": ":case:"
-										}
-									},
-									"suffix": {
-										"isContext": false
-									}
-								},
-								"operator": "concat"
-							}
-						]
-					}
-				},
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ":case:"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
                 },
-                "IncomingMirrorError": {
-                    "simple": "in_mirror_error"
+                "occurred": {
+                    "simple": "created_timestamp"
+                },
+                "severity": {
+                    "simple": "severity"
                 }
-			}
-		},
+            }
+        },
         "CrowdStrike Falcon NGSIEM Automated Lead":{
 			"dontMapEventToLabels": false,
 			"internalMapping": {
