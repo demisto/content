@@ -1,0 +1,27 @@
+{
+    "Name": "Adobe",
+    "Title": "Adobe",
+    "Domain": "adobe.com",
+    "BreachDate": "2013-10-04",
+    "AddedDate": "2013-12-04T00:00:00Z",
+    "ModifiedDate": "2022-05-15T23:52:49Z",
+    "PwnCount": 152445165,
+    "Description": "In October 2013, 153 million Adobe accounts were breached with each containing an internal ID, username, email, \u003Cem\u003Eencrypted\u003C/em\u003E password and a password hint in plain text. The password cryptography was poorly done and many were quickly resolved back to plain text. The unencrypted hints also \u003Ca href=\"http://www.troyhunt.com/2013/11/adobe-credentials-and-serious.html\" target=\"_blank\" rel=\"noopener\"\u003Edisclosed much about the passwords\u003C/a\u003E adding further to the risk that hundreds of millions of Adobe customers already faced.",
+    "LogoPath": "https://logos.haveibeenpwned.com/Adobe.png",
+    "Attribution": null,
+    "DisclosureUrl": null,
+    "DataClasses": [
+        "Email addresses",
+        "Password hints",
+        "Passwords",
+        "Usernames"
+    ],
+    "IsVerified": true,
+    "IsFabricated": false,
+    "IsSensitive": false,
+    "IsRetired": false,
+    "IsSpamList": false,
+    "IsMalware": false,
+    "IsSubscriptionFree": false,
+    "IsStealerLog": false
+}

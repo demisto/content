@@ -1,0 +1,16 @@
+[
+    {
+        "DomainName": "example.com",
+        "PwnCount": 1234,
+        "PwnCountExcludingSpamLists": 1100,
+        "PwnCountExcludingSpamListsAtLastSubscriptionRenewal": 900,
+        "NextSubscriptionRenewal": "2025-06-15T00:00:00Z"
+    },
+    {
+        "DomainName": "test.org",
+        "PwnCount": 567,
+        "PwnCountExcludingSpamLists": 500,
+        "PwnCountExcludingSpamListsAtLastSubscriptionRenewal": 450,
+        "NextSubscriptionRenewal": "2025-09-01T00:00:00Z"
+    }
+]
