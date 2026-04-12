@@ -6962,6 +6962,8 @@ class CloudWatchLogs:
             args (Dict[str, Any]): Command arguments containing:
                 - log_group_name: The name of the log group (required).
                 - kms_key_id: The ARN of the CMK to use when encrypting log data (optional).
+                - log_group_class: The class of the log group - STANDARD or INFREQUENT_ACCESS (optional).
+                - tags: Key-value pairs to tag the log group, in JSON format (optional).
 
         Returns:
             CommandResults: Results of the operation with a success message.
@@ -6974,6 +6976,12 @@ class CloudWatchLogs:
         }
         if kms_key_id := args.get("kms_key_id"):
             kwargs["kmsKeyId"] = kms_key_id
+        if log_group_class := args.get("log_group_class"):
+            kwargs["logGroupClass"] = log_group_class
+        if tags := args.get("tags"):
+            kwargs["tags"] = json.loads(tags) if isinstance(tags, str) else tags
+        if (deletion_protection := args.get("deletion_protection_enabled")) is not None:
+            kwargs["deletionProtectionEnabled"] = argToBoolean(deletion_protection)
 
         response = client.create_log_group(**kwargs)
 
@@ -7089,12 +7097,15 @@ class CloudWatchLogs:
             client (BotoClient): The AWS CloudWatch Logs boto3 client.
             args (Dict[str, Any]): Command arguments containing:
                 - log_group_name: The name of the log group (required).
+                - log_group_identifier: The ARN or name of the log group to search (optional).
                 - log_stream_names: Comma-separated list of log stream names (optional).
+                - log_stream_name_prefix: Filters by log stream name prefix (optional).
                 - start_time: Start of the time range in milliseconds since epoch (optional).
                 - end_time: End of the time range in milliseconds since epoch (optional).
                 - filter_pattern: The filter pattern to use (optional).
                 - limit: Maximum number of events to return (optional).
-                - interleaved: Whether to interleave results from multiple streams (optional).
+                - next_token: Pagination token from a previous request (optional).
+                - unmask: Display log events with unmasked data (optional).
 
         Returns:
             CommandResults: Results containing the filtered log events.
@@ -7106,8 +7117,12 @@ class CloudWatchLogs:
             "logGroupName": args.get("log_group_name"),
         }
 
+        if log_group_identifier := args.get("log_group_identifier"):
+            kwargs["logGroupIdentifier"] = log_group_identifier
         if log_stream_names := args.get("log_stream_names"):
             kwargs["logStreamNames"] = argToList(log_stream_names)
+        if log_stream_name_prefix := args.get("log_stream_name_prefix"):
+            kwargs["logStreamNamePrefix"] = log_stream_name_prefix
         if start_time := arg_to_number(args.get("start_time")):
             kwargs["startTime"] = start_time
         if end_time := arg_to_number(args.get("end_time")):
@@ -7116,8 +7131,10 @@ class CloudWatchLogs:
             kwargs["filterPattern"] = filter_pattern
         if limit := arg_to_number(args.get("limit")):
             kwargs["limit"] = limit
-        if interleaved := args.get("interleaved"):
-            kwargs["interleaved"] = argToBoolean(interleaved)
+        if next_token := args.get("next_token"):
+            kwargs["nextToken"] = next_token
+        if (unmask := args.get("unmask")) is not None:
+            kwargs["unmask"] = argToBoolean(unmask)
 
         response = client.filter_log_events(**kwargs)
 
@@ -7152,7 +7169,12 @@ class CloudWatchLogs:
             client (BotoClient): The AWS CloudWatch Logs boto3 client.
             args (Dict[str, Any]): Command arguments containing:
                 - log_group_name_prefix: The prefix to match (optional).
+                - log_group_name_pattern: Case-sensitive substring to match against log group names (optional).
+                - account_identifiers: Comma-separated list of account IDs for cross-account querying (optional).
+                - include_linked_accounts: Whether to include log groups in linked source accounts (optional).
+                - log_group_class: Filter by log group class - STANDARD or INFREQUENT_ACCESS (optional).
                 - limit: Maximum number of items returned (optional, default up to 50).
+                - next_token: Pagination token from a previous request (optional).
 
         Returns:
             CommandResults: Results containing the log groups.
@@ -7164,8 +7186,18 @@ class CloudWatchLogs:
 
         if prefix := args.get("log_group_name_prefix"):
             kwargs["logGroupNamePrefix"] = prefix
+        if pattern := args.get("log_group_name_pattern"):
+            kwargs["logGroupNamePattern"] = pattern
+        if account_identifiers := args.get("account_identifiers"):
+            kwargs["accountIdentifiers"] = argToList(account_identifiers)
+        if (include_linked := args.get("include_linked_accounts")) is not None:
+            kwargs["includeLinkedAccounts"] = argToBoolean(include_linked)
+        if log_group_class := args.get("log_group_class"):
+            kwargs["logGroupClass"] = log_group_class
         if limit := arg_to_number(args.get("limit")):
             kwargs["limit"] = limit
+        if next_token := args.get("next_token"):
+            kwargs["nextToken"] = next_token
 
         response = client.describe_log_groups(**kwargs)
 
@@ -7205,9 +7237,12 @@ class CloudWatchLogs:
             client (BotoClient): The AWS CloudWatch Logs boto3 client.
             args (Dict[str, Any]): Command arguments containing:
                 - log_group_name: The name of the log group (required).
+                - log_group_identifier: The ARN or name of the log group (optional).
                 - log_stream_name_prefix: The prefix to match (optional).
                 - order_by: Order results by LogStreamName or LastEventTime (optional).
+                - descending: If true, results are returned in descending order (optional).
                 - limit: Maximum number of items returned (optional).
+                - next_token: Pagination token from a previous request (optional).
 
         Returns:
             CommandResults: Results containing the log streams.
@@ -7219,12 +7254,18 @@ class CloudWatchLogs:
             "logGroupName": args.get("log_group_name"),
         }
 
+        if log_group_identifier := args.get("log_group_identifier"):
+            kwargs["logGroupIdentifier"] = log_group_identifier
         if prefix := args.get("log_stream_name_prefix"):
             kwargs["logStreamNamePrefix"] = prefix
         if limit := arg_to_number(args.get("limit")):
             kwargs["limit"] = limit
         if order_by := args.get("order_by"):
             kwargs["orderBy"] = order_by
+        if (descending := args.get("descending")) is not None:
+            kwargs["descending"] = argToBoolean(descending)
+        if next_token := args.get("next_token"):
+            kwargs["nextToken"] = next_token
 
         response = client.describe_log_streams(**kwargs)
 
@@ -7376,6 +7417,10 @@ class CloudWatchLogs:
                 - metric_name: The name of the CloudWatch metric (required).
                 - metric_namespace: The namespace of the CloudWatch metric (required).
                 - metric_value: The value to publish to the CloudWatch metric (required).
+                - default_value: The value to emit when a filter pattern does not match (optional).
+                - dimensions: The fields to use as dimensions for the metric, as JSON (optional).
+                - unit: The unit to assign to the metric (optional).
+                - apply_on_transformed_logs: Whether to apply on transformed logs (optional).
 
         Returns:
             CommandResults: Results of the operation with a success message.
@@ -7383,18 +7428,27 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
+        metric_transformation: dict[str, Any] = {
+            "metricName": args.get("metric_name"),
+            "metricNamespace": args.get("metric_namespace"),
+            "metricValue": args.get("metric_value"),
+        }
+        if (default_value := args.get("default_value")) is not None:
+            metric_transformation["defaultValue"] = float(default_value)
+        if dimensions := args.get("dimensions"):
+            metric_transformation["dimensions"] = json.loads(dimensions) if isinstance(dimensions, str) else dimensions
+        if unit := args.get("unit"):
+            metric_transformation["unit"] = unit
+
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),
             "filterName": args.get("filter_name"),
             "filterPattern": args.get("filter_pattern"),
-            "metricTransformations": [
-                {
-                    "metricName": args.get("metric_name"),
-                    "metricNamespace": args.get("metric_namespace"),
-                    "metricValue": args.get("metric_value"),
-                }
-            ],
+            "metricTransformations": [metric_transformation],
         }
+
+        if (apply_on_transformed := args.get("apply_on_transformed_logs")) is not None:
+            kwargs["applyOnTransformedLogs"] = argToBoolean(apply_on_transformed)
 
         response = client.put_metric_filter(**kwargs)
 
