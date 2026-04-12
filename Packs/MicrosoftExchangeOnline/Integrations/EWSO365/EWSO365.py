@@ -331,9 +331,9 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     """
     Checks if an item is a duplicate based on ID and Timestamp.
 
-    RFC 5322 defines Message-ID values as <id@domain>, but in practice the same
-    message may appear in different forms across fetches, such as id@domain,
-    <id@domain>, id@domain>, or <id@domain and they might change between fetches.
+    RFC 5322 defines Message-ID values as ``<id@domain>``, but in practice the same
+    message may appear in different forms across fetches — such as ``id@domain``,
+    ``<id@domain>``, ``id@domain>``, or ``<id@domain`` — and they might change between fetches.
     To avoid duplicate incidents, we verify all possible forms in exclude_ids.
 
     Features:
