@@ -185,3 +185,181 @@ def test_test_module_command(mocker) -> None:
     main()
 
     assert "ok" in AzureResourceGraph.return_results.call_args[0][0]
+
+
+class TestGovAccountToggle:
+    """Tests for the Gov Account checkbox feature."""
+
+    GOV_SCOPE = "https://management.usgovcloudapi.net/.default"
+    NORMAL_SCOPE = "https://management.azure.com/.default"
+
+    def test_client_with_gov_account_enabled(self, mocker):
+        """
+        Given:
+            - is_gov=True is passed to AzureResourceGraphClient.
+        When:
+            - The client is initialized.
+        Then:
+            - MicrosoftClient is created with the gov scope and AZURE_US_GCC_HIGH_CLOUD azure_cloud.
+        """
+        from AzureResourceGraph import AZURE_US_GCC_HIGH_CLOUD, AzureResourceGraphClient, MicrosoftClient
+
+        mock_ms_client = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
+
+        AzureResourceGraphClient(
+            base_url="url",
+            tenant_id="tenant",
+            auth_id="auth_id",
+            enc_key="enc_key",
+            app_name="APP_NAME",
+            verify=False,
+            proxy=False,
+            self_deployed=True,
+            ok_codes=(200,),
+            server="server",
+            certificate_thumbprint="",
+            private_key="",
+            is_gov=True,
+        )
+
+        call_kwargs = mock_ms_client.call_args[1]
+        assert call_kwargs["scope"] == self.GOV_SCOPE
+        assert call_kwargs["azure_cloud"] == AZURE_US_GCC_HIGH_CLOUD
+
+    def test_client_with_gov_account_disabled(self, mocker):
+        """
+        Given:
+            - is_gov=False (default) is passed to AzureResourceGraphClient.
+        When:
+            - The client is initialized.
+        Then:
+            - MicrosoftClient is created with the standard scope and no azure_cloud parameter.
+        """
+        from AzureResourceGraph import AzureResourceGraphClient, MicrosoftClient
+
+        mock_ms_client = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
+
+        AzureResourceGraphClient(
+            base_url="url",
+            tenant_id="tenant",
+            auth_id="auth_id",
+            enc_key="enc_key",
+            app_name="APP_NAME",
+            verify=False,
+            proxy=False,
+            self_deployed=True,
+            ok_codes=(200,),
+            server="server",
+            certificate_thumbprint="",
+            private_key="",
+            is_gov=False,
+        )
+
+        call_kwargs = mock_ms_client.call_args[1]
+        assert call_kwargs["scope"] == self.NORMAL_SCOPE
+        assert "azure_cloud" not in call_kwargs
+
+    def test_client_default_is_not_gov(self, mocker):
+        """
+        Given:
+            - is_gov is not passed to AzureResourceGraphClient (uses default).
+        When:
+            - The client is initialized.
+        Then:
+            - MicrosoftClient is created with the standard scope (same as is_gov=False).
+        """
+        from AzureResourceGraph import AzureResourceGraphClient, MicrosoftClient
+
+        mock_ms_client = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
+
+        AzureResourceGraphClient(
+            base_url="url",
+            tenant_id="tenant",
+            auth_id="auth_id",
+            enc_key="enc_key",
+            app_name="APP_NAME",
+            verify=False,
+            proxy=False,
+            self_deployed=True,
+            ok_codes=(200,),
+            server="server",
+            certificate_thumbprint="",
+            private_key="",
+        )
+
+        call_kwargs = mock_ms_client.call_args[1]
+        assert call_kwargs["scope"] == self.NORMAL_SCOPE
+        assert "azure_cloud" not in call_kwargs
+
+    def test_main_passes_gov_account_param(self, mocker):
+        """
+        Given:
+            - The gov_account parameter is set to True in demisto.params().
+        When:
+            - main() is called with test-module command.
+        Then:
+            - AzureResourceGraphClient is initialized with is_gov=True.
+        """
+        import AzureResourceGraph
+        import demistomock as demisto
+        from AzureResourceGraph import MicrosoftClient, main
+
+        params = {
+            "auth_id": "test_client_id",
+            "cred_token": {"password": "test"},
+            "host": "https://management.azure.com",
+            "tenant_id": "1abc234d-12a3-12a3-12a3-1234abcde123",
+            "cred_auth_id": {"password": "test_api"},
+            "unsecure": False,
+            "proxy": False,
+            "private_key": "test-key",
+            "self_deployed": True,
+            "enc_key": "test",
+            "gov_account": True,
+        }
+
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(MicrosoftClient, "http_request", return_value=get_azure_access_token_mock())
+        mocker.patch.object(AzureResourceGraph, "return_results")
+
+        main()
+
+        assert "ok" in AzureResourceGraph.return_results.call_args[0][0]
+
+    def test_main_without_gov_account_param(self, mocker):
+        """
+        Given:
+            - The gov_account parameter is not set (defaults to False) in demisto.params().
+        When:
+            - main() is called with test-module command.
+        Then:
+            - AzureResourceGraphClient is initialized with is_gov=False (default behavior).
+        """
+        import AzureResourceGraph
+        import demistomock as demisto
+        from AzureResourceGraph import MicrosoftClient, main
+
+        params = {
+            "auth_id": "test_client_id",
+            "cred_token": {"password": "test"},
+            "host": "https://management.azure.com",
+            "tenant_id": "1abc234d-12a3-12a3-12a3-1234abcde123",
+            "cred_auth_id": {"password": "test_api"},
+            "unsecure": False,
+            "proxy": False,
+            "private_key": "test-key",
+            "self_deployed": True,
+            "enc_key": "test",
+        }
+
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(MicrosoftClient, "http_request", return_value=get_azure_access_token_mock())
+        mocker.patch.object(AzureResourceGraph, "return_results")
+
+        main()
+
+        assert "ok" in AzureResourceGraph.return_results.call_args[0][0]
