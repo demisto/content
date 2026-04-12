@@ -1763,7 +1763,8 @@ def text_to_adf(text: str) -> Dict[str, Any]:
     def is_adf_json(adf: Any) -> bool:
         return bool(
             isinstance(adf, dict)
-            and "version" in adf  # The "version" field is required in ADF, and it should be an integer greater than or equal to 1.
+            and "version"
+            in adf  # The "version" field is required in ADF, and it should be an integer greater than or equal to 1.
             and int(adf["version"]) >= 1
             and "type" in adf  # The "type" field is required in ADF, and for root-level ADF objects, it should be "doc".
             and adf["type"] == "doc"
@@ -5021,4 +5022,3 @@ def main():  # pragma: no cover
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
-
