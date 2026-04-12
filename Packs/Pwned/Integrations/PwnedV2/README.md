@@ -428,3 +428,121 @@ Date: __2011-06-25__
 
 In June 2011, the hacktivist group known as "LulzSec" leaked [one final large data breach they titled "50 days of lulz"](http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-dumping-nato-att-gamer-data/). The compromised data came from sources such as AT&T, Battlefield Heroes and the [hackforums.net website](http://hackforums.net). The leaked Hack Forums data included credentials and personal information of nearly 200,000 registered forum users.
 Data breached: __Dates of birth,Email addresses,Instant messenger identities,IP addresses,Passwords,Social connections,Spoken languages,Time zones,User website URLs,Usernames,Website activity__
+
+### pwned-breaches-for-domain-list
+
+***
+Gets all breached email addresses for a domain.
+
+#### Base Command
+
+`pwned-breaches-for-domain-list`
+
+#### Input
+
+| __Argument Name__ | __Description__ | __Required__ |
+| --- | --- | --- |
+| domain | Comma-separated list of domains to check for breaches. | Required |
+
+#### Context Output
+
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| Domain.Pwned-V2.Breaches | Unknown | A dictionary of breached email aliases and their associated breach names for the domain. |
+
+#### Command Example
+
+`pwned-breaches-for-domain-list domain="adobe.com"`
+
+### pwned-subscribed-domains-list
+
+***
+Gets the list of subscribed domains.
+
+#### Base Command
+
+`pwned-subscribed-domains-list`
+
+#### Input
+
+| __Argument Name__ | __Description__ | __Required__ |
+| --- | --- | --- |
+
+#### Context Output
+
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| Pwned-V2.SubscribedDomain.DomainName | String | The full domain name that has been successfully verified. |
+| Pwned-V2.SubscribedDomain.PwnCount | Number | Total number of breached email addresses found on the domain at last search. |
+| Pwned-V2.SubscribedDomain.PwnCountExcludingSpamLists | Number | Number of breached email addresses found on the domain, excluding spam lists. |
+| Pwned-V2.SubscribedDomain.PwnCountExcludingSpamListsAtLastSubscriptionRenewal | Number | Total breached email addresses found when the current subscription was taken out. |
+| Pwned-V2.SubscribedDomain.NextSubscriptionRenewal | Date | The date and time the current subscription ends in ISO 8601 format. |
+
+#### Command Example
+
+`pwned-subscribed-domains-list`
+
+### pwned-breach-get
+
+***
+Gets a single breached site by breach name.
+
+#### Base Command
+
+`pwned-breach-get`
+
+#### Input
+
+| __Argument Name__ | __Description__ | __Required__ |
+| --- | --- | --- |
+| breach_name | The name of the breach to retrieve. | Required |
+
+#### Context Output
+
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| Domain.Pwned-V2.Compromised.Vendor | String | For compromised domains, the vendor that made the decision. |
+| Domain.Pwned-V2.Compromised.Reporters | String | For compromised domains, the reporters for the vendor to make the compromised decision. |
+| Domain.Name | String | Domain name. |
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+
+#### Command Example
+
+`pwned-breach-get breach_name="Adobe"`
+
+### pwned-latest-breach-get
+
+***
+Gets the most recently added breach.
+
+#### Base Command
+
+`pwned-latest-breach-get`
+
+#### Input
+
+| __Argument Name__ | __Description__ | __Required__ |
+| --- | --- | --- |
+
+#### Context Output
+
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| Domain.Pwned-V2.Compromised.Vendor | String | For compromised domains, the vendor that made the decision. |
+| Domain.Pwned-V2.Compromised.Reporters | String | For compromised domains, the reporters for the vendor to make the compromised decision. |
+| Domain.Name | String | Domain name. |
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+
+#### Command Example
+
+`pwned-latest-breach-get`
