@@ -5898,6 +5898,7 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
         "directionality": reply.get("directionality", {}),
         "m365_signals": reply.get("m365_signals", {}),
         "fingerprints": reply.get("fingerprints", {}),
+        "available_actions": reply.get("available_actions", {}),
     }
 
     return CommandResults(
