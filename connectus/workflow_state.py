@@ -62,6 +62,7 @@ Usage:
 
 import csv
 import io
+import json
 import os
 import sys
 from typing import Optional
@@ -239,6 +240,18 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
     val = row.get(step_name, "").strip()
     if is_checked(val):
         return f"'{step_name}' is already marked as passed for '{row['Integration Name']}'."
+
+    # Prerequisite: "generated manifest" requires "script inputs" to be set
+    if step_name == "generated manifest":
+        script_inputs = row.get("script inputs", "").strip()
+        if not script_inputs:
+            return (
+                f"ERROR: Cannot mark 'generated manifest' as passed — "
+                f"'script inputs' must be set first.\n"
+                f"  Use 'set-inputs' to provide the script inputs (JSON).\n"
+                f"  Example: workflow_state.py set-inputs "
+                f"\"{row['Integration Name']}\" '{{}}'"
+            )
 
     # Check all prior steps are complete
     for prior_col in CHECKPOINT_COLUMNS[:idx]:
@@ -419,13 +432,24 @@ def cmd_dashboard(_args: list[str]) -> None:
 
 
 def cmd_set_inputs(args: list[str]) -> None:
-    """Set the script inputs for an integration."""
+    """Set the script inputs for an integration (must be valid JSON)."""
     if len(args) < 2:
-        print("Usage: workflow_state.py set-inputs <integration_name> <inputs>")
+        print("Usage: workflow_state.py set-inputs <integration_name> '<json>'")
+        print("  The value must be valid JSON (e.g. '{}', '{\"key\": \"val\"}').")
         sys.exit(1)
 
     name = args[0]
     inputs = " ".join(args[1:])
+
+    # Validate JSON
+    try:
+        json.loads(inputs)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: script inputs must be valid JSON.")
+        print(f"  Got: {inputs}")
+        print(f"  Parse error: {e}")
+        print(f"  Example: workflow_state.py set-inputs \"{name}\" '{{}}'")
+        sys.exit(1)
 
     rows = load_csv()
     idx = find_row(rows, name)
