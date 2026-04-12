@@ -107,7 +107,7 @@ If any alerts are missing in Cortex XSIAM, check the status of the integration:
 
 ![image](doc_files/prisma_instance.png)
 
-### Fewer Alerts in Cortex XSIAM Than in Prisma Cloud Compute
+### Troubleshooting: Mismatch Between Prisma Cloud Alerts and Cortex XSIAM Issues
 
 Prisma Cloud Compute aggregates alerts occurring within a specific time window into a single alert before sending them to Cortex XSIAM. This may result in fewer issues created compared to the total number of alerts in the Prisma Cloud Compute console. Your alerts are not lost — they are stored inside each issue in the `aggregatedAlerts` field and can be viewed with this XQL query:
 
