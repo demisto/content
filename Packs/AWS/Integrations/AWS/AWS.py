@@ -735,6 +735,7 @@ class AWSServices(str, Enum):
     CostExplorer = "ce"
     BUDGETS = "budgets"
     SSM = "ssm"
+    CloudWatchLogs = "logs"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -6948,6 +6949,551 @@ class SSM:
         )
 
 
+class CloudWatchLogs:
+    service = AWSServices.CloudWatchLogs
+
+    @staticmethod
+    def log_group_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a log group with the specified name.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - kms_key_id: The ARN of the CMK to use when encrypting log data (optional).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+        }
+        if kms_key_id := args.get("kms_key_id"):
+            kwargs["kmsKeyId"] = kms_key_id
+
+        response = client.create_log_group(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully created log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def log_stream_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a log stream for the specified log group.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - log_stream_name: The name of the log stream (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "logStreamName": args.get("log_stream_name"),
+        }
+
+        response = client.create_log_stream(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully created log stream: {args.get('log_stream_name')} "
+                f"in log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def log_group_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified log group and permanently deletes all the archived log events
+        associated with the log group.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+        }
+
+        response = client.delete_log_group(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully deleted log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def log_stream_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified log stream and permanently deletes all the archived log events
+        associated with the log stream.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - log_stream_name: The name of the log stream (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "logStreamName": args.get("log_stream_name"),
+        }
+
+        response = client.delete_log_stream(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully deleted log stream: {args.get('log_stream_name')} "
+                f"from log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def log_events_filter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists log events from the specified log group. You can list all the log events or filter
+        the results using a filter pattern, a time range, and the name of the log stream.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - log_stream_names: Comma-separated list of log stream names (optional).
+                - start_time: Start of the time range in milliseconds since epoch (optional).
+                - end_time: End of the time range in milliseconds since epoch (optional).
+                - filter_pattern: The filter pattern to use (optional).
+                - limit: Maximum number of events to return (optional).
+                - interleaved: Whether to interleave results from multiple streams (optional).
+
+        Returns:
+            CommandResults: Results containing the filtered log events.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+        }
+
+        if log_stream_names := args.get("log_stream_names"):
+            kwargs["logStreamNames"] = argToList(log_stream_names)
+        if start_time := arg_to_number(args.get("start_time")):
+            kwargs["startTime"] = start_time
+        if end_time := arg_to_number(args.get("end_time")):
+            kwargs["endTime"] = end_time
+        if filter_pattern := args.get("filter_pattern"):
+            kwargs["filterPattern"] = filter_pattern
+        if limit := arg_to_number(args.get("limit")):
+            kwargs["limit"] = limit
+        if interleaved := args.get("interleaved"):
+            kwargs["interleaved"] = argToBoolean(interleaved)
+
+        response = client.filter_log_events(**kwargs)
+
+        events = []
+        for event in response.get("events", []):
+            events.append(
+                {
+                    "LogStreamName": event.get("logStreamName"),
+                    "Timestamp": event.get("timestamp"),
+                    "Message": event.get("message"),
+                    "IngestionTime": event.get("ingestionTime"),
+                    "EventId": event.get("eventId"),
+                }
+            )
+
+        readable = tableToMarkdown("AWS CloudWatch Logs Events", events) if events else "No events were found."
+
+        return CommandResults(
+            outputs_prefix="AWS.CloudWatchLogs.Events",
+            outputs_key_field="EventId",
+            outputs=events,
+            readable_output=readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def log_groups_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the specified log groups. You can list all your log groups or filter the results by prefix.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name_prefix: The prefix to match (optional).
+                - limit: Maximum number of items returned (optional, default up to 50).
+
+        Returns:
+            CommandResults: Results containing the log groups.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {}
+
+        if prefix := args.get("log_group_name_prefix"):
+            kwargs["logGroupNamePrefix"] = prefix
+        if limit := arg_to_number(args.get("limit")):
+            kwargs["limit"] = limit
+
+        response = client.describe_log_groups(**kwargs)
+
+        data = []
+        for log_group in response.get("logGroups", []):
+            entry: dict[str, Any] = {
+                "LogGroupName": log_group.get("logGroupName"),
+                "CreationTime": log_group.get("creationTime"),
+                "Arn": log_group.get("arn"),
+            }
+            if "retentionInDays" in log_group:
+                entry["RetentionInDays"] = log_group["retentionInDays"]
+            if "metricFilterCount" in log_group:
+                entry["MetricFilterCount"] = log_group["metricFilterCount"]
+            if "storedBytes" in log_group:
+                entry["StoredBytes"] = log_group["storedBytes"]
+            if "kmsKeyId" in log_group:
+                entry["KmsKeyId"] = log_group["kmsKeyId"]
+            data.append(entry)
+
+        readable = tableToMarkdown("AWS CloudWatch Log Groups", data) if data else "No log groups were found."
+
+        return CommandResults(
+            outputs_prefix="AWS.CloudWatchLogs.LogGroups",
+            outputs_key_field="LogGroupName",
+            outputs=data,
+            readable_output=readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def log_streams_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the log streams for the specified log group.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - log_stream_name_prefix: The prefix to match (optional).
+                - order_by: Order results by LogStreamName or LastEventTime (optional).
+                - limit: Maximum number of items returned (optional).
+
+        Returns:
+            CommandResults: Results containing the log streams.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+        }
+
+        if prefix := args.get("log_stream_name_prefix"):
+            kwargs["logStreamNamePrefix"] = prefix
+        if limit := arg_to_number(args.get("limit")):
+            kwargs["limit"] = limit
+        if order_by := args.get("order_by"):
+            kwargs["orderBy"] = order_by
+
+        response = client.describe_log_streams(**kwargs)
+
+        data = []
+        for log_stream in response.get("logStreams", []):
+            entry: dict[str, Any] = {
+                "LogGroupName": args.get("log_group_name"),
+                "LogStreamName": log_stream.get("logStreamName"),
+                "CreationTime": log_stream.get("creationTime"),
+                "Arn": log_stream.get("arn"),
+            }
+            if "firstEventTimestamp" in log_stream:
+                entry["FirstEventTimestamp"] = log_stream["firstEventTimestamp"]
+            if "lastEventTimestamp" in log_stream:
+                entry["LastEventTimestamp"] = log_stream["lastEventTimestamp"]
+            if "storedBytes" in log_stream:
+                entry["StoredBytes"] = log_stream["storedBytes"]
+            if "lastIngestionTime" in log_stream:
+                entry["LastIngestionTime"] = log_stream["lastIngestionTime"]
+            if "uploadSequenceToken" in log_stream:
+                entry["UploadSequenceToken"] = log_stream["uploadSequenceToken"]
+            data.append(entry)
+
+        readable = tableToMarkdown("AWS CloudWatch Log Streams", data) if data else "No log streams were found."
+
+        return CommandResults(
+            outputs_prefix="AWS.CloudWatchLogs.LogStreams",
+            outputs_key_field="Arn",
+            outputs=data,
+            readable_output=readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def retention_policy_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Sets the retention of the specified log group.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - retention_in_days: The number of days to retain the log events (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "retentionInDays": arg_to_number(args.get("retention_in_days")),
+        }
+
+        response = client.put_retention_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully set retention policy of {args.get('retention_in_days')} days "
+                f"for log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def retention_policy_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified retention policy. Log events do not expire if they belong
+        to log groups without a retention policy.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        response = client.delete_retention_policy(logGroupName=args.get("log_group_name"))
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully deleted retention policy for log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def log_events_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Uploads a batch of log events to the specified log stream.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - log_stream_name: The name of the log stream (required).
+                - timestamp: The time the event occurred in milliseconds since epoch (required).
+                - message: The raw event message (required).
+                - sequence_token: The sequence token from a previous PutLogEvents call (optional).
+
+        Returns:
+            CommandResults: Results containing the next sequence token.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "logStreamName": args.get("log_stream_name"),
+            "logEvents": [
+                {
+                    "timestamp": arg_to_number(args.get("timestamp")),
+                    "message": args.get("message"),
+                }
+            ],
+        }
+        if sequence_token := args.get("sequence_token"):
+            kwargs["sequenceToken"] = sequence_token
+
+        response = client.put_log_events(**kwargs)
+
+        data = {"NextSequenceToken": response.get("nextSequenceToken")}
+
+        readable = tableToMarkdown("AWS CloudWatch Log Put Log Events", data)
+
+        return CommandResults(
+            outputs_prefix="AWS.CloudWatchLogs.PutLogEvents",
+            outputs=data,
+            readable_output=readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def metric_filter_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates or updates a metric filter and associates it with the specified log group.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - filter_name: A name for the metric filter (required).
+                - filter_pattern: A filter pattern for extracting metric data (required).
+                - metric_name: The name of the CloudWatch metric (required).
+                - metric_namespace: The namespace of the CloudWatch metric (required).
+                - metric_value: The value to publish to the CloudWatch metric (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "filterName": args.get("filter_name"),
+            "filterPattern": args.get("filter_pattern"),
+            "metricTransformations": [
+                {
+                    "metricName": args.get("metric_name"),
+                    "metricNamespace": args.get("metric_namespace"),
+                    "metricValue": args.get("metric_value"),
+                }
+            ],
+        }
+
+        response = client.put_metric_filter(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully created/updated metric filter: {args.get('filter_name')} "
+                f"for log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def metric_filter_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the specified metric filter.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (required).
+                - filter_name: The name of the metric filter (required).
+
+        Returns:
+            CommandResults: Results of the operation with a success message.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "filterName": args.get("filter_name"),
+        }
+
+        response = client.delete_metric_filter(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                readable_output=f"Successfully deleted metric filter: {args.get('filter_name')} "
+                f"from log group: {args.get('log_group_name')}",
+                raw_response=response,
+            )
+        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+    @staticmethod
+    def metric_filters_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the specified metric filters.
+
+        Args:
+            client (BotoClient): The AWS CloudWatch Logs boto3 client.
+            args (Dict[str, Any]): Command arguments containing:
+                - log_group_name: The name of the log group (optional).
+                - filter_name_prefix: The prefix to match (optional).
+                - metric_name: Filters results by metric name (optional).
+                - metric_namespace: Filters results by metric namespace (optional).
+
+        Returns:
+            CommandResults: Results containing the metric filters.
+
+        Raises:
+            DemistoException: If the AWS API call fails.
+        """
+        kwargs: dict[str, Any] = {}
+
+        if log_group_name := args.get("log_group_name"):
+            kwargs["logGroupName"] = log_group_name
+        if filter_name_prefix := args.get("filter_name_prefix"):
+            kwargs["filterNamePrefix"] = filter_name_prefix
+        if metric_name := args.get("metric_name"):
+            kwargs["metricName"] = metric_name
+        if metric_namespace := args.get("metric_namespace"):
+            kwargs["metricNamespace"] = metric_namespace
+
+        response = client.describe_metric_filters(**kwargs)
+
+        data = []
+        for metric in response.get("metricFilters", []):
+            data.append(
+                {
+                    "FilterName": metric.get("filterName"),
+                    "FilterPattern": metric.get("filterPattern"),
+                    "CreationTime": metric.get("creationTime"),
+                    "LogGroupName": metric.get("logGroupName"),
+                }
+            )
+
+        raw = json.loads(json.dumps(response.get("metricFilters", []), cls=DatetimeEncoder))
+
+        readable = tableToMarkdown("AWS CloudWatch Metric Filters", data) if data else "No metric filters were found."
+
+        return CommandResults(
+            outputs_prefix="AWS.CloudWatchLogs.MetricFilters",
+            outputs_key_field="FilterName",
+            outputs=raw,
+            readable_output=readable,
+            raw_response=response,
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -7103,6 +7649,19 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-launch-template-delete": EC2.delete_launch_template_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
+    "aws-cloudwatch-log-group-create": CloudWatchLogs.log_group_create_command,
+    "aws-cloudwatch-log-stream-create": CloudWatchLogs.log_stream_create_command,
+    "aws-cloudwatch-log-group-delete": CloudWatchLogs.log_group_delete_command,
+    "aws-cloudwatch-log-stream-delete": CloudWatchLogs.log_stream_delete_command,
+    "aws-cloudwatch-log-events-filter": CloudWatchLogs.log_events_filter_command,
+    "aws-cloudwatch-log-groups-describe": CloudWatchLogs.log_groups_describe_command,
+    "aws-cloudwatch-log-streams-describe": CloudWatchLogs.log_streams_describe_command,
+    "aws-cloudwatch-retention-policy-put": CloudWatchLogs.retention_policy_put_command,
+    "aws-cloudwatch-retention-policy-delete": CloudWatchLogs.retention_policy_delete_command,
+    "aws-cloudwatch-log-events-put": CloudWatchLogs.log_events_put_command,
+    "aws-cloudwatch-metric-filter-put": CloudWatchLogs.metric_filter_put_command,
+    "aws-cloudwatch-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
+    "aws-cloudwatch-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -7229,6 +7788,19 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DeleteLaunchTemplate",
     "ssm:SendCommand",
     "ssm:ListCommands",
+    "logs:CreateLogGroup",
+    "logs:CreateLogStream",
+    "logs:DeleteLogGroup",
+    "logs:DeleteLogStream",
+    "logs:FilterLogEvents",
+    "logs:DescribeLogGroups",
+    "logs:DescribeLogStreams",
+    "logs:PutRetentionPolicy",
+    "logs:DeleteRetentionPolicy",
+    "logs:PutLogEvents",
+    "logs:PutMetricFilter",
+    "logs:DeleteMetricFilter",
+    "logs:DescribeMetricFilters",
 ]
 
 COMMAND_SERVICE_MAP = {
@@ -7236,6 +7808,19 @@ COMMAND_SERVICE_MAP = {
     "aws-billing-forecast-list": "ce",
     "aws-billing-budgets-list": "budgets",
     "aws-billing-budget-notification-list": "budgets",
+    "aws-cloudwatch-log-group-create": "logs",
+    "aws-cloudwatch-log-stream-create": "logs",
+    "aws-cloudwatch-log-group-delete": "logs",
+    "aws-cloudwatch-log-stream-delete": "logs",
+    "aws-cloudwatch-log-events-filter": "logs",
+    "aws-cloudwatch-log-groups-describe": "logs",
+    "aws-cloudwatch-log-streams-describe": "logs",
+    "aws-cloudwatch-retention-policy-put": "logs",
+    "aws-cloudwatch-retention-policy-delete": "logs",
+    "aws-cloudwatch-log-events-put": "logs",
+    "aws-cloudwatch-metric-filter-put": "logs",
+    "aws-cloudwatch-metric-filter-delete": "logs",
+    "aws-cloudwatch-metric-filters-describe": "logs",
 }
 
 
