@@ -31,6 +31,16 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - "xsiam"
 - name: threshold_ip
   display: Score threshold for IP reputation command
   defaultvalue: '65'
