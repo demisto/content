@@ -130,7 +130,9 @@ class AWSClient:
         calculated_sts_region = self.sts_region
         if not calculated_sts_region:
             calculated_sts_region = region if region else self.aws_default_region
-        demisto.debug(f"Calculated sts region: {calculated_sts_region}, {self.sts_region=}, {region=}, {self.aws_default_region=}")
+        demisto.debug(
+            f"Calculated sts region: {calculated_sts_region}, {self.sts_region=}, {region=}, {self.aws_default_region=}"
+        )
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
             if not self.aws_access_key_id:
