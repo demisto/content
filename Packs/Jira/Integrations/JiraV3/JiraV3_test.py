@@ -153,7 +153,12 @@ ADF_TEXT_CASES = [
         {
             "type": "doc",
             "version": 1,
-            "content": [{"type": "paragraph", "content": [{"text": {"type": "doc", "version": 1, "content": ["invalid_node"]}, "type": "text"}]}],
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [{"text": {"type": "doc", "version": 1, "content": ["invalid_node"]}, "type": "text"}],
+                }
+            ],
         },
     ),
 ]
