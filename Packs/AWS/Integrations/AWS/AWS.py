@@ -7151,11 +7151,17 @@ class CloudWatchLogs:
             )
 
         readable = tableToMarkdown("AWS CloudWatch Logs Events", events) if events else "No events were found."
+        next_token = response.get("nextToken")
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+
+        outputs = {
+            "AWS.CloudWatchLogs.Events(val.EventId && val.EventId == obj.EventId)": events,
+            "AWS.CloudWatchLogs(true)": {"EventsNextToken": next_token},
+        }
 
         return CommandResults(
-            outputs_prefix="AWS.CloudWatchLogs.Events",
-            outputs_key_field="EventId",
-            outputs=events,
+            outputs=outputs,
             readable_output=readable,
             raw_response=response,
         )
@@ -7219,11 +7225,17 @@ class CloudWatchLogs:
             data.append(entry)
 
         readable = tableToMarkdown("AWS CloudWatch Log Groups", data) if data else "No log groups were found."
+        next_token = response.get("nextToken")
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+
+        outputs = {
+            "AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName)": data,
+            "AWS.CloudWatchLogs(true)": {"LogGroupsNextToken": next_token},
+        }
 
         return CommandResults(
-            outputs_prefix="AWS.CloudWatchLogs.LogGroups",
-            outputs_key_field="LogGroupName",
-            outputs=data,
+            outputs=outputs,
             readable_output=readable,
             raw_response=response,
         )
@@ -7290,11 +7302,17 @@ class CloudWatchLogs:
             data.append(entry)
 
         readable = tableToMarkdown("AWS CloudWatch Log Streams", data) if data else "No log streams were found."
+        next_token = response.get("nextToken")
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+
+        outputs = {
+            "AWS.CloudWatchLogs.LogStreams(val.Arn && val.Arn == obj.Arn)": data,
+            "AWS.CloudWatchLogs(true)": {"LogStreamsNextToken": next_token},
+        }
 
         return CommandResults(
-            outputs_prefix="AWS.CloudWatchLogs.LogStreams",
-            outputs_key_field="Arn",
-            outputs=data,
+            outputs=outputs,
             readable_output=readable,
             raw_response=response,
         )
@@ -7504,6 +7522,8 @@ class CloudWatchLogs:
                 - filter_name_prefix: The prefix to match (optional).
                 - metric_name: Filters results by metric name (optional).
                 - metric_namespace: Filters results by metric namespace (optional).
+                - limit: Maximum number of items returned (optional, default 50).
+                - next_token: Pagination token from a previous request (optional).
 
         Returns:
             CommandResults: Results containing the metric filters.
@@ -7521,6 +7541,10 @@ class CloudWatchLogs:
             kwargs["metricName"] = metric_name
         if metric_namespace := args.get("metric_namespace"):
             kwargs["metricNamespace"] = metric_namespace
+        if limit := arg_to_number(args.get("limit")):
+            kwargs["limit"] = limit
+        if next_token := args.get("next_token"):
+            kwargs["nextToken"] = next_token
 
         response = client.describe_metric_filters(**kwargs)
 
@@ -7538,11 +7562,17 @@ class CloudWatchLogs:
         raw = json.loads(json.dumps(response.get("metricFilters", []), cls=DatetimeEncoder))
 
         readable = tableToMarkdown("AWS CloudWatch Metric Filters", data) if data else "No metric filters were found."
+        next_token = response.get("nextToken")
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+
+        outputs = {
+            "AWS.CloudWatchLogs.MetricFilters(val.FilterName && val.FilterName == obj.FilterName)": raw,
+            "AWS.CloudWatchLogs(true)": {"MetricFiltersNextToken": next_token},
+        }
 
         return CommandResults(
-            outputs_prefix="AWS.CloudWatchLogs.MetricFilters",
-            outputs_key_field="FilterName",
-            outputs=raw,
+            outputs=outputs,
             readable_output=readable,
             raw_response=response,
         )

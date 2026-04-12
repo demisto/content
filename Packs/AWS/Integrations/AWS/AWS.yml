@@ -12169,6 +12169,9 @@ script:
     - contextPath: AWS.CloudWatchLogs.Events.EventId
       description: The ID of the event.
       type: string
+    - contextPath: AWS.CloudWatchLogs.EventsNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+      type: string
     description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
 
   - name: aws-cloudwatch-log-groups-describe
@@ -12225,6 +12228,9 @@ script:
       type: number
     - contextPath: AWS.CloudWatchLogs.LogGroups.KmsKeyId
       description: The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroupsNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
     description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
 
@@ -12290,6 +12296,9 @@ script:
     - contextPath: AWS.CloudWatchLogs.LogStreams.StoredBytes
       description: The number of bytes stored.
       type: number
+    - contextPath: AWS.CloudWatchLogs.LogStreamsNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+      type: string
     description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
 
   - name: aws-cloudwatch-retention-policy-put
@@ -12469,6 +12478,11 @@ script:
       description: Filters results to include only those with the specified metric name. If you include this parameter in your request, you must also include the metric_namespace parameter.
     - name: metric_namespace
       description: Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter.
+    - name: limit
+      defaultvalue: "50"
+      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+    - name: next_token
+      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     - name: region
       required: true
       description: The AWS Region.
@@ -12499,6 +12513,9 @@ script:
       type: date
     - contextPath: AWS.CloudWatchLogs.MetricFilters.logGroupName
       description: The name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFiltersNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
     description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
 
