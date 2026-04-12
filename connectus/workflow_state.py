@@ -41,6 +41,9 @@ Usage:
   # Set script inputs (JSON)
   python workflow_state.py set-inputs "Cisco Spark" '{"api_key": "str"}'
 
+  # Set params required for test (JSON)
+  python workflow_state.py set-params-for-test "Cisco Spark" '{"api_key": "test123"}'
+
   # Mark a specific step as passed (must be the current step)
   python workflow_state.py markpass "Cisco Spark" "wrote code"
 
@@ -61,6 +64,9 @@ Usage:
 
   # List all integration names (for scripting)
   python workflow_state.py list
+
+  # List all integrations assigned to a specific person
+  python workflow_state.py list-by-assignee "John Doe"
 """
 
 import csv
@@ -91,6 +97,7 @@ DATA_COLUMNS = [
 # Workflow columns in order. These are the columns this script manages.
 WORKFLOW_COLUMNS = [
     "script inputs",
+    "params required for test",
     "generated manifest",
     "wrote code",
     "validations passed",
@@ -119,6 +126,7 @@ CHECKPOINT_COLUMNS = [
 # Steps that are NOT pass/fail checkpoints — they need a different command
 NON_CHECKPOINT_STEPS = {
     "script inputs": "set-inputs",
+    "params required for test": "set-params-for-test",
     "requires auth parity test": "set-auth-flag",
 }
 
@@ -245,7 +253,7 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
     if is_checked(val):
         return f"'{step_name}' is already marked as passed for '{row['Integration Name']}'."
 
-    # Prerequisite: "generated manifest" requires "script inputs" to be set
+    # Prerequisite: "generated manifest" requires both inputs to be set
     if step_name == "generated manifest":
         script_inputs = row.get("script inputs", "").strip()
         if not script_inputs:
@@ -254,6 +262,15 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
                 f"'script inputs' must be set first.\n"
                 f"  Use 'set-inputs' to provide the script inputs (JSON).\n"
                 f"  Example: workflow_state.py set-inputs "
+                f"\"{row['Integration Name']}\" '{{}}'"
+            )
+        params_for_test = row.get("params required for test", "").strip()
+        if not params_for_test:
+            return (
+                f"ERROR: Cannot mark 'generated manifest' as passed — "
+                f"'params required for test' must be set first.\n"
+                f"  Use 'set-params-for-test' to provide the params (JSON).\n"
+                f"  Example: workflow_state.py set-params-for-test "
                 f"\"{row['Integration Name']}\" '{{}}'"
             )
 
@@ -316,7 +333,7 @@ def format_status(row: dict[str, str]) -> str:
 
     for col in WORKFLOW_COLUMNS:
         val = row.get(col, "").strip()
-        if col == "script inputs":
+        if col in ("script inputs", "params required for test"):
             display = val if val else "(not set)"
             lines.append(f"    {col:30s} : {display}")
         elif col == "requires auth parity test":
@@ -466,6 +483,37 @@ def cmd_set_inputs(args: list[str]) -> None:
     rows[idx]["script inputs"] = inputs
     save_csv(rows)
     print(f"Set 'script inputs' for '{rows[idx]['Integration Name']}' to: {inputs}")
+
+
+def cmd_set_params_for_test(args: list[str]) -> None:
+    """Set the params required for test for an integration (must be valid JSON)."""
+    if len(args) < 2:
+        print("Usage: workflow_state.py set-params-for-test <integration_name> '<json>'")
+        print("  The value must be valid JSON (e.g. '{}', '{\"api_key\": \"test123\"}').")
+        sys.exit(1)
+
+    name = args[0]
+    params = " ".join(args[1:])
+
+    # Validate JSON
+    try:
+        json.loads(params)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: params required for test must be valid JSON.")
+        print(f"  Got: {params}")
+        print(f"  Parse error: {e}")
+        print(f"  Example: workflow_state.py set-params-for-test \"{name}\" '{{}}'")
+        sys.exit(1)
+
+    rows = load_csv()
+    idx = find_row(rows, name)
+    if idx is None:
+        print(f"ERROR: Integration '{name}' not found.")
+        sys.exit(1)
+
+    rows[idx]["params required for test"] = params
+    save_csv(rows)
+    print(f"Set 'params required for test' for '{rows[idx]['Integration Name']}' to: {params}")
 
 
 def cmd_markpass(args: list[str]) -> None:
@@ -704,6 +752,61 @@ def cmd_list(_args: list[str]) -> None:
         print(row["Integration Name"])
 
 
+def list_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> list[dict[str, str]]:
+    """Filter rows to those whose assignee matches (case-insensitive).
+
+    Args:
+        rows: All CSV rows.
+        assignee_name: The assignee name to search for.
+
+    Returns:
+        List of row dicts where the assignee column matches.
+    """
+    target = assignee_name.strip().lower()
+    return [row for row in rows if row.get("assignee", "").strip().lower() == target]
+
+
+def format_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> str:
+    """Format a list of integrations belonging to an assignee.
+
+    Shows each matching integration's name and current workflow step,
+    similar to the at-step output format.
+
+    Args:
+        rows: Filtered rows (already matched by assignee).
+        assignee_name: The assignee name (used in the header).
+
+    Returns:
+        Formatted string for display.
+    """
+    if not rows:
+        return f"No integrations found for assignee '{assignee_name}'."
+
+    lines = [f"\nIntegrations assigned to '{assignee_name}' ({len(rows)}):"]
+    for row in rows:
+        name = row["Integration Name"]
+        has_any = any(row.get(c, "").strip() for c in WORKFLOW_COLUMNS)
+        if not has_any:
+            step_display = "not started"
+        else:
+            current = get_current_step(row)
+            step_display = current if current else "✅ DONE"
+        lines.append(f"  - {name:45s} → {step_display}")
+    return "\n".join(lines)
+
+
+def cmd_list_by_assignee(args: list[str]) -> None:
+    """List all integrations assigned to a specific person."""
+    if not args:
+        print("Usage: workflow_state.py list-by-assignee <assignee_name>")
+        sys.exit(1)
+
+    assignee_name = " ".join(args)
+    rows = load_csv()
+    matches = list_by_assignee(rows, assignee_name)
+    print(format_by_assignee(matches, assignee_name))
+
+
 def cmd_help(_args: list[str]) -> None:
     """Show help."""
     print(__doc__)
@@ -825,6 +928,7 @@ COMMANDS = {
     "dashboard": cmd_dashboard,
     "set-assignee": cmd_set_assignee,
     "set-inputs": cmd_set_inputs,
+    "set-params-for-test": cmd_set_params_for_test,
     "markpass": cmd_markpass,
     "fail": cmd_fail,
     "set-auth-flag": cmd_set_auth_flag,
@@ -832,6 +936,7 @@ COMMANDS = {
     "reset": cmd_reset,
     "at-step": cmd_at_step,
     "list": cmd_list,
+    "list-by-assignee": cmd_list_by_assignee,
     "help": cmd_help,
 }
 

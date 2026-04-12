@@ -210,6 +210,9 @@ python3 connectus/workflow_state.py at-step "<step name>"
 
 # See all integrations with any progress
 python3 connectus/workflow_state.py status-all
+
+# See all integrations assigned to a specific person
+python3 connectus/workflow_state.py list-by-assignee "<assignee name>"
 ```
 
 ## Auth Type Reference
