@@ -116,7 +116,5 @@ script:
   isfetchevents: true
   runonce: false
 fromversion: 6.5.0
-marketplaces:
-- marketplacev2
 tests:
 - No tests (auto formatted)

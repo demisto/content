@@ -19,6 +19,10 @@
         "GPFS"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
     ]
 }

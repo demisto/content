@@ -54,8 +54,6 @@ configuration:
   required: false
   section: Connect
 fromversion: 6.8.0
-marketplaces:
-- marketplacev2
 script:
   script: ''
   type: python

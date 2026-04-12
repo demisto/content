@@ -13,8 +13,11 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
     ],
     "devEmail": [
         "cbalmer@paloaltonetworks.com"
