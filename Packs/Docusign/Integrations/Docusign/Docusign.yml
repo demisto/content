@@ -102,7 +102,6 @@ script:
       - Customer events
       - Audit Users
     - name: limit
-      required: true
       description: Maximum number of events to fetch.
     execution: false
   - name: docusign-reset-access-token
@@ -110,7 +109,7 @@ script:
     arguments: []
     execution: false
     hidden: true
-  dockerimage: demisto/auth-utils:1.0.0.5312400
+  dockerimage: demisto/auth-utils:1.0.0.8160132
   isfetchevents: true
   runonce: false
   script: '-'

@@ -13,3 +13,51 @@ To use the Docusign integration and allow access to Docusign events, an administ
 
 ### IMPORTANT:
 Consent is only required once per user for a given set of scopes. In subsequent authentication workflows, you can skip this step unless you are requesting a different set of scopes or authenticating a different user.
+
+## Configure DocuSign new application
+
+Follow the steps below to create and configure a DocuSign application for use with this integration:
+
+#### 1. **Access DocuSign Developer Portal**
+
+* Open the DocuSign web UI and log in.
+* Navigate to **Account**.
+* From the left sidebar, click **Apps and Keys**.
+
+#### 2. **Create a New Application**
+
+* Click **Add App**.
+* Provide a name for your application.
+* Copy the **Integration Key**.
+
+#### 3. **Setting Integration Type**
+
+* Select the App integration type required for your workflow.
+
+#### 4. **Configure Application Settings**
+
+* Under **User Application**, select **Yes**.
+* Under **Authentication Method for your App**, leave the default option, **Authorization Code Grant**.
+
+#### 5. **Generate a Secret Key**
+
+* Click **Add Secret Key** and generate a new secret key.
+
+#### 6. **Generate RSA Key Pair**
+
+* Under **Service Integration** Click **Generate RSA**.
+* Copy the **Private Key**. (The public key is not used by the integration)
+
+#### 7. **Set Redirect URI**
+
+* Navigate to **Additional Settings**.
+* Set the **Redirect URI** to `https://localhost`.
+
+#### 8. **Save the Application**
+
+* Click **Save** to finalize your application configuration.
+
+#### 9. **Retrieve Organization ID**
+
+* Navigate to the **Organization** tab from the left sidebar.
+* Copy the **Organization ID** from the URL.

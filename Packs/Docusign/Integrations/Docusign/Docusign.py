@@ -862,7 +862,6 @@ def test_module() -> str:
     return "ok"
 
 
-
 def get_events_command(auth_client: AuthClient) -> CommandResults:
     """Manual command to fetch Docusign events and display them in the War Room.
 
@@ -873,8 +872,8 @@ def get_events_command(auth_client: AuthClient) -> CommandResults:
         CommandResults: Human-readable table and raw events.
     """
     args = demisto.args()
-    event_type: str = args["event_type"]
-    limit: int = arg_to_number(args["limit"], required=True)  # type: ignore[assignment]
+    event_type: str = args.get("event_type")
+    limit: int = arg_to_number(args.get("limit", 10), required=True)  # type: ignore[assignment]
 
     events = []
 
