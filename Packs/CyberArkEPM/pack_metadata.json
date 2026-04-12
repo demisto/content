@@ -19,6 +19,7 @@
     ],
     "supportedModules": [
         "agentix",
-        "xsiam"
+        "xsiam",
+        "edr"
     ]
 }
