@@ -191,7 +191,11 @@ class TestGovAccountToggle:
     """Tests for the Gov Account checkbox feature."""
 
     GOV_SCOPE = "https://management.usgovcloudapi.net/.default"
+    GOV_SERVER = "https://management.usgovcloudapi.net"
+    GOV_BASE_URL = "https://management.usgovcloudapi.net/providers/Microsoft.ResourceGraph"
     NORMAL_SCOPE = "https://management.azure.com/.default"
+    NORMAL_SERVER = "https://management.azure.com"
+    NORMAL_BASE_URL = "https://management.azure.com/providers/Microsoft.ResourceGraph"
 
     def test_client_with_gov_account_enabled(self, mocker):
         """
@@ -200,14 +204,16 @@ class TestGovAccountToggle:
         When:
             - The client is initialized.
         Then:
-            - MicrosoftClient is created with the gov scope and AZURE_US_GCC_HIGH_CLOUD azure_cloud.
+            - MicrosoftClient is created with the gov scope, AZURE_US_GCC_HIGH_CLOUD azure_cloud,
+              and the gov base_url.
+            - The client server is set to the gov management URL.
         """
         from AzureResourceGraph import AZURE_US_GCC_HIGH_CLOUD, AzureResourceGraphClient, MicrosoftClient
 
         mock_ms_client = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
 
-        AzureResourceGraphClient(
-            base_url="url",
+        gov_client = AzureResourceGraphClient(
+            base_url=self.NORMAL_BASE_URL,
             tenant_id="tenant",
             auth_id="auth_id",
             enc_key="enc_key",
@@ -216,7 +222,7 @@ class TestGovAccountToggle:
             proxy=False,
             self_deployed=True,
             ok_codes=(200,),
-            server="server",
+            server=self.NORMAL_SERVER,
             certificate_thumbprint="",
             private_key="",
             is_gov=True,
@@ -225,6 +231,8 @@ class TestGovAccountToggle:
         call_kwargs = mock_ms_client.call_args[1]
         assert call_kwargs["scope"] == self.GOV_SCOPE
         assert call_kwargs["azure_cloud"] == AZURE_US_GCC_HIGH_CLOUD
+        assert call_kwargs["base_url"] == self.GOV_BASE_URL
+        assert gov_client.server == self.GOV_SERVER
 
     def test_client_with_gov_account_disabled(self, mocker):
         """
@@ -233,14 +241,16 @@ class TestGovAccountToggle:
         When:
             - The client is initialized.
         Then:
-            - MicrosoftClient is created with the standard scope and no azure_cloud parameter.
+            - MicrosoftClient is created with the standard scope, no azure_cloud parameter,
+              and the standard base_url.
+            - The client server is set to the standard management URL.
         """
         from AzureResourceGraph import AzureResourceGraphClient, MicrosoftClient
 
         mock_ms_client = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
 
-        AzureResourceGraphClient(
-            base_url="url",
+        normal_client = AzureResourceGraphClient(
+            base_url=self.NORMAL_BASE_URL,
             tenant_id="tenant",
             auth_id="auth_id",
             enc_key="enc_key",
@@ -249,7 +259,7 @@ class TestGovAccountToggle:
             proxy=False,
             self_deployed=True,
             ok_codes=(200,),
-            server="server",
+            server=self.NORMAL_SERVER,
             certificate_thumbprint="",
             private_key="",
             is_gov=False,
@@ -258,6 +268,8 @@ class TestGovAccountToggle:
         call_kwargs = mock_ms_client.call_args[1]
         assert call_kwargs["scope"] == self.NORMAL_SCOPE
         assert "azure_cloud" not in call_kwargs
+        assert call_kwargs["base_url"] == self.NORMAL_BASE_URL
+        assert normal_client.server == self.NORMAL_SERVER
 
     def test_client_default_is_not_gov(self, mocker):
         """
@@ -272,8 +284,8 @@ class TestGovAccountToggle:
 
         mock_ms_client = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
 
-        AzureResourceGraphClient(
-            base_url="url",
+        default_client = AzureResourceGraphClient(
+            base_url=self.NORMAL_BASE_URL,
             tenant_id="tenant",
             auth_id="auth_id",
             enc_key="enc_key",
@@ -282,7 +294,7 @@ class TestGovAccountToggle:
             proxy=False,
             self_deployed=True,
             ok_codes=(200,),
-            server="server",
+            server=self.NORMAL_SERVER,
             certificate_thumbprint="",
             private_key="",
         )
@@ -290,6 +302,8 @@ class TestGovAccountToggle:
         call_kwargs = mock_ms_client.call_args[1]
         assert call_kwargs["scope"] == self.NORMAL_SCOPE
         assert "azure_cloud" not in call_kwargs
+        assert call_kwargs["base_url"] == self.NORMAL_BASE_URL
+        assert default_client.server == self.NORMAL_SERVER
 
     def test_main_passes_gov_account_param(self, mocker):
         """
@@ -298,11 +312,11 @@ class TestGovAccountToggle:
         When:
             - main() is called with test-module command.
         Then:
-            - AzureResourceGraphClient is initialized with is_gov=True.
+            - AzureResourceGraphClient is initialized with is_gov=True and the gov URLs are used.
         """
         import AzureResourceGraph
         import demistomock as demisto
-        from AzureResourceGraph import MicrosoftClient, main
+        from AzureResourceGraph import AZURE_US_GCC_HIGH_CLOUD, MicrosoftClient, main
 
         params = {
             "auth_id": "test_client_id",
@@ -321,11 +335,16 @@ class TestGovAccountToggle:
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "args", return_value={})
         mocker.patch.object(demisto, "command", return_value="test-module")
+        mock_ms_init = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
         mocker.patch.object(MicrosoftClient, "http_request", return_value=get_azure_access_token_mock())
         mocker.patch.object(AzureResourceGraph, "return_results")
 
         main()
 
+        ms_call_kwargs = mock_ms_init.call_args[1]
+        assert ms_call_kwargs["scope"] == self.GOV_SCOPE
+        assert ms_call_kwargs["azure_cloud"] == AZURE_US_GCC_HIGH_CLOUD
+        assert ms_call_kwargs["base_url"] == self.GOV_BASE_URL
         assert "ok" in AzureResourceGraph.return_results.call_args[0][0]
 
     def test_main_without_gov_account_param(self, mocker):
@@ -335,7 +354,7 @@ class TestGovAccountToggle:
         When:
             - main() is called with test-module command.
         Then:
-            - AzureResourceGraphClient is initialized with is_gov=False (default behavior).
+            - AzureResourceGraphClient is initialized with is_gov=False and the standard URLs are used.
         """
         import AzureResourceGraph
         import demistomock as demisto
@@ -357,9 +376,14 @@ class TestGovAccountToggle:
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "args", return_value={})
         mocker.patch.object(demisto, "command", return_value="test-module")
+        mock_ms_init = mocker.patch.object(MicrosoftClient, "__init__", return_value=None)
         mocker.patch.object(MicrosoftClient, "http_request", return_value=get_azure_access_token_mock())
         mocker.patch.object(AzureResourceGraph, "return_results")
 
         main()
 
+        ms_call_kwargs = mock_ms_init.call_args[1]
+        assert ms_call_kwargs["scope"] == self.NORMAL_SCOPE
+        assert "azure_cloud" not in ms_call_kwargs
+        assert ms_call_kwargs["base_url"] == self.NORMAL_BASE_URL
         assert "ok" in AzureResourceGraph.return_results.call_args[0][0]

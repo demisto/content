@@ -33,6 +33,7 @@ class AzureResourceGraphClient:
             scope = "https://management.usgovcloudapi.net/.default"
             azure_cloud = AZURE_US_GCC_HIGH_CLOUD
             server = "https://management.usgovcloudapi.net"
+            base_url = f"{server}/providers/Microsoft.ResourceGraph"
         else:
             scope = Scopes.management_azure
             azure_cloud = None
@@ -256,7 +257,7 @@ def main():
     private_key = params.get("private_key")
     verify = not params.get("unsecure", False)
     proxy: bool = params.get("proxy", False)
-    is_gov: bool = params.get("gov_account", False)
+    is_gov: bool = argToBoolean(params.get("gov_account", False))
 
     validate_connection_params(tenant, auth_and_token_url, enc_key, certificate_thumbprint, private_key)
 
