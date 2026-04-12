@@ -1901,8 +1901,8 @@ script:
       description: Role to remove (e.g., roles/viewer).
       required: true
     outputs: []
-  - name: gcp-bq-dataset-policy-update
-    description: Updates the access policy of an existing dataset.
+  - name: gcp-bq-dataset-policy-remove
+    description: Removes an email from the BigQuery dataset policy.
     arguments:
     - name: project_id
       required: true
@@ -1910,19 +1910,9 @@ script:
     - name: dataset_id
       required: true
       description: Dataset ID of the requested dataset.
-    - name: user_email
-      description: The email address of the user to add or remove from the dataset access list.
-      required: false
-    - name: group_email
-      description: The email address of the group to add or remove from the dataset access list.
-      required: false
-    - name: action
-      description: Whether to add or remove a user from the Dataset policy.
+    - name: email
+      description: The email address to remove from the dataset access list.
       required: true
-      auto: PREDEFINED
-      predefined:
-        - remove
-      defaultValue: remove
     outputs:
       - contextPath: GCP.BigQuery.Datasets.kind
         description: The type of the resource.

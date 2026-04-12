@@ -2247,10 +2247,9 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     )
 
 
-def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def bq_dataset_policy_remove_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Updates information in an existing dataset. The method supports patch semantics.
-    If 'email' is provided, it retrieves the current access list and removes entries matching the email.
+    Removes an email from the dataset access list.
 
     Args:
         creds (Credentials): GCP credentials.
@@ -2261,13 +2260,10 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
     """
     project_id = args.get("project_id")
     dataset_id = args.get("dataset_id")
-    user_email = args.get("user_email", "")
-    group_email = args.get("group_email", "")
-    action = args.get("action")
+    # user_email = args.get("user_email", "")
+    # group_email = args.get("group_email", "")
+    email = args.get("email", "")
     body: dict[str, Any] = {}
-
-    if (user_email and group_email) or (not user_email and not group_email):
-        raise DemistoException("Enter exactly one of user_email and group_email.")
 
     bigquery = GCPServices.BIGQUERY.build(creds)
 
@@ -2276,22 +2272,20 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
     demisto.debug(f"[GCP] {current_dataset=}")
     current_dataset_access = current_dataset.get("access", [])
 
-    if action == "remove":
-        # Filter out access entries matching the email
-        # Access entries can have 'userByEmail', 'groupByEmail', or 'domain'
-        if user_email:
-            new_access = [entry for entry in current_dataset_access if entry.get("userByEmail") != user_email]
-        else:
-            new_access = [entry for entry in current_dataset_access if entry.get("groupByEmail") != group_email]
+    # Filter out access entries matching the email
+    # Access entries can have both 'userByEmail', and 'groupByEmail'
+    new_access = [
+        entry for entry in current_dataset_access if entry.get("userByEmail") != email and entry.get("groupByEmail") != email
+    ]
 
-        if len(new_access) == len(current_dataset_access):
-            demisto.debug(f"[GCP] Email not found in access list for dataset {dataset_id}")
-            return CommandResults(
-                readable_output=f"No changes to apply for dataset {dataset_id} or the provided email wasn't found in access list."
-            )
-        else:
-            body["access"] = new_access
-            demisto.debug(f"[GCP] Removed emails from access list for dataset {dataset_id}, {new_access=}")
+    if len(new_access) == len(current_dataset_access):
+        demisto.debug(f"[GCP] Email {email} not found in access list for dataset {dataset_id}")
+        return CommandResults(
+            readable_output=f"The provided email {email} wasn't found in access list of the dataset {dataset_id}."
+        )
+    else:
+        body["access"] = new_access
+        demisto.debug(f"[GCP] Removed an email from access list for dataset {dataset_id}, {new_access=}")
 
     demisto.debug(f"BigQuery dataset policy update body for {dataset_id} in project {project_id}: {body}")
     response = bigquery.datasets().patch(projectId=project_id, datasetId=dataset_id, body=body).execute()
@@ -2994,7 +2988,7 @@ def main():  # pragma: no cover
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands
-            "gcp-bq-dataset-policy-update": bq_dataset_policy_update_command,
+            "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy

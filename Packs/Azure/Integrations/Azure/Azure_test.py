@@ -4530,7 +4530,7 @@ def test_network_interface_update_command_success(mocker):
             "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
         },
     }
-    assert result.outputs_prefix == "Azure.VirtualNetwork.NetworkInterfaces"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
     assert result.outputs_key_field == "id"
     client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
     client.update_network_interface_request.assert_called_once_with(

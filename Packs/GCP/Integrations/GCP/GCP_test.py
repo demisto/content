@@ -2,7 +2,6 @@ import json
 import pytest
 from google.oauth2.credentials import Credentials
 from unittest.mock import MagicMock
-from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -5461,58 +5460,19 @@ class TestGCPComputeNetworksList:
         assert "custom-token" in result.readable_output
 
 
-def test_bq_dataset_policy_update_command_missing_emails():
-    """
-    Given:
-        - Arguments missing both user_email and group_email.
-    When:
-        - Calling bq_dataset_policy_update_command.
-    Then:
-        - Ensure DemistoException is raised with the correct message.
-    """
-    from GCP import bq_dataset_policy_update_command
-
-    creds = MagicMock()
-    args = {"project_id": "test_project", "dataset_id": "test_dataset"}
-    with pytest.raises(DemistoException, match="Enter exactly one of user_email and group_email."):
-        bq_dataset_policy_update_command(creds, args)
-
-
-def test_bq_dataset_policy_update_command_both_emails():
-    """
-    Given:
-        - Arguments containing both user_email and group_email.
-    When:
-        - Calling bq_dataset_policy_update_command.
-    Then:
-        - Ensure DemistoException is raised with the correct message.
-    """
-    from GCP import bq_dataset_policy_update_command
-
-    creds = MagicMock()
-    args = {
-        "project_id": "test_project",
-        "dataset_id": "test_dataset",
-        "user_email": "test@test.com",
-        "group_email": "group@test.com",
-    }
-    with pytest.raises(DemistoException, match="Enter exactly one of user_email and group_email."):
-        bq_dataset_policy_update_command(creds, args)
-
-
-def test_bq_dataset_policy_update_command_remove_user(mocker):
+def test_bq_dataset_policy_remove_command_remove_user(mocker):
     """
     Given:
         - Valid arguments to remove an existing user.
     When:
-        - Calling bq_dataset_policy_update_command.
+        - Calling bq_dataset_policy_remove_command.
     Then:
         - Ensure the patch API is called with the correct body excluding the removed user.
     """
-    from GCP import bq_dataset_policy_update_command
+    from GCP import bq_dataset_policy_remove_command
 
     creds = MagicMock()
-    args = {"project_id": "test_project", "dataset_id": "test_dataset", "user_email": "test@test.com", "action": "remove"}
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "email": "test@test.com"}
 
     mock_bigquery = MagicMock()
     mock_datasets = MagicMock()
@@ -5534,26 +5494,26 @@ def test_bq_dataset_policy_update_command_remove_user(mocker):
 
     mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
 
-    bq_dataset_policy_update_command(creds, args)
+    bq_dataset_policy_remove_command(creds, args)
 
     mock_datasets.patch.assert_called_once_with(
         projectId="test_project", datasetId="test_dataset", body={"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
     )
 
 
-def test_bq_dataset_policy_update_command_remove_group(mocker):
+def test_bq_dataset_policy_remove_command_remove_group(mocker):
     """
     Given:
         - Valid arguments to remove an existing group.
     When:
-        - Calling bq_dataset_policy_update_command.
+        - Calling bq_dataset_policy_remove_command.
     Then:
         - Ensure the patch API is called with the correct body excluding the removed group.
     """
-    from GCP import bq_dataset_policy_update_command
+    from GCP import bq_dataset_policy_remove_command
 
     creds = MagicMock()
-    args = {"project_id": "test_project", "dataset_id": "test_dataset", "group_email": "test@test.com", "action": "remove"}
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "email": "test@test.com"}
 
     mock_bigquery = MagicMock()
     mock_datasets = MagicMock()
@@ -5575,26 +5535,28 @@ def test_bq_dataset_policy_update_command_remove_group(mocker):
 
     mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
 
-    bq_dataset_policy_update_command(creds, args)
+    bq_dataset_policy_remove_command(creds, args)
 
     mock_datasets.patch.assert_called_once_with(
         projectId="test_project", datasetId="test_dataset", body={"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
     )
 
 
-def test_bq_dataset_policy_update_command_remove_user_not_found(mocker):
+def test_bq_dataset_policy_remove_command_remove_user_not_found(mocker):
     """
     Given:
         - Arguments to remove a user that does not exist in the access list.
     When:
-        - Calling bq_dataset_policy_update_command.
+        - Calling bq_dataset_policy_remove_command.
     Then:
         - Ensure the patch API is not called and a 'No changes' message is returned.
     """
-    from GCP import bq_dataset_policy_update_command
+    from GCP import bq_dataset_policy_remove_command
 
     creds = MagicMock()
-    args = {"project_id": "test_project", "dataset_id": "test_dataset", "user_email": "test@test.com", "action": "remove"}
+    email = "test@test.com"
+    dataset_id = "test_dataset"
+    args = {"project_id": "test_project", "dataset_id": dataset_id, "user_email": email}
 
     mock_bigquery = MagicMock()
     mock_datasets = MagicMock()
@@ -5607,11 +5569,8 @@ def test_bq_dataset_policy_update_command_remove_user_not_found(mocker):
     mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
     mock_debug = mocker.patch("demistomock.debug")
 
-    result = bq_dataset_policy_update_command(creds, args)
+    result = bq_dataset_policy_remove_command(creds, args)
 
-    assert (
-        result.readable_output
-        == "No changes to apply for dataset test_dataset or the provided email wasn't found in access list."
-    )
+    assert result.readable_output == f"The provided email {email} wasn't found in access list of the dataset {dataset_id}."
     mock_datasets.patch.assert_not_called()
-    mock_debug.assert_called_with("[GCP] Email not found in access list for dataset test_dataset")
+    mock_debug.assert_called_with(f"[GCP] Email {email} not found in access list for dataset {dataset_id}")

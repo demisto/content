@@ -3083,94 +3083,94 @@ script:
         - Standard
         - Elastic
     outputs:
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.id
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
       description: The network interface ID.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.name
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
       description: The network interface name.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.location
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
       description: The Azure region where the network interface is deployed.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.etag
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.type
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.type
       description: The resource type.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.tags
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
       description: Resource tags.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.extendedLocation
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.extendedLocation
       description: The extended location of the network interface.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.provisioningState
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
       description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.ipConfigurations
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
       description: The list of IP configurations for the network interface.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.dnsSettings
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
       description: The DNS configuration of the network interface, including DNS servers and domain name.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.macAddress
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress
       description: The MAC address of the network interface.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.enableIPForwarding
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.enableAcceleratedNetworking
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking
       description: Indicates whether accelerated networking is enabled for the network interface.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.networkSecurityGroup
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
       description: The network security group associated with the network interface.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.primary
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.primary
       description: Indicates whether this is a primary network interface on a virtual machine.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.virtualMachine
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine
       description: The reference to a virtual machine.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.nicType
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
       description: The type of network interface (Standard or Elastic).
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.auxiliaryMode
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode
       description: Auxiliary mode of Network Interface resource.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.auxiliarySku
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku
       description: Auxiliary sku of Network Interface resource.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled
       description: Whether default outbound connectivity for nic was configured or not.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.disableTcpStateTracking
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking
       description: Indicates whether to disable tcp state tracking.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.dscpConfiguration
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration
       description: A reference to the dscp configuration to which the network interface is linked.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.hostedWorkloads
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads
       description: A list of references to linked BareMetal resources.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.migrationPhase
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase
       description: Migration phase of Network Interface resource.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.privateEndpoint
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint
       description: A reference to the private endpoint to which the network interface is linked.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.privateLinkService
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService
       description: Privatelinkservice of the network interface resource.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.resourceGuid
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid
       description: The resource GUID property of the network interface resource.
       type: String
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.tapConfigurations
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations
       description: A list of TapConfigurations of the network interface.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.vnetEncryptionSupported
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.vnetEncryptionSupported
       description: Whether the virtual machine this nic is attached to supports encryption.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.workloadType
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType
       description: WorkloadType of the NetworkInterface for BareMetal resources.
       type: String
 
