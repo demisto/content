@@ -14219,6 +14219,488 @@ script:
       description: The last port in the range. Required if specifying tcp or udp for the protocol parameter.
       required: false
 
+  - name: aws-cloudwatch-log-group-create
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group. Log group names can be between 1 and 512 characters long. Allowed characters are a-z, A-Z, 0-9, '_' (underscore), '-' (hyphen), '/' (forward slash), '.' (period), and '#' (number sign).
+    - name: kms_key_id
+      description: The Amazon Resource Name (ARN) of the KMS key to use when encrypting log data.
+    - name: log_group_class
+      auto: PREDEFINED
+      predefined:
+      - STANDARD
+      - INFREQUENT_ACCESS
+      defaultvalue: STANDARD
+      description: The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost.
+    - name: tags
+      description: "The key-value pairs to use for the tags. You can grant users access to certain log groups while preventing them from accessing other log groups, by using tag-based access control. Format: JSON object, e.g. {\"Environment\": \"Production\", \"Team\": \"DevOps\"}."
+    - name: deletion_protection_enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultvalue: "false"
+      description: Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Creates a log group with the specified name.
+    execution: true
+
+  - name: aws-cloudwatch-log-stream-create
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: log_stream_name
+      required: true
+      description: The name of the log stream.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Creates a log stream for the specified log group.
+    execution: true
+
+  - name: aws-cloudwatch-log-group-delete
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
+    execution: true
+
+  - name: aws-cloudwatch-log-stream-delete
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: log_stream_name
+      required: true
+      description: The name of the log stream.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
+    execution: true
+
+  - name: aws-cloudwatch-log-events-filter
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group to search. You must include either logGroupName or logGroupIdentifier, but not both.
+    - name: log_group_identifier
+      description: Specify either the name or ARN of the log group to search. If the log group is in a source account and you are using a monitoring account, you must use the log group ARN. You must include either logGroupName or logGroupIdentifier, but not both.
+    - name: log_stream_names
+      description: Comma-separated list of log stream names to search within. Cannot be used together with log_stream_name_prefix.
+      isArray: true
+    - name: log_stream_name_prefix
+      description: Filters the results to include only events from log streams that have names starting with this prefix. Cannot be used together with log_stream_names.
+    - name: start_time
+      description: The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp before this time are not returned.
+    - name: end_time
+      description: The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp later than this time are not returned.
+    - name: filter_pattern
+      description: The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation.
+    - name: limit
+      defaultvalue: "10000"
+      description: The maximum number of events to return. The default is 10,000 events.
+    - name: next_token
+      description: The token for the next set of events to return. Use the value returned in the previous response as nextToken to get the next page of results.
+    - name: unmask
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultvalue: "false"
+      description: Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.Events.LogStreamName
+      description: The name of the log stream this event belongs to.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.Events.Timestamp
+      description: The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.Events.Message
+      description: The data contained in the log event.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.Events.IngestionTime
+      description: The time the event was ingested, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.Events.EventId
+      description: The ID of the event.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.EventsNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+      type: string
+    description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
+
+  - name: aws-cloudwatch-log-groups-describe
+    arguments:
+    - name: log_group_name_prefix
+      description: The prefix to match. logGroupNamePrefix and logGroupNamePattern are mutually exclusive. Only one of these parameters can be passed.
+    - name: log_group_name_pattern
+      description: A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. logGroupNamePrefix and logGroupNamePattern are mutually exclusive.
+    - name: account_identifiers
+      description: Comma-separated list of account IDs. When used with includeLinkedAccounts, returns log groups in the accounts listed. Used for cross-account querying.
+      isArray: true
+    - name: include_linked_accounts
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultvalue: "false"
+      description: If true, include log groups in the accounts specified by accountIdentifiers. If this parameter is set to true and accountIdentifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
+    - name: log_group_class
+      auto: PREDEFINED
+      predefined:
+      - STANDARD
+      - INFREQUENT_ACCESS
+      description: Specifies the log group class for this log group. Possible values are STANDARD and INFREQUENT_ACCESS.
+    - name: limit
+      defaultvalue: "50"
+      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+    - name: next_token
+      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogGroupName
+      description: The name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.CreationTime
+      description: The creation time of the log group, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.RetentionInDays
+      description: The number of days to retain the log events in the specified log group.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.MetricFilterCount
+      description: The number of metric filters.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.Arn
+      description: The Amazon Resource Name (ARN) of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.StoredBytes
+      description: The number of bytes stored.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.KmsKeyId
+      description: The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroupsNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+      type: string
+    description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
+
+  - name: aws-cloudwatch-log-streams-describe
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: log_group_identifier
+      description: Specify either the name or ARN of the log group. You must include either logGroupIdentifier or logGroupName, but not both.
+    - name: log_stream_name_prefix
+      description: The prefix to match. If orderBy is LastEventTime, you cannot specify this parameter.
+    - name: order_by
+      auto: PREDEFINED
+      predefined:
+      - LogStreamName
+      - LastEventTime
+      defaultvalue: LogStreamName
+      description: If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time. The default value is LogStreamName.
+    - name: descending
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultvalue: "false"
+      description: If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending).
+    - name: limit
+      defaultvalue: "50"
+      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+    - name: next_token
+      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.LogStreams.LogGroupName
+      description: The name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogStreams.LogStreamName
+      description: The name of the log stream.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogStreams.CreationTime
+      description: The creation time of the stream, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogStreams.Arn
+      description: The Amazon Resource Name (ARN) of the log stream.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogStreams.FirstEventTimestamp
+      description: The time of the first event, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.LogStreams.LastEventTimestamp
+      description: The time of the most recent log event in the log stream in CloudWatch Logs.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.LogStreams.LastIngestionTime
+      description: The ingestion time, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.LogStreams.UploadSequenceToken
+      description: The sequence token.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogStreams.StoredBytes
+      description: The number of bytes stored.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogStreamsNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+      type: string
+    description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
+
+  - name: aws-cloudwatch-retention-policy-put
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: retention_in_days
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "3"
+      - "5"
+      - "7"
+      - "14"
+      - "30"
+      - "60"
+      - "90"
+      - "120"
+      - "150"
+      - "180"
+      - "365"
+      - "400"
+      - "545"
+      - "731"
+      - "1827"
+      - "3653"
+      description: The number of days to retain the log events in the specified log group.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
+    execution: true
+
+  - name: aws-cloudwatch-retention-policy-delete
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
+    execution: true
+
+  - name: aws-cloudwatch-log-events-put
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: log_stream_name
+      required: true
+      description: The name of the log stream.
+    - name: timestamp
+      required: true
+      description: The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time).
+    - name: message
+      required: true
+      description: The raw event message.
+    - name: sequence_token
+      description: The sequence token obtained from the response of the previous PutLogEvents call. An upload in a newly created log stream does not require a sequence token.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.PutLogEvents.NextSequenceToken
+      description: The next sequence token.
+      type: string
+    description: Uploads a batch of log events to the specified log stream.
+    execution: true
+
+  - name: aws-cloudwatch-metric-filter-put
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: filter_name
+      required: true
+      description: A name for the metric filter.
+    - name: filter_pattern
+      required: true
+      description: A filter pattern for extracting metric data out of ingested log events.
+    - name: metric_name
+      required: true
+      description: The name of the CloudWatch metric.
+    - name: metric_namespace
+      required: true
+      description: The namespace of the CloudWatch metric.
+    - name: metric_value
+      required: true
+      description: The value to publish to the CloudWatch metric when a filter pattern matches a log event.
+    - name: default_value
+      description: The value to emit when a filter pattern does not match a log event. This value can be null.
+    - name: dimensions
+      description: "The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Format: JSON object, e.g. {\"EventType\": \"$.eventType\"}."
+    - name: unit
+      auto: PREDEFINED
+      predefined:
+      - Seconds
+      - Microseconds
+      - Milliseconds
+      - Bytes
+      - Kilobytes
+      - Megabytes
+      - Gigabytes
+      - Terabytes
+      - Bits
+      - Kilobits
+      - Megabits
+      - Gigabits
+      - Terabits
+      - Percent
+      - Count
+      - Bytes/Second
+      - Kilobytes/Second
+      - Megabytes/Second
+      - Gigabytes/Second
+      - Terabytes/Second
+      - Bits/Second
+      - Kilobits/Second
+      - Megabits/Second
+      - Gigabits/Second
+      - Terabits/Second
+      - Count/Second
+      - None
+      description: The unit to assign to the metric. If you omit this, the unit is set as None.
+    - name: apply_on_transformed_logs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultvalue: "false"
+      description: Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
+    execution: true
+
+  - name: aws-cloudwatch-metric-filter-delete
+    arguments:
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: filter_name
+      required: true
+      description: The name of the metric filter.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    description: Deletes the specified metric filter.
+    execution: true
+
+  - name: aws-cloudwatch-metric-filters-describe
+    arguments:
+    - name: log_group_name
+      description: The name of the log group.
+    - name: filter_name_prefix
+      description: The prefix to match.
+    - name: metric_name
+      description: Filters results to include only those with the specified metric name. If you include this parameter in your request, you must also include the metric_namespace parameter.
+    - name: metric_namespace
+      description: Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter.
+    - name: limit
+      defaultvalue: "50"
+      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+    - name: next_token
+      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
+    - name: region
+      required: true
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterName
+      description: The name of the metric filter.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterPattern
+      description: A symbolic description of how CloudWatch Logs should interpret the data in each log event.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName
+      description: The name of the CloudWatch metric.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace
+      description: The namespace of the CloudWatch metric.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue
+      description: The value to publish to the CloudWatch metric when a filter pattern matches a log event.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue
+      description: The value to emit when a filter pattern does not match a log event. This value can be null.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.creationTime
+      description: The creation time of the metric filter, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.logGroupName
+      description: The name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFiltersNextToken
+      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+      type: string
+    description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
+
   isfetch: false
   runonce: false
   script: '-'

@@ -8746,6 +8746,19 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-hosts-allocate": EC2.allocate_hosts_command,
     "aws-ec2-hosts-release": EC2.release_hosts_command,
     "aws-ec2-traffic-mirror-session-create": EC2.create_traffic_mirror_session_command,
+    "aws-cloudwatch-log-group-create": CloudWatchLogs.log_group_create_command,
+    "aws-cloudwatch-log-stream-create": CloudWatchLogs.log_stream_create_command,
+    "aws-cloudwatch-log-group-delete": CloudWatchLogs.log_group_delete_command,
+    "aws-cloudwatch-log-stream-delete": CloudWatchLogs.log_stream_delete_command,
+    "aws-cloudwatch-log-events-filter": CloudWatchLogs.log_events_filter_command,
+    "aws-cloudwatch-log-groups-describe": CloudWatchLogs.log_groups_describe_command,
+    "aws-cloudwatch-log-streams-describe": CloudWatchLogs.log_streams_describe_command,
+    "aws-cloudwatch-retention-policy-put": CloudWatchLogs.retention_policy_put_command,
+    "aws-cloudwatch-retention-policy-delete": CloudWatchLogs.retention_policy_delete_command,
+    "aws-cloudwatch-log-events-put": CloudWatchLogs.log_events_put_command,
+    "aws-cloudwatch-metric-filter-put": CloudWatchLogs.metric_filter_put_command,
+    "aws-cloudwatch-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
+    "aws-cloudwatch-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -8891,6 +8904,19 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:AllocateHosts",
     "ec2:ReleaseHosts",
     "ec2:CreateTrafficMirrorSession",
+    "logs:CreateLogGroup",
+    "logs:CreateLogStream",
+    "logs:DeleteLogGroup",
+    "logs:DeleteLogStream",
+    "logs:FilterLogEvents",
+    "logs:DescribeLogGroups",
+    "logs:DescribeLogStreams",
+    "logs:PutRetentionPolicy",
+    "logs:DeleteRetentionPolicy",
+    "logs:PutLogEvents",
+    "logs:PutMetricFilter",
+    "logs:DeleteMetricFilter",
+    "logs:DescribeMetricFilters",
 ]
 
 COMMAND_SERVICE_MAP = {
