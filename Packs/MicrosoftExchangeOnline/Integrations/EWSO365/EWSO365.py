@@ -329,22 +329,20 @@ def email_ec(item):
 
 def is_item_duplicate(item, exclude_ids, incident_filter):
     """
-    Checks if an item is a duplicate based on ID and Timestamp.
+    Check whether an item is a duplicate based on its Message-ID and timestamp.
 
-    Note:
-    According to RFC 5322, Message-IDs should be enclosed in angle brackets (e.g., <id@domain>).
-    However, EWS search might return id@domain first, while subsequent fetches might add them.
-    This function normalizes both forms to prevent duplication caused by this inconsistency.
+    RFC 5322 defines Message-ID values as <id@domain>, but in practice the same
+    message may appear in different forms across fetches, such as id@domain,
+    <id@domain>, id@domain>, or <id@domain and they might change between fetches.
+    To avoid duplicate incidents, we verify all possible forms in exclude_ids.
 
-    Features:
-    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>).
-    2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
-    3. Timestamp Logic: Compares stored time vs item time.
+    If a matching stored entry has no timestamp, it is treated as a legacy
+    duplicate. Otherwise, the stored timestamp is compared with the item's
+    received or modified time, depending on incident_filter.
 
     Returns:
-        tuple[bool, str | None]: A tuple containing:
-            - is_duplicate (bool): True if item is a duplicate (skip it), False if it should be processed.
-            - stored_time (str | None): The stored fetch time for the item, or None if not found/not a duplicate.
+        tuple[bool, str | None]: Whether the item is a duplicate and the stored
+        timestamp of the matched entry, if any.
     """
     if not item.message_id or not exclude_ids:
         return False, None
@@ -352,10 +350,10 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     clean_id = item.message_id.strip().strip("<>")
 
     found_key = None
-    if clean_id in exclude_ids:
-        found_key = clean_id
-    elif f"<{clean_id}>" in exclude_ids:
-        found_key = f"<{clean_id}>"
+    for candidate in (clean_id, f"<{clean_id}>", f"{clean_id}>", f"<{clean_id}"):
+        if candidate in exclude_ids:
+            found_key = candidate
+            break
 
     if found_key is None:
         return False, None
