@@ -90,6 +90,8 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+RECON_API_LIMIT = 100
+MAX_FETCH_RECON = 100
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -2769,12 +2771,14 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Recon-Log Closing Recon Notification: {remote_id} in remote system.")
-        result = str(resolve_case(remote_id, status="closed-true-positive", is_recon_type=True))
+        close_reason = delta.get("closeReason")
+        status = "closed-true-positive" if close_reason in ("True Positive", "Resolved") else "closed-false-positive"
+        result = str(patch_remote_entity(remote_id, status=status, is_recon_type=True))
         demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
         return result
     elif "status" in delta:
         demisto.debug(f"Recon-Log Updating Recon Notification: {remote_id} with status: {delta.get('status')} in remote system.")
-        result = str(resolve_case(remote_id, status=delta.get("status"), is_recon_type=True))
+        result = str(patch_remote_entity(remote_id, status=delta.get("status"), is_recon_type=True))
         demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
         return result
     demisto.debug(f"Recon-Log No relevant change found for Recon Notification: {remote_id}")
@@ -2797,9 +2801,9 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
     try:
         ids, _, _ = recon_notifications_pagination(
             filter=mirror_status_filter,
-            api_limit=100,
+            api_limit=RECON_API_LIMIT,
             recon_offset=0,
-            fetch_limit=100,
+            fetch_limit=MAX_FETCH_RECON,
             is_fetch=False,
         )
         prefixed_incident_ids = [f"{IncidentType.RECON.value}{id}" for id in ids]
@@ -2833,7 +2837,8 @@ def set_xsoar_entries(
     reopen_statuses_set = {str(status).lower().strip().replace(" ", "_").replace("-", "_") for status in reopen_statuses_list}
     demisto.debug(f"In set_xsoar_entries {reopen_statuses_set=} {remote_detection_id=}")
     if demisto.params().get("close_incident"):
-        if updated_object.get("status", "").lower() == "closed" or updated_object.get("status", "").lower().startswith("closed-"):
+        status = updated_object.get("status", "").lower()
+        if status.startswith("closed"):
             close_in_xsoar(entries, remote_detection_id, incident_type_name)
         elif updated_object.get("status", "").lower().replace("-", "_") in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, incident_type_name)
@@ -3068,9 +3073,9 @@ def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id:
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
-        return str(resolve_case(remote_id, status="closed"))
+        return str(patch_remote_entity(remote_id, status="closed"))
     elif "status" in delta:
-        return str(resolve_case(remote_id, status=delta.get("status")))
+        return str(patch_remote_entity(remote_id, status=delta.get("status")))
     return ""
 
 
@@ -7088,7 +7093,7 @@ def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output="Tags were deleted successfully.")
 
 
-def resolve_case(
+def patch_remote_entity(
     case_id: str,
     status: str | None = None,
     name: str | None = None,
@@ -7100,17 +7105,17 @@ def resolve_case(
     is_recon_type: bool | None = None,
 ) -> dict:
     """
-    Updates a specific case object using PATCH /cases/entities/cases/v2.
+    Updates an incident (Case or Recon Notification) in the remote system via PATCH request.
 
     Args:
-        case_id (str): The ID of the case to patch.
-        status (str | None): The status to set for the case.
-        assigned_to_uuid (str | None): A UUID of a user to assign the case to.
-        description (str | None): A new description for the case.
-        remove_user_assignment (bool): Whether to remove case assignment from current user.
-        severity (int | None): The new case severity rating (10-100).
-        template_id (str | None): The unique ID of the template to apply to the case.
-        is_recon_type (bool | None): Whether the case is a recon type.
+        case_id (str): The unique identifier of the incident/case.
+        status (str | None): The status to set for the incident/case.
+        assigned_to_uuid (str | None): A UUID of a user to assign the incident/case to.
+        description (str | None): A new description for the incident/case.
+        remove_user_assignment (bool): Whether to remove incident/case assignment from current user.
+        severity (int | None): The new incident/case severity rating (10-100).
+        template_id (str | None): The unique ID of the template to apply to the incident/case.
+        is_recon_type (bool | None): Whether the incident is a recon type.
 
     Returns:
         dict: The response from the API.
@@ -7125,17 +7130,16 @@ def resolve_case(
         "template": {"id": template_id} if template_id else None,
         "remove_user_assignment": remove_user_assignment if remove_user_assignment else None,
     }
-    fields = {k: v for k, v in fields.items() if v is not None}
+    remove_nulls_from_dictionary(fields)
 
     if is_recon_type:
-        recon_payload = {"id": case_id, **fields}
-        request_payload: dict | list = [recon_payload]
         url_suffix = "/recon/entities/notifications/v1"
+        payload: dict | list = [{"id": case_id, **fields}]
     else:
-        request_payload = {"id": case_id, "fields": fields}
+        payload = {"id": case_id, "fields": fields}
         url_suffix = "/cases/entities/cases/v2"
-    demisto.debug(f"About to call http_request with {request_payload=}")
-    return http_request("PATCH", url_suffix, json=request_payload)
+    demisto.debug(f"Sending PATCH request to {url_suffix} for ID: {case_id}. Payload: {payload}")
+    return http_request("PATCH", url_suffix, json=payload)
 
 
 def resolve_case_command(args: dict[str, Any]) -> CommandResults:
@@ -7164,7 +7168,7 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
         "template_id": args.get("template_id"),
     }
 
-    resolve_case(
+    patch_remote_entity(
         case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields
     )
 

@@ -7749,7 +7749,8 @@ def test_get_remote_recon_data_not_found(mocker):
 @pytest.mark.parametrize(
     "delta, inc_status, close_in_cs, expected_status, expected_call",
     [
-        ({"status": 2}, IncidentStatus.DONE, True, "closed-true-positive", True),
+        ({"status": 2, "closeReason": "True Positive"}, IncidentStatus.DONE, True, "closed-true-positive", True),
+        ({"status": 2, "closeReason": "False Positive"}, IncidentStatus.DONE, True, "closed-false-positive", True),
         ({"status": "in-progress"}, IncidentStatus.ACTIVE, False, "in-progress", True),
         ({"other_field": 1}, IncidentStatus.DONE, False, None, False),
     ],
@@ -8000,7 +8001,7 @@ def test_update_remote_ngsiem_case(mocker, delta, inc_status, close_in_cs_falcon
     from CrowdStrikeFalcon import update_remote_ngsiem_case, IncidentType
 
     mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon_param})
-    update_mock = mocker.patch("CrowdStrikeFalcon.resolve_case", return_value="success")
+    update_mock = mocker.patch("CrowdStrikeFalcon.patch_remote_entity", return_value="success")
 
     remote_id = f"{IncidentType.NGSIEM_CASE.value}:case1"
     result = update_remote_ngsiem_case(delta, inc_status, remote_id)
@@ -8230,38 +8231,38 @@ def test_resolve_case_command(requests_mock):
         resolve_case_command({"status": "new"})
 
 
-def test_resolve_case_recon_type(requests_mock):
+def test_patch_remote_entity_recon_type(requests_mock):
     """
     Given:
         - A case ID, status, and is_recon_type=True.
     When:
-        - Calling resolve_case with is_recon_type=True.
+        - Calling patch_remote_entity with is_recon_type=True.
     Then:
         - Verify the request is sent to the recon endpoint with the correct payload format (list).
     """
-    from CrowdStrikeFalcon import resolve_case
+    from CrowdStrikeFalcon import patch_remote_entity
 
     requests_mock.patch(f"{SERVER_URL}/recon/entities/notifications/v1", json={"resources": []})
 
-    resolve_case(case_id="recon-case-1", status="closed-true-positive", is_recon_type=True)
+    patch_remote_entity(case_id="recon-case-1", status="closed-true-positive", is_recon_type=True)
 
     assert requests_mock.last_request.json() == [{"id": "recon-case-1", "status": "closed-true-positive"}]
 
 
-def test_resolve_case_recon_type_with_multiple_fields(requests_mock):
+def test_patch_remote_entity_recon_type_with_multiple_fields(requests_mock):
     """
     Given:
         - A case ID with status and severity, and is_recon_type=True.
     When:
-        - Calling resolve_case with is_recon_type=True and multiple fields.
+        - Calling patch_remote_entity with is_recon_type=True and multiple fields.
     Then:
         - Verify the recon payload includes all fields flattened (not nested under 'fields').
     """
-    from CrowdStrikeFalcon import resolve_case
+    from CrowdStrikeFalcon import patch_remote_entity
 
     requests_mock.patch(f"{SERVER_URL}/recon/entities/notifications/v1", json={"resources": []})
 
-    resolve_case(case_id="recon-case-2", status="in_progress", severity=50, is_recon_type=True)
+    patch_remote_entity(case_id="recon-case-2", status="in_progress", severity=50, is_recon_type=True)
 
     sent_payload = requests_mock.last_request.json()
     assert isinstance(sent_payload, list)
@@ -8269,20 +8270,20 @@ def test_resolve_case_recon_type_with_multiple_fields(requests_mock):
     assert sent_payload[0] == {"id": "recon-case-2", "status": "in_progress", "severity": 50}
 
 
-def test_resolve_case_with_template_id(requests_mock):
+def test_patch_remote_entity_with_template_id(requests_mock):
     """
     Given:
         - A case ID and a template_id.
     When:
-        - Calling resolve_case with template_id.
+        - Calling patch_remote_entity with template_id.
     Then:
         - Verify the template field is formatted as {"id": template_id} in the payload.
     """
-    from CrowdStrikeFalcon import resolve_case
+    from CrowdStrikeFalcon import patch_remote_entity
 
     requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={"resources": []})
 
-    resolve_case(case_id="case-tmpl-1", template_id="tmpl-abc-123")
+    patch_remote_entity(case_id="case-tmpl-1", template_id="tmpl-abc-123")
 
     assert requests_mock.last_request.json() == {
         "id": "case-tmpl-1",
@@ -8290,20 +8291,20 @@ def test_resolve_case_with_template_id(requests_mock):
     }
 
 
-def test_resolve_case_with_name_and_assigned_to(requests_mock):
+def test_patch_remote_entity_with_name_and_assigned_to(requests_mock):
     """
     Given:
         - A case ID with name and assigned_to_uuid.
     When:
-        - Calling resolve_case with name and assigned_to_uuid.
+        - Calling patch_remote_entity with name and assigned_to_uuid.
     Then:
         - Verify the payload includes the correct field mappings.
     """
-    from CrowdStrikeFalcon import resolve_case
+    from CrowdStrikeFalcon import patch_remote_entity
 
     requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={"resources": []})
 
-    resolve_case(case_id="case-name-1", name="Updated Case", assigned_to_uuid="user-uuid-123")
+    patch_remote_entity(case_id="case-name-1", name="Updated Case", assigned_to_uuid="user-uuid-123")
 
     assert requests_mock.last_request.json() == {
         "id": "case-name-1",
