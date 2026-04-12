@@ -45,6 +45,12 @@ def get_domain_dns_details_command(args: dict[str, Any]) -> CommandResults:
     outputs: dict[str, dict[str, Any]] | None
     answer: str | dict[str, Any]
 
+    try:
+        with open("/etc/resolv.conf") as f:
+            demisto.debug(f"Contents of /etc/resolv.conf:\n{f.read()}")
+    except Exception as e:
+        demisto.debug(f"Could not read /etc/resolv.conf: {e}")
+
     server = args.get("server")
     use_tcp = argToBoolean(args.get("use_tcp", "Yes"))
 

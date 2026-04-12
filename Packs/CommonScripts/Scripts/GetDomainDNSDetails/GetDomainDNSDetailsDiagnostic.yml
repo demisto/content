@@ -1,0 +1,154 @@
+commonfields:
+  id: GetDomainDNSDetailsDiagnostic
+  version: -1
+name: GetDomainDNSDetailsDiagnostic
+script: |
+  import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+  from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+  from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+  from typing import Any
+  import traceback
+  import socket
+
+  import dns.resolver
+  import dns.rdatatype
+  import dns.rdataclass
+  import dns.rdata
+
+
+  DNS_QUERY_TIMEOUT = 5.0
+  DNS_QUERY_LIFETIME = 10.0
+  QTYPES = ["CNAME", "NS", "A", "AAAA"]
+
+
+  """ STANDALONE FUNCTION """
+
+
+  def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp: bool) -> dict[str, Any]:
+      q_rdtype = dns.rdatatype.from_text(qtype)
+      q_rdclass = dns.rdataclass.from_text("IN")
+
+      try:
+          ans = resolver.resolve(
+              qname,
+              q_rdtype,
+              q_rdclass,
+              tcp=use_tcp,
+              raise_on_no_answer=True,
+          )
+
+      except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+          return {}
+
+      if ans.rrset is None:
+          return {}
+
+      result: dict[str, list[str]] = {}
+
+      result[qtype] = [rr.to_text() for rr in ans.rrset if (rr is not None and rr.rdtype == q_rdtype and rr.rdclass == q_rdclass)]
+
+      return result
+
+
+  """ COMMAND FUNCTION """
+
+
+  def get_domain_dns_details_command(args: dict[str, Any]) -> CommandResults:
+      outputs: dict[str, dict[str, Any]] | None
+      answer: str | dict[str, Any]
+
+      # DIAGNOSTICS
+      demisto.debug("--- DNS DIAGNOSTICS START ---")
+      try:
+          with open("/etc/resolv.conf") as f:
+              content = f.read()
+              demisto.debug(f"Contents of /etc/resolv.conf:\n{content}")
+      except Exception as e:
+          demisto.debug(f"Could not read /etc/resolv.conf: {e}")
+
+      try:
+          hostname = socket.gethostname()
+          demisto.debug(f"Container Hostname: {hostname}")
+          demisto.debug(f"Socket gethostbyname(hostname): {socket.gethostbyname(hostname)}")
+      except Exception as e:
+          demisto.debug(f"Socket diagnostics failed: {e}")
+      demisto.debug("--- DNS DIAGNOSTICS END ---")
+
+      server = args.get("server")
+      use_tcp = argToBoolean(args.get("use_tcp", "false"))
+
+      qtypes = QTYPES
+      if (arg_qtype := args.get("qtype")) is not None:
+          qtypes = argToList(arg_qtype)
+
+      qname = args.get("domain")
+      if qname is None:
+          raise ValueError("domain is required")
+
+      resolver = dns.resolver.Resolver()
+      resolver.timeout = DNS_QUERY_TIMEOUT
+      resolver.lifetime = DNS_QUERY_LIFETIME
+
+      if server is not None:
+          demisto.debug(f"Using manual nameserver: {server}")
+          resolver.nameservers = [server]
+      else:
+          demisto.debug(f"Using system nameservers: {resolver.nameservers}")
+
+      answer = {"domain": qname, "server": server if server is not None else "system"}
+
+      for qtype in qtypes:
+          demisto.debug(f"Querying {qname} for type {qtype} (TCP: {use_tcp})...")
+          try:
+              res = make_query(resolver, qname, qtype, use_tcp=use_tcp)
+              demisto.debug(f"Query for {qtype} finished. Result: {res}")
+              answer.update(res)
+          except Exception as e:
+              demisto.debug(f"Query for {qtype} failed: {type(e).__name__}: {e}")
+
+      outputs = {"DomainDNSDetails": answer}
+
+      markdown = tableToMarkdown(f"Domain DNS Details for {qname}", answer, headers=["domain", "server"] + qtypes)
+
+      return CommandResults(readable_output=markdown, outputs=outputs, outputs_key_field=["domain", "server"])
+
+
+  """ MAIN FUNCTION """
+
+
+  def main():
+      try:
+          return_results(get_domain_dns_details_command(demisto.args()))
+      except Exception as ex:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f"Failed to execute GetDomainDNSDetails. Error: {ex!s}")
+
+
+  """ ENTRY POINT """
+
+
+  if __name__ in ("__main__", "__builtin__", "builtins"):
+      main()
+type: python
+subtype: python3
+args:
+- description: The domain to query.
+  name: domain
+  required: true
+- description: "IP of the DNS Server to use (default: system settings)."
+  name: server
+- description: "Use TCP for the query (default: false)."
+  name: use_tcp
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+- description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)."
+  name: qtype
+  defaultValue: CNAME,NS,A,AAAA
+comment: Returns DNS details for a domain with enhanced diagnostics for Engine/Podman issues.
+dockerimage: demisto/netutils:1.0.0.3562043
+runonce: false
+tags: []
