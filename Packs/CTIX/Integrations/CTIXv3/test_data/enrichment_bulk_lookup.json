@@ -1,0 +1,83 @@
+{
+    "next": null,
+    "previous": null,
+    "total": 1,
+    "results": [
+  {
+      "id": "ind-001-aaaa-bbbb-cccc-ddddeeee0001",
+    "name": "1.2.3.4",
+    "object_type": "indicator",
+    "ioc_type": "ipv4-addr",
+    "confidence_score": 90,
+    "description": "Enriched: Known C2 server associated with APT29",
+    "country": "RU",
+    "tlp": "AMBER",
+    "created": 1700000000,
+    "modified": 1700000000,
+    "ctix_created": 1700000001,
+    "ctix_modified": 1700000001,
+    "first_seen": 1699900000,
+    "last_seen": 1700000000,
+    "valid_from": 1699900000,
+    "valid_until": null,
+    "is_deprecated": false,
+    "is_false_positive": false,
+    "is_reviewed": true,
+    "is_whitelisted": false,
+    "sources": [
+      {"id": "src-001", "name": "ThreatFeed Alpha", "source_type": "RSS_FEED"}
+    ],
+    "tags": [
+      {"colour_code": "#FF5330", "id": "tag-001", "name": "malware"},
+      {"colour_code": "#0068FA", "id": "tag-002", "name": "c2"}
+    ],
+    "relations": {
+      "related-to": [
+        {"name": "evil.example.com", "type": "domain-name"},
+        {"name": "APT29", "type": "threat-actor"}
+      ],
+      "communicates-with": [
+        {"name": "5.6.7.8", "type": "ipv4-addr"}
+      ]
+    },
+    "enrichment_data": [
+      {
+        "tool_name": "VirusTotal",
+        "result": {"malicious": 45, "suspicious": 3, "harmless": 12}
+      }
+    ],
+    "custom_attributes": []
+  },
+  {
+    "id": "ind-002-aaaa-bbbb-cccc-ddddeeee0002",
+    "name": "evil.example.com",
+    "object_type": "indicator",
+    "ioc_type": "domain-name",
+    "confidence_score": 60,
+    "description": "Enriched: Phishing domain registered recently",
+    "country": "US",
+    "tlp": "GREEN",
+    "created": 1700000100,
+    "modified": 1700000100,
+    "ctix_created": 1700000101,
+    "ctix_modified": 1700000101,
+    "first_seen": 1699950000,
+    "last_seen": 1700000100,
+    "valid_from": 1699950000,
+    "valid_until": null,
+    "is_deprecated": false,
+    "is_false_positive": false,
+    "is_reviewed": false,
+    "is_whitelisted": false,
+    "sources": [
+      {"id": "src-002", "name": "Internal SOC", "source_type": "MISCELLANEOUS"}
+    ],
+    "tags": [
+      {"colour_code": "#EB9C00", "id": "tag-003", "name": "phishing"}
+    ],
+    "relations": {},
+    "enrichment_data": [],
+    "custom_attributes": []
+  }
+]
+}
