@@ -15,11 +15,13 @@ from workflow_state import (
     NA_MARK,
     WORKFLOW_COLUMNS,
     find_row,
+    format_by_assignee,
     format_dashboard_row,
     format_status,
     get_current_step,
     get_step_index,
     is_checked,
+    list_by_assignee,
     markpass_step,
     reset_from_step,
 )
@@ -32,6 +34,7 @@ from workflow_state import (
 def _make_row(
     name: str = "TestIntegration",
     script_inputs: str = "",
+    params_for_test: str = "",
     overrides: dict[str, str] | None = None,
 ) -> dict[str, str]:
     """Create a blank workflow row dict for testing."""
@@ -43,6 +46,7 @@ def _make_row(
         "Auth Requirement": "REQUIRED(API_KEY)",
         "Auth Params": "api_key[API_KEY](type4,required)",
         "script inputs": script_inputs,
+        "params required for test": params_for_test,
     }
     for col in WORKFLOW_COLUMNS:
         if col not in row:
@@ -55,11 +59,13 @@ def _make_row(
 def _complete_up_to(row: dict[str, str], step_name: str) -> None:
     """Mark all checkpoint steps up to (but NOT including) step_name as ✅.
 
-    Also sets 'script inputs' to '{}' if not already set, since it's a
-    prerequisite for 'generated manifest'.
+    Also sets 'script inputs' and 'params required for test' to '{}' if not
+    already set, since they are prerequisites for 'generated manifest'.
     """
     if not row.get("script inputs", "").strip():
         row["script inputs"] = "{}"
+    if not row.get("params required for test", "").strip():
+        row["params required for test"] = "{}"
     for col in CHECKPOINT_COLUMNS:
         if col == step_name:
             break
@@ -197,7 +203,7 @@ class TestGetStepIndex:
 
 class TestResetFromStep:
     def test_reset_from_first_clears_all(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
         row["requires auth parity test"] = "YES"
@@ -210,7 +216,7 @@ class TestResetFromStep:
         assert row["requires auth parity test"] == ""
 
     def test_reset_from_middle(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
         row["requires auth parity test"] = "YES"
@@ -226,7 +232,7 @@ class TestResetFromStep:
         assert row["code merged"] == ""
 
     def test_reset_from_last(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
 
@@ -237,7 +243,7 @@ class TestResetFromStep:
         assert row["code merged"] == ""
 
     def test_reset_clears_auth_flag_when_before_auth_position(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
         row["requires auth parity test"] = "YES"
@@ -247,7 +253,7 @@ class TestResetFromStep:
         assert row["requires auth parity test"] == ""
 
     def test_reset_preserves_auth_flag_when_after_auth_position(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
         row["requires auth parity test"] = "YES"
@@ -296,7 +302,7 @@ class TestMarkpassStep:
         assert "set-inputs" in msg
 
     def test_generated_manifest_works_with_script_inputs(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         msg = markpass_step(row, "generated manifest")
         assert "ERROR" not in msg
         assert row["generated manifest"] == CHECK
@@ -304,20 +310,20 @@ class TestMarkpassStep:
     # --- Sequential enforcement ---
 
     def test_cannot_skip_ahead(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         msg = markpass_step(row, "wrote code")
         assert "ERROR" in msg
         assert "not up to that step" in msg
         assert "generated manifest" in msg
 
     def test_cannot_skip_multiple_steps(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         msg = markpass_step(row, "unit tests passed")
         assert "ERROR" in msg
         assert "not up to that step" in msg
 
     def test_sequential_pass_works(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         msg1 = markpass_step(row, "generated manifest")
         assert "ERROR" not in msg1
         assert row["generated manifest"] == CHECK
@@ -333,7 +339,7 @@ class TestMarkpassStep:
     # --- Already done ---
 
     def test_already_done(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["generated manifest"] = CHECK
         msg = markpass_step(row, "generated manifest")
         assert "already marked as passed" in msg
@@ -341,7 +347,7 @@ class TestMarkpassStep:
     # --- Auth parity special cases ---
 
     def test_auth_parity_requires_flag_set(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         _complete_up_to(row, "auth parity test passes")
         row["requires auth parity test"] = ""
 
@@ -350,7 +356,7 @@ class TestMarkpassStep:
         assert "set-auth-flag" in msg
 
     def test_auth_parity_auto_na_when_flag_no(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         _complete_up_to(row, "auth parity test passes")
         row["requires auth parity test"] = "NO"
 
@@ -359,7 +365,7 @@ class TestMarkpassStep:
         assert row["auth parity test passes"] == NA_MARK
 
     def test_auth_parity_auto_na_when_flag_na(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         _complete_up_to(row, "auth parity test passes")
         row["requires auth parity test"] = "N/A"
 
@@ -368,7 +374,7 @@ class TestMarkpassStep:
         assert row["auth parity test passes"] == NA_MARK
 
     def test_auth_parity_passes_when_flag_yes(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         _complete_up_to(row, "auth parity test passes")
         row["requires auth parity test"] = "YES"
 
@@ -386,7 +392,7 @@ class TestMarkpassStep:
     # --- Full workflow ---
 
     def test_full_workflow_happy_path(self) -> None:
-        row = _make_row(script_inputs='{"arg1": "val1"}')
+        row = _make_row(script_inputs='{"arg1": "val1"}', params_for_test='{}')
         row["requires auth parity test"] = "NO"
 
         for col in CHECKPOINT_COLUMNS:
@@ -441,14 +447,14 @@ class TestFormatStatus:
         assert "generated manifest" in output
 
     def test_in_progress_shows_current_step(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["generated manifest"] = CHECK
         output = format_status(row)
         assert "Current step" in output
         assert "wrote code" in output
 
     def test_all_complete_shows_celebration(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
         output = format_status(row)
@@ -480,14 +486,14 @@ class TestFormatDashboardRow:
         assert format_dashboard_row(row) is None
 
     def test_with_progress_returns_string(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["generated manifest"] = CHECK
         result = format_dashboard_row(row)
         assert result is not None
         assert "TestIntegration" in result
 
     def test_all_done_shows_done(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         for col in CHECKPOINT_COLUMNS:
             row[col] = CHECK
         result = format_dashboard_row(row)
@@ -495,7 +501,7 @@ class TestFormatDashboardRow:
         assert "DONE" in result
 
     def test_progress_bar_format(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["generated manifest"] = CHECK
         row["wrote code"] = CHECK
         result = format_dashboard_row(row)
@@ -511,7 +517,7 @@ class TestFormatDashboardRow:
 
 class TestMarkpassResetRoundTrip:
     def test_markpass_then_reset_to_same_step(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         markpass_step(row, "generated manifest")
         assert row["generated manifest"] == CHECK
 
@@ -520,7 +526,7 @@ class TestMarkpassResetRoundTrip:
         assert get_current_step(row) == "generated manifest"
 
     def test_markpass_several_then_reset_to_middle(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         markpass_step(row, "generated manifest")
         markpass_step(row, "wrote code")
         markpass_step(row, "validations passed")
@@ -535,7 +541,7 @@ class TestMarkpassResetRoundTrip:
         assert get_current_step(row) == "wrote code"
 
     def test_reset_then_markpass_again(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         markpass_step(row, "generated manifest")
         markpass_step(row, "wrote code")
 
@@ -567,7 +573,7 @@ class TestMarkpassResetRoundTrip:
 
 class TestEdgeCases:
     def test_markpass_with_whitespace_in_value(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["generated manifest"] = "  "
         msg = markpass_step(row, "generated manifest")
         assert "ERROR" not in msg
@@ -575,13 +581,13 @@ class TestEdgeCases:
 
     def test_script_inputs_with_complex_json(self) -> None:
         complex_json = '{"args": ["a", "b"], "config": {"nested": true}}'
-        row = _make_row(script_inputs=complex_json)
+        row = _make_row(script_inputs=complex_json, params_for_test="{}")
         msg = markpass_step(row, "generated manifest")
         assert "ERROR" not in msg
         assert row["generated manifest"] == CHECK
 
     def test_markpass_preserves_other_columns(self) -> None:
-        row = _make_row(name="SpecialInt", script_inputs="{}")
+        row = _make_row(name="SpecialInt", script_inputs="{}", params_for_test="{}")
         original_name = row["Integration Name"]
         original_provider = row["Provider"]
 
@@ -591,7 +597,7 @@ class TestEdgeCases:
         assert row["Provider"] == original_provider
 
     def test_reset_preserves_data_columns(self) -> None:
-        row = _make_row(name="SpecialInt", script_inputs="{}")
+        row = _make_row(name="SpecialInt", script_inputs="{}", params_for_test="{}")
         row["generated manifest"] = CHECK
         row["wrote code"] = CHECK
 
@@ -620,7 +626,7 @@ class TestAssignee:
         assert "(unassigned)" not in output
 
     def test_assignee_preserved_after_reset(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["assignee"] = "Jane Smith"
         row["generated manifest"] = CHECK
         row["wrote code"] = CHECK
@@ -630,7 +636,7 @@ class TestAssignee:
         assert row["assignee"] == "Jane Smith"
 
     def test_assignee_preserved_after_markpass(self) -> None:
-        row = _make_row(script_inputs="{}")
+        row = _make_row(script_inputs="{}", params_for_test="{}")
         row["assignee"] = "Jane Smith"
 
         markpass_step(row, "generated manifest")
@@ -641,3 +647,138 @@ class TestAssignee:
     def test_assignee_in_data_columns(self) -> None:
         from workflow_state import DATA_COLUMNS
         assert "assignee" in DATA_COLUMNS
+
+
+# ---------------------------------------------------------------------------
+# Params required for test
+# ---------------------------------------------------------------------------
+
+class TestParamsRequiredForTest:
+    def test_markpass_rejects_params_required_for_test(self) -> None:
+        row = _make_row()
+        msg = markpass_step(row, "params required for test")
+        assert "ERROR" in msg
+        assert "set-params-for-test" in msg
+
+    def test_generated_manifest_requires_params(self) -> None:
+        row = _make_row(script_inputs="{}", params_for_test="")
+        msg = markpass_step(row, "generated manifest")
+        assert "ERROR" in msg
+        assert "params required for test" in msg
+
+    def test_generated_manifest_works_with_both_inputs(self) -> None:
+        row = _make_row(script_inputs="{}", params_for_test='{"key": "val"}')
+        msg = markpass_step(row, "generated manifest")
+        assert "ERROR" not in msg
+        assert row["generated manifest"] == CHECK
+
+    def test_params_in_workflow_columns(self) -> None:
+        assert "params required for test" in WORKFLOW_COLUMNS
+
+    def test_params_in_non_checkpoint_steps(self) -> None:
+        from workflow_state import NON_CHECKPOINT_STEPS
+        assert "params required for test" in NON_CHECKPOINT_STEPS
+        assert NON_CHECKPOINT_STEPS["params required for test"] == "set-params-for-test"
+
+    def test_status_shows_params_not_set(self) -> None:
+        row = _make_row()
+        output = format_status(row)
+        # Should show (not set) for params required for test
+        assert "params required for test" in output
+
+    def test_status_shows_params_value(self) -> None:
+        row = _make_row(params_for_test='{"api_key": "test123"}')
+        output = format_status(row)
+        assert '{"api_key": "test123"}' in output
+
+    def test_params_preserved_after_reset(self) -> None:
+        row = _make_row(script_inputs="{}", params_for_test='{"key": "val"}')
+        row["generated manifest"] = CHECK
+        row["wrote code"] = CHECK
+
+        reset_from_step(row, "generated manifest")
+
+        # params required for test is not a checkpoint, should be preserved
+        assert row["params required for test"] == '{"key": "val"}'
+
+
+# ---------------------------------------------------------------------------
+# list_by_assignee / format_by_assignee
+# ---------------------------------------------------------------------------
+
+class TestListByAssignee:
+    def test_finds_integrations_for_valid_assignee(self) -> None:
+        rows = [
+            _make_row(name="IntA", overrides={"assignee": "Alice"}),
+            _make_row(name="IntB", overrides={"assignee": "Bob"}),
+            _make_row(name="IntC", overrides={"assignee": "Alice"}),
+        ]
+        result = list_by_assignee(rows, "Alice")
+        assert len(result) == 2
+        names = [r["Integration Name"] for r in result]
+        assert "IntA" in names
+        assert "IntC" in names
+
+    def test_case_insensitive_matching(self) -> None:
+        rows = [
+            _make_row(name="IntA", overrides={"assignee": "Alice"}),
+            _make_row(name="IntB", overrides={"assignee": "alice"}),
+            _make_row(name="IntC", overrides={"assignee": "ALICE"}),
+        ]
+        result = list_by_assignee(rows, "aLiCe")
+        assert len(result) == 3
+
+    def test_no_results_found(self) -> None:
+        rows = [
+            _make_row(name="IntA", overrides={"assignee": "Alice"}),
+            _make_row(name="IntB", overrides={"assignee": "Bob"}),
+        ]
+        result = list_by_assignee(rows, "Charlie")
+        assert len(result) == 0
+
+    def test_multiple_integrations_same_assignee(self) -> None:
+        rows = [
+            _make_row(name="IntA", overrides={"assignee": "Bob"}),
+            _make_row(name="IntB", overrides={"assignee": "Bob"}),
+            _make_row(name="IntC", overrides={"assignee": "Bob"}),
+        ]
+        result = list_by_assignee(rows, "Bob")
+        assert len(result) == 3
+        names = [r["Integration Name"] for r in result]
+        assert names == ["IntA", "IntB", "IntC"]
+
+
+class TestFormatByAssignee:
+    def test_no_matches_message(self) -> None:
+        output = format_by_assignee([], "Nobody")
+        assert "No integrations found for assignee 'Nobody'" in output
+
+    def test_shows_count_and_names(self) -> None:
+        rows = [
+            _make_row(name="IntA", overrides={"assignee": "Alice"}),
+            _make_row(name="IntB", overrides={"assignee": "Alice"}),
+        ]
+        output = format_by_assignee(rows, "Alice")
+        assert "(2)" in output
+        assert "IntA" in output
+        assert "IntB" in output
+
+    def test_shows_current_step(self) -> None:
+        row = _make_row(name="IntA", overrides={"assignee": "Alice"})
+        row["script inputs"] = "{}"
+        row["generated manifest"] = CHECK
+        # Current step should be "wrote code"
+        output = format_by_assignee([row], "Alice")
+        assert "wrote code" in output
+
+    def test_shows_done_when_all_complete(self) -> None:
+        row = _make_row(name="IntA", overrides={"assignee": "Alice"})
+        for col in CHECKPOINT_COLUMNS:
+            row[col] = CHECK
+        output = format_by_assignee([row], "Alice")
+        assert "DONE" in output
+
+    def test_shows_not_started(self) -> None:
+        row = _make_row(name="IntA", overrides={"assignee": "Alice"})
+        output = format_by_assignee([row], "Alice")
+        assert "not started" in output
