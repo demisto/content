@@ -1748,13 +1748,13 @@ def extract_issue_id_from_comment_url(comment_url: str) -> str:
     return ""
 
 
-def text_to_adf(text: str) -> Dict[str, Any]:
+def text_to_adf(text: str | dict[str, Any]) -> Dict[str, Any]:
     """This function receives a text and converts the text to Atlassian Document Format (ADF),
     which is used in order to send data to the API (such as, summary, content, when creating an issue for instance).
     This format is only currently used for Jira Cloud.
 
     Args:
-        text (str): A text to convert to ADF.
+        text (str | dict[str, Any]): A text or dictionary to convert to ADF.
 
     Returns:
         Dict[str, Any]: An ADF object (dictionary).
@@ -1770,6 +1770,7 @@ def text_to_adf(text: str) -> Dict[str, Any]:
             and adf["type"] == "doc"
             and "content" in adf  # The "content" field is required in ADF, and it should be a list of content nodes.
             and isinstance(adf["content"], list)
+            and all(isinstance(node, dict) and "type" in node for node in adf["content"])
         )
 
     try:
