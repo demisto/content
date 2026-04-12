@@ -1,11 +1,11 @@
 {
     "name": "Tessian",
     "description": "Tessian's complete cloud email security platform defends customers against advanced phishing threats, and protects their sensitive data on email.",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.1.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "author": "Tessian",
+    "url": "",
+    "email": "support@tessian.com",
     "categories": [
         "Analytics & SIEM"
     ],
