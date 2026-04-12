@@ -1257,7 +1257,7 @@ class TestOAuthFunctions:
 
     @patch("AtlassianApiModule.get_integration_context")
     def test_create_client_oauth(self, mock_get_ctx):
-        """Test create_client with OAuth 2.0 authentication."""
+        """Test create_client with OAuth 2.0 uses the correct API gateway base URL."""
         mock_get_ctx.return_value = {
             "token": "test-access-token",
             "valid_until": time.time() + 3600,
@@ -1265,6 +1265,7 @@ class TestOAuthFunctions:
         }
         mock_oauth_client = MagicMock()
         mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.cloud_id = "test-cloud-id-123"
         mock_oauth_client.verify = True
 
         params = {
@@ -1275,6 +1276,32 @@ class TestOAuthFunctions:
         }
         result = create_client(params, oauth_client=mock_oauth_client)
         assert isinstance(result, Client)
+        # Verify the base URL uses the Atlassian API gateway with cloud_id
+        assert result._base_url == "https://api.atlassian.com/ex/confluence/test-cloud-id-123"
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_create_client_oauth_no_cloud_id_falls_back(self, mock_get_ctx):
+        """Test create_client with OAuth 2.0 falls back to site URL when cloud_id is empty."""
+        mock_get_ctx.return_value = {
+            "token": "test-access-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "test-refresh-token",
+        }
+        mock_oauth_client = MagicMock()
+        mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.cloud_id = ""
+        mock_oauth_client.verify = True
+
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "OAuth 2.0",
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params, oauth_client=mock_oauth_client)
+        assert isinstance(result, Client)
+        # Falls back to site URL when cloud_id is not set
+        assert result._base_url == "https://mysite.atlassian.net"
 
     @patch("AtlassianApiModule.get_integration_context", return_value={})
     @patch("AtlassianApiModule.set_integration_context")
