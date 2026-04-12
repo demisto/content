@@ -13712,7 +13712,7 @@ def is_ucp_enabled():
 
     UCP mode is active when ``demisto.unifiedConnectorMetadata()`` returns a
     non-empty connector descriptor.  The backend caches this value, so repeated
-    calls are cheap.
+    calls are cheap. This assumes that demisto.unifiedConnectorMetadata will never raise an exception.
 
     :return: ``True`` if UCP metadata is present, ``False`` otherwise.
     :rtype: ``bool``

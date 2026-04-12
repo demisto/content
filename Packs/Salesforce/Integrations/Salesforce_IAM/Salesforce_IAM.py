@@ -351,7 +351,7 @@ def main():
     password = params.get("credentials").get("password")
     client_id = params.get("credentials_consumer", {}).get("identifier") or params.get("consumer_key")
     client_secret = params.get("credentials_consumer", {}).get("password") or params.get("consumer_secret")
-    if not (client_id and client_secret) and not is_ucp_enabled():
+    if not (client_id and client_secret) and not should_use_ucp_auth():
         return_error("Consumer Key and Consumer Secret must be provided.")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -409,15 +409,6 @@ def main():
 
 
 from IAMApiModule import *  # noqa: E402
-def inject_ucp_creds_if_needed():
-    if is_ucp_enabled():
-        method_unique_id = get_ucp_method_unique_id()
-        creds = get_ucp_credentials(method_unique_id)
-        if creds["type"] == "external_auth":
-            _UCP_AUTH_PARAMS_INJECTED = True
-            # Append the creds to params in calling context
-            demisto.callingContext.set
         
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    inject_ucp_creds_if_needed()
     main()
