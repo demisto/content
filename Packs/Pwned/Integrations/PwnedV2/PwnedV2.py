@@ -319,6 +319,158 @@ def pwned_username(username_list):
     return api_res_list
 
 
+def pwned_breaches_for_domain_list_command(args_dict: dict) -> tuple[list, list, list]:
+    """Get all breached email addresses for one or more domains.
+
+    API endpoint: GET /breachedDomain/{domain}
+    The API returns a JSON object where keys are email aliases and values are
+    lists of breach names, e.g. {"alias1": ["Adobe"], "alias2": ["Adobe", "Gawker"]}.
+
+    On HTTP 404 the domain has no breached email addresses.
+
+    Args:
+        args_dict: demisto.args() dictionary. Expected key: ``domain`` (comma-separated list).
+
+    Returns:
+        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+    """
+    domain_list: list[str] = argToList(args_dict.get("domain", ""))
+
+    md_list: list[str] = []
+    ec_list: list[dict] = []
+    api_res_list: list = []
+
+    for domain in domain_list:
+        api_res = http_request("GET", f"breachedDomain/{domain}")
+
+        if api_res is None:
+            md_list.append(f"### Breaches for domain: *{domain}*\nThe domain does not have any email addresses")
+            ec_list.append({})
+            api_res_list.append(None)
+            continue
+
+        # api_res is a dict {alias: [breach_name, ...], ...}
+        # Build HR table with columns: Domain, Account (alias), Breaches
+        table_data = [
+            {"Domain": domain, "Account": alias, "Breaches": ", ".join(breaches)} for alias, breaches in api_res.items()
+        ]
+        md = tableToMarkdown(f"Breaches for domain: {domain}", table_data, ["Domain", "Account", "Breaches"])
+
+        # Build entry context under "Domain.Pwned-V2.Breaches"
+        ec: dict = {"Domain.Pwned-V2.Breaches": api_res}
+
+        md_list.append(md)
+        ec_list.append(ec)
+        api_res_list.append(api_res)
+
+    return md_list, ec_list, api_res_list
+
+
+def pwned_subscribed_domains_list_command(args_dict: dict) -> tuple[list, list, list]:
+    """Get the list of subscribed (verified) domains for the API key owner.
+
+    API endpoint: GET /subscribedDomains
+    No input arguments required.
+
+    Returns:
+        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+    """
+    api_res = http_request("GET", "subscribedDomains")
+
+    if api_res is None:
+        return ["No subscribed domains found."], [{}], [None]
+
+    # Build HR table
+    hr_headers = [
+        "DomainName",
+        "PwnCount",
+        "PwnCountExcludingSpamLists",
+        "PwnCountExcludingSpamListsAtLastSubscriptionRenewal",
+        "NextSubscriptionRenewal",
+    ]
+    md = tableToMarkdown("Subscribed Domains", api_res, hr_headers)
+
+    # Build entry context
+    ec: dict = {"Pwned-V2.SubscribedDomain": api_res}
+
+    return [md], [ec], [api_res]
+
+
+def pwned_latest_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
+    """Get the most recently added breach.
+
+    API endpoint: GET /latestBreach
+    No input arguments required.
+
+    The response is a single breach object (same schema as domain/pwned-domain commands).
+    Should reuse ``domain_to_entry_context()`` for context and dBotScore handling.
+
+    Returns:
+        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+    """
+    api_res = http_request("GET", "latestBreach")
+
+    if api_res is None:
+        return ["No latest breach found."], [{}], [None]
+
+    # Build HR table
+    table_data = [
+        {
+            "Latest breach domain name": api_res.get("Domain", ""),
+            "Breach Date": api_res.get("BreachDate", ""),
+            "Added Date": api_res.get("AddedDate", ""),
+            "Pwn Count": api_res.get("PwnCount", ""),
+        }
+    ]
+    md = tableToMarkdown("Latest Breach", table_data, ["Latest breach domain name", "Breach Date", "Added Date", "Pwn Count"])
+
+    # Build entry context reusing domain_to_entry_context()
+    domain = api_res.get("Domain", "")
+    ec = domain_to_entry_context(domain, [api_res])
+
+    return [md], [ec], [api_res]
+
+
+def pwned_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
+    """Get a single breached site by its breach name.
+
+    API endpoint: GET /breach/{breach_name}
+    The response is a single breach object (same schema as domain/pwned-domain commands).
+    Should reuse ``domain_to_entry_context()`` for context and dBotScore handling.
+
+    Args:
+        args_dict: demisto.args() dictionary. Expected key: ``breach_name``.
+
+    Returns:
+        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+    """
+    breach_name: str = args_dict.get("breach_name", "")
+
+    api_res = http_request("GET", f"breach/{breach_name}")
+
+    if api_res is None:
+        return [f"No breach found for name: {breach_name}"], [{}], [None]
+
+    # Build HR table (same format as latest breach per design doc)
+    table_data = [
+        {
+            "Latest breach domain name": api_res.get("Domain", ""),
+            "Breach Date": api_res.get("BreachDate", ""),
+            "Added Date": api_res.get("AddedDate", ""),
+            "Pwn Count": api_res.get("PwnCount", ""),
+        }
+    ]
+    md = tableToMarkdown(
+        f"Breach: {breach_name}", table_data, ["Latest breach domain name", "Breach Date", "Added Date", "Pwn Count"]
+    )
+
+    # Build entry context reusing domain_to_entry_context()
+    domain = api_res.get("Domain", "")
+    ec = domain_to_entry_context(domain, [api_res])
+
+    return [md], [ec], [api_res]
+
+
 def main():  # pragma: no cover
     if not API_KEY:
         raise DemistoException("API key must be provided.")
@@ -334,6 +486,10 @@ def main():  # pragma: no cover
             "domain": pwned_domain_command,
             "pwned-domain": pwned_domain_command,
             "pwned-username": pwned_username_command,
+            "pwned-breaches-for-domain-list": pwned_breaches_for_domain_list_command,
+            "pwned-subscribed-domains-list": pwned_subscribed_domains_list_command,
+            "pwned-latest-breach-get": pwned_latest_breach_get_command,
+            "pwned-breach-get": pwned_breach_get_command,
         }
         if command in commands:
             md_list, ec_list, api_email_res_list = commands[command](demisto.args())

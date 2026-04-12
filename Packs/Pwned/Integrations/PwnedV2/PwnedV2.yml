@@ -239,6 +239,103 @@ script:
     - contextPath: Username.Malicious.Description
       description: For malicious usernames, the reason that the vendor made the decision.
       type: String
+  - arguments:
+    - default: true
+      description: Comma-separated list of domains to check for breaches.
+      isArray: true
+      name: domain
+      required: true
+    description: Gets all breached email addresses for a domain.
+    name: pwned-breaches-for-domain-list
+    outputs:
+    - contextPath: Domain.Pwned-V2.Breaches
+      description: A dictionary of breached email aliases and their associated breach names for the domain.
+      type: Unknown
+  - arguments: []
+    description: Gets the list of subscribed domains.
+    name: pwned-subscribed-domains-list
+    outputs:
+    - contextPath: Pwned-V2.SubscribedDomain.DomainName
+      description: The full domain name that has been successfully verified.
+      type: String
+    - contextPath: Pwned-V2.SubscribedDomain.PwnCount
+      description: Total number of breached email addresses found on the domain at last search.
+      type: Number
+    - contextPath: Pwned-V2.SubscribedDomain.PwnCountExcludingSpamLists
+      description: Number of breached email addresses found on the domain, excluding spam lists.
+      type: Number
+    - contextPath: Pwned-V2.SubscribedDomain.PwnCountExcludingSpamListsAtLastSubscriptionRenewal
+      description: Total breached email addresses found when the current subscription was taken out.
+      type: Number
+    - contextPath: Pwned-V2.SubscribedDomain.NextSubscriptionRenewal
+      description: The date and time the current subscription ends in ISO 8601 format.
+      type: Date
+  - arguments: []
+    description: Gets the most recently added breach.
+    name: pwned-latest-breach-get
+    outputs:
+    - contextPath: Domain.Pwned-V2.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Pwned-V2.Compromised.Reporters
+      description: For compromised domains, the reporters for the vendor to make the compromised decision.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: true
+      description: The name of the breach to retrieve.
+      name: breach_name
+      required: true
+    description: Gets a single breached site by breach name.
+    name: pwned-breach-get
+    outputs:
+    - contextPath: Domain.Pwned-V2.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Pwned-V2.Compromised.Reporters
+      description: For compromised domains, the reporters for the vendor to make the compromised decision.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   runonce: false
   script: '-'
   subtype: python3
