@@ -72,7 +72,7 @@ configuration:
   display: Maximum number of events per fetch
   type: 0
   defaultvalue: '5000'
-  additionalinfo: 'Maximum number of events to fetch per type per fetch cycle (default: 5000). Audit logs: 500 per page × 10 pages = 5000 events. Alerts: 500 per page × 10 pages = 5000 events.'
+  additionalinfo: 'Maximum number of events to fetch per type per fetch cycle (default: 5000).'
   section: Collect
   required: false
 - defaultvalue: 1
@@ -82,8 +82,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Koi is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats. This integration fetches alerts and audit logs from the Koi API for ingestion into Cortex XSIAM.
-display: Koi Event Collector
+description: KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
+display: KOI Event Collector
 name: Koi
 script:
   commands:
