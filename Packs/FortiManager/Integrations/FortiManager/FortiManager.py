@@ -457,7 +457,7 @@ def delete_custom_service_command(client, args):
 
 def list_policy_packages_command(client, args):
     policy_packages = client.fortimanager_api_call(
-        "get", f"pm/pkg/{get_global_or_adom(client, args)}{get_specific_entity(args.get('policy_package'))}"
+        "get", f"/pm/pkg/{get_global_or_adom(client, args)}{get_specific_entity(args.get('policy_package'))}"
     )
 
     # No native range filter in API call, implementing manually
@@ -496,7 +496,7 @@ def create_policy_package_command(client, args):
     args["package settings"] = package_settings
     client.fortimanager_api_call(
         "add",
-        f"pm/pkg/{get_global_or_adom(client, args)}",
+        f"/pm/pkg/{get_global_or_adom(client, args)}",
         data_in_list=setup_request_data(
             args,
             [
@@ -529,7 +529,7 @@ def update_policy_package_command(client, args):
     args["package settings"] = package_settings
     client.fortimanager_api_call(
         "update",
-        f"pm/pkg/{get_global_or_adom(client, args)}",
+        f"/pm/pkg/{get_global_or_adom(client, args)}",
         data_in_list=setup_request_data(
             args,
             [
@@ -549,7 +549,7 @@ def update_policy_package_command(client, args):
 
 
 def delete_policy_package_command(client, args):
-    client.fortimanager_api_call("delete", f"pm/pkg/{get_global_or_adom(client, args)}/{args.get('pkg_path')}")
+    client.fortimanager_api_call("delete", f"/pm/pkg/{get_global_or_adom(client, args)}/{args.get('pkg_path')}")
     return f"Deleted Policy Package {args.get('pkg_path')}"
 
 
