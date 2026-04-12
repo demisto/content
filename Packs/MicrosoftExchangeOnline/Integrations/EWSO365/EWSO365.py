@@ -336,13 +336,15 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     <id@domain>, id@domain>, or <id@domain and they might change between fetches.
     To avoid duplicate incidents, we verify all possible forms in exclude_ids.
 
-    If a matching stored entry has no timestamp, it is treated as a legacy
-    duplicate. Otherwise, the stored timestamp is compared with the item's
-    received or modified time, depending on incident_filter.
+    Features:
+    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>, <abc, abc>).
+    2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
+    3. Timestamp Logic: Compares stored time vs item time.
 
     Returns:
-        tuple[bool, str | None]: Whether the item is a duplicate and the stored
-        timestamp of the matched entry, if any.
+        tuple[bool, str | None]: A tuple containing:
+            - is_duplicate (bool): True if item is a duplicate (skip it), False if it should be processed.
+            - stored_time (str | None): The stored fetch time for the item, or None if not found/not a duplicate.
     """
     if not item.message_id or not exclude_ids:
         return False, None
