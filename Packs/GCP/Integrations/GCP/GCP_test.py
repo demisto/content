@@ -5556,7 +5556,7 @@ def test_bq_dataset_policy_remove_command_remove_user_not_found(mocker):
     creds = MagicMock()
     email = "test@test.com"
     dataset_id = "test_dataset"
-    args = {"project_id": "test_project", "dataset_id": dataset_id, "user_email": email}
+    args = {"project_id": "test_project", "dataset_id": dataset_id, "email": email}
 
     mock_bigquery = MagicMock()
     mock_datasets = MagicMock()
