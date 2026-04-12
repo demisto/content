@@ -1,7 +1,7 @@
 commonfields:
   id: CTIX v3
   version: -1
-fromversion: 5.5.0
+fromversion: 5.0.0
 name: CTIX v3
 display: Cyware Intel Exchange
 category: Data Enrichment & Threat Intelligence
