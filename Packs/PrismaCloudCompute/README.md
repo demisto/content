@@ -103,7 +103,7 @@ In addition, the playbook can create and update external ticketing systems for e
 
 ## Troubleshooting
 
-If any alerts are missing in Cortex XSIAM, check the status of the integration:
+If any alerts are missing in Cortex XSIAM, do the following.
 
 ![image](doc_files/prisma_instance.png)
 
