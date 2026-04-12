@@ -231,7 +231,7 @@ If any alerts are missing in Cortex XSOAR, check the status of the integration:
 
 ### Troubleshooting: Mismatch Between Prisma Cloud Alerts and Cortex XSOAR Incidents
 
-Prisma Cloud Compute groups alerts that occur close together into a single aggregated alert before sending them to Cortex XSOAR. Each aggregated alert creates one incident, even if it contains multiple individual alerts. The individual alerts are preserved in the `aggregatedAlerts` field of each incident.
+Prisma Cloud Compute aggregates alerts occurring within a specific time window into a single alert before sending them to Cortex XSOAR. This may result in fewer incidents created compared to the total number of alerts in the Prisma Cloud Compute console. Your alerts are not lost — they are stored inside each incident in the `aggregatedAlerts` field.
 
 To receive each alert as a separate incident, reduce the aggregation window in your Prisma Cloud alert profile:
 
