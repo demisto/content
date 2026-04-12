@@ -384,18 +384,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: 'The bucket to which to apply the ACL.'
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: acl
@@ -468,18 +471,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the bucket for which to set the logging parameters.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: target_bucket
@@ -560,18 +566,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the bucket for which to set the logging parameters.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: status
@@ -630,6 +639,38 @@ script:
     - name: policy
       description: 'The bucket policy to apply as a JSON string.'
       required: true
+
+  - name: aws-s3-bucket-policy-put-quick-action
+    description: Enforces SSL-only access on the S3 bucket by applying a bucket policy that denies all non-HTTPS requests.
+    prettyname: Enforce SSL Only on Bucket
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        description: The name of the bucket to which the policy will be applied.
+        prettyname: Bucket Name
+        required: true
+        defaultValue: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: policy
+        description: The bucket policy to apply as a JSON string.
+        defaultValue: '{"Version":"2012-10-17","Statement":[{"Sid":"ForceSSLOnlyAccess","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::${asset.xdm.asset.name}","arn:aws:s3:::${asset.xdm.asset.name}/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}'
+        hidden: true
 
   - name: aws-s3-bucket-website-delete
     description: Removes the website configuration for a bucket.
@@ -690,18 +731,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the S3 bucket from which the website configuration will be removed.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
 
@@ -761,6 +805,38 @@ script:
           - BucketOwnerPreferred
           - ObjectWriter
           - BucketOwnerEnforced
+
+  - name: aws-s3-bucket-ownership-controls-put-quick-action
+    description: Switches the bucket to "Bucket Owner Enforced" mode. This remediation step aligns the bucket with AWS security best practices by making ACLs irrelevant and centralizing all access control under your account's policies.
+    prettyname: Set S3 ACL to BucketOwnerEnforced
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        description: The name of the S3 bucket to configure with Ownership Controls.
+        prettyname: Bucket Name
+        required: true
+        defaultValue: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: ownership_controls_rule
+        description: Specifies the ownership setting for objects uploaded to the bucket.
+        defaultValue: 'BucketOwnerEnforced'
+        hidden: true
 
   - name: aws-s3-bucket-website-get
     description: Returns the website configuration for a bucket.
@@ -1331,18 +1407,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: cluster_name
         prettyname: EKS Cluster
         description: The name of the Amazon EKS cluster to update.
         required: true
+        defaultValue: EKS Cluster
         prettypredefined:
           EKS Cluster: ${asset.xdm.asset.name}
       - name: logging
@@ -1360,18 +1439,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: cluster_name
         prettyname: EKS Cluster
         description: The name of the Amazon EKS cluster to update.
         required: true
+        defaultValue: EKS Cluster
         prettypredefined:
           EKS Cluster: ${asset.xdm.asset.name}
       - name: resources_vpc_config
@@ -1627,6 +1709,259 @@ script:
       description: The date and time for the last modification to the object.
       type: String
 
+  - name: aws-eks-access-entry-update
+    description: Updates an existing Access Entry for an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: cluster_name
+      description: The name of the cluster for which to update the AccessEntry.
+      required: true
+    - name: principal_arn
+      description: The ARN of the IAM principal to associate with the access entry.
+      required: true
+    - name: kubernetes_groups
+      description: The Kubernetes groups that the access entry is associated with.
+      required: false
+      isArray: true
+    - name: client_request_token
+      description: The unique string used to ensure the request is processed only once.
+      required: false
+    - name: user_name
+      description: The username for Kubernetes authentication.
+      required: false
+    outputs:
+    - contextPath: AWS.EKS.AccessEntry.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.principalArn
+      description: The ARN of the IAM principal for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.username
+      description: The Kubernetes user name for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.type
+      description: The access entry type.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.createdAt
+      description: The date and time the access entry was created.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.modifiedAt
+      description: The date and time the access entry was last modified.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.kubernetesGroups
+      description: The Kubernetes groups that the access entry is associated with.
+      type: Array
+    - contextPath: AWS.EKS.AccessEntry.tags
+      description: The metadata tags associated with the access entry.
+      type: Object
+    - contextPath: AWS.EKS.AccessEntry.accessEntryArn
+      description: The ARN of the access entry.
+      type: String
+  - name: aws-eks-access-entry-create
+    description: Creates a new Access Entry for an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+    - name: principal_arn
+      description: The ARN of the IAM principal to associate with the access entry.
+      required: true
+    - name: kubernetes_groups
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      required: false
+      isArray: true
+    - name: client_request_token
+      description: The unique string used to ensure the request is processed only once.
+      required: false
+    - name: type
+      description: The type of access entry to create.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Standard
+      - FARGATE_LINUX
+      - EC2_LINUX
+      - EC2_WINDOWS
+      - EC2
+      - HYBRID_LINUX
+      - HYPERPOD_LINUX  
+    - name: user_name
+      description: The username for Kubernetes authentication.
+      required: false
+    outputs:
+    - contextPath: AWS.EKS.AccessEntry.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.principalArn
+      description: The ARN of the IAM principal for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.username
+      description: The Kubernetes user name for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.type
+      description: The access entry type.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.createdAt
+      description: The date and time the access entry was created.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.modifiedAt
+      description: The date and time the access entry was last modified.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.kubernetesGroups
+      description: The Kubernetes groups that the access entry is associated with.
+      type: Array
+    - contextPath: AWS.EKS.AccessEntry.tags
+      description: The metadata tags associated with the access entry.
+      type: Object
+    - contextPath: AWS.EKS.AccessEntry.accessEntryArn
+      description: The ARN of the access entry.
+      type: String
+  - name: aws-eks-clusters-list
+    description: Returns a list of EKS clusters.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: limit
+      description: The maximum number of clusters returned in response. Possible values are between 1 and 100.
+      required: false
+      defaultValue: 50
+    - name: next_token
+      description: The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken.
+      required: false
+    - name: include
+      description: Whether external clusters are included in the returned list. Set to 'all' to include connected clusters.
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: AWS.EKS.Clusters
+      description: A list of all of the clusters for your account in the specified Region.
+      type: String
+    - contextPath: AWS.EKS.ClustersNextToken
+      description: The nextToken value to include in a future ListClusters request. When the results of a ListClusters request exceed maxResults, you can use this value to retrieve the next page of results.
+      type: String
   - name: aws-rds-db-cluster-modify
     description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:
@@ -1698,18 +2033,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
         required: true
+        defaultValue: RDS Cluster ID
         prettypredefined:
           RDS Cluster ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
@@ -1785,18 +2123,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_snapshot_identifier
         prettyname: RDS Cluster Snapshot ID
         description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
         required: true
+        defaultValue: RDS Cluster Snapshot ID
         prettypredefined:
           RDS Cluster Snapshot ID: ${asset.xdm.asset.name}
       - name: attribute_name
@@ -1818,18 +2159,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
         required: true
+        defaultValue: RDS Cluster ID
         prettypredefined:
           RDS Cluster ID: ${asset.xdm.asset.name}
       - name: deletion_protection
@@ -1954,18 +2298,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: publicly_accessible
@@ -1987,18 +2334,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: copy_tags_to_snapshot
@@ -2020,18 +2370,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: backup_retention_period
@@ -2053,18 +2406,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
@@ -2082,18 +2438,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: deletion_protection
@@ -2111,18 +2470,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: auto_minor_version_upgrade
@@ -2144,18 +2506,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: multi_az
@@ -2317,6 +2682,69 @@ script:
         description: The time the RDS event notification subscription was created.
         type: string
 
+  - name: aws-rds-event-subscription-modify-quick-action
+    description: Activates an existing RDS event subscription.
+    prettyname: Enable RDS Event Subscription
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: subscription_name
+        description: The name of the RDS event notification subscription.
+        prettyname: RDS Instance
+        required: true
+        defaultValue: RDS Instance
+        prettypredefined:
+          RDS Instance: ${asset.xdm.asset.name}
+      - name: enabled
+        description: Whether to activate the subscription.
+        defaultValue: 'true'
+        hidden: true
+    outputs:
+    - contextPath: AWS.RDS.EventSubscription.CustomerAwsId
+      description: The AWS customer account associated with the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
+      description: The RDS event notification subscription ID.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.Enabled
+      description: Whether the subscription is enabled. If True, the subscription is enabled.
+      type: boolean
+    - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
+      description: A list of event categories for the RDS event notification subscription.
+      type: array
+    - contextPath: AWS.RDS.EventSubscription.EventSubscriptionArn
+      description: The Amazon Resource Name (ARN) for the event subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.SnsTopicArn
+      description: The topic ARN of the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.SourceIdsList
+      description: A list of source IDs for the RDS event notification subscription.
+      type: array
+    - contextPath: AWS.RDS.EventSubscription.SourceType
+      description: The source type for the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.Status
+      description: The status of the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.SubscriptionCreationTime
+      description: The time the RDS event notification subscription was created.
+      type: string
+
   - name: aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
     description: Revokes public access to the RDS DB snapshot, making it private.
     prettyname: Set RDS Snapshot to Private
@@ -2327,18 +2755,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_snapshot_identifier
         prettyname: RDS Snapshot ID
         description: 'The identifier for the DB snapshot to modify the attributes for.'
         required: true
+        defaultValue: RDS Snapshot ID
         prettypredefined:
           RDS Snapshot ID: ${asset.xdm.asset.name}
       - name: attribute_name
@@ -2779,12 +3210,14 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: instance_id
@@ -2793,6 +3226,7 @@ script:
         prettypredefined:
           EC2 Instance ID: ${asset.xdm.asset.strong_id}
         required: true
+        defaultValue: EC2 Instance ID
 
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
@@ -2878,18 +3312,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: image_id
         prettyname: AMI ID
         description: 'The ID of the AMI.'
         required: true
+        defaultValue: AMI ID
         prettypredefined:
           AMI ID: ${asset.xdm.asset.strong_id}
       - name: attribute
@@ -3140,18 +3577,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: snapshot_id
         prettyname: EC2 Snapshot ID
         description: The ID of the EBS snapshot.
         required: true
+        defaultValue: EC2 Snapshot ID
         prettypredefined:
           EC2 Snapshot ID: ${asset.xdm.asset.name}
       - name: operation_type
@@ -3777,18 +4217,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: name
         prettyname: Name
         description: The name of the trail or trail ARN.
         required: true
+        defaultValue: Name
         prettypredefined:
           Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
@@ -3904,18 +4347,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: name
         prettyname: Name
         description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
         required: true
+        defaultValue: Name
         prettypredefined:
           Name: ${asset.xdm.asset.name}
 
@@ -8890,18 +9336,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the Amazon S3 bucket.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: block_public_acls
@@ -8931,18 +9380,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: instance_id
         prettyname: EC2 Instance ID
         description: The ID of the instance.
         required: true
+        defaultValue: EC2 Instance ID
         prettypredefined:
           EC2 Instance ID: ${asset.xdm.asset.strong_id}
       - name: http_tokens
@@ -12036,488 +12488,1736 @@ script:
         description: The value of the tag.
         type: string
 
-
-  - name: aws-cloudwatch-log-group-create
+  - name: aws-ec2-fleet-create
+    description: Launches an EC2 Fleet.
     arguments:
-    - name: log_group_name
+    - name: account_id
+      description: The AWS account ID.
       required: true
-      description: The name of the log group. Log group names can be between 1 and 512 characters long. Allowed characters are a-z, A-Z, 0-9, '_' (underscore), '-' (hyphen), '/' (forward slash), '.' (period), and '#' (number sign).
-    - name: kms_key_id
-      description: The Amazon Resource Name (ARN) of the KMS key to use when encrypting log data.
-    - name: log_group_class
+    - name: region
+      description: The AWS region.
+      required: true
       auto: PREDEFINED
       predefined:
-      - STANDARD
-      - INFREQUENT_ACCESS
-      defaultvalue: STANDARD
-      description: The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost.
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: spot_allocation_strategy
+      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - lowest-price
+      - diversified
+      - capacity-optimized
+      - capacity-optimized-prioritized
+      - price-capacity-optimized
+    - name: instance_interruption_behavior
+      description: The behavior when a Spot Instance is interrupted.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - hibernate
+      - stop
+      - terminate
+    - name: instance_pools_to_use_count
+      description: The number of Spot pools across which to allocate your target Spot capacity.
+      required: false
+    - name: max_total_price
+      description: The maximum amount per hour for Spot Instances that you are willing to pay.
+      required: false
+    - name: capacity_rebalance_replacement_strategy
+      description: The replacement strategy to use. Only available for fleets of type maintain.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - launch
+        - launch-before-terminate
+    - name: capacity_rebalance_termination_delay
+      description: The amount of time (in seconds) that Amazon EC2 waits before terminating the old Spot Instance after launching a new replacement Spot Instance.
+      required: false
+    - name: spot_single_instance_type
+      description: Indicates that the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: single_availability_zone
+      description: Indicates that the fleet launches all Spot Instances into a single Availability Zone.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: min_target_capacity
+      description: The minimum target capacity for Spot Instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      required: false
+    - name: on_demand_allocation_strategy
+      description: The launch template override order to use to fulfill on-demand capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - lowest-price
+      - prioritized
+    - name: on_demand_single_instance_type
+      description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: on_demand_single_availability_zone
+      description: Whether the fleet launches all on-demand instances into a single Availability Zone.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: on_demand_min_target_capacity
+      description: The minimum target capacity for on-demand instances in the fleet. If the minimum target capacity is not reached, the fleet launches no instances.
+      required: false
+    - name: on_demand_max_total_price
+      description: The maximum amount per hour you are willing to pay for on-demand instances.
+      required: false
+    - name: capacity_reservation_strategy
+      description: Whether to use unused capacity reservations to fulfill on-demand capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - use-capacity-reservations-first
+    - name: excess_capacity_termination_policy
+      description: Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no-termination
+      - termination
+    - name: launch_template_id
+      description: The ID of the launch template.
+      required: false
+    - name: launch_template_name
+      description: The name of the launch template.
+      required: false
+    - name: launch_template_version
+      description: The version number of the launch template.
+      required: false
+      defaultValue: "1"
+    - name: availability_zone
+      description: The Availability Zone in which to launch the instances.
+      required: false
+    - name: availability_zone_id
+      description: The ID of the Availability Zone in which to launch the instances.
+      required: false
+    - name: image_id
+      description: The ID of the AMI.
+      required: false
+    - name: instance_type
+      description: The instance type.
+      required: false
+    - name: max_price
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      required: false
+    - name: placement_group_id
+      description: The ID of the placement group.
+      required: false
+    - name: placement_group_name
+      description: The name of the placement group.
+      required: false
+    - name: priority
+      description: The priority for the launch template override. The highest priority is launched first.
+      required: false
+    - name: subnet_id
+      description: The ID of the subnet in which to launch the instances.
+      required: false
+    - name: weighted_capacity
+      description: The number of units provided by the specified instance type.
+      required: false
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_encrypted
+      description: "Whether the encryption state of an EBS volume is changed when restored from a backup snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_delete_on_termination
+      description: "Whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS)."
+      required: false
+    - name: ebs_kms_key_id
+      description: "Identifier for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_throughput
+      description: "The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes."
+      required: false
+    - name: block_device_mappings_no_device
+      description: "Suppresses the specified device included in the block device mapping of the AMI."
+      required: false
+    - name: block_device_mappings_virtual_name
+      description: "The virtual device name (ephemeralN)."
+      required: false
+    - name: total_target_capacity
+      description: The number of units to request.
+      required: true
+    - name: on_demand_target_capacity
+      description: The number of on-demand units to request.
+      required: false
+    - name: spot_target_capacity
+      description: The number of Spot units to request.
+      required: false
+    - name: default_target_capacity_type
+      description: The default TotalTargetCapacity, which is either Spot or on-demand.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - spot
+      - on-demand
+      - capacity-block
+    - name: target_capacity_unit
+      description: The unit for the target capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - vcpu
+      - memory-mib
+      - units
+    - name: terminate_instances_with_expiration
+      description: Whether running instances should be terminated when the EC2 Fleet expires.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: type
+      description: The request type.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - request
+      - maintain
+      - instant
+    - name: valid_from
+      description: The start date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z.
+      required: false
+    - name: valid_until
+      description: The end date and time of the request, in UTC format (YYYY-MM-DDTHH:MM:SSZ). For example, 2024-01-15T10:30:00Z.
+      required: false
+    - name: replace_unhealthy_instances
+      description: Whether the EC2 Fleet should replace unhealthy instances.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: tags
-      description: "The key-value pairs to use for the tags. You can grant users access to certain log groups while preventing them from accessing other log groups, by using tag-based access control. Format: JSON object, e.g. {\"Environment\": \"Production\", \"Team\": \"DevOps\"}."
-    - name: deletion_protection_enabled
+      description: "The tags to apply to the resource. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides
+      description: Information about the instances that could not be launched by the fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides
+      description: The launch templates and overrides that were used for launching the instances. The values that you specify in the Overrides replace the values in of the launch template.
+      type: string
+
+  - name: aws-ec2-fleet-delete
+    description: Deletes the specified EC2 Fleet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      defaultvalue: "false"
-      description: Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false.
-    - name: region
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: fleet_ids
+      description: A comma-separated list of EC2 Fleet IDs.
       required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Creates a log group with the specified name.
-    execution: true
-
-  - name: aws-cloudwatch-log-stream-create
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: log_stream_name
-      required: true
-      description: The name of the log stream.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Creates a log stream for the specified log group.
-    execution: true
-
-  - name: aws-cloudwatch-log-group-delete
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
-    execution: true
-
-  - name: aws-cloudwatch-log-stream-delete
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: log_stream_name
-      required: true
-      description: The name of the log stream.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
-    execution: true
-
-  - name: aws-cloudwatch-log-events-filter
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group to search. You must include either logGroupName or logGroupIdentifier, but not both.
-    - name: log_group_identifier
-      description: Specify either the name or ARN of the log group to search. If the log group is in a source account and you are using a monitoring account, you must use the log group ARN. You must include either logGroupName or logGroupIdentifier, but not both.
-    - name: log_stream_names
-      description: Comma-separated list of log stream names to search within. Cannot be used together with log_stream_name_prefix.
       isArray: true
-    - name: log_stream_name_prefix
-      description: Filters the results to include only events from log streams that have names starting with this prefix. Cannot be used together with log_stream_names.
-    - name: start_time
-      description: The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp before this time are not returned.
-    - name: end_time
-      description: The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp later than this time are not returned.
-    - name: filter_pattern
-      description: The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation.
-    - name: limit
-      defaultvalue: "10000"
-      description: The maximum number of events to return. The default is 10,000 events.
-    - name: next_token
-      description: The token for the next set of events to return. Use the value returned in the previous response as nextToken to get the next page of results.
-    - name: unmask
+    - name: terminate_instances
+      description: Whether to terminate instances for an EC2 Fleet if it is deleted successfully.
+      required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      defaultvalue: "false"
-      description: Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
+      - 'true'
+      - 'false'
     outputs:
-    - contextPath: AWS.CloudWatchLogs.Events.LogStreamName
-      description: The name of the log stream this event belongs to.
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState
+      description: The current state of the EC2 Fleet.
       type: string
-    - contextPath: AWS.CloudWatchLogs.Events.Timestamp
-      description: The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: date
-    - contextPath: AWS.CloudWatchLogs.Events.Message
-      description: The data contained in the log event.
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState
+      description: The previous state of the EC2 Fleet.
       type: string
-    - contextPath: AWS.CloudWatchLogs.Events.IngestionTime
-      description: The time the event was ingested, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: date
-    - contextPath: AWS.CloudWatchLogs.Events.EventId
-      description: The ID of the event.
+    - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId
+      description: The ID of the EC2 Fleet.
       type: string
-    - contextPath: AWS.CloudWatchLogs.EventsNextToken
-      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error
+      description: Information about the EC2 Fleets that are not successfully deleted.
       type: string
-    description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
+    - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
 
-  - name: aws-cloudwatch-log-groups-describe
+  - name: aws-ec2-fleets-describe
+    description: Describes one or more of your EC2 Fleets.
     arguments:
-    - name: log_group_name_prefix
-      description: The prefix to match. logGroupNamePrefix and logGroupNamePattern are mutually exclusive. Only one of these parameters can be passed.
-    - name: log_group_name_pattern
-      description: A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. logGroupNamePrefix and logGroupNamePattern are mutually exclusive.
-    - name: account_identifiers
-      description: Comma-separated list of account IDs. When used with includeLinkedAccounts, returns log groups in the accounts listed. Used for cross-account querying.
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: fleet_ids
+      description: A comma-separated list of EC2 Fleet IDs.
+      required: false
       isArray: true
-    - name: include_linked_accounts
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      defaultvalue: "false"
-      description: If true, include log groups in the accounts specified by accountIdentifiers. If this parameter is set to true and accountIdentifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
-    - name: log_group_class
-      auto: PREDEFINED
-      predefined:
-      - STANDARD
-      - INFREQUENT_ACCESS
-      description: Specifies the log group class for this log group. Possible values are STANDARD and INFREQUENT_ACCESS.
     - name: limit
-      defaultvalue: "50"
-      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      required: false
     - name: next_token
-      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
+      description: The token for the next set of results.
+      required: false
     outputs:
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogGroupName
-      description: The name of the log group.
+    - contextPath: AWS.EC2.FleetsNextToken
+      description: The token for the next set of results.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.CreationTime
-      description: The creation time of the log group, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.RetentionInDays
-      description: The number of days to retain the log events in the specified log group.
-      type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.MetricFilterCount
-      description: The number of metric filters.
-      type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.Arn
-      description: The Amazon Resource Name (ARN) of the log group.
+    - contextPath: AWS.EC2.Fleets.ActivityStatus
+      description: The progress of the EC2 Fleet. If there is an error, the status is error.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.StoredBytes
-      description: The number of bytes stored.
+    - contextPath: AWS.EC2.Fleets.CreateTime
+      description: The creation date and time of the EC2 Fleet.
+      type: date
+    - contextPath: AWS.EC2.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.FleetState
+      description: The state of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ExcessCapacityTerminationPolicy
+      description: Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      type: string
+    - contextPath: AWS.EC2.Fleets.FulfilledCapacity
+      description: The number of units fulfilled by this request compared to the set target capacity.
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.KmsKeyId
-      description: The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
+    - contextPath: AWS.EC2.Fleets.FulfilledOnDemandCapacity
+      description: The number of units fulfilled by this request compared to the set target On-Demand capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification
+      description: Describes a launch template and overrides.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroupsNextToken
-      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
+      type: number
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity
+      description: The number of On-Demand units to request.
+      type: number
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.SpotTargetCapacity
+      description: The maximum number of Spot units to launch.
+      type: number
+    - contextPath: AWS.EC2.Fleets.TargetCapacitySpecification.DefaultTargetCapacityType
+      description: The default TotalTargetCapacity, which is either Spot or On-Demand.
       type: string
-    description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
+    - contextPath: AWS.EC2.Fleets.TerminateInstancesWithExpiration
+      description: Whether running instances should be terminated when the EC2 Fleet expires.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.Type
+      description: The type of request. Indicates whether the EC2 Fleet only requests the target capacity, or also attempts to maintain it.
+      type: string
+    - contextPath: AWS.EC2.Fleets.ValidFrom
+      description: The start date and time of the request, in UTC format.
+      type: date
+    - contextPath: AWS.EC2.Fleets.ValidUntil
+      description: The end date and time of the request, in UTC format.
+      type: date
+    - contextPath: AWS.EC2.Fleets.ReplaceUnhealthyInstances
+      description: Whether EC2 Fleet should replace unhealthy instances.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.SpotOptions.AllocationStrategy
+      description: Indicates how to allocate the target capacity across the Spot pools specified by the Spot Fleet request.
+      type: string
+    - contextPath: AWS.EC2.Fleets.SpotOptions.InstanceInterruptionBehavior
+      description: The behavior when a Spot Instance is interrupted. The default is terminate.
+      type: string
+    - contextPath: AWS.EC2.Fleets.SpotOptions.InstancePoolsToUseCount
+      description: The number of Spot pools across which to allocate your target Spot capacity.
+      type: number
+    - contextPath: AWS.EC2.Fleets.SpotOptions.SingleInstanceType
+      description: Whether the fleet uses a single instance type to launch all Spot Instances in the fleet.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.SpotOptions.SingleAvailabilityZone
+      description: Whether the fleet launches all Spot Instances into a single Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.SpotOptions.MinTargetCapacity
+      description: The minimum target capacity for Spot Instances in the fleet.
+      type: number
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.AllocationStrategy
+      description: The order of the launch template overrides to use in fulfilling On-Demand capacity.
+      type: string
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.SingleInstanceType
+      description: Whether the fleet uses a single instance type to launch all on-demand instances in the fleet.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.SingleAvailabilityZone
+      description: Whether the fleet launches all on-demand instances into a single Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Fleets.OnDemandOptions.MinTargetCapacity
+      description: The minimum target capacity for on-demand instances in the fleet.
+      type: number
+    - contextPath: AWS.EC2.Fleets.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Fleets.Tags.Value
+      description: The value of the tag.
+      type: string
 
-  - name: aws-cloudwatch-log-streams-describe
+  - name: aws-ec2-fleet-instances-describe
+    description: Describes the running instances for the specified EC2 Fleet.
     arguments:
-    - name: log_group_name
+    - name: account_id
+      description: The AWS account ID.
       required: true
-      description: The name of the log group.
-    - name: log_group_identifier
-      description: Specify either the name or ARN of the log group. You must include either logGroupIdentifier or logGroupName, but not both.
-    - name: log_stream_name_prefix
-      description: The prefix to match. If orderBy is LastEventTime, you cannot specify this parameter.
-    - name: order_by
+    - name: region
+      description: The AWS region.
+      required: true
       auto: PREDEFINED
       predefined:
-      - LogStreamName
-      - LastEventTime
-      defaultvalue: LogStreamName
-      description: If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time. The default value is LogStreamName.
-    - name: descending
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      defaultvalue: "false"
-      description: If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending).
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+      required: false
+    - name: fleet_id
+      description: The ID of the EC2 Fleet.
+      required: true
     - name: limit
-      defaultvalue: "50"
-      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+      description: The maximum number of results to return in a single call. Specify a value between 1 and 1000.
+      required: false
     - name: next_token
-      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
+      description: The token for the next set of results.
+      required: false
     outputs:
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LogGroupName
-      description: The name of the log group.
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceId
+      description: The ID of the instance.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LogStreamName
-      description: The name of the log stream.
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceType
+      description: The instance type.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.CreationTime
-      description: The creation time of the stream, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: number
-    - contextPath: AWS.CloudWatchLogs.LogStreams.Arn
-      description: The Amazon Resource Name (ARN) of the log stream.
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.SpotInstanceRequestId
+      description: The ID of the Spot Instance request.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.FirstEventTimestamp
-      description: The time of the first event, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: date
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LastEventTimestamp
-      description: The time of the most recent log event in the log stream in CloudWatch Logs.
-      type: date
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LastIngestionTime
-      description: The ingestion time, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: date
-    - contextPath: AWS.CloudWatchLogs.LogStreams.UploadSequenceToken
-      description: The sequence token.
+    - contextPath: AWS.EC2.Fleets.ActiveInstances.InstanceHealth
+      description: The health status of the instance.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.StoredBytes
-      description: The number of bytes stored.
-      type: number
-    - contextPath: AWS.CloudWatchLogs.LogStreamsNextToken
-      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
+    - contextPath: AWS.EC2.Fleets.FleetInstancesNextToken
+      description: The token for the next set of results.
       type: string
-    description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
+    - contextPath: AWS.EC2.Fleets.FleetId
+      description: The ID of the EC2 Fleet.
+      type: string
 
-  - name: aws-cloudwatch-retention-policy-put
+  - name: aws-ec2-fleet-modify
+    description: Modifies the specified EC2 Fleet.
+    execution: true
     arguments:
-    - name: log_group_name
+    - name: account_id
+      description: The AWS account ID.
       required: true
-      description: The name of the log group.
-    - name: retention_in_days
+    - name: region
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "3"
-      - "5"
-      - "7"
-      - "14"
-      - "30"
-      - "60"
-      - "90"
-      - "120"
-      - "150"
-      - "180"
-      - "365"
-      - "400"
-      - "545"
-      - "731"
-      - "1827"
-      - "3653"
-      description: The number of days to retain the log events in the specified log group.
-    - name: region
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: fleet_id
+      description: The ID of the EC2 Fleet.
       required: true
-      description: The AWS Region.
-    - name: account_id
+    - name: excess_capacity_termination_policy
+      description: Whether running instances should be terminated if the total target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no-termination
+      - termination
+    - name: launch_template_id
+      description: The ID of the launch template.
+      required: false
+    - name: launch_template_name
+      description: The name of the launch template.
+      required: false
+    - name: launch_template_version
+      description: The version number of the launch template.
+      required: false
+      defaultValue: "1"
+    - name: availability_zone
+      description: The Availability Zone in which to launch the instances.
+      required: false
+    - name: availability_zone_id
+      description: The ID of the Availability Zone in which to launch the instances.
+      required: false
+    - name: image_id
+      description: The ID of the AMI.
+      required: false
+    - name: instance_type
+      description: The instance type.
+      required: false
+    - name: max_price
+      description: The maximum price per unit hour that you are willing to pay for a Spot Instance.
+      required: false
+    - name: placement_group_id
+      description: The ID of the placement group.
+      required: false
+    - name: placement_group_name
+      description: The name of the placement group.
+      required: false
+    - name: priority
+      description: The priority for the launch template override.
+      required: false
+    - name: subnet_id
+      description: The ID of the subnet in which to launch the instances.
+      required: false
+    - name: weighted_capacity
+      description: The number of units provided by the specified instance type.
+      required: false
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_encrypted
+      description: "Whether the encryption state of an EBS volume is changed when restored from a backup snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_delete_on_termination
+      description: "Whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS."
+      required: false
+    - name: ebs_kms_key_id
+      description: "Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_throughput
+      description: "The throughput for the volume, in MiB/s. This parameter is valid only for gp3 volumes."
+      required: false
+    - name: block_device_mappings_no_device
+      description: "Suppresses the specified device included in the block device mapping of the AMI."
+      required: false
+    - name: block_device_mappings_virtual_name
+      description: "The virtual device name (ephemeralN)."
+      required: false
+    - name: total_target_capacity
+      description: The number of units to request, filled using DefaultTargetCapacityType.
       required: true
-      description: The AWS account ID.
-    description: Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
-    execution: true
+    - name: on_demand_target_capacity
+      description: The number of On-Demand units to request.
+      required: false
+    - name: spot_target_capacity
+      description: The number of Spot units to request.
+      required: false
+    - name: default_target_capacity_type
+      description: The default TotalTargetCapacityType, which is either Spot or On-Demand.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - spot
+      - on-demand
+      - capacity-block
+    - name: target_capacity_unit
+      description: The unit for the target capacity.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - vcpu
+      - memory-mib
+      - units
 
-  - name: aws-cloudwatch-retention-policy-delete
+  - name: aws-ec2-key-pairs-describe
+    description: Describes the specified key pairs or all of your key pairs.
     arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
-    execution: true
-
-  - name: aws-cloudwatch-log-events-put
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: log_stream_name
-      required: true
-      description: The name of the log stream.
-    - name: timestamp
-      required: true
-      description: The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time).
-    - name: message
-      required: true
-      description: The raw event message.
-    - name: sequence_token
-      description: The sequence token obtained from the response of the previous PutLogEvents call. An upload in a newly created log stream does not require a sequence token.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: key_pair_ids
+        description: A comma-separated list of key pair IDs.
+        required: false
+        isArray: true
+      - name: key_names
+        description: A comma-separated list of key pair names.
+        required: false
+        isArray: true
+      - name: filters
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+        required: false
+      - name: include_public_key
+        description: If true, the public key material is included in the response.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
     outputs:
-    - contextPath: AWS.CloudWatchLogs.PutLogEvents.NextSequenceToken
-      description: The next sequence token.
+      - contextPath: AWS.EC2.KeyPairs.KeyPairId
+        description: The ID of the key pair.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyName
+        description: The name of the key pair.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyType
+        description: The type of key pair (rsa or ed25519).
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyFingerprint
+        description: The SHA-1 digest of the DER encoded private key (CreateKeyPair) or MD5 public key fingerprint (ImportKeyPair).
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.PublicKey
+        description: The public key material. Present only when include_public_key=true.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.CreateTime
+        description: The date and time the key pair was created.
+        type: date
+      - contextPath: AWS.EC2.KeyPairs.Tags
+        description: Any tags applied to the key pair.
+        type: array
+
+  - name: aws-ec2-hosts-allocate
+    description: Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: availability_zone
+        description: The Availability Zone in which to allocate the Dedicated Host.
+        required: true
+      - name: availability_zone_id
+        description: The ID of the Availability Zone.
+        required: false
+      - name: quantity
+        description: The number of Dedicated Hosts with these parameters to allocate to your account.
+        required: true
+      - name: instance_type
+        description: Specifies the instance type to be supported by the Dedicated Hosts. You cannot specify instance_type and instance_family in the same request.
+        required: false
+      - name: instance_family
+        description: Specifies the instance family to be supported by the Dedicated Hosts. You cannot specify instance_type and instance_family in the same request.
+        required: false
+      - name: auto_placement
+        description: Whether the host accepts untargeted instance launches matching its configuration or only accepts instance launches specifying its unique host ID.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'on'
+          - 'off'
+      - name: host_recovery
+        description: Whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'on'
+          - 'off'
+      - name: host_maintenance
+        description: Whether to enable or disable host maintenance for the Dedicated Host.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'on'
+          - 'off'
+      - name: outpost_arn
+        description: The Amazon Resource Name (ARN) of the Amazon Web Services Outpost on which to allocate the Dedicated Host.
+        required: false
+      - name: asset_ids
+        description: A comma-separated list of IDs of the Outpost hardware assets on which to allocate the Dedicated Hosts.
+        required: false
+        isArray: true
+      - name: tags
+        description: "The tags to apply to the Dedicated Host during creation. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: true
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.Hosts.HostIds
+        description: The IDs of the allocated Dedicated Hosts.
+        type: array
+
+  - name: aws-ec2-hosts-release
+    description: Releases the specified Dedicated Hosts.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: host_ids
+        description: A comma-separated list of IDs of the Dedicated Hosts to release.
+        required: true
+        isArray: true
+    outputs:
+      - contextPath: AWS.EC2.ReleasedHosts.Successful
+        description: The IDs of the Dedicated Hosts that were successfully released.
+        type: array
+      - contextPath: AWS.EC2.ReleasedHosts.Unsuccessful
+        description: The IDs of the Dedicated Hosts that could not be released, including an error message.
+        type: array
+
+  - name: aws-ec2-traffic-mirror-session-create
+    description: Creates a Traffic Mirror session. A Traffic Mirror session actively copies packets from a Traffic Mirror source to a Traffic Mirror target.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: network_interface_id
+        description: The ID of the source network interface.
+        required: true
+      - name: traffic_mirror_target_id
+        description: The ID of the Traffic Mirror target.
+        required: true
+      - name: traffic_mirror_filter_id
+        description: The ID of the Traffic Mirror filter.
+        required: true
+      - name: session_number
+        description: The order in which sessions are evaluated when an interface is used by multiple sessions. Possible values are 1-32766.
+        required: true
+      - name: virtual_network_id
+        description: The VXLAN ID for the Traffic Mirror session. If you do not specify a virtual_network_id, an account-wide unique ID is chosen at random.
+        required: false
+      - name: packet_length
+        description: The number of bytes in each packet to mirror. These are bytes after the VXLAN header. Do not specify this parameter when you want to mirror the entire packet.
+        required: false
+      - name: description
+        description: The description of the Traffic Mirror session.
+        required: false
+      - name: tags
+        description: "The tags to assign to a Traffic Mirror session. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
+    outputs:
+      - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorSessionId
+        description: The ID of the Traffic Mirror session.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorTargetId
+        description: The ID of the Traffic Mirror target.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorFilterId
+        description: The ID of the Traffic Mirror filter.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.NetworkInterfaceId
+        description: The ID of the Traffic Mirror session's network interface.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.OwnerId
+        description: The ID of the account that owns the Traffic Mirror session.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.PacketLength
+        description: The number of bytes in each packet to mirror.
+        type: number
+      - contextPath: AWS.EC2.TrafficMirrorSessions.SessionNumber
+        description: The order in which sessions are evaluated when an interface is used by multiple sessions.
+        type: number
+      - contextPath: AWS.EC2.TrafficMirrorSessions.VirtualNetworkId
+        description: The virtual network ID associated with the Traffic Mirror session.
+        type: number
+      - contextPath: AWS.EC2.TrafficMirrorSessions.Description
+        description: The description of the Traffic Mirror session.
+        type: string
+      - contextPath: AWS.EC2.TrafficMirrorSessions.Tags
+        description: The tags assigned to the Traffic Mirror session.
+        type: array
+
+  - name: aws-ec2-vpc-delete
+    description: Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: vpc_id
+      description: The ID of the VPC.
+      required: true
+
+  - name: aws-ec2-vpc-endpoint-create
+    description: Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: vpc_id
+      description: The VPC ID where the endpoint is created.
+      required: true
+    - name: service_name
+      description: "The service name. For AWS services, the service name is usually in the form com.amazonaws.<region>.<service>."
+      required: true
+    - name: service_network_arn
+      description: The service network Amazon Resource Name (ARN) to associate with the service-network VPC endpoint.
+    - name: service_region
+      description: The region where the service is hosted. Default is the current region.
+    - name: vpc_endpoint_type
+      description: The type of endpoint.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Interface
+      - Gateway
+      - GatewayLoadBalancer
+      - Resource
+      - ServiceNetwork
+    - name: policy_document
+      description: A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format.
+      required: false
+    - name: route_table_ids
+      description: A comma-separated list of route table IDs. Applicable for Gateway endpoints only.
+      required: false
+      isArray: true
+    - name: subnet_ids
+      description: A comma-separated list of subnet IDs for an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+      required: false
+      isArray: true
+    - name: security_group_ids
+      description: A comma-separated list of security group IDs to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only.
+      required: false
+      isArray: true
+    - name: ip_address_type
+      description: The IP address type for the endpoint.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - dualstack
+      - ipv6
+    - name: dns_options_dns_record_ip_type
+      description: The DNS records created for the endpoint.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - dualstack
+      - ipv6
+      - service-defined
+    - name: dns_options_private_dns_only_for_inbound_resolver_endpoint
+      description: Whether to enable private DNS only for inbound endpoints.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: dns_options_private_dns_preference
+      description: The preference for creating and associating private hosted zones with a specified VPC.
+      required: false
+    - name: dns_options_private_dns_specified_domains
+      description: The private domains used for creating and associating private hosted zones with the VPC.
+      required: false
+    - name: subnet_configuration_ipv4
+      description: The IPv4 address to assign to the endpoint network interface in the subnet.
+      required: false
+    - name: subnet_configuration_ipv6
+      description: The IPv6 address to assign to the endpoint network interface in the subnet.
+      required: false
+    - name: subnet_configuration_subnet_id
+      description: The ID of the subnet.
+      required: false
+    - name: private_dns_enabled
+      description: Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: resource_configuration_arn
+      description: The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint.
+      required: false
+    - name: tags
+      description: "The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
+    - name: client_token
+      description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      required: false
+    outputs:
+    - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId
+      description: The ID of the VPC endpoint.
       type: string
-    description: Uploads a batch of log events to the specified log stream.
-    execution: true
+    - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointType
+      description: The type of endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.VpcId
+      description: The ID of the VPC associated with the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.ServiceName
+      description: The name of the service associated with the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.ServiceNetworkArn
+      description: The Amazon Resource Name (ARN) of the service network.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.ServiceRegion
+      description: The Region where the service is hosted.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.State
+      description: The state of the VPC endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.PolicyDocument
+      description: The policy document associated with the endpoint, if applicable.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.RouteTableIds
+      description: One or more route tables associated with the endpoint.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.SubnetIds
+      description: One or more subnets in which the endpoint is located.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.Groups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.IpAddressType
+      description: The IP address type for the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType
+      description: The DNS records created for the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint
+      description: Whether to enable private DNS only for inbound endpoints.
+      type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsPreference
+      description: The preference for which private domains have a private hosted zone created for and associated with the specified VPC.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsSpecifiedDomainSet
+      description: Indicates which of the private domains to create private hosted zones for and associate with the specified VPC.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.PrivateDnsEnabled
+      description: Whether the VPC is associated with a private hosted zone.
+      type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.RequesterManaged
+      description: Whether the VPC endpoint is being managed by its service.
+      type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.NetworkInterfaceIds
+      description: One or more network interfaces for the endpoint.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.DnsName
+      description: The DNS name.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId
+      description: The ID of the private hosted zone.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.CreationTimestamp
+      description: The date and time that the VPC endpoint was created.
+      type: date
+    - contextPath: AWS.EC2.VpcEndpoints.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.OwnerId
+      description: The ID of the AWS account that owns the VPC endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.LastError.Message
+      description: The VCP endpoint error message.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.LastError.Code
+      description: The VCP endpoint error code.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.FailureReason
+      description: Reason for the failure.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv4Prefixes.IpPrefixes
+      description: Array of IPv4 prefixes.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv4Prefixes.SubnetId
+      description: ID of the subnet.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv6Prefixes.IpPrefixes
+      description: Array of IPv6 prefixes.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv6Prefixes.SubnetId
+      description: ID of the subnet.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.ResourceConfigurationArn
+      description: The Amazon Resource Name (ARN) of the resource configuration.
+      type: array
 
-  - name: aws-cloudwatch-metric-filter-put
+  - name: aws-ec2-internet-gateway-describe
+    description: A description of one or more of your internet gateways.
     arguments:
-    - name: log_group_name
+    - name: account_id
+      description: The AWS account ID.
       required: true
-      description: The name of the log group.
-    - name: filter_name
+    - name: region
+      description: The AWS region.
       required: true
-      description: A name for the metric filter.
-    - name: filter_pattern
-      required: true
-      description: A filter pattern for extracting metric data out of ingested log events.
-    - name: metric_name
-      required: true
-      description: The name of the CloudWatch metric.
-    - name: metric_namespace
-      required: true
-      description: The namespace of the CloudWatch metric.
-    - name: metric_value
-      required: true
-      description: The value to publish to the CloudWatch metric when a filter pattern matches a log event.
-    - name: default_value
-      description: The value to emit when a filter pattern does not match a log event. This value can be null.
-    - name: dimensions
-      description: "The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Format: JSON object, e.g. {\"EventType\": \"$.eventType\"}."
-    - name: unit
       auto: PREDEFINED
       predefined:
-      - Seconds
-      - Microseconds
-      - Milliseconds
-      - Bytes
-      - Kilobytes
-      - Megabytes
-      - Gigabytes
-      - Terabytes
-      - Bits
-      - Kilobits
-      - Megabits
-      - Gigabits
-      - Terabits
-      - Percent
-      - Count
-      - Bytes/Second
-      - Kilobytes/Second
-      - Megabytes/Second
-      - Gigabytes/Second
-      - Terabytes/Second
-      - Bits/Second
-      - Kilobits/Second
-      - Megabits/Second
-      - Gigabits/Second
-      - Terabits/Second
-      - Count/Second
-      - None
-      description: The unit to assign to the metric. If you omit this, the unit is set as None.
-    - name: apply_on_transformed_logs
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      defaultvalue: "false"
-      description: Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
-    execution: true
-
-  - name: aws-cloudwatch-metric-filter-delete
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: filter_name
-      required: true
-      description: The name of the metric filter.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Deletes the specified metric filter.
-    execution: true
-
-  - name: aws-cloudwatch-metric-filters-describe
-    arguments:
-    - name: log_group_name
-      description: The name of the log group.
-    - name: filter_name_prefix
-      description: The prefix to match.
-    - name: metric_name
-      description: Filters results to include only those with the specified metric name. If you include this parameter in your request, you must also include the metric_namespace parameter.
-    - name: metric_namespace
-      description: Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter.
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: filters
+      description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for filter details and options."
+      required: false
+    - name: internet_gateway_ids
+      description: A comma-separated list of internet gateway IDs.
+      required: false
+      isArray: true
     - name: limit
-      defaultvalue: "50"
-      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+      description: The maximum number of results to return with a single call. Specify a value between 5 and 1000.
+      required: false
     - name: next_token
-      description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
+      description: The token for the next page of results.
+      required: false
     outputs:
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterName
-      description: The name of the metric filter.
+    - contextPath: AWS.EC2.InternetGateways.InternetGatewayId
+      description: The ID of the internet gateway.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterPattern
-      description: A symbolic description of how CloudWatch Logs should interpret the data in each log event.
+    - contextPath: AWS.EC2.InternetGateways.Attachments.State
+      description: The current state of the attachment.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName
-      description: The name of the CloudWatch metric.
+    - contextPath: AWS.EC2.InternetGateways.Attachments.VpcId
+      description: The ID of the VPC.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace
-      description: The namespace of the CloudWatch metric.
+    - contextPath: AWS.EC2.InternetGateways.Tags.Key
+      description: The key of the tag.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue
-      description: The value to publish to the CloudWatch metric when a filter pattern matches a log event.
+    - contextPath: AWS.EC2.InternetGateways.Tags.Value
+      description: The value of the tag.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue
-      description: The value to emit when a filter pattern does not match a log event. This value can be null.
+    - contextPath: AWS.EC2.InternetGateways.OwnerId
+      description: The ID of the AWS account that owns the internet gateway.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.creationTime
-      description: The creation time of the metric filter, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
-      type: date
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.logGroupName
-      description: The name of the log group.
+    - contextPath: AWS.EC2.InternetGatewaysNextToken
+      description: The token used to retrieve the next page of results.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFiltersNextToken
-      description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
-      type: string
-    description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
+
+  - name: aws-ec2-internet-gateway-detach
+    description: Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: internet_gateway_id
+      description: The ID of the internet gateway.
+      required: true
+    - name: vpc_id
+      description: The ID of the VPC.
+      required: true
+
+  - name: aws-ec2-internet-gateway-delete
+    description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: internet_gateway_id
+      description: The ID of the internet gateway.
+      required: true
+
+  - name: aws-ec2-subnet-delete
+    description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: subnet_id
+      description: The ID of the subnet.
+      required: true
+
+  - name: aws-ec2-network-acl-entry-create
+    description: Creates an entry (a rule) in a network ACL with the specified rule number.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: network_acl_id
+      description: The ID of the network ACL.
+      required: true
+    - name: rule_number
+      description: The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number.
+      required: true
+    - name: protocol
+      description: The protocol number, where -1 or all specifies all protocols. Using all, -1, or any protocol other than tcp, udp, or icmp allows traffic on all ports, regardless other settings.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      - icmpv6
+      - '-1'
+    - name: rule_action
+      description: Whether to allow the traffic that matches the rule.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+    - name: egress
+      description: Whether it is an egress rule (a rule applied to traffic leaving the subnet).
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: cidr_block
+      description: The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block.
+      required: false
+    - name: ipv6_cidr_block
+      description: The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block.
+      required: false
+    - name: icmp_type_code_type
+      description: The ICMP type. A value of -1 means all types. Required if specifying icmp or icmpv6 for the protocol parameter.
+      required: false
+    - name: icmp_type_code_code
+      description: The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying icmp or icmpv6 for the protocol parameter.
+      required: false
+    - name: port_range_from
+      description: The first port in the range. Required if specifying tcp or udp for the protocol parameter.
+      required: false
+    - name: port_range_to
+      description: The last port in the range. Required if specifying tcp or udp for the protocol parameter.
+      required: false
 
   isfetch: false
   runonce: false
@@ -12533,3 +14233,4 @@ sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true
+internal: true
