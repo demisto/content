@@ -116,7 +116,7 @@ dataset = prisma_cloud_compute_raw
 | fields aggregatedAlerts
 ```
 
-To receive each alert as a separate case, reduce the aggregation window in your Prisma Cloud alert profile:
+To receive each alert as a separate issue, reduce the aggregation window in your Prisma Cloud alert profile:
 
 1. Open a case with **Prisma Cloud Support** and request enabling `SAAS_ADDITIONAL_ALERT_AGGREGATION_OPTIONS_ENABLED = true` on your tenant. This unlocks the 1-second aggregation option (the default minimum is 10 minutes).
 2. In the Prisma Cloud Console, go to **Manage → Alerts → [Alert Profile] → Aggregation Period** and set it to **1 second**.
