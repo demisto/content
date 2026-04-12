@@ -1,9 +1,11 @@
 id: CrowdStrike Falcon - False Positive Incident Handling
 version: -1
-fromversion: 6.10.0
+fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook handles a CrowdStrike case or detection that was determined to be a false positive by the analyst. Actions include unisolating the host, allowing the indicator by the EDR, and tagging it.
+  This playbook handles a CrowdStrike incident that was determined
+  to be a false positive by the analyst. Actions include unisolating the host, allowing
+  the indicator by the EDR, and tagging it.
 name: CrowdStrike Falcon - False Positive Incident Handling
 starttaskid: "0"
 tasks:
@@ -20,13 +22,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
+      - "1"
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 50
+          "x": 380,
+          "y": -700
         }
       }
     note: false
@@ -56,8 +59,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 727.5
+          "x": -60,
+          "y": -550
         }
       }
     note: false
@@ -89,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 190,
+          "y": 380
         }
       }
     note: false
@@ -135,8 +138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
-          "y": 2105
+          "x": 410,
+          "y": 1240
         }
       }
     note: false
@@ -149,12 +152,12 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: f59286c1-96eb-4b74-94c8-74980d27f366
+    taskid: d454a7d0-22e4-484a-8ea0-89565a7e79cb
     type: title
     task:
-      id: f59286c1-96eb-4b74-94c8-74980d27f366
+      id: d454a7d0-22e4-484a-8ea0-89565a7e79cb
       version: -1
-      name: False positive detection or case closing
+      name: False positive Incident closing
       type: title
       iscommand: false
       brand: ""
@@ -166,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 1420
+          "x": 400,
+          "y": 740
         }
       }
     note: false
@@ -197,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 385
+          "x": 1090,
+          "y": -550
         }
       }
     note: false
@@ -242,8 +245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 1245
+          "x": 540,
+          "y": 500
         }
       }
     note: false
@@ -256,31 +259,31 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: f5e62cd5-197f-4f41-ac09-c6980640123c
+    taskid: 97d3043a-800a-4205-81bd-ae13f2358967
     type: regular
     task:
-      id: f5e62cd5-197f-4f41-ac09-c6980640123c
+      id: 97d3043a-800a-4205-81bd-ae13f2358967
       version: -1
-      name: Resolve CS case
-      description: Resolves or updates a case.
-      script: '|||cs-falcon-resolve-case'
+      name: Resolve CS incident
+      description: Resolves the CrowdStrike incident.
+      script: '|||cs-falcon-resolve-incident'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "4"
     scriptarguments:
-      status:
-        simple: closed
-      id:
+      ids:
         simple: ${incident.externalsystemid}
+      status:
+        simple: Closed
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1605,
-          "y": 1755
+          "x": 200,
+          "y": 1065
         }
       }
     note: false
@@ -318,8 +321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 407.5,
-          "y": 1930
+          "x": 600,
+          "y": 1065
         }
       }
     note: false
@@ -349,8 +352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 545
+          "x": 1090,
+          "y": -410
         }
       }
     note: false
@@ -402,12 +405,12 @@ tasks:
     continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 474bc124-6b8f-4d7e-8ef7-0cc9a6ce9d3e
+    taskid: 5f4f88e4-8852-4e74-8c8c-aecd084bff3e
     type: condition
     task:
-      id: 474bc124-6b8f-4d7e-8ef7-0cc9a6ce9d3e
+      id: 5f4f88e4-8852-4e74-8c8c-aecd084bff3e
       version: -1
-      name: Was this a detection or a case?
+      name: Was this an incident or alert?
       type: condition
       iscommand: false
       brand: ""
@@ -415,11 +418,11 @@ tasks:
     nexttasks:
       detection:
       - "10"
-      ngsiem_case:
+      incident:
       - "9"
     separatecontext: false
     conditions:
-    - label: ngsiem_case
+    - label: incident
       condition:
       - - operator: isEqualString
           left:
@@ -428,7 +431,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ngsiem_case
+              simple: incident
     - label: detection
       condition:
       - - operator: isEqualString
@@ -442,8 +445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 1580
+          "x": 400,
+          "y": 870
         }
       }
     note: false
@@ -487,8 +490,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": -60,
+          "y": 205
         }
       }
     note: false
@@ -528,8 +531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1245
+          "x": -60,
+          "y": 550
         }
       }
     note: false
@@ -568,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1605,
-          "y": 1245
+          "x": 1900,
+          "y": 560
         }
       }
     note: false
@@ -599,8 +602,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1605,
-          "y": 1077.5
+          "x": 1900,
+          "y": 115
         }
       }
     note: false
@@ -630,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 902.5
+          "x": 750,
+          "y": -60
         }
       }
     note: false
@@ -693,8 +696,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 1070
+          "x": 750,
+          "y": 150
         }
       }
     note: false
@@ -739,8 +742,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1175,
-          "y": 1245
+          "x": 960,
+          "y": 500
         }
       }
     note: false
@@ -783,8 +786,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 720
+          "x": 1900,
+          "y": -240
         }
       }
     note: false
@@ -795,90 +798,15 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  "25":
-    id: "25"
-    taskid: 37adfaa5-356c-46ba-9fda-f923dcefa815
-    type: regular
-    task:
-      id: 37adfaa5-356c-46ba-9fda-f923dcefa815
-      version: -1
-      name: Add CS case tag
-      description: Adds tags to the specified case.
-      script: '|||cs-falcon-add-case-tag'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      id:
-        simple: ${incident.externalsystemid}
-      tags:
-        simple: ${inputs.CloseNotes}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1605,
-          "y": 1930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: 5a849e72-3d4e-4546-9a0e-9033c3847925
-    type: condition
-    task:
-      id: 5a849e72-3d4e-4546-9a0e-9033c3847925
-      version: -1
-      name: is CrowdStrike Falcon integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "1"
-      - "7"
-    scriptarguments:
-      brandname:
-        simple: CrowdstrikeFalcon
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 745,
-          "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2115,
-        "width": 1935,
-        "x": 50,
-        "y": 50
+        "height": 2005,
+        "width": 2340,
+        "x": -60,
+        "y": -700
       }
     }
   }
@@ -925,8 +853,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test - CrowdStrike Falcon
+- No tests
 marketplaces:
 - xsoar
-contentitemexportablefields:
-  contentitemfields: {}

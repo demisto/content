@@ -1,5 +1,7 @@
-This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to <https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response>.
-This playbook handles a CrowdStrike case or detection that was determined to be a false positive by the analyst. Actions include unisolating the host, allowing the indicator by the EDR, and tagging it.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook handles a CrowdStrike incident that was determined
+to be a false positive by the analyst. Actions include unisolating the host, allowing
+the indicator by the EDR, and tagging it.
 
 ## Dependencies
 
@@ -15,15 +17,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* IsIntegrationAvailable
+This playbook does not use any scripts.
 
 ### Commands
 
-* cs-falcon-add-case-tag
-* cs-falcon-resolve-case
+* cs-falcon-resolve-incident
+* setIndicators
 * cs-falcon-resolve-detection
 * cs-falcon-upload-custom-ioc
-* setIndicators
 
 ## Playbook Inputs
 
