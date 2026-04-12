@@ -31,10 +31,8 @@
         "Registry Key",
         "Account",
         "MAC Address",
-        "Network Traffic",
         "Mutex",
         "Software",
-        "User Agent",
         "Malware",
         "Threat Actor",
         "Attack Pattern",
@@ -46,8 +44,7 @@
         "Infrastructure",
         "CVE",
         "Identity",
-        "Location",
-        "Indicator"
+        "Location"
     ],
     "unmapped": false,
     "unsearchable": true,

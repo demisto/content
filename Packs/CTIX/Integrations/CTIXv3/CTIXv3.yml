@@ -5,6 +5,7 @@ fromversion: 5.5.0
 name: CTIX v3
 display: Cyware Intel Exchange
 category: Data Enrichment & Threat Intelligence
+provider: Cyware Labs
 sectionorder:
 - Connect
 - Collect
@@ -172,6 +173,7 @@ configuration:
 - name: feedExpirationInterval
   display: ''
   type: 1
+  section: Collect
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
@@ -2154,7 +2156,7 @@ script:
       description: Status.
       type: String
     description: Disables or enables one or more tags based on their IDs.
-  dockerimage: demisto/python3:3.12.12.6204436
+  dockerimage: demisto/python3:3.12.13.8160132
   subtype: python3
   isfetch: true
   feed: true

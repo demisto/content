@@ -1,6 +1,6 @@
 {
     "name": "Cyware Intel Exchange",
-    "description": "Cyware Intel Exchange enables security teams to ingest, enrich, analyze, and share threat intelligence in real time, helping improve threat visibility and response across trusted networks.",
+    "description": "Cyware Intel Exchange enables security teams to ingest, enrich, analyze, and share threat intelligence in real time.",
     "support": "partner",
     "currentVersion": "2.4.0",
     "author": "Cyware Labs",
