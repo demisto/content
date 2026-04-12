@@ -843,7 +843,24 @@ def validate_configuration_params() -> str:
 
 
 def test_module() -> str:
-    return validate_configuration_params()
+    """Test the Docusign integration configuration by validating parameters , test Auth and making an API call.
+    Returns:
+        str: 'ok' if the configuration is valid and the API call succeeds, otherwise an error message.
+    """
+    validation_result = validate_configuration_params()
+    if validation_result != "ok":
+        return validation_result
+
+    try:
+        auth_client = initiate_auth_client()
+    except DemistoException as e:
+        return str(e)
+
+    # Verify the access token works by calling the /oauth/userinfo endpoint
+    auth_client.get_user_info(auth_client.access_token)
+    demisto.debug(f"{LOG_PREFIX}test-module: API call to /oauth/userinfo succeeded.")
+    return "ok"
+
 
 
 def get_events_command(auth_client: AuthClient) -> CommandResults:
@@ -899,6 +916,9 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
         if command == "test-module":
+            return_results("Please run the command docusign-auth-test to test the full authentication flow and API connectivity.")
+
+        elif command == "docusign-auth-test":
             return_results(test_module())
 
         elif command == "fetch-events":

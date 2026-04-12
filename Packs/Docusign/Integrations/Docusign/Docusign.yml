@@ -88,6 +88,10 @@ script:
     description: Generates the Docusign Admin consent URL based on the configured parameters and environment.
     arguments: []
     execution: false
+  - name: docusign-auth-test
+    description: Tests the full authentication flow and API connectivity by validating configuration, exchanging a JWT for an access token, and calling the /oauth/userinfo endpoint.
+    arguments: []
+    execution: false
   - name: docusign-get-events
     description: Fetches events from Docusign. Used for debugging purposes on failures.
     arguments:

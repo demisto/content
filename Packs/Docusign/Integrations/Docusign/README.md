@@ -166,6 +166,31 @@ There is no context output for this command.
 >
 >[Click here to authorize]
 
+### docusign-auth-test
+
+***
+Tests the full authentication flow and API connectivity by validating configuration, exchanging a JWT for an access token, and calling the /oauth/userinfo endpoint.
+
+#### Base Command
+
+`docusign-auth-test`
+
+#### Input
+
+There is no input for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!docusign-auth-test```
+
+#### Human Readable Output
+
+>ok
+
 ### docusign-get-events
 
 ***
