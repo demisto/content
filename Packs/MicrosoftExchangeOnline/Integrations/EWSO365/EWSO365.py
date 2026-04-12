@@ -329,7 +329,7 @@ def email_ec(item):
 
 def is_item_duplicate(item, exclude_ids, incident_filter):
     """
-    Check whether an item is a duplicate based on its Message-ID and timestamp.
+    Checks if an item is a duplicate based on ID and Timestamp.
 
     RFC 5322 defines Message-ID values as <id@domain>, but in practice the same
     message may appear in different forms across fetches, such as id@domain,
