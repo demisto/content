@@ -7981,7 +7981,7 @@ class CloudWatchLogs:
                 readable_output=f"Successfully created log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def log_stream_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8013,7 +8013,7 @@ class CloudWatchLogs:
                 f"in log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def log_group_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8043,7 +8043,7 @@ class CloudWatchLogs:
                 readable_output=f"Successfully deleted log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def log_stream_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8076,7 +8076,7 @@ class CloudWatchLogs:
                 f"from log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def log_events_filter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8338,7 +8338,7 @@ class CloudWatchLogs:
                 f"for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def retention_policy_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8364,7 +8364,7 @@ class CloudWatchLogs:
                 readable_output=f"Successfully deleted retention policy for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def log_events_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8467,7 +8467,7 @@ class CloudWatchLogs:
                 f"for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def metric_filter_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -8499,7 +8499,7 @@ class CloudWatchLogs:
                 f"from log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return None  # type: ignore
 
     @staticmethod
     def metric_filters_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
