@@ -600,3 +600,44 @@ class TestEdgeCases:
         assert row["Integration Name"] == "SpecialInt"
         assert row["Provider"] == "TestProvider"
         assert row["script inputs"] == "{}"
+
+
+# ---------------------------------------------------------------------------
+# Assignee
+# ---------------------------------------------------------------------------
+
+class TestAssignee:
+    def test_status_shows_unassigned(self) -> None:
+        row = _make_row()
+        output = format_status(row)
+        assert "(unassigned)" in output
+
+    def test_status_shows_assignee(self) -> None:
+        row = _make_row()
+        row["assignee"] = "John Doe"
+        output = format_status(row)
+        assert "John Doe" in output
+        assert "(unassigned)" not in output
+
+    def test_assignee_preserved_after_reset(self) -> None:
+        row = _make_row(script_inputs="{}")
+        row["assignee"] = "Jane Smith"
+        row["generated manifest"] = CHECK
+        row["wrote code"] = CHECK
+
+        reset_from_step(row, "generated manifest")
+
+        assert row["assignee"] == "Jane Smith"
+
+    def test_assignee_preserved_after_markpass(self) -> None:
+        row = _make_row(script_inputs="{}")
+        row["assignee"] = "Jane Smith"
+
+        markpass_step(row, "generated manifest")
+
+        assert row["assignee"] == "Jane Smith"
+        assert row["generated manifest"] == CHECK
+
+    def test_assignee_in_data_columns(self) -> None:
+        from workflow_state import DATA_COLUMNS
+        assert "assignee" in DATA_COLUMNS

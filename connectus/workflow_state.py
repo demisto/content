@@ -35,8 +35,11 @@ Usage:
   # Show what step each in-progress integration is on
   python workflow_state.py dashboard
 
-  # Set script inputs (free text)
-  python workflow_state.py set-inputs "Cisco Spark" "api_key, base_url"
+  # Set the assignee
+  python workflow_state.py set-assignee "Cisco Spark" "John Doe"
+
+  # Set script inputs (JSON)
+  python workflow_state.py set-inputs "Cisco Spark" '{"api_key": "str"}'
 
   # Mark a specific step as passed (must be the current step)
   python workflow_state.py markpass "Cisco Spark" "wrote code"
@@ -76,6 +79,7 @@ CSV_PATH = os.path.join(BASE_DIR, "connectus", "integrations_report.csv")
 
 # The original data columns (not managed by this script)
 DATA_COLUMNS = [
+    "assignee",
     "Integration Name",
     "Support Level",
     "Provider",
@@ -299,6 +303,8 @@ def format_status(row: dict[str, str]) -> str:
     lines = [f"\n{'=' * 60}", f"  {name}", f"{'=' * 60}"]
 
     # Data columns summary
+    assignee = row.get("assignee", "").strip()
+    lines.append(f"  Assignee:      {assignee if assignee else '(unassigned)'}")
     lines.append(f"  Support Level: {row.get('Support Level', '')}")
     lines.append(f"  Provider:      {row.get('Provider', '')}")
     lines.append(f"  Auth Types:    {row.get('Auth Types', '')}")
@@ -546,6 +552,26 @@ def cmd_fail(args: list[str]) -> None:
     except ValueError as e:
         print(f"ERROR: {e}")
         sys.exit(1)
+
+
+def cmd_set_assignee(args: list[str]) -> None:
+    """Set the assignee for an integration."""
+    if len(args) < 2:
+        print("Usage: workflow_state.py set-assignee <integration_name> <assignee_name>")
+        sys.exit(1)
+
+    name = args[0]
+    assignee = " ".join(args[1:])
+
+    rows = load_csv()
+    idx = find_row(rows, name)
+    if idx is None:
+        print(f"ERROR: Integration '{name}' not found.")
+        sys.exit(1)
+
+    rows[idx]["assignee"] = assignee
+    save_csv(rows)
+    print(f"Set assignee for '{rows[idx]['Integration Name']}' to: {assignee}")
 
 
 def cmd_set_auth_flag(args: list[str]) -> None:
@@ -797,6 +823,7 @@ COMMANDS = {
     "status": cmd_status,
     "status-all": cmd_status_all,
     "dashboard": cmd_dashboard,
+    "set-assignee": cmd_set_assignee,
     "set-inputs": cmd_set_inputs,
     "markpass": cmd_markpass,
     "fail": cmd_fail,
