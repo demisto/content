@@ -520,7 +520,7 @@ class TestGetEventsCommand:
         result = get_events_command(mock_client, args, params)
 
         assert not isinstance(result, str)
-        assert "Koi Collector Events" in result.readable_output  # type: ignore[union-attr]
+        assert "KOI Events" in result.readable_output  # type: ignore[union-attr]
 
     def test_get_events_push_to_xsiam(self, mock_client, alerts_response, mocker):
         """Test get-events command with push to XSIAM."""
