@@ -24,6 +24,8 @@ DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
+MAX_COMMUNITY_SEARCH_RELATIONSHIPS = 50
+MAX_COMMUNITY_SEARCH_ENRICHMENTS = 50
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
 MAX_PRODUCT = 10000
@@ -1231,6 +1233,10 @@ def create_relationships_list_for_community_search(client, indicators, ip):
         ip_address_data = indicators.get("enrichments", {}).get("ip_address", [])
         for ip_address in ip_address_data:
             if is_ip_valid(ip_address, True):
+                if len(relationships) >= MAX_COMMUNITY_SEARCH_RELATIONSHIPS:
+                    demisto.debug(f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
+                                "for community search. truncating the rest of the relationships.")
+                    break
                 relationships.append(
                     EntityRelationship(
                         name="indicator-of",
@@ -1247,6 +1253,10 @@ def create_relationships_list_for_community_search(client, indicators, ip):
         indicator_data += indicators.get("enrichments", {}).get("cve_ids", [])
 
         for indicator in indicator_data:
+            if len(relationships) >= MAX_COMMUNITY_SEARCH_RELATIONSHIPS:
+                demisto.debug(f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
+                              "for community search. truncating the rest of the relationships.")
+                break
             relationships.append(
                 EntityRelationship(
                     name="indicator-of",
@@ -1872,10 +1882,21 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
             )
             human_readable += f"\nIgnite link to community search: [{community_search_link}]({community_search_link})\n"
 
+            limited_indicators = []
+            for indicator in indicators:
+                for enr_key, enr_val in indicator.get("enrichments", {}).items():
+                    if isinstance(enr_val, list) and len(enr_val) > MAX_COMMUNITY_SEARCH_ENRICHMENTS:
+                        demisto.debug(
+                            f"Community search for IP {ip}: enrichments[{enr_key}] truncated to "
+                            f"{MAX_COMMUNITY_SEARCH_ENRICHMENTS} entries for indicator "
+                            f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
+                        )
+                        indicator["enrichments"][enr_key] = enr_val[:MAX_COMMUNITY_SEARCH_ENRICHMENTS]
+                limited_indicators.append(indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
                 outputs_key_field="id",
-                outputs=remove_empty_elements(indicators),
+                outputs=remove_empty_elements(limited_indicators),
                 readable_output=human_readable,
                 indicator=ip_ioc,
                 raw_response=community_response,
