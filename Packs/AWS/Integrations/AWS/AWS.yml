@@ -14231,7 +14231,6 @@ script:
       predefined:
       - STANDARD
       - INFREQUENT_ACCESS
-      defaultvalue: STANDARD
       description: The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost.
     - name: tags
       description: "The key-value pairs to use for the tags. You can grant users access to certain log groups while preventing them from accessing other log groups, by using tag-based access control. Format: JSON object, e.g. {\"Environment\": \"Production\", \"Team\": \"DevOps\"}."
@@ -14239,8 +14238,6 @@ script:
       auto: PREDEFINED
       predefined:
       - "true"
-      - "false"
-      defaultvalue: "false"
       description: Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false.
     - name: region
       required: true
@@ -14318,8 +14315,7 @@ script:
     - name: filter_pattern
       description: The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation.
     - name: limit
-      defaultvalue: "10000"
-      description: The maximum number of events to return. The default is 10,000 events.
+      description: The maximum number of events to return. Max 10,000 events.
     - name: next_token
       description: The token for the next set of events to return. Use the value returned in the previous response as nextToken to get the next page of results.
     - name: unmask
@@ -14327,7 +14323,6 @@ script:
       predefined:
       - "true"
       - "false"
-      defaultvalue: "false"
       description: Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false.
     - name: region
       required: true
@@ -14366,11 +14361,9 @@ script:
       description: Comma-separated list of account IDs. When used with includeLinkedAccounts, returns log groups in the accounts listed. Used for cross-account querying.
       isArray: true
     - name: include_linked_accounts
-      auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      defaultvalue: "false"
       description: If true, include log groups in the accounts specified by accountIdentifiers. If this parameter is set to true and accountIdentifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
     - name: log_group_class
       auto: PREDEFINED
@@ -14379,8 +14372,7 @@ script:
       - INFREQUENT_ACCESS
       description: Specifies the log group class for this log group. Possible values are STANDARD and INFREQUENT_ACCESS.
     - name: limit
-      defaultvalue: "50"
-      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+      description: The maximum number of items returned. If you don't specify a value, max 50 items.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     - name: region
@@ -14430,18 +14422,15 @@ script:
       predefined:
       - LogStreamName
       - LastEventTime
-      defaultvalue: LogStreamName
       description: If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time. The default value is LogStreamName.
     - name: descending
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      defaultvalue: "false"
       description: If set to true, results are returned in descending order. If the orderBy field is not set, the default is false (ascending). If the orderBy field is LastEventTime, the default is true (descending).
     - name: limit
-      defaultvalue: "50"
-      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+      description: The maximum number of items returned. If you don't specify a value, maximum 50 items.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     - name: region
@@ -14622,7 +14611,6 @@ script:
       predefined:
       - "true"
       - "false"
-      defaultvalue: "false"
       description: Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false.
     - name: region
       required: true
@@ -14661,8 +14649,7 @@ script:
     - name: metric_namespace
       description: Filters results to include only those in the specified namespace. If you include this parameter in your request, you must also include the metric_name parameter.
     - name: limit
-      defaultvalue: "50"
-      description: The maximum number of items returned. If you don't specify a value, the default is up to 50 items.
+      description: The maximum number of items returned. If you don't specify a value, maximum 50 items.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     - name: region
