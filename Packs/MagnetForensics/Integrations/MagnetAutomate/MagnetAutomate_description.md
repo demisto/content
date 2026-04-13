@@ -11,4 +11,4 @@ To configure this integration, you will need:
 ### Obtain the API Key
 1.  Log in to your Magnet Automate interface.
 2.  Navigate to the **Settings** or **API Management** section (refer to your Magnet Automate version documentation for the exact location).
-3.  Generate a new API Key and copy it for use in the XSOAR integration configuration.
+3.  Generate an API key, copy it, and then paste it in the integration configuration.
