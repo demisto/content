@@ -9,6 +9,7 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: "Format: `https://{hostName}:{port}`"
   section: Connect
 - name: credentials
   displaypassword: API Key
