@@ -1,6 +1,6 @@
 ## Cyber Triage Integration
 
-Initiate agentless forensic triage collections on Windows endpoints directly from Cortex XSOAR.
+Initiate non-persistent endpoint agent forensic triage collections on Windows endpoints directly from Cortex XSOAR.
 
 This integration was integrated and tested with Cyber Triage v3.16.0.
 
@@ -56,7 +56,7 @@ Initiates a Cyber Triage forensic collection on a Windows endpoint.
 
 #### Command Example
 
-```
+``` bash
 !ct-triage-endpoint host_name=ct-win10-01 scan_options=pr,nw malware_scan_requested=yes send_content=no incident_name=MyIncident
 ```
 
