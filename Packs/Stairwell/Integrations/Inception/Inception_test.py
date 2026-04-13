@@ -66,6 +66,13 @@ test_client_v1_base = Client(
     base_url="https://app.stairwell.com/v1/", verify=False, proxy=False, headers={"Authorization": API_KEY}
 )
 
+test_intake_client = Client(
+    base_url="https://http.intake.app.stairwell.com/v2021.05/upload",
+    verify=False,
+    proxy=False,
+    headers={"Authorization": API_KEY},
+)
+
 
 def test_variant_discovery_command_success(requests_mock):
     mock_response = util_load_json("test_data/variant_discovery_command_result.json")
@@ -116,25 +123,25 @@ def test_file_enrichment_command_notfound(requests_mock):
 def test_intake_preflight_and_upload_missing_args():
     """Test intake_preflight_and_upload with missing required arguments"""
     # Test missing asset_id
-    results = intake_preflight_and_upload(asset_id="", file_path="/path/to/file")
+    results = intake_preflight_and_upload(test_intake_client, asset_id="", file_path="/path/to/file")
     assert results.readable_output == "Missing required arguments: asset_id"
 
     # Test missing file_path
-    results = intake_preflight_and_upload(asset_id="test-asset", file_path="")
+    results = intake_preflight_and_upload(test_intake_client, asset_id="test-asset", file_path="")
     assert results.readable_output == "Missing required arguments: file_path"
 
 
-def test_intake_preflight_and_upload_already_exists(requests_mock):
+def test_intake_preflight_and_upload_already_exists():
     """Test intake_preflight_and_upload when file already exists"""
     mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
-
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_response
 
     with (
         patch("Inception.os.path.exists", return_value=True),
         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
     ):
-        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
     assert "already exists in Stairwell" in results.readable_output
@@ -145,11 +152,10 @@ def test_intake_preflight_and_upload_already_exists(requests_mock):
 def test_intake_preflight_and_upload_success(requests_mock):
     """Test intake_preflight_and_upload with successful upload"""
     mock_preflight = util_load_json("test_data/intake_preflight_upload.json")
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_preflight
 
-    # Mock the preflight request
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_preflight)
-
-    # Mock the upload request
+    # Mock the upload request (upload goes through _create_session_with_retries, not the client)
     requests_mock.post("https://storage.googleapis.com/upload-url", status_code=200)
 
     with tempfile.NamedTemporaryFile(suffix=".exe", delete=False) as tmp:
@@ -158,7 +164,7 @@ def test_intake_preflight_and_upload_success(requests_mock):
 
     try:
         with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
-            results = intake_preflight_and_upload(asset_id="test-asset", file_path=tmp_path)
+            results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path=tmp_path)
     finally:
         os.unlink(tmp_path)
 
@@ -170,9 +176,8 @@ def test_intake_preflight_and_upload_success(requests_mock):
 def test_intake_preflight_and_upload_upload_failure(requests_mock):
     """Test intake_preflight_and_upload when upload fails"""
     mock_preflight = util_load_json("test_data/intake_preflight_upload.json")
-
-    # Mock the preflight request
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_preflight)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_preflight
 
     # Mock the upload request to fail
     requests_mock.post("https://storage.googleapis.com/upload-url", status_code=500, text="Upload failed")
@@ -183,7 +188,7 @@ def test_intake_preflight_and_upload_upload_failure(requests_mock):
 
     try:
         with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
-            results = intake_preflight_and_upload(asset_id="test-asset", file_path=tmp_path)
+            results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path=tmp_path)
     finally:
         os.unlink(tmp_path)
 
@@ -192,62 +197,64 @@ def test_intake_preflight_and_upload_upload_failure(requests_mock):
     assert results.outputs.get("upload_status") == 500
 
 
-def test_intake_preflight_and_upload_missing_upload_info(requests_mock):
+def test_intake_preflight_and_upload_missing_upload_info():
     """Test intake_preflight_and_upload when preflight requests upload but missing upload info"""
     mock_response = util_load_json("test_data/intake_preflight_missing_upload_info.json")
-
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_response
 
     with (
         patch("Inception.os.path.exists", return_value=True),
         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
     ):
-        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
     assert "missing uploadUrl/fields" in results.readable_output
     assert results.outputs.get("error") == "missing_upload_instructions"
 
 
-def test_intake_preflight_and_upload_unknown_action(requests_mock):
+def test_intake_preflight_and_upload_unknown_action():
     """Test intake_preflight_and_upload with unknown action"""
     mock_response = util_load_json("test_data/intake_preflight_unknown_action.json")
-
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_response
 
     with (
         patch("Inception.os.path.exists", return_value=True),
         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
     ):
-        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
     assert "Unrecognized action" in results.readable_output
 
 
-def test_intake_preflight_and_upload_http_error(requests_mock):
+def test_intake_preflight_and_upload_http_error():
     """Test intake_preflight_and_upload with HTTP error"""
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", status_code=500)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.side_effect = DemistoException("500 Server Error")
 
     with (
         patch("Inception.os.path.exists", return_value=True),
         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
     ):
-        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/to/test/file.exe")
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/to/test/file.exe")
 
     assert results
     assert "HTTP error during Intake preflight/upload" in results.readable_output
     assert "error" in results.outputs
 
 
-def test_intake_preflight_and_upload_with_sha256(requests_mock):
+def test_intake_preflight_and_upload_with_sha256():
     """Test intake_preflight_and_upload with provided SHA256"""
     mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
-
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_response
 
     with patch("Inception.os.path.exists", return_value=True):
         results = intake_preflight_and_upload(
+            mock_client,
             asset_id="test-asset",
             file_path="/path/to/test/file.exe",
             sha256="e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d",
@@ -257,17 +264,18 @@ def test_intake_preflight_and_upload_with_sha256(requests_mock):
     assert "already exists in Stairwell" in results.readable_output
 
 
-def test_intake_preflight_and_upload_with_web_origin(requests_mock):
+def test_intake_preflight_and_upload_with_web_origin():
     """Test intake_preflight_and_upload with web origin type"""
     mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
-
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_response
 
     with (
         patch("Inception.os.path.exists", return_value=True),
         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
     ):
         results = intake_preflight_and_upload(
+            mock_client,
             asset_id="test-asset",
             file_path="/path/to/test/file.exe",
             origin_type="web",
@@ -280,18 +288,18 @@ def test_intake_preflight_and_upload_with_web_origin(requests_mock):
     assert "already exists in Stairwell" in results.readable_output
 
 
-def test_intake_preflight_and_upload_with_detonation_plan(requests_mock):
+def test_intake_preflight_and_upload_with_detonation_plan():
     """Test intake_preflight_and_upload with detonation plan"""
     mock_response = util_load_json("test_data/intake_preflight_already_exists.json")
-
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json=mock_response)
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_response
 
     with (
         patch("Inception.os.path.exists", return_value=True),
         patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
     ):
         results = intake_preflight_and_upload(
-            asset_id="test-asset", file_path="/path/to/test/file.exe", detonation_plan="test-plan"
+            mock_client, asset_id="test-asset", file_path="/path/to/test/file.exe", detonation_plan="test-plan"
         )
 
     assert results
@@ -652,7 +660,7 @@ def test_ipaddress_get_whois_command_success(requests_mock):
 # Network Intel Tests - Utilities
 def test_utilities_get_cloud_ip_ranges_command_success(requests_mock):
     """Test utilities get cloud IP ranges command with successful response"""
-    mock_response = {"ranges": [{"cidr": "1.2.3.0/24", "provider": "AWS"}, {"cidr": "5.6.7.0/24", "provider": "GCP"}]}
+    mock_response = {"ranges": [{"cidr": "192.0.2.0/24", "provider": "AWS"}, {"cidr": "198.51.100.0/24", "provider": "GCP"}]}
 
     requests_mock.get("https://app.stairwell.com/v1/network/providers/ip-ranges", json=mock_response)
 
@@ -1043,7 +1051,8 @@ def test_hash_sha256_success():
     try:
         sha, err = _hash_sha256(tmp_path)
         assert err is None
-        assert sha is not None and len(sha) == 64
+        assert sha is not None
+        assert len(sha) == 64
     finally:
         os.unlink(tmp_path)
 
@@ -1052,51 +1061,56 @@ def test_hash_sha256_success():
 # intake_preflight_and_upload Additional Paths
 # ─────────────────────────────────────────────
 
-def test_intake_preflight_and_upload_unexpected_preflight_response(requests_mock):
+def test_intake_preflight_and_upload_unexpected_preflight_response():
     """Preflight returns response with no fileActions key"""
-    requests_mock.post("https://http.intake.app.stairwell.com/v2021.05/upload", json={"someOther": "data"})
-    with patch("Inception.os.path.exists", return_value=True):
-        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
-            results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/file.exe")
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = {"someOther": "data"}
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/file.exe")
     assert "Unexpected preflight response" in results.readable_output
 
 
 def test_intake_preflight_and_upload_preflight_timeout():
     """Preflight request times out"""
-    with patch("Inception.os.path.exists", return_value=True):
-        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
-            with patch("Inception._create_session_with_retries") as mock_factory:
-                mock_session = MagicMock()
-                mock_session.post.side_effect = requests.exceptions.Timeout()
-                mock_factory.return_value = mock_session
-                results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/file.exe")
+    mock_client = MagicMock()
+    mock_client.intake_preflight.side_effect = requests.exceptions.Timeout()
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/file.exe")
     assert "timed out" in results.readable_output
 
 
 def test_intake_preflight_and_upload_preflight_connection_error():
     """Preflight request gets a connection error"""
-    with patch("Inception.os.path.exists", return_value=True):
-        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
-            with patch("Inception._create_session_with_retries") as mock_factory:
-                mock_session = MagicMock()
-                mock_session.post.side_effect = requests.exceptions.ConnectionError("refused")
-                mock_factory.return_value = mock_session
-                results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/file.exe")
+    mock_client = MagicMock()
+    mock_client.intake_preflight.side_effect = requests.exceptions.ConnectionError("refused")
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/file.exe")
     assert "Connection error" in results.readable_output
 
 
 def test_intake_preflight_and_upload_resolve_error():
     """_resolve_file_source returns an error"""
     with patch("Inception._resolve_file_source", return_value=(None, None, "File not found at path: /bad")):
-        results = intake_preflight_and_upload(asset_id="test-asset", file_path="/bad/path")
+        results = intake_preflight_and_upload(test_intake_client, asset_id="test-asset", file_path="/bad/path")
     assert "File not found" in results.readable_output
 
 
 def test_intake_preflight_and_upload_hash_error():
     """SHA256 calculation fails"""
-    with patch("Inception.os.path.exists", return_value=True):
-        with patch("Inception._hash_sha256", return_value=(None, "Failed computing sha256")):
-            results = intake_preflight_and_upload(asset_id="test-asset", file_path="/path/file.exe")
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=(None, "Failed computing sha256")),
+    ):
+        results = intake_preflight_and_upload(test_intake_client, asset_id="test-asset", file_path="/path/file.exe")
     assert "Failed computing sha256" in results.readable_output
 
 
@@ -1376,3 +1390,343 @@ def test_ai_triage_summarize_command_non_dict_response(requests_mock):
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}:summarize", json="unexpected string")
     results = ai_triage_summarize_command(test_client_v1, TEST_OBJECT_ID)
     assert results
+
+
+# ─────────────────────────────────────────────
+# AI Triage — Rich Response (conditional branch coverage)
+# ─────────────────────────────────────────────
+
+def test_ai_triage_summarize_command_rich_response(requests_mock):
+    """Test AI triage with all optional summaryJson fields populated"""
+    mock_response = {
+        "hash": TEST_OBJECT_ID,
+        "raw": {
+            "tldr": "Suspicious executable",
+            "summary": "Very long detailed analysis " * 20,
+            "summaryJson": {
+                "malicious_likelihood": 99,
+                "confidence": 95,
+                "threat_type": "Backdoor",
+                "tldr": "Suspicious executable",
+                "summary": ["Point 1"],
+                "iocs": {
+                    "urls": ["http://evil.com"],
+                    "file_paths_filenames": [f"file{i}.exe" for i in range(25)],  # >20 to trigger truncation
+                    "registry_keys": ["SOFTWARE\\Bad"],
+                    "ip_addresses": ["198.51.100.1", "203.0.113.1"],
+                },
+                "key_considerations": {
+                    "prevalence": "Rare malware family",
+                    "api_analysis": "Uses suspicious Windows APIs",
+                    "entropy_analysis": "High entropy sections detected",
+                },
+                "guidance_for_clarity_and_impact": {
+                    "persistence_mechanisms": ["Registry run key", "Scheduled task"],
+                    "obfuscation_or_evasion_techniques": ["Packing", "Anti-debug"],
+                    "data_exfiltration_capabilities": ["HTTP POST to C2"],
+                },
+            },
+        },
+    }
+
+    requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}:summarize", json=mock_response)
+    results = ai_triage_summarize_command(test_client_v1, TEST_OBJECT_ID)
+
+    assert results
+    assert "Suspicious executable" in results.readable_output
+    assert "Prevalence" in results.readable_output
+    assert "API Analysis" in results.readable_output
+    assert "Entropy Analysis" in results.readable_output
+    assert "Persistence Mechanisms" in results.readable_output
+    assert "IP Addresses" in results.readable_output
+
+
+# ─────────────────────────────────────────────
+# Intake — Upload Step Failures
+# ─────────────────────────────────────────────
+
+def test_intake_preflight_and_upload_upload_timeout(requests_mock):
+    """Upload step times out after preflight succeeds"""
+    mock_preflight = util_load_json("test_data/intake_preflight_upload.json")
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_preflight
+
+    requests_mock.post("https://storage.googleapis.com/upload-url", exc=requests.exceptions.Timeout())
+
+    with tempfile.NamedTemporaryFile(suffix=".exe", delete=False) as tmp:
+        tmp.write(b"fake content")
+        tmp_path = tmp.name
+
+    try:
+        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+            results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path=tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
+    assert results
+    assert "timed out" in results.readable_output
+    assert results.outputs.get("error") == "upload_timeout"
+
+
+def test_intake_preflight_and_upload_upload_connection_error(requests_mock):
+    """Upload step gets a connection error after preflight succeeds"""
+    mock_preflight = util_load_json("test_data/intake_preflight_upload.json")
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = mock_preflight
+
+    requests_mock.post("https://storage.googleapis.com/upload-url", exc=requests.exceptions.ConnectionError("refused"))
+
+    with tempfile.NamedTemporaryFile(suffix=".exe", delete=False) as tmp:
+        tmp.write(b"fake content")
+        tmp_path = tmp.name
+
+    try:
+        with patch("Inception._hash_sha256", return_value=("abc123fakehash", None)):
+            results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path=tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
+    assert results
+    assert "Connection error during file upload" in results.readable_output
+
+
+def test_intake_preflight_and_upload_http_error_outer():
+    """Outer requests.HTTPError catch (not DemistoException) in intake"""
+    mock_client = MagicMock()
+    mock_client.intake_preflight.side_effect = requests.exceptions.HTTPError("500 Server Error")
+
+    with (
+        patch("Inception.os.path.exists", return_value=True),
+        patch("Inception._hash_sha256", return_value=("abc123fakehash", None)),
+    ):
+        results = intake_preflight_and_upload(mock_client, asset_id="test-asset", file_path="/path/to/test/file.exe")
+
+    assert results
+    assert "HTTP error during Intake preflight/upload" in results.readable_output
+
+
+def test_intake_preflight_and_upload_with_entry_id():
+    """Intake with entry_id source covers the entry_id branch in markdown"""
+    mock_client = MagicMock()
+    mock_client.intake_preflight.return_value = util_load_json("test_data/intake_preflight_already_exists.json")
+
+    with patch("Inception._resolve_file_source", return_value=("/tmp/fake.exe", "fake.exe", None)):
+        results = intake_preflight_and_upload(
+            mock_client,
+            asset_id="test-asset",
+            entry_id="abc123",
+            sha256="e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d",
+        )
+
+    assert results
+    assert "already exists in Stairwell" in results.readable_output
+
+
+# ─────────────────────────────────────────────
+# Cloud IP Ranges — Exception Paths
+# ─────────────────────────────────────────────
+
+def test_utilities_get_cloud_ip_ranges_400():
+    """Cloud IP ranges 400 error (invalid provider)"""
+    mock_client = MagicMock()
+    mock_client.get_cloud_ip_ranges.side_effect = DemistoException("400 Bad Request")
+    results = utilities_get_cloud_ip_ranges_command(mock_client, provider="invalid-provider")
+    assert "Invalid provider parameter" in results.readable_output
+
+
+def test_utilities_get_cloud_ip_ranges_400_no_provider():
+    """Cloud IP ranges 400 error (no provider)"""
+    mock_client = MagicMock()
+    mock_client.get_cloud_ip_ranges.side_effect = DemistoException("400 Bad Request")
+    results = utilities_get_cloud_ip_ranges_command(mock_client)
+    assert "Bad request" in results.readable_output
+
+
+def test_utilities_get_cloud_ip_ranges_404():
+    """Cloud IP ranges 404 error (provider not found)"""
+    mock_client = MagicMock()
+    mock_client.get_cloud_ip_ranges.side_effect = DemistoException("404 Not Found")
+    results = utilities_get_cloud_ip_ranges_command(mock_client, provider="FakeProvider")
+    assert "not found" in results.readable_output.lower()
+
+
+def test_utilities_get_cloud_ip_ranges_other_exception():
+    """Cloud IP ranges unexpected error raises"""
+    mock_client = MagicMock()
+    mock_client.get_cloud_ip_ranges.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_get_cloud_ip_ranges_command(mock_client)
+
+
+def test_utilities_get_cloud_ip_ranges_with_provider(requests_mock):
+    """Cloud IP ranges with provider param exercises the provider branch"""
+    mock_response = {"ranges": [{"cidr": "192.0.2.0/24", "provider": "AWS"}]}
+    requests_mock.get("https://app.stairwell.com/v1/network/providers/AWS/ip-ranges", json=mock_response)
+    results = utilities_get_cloud_ip_ranges_command(test_client_network, provider="AWS")
+    assert results
+    assert "AWS" in results.readable_output
+
+
+# ─────────────────────────────────────────────
+# Utilities — Exception Re-raise Paths
+# ─────────────────────────────────────────────
+
+def test_utilities_batch_canonicalize_hostnames_400():
+    mock_client = MagicMock()
+    mock_client.batch_canonicalize_hostnames.side_effect = DemistoException("400 Bad Request")
+    results = utilities_batch_canonicalize_hostnames_command(mock_client, "bad..host,other")
+    assert "Invalid hostname format" in results.readable_output
+
+
+def test_utilities_batch_canonicalize_hostnames_other_exception():
+    mock_client = MagicMock()
+    mock_client.batch_canonicalize_hostnames.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_batch_canonicalize_hostnames_command(mock_client, "example.com")
+
+
+def test_utilities_batch_compute_etld_plus_one_400():
+    mock_client = MagicMock()
+    mock_client.batch_compute_etld_plus_one.side_effect = DemistoException("400 Bad Request")
+    results = utilities_batch_compute_etld_plus_one_command(mock_client, "bad..domain")
+    assert "Invalid domain format" in results.readable_output
+
+
+def test_utilities_batch_compute_etld_plus_one_other_exception():
+    mock_client = MagicMock()
+    mock_client.batch_compute_etld_plus_one.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_batch_compute_etld_plus_one_command(mock_client, "example.com")
+
+
+def test_utilities_canonicalize_hostname_400():
+    mock_client = MagicMock()
+    mock_client.canonicalize_hostname.side_effect = DemistoException("400 Bad Request")
+    results = utilities_canonicalize_hostname_command(mock_client, "bad..host")
+    assert "Invalid hostname format" in results.readable_output
+
+
+def test_utilities_canonicalize_hostname_other_exception():
+    mock_client = MagicMock()
+    mock_client.canonicalize_hostname.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_canonicalize_hostname_command(mock_client, "example.com")
+
+
+def test_utilities_compute_etld_plus_one_400():
+    mock_client = MagicMock()
+    mock_client.compute_etld_plus_one.side_effect = DemistoException("400 Bad Request")
+    results = utilities_compute_etld_plus_one_command(mock_client, "bad..domain")
+    assert "Invalid domain format" in results.readable_output
+
+
+def test_utilities_compute_etld_plus_one_other_exception():
+    mock_client = MagicMock()
+    mock_client.compute_etld_plus_one.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_compute_etld_plus_one_command(mock_client, "example.com")
+
+
+def test_utilities_batch_canonicalize_urls_400():
+    mock_client = MagicMock()
+    mock_client.batch_canonicalize_urls.side_effect = DemistoException("400 Bad Request")
+    results = utilities_batch_canonicalize_urls_command(mock_client, "not-a-url")
+    assert "Invalid URL format" in results.readable_output
+
+
+def test_utilities_batch_canonicalize_urls_other_exception():
+    mock_client = MagicMock()
+    mock_client.batch_canonicalize_urls.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_batch_canonicalize_urls_command(mock_client, "https://example.com")
+
+
+def test_utilities_canonicalize_url_400():
+    mock_client = MagicMock()
+    mock_client.canonicalize_url.side_effect = DemistoException("400 Bad Request")
+    results = utilities_canonicalize_url_command(mock_client, "not-a-url")
+    assert "Invalid URL format" in results.readable_output
+
+
+def test_utilities_canonicalize_url_other_exception():
+    mock_client = MagicMock()
+    mock_client.canonicalize_url.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        utilities_canonicalize_url_command(mock_client, "https://example.com")
+
+
+# ─────────────────────────────────────────────
+# Network Intel — Non-404 Exception Re-raises
+# ─────────────────────────────────────────────
+
+def test_ipaddress_lookup_cloud_provider_non_404():
+    mock_client = MagicMock()
+    mock_client.lookup_cloud_provider.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        ipaddress_lookup_cloud_provider_command(mock_client, "1.2.3.4")
+
+
+def test_ipaddress_get_hostnames_resolving_to_ip_non_404():
+    mock_client = MagicMock()
+    mock_client.get_hostnames_resolving_to_ip.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        ipaddress_get_hostnames_resolving_to_ip_command(mock_client, "1.2.3.4")
+
+
+def test_ipaddress_get_whois_non_404():
+    mock_client = MagicMock()
+    mock_client.get_ip_address_whois.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        ipaddress_get_whois_command(mock_client, "1.2.3.4")
+
+
+def test_hostname_batch_get_resolutions_raises():
+    mock_client = MagicMock()
+    mock_client.batch_get_hostname_resolutions.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        hostname_batch_get_resolutions_command(mock_client, "example.com")
+
+
+# ─────────────────────────────────────────────
+# Batch Hostname Resolutions — With Data
+# ─────────────────────────────────────────────
+
+def test_hostname_batch_get_resolutions_with_data(requests_mock):
+    """Batch resolutions with actual resolution data exercises lines 1015-1023"""
+    mock_response = {
+        "resolutions": [
+            {
+                "reversedHostname": "com.example",
+                "resolutions": [
+                    {"ipAddress": "93.184.216.34", "recordType": "A", "timestamp": "2024-01-01T00:00:00Z"}
+                ],
+            }
+        ]
+    }
+    requests_mock.post(
+        "https://app.stairwell.com/v1/network/hostnames:batch-resolutions",
+        json=mock_response,
+    )
+    results = hostname_batch_get_resolutions_command(test_client_network, "example.com")
+    assert results
+    assert results.outputs_prefix == "Stairwell.Hostname.BatchResolutions"
+
+
+# ─────────────────────────────────────────────
+# File Enrichment / Variant — Non-standard Exception Re-raises
+# ─────────────────────────────────────────────
+
+def test_file_enrichment_command_non_404():
+    """file_enrichment_command re-raises non-404 DemistoException"""
+    mock_client = MagicMock()
+    mock_client.get_file_reputation.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        file_enrichment_command(mock_client, TEST_FILE_HASH)
+
+
+def test_variant_discovery_command_non_500():
+    """variant_discovery_command re-raises non-500 DemistoException"""
+    mock_client = MagicMock()
+    mock_client.get_file_variants.side_effect = DemistoException("403 Forbidden")
+    with pytest.raises(DemistoException):
+        variant_discovery_command(mock_client, TEST_FILE_HASH)
