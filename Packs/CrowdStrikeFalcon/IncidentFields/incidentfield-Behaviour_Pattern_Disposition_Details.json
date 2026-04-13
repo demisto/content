@@ -1,8 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-		"CrowdStrike Falcon Detection"
-	],
+        "CrowdStrike Falcon Detection"
+    ],
     "caseInsensitive": true,
     "cliName": "crowdstrikefalconbehaviourpatterndispositiondetails",
     "closeForm": false,
@@ -322,5 +322,9 @@
     "fromVersion": "6.8.0",
     "marketplaces": [
         "xsoar"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
