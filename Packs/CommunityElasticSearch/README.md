@@ -1,0 +1,1 @@
+These contributions help to boost the lack of SIEM capabilities with the Elasticsearch v2 integration. By adding support for Kibana API commands, users can integrate into case management and much more than simple log searching.

@@ -1,15 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """IMPORTS"""
-import re
 import requests
 import json
 import warnings
 from datetime import datetime
 from requests.auth import HTTPBasicAuth
-import requests
 import urllib3
-from dateutil.parser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -35,7 +33,7 @@ API_KEY = None
 if AUTH_TYPE == BASIC_AUTH:
     if USERNAME and USERNAME.startswith(API_KEY_PREFIX):
         AUTH_TYPE = API_KEY_AUTH
-        API_KEY_ID = USERNAME[len(API_KEY_PREFIX):]
+        API_KEY_ID = USERNAME[len(API_KEY_PREFIX) :]
         API_KEY = (API_KEY_ID, PASSWORD)
 
 elif AUTH_TYPE == API_KEY_AUTH:
@@ -46,19 +44,13 @@ ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
 ELASTIC_SEARCH_CLIENT = PARAMS.get("client_type")
 if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
-    from opensearch_dsl import Search
-    from opensearch_dsl.query import QueryString
-    from opensearchpy import NotFoundError, RequestsHttpConnection
+    from opensearchpy import RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
 elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
     from elastic_transport import RequestsHttpNode
-    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
+    from elasticsearch import Elasticsearch  # type: ignore[assignment]
 else:  # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment,misc]
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
+    from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment,misc]
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
 PYTHON_DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
@@ -278,8 +270,8 @@ def test_func(proxies):
     Tests API connectivity to the Elasticsearch server.
     Tests the existence of all necessary fields for fetch.
 
-    Due to load considerations, the test module doesn't check the validity of the fetch-incident - to test that the fetch works
-    as excepted the user should run the es-integration-health-check command.
+    Due to load considerations, the test module doesn't check the validity of the fetch-incident. To test that the fetch works
+    as excepted, the user should run the es-integration-health-check command.
 
     """
     success, message = test_connectivity_auth(proxies)
@@ -366,12 +358,12 @@ def verify_es_server_version(res):
 
 
 def kibana_find_cases(args, proxies):
-    '''
+    """
     Returns information on the cases in Kibana.
     API reference: https://www.elastic.co/docs/api/doc/kibana/operation/operation-findcasesdefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     status = args.get("status")
@@ -380,24 +372,18 @@ def kibana_find_cases(args, proxies):
 
     url = f"{KIBANA_SERVER}/api/cases/_find"
 
-    query_params = {
-        'status': status,
-        'severity': severity,
-        'from': from_time
-    }
+    query_params = {"status": status, "severity": severity, "from": from_time}
 
     try:
-        response = requests.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD),
-                                params=query_params, headers=headers, verify=INSECURE)
+        response = requests.get(
+            url, auth=HTTPBasicAuth(USERNAME, PASSWORD), params=query_params, headers=headers, verify=INSECURE
+        )
         json_data = response.json()["cases"]
 
         # output results to markdown table
         md = tableToMarkdown("Kibana Cases", json_data, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Cases",
-            outputs=json_data)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Cases", outputs=json_data)
 
         return result
 
@@ -406,12 +392,12 @@ def kibana_find_cases(args, proxies):
 
 
 def kibana_get_case_information(args, proxies):
-    '''
+    """
     Retrieve information for a specific case in Kibana.
     API reference: https://www.elastic.co/docs/api/doc/kibana/operation/operation-getcasedefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
@@ -425,10 +411,7 @@ def kibana_get_case_information(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Case Info", json_data, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Case.Info",
-            outputs=json_data)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Case.Info", outputs=json_data)
 
         return result
 
@@ -437,12 +420,12 @@ def kibana_get_case_information(args, proxies):
 
 
 def kibana_find_alerts_for_case(args, proxies):
-    '''
+    """
     Returns information on the alerts of a case in Kibana.
     API reference: https://www.elastic.co/docs/api/doc/kibana/operation/operation-getcasealertsdefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
@@ -456,10 +439,7 @@ def kibana_find_alerts_for_case(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Alerts For Case", json_data, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Alerts.For.Case",
-            outputs=json_data)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Alerts.For.Case", outputs=json_data)
 
         return result
 
@@ -468,12 +448,12 @@ def kibana_find_alerts_for_case(args, proxies):
 
 
 def kibana_find_case_comments(args, proxies):
-    '''
+    """
     Get list of comments for a case in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-findcasecommentsdefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
@@ -487,10 +467,7 @@ def kibana_find_case_comments(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Case Comments", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Case.Comments",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Case.Comments", outputs=response)
 
         return result
 
@@ -499,12 +476,12 @@ def kibana_find_case_comments(args, proxies):
 
 
 def kibana_find_user_spaces(args, proxies):
-    '''
+    """
     Get list of user spaces in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-get-spaces-space
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/spaces/space"
@@ -516,10 +493,7 @@ def kibana_find_user_spaces(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana User Spaces", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.User.Spaces",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.User.Spaces", outputs=response)
 
         return result
 
@@ -528,19 +502,17 @@ def kibana_find_user_spaces(args, proxies):
 
 
 def kibana_search_rule_details(args, proxies):
-    '''
+    """
     Retrieve details about detection rule in Kibana based on input KQL filter.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-get-alerting-rules-find
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     kql_query = args.get("kql_query")
 
-    params = {
-        'filter': kql_query
-    }
+    params = {"filter": kql_query}
 
     url = f"{KIBANA_SERVER}/api/alerting/rules/_find"
 
@@ -551,10 +523,7 @@ def kibana_search_rule_details(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Rule Details", json_data, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Rule.Details",
-            outputs=json_data)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Rule.Details", outputs=json_data)
 
         return result
 
@@ -563,12 +532,12 @@ def kibana_search_rule_details(args, proxies):
 
 
 def kibana_delete_rule(args, proxies):
-    '''
+    """
     Delete rule in Kibana based on input rule ID.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-delete-alerting-rule-id
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     rule_id = args.get("rule_id")
@@ -584,22 +553,20 @@ def kibana_delete_rule(args, proxies):
 
 
 def kibana_delete_case(args, proxies):
-    '''
+    """
     Delete case in Kibana based on input case ID.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-deletecasedefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
-    case_id = "[\"" + case_id + "\"]"
+    case_id = '["' + case_id + '"]'
     case_list = []
     case_list.append(case_id)
 
-    params = {
-        'ids': case_list
-    }
+    params = {"ids": case_list}
 
     url = f"{KIBANA_SERVER}/api/cases"
 
@@ -612,12 +579,12 @@ def kibana_delete_case(args, proxies):
 
 
 def kibana_update_case_status(args, proxies):
-    '''
+    """
     Update status of input case in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-updatecasedefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
@@ -626,13 +593,7 @@ def kibana_update_case_status(args, proxies):
 
     url = f"{KIBANA_SERVER}/api/cases"
 
-    body = {
-        'cases': [{
-            'id': case_id,
-            'status': status,
-            'version': version
-        }]
-    }
+    body = {"cases": [{"id": case_id, "status": status, "version": version}]}
 
     try:
         response = requests.patch(url, auth=(USERNAME, PASSWORD), headers=headers, json=body, verify=False)
@@ -641,10 +602,7 @@ def kibana_update_case_status(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Updated Case Status", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Updated.Case.Status",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Updated.Case.Status", outputs=response)
 
         return result
 
@@ -653,12 +611,12 @@ def kibana_update_case_status(args, proxies):
 
 
 def kibana_update_alert_status(args, proxies):
-    '''
+    """
     Update status of input alert in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-setalertsstatus
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     alert_id = args.get("alert_id")
@@ -667,8 +625,8 @@ def kibana_update_alert_status(args, proxies):
     url = f"{KIBANA_SERVER}/api/detection_engine/signals/status"
 
     data_params = {
-        'status': status,
-        'signal_ids': [
+        "status": status,
+        "signal_ids": [
             alert_id,
         ],
     }
@@ -682,28 +640,24 @@ def kibana_update_alert_status(args, proxies):
 
 
 def kibana_get_user_list(args, proxies):
-    '''
+    """
     Search for a list of all users and UIDs in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-security-query-user
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     es = elasticsearch_builder(proxies)
 
     try:
-        all_users = es.security.query_user(
-            with_profile_uid=True, size=100)
-        all_users = all_users.body['users']
+        all_users = es.security.query_user(with_profile_uid=True, size=100)
+        all_users = all_users.body["users"]
 
         # output results to markdown table
         md = tableToMarkdown("Kibana User List", all_users, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.User.List",
-            outputs=all_users)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.User.List", outputs=all_users)
 
         return result
 
@@ -712,41 +666,29 @@ def kibana_get_user_list(args, proxies):
 
 
 def kibana_get_user_by_email(args, proxies):
-    '''
+    """
     Search for a single user's UID in Kibana by email address filter.
     Reference - https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-security-query-user
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     email_wildcard = args.get("email_wildcard")
 
     es = elasticsearch_builder(proxies)
 
-    query_body = {
-        "query": {
-            "wildcard": {
-                "email": {
-                    "value": email_wildcard,
-                    "case_insensitive": True
-                }
-            }
-        }
-    }
+    query_body = {"query": {"wildcard": {"email": {"value": email_wildcard, "case_insensitive": True}}}}
 
     try:
         user_data = es.security.query_user(with_profile_uid=True, body=query_body)
 
-        user_data = user_data['users']
+        user_data = user_data["users"]
 
         # output results to markdown table
         md = tableToMarkdown("Kibana User Data", user_data, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.User.Data",
-            outputs=user_data)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.User.Data", outputs=user_data)
 
         return result
 
@@ -755,12 +697,12 @@ def kibana_get_user_by_email(args, proxies):
 
 
 def kibana_assign_alert_user(args, proxies):
-    '''
+    """
     Assign user to input alert in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-setalertassignees
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     alert_id = args.get("alert_id")
@@ -769,14 +711,14 @@ def kibana_assign_alert_user(args, proxies):
     url = f"{KIBANA_SERVER}/api/detection_engine/signals/assignees"
 
     json_data = {
-        'ids': [
+        "ids": [
             alert_id,
         ],
-        'assignees': {
-            'add': [
+        "assignees": {
+            "add": [
                 user_id,
             ],
-            'remove': [],
+            "remove": [],
         },
     }
 
@@ -789,12 +731,12 @@ def kibana_assign_alert_user(args, proxies):
 
 
 def kibana_list_detection_alerts(args, proxies):
-    '''
+    """
     List detection alerts in Kibana matching a status filter.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-searchalerts
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     alert_status = args.get("alert_status")
@@ -802,16 +744,16 @@ def kibana_list_detection_alerts(args, proxies):
     url = f"{KIBANA_SERVER}/api/detection_engine/signals/search"
 
     json_data = {
-        'query': {
-            'bool': {
-                'filter': [
+        "query": {
+            "bool": {
+                "filter": [
                     {
-                        'bool': {
-                            'must': [],
-                            'filter': [
+                        "bool": {
+                            "must": [],
+                            "filter": [
                                 {
-                                    'match_phrase': {
-                                        'kibana.alert.workflow_status': alert_status,
+                                    "match_phrase": {
+                                        "kibana.alert.workflow_status": alert_status,
                                     },
                                 },
                             ],
@@ -820,27 +762,24 @@ def kibana_list_detection_alerts(args, proxies):
                 ],
             },
         },
-        'runtime_mappings': {},
+        "runtime_mappings": {},
     }
 
     try:
         response = requests.post(url, auth=(USERNAME, PASSWORD), headers=headers, json=json_data, verify=False)
         result_json = response.json()
-        result_json = result_json.get('hits')  # dict
-        result_list = result_json.get('hits')  # list
+        result_json = result_json.get("hits")  # dict
+        result_list = result_json.get("hits")  # list
         result_list_final = []
 
         # append each _source dict in list of dicts to a final results list
         for item in result_list:
-            result_list_final.append(item.get('_source'))
+            result_list_final.append(item.get("_source"))
 
         # output results to markdown table
         md = tableToMarkdown("Kibana Detection Alerts", result_list_final, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Detection.Alerts",
-            outputs=result_list_final)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Detection.Alerts", outputs=result_list_final)
 
         return result
 
@@ -849,12 +788,12 @@ def kibana_list_detection_alerts(args, proxies):
 
 
 def kibana_add_alert_note(args, proxies):
-    '''
+    """
     Add note to detection alerts in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-persistnoteroute
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     event_id = args.get("alert_id")
@@ -863,10 +802,10 @@ def kibana_add_alert_note(args, proxies):
     url = f"{KIBANA_SERVER}/api/note"
 
     json_data = {
-        'note': {
-            'eventId': event_id,
-            'note': note,
-            'timelineId': '',
+        "note": {
+            "eventId": event_id,
+            "note": note,
+            "timelineId": "",
         },
     }
 
@@ -879,12 +818,12 @@ def kibana_add_alert_note(args, proxies):
 
 
 def kibana_add_case_comment(args, proxies):
-    '''
+    """
     Add comment to case in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-addcasecommentdefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
@@ -894,9 +833,9 @@ def kibana_add_case_comment(args, proxies):
     url = f"{KIBANA_SERVER}/api/cases/{case_id}/comments"
 
     json_data = {
-        'type': 'user',
-        'owner': case_owner,
-        'comment': comment,
+        "type": "user",
+        "owner": case_owner,
+        "comment": comment,
     }
 
     try:
@@ -909,12 +848,12 @@ def kibana_add_case_comment(args, proxies):
 
 
 def kibana_get_alerting_health(args, proxies):
-    '''
+    """
     Get alerting framework health in Kibana.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-getalertinghealth
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/alerting/_health"
@@ -926,10 +865,7 @@ def kibana_get_alerting_health(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Alerting Framework Health", result_json, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Alerting.Framework.Health",
-            outputs=result_json)
+        result = CommandResults(readable_output=md, outputs_prefix="Alerting.Framework.Health", outputs=result_json)
 
         return result
 
@@ -938,12 +874,12 @@ def kibana_get_alerting_health(args, proxies):
 
 
 def kibana_disable_alert_rule(args, proxies):
-    '''
+    """
     Used to disable a rule used for detection alerting. Clears all associated alerts from active alerts page.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-post-alerting-rule-id-disable
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     rule_id = args.get("rule_id")
@@ -951,7 +887,7 @@ def kibana_disable_alert_rule(args, proxies):
     url = f"{KIBANA_SERVER}/api/alerting/rule/{rule_id}/_disable"
 
     json_data = {
-        'untrack': True,
+        "untrack": True,
     }
 
     try:
@@ -963,12 +899,12 @@ def kibana_disable_alert_rule(args, proxies):
 
 
 def kibana_enable_alert_rule(args, proxies):
-    '''
+    """
     Used to enable a rule used for detection alerting.
     Reference -https://www.elastic.co/docs/api/doc/kibana/operation/operation-post-alerting-rule-id-enable
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     rule_id = args.get("rule_id")
@@ -984,12 +920,12 @@ def kibana_enable_alert_rule(args, proxies):
 
 
 def kibana_get_exception_lists(args, proxies):
-    '''
+    """
     Used to get a list of all exception list containers.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-findexceptionlists
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/exception_lists/_find"
@@ -1001,10 +937,7 @@ def kibana_get_exception_lists(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Exception Lists", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Exception.Lists",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Exception.Lists", outputs=response)
 
         return result
 
@@ -1013,12 +946,12 @@ def kibana_get_exception_lists(args, proxies):
 
 
 def kibana_create_value_list(args, proxies):
-    '''
+    """
     Used to create a value list in Kibana Detection Rules menu.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-createlist
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     description = args.get("description")
@@ -1027,10 +960,10 @@ def kibana_create_value_list(args, proxies):
     data_type = args.get("data_type")
 
     json_data = {
-        'id': list_id,
-        'name': name,
-        'type': data_type,
-        'description': description,
+        "id": list_id,
+        "name": name,
+        "type": data_type,
+        "description": description,
     }
 
     url = f"{KIBANA_SERVER}/api/lists"
@@ -1044,12 +977,12 @@ def kibana_create_value_list(args, proxies):
 
 
 def kibana_get_value_lists(args, proxies):
-    '''
+    """
     Used to find all value lists in Kibana Detection Rules menu.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-findlists
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/lists/_find"
@@ -1061,10 +994,7 @@ def kibana_get_value_lists(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Alerting Value Lists", result_json, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Alerting.Value.Lists",
-            outputs=result_json)
+        result = CommandResults(readable_output=md, outputs_prefix="Alerting.Value.Lists", outputs=result_json)
 
         return result
 
@@ -1073,24 +1003,22 @@ def kibana_get_value_lists(args, proxies):
 
 
 def kibana_import_value_list_items(args, proxies):
-    '''
+    """
     Used to import value list items from a TXT file.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-importlistitems
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     list_id = args.get("list_id")
     file_content = args.get("file_content")
 
     json_data = {
-        'list_id': list_id,
+        "list_id": list_id,
     }
 
-    files = {
-        'file': ("value_list.txt", file_content, "text/plain")
-    }
+    files = {"file": ("value_list.txt", file_content, "text/plain")}
 
     url = f"{KIBANA_SERVER}/api/lists/items/_import"
 
@@ -1103,21 +1031,18 @@ def kibana_import_value_list_items(args, proxies):
 
 
 def kibana_create_value_list_item(args, proxies):
-    '''
+    """
     Used to create a value list item and associate it with the specified value list.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-createlistitem
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     list_id = args.get("list_id")
     new_item = args.get("new_value_list_item")
 
-    json_data = {
-        'value': new_item,
-        'list_id': list_id
-    }
+    json_data = {"value": new_item, "list_id": list_id}
 
     url = f"{KIBANA_SERVER}/api/lists/items"
 
@@ -1130,23 +1055,18 @@ def kibana_create_value_list_item(args, proxies):
 
 
 def kibana_get_value_list_items(args, proxies):
-    '''
+    """
     Used to display entries in an input value list.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-findlistitems
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     list_id = args.get("list_id")
     result_size = args.get("result_size")
 
-    params = {
-        'list_id': list_id,
-        'sort_field': 'created_at',
-        'sort_order': 'asc',
-        'per_page': result_size
-    }
+    params = {"list_id": list_id, "sort_field": "created_at", "sort_order": "asc", "per_page": result_size}
 
     url = f"{KIBANA_SERVER}/api/lists/items/_find"
 
@@ -1157,10 +1077,7 @@ def kibana_get_value_list_items(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Value List Items", result_output, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Value.List.Items",
-            outputs=result_output)
+        result = CommandResults(readable_output=md, outputs_prefix="Value.List.Items", outputs=result_output)
 
         return result
 
@@ -1169,20 +1086,18 @@ def kibana_get_value_list_items(args, proxies):
 
 
 def kibana_delete_value_list_item(args, proxies):
-    '''
+    """
     Used to delete a value list item given the item ID as input.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-deletelistitem
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
-        'Content-Type': 'application/json'
+        "kbn-xsrf": "true",  # Required for Kibana API requests
+        "Content-Type": "application/json",
     }
 
     item_id = args.get("item_id")
 
-    json_data = {
-        'id': item_id
-    }
+    json_data = {"id": item_id}
 
     url = f"{KIBANA_SERVER}/api/lists/items"
 
@@ -1195,20 +1110,18 @@ def kibana_delete_value_list_item(args, proxies):
 
 
 def kibana_delete_value_list(args, proxies):
-    '''
+    """
     Used to delete a value list given the list ID as input.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-deletelist
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
-        'Content-Type': 'application/json'
+        "kbn-xsrf": "true",  # Required for Kibana API requests
+        "Content-Type": "application/json",
     }
 
     list_id = args.get("list_id")
 
-    params = {
-        'id': list_id
-    }
+    params = {"id": list_id}
 
     url = f"{KIBANA_SERVER}/api/lists"
 
@@ -1221,12 +1134,12 @@ def kibana_delete_value_list(args, proxies):
 
 
 def kibana_get_status(args, proxies):
-    '''
+    """
     Used to check Kibana's operational status.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-get-status
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/status"
@@ -1238,10 +1151,7 @@ def kibana_get_status(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Operational Status", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Operational.Status",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Operational.Status", outputs=response)
 
         return result
 
@@ -1250,12 +1160,12 @@ def kibana_get_status(args, proxies):
 
 
 def kibana_get_task_manager_health(args, proxies):
-    '''
+    """
     Get the health status of the Kibana task manager.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-task-manager-health
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/task_manager/_health"
@@ -1267,10 +1177,7 @@ def kibana_get_task_manager_health(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Task Manager Health", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Task.Manager.Health",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Task.Manager.Health", outputs=response)
 
         return result
 
@@ -1279,12 +1186,12 @@ def kibana_get_task_manager_health(args, proxies):
 
 
 def kibana_get_upgrade_readiness_status(args, proxies):
-    '''
+    """
     Check the upgrade readiness status of your cluster.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-get-upgrade-status
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     url = f"{KIBANA_SERVER}/api/upgrade_assistant/status"
@@ -1296,10 +1203,7 @@ def kibana_get_upgrade_readiness_status(args, proxies):
         # output results to markdown table
         md = tableToMarkdown("Kibana Upgrade Readiness Status", response, headers=[])
 
-        result = CommandResults(
-            readable_output=md,
-            outputs_prefix="Kibana.Upgrade.Readiness.Status",
-            outputs=response)
+        result = CommandResults(readable_output=md, outputs_prefix="Kibana.Upgrade.Readiness.Status", outputs=response)
 
         return result
 
@@ -1308,12 +1212,12 @@ def kibana_get_upgrade_readiness_status(args, proxies):
 
 
 def kibana_delete_case_comment(args, proxies):
-    '''
+    """
     Delete a case comment.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-deletecasecommentdefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
@@ -1330,28 +1234,26 @@ def kibana_delete_case_comment(args, proxies):
 
 
 def kibana_add_file_to_case(args, proxies):
-    '''
+    """
     Attach a file to a case.
     Reference - https://www.elastic.co/docs/api/doc/kibana/operation/operation-addcasefiledefaultspace
-    '''
+    """
     headers = {
-        'kbn-xsrf': 'true',  # Required for Kibana API requests
+        "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
     case_id = args.get("case_id")
     file_id = args.get("file_id")
 
     file_path_dict = demisto.getFilePath(file_id)
-    file_path = file_path_dict['path']
-    file_name = file_path_dict['name']
+    file_path = file_path_dict["path"]
+    file_name = file_path_dict["name"]
 
     url = f"{KIBANA_SERVER}/api/cases/{case_id}/files"
 
     try:
-        with open(file_path, 'rb') as f:
-            files = {
-                'file': (file_name, f)
-            }
+        with open(file_path, "rb") as f:
+            files = {"file": (file_name, f)}
 
             response = requests.post(url, auth=(USERNAME, PASSWORD), headers=headers, files=files, verify=False)
             return f"Successfully added file {file_name} to case {case_id}"
