@@ -9905,7 +9905,7 @@ if 'requests' in sys.modules:
             method_unique_id = get_ucp_method_unique_id(capability, sub_capability)
             ucp_creds = get_ucp_credentials(method_unique_id)
             demisto.debug(
-                'UCP: _inject_ucp_credentials: Applying credentials. '
+                '[UCP][CommonServerPython.py]: _inject_ucp_credentials: Applying credentials. '
                 'capability="{}", method_unique_id={}, type={}'.format(
                     capability, method_unique_id,
                     ucp_creds.get('type', 'unknown') if isinstance(ucp_creds, dict) else 'N/A',
@@ -10164,9 +10164,9 @@ if 'requests' in sys.modules:
                 ):  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
                 # ── UCP: Inject credentials into request ──
-                _ucp_active = should_use_ucp_auth()
                 _ucp_method_id = None  # type: Optional[str]
-                if _ucp_active:
+                if should_use_ucp_auth():
+                    demisto.info("[UCP][CommonServerPython.py] _http_request will be using UCP auth")
                     ctx = UcpRequestContext(
                         headers=dict(headers) if headers else {},
                         params=dict(params) if params else {},
@@ -10201,10 +10201,11 @@ if 'requests' in sys.modules:
                     _ucp_method_id is not None
                     and request_retries
                     and status_list_to_retry
+                    # TODO, discuss if we want to just check for 401, 403
                     and res.status_code in status_list_to_retry
                 ):
                     demisto.debug(
-                        'UCP: Got status {}. Invalidating cached credentials for '
+                        '[UCP][CommonServerPython.py]: Got status {}. Invalidating cached credentials for '
                         'method_unique_id={} and retrying.'.format(
                             res.status_code, _ucp_method_id
                         )
@@ -13774,8 +13775,10 @@ def _get_ucp_profiles():
         raise DemistoException(
             'UCP: unifiedConnectorMetadata() returned empty — UCP is not enabled.'
         )
-    profiles = connector_info.get('connection', {}).get('profiles', [])
+    profiles = connector_info.get('connectionProfiles', [])
     if not profiles:
+        demisto.error("[UCP][CommonServerPython.py] No connection profiles found in connector metadata. Metadata: {}".format(connector_info))
+        # TODO, need a user friendly error message here
         raise DemistoException(
             'UCP: No connection profiles found in connector metadata.'
         )
@@ -13863,7 +13866,10 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
         capability = resolve_ucp_capability()
 
     profiles = _get_ucp_profiles()
-
+    demisto.info(
+        '[UCP][CommonServerPython.py]: Resolving method_unique_id for capability="{}", '
+        'sub_capability="{}".'.format(capability, sub_capability)
+    )
     # Priority 1: match by sub_capability
     if sub_capability:
         method_id = _find_ucp_profile_by_sub_capability(profiles, sub_capability)

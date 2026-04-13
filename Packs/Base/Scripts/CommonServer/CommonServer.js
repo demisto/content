@@ -2227,12 +2227,16 @@ function resolveUcpCapability(cmd) {
  */
 function _getUcpProfiles() {
     var info = unifiedConnectorMetadata();
+    //log the metadata received TOTO, remove this log.
+    logDebug('[UCP][CommonServer.js] UCP Metadata: ' + JSON.stringify(info));
     if (!info) {
         throw 'UCP: unifiedConnectorMetadata() returned empty — UCP is not enabled.';
     }
-    var connection = info.connection || {};
-    var profiles = connection.profiles || [];
+    
+    var profiles = info.connectionProfiles || [];
     if (profiles.length === 0) {
+        logDebug('[UCP][CommonServer.js] No connection profiles found in connector metadata. UCP Metadata: ' + JSON.stringify(info));
+        //TODO, need a user friendly exception here
         throw 'UCP: No connection profiles found in connector metadata.';
     }
     return profiles;
@@ -2296,7 +2300,7 @@ function getUcpMethodUniqueId(capability, subCapability) {
     if (subCapability) {
         var bySubCap = _findUcpProfileBySubCapability(profiles, subCapability);
         if (bySubCap) {
-            console.log('UCP: getUcpMethodUniqueId: matched by sub_capability='
+            logDebug('[UCP][CommonServer.js]: getUcpMethodUniqueId: matched by sub_capability='
                 + subCapability + ' → ' + bySubCap);
             return bySubCap;
         }
@@ -2305,14 +2309,14 @@ function getUcpMethodUniqueId(capability, subCapability) {
     // Priority 2: match by capability
     var byCap = _findUcpProfileByCapability(profiles, capability);
     if (byCap) {
-        console.log('UCP: getUcpMethodUniqueId: matched by capability='
+        logDebug('[UCP][CommonServer.js]: getUcpMethodUniqueId: matched by capability='
             + capability + ' → ' + byCap);
         return byCap;
     }
 
     // Priority 3: fallback to first profile
     var fallback = profiles[0].method_unique_id;
-    console.log('UCP: getUcpMethodUniqueId: no match for capability='
+    logDebug('[UCP][CommonServer.js]: getUcpMethodUniqueId: no match for capability='
         + capability + ', falling back to first profile → ' + fallback);
     return fallback;
 }
@@ -2390,24 +2394,24 @@ function getUcpCredentials(options) {
         var expiry = cached.expiry;
         if (expiry === null) {
             // Static credentials — never expire
-            console.log('UCP: getUcpCredentials: returning cached static credentials for ' + methodId);
+            logDebug('UCP: getUcpCredentials: returning cached static credentials for ' + methodId);
             return cached.result;
         }
         if (now < (expiry - _UCP_REFRESH_THRESHOLD_SECONDS)) {
-            console.log('UCP: getUcpCredentials: returning cached credentials for ' + methodId
+            logDebug('[UCP][CommonServer.js]: getUcpCredentials: returning cached credentials for ' + methodId
                 + ' (expires in ' + Math.round(expiry - now) + 's)');
             return cached.result;
         }
         // Stale — fall through to re-fetch
-        console.log('UCP: getUcpCredentials: cached credentials stale for ' + methodId + ', re-fetching...');
+        logDebug('[UCP][CommonServer.js]: getUcpCredentials: cached credentials stale for ' + methodId + ', re-fetching...');
     }
     
 
     try {
-        console.log('UCP: getUcpCredentials: fetching fresh credentials for method_unique_id=' + methodId);
+        logDebug('[UCP][CommonServer.js]: getUcpCredentials: fetching fresh credentials for method_unique_id=' + methodId);
         var creds = getUCPCredentials(methodId, false);
         if (!creds) {
-            console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined.');
+            logDebug('[UCP][CommonServer.js]: getUcpCredentials: getUCPCredentials() returned null/undefined.');
             return null;
         }
 
@@ -2426,13 +2430,13 @@ function getUcpCredentials(options) {
         } else if (flatCreds.username) {
             tokenPreview = 'username=' + flatCreds.username;
         }
-        console.log('[UCP][CommonServer.js]: getUcpCredentials: SUCCESS. type=' + flatCreds.type
+        logDebug('[UCP][CommonServer.js]: getUcpCredentials: SUCCESS. type=' + flatCreds.type
             + ', preview=' + tokenPreview
             + ', expires_at=' + (flatCreds.expires_at || 'static')
             + ', cached_expiry=' + (expiry !== null ? expiry : 'never'));
         return flatCreds;
     } catch (e) {
-        console.log('[UCP][CommonServer.js]: getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
+        logDebug('[UCP][CommonServer.js]: getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
         throw 'UCP: Failed to get credentials for method_unique_id=' + methodId + ': ' + e;
     }
 }
@@ -2467,7 +2471,7 @@ function interpolateUcpParams(capability, subCapability) {
             }
         }
         _UCP_AUTH_PARAMS_INJECTED = true;
-        console.log('UCP: interpolateUcpParams: Merged ' + keys.length
+        logDebug('[UCP][CommonServer.js]: interpolateUcpParams: Merged ' + keys.length
             + ' credential fields into params. type=' + (creds.type || 'N/A'));
     }
 }

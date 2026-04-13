@@ -838,7 +838,7 @@ function fetchIncident() {
 }
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
 if (shouldUseUcpAuth()) {
-    logDebug("[UCP][Salesforce] Using UCP-managed token")
+    logDebug("[UCP][Salesforce.js] Using UCP-managed token")
     var ucp_credentials = getUcpCredentials();
     SESSION_DATA = {
         access_token: ucp_credentials.access_token,
