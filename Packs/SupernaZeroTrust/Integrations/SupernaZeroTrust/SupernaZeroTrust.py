@@ -1,5 +1,4 @@
-\
-from typing import Any, Dict
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
@@ -14,28 +13,28 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def snapshot_critical_paths(self) -> Dict[str, Any]:
+    def snapshot_critical_paths(self) -> dict[str, Any]:
         return self._http_request(
             method="POST",
             url_suffix="/sera/v2/ransomware/criticalpaths",
             json_data={},
         )
 
-    def lockout_user(self, username: str) -> Dict[str, Any]:
+    def lockout_user(self, username: str) -> dict[str, Any]:
         return self._http_request(
             method="POST",
             url_suffix=f"/sera/v2/ransomware/lockout/{username}",
             json_data={},
         )
 
-    def unlock_user(self, username: str) -> Dict[str, Any]:
+    def unlock_user(self, username: str) -> dict[str, Any]:
         return self._http_request(
             method="POST",
             url_suffix=f"/sera/v2/ransomware/unlock/{username}",
             json_data={},
         )
 
-    def healthcheck(self) -> Dict[str, Any]:
+    def healthcheck(self) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix="/sera/v1/healthcheck",
@@ -52,11 +51,7 @@ def snapshot_critical_paths_command(client: Client) -> CommandResults:
         res = client.snapshot_critical_paths()
         return CommandResults(
             outputs_prefix="SupernaZeroTrust.Snapshot",
-            outputs={
-                "Status": "Success",
-                "Message": "Snapshot created successfully",
-                "Result": res
-            },
+            outputs={"Status": "Success", "Message": "Snapshot created successfully", "Result": res},
             readable_output="✅ Snapshot created successfully",
             raw_response=res,
         )
@@ -67,7 +62,7 @@ def snapshot_critical_paths_command(client: Client) -> CommandResults:
                 outputs_prefix="SupernaZeroTrust.Snapshot",
                 outputs={
                     "Status": "AlreadyExists",
-                    "Message": "Snapshot already created within the last hour. Please wait before creating another snapshot."
+                    "Message": "Snapshot already created within the last hour. Please wait before creating another snapshot.",
                 },
                 readable_output="⚠️ Snapshot already created within the last hour. Please wait before creating another snapshot.",
                 raw_response={"error": str(e)},
@@ -77,7 +72,7 @@ def snapshot_critical_paths_command(client: Client) -> CommandResults:
             raise
 
 
-def lockout_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def lockout_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     username = args.get("username")
     if not username:
         raise DemistoException("Missing required argument: username")
@@ -89,7 +84,7 @@ def lockout_user_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def unlock_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def unlock_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     username = args.get("username")
     if not username:
         raise DemistoException("Missing required argument: username")

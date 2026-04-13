@@ -1,18 +1,17 @@
 """Unit tests for SupernaZeroTrust integration"""
 
-import pytest
 from SupernaZeroTrust import Client
 
 
 def test_client_initialization():
     """Test that client initializes correctly"""
     client = Client(
-        base_url='https://test.example.com',
-        api_key='test-key',
+        base_url="https://test.example.com",
+        api_key="test-key",
         verify=False,
         proxy=False,
     )
-    assert client._base_url.rstrip('/') == 'https://test.example.com'
+    assert client._base_url.rstrip("/") == "https://test.example.com"
 
 
 def test_snapshot_command(mocker):
@@ -20,13 +19,13 @@ def test_snapshot_command(mocker):
     from SupernaZeroTrust import snapshot_critical_paths_command
 
     mock_client = mocker.Mock()
-    mock_client.snapshot_critical_paths.return_value = {'status': 'success'}
+    mock_client.snapshot_critical_paths.return_value = {"status": "success"}
 
     result = snapshot_critical_paths_command(mock_client)
 
-    assert result.outputs_prefix == 'SupernaZeroTrust.Snapshot'
-    assert result.outputs['Status'] == 'Success'
-    assert result.outputs['Result'] == {'status': 'success'}
+    assert result.outputs_prefix == "SupernaZeroTrust.Snapshot"
+    assert result.outputs["Status"] == "Success"
+    assert result.outputs["Result"] == {"status": "success"}
 
 
 def test_lockout_command(mocker):
@@ -34,13 +33,13 @@ def test_lockout_command(mocker):
     from SupernaZeroTrust import lockout_user_command
 
     mock_client = mocker.Mock()
-    mock_client.lockout_user.return_value = {'status': 'success'}
+    mock_client.lockout_user.return_value = {"status": "success"}
 
-    result = lockout_user_command(mock_client, {'username': 'testuser'})
+    result = lockout_user_command(mock_client, {"username": "testuser"})
 
-    assert result.outputs_prefix == 'SupernaZeroTrust.Lockout'
-    assert result.outputs['Username'] == 'testuser'
-    assert result.outputs['Result'] == {'status': 'success'}
+    assert result.outputs_prefix == "SupernaZeroTrust.Lockout"
+    assert result.outputs["Username"] == "testuser"
+    assert result.outputs["Result"] == {"status": "success"}
 
 
 def test_unlock_command(mocker):
@@ -48,10 +47,10 @@ def test_unlock_command(mocker):
     from SupernaZeroTrust import unlock_user_command
 
     mock_client = mocker.Mock()
-    mock_client.unlock_user.return_value = {'status': 'success'}
+    mock_client.unlock_user.return_value = {"status": "success"}
 
-    result = unlock_user_command(mock_client, {'username': 'testuser'})
+    result = unlock_user_command(mock_client, {"username": "testuser"})
 
-    assert result.outputs_prefix == 'SupernaZeroTrust.Unlock'
-    assert result.outputs['Username'] == 'testuser'
-    assert result.outputs['Result'] == {'status': 'success'}
+    assert result.outputs_prefix == "SupernaZeroTrust.Unlock"
+    assert result.outputs["Username"] == "testuser"
+    assert result.outputs["Result"] == {"status": "success"}
