@@ -165,8 +165,6 @@ class RequestArguments:
         self.mwg_type = mwg_type
         self.category_default = category_default
         self.category_attribute = []  # type:List
-        # Store original value to preserve legacy query mode across refreshes
-        self._original_fields_to_present = fields_to_present
         self.fields_to_present = self.get_fields_to_present(fields_to_present)
         self.csv_text = csv_text
         self.url_truncate = url_truncate
@@ -192,7 +190,7 @@ class RequestArguments:
             self.CTX_MWG_TYPE: self.mwg_type,
             self.CTX_CATEGORY_DEFAULT: self.category_default,
             self.CTX_CATEGORY_ATTRIBUTE: self.category_attribute,
-            self.CTX_FIELDS_TO_PRESENT: self._original_fields_to_present,
+            self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
             self.CTX_CSV_TEXT: self.csv_text,
             self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
             self.CTX_URL_TRUNCATE_KEY: self.url_truncate,
@@ -228,7 +226,9 @@ class RequestArguments:
     def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
-        if fields_to_present == "use_legacy_query":
+        # Fixes legacy query mode silently lost after the first refresh because 
+        # `get_fields_to_present("")` returned "name,type" instead of ""
+        if not fields_to_present or fields_to_present == "use_legacy_query":
             return ""
 
         fields_for_format = {
