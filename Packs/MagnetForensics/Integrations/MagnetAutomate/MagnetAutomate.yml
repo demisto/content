@@ -39,11 +39,11 @@ script:
     - name: limit
       required: false
       defaultValue: 50
-      description: The maximum number of results to return. Default value is 50.
+      description: The maximum number of results to return.
     - name: all_results
       required: false
       defaultValue: false
-      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+      description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
     - contextPath: MagnetForensics.CustomFields.id
       description: The unique identifier of the custom field.
@@ -101,11 +101,11 @@ script:
     - name: limit
       required: false
       defaultValue: 50
-      description: The maximum number of results to return. Default value is 50.
+      description: The maximum number of results to return.
     - name: all_results
       required: false
       defaultValue: false
-      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+      description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
     - contextPath: MagnetForensics.Case.id
       description: The unique identifier of the case.
@@ -204,11 +204,11 @@ script:
     - name: limit
       required: false
       defaultValue: 50
-      description: The maximum number of results to return. Default value is 50.
+      description: The maximum number of results to return.
     - name: all_results
       required: false
       defaultValue: false
-      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+      description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
     - contextPath: MagnetForensics.WorkflowRun.id
       description: The unique identifier of the workflow run.
@@ -229,10 +229,10 @@ script:
       description: The output path for the workflow run.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.startDateTime
-      description: The date and time when the workflow run started.
+      description: The date and time the workflow run started.
       type: Date
     - contextPath: MagnetForensics.WorkflowRun.endDateTime
-      description: The date and time when the workflow run ended.
+      description: The date and time the workflow run ended.
       type: Date
     - contextPath: MagnetForensics.WorkflowRun.automateVersion
       description: The version of Magnet Automate used.
@@ -319,11 +319,11 @@ script:
     - name: limit
       required: false
       defaultValue: 50
-      description: The maximum number of results to return. Default value is 50.
+      description: The maximum number of results to return.
     - name: all_results
       required: false
       defaultValue: false
-      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+      description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
     - contextPath: MagnetForensics.Workflow.id
       description: The unique identifier of the workflow.
@@ -394,7 +394,7 @@ script:
       description: Whether the workflow runs in local mode.
       type: Boolean
     - contextPath: MagnetForensics.Workflow.timeExported
-      description: The date and time when the workflow was exported.
+      description: The date and time the workflow was exported.
       type: Date
 
   - name: ma-forensics-node-create
@@ -440,11 +440,11 @@ script:
     - name: limit
       required: false
       defaultValue: 50
-      description: The maximum number of results to return. Default value is 50.
+      description: The maximum number of results to return.
     - name: all_results
       required: false
       defaultValue: false
-      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+      description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
     - contextPath: MagnetForensics.Node.id
       description: The unique identifier of the node.

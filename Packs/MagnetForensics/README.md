@@ -2,6 +2,7 @@ Magnet Automate is a workflow orchestration tool by Magnet Forensics designed to
 
 ## What does this pack do?
 
+This content pack enables you to:
 - Create, list, cancel, and delete forensic cases with support for organization-defined custom fields.
 - Start workflow runs to process evidence sources and associate them with existing cases.
 - List, cancel, and delete workflow runs, and monitor their processing status.
