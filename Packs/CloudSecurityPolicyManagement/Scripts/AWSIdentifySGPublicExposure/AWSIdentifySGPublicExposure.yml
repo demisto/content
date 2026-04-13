@@ -54,7 +54,7 @@ commonfields:
 dependson:
   must:
   - AWS|||aws-ec2-instances-describe
-dockerimage: demisto/python3:3.12.12.6391686
+dockerimage: demisto/python3:3.12.13.8160132
 enabled: true
 name: AWSIdentifySGPublicExposure
 runas: DBotWeakRole

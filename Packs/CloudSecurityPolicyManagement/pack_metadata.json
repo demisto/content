@@ -15,7 +15,7 @@
     "marketplaces": [
         "platform"
     ],
-    "firstCreated": "2026-04-02T11:25:26Z",
+    "created": "2026-04-02T11:25:26Z",
     "dependencies": {
         "AWS": {
             "mandatory": true,
