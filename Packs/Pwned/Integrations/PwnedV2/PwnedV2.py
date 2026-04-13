@@ -427,6 +427,8 @@ def pwned_latest_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
     # Build entry context reusing domain_to_entry_context()
     domain = api_res.get("Domain", "")
     ec = domain_to_entry_context(domain, [api_res])
+    # append api response to populated context template
+    ec[outputPaths["domain"]]["Pwned-V2"].update(api_res)
 
     return [md], [ec], [api_res]
 
@@ -467,6 +469,8 @@ def pwned_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
     # Build entry context reusing domain_to_entry_context()
     domain = api_res.get("Domain", "")
     ec = domain_to_entry_context(domain, [api_res])
+    # append api response to populated context template
+    ec[outputPaths["domain"]]["Pwned-V2"].update(api_res)
 
     return [md], [ec], [api_res]
 
