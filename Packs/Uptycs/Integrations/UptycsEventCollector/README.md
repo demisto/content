@@ -1,3 +1,5 @@
+This integration is currently in Beta, allowing you to test pre-release software. Note that it may contain bugs, and future updates could include changes that are not backward compatible. We welcome your feedback to help us identify issues and improve the integration.
+
 ## Overview
 
 Uptycs is a cloud-native security analytics platform that provides unified visibility across endpoints, cloud workloads, and containers. It leverages Osquery-based telemetry and threat intelligence to detect threats, monitor compliance, and investigate security incidents across hybrid environments.

@@ -2,7 +2,8 @@ commonfields:
   id: UptycsEventCollector
   version: -1
 name: UptycsEventCollector
-display: Uptycs Event Collector
+display: Uptycs Event Collector (Beta)
+beta: true
 category: Analytics & SIEM
 provider: Uptycs
 description: Uptycs is a cloud-native security analytics platform that provides visibility, threat detection, and compliance across endpoints and cloud workloads.
