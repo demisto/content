@@ -48,14 +48,14 @@ Retrieves a list of custom fields for cases and evidence sources.
 
 `!ma-forensics-custom-fields-list limit=10`
 
-### ma-forensic-case-create
+### ma-forensics-case-create
 
 ***
 Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to get all available custom fields.
 
 #### Base Command
 
-`ma-forensic-case-create`
+`ma-forensics-case-create`
 
 #### Input
 

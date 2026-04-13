@@ -70,7 +70,7 @@ script:
       description: The variable name associated with the custom field.
       type: String
 
-  - name: ma-forensic-case-create
+  - name: ma-forensics-case-create
     description: Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to get all available custom fields.
     execution: false
     arguments:
