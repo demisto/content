@@ -1206,7 +1206,7 @@ def test_is_core_available_calculation_with_bypass_true(mocker):
     mocker.patch("CoreXQLApiModule.is_using_engine", return_value=False)
 
     import CoreXQLApiModule
-    importlib.reload(CoreXQLApiModule)
 
+    importlib.reload(CoreXQLApiModule)
 
     assert CoreXQLApiModule.IS_CORE_AVAILABLE is False
