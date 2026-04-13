@@ -1228,7 +1228,7 @@ def create_relationships_list_v2(client, related_iocs, indicator_value, indicato
 
 
 def create_relationships_list_for_community_search(client, indicators, ip):
-    relationships = []
+    relationships: list = []
     if client.create_relationships:
         ip_address_data = indicators.get("enrichments", {}).get("ip_address", [])
         for ip_address in ip_address_data:

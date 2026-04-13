@@ -30,7 +30,6 @@ from Ignite import (
     ALERT_ORIGIN_VALUES,
     OUTPUT_KEY_FIELD,
     MAX_COMMUNITY_SEARCH_RELATIONSHIPS,
-    MAX_COMMUNITY_SEARCH_ENRICHMENTS,
     create_relationships_list_for_community_search,
 )
 
@@ -2401,46 +2400,34 @@ def test_fetch_incidents_when_invalid_password_complexity_filter_params_passed(m
     assert str(error.value) == MESSAGES["INVALID_PASSWORD_LENGTH"]
 
 
-def test_community_search_enrichments_truncated(mock_client):
+def test_community_search_relationships_truncated_when_over_limit(mock_client):
     """
-    Test that enrichment list fields exceeding MAX_COMMUNITY_SEARCH_ENRICHMENTS are truncated.
+    Test that relationships are capped at MAX_COMMUNITY_SEARCH_RELATIONSHIPS.
 
     Given:
-        - A community search indicator with enrichment lists longer than the limit.
+        - A community search indicator with url_domains list longer than the limit.
     When:
         - Calling `create_relationships_list_for_community_search`.
     Then:
-        - Only MAX_COMMUNITY_SEARCH_RELATIONSHIPS relationships are created.
+        - Relationships are capped at MAX_COMMUNITY_SEARCH_RELATIONSHIPS.
     """
-    oversized_list = [f"item_{i}" for i in range(MAX_COMMUNITY_SEARCH_ENRICHMENTS + 10)]
-    indicator = {
-        "enrichments": {
-            "ip_addresses": oversized_list,
-            "url_domains": oversized_list,
-        }
-    }
+    oversized_domains = [f"domain{i}.com" for i in range(MAX_COMMUNITY_SEARCH_RELATIONSHIPS + 10)]
+    indicator = {"enrichments": {"url_domains": oversized_domains}}
     relationships = create_relationships_list_for_community_search(mock_client, indicator, "1.2.3.4")
-    assert len(relationships) <= MAX_COMMUNITY_SEARCH_RELATIONSHIPS
+    assert len(relationships) == MAX_COMMUNITY_SEARCH_RELATIONSHIPS
 
 
 def test_community_search_relationships_not_truncated_when_within_limit(mock_client):
     """
-    Test that enrichment lists within the limit are not truncated.
+    Test that enrichment lists within the limit produce all relationships.
 
     Given:
-        - A community search indicator with enrichment lists shorter than the limit.
+        - A community search indicator with url_domains list shorter than the limit.
     When:
         - Calling `create_relationships_list_for_community_search`.
     Then:
-        - All valid entries produce relationships.
+        - All entries produce relationships.
     """
-    small_list = ["1.2.3.4", "5.6.7.8"]
-    indicator = {
-        "enrichments": {
-            "ip_addresses": small_list,
-            "url_domains": ["example.com"],
-        }
-    }
+    indicator = {"enrichments": {"url_domains": ["example.com", "test.com"]}}
     relationships = create_relationships_list_for_community_search(mock_client, indicator, "9.9.9.9")
-    # 2 valid IPs + 1 domain = 3 relationships (all within limit)
-    assert len(relationships) == 3
+    assert len(relationships) == 2
