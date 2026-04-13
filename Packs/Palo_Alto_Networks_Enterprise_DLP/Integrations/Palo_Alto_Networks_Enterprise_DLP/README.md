@@ -1,7 +1,8 @@
 Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP.
 
-**Note**: Currently, only fetching of DLP incidents from the "NGFW" and "Prisma Browser" channels is supported.
+**Note**:  
+This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Browser" channels only.
 
 ### Setup
 
