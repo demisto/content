@@ -1,6 +1,6 @@
-## Koi Event Collector
+## KOI Event Collector
 
-This integration fetches alerts and audit logs from the Koi API for ingestion into Cortex XSIAM.
+This integration fetches alerts and audit logs from the KOI API for ingestion into Cortex XSIAM.
 
 ### Creating an API Key
 

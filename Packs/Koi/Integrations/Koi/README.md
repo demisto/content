@@ -6,7 +6,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### koi-get-events
 
 ***
-Gets events from Koi. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+Gets events from KOI. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
 #### Base Command
 
@@ -26,14 +26,14 @@ Gets events from Koi. This command is used for developing/debugging and is to be
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Koi.Event.id | String | The unique identifier of the event. |
-| Koi.Event.source_log_type | String | The source log type of the event (Alerts or Audit). |
-| Koi.Event._time | Date | The timestamp of the event in ISO 8601 format. |
-| Koi.Event.created_at | Date | The creation time of the event (audit logs). |
+| KOI.Event.id | String | The unique identifier of the event. |
+| KOI.Event.source_log_type | String | The source log type of the event (Alerts or Audit). |
+| KOI.Event._time | Date | The timestamp of the event in ISO 8601 format. |
+| KOI.Event.created_at | Date | The creation time of the event (audit logs). |
 
 #### Human Readable Output
 
->### Koi Event Collector Events
+>### KOI Event Collector Events
 >
 >|id|source_log_type|_time|severity|status|
 >|---|---|---|---|---|

@@ -1,6 +1,6 @@
 {
-    "name": "Koi",
-    "description": "Koi is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.",
+    "name": "KOI",
+    "description": "KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -13,7 +13,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "Koi",
+        "KOI",
         "browser security",
         "endpoint"
     ],

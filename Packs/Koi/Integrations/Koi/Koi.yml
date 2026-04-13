@@ -1,10 +1,10 @@
 category: Endpoint
-provider: Koi
+provider: KOI
 sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Koi
+  id: KOI
   version: -1
 configuration:
 - name: url
@@ -12,13 +12,13 @@ configuration:
   required: true
   defaultvalue: https://api.prod.koi.security/
   type: 0
-  additionalinfo: 'The Koi API server URL.'
+  additionalinfo: 'The KOI API server URL.'
   section: Connect
 - name: api_key
   display: API Key
   required: true
   type: 14
-  additionalinfo: 'The API key for authenticating with the Koi API. See the help section for instructions on creating an API key.'
+  additionalinfo: 'The API key for authenticating with the KOI API. See the help section for instructions on creating an API key.'
   section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
@@ -47,7 +47,7 @@ configuration:
   options:
   - Alerts
   - Audit
-  additionalinfo: 'Select which event types to fetch from Koi.'
+  additionalinfo: 'Select which event types to fetch from KOI.'
   section: Collect
 - name: audit_types_filter
   display: Audit log type filter
@@ -84,11 +84,11 @@ configuration:
   required: false
 description: KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
 display: KOI Event Collector
-name: Koi
+name: KOI
 script:
   commands:
   - name: koi-get-events
-    description: Gets events from Koi. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    description: Gets events from KOI. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
     - name: event_type
       description: 'The type of events to retrieve. If not specified, uses the value configured in the integration parameters.'
@@ -113,16 +113,16 @@ script:
       - 'true'
       - 'false'
     outputs:
-    - contextPath: Koi.Event.id
+    - contextPath: KOI.Event.id
       description: The unique identifier of the event.
       type: String
-    - contextPath: Koi.Event.source_log_type
+    - contextPath: KOI.Event.source_log_type
       description: The source log type of the event (Alerts or Audit).
       type: String
-    - contextPath: Koi.Event._time
+    - contextPath: KOI.Event._time
       description: The timestamp of the event in ISO 8601 format.
       type: Date
-    - contextPath: Koi.Event.created_at
+    - contextPath: KOI.Event.created_at
       description: The creation time of the event (audit logs).
       type: Date
   runonce: false
