@@ -13780,7 +13780,7 @@ def _get_ucp_profiles():
     return profiles
 
 
-def _find_profile_by_sub_capability(profiles, sub_capability):
+def _find_ucp_profile_by_sub_capability(profiles, sub_capability):
     # type: (list, str) -> Optional[str]
     """Find the ``method_unique_id`` of the first profile matching a sub-capability.
 
@@ -13808,7 +13808,7 @@ def _find_profile_by_sub_capability(profiles, sub_capability):
     return matches[0].get('method_unique_id', '')
 
 
-def _find_profile_by_capability(profiles, capability):
+def _find_ucp_profile_by_capability(profiles, capability):
     # type: (list, str) -> Optional[str]
     """Find the ``method_unique_id`` of the first profile matching a capability.
 
@@ -13839,8 +13839,8 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 
     Resolution priority:
 
-    1. Match by *sub_capability* (via ``_find_profile_by_sub_capability``).
-    2. Match by *capability* (via ``_find_profile_by_capability``).
+    1. Match by *sub_capability* (via ``_find_ucp_profile_by_sub_capability``).
+    2. Match by *capability* (via ``_find_ucp_profile_by_capability``).
     3. Fall back to the first profile in the list.
 
     :type capability: ``str`` or ``None``
@@ -13864,12 +13864,12 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 
     # Priority 1: match by sub_capability
     if sub_capability:
-        method_id = _find_profile_by_sub_capability(profiles, sub_capability)
+        method_id = _find_ucp_profile_by_sub_capability(profiles, sub_capability)
         if method_id is not None:
             return method_id
 
     # Priority 2: match by capability
-    method_id = _find_profile_by_capability(profiles, capability)
+    method_id = _find_ucp_profile_by_capability(profiles, capability)
     if method_id is not None:
         return method_id
 

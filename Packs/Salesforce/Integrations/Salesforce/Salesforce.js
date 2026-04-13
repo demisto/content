@@ -91,7 +91,7 @@ function sendRequestInSession(method, uri, body) {
         // ── UCP: Try refreshing from BE first, fall back to legacy token exchange ──
         console.log('Salesforce: sendRequestInSession: received 401 for ' + method + ' ' + uri
             + '. Attempting credential refresh...');
-        var ucpCreds = getUcpCredentials();
+        var ucpCreds = getUcpCredentials({fromCache: false});
         if (ucpCreds) {
             var newToken = ucpCreds.access_token || ucpCreds.key;
             var tokenPreview = newToken ? newToken.substring(0, 10) + '...' : '<empty>';
@@ -881,9 +881,9 @@ function fetchIncident() {
 }
 
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
-console.log('Salesforce init: Detecting UCP mode via getUcpCredentials()...');
+console.log('Salesforce init: Detecting UCP mode via isUcpEnabled()...');
 console.log("Params: " + JSON.stringify(params));
-var _ucpCreds = getUcpCredentials();
+var _ucpCreds = isUcpEnabled() ? getUcpCredentials() : null;
 if (_ucpCreds) {
     var _ucpToken = _ucpCreds.access_token || _ucpCreds.key || '';
     var _ucpTokenPreview = _ucpToken ? _ucpToken.substring(0, 10) + '...' : '<empty>';

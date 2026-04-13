@@ -2118,139 +2118,286 @@ function fileResult(file_name, file_content,entryType=null, human_readable_optio
 };
 
 // ── UCP (Unified Connector Platform) Auth Helpers ──
+// Mirrors the Python UCP functions in CommonServerPython.py
+
+var _UCP_AUTH_PARAMS_INJECTED = false;
+var _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation';
+var _UCP_COMMAND_CAPABILITIES = {
+    'fetch-incidents': 'collection-and-ingestion',
+    'fetch-assets': 'collection-and-ingestion'
+};
+
 
 /**
- * Detect UCP mode and resolve the connection profile to use.
- * Returns the connector metadata object if UCP is enabled, null otherwise.
+ * Check whether this integration instance is running in UCP (ConnectUs) mode.
+ * UCP mode is active when unifiedConnectorMetadata() returns a non-empty
+ * connector descriptor.
  *
- * @return {Object|null} Connector metadata or null if not in UCP mode
+ * @return {Boolean} true if UCP metadata is present, false otherwise
  */
-function getUcpConnectorInfo() {
+function isUcpEnabled() {
     try {
-        console.log('UCP: getUcpConnectorInfo: calling unifiedConnectorMetadata()...');
         var info = unifiedConnectorMetadata();
-        console.log('UCP: unifiedConnectorMetadata() returned: ' + JSON.stringify(info));
-        if (info && info.connectionProfiles && info.connectionProfiles.length > 0) {
-            console.log('UCP: getUcpConnectorInfo: Unified Connector detected. '
-                + 'connectorId=' + (info.connectorId || 'N/A')
-                + ', instanceId=' + (info.instanceId || 'N/A')
-                + ', handlerId=' + (info.handlerId || 'N/A')
-                + ', num_profiles=' + info.connectionProfiles.length);
-            for (var i = 0; i < info.connectionProfiles.length; i++) {
-                var p = info.connectionProfiles[i];
-                console.log('UCP: getUcpConnectorInfo: Profile[' + i + ']: '
-                    + 'method_unique_id=' + (p.method_unique_id || 'N/A')
-                    + ', profile_id=' + (p.profile_id || 'N/A')
-                    + ', type=' + (p.type || 'N/A')
-                    + ', capability=' + (p.capability || 'N/A')
-                    + ', sub_capabilities=' + JSON.stringify(p.sub_capabilities));
-            }
-            return info;
-        }
-        console.log('UCP: getUcpConnectorInfo: unifiedConnectorMetadata() returned empty or no profiles — legacy auth mode');
+        return !!(info && info.connectionProfiles && info.connectionProfiles.length > 0);
     } catch (e) {
-        console.log('UCP: getUcpConnectorInfo: unifiedConnectorMetadata() not available (legacy mode): ' + e);
+        return false;
+    }
+}
+
+
+/**
+ * Determine whether UCP credentials should be injected per-request.
+ * Returns true when UCP is enabled AND credentials have not already been
+ * injected into params via interpolateUcpParams().
+ *
+ * @return {Boolean} true if per-request UCP credential injection should be used
+ */
+function shouldUseUcpAuth() {
+    return isUcpEnabled() && !_UCP_AUTH_PARAMS_INJECTED;
+}
+
+
+/**
+ * Resolve the UCP capability for the current (or given) command.
+ * Uses _UCP_COMMAND_CAPABILITIES for known commands, falling back to
+ * _UCP_DEFAULT_CAPABILITY ('automation-and-remediation').
+ *
+ * @param {String} [cmd] - The command name. Defaults to the current command.
+ * @return {String} The capability string.
+ */
+function resolveUcpCapability(cmd) {
+    cmd = cmd || command;
+    return _UCP_COMMAND_CAPABILITIES[cmd] || _UCP_DEFAULT_CAPABILITY;
+}
+
+
+/**
+ * Return the list of connection profiles from UCP metadata.
+ *
+ * @return {Array} Array of profile objects.
+ * @throws {Error} If UCP is not enabled or no profiles exist.
+ */
+function _getUcpProfiles() {
+    var info = unifiedConnectorMetadata();
+    if (!info) {
+        throw 'UCP: unifiedConnectorMetadata() returned empty — UCP is not enabled.';
+    }
+    var connection = info.connection || {};
+    var profiles = connection.profiles || [];
+    if (profiles.length === 0) {
+        throw 'UCP: No connection profiles found in connector metadata.';
+    }
+    return profiles;
+}
+
+
+/**
+ * Find the method_unique_id of the first profile matching a sub-capability.
+ *
+ * @param {Array} profiles - Array of profile objects.
+ * @param {String} subCapability - The sub-capability to match.
+ * @return {String|null} method_unique_id or null if not found.
+ */
+function _findUcpProfileBySubCapability(profiles, subCapability) {
+    for (var i = 0; i < profiles.length; i++) {
+        var subs = profiles[i].sub_capabilities || [];
+        for (var j = 0; j < subs.length; j++) {
+            if (subs[j] === subCapability) {
+                return profiles[i].method_unique_id;
+            }
+        }
     }
     return null;
 }
 
+
+/**
+ * Find the method_unique_id of the first profile matching a capability.
+ *
+ * @param {Array} profiles - Array of profile objects.
+ * @param {String} capability - The capability to match.
+ * @return {String|null} method_unique_id or null if not found.
+ */
+function _findUcpProfileByCapability(profiles, capability) {
+    for (var i = 0; i < profiles.length; i++) {
+        if (profiles[i].capability === capability) {
+            return profiles[i].method_unique_id;
+        }
+    }
+    return null;
+}
+
+
+/**
+ * Resolve which connection profile's method_unique_id to use.
+ *
+ * Resolution priority:
+ * 1. Match by sub_capability (via _findUcpProfileBySubCapability).
+ * 2. Match by capability (via _findUcpProfileByCapability).
+ * 3. Fall back to the first profile in the list.
+ *
+ * @param {String} [capability] - Override capability. Defaults to resolveUcpCapability().
+ * @param {String} [subCapability] - Optional sub-capability for finer matching.
+ * @return {String} The method_unique_id.
+ */
+function getUcpMethodUniqueId(capability, subCapability) {
+    var profiles = _getUcpProfiles();
+    capability = capability || resolveUcpCapability();
+
+    // Priority 1: match by sub_capability
+    if (subCapability) {
+        var bySubCap = _findUcpProfileBySubCapability(profiles, subCapability);
+        if (bySubCap) {
+            console.log('UCP: getUcpMethodUniqueId: matched by sub_capability='
+                + subCapability + ' → ' + bySubCap);
+            return bySubCap;
+        }
+    }
+
+    // Priority 2: match by capability
+    var byCap = _findUcpProfileByCapability(profiles, capability);
+    if (byCap) {
+        console.log('UCP: getUcpMethodUniqueId: matched by capability='
+            + capability + ' → ' + byCap);
+        return byCap;
+    }
+
+    // Priority 3: fallback to first profile
+    var fallback = profiles[0].method_unique_id;
+    console.log('UCP: getUcpMethodUniqueId: no match for capability='
+        + capability + ', falling back to first profile → ' + fallback);
+    return fallback;
+}
+
+
+/**
+ * Flatten a nested UCP credentials response into a flat object.
+ *
+ * getUCPCredentials() returns nested structures like:
+ *   {oauth2: {access_token: '...', ...}, type: 'oauth2'}
+ * This function flattens them to:
+ *   {type: 'oauth2', access_token: '...', ...}
+ *
+ * @param {Object} creds - Raw credentials from getUCPCredentials().
+ * @return {Object} Flattened credentials.
+ */
+function _flattenUcpCredentials(creds) {
+    var credType = creds.type || '';
+
+    if (credType === 'oauth2' || credType === 'oauth2_client_credentials' || credType === 'oauth2_authorization_code') {
+        var oauth2Data = creds.oauth2 || creds;
+        return {
+            type: credType,
+            access_token: oauth2Data.access_token || creds.access_token || '',
+            token_type: oauth2Data.token_type || creds.token_type || 'Bearer',
+            expires_at: oauth2Data.expires_at || creds.expires_at || ''
+        };
+    } else if (credType === 'api_key') {
+        var apiKeyData = creds.api_key || creds;
+        return {
+            type: credType,
+            key: apiKeyData.key || creds.key || ''
+        };
+    } else if (credType === 'plain') {
+        var plainData = creds.plain || creds;
+        return {
+            type: credType,
+            username: plainData.username || creds.username || '',
+            password: plainData.password || creds.password || ''
+        };
+    }
+
+    return creds;
+}
+
+
 /**
  * Get UCP credentials for the current command.
  *
- * Resolution order for profile selection:
- * 1. Explicit profileInstanceId parameter
- * 2. Single profile (no ambiguity)
- * 3. First profile by auth type priority
+ * Uses capability resolution to find the right profile, fetches credentials
+ * from the BE, and returns a flattened credentials object.
  *
- * @param {String} [profileInstanceId] - Optional explicit profile ID
- * @return {Object|null} Credentials object or null if not in UCP mode.
+ * @param {Object} [options] - Optional settings.
+ * @param {String} [options.capability] - Override capability.
+ * @param {String} [options.subCapability] - Override sub-capability.
+ * @param {Boolean} [options.fromCache] - Whether to use cached credentials (default: true).
+ *   Pass false to force a fresh fetch (e.g. after a 401 retry).
+ * @return {Object|null} Flattened credentials object or null if not in UCP mode.
  *   For oauth2: {type: 'oauth2', access_token: '...', token_type: 'Bearer', expires_at: '...'}
  *   For api_key: {type: 'api_key', key: '...'}
  *   For plain:   {type: 'plain', username: '...', password: '...'}
  */
-function getUcpCredentials() {
-    console.log('UCP: getUcpCredentials: starting credential retrieval...');
-    var info = getUcpConnectorInfo();
-    if (!info) {
-        console.log('UCP: getUcpCredentials: not in UCP mode, returning null');
+function getUcpCredentials(options) {
+    options = options || {};
+    var fromCache = options.fromCache !== undefined ? options.fromCache : true;
+
+    if (!isUcpEnabled()) {
         return null;
     }
 
-    var method_unique_id = 'unknown';
+    var methodId = getUcpMethodUniqueId(options.capability, options.subCapability);
+
     try {
-        method_unique_id = info.connectionProfiles[0].method_unique_id;
-        console.log('UCP: getUcpCredentials: calling getUCPCredentials(method_unique_id=' + method_unique_id + ')...');
-        var creds = getUCPCredentials(method_unique_id, from_cache=false);
-        console.log('UCP: getUcpCredentials: getUCPCredentials() returned: '
-            + (creds ? 'object' : 'null/undefined'));
-        if (creds) {
-            // Log credential metadata without exposing secrets
-            var credKeys = Object.keys(creds);
-            console.log('UCP: getUcpCredentials: Raw credential keys=' + credKeys.join(',')
-                + ', num_keys=' + credKeys.length + ', type=' + (creds.type || 'N/A'));
-
-            // ── Flatten nested credentials ──
-            // getUCPCredentials() returns a nested structure, e.g.:
-            //   {oauth2: {access_token: '...', token_type: 'Bearer', expires_at: '...'}, type: 'oauth2'}
-            //   {api_key: {key: '...'}, type: 'api_key'}
-            //   {plain: {username: '...', password: '...'}, type: 'plain'}
-            // Callers expect a flat structure with fields at the top level.
-            var credType = creds.type || '';
-            var flatCreds = creds;
-
-            if (credType === 'oauth2' || credType === 'oauth2_client_credentials' || credType === 'oauth2_authorization_code') {
-                var oauth2Data = creds.oauth2 || creds;
-                flatCreds = {
-                    type: credType,
-                    access_token: oauth2Data.access_token || creds.access_token || '',
-                    token_type: oauth2Data.token_type || creds.token_type || 'Bearer',
-                    expires_at: oauth2Data.expires_at || creds.expires_at || ''
-                };
-            } else if (credType === 'api_key') {
-                var apiKeyData = creds.api_key || creds;
-                flatCreds = {
-                    type: credType,
-                    key: apiKeyData.key || creds.key || ''
-                };
-            } else if (credType === 'plain') {
-                var plainData = creds.plain || creds;
-                flatCreds = {
-                    type: credType,
-                    username: plainData.username || creds.username || '',
-                    password: plainData.password || creds.password || ''
-                };
-            }
-
-            var tokenPreview = '';
-            if ((flatCreds.type === 'oauth2_client_credentials' || flatCreds.type === 'oauth2_authorization_code'
-                || flatCreds.type === 'oauth2') && flatCreds.access_token) {
-                tokenPreview = flatCreds.access_token.substring(0, 10) + '...';
-                console.log('UCP: getUcpCredentials: OAuth2 token details — '
-                    + 'token_length=' + flatCreds.access_token.length
-                    + ', token_type=' + (flatCreds.token_type || 'N/A')
-                    + ', expires_at=' + (flatCreds.expires_at || 'static'));
-            } else if (flatCreds.type === 'api_key' && flatCreds.key) {
-                tokenPreview = flatCreds.key.substring(0, 6) + '...';
-                console.log('UCP: getUcpCredentials: API key details — '
-                    + 'key_length=' + flatCreds.key.length);
-            } else if (flatCreds.type === 'plain' && flatCreds.username) {
-                tokenPreview = 'username=' + flatCreds.username;
-                console.log('UCP: getUcpCredentials: Plain auth details — '
-                    + 'username=' + flatCreds.username
-                    + ', has_password=' + (flatCreds.password ? 'yes' : 'no'));
-            }
-            console.log('UCP: getUcpCredentials: SUCCESS. type=' + flatCreds.type
-                + ', token_type=' + (flatCreds.token_type || 'N/A')
-                + ', expires_at=' + (flatCreds.expires_at || 'static')
-                + ', preview=' + tokenPreview);
-            return flatCreds;
-        } else {
-            console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined — '
-                + 'this should not happen in UCP mode. Check BE connector configuration.');
+        console.log('UCP: getUcpCredentials: calling getUCPCredentials(method_unique_id='
+            + methodId + ', from_cache=' + fromCache + ')...');
+        var creds = getUCPCredentials(methodId, fromCache);
+        if (!creds) {
+            console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined.');
+            return null;
         }
-        return creds;
+
+        var flatCreds = _flattenUcpCredentials(creds);
+
+        // Log credential metadata without exposing secrets
+        var tokenPreview = '';
+        if (flatCreds.access_token) {
+            tokenPreview = flatCreds.access_token.substring(0, 10) + '...';
+        } else if (flatCreds.key) {
+            tokenPreview = flatCreds.key.substring(0, 6) + '...';
+        } else if (flatCreds.username) {
+            tokenPreview = 'username=' + flatCreds.username;
+        }
+        console.log('UCP: getUcpCredentials: SUCCESS. type=' + flatCreds.type
+            + ', preview=' + tokenPreview
+            + ', expires_at=' + (flatCreds.expires_at || 'static'));
+        return flatCreds;
     } catch (e) {
-        console.log('UCP: getUcpCredentials: FAILED for method_unique_id=' + method_unique_id + ': ' + e);
-        throw 'UCP: Failed to get credentials for method_unique_id=' + method_unique_id + ': ' + e;
+        console.log('UCP: getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
+        throw 'UCP: Failed to get credentials for method_unique_id=' + methodId + ': ' + e;
+    }
+}
+
+
+/**
+ * Fetch UCP credentials and merge them into params.
+ * This is the zero-change migration path for integrations using external_auth.
+ * After calling this function, the integration can read credentials from params
+ * exactly as if the user had configured them manually.
+ *
+ * Sets _UCP_AUTH_PARAMS_INJECTED so that shouldUseUcpAuth() returns false.
+ *
+ * @param {String} [capability] - Capability to resolve the profile.
+ * @param {String} [subCapability] - Sub-capability to resolve the profile.
+ */
+function interpolateUcpParams(capability, subCapability) {
+    if (!isUcpEnabled()) {
+        return;
+    }
+    var creds = getUcpCredentials({
+        capability: capability,
+        subCapability: subCapability,
+        fromCache: true
+    });
+    if (creds) {
+        // Merge credential fields into params
+        var keys = Object.keys(creds);
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] !== 'type') {
+                params[keys[i]] = creds[keys[i]];
+            }
+        }
+        _UCP_AUTH_PARAMS_INJECTED = true;
+        console.log('UCP: interpolateUcpParams: Merged ' + keys.length
+            + ' credential fields into params. type=' + (creds.type || 'N/A'));
     }
 }
