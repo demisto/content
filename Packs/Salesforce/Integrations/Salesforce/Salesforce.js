@@ -61,9 +61,9 @@ function sendRequestInSession(method, uri, body) {
         // ── UCP: invalidate cache and get fresh credentials, fall back to legacy ──
         if (shouldUseUcpAuth()) {
             invalidateUcpCredentialsCache(getUcpMethodUniqueId());
-            var ucpCreds = getUcpCredentials({fromCache: false});
+            var ucpCreds = getUcpCredentials();
             if (ucpCreds) {
-                SESSION_DATA.access_token = ucpCreds.access_token || ucpCreds.key || '';
+                SESSION_DATA.access_token = ucpCreds.access_token;
             }
         } else {
             SESSION_DATA = getNewToken();
@@ -837,11 +837,12 @@ function fetchIncident() {
     return incidents;
 }
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
-if (!shouldUseUcpAuth()) {
-    var _ucpCreds = getUcpCredentials();
+if (shouldUseUcpAuth()) {
+    logDebug("[UCP][Salesforce] Using UCP-managed token")
+    var ucp_credentials = getUcpCredentials();
     SESSION_DATA = {
-        access_token: _ucpCreds ? (_ucpCreds.access_token || _ucpCreds.key || '') : '',
-        instance_url: params.InstanceURL || ''
+        access_token: ucp_credentials.access_token,
+        instance_url: params.InstanceURL
     };
 } else {
     SESSION_DATA = getNewToken();

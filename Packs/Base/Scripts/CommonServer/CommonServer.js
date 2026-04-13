@@ -2368,7 +2368,6 @@ function _flattenUcpCredentials(creds) {
  * @param {Object} [options] - Optional settings.
  * @param {String} [options.capability] - Override capability.
  * @param {String} [options.subCapability] - Override sub-capability.
- * @param {Boolean} [options.fromCache] - Whether to use cached credentials (default: true).
  *   Pass false to force a fresh fetch (e.g. after a 401 retry).
  * @return {Object|null} Flattened credentials object or null if not in UCP mode.
  *   For oauth2: {type: 'oauth2', access_token: '...', token_type: 'Bearer', expires_at: '...'}
@@ -2377,7 +2376,6 @@ function _flattenUcpCredentials(creds) {
  */
 function getUcpCredentials(options) {
     options = options || {};
-    var fromCache = options.fromCache !== undefined ? options.fromCache : true;
 
     if (!isUcpEnabled()) {
         return null;
@@ -2386,25 +2384,24 @@ function getUcpCredentials(options) {
     var methodId = getUcpMethodUniqueId(options.capability, options.subCapability);
 
     // ── Check client-side TTL cache ──
-    if (fromCache) {
-        var cached = _ucpCredentialsCache[methodId];
-        if (cached) {
-            var now = Date.now() / 1000;
-            var expiry = cached.expiry;
-            if (expiry === null) {
-                // Static credentials — never expire
-                console.log('UCP: getUcpCredentials: returning cached static credentials for ' + methodId);
-                return cached.result;
-            }
-            if (now < (expiry - _UCP_REFRESH_THRESHOLD_SECONDS)) {
-                console.log('UCP: getUcpCredentials: returning cached credentials for ' + methodId
-                    + ' (expires in ' + Math.round(expiry - now) + 's)');
-                return cached.result;
-            }
-            // Stale — fall through to re-fetch
-            console.log('UCP: getUcpCredentials: cached credentials stale for ' + methodId + ', re-fetching...');
+    var cached = _ucpCredentialsCache[methodId];
+    if (cached) {
+        var now = Date.now() / 1000;
+        var expiry = cached.expiry;
+        if (expiry === null) {
+            // Static credentials — never expire
+            console.log('UCP: getUcpCredentials: returning cached static credentials for ' + methodId);
+            return cached.result;
         }
+        if (now < (expiry - _UCP_REFRESH_THRESHOLD_SECONDS)) {
+            console.log('UCP: getUcpCredentials: returning cached credentials for ' + methodId
+                + ' (expires in ' + Math.round(expiry - now) + 's)');
+            return cached.result;
+        }
+        // Stale — fall through to re-fetch
+        console.log('UCP: getUcpCredentials: cached credentials stale for ' + methodId + ', re-fetching...');
     }
+    
 
     try {
         console.log('UCP: getUcpCredentials: fetching fresh credentials for method_unique_id=' + methodId);
@@ -2429,13 +2426,13 @@ function getUcpCredentials(options) {
         } else if (flatCreds.username) {
             tokenPreview = 'username=' + flatCreds.username;
         }
-        console.log('UCP: getUcpCredentials: SUCCESS. type=' + flatCreds.type
+        console.log('[UCP][CommonServer.js]: getUcpCredentials: SUCCESS. type=' + flatCreds.type
             + ', preview=' + tokenPreview
             + ', expires_at=' + (flatCreds.expires_at || 'static')
             + ', cached_expiry=' + (expiry !== null ? expiry : 'never'));
         return flatCreds;
     } catch (e) {
-        console.log('UCP: getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
+        console.log('[UCP][CommonServer.js]: getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
         throw 'UCP: Failed to get credentials for method_unique_id=' + methodId + ': ' + e;
     }
 }

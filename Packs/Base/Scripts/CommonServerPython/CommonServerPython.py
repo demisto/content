@@ -13829,7 +13829,7 @@ def _find_ucp_profile_by_capability(profiles, capability):
         return None
     if len(matches) > 1:
         demisto.info(
-            'UCP: Multiple profiles ({}) match capability="{}". '
+            '[UCP][CommonServerPython.py]: Multiple profiles ({}) match capability="{}". '
             'Using first.'.format(len(matches), capability)
         )
     return matches[0].get('method_unique_id', '')
@@ -13877,7 +13877,7 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 
     # Priority 3: fallback to first profile
     demisto.info(
-        'UCP: No profile matches capability="{}" or sub_capability="{}". '
+        '[UCP][CommonServerPython.py]: No profile matches capability="{}" or sub_capability="{}". '
         'Falling back to first profile.'.format(capability, sub_capability)
     )
     return profiles[0].get('method_unique_id', '')
@@ -13922,13 +13922,13 @@ def get_ucp_credentials(method_unique_id: str) -> dict:
             'UCP: get_ucp_credentials: method_unique_id is required.'
         )
     demisto.debug(
-        'UCP: get_ucp_credentials: Fetching fresh credentials for '
+        '[UCP][CommonServerPython.py]: get_ucp_credentials: Fetching fresh credentials for '
         'method_unique_id={}'.format(method_unique_id)
     )
     creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
     
     demisto.debug(
-        'UCP: get_ucp_credentials: Received type={}'.format(
+        '[UCP][CommonServerPython.py]: get_ucp_credentials: Received type={}'.format(
             creds.get('type', 'unknown') if isinstance(creds, dict) else 'non-dict'
         )
     )
@@ -13945,6 +13945,12 @@ def interpolate_ucp_params(capability=None, sub_capability=None):
     ``external_auth``.  After calling this function, the integration can read
     credentials from ``demisto.params()`` exactly as if the user had configured
     them manually.
+    
+    demisto.params before: 
+        {'url': 'https://example.com', 'query': 'SELECT * FROM ...'}
+
+    demisto.params after:
+        {'url': 'https://example.com', 'query': 'SELECT * FROM ...', 'client_key': '...', 'client_secret': '...'}
 
     Sets ``_UCP_AUTH_PARAMS_INJECTED`` so that ``BaseClient`` knows **not** to
     also inject credentials per-request.
@@ -13958,7 +13964,7 @@ def interpolate_ucp_params(capability=None, sub_capability=None):
     global _UCP_AUTH_PARAMS_INJECTED
 
     if not is_ucp_enabled():
-        demisto.debug('UCP: interpolate_ucp_params: UCP not enabled — skipping.')
+        demisto.debug('[UCP][CommonServerPython.py]: interpolate_ucp_params: UCP not enabled — skipping.')
         return
 
     method_id = get_ucp_method_unique_id(
@@ -13968,25 +13974,28 @@ def interpolate_ucp_params(capability=None, sub_capability=None):
     cred_type = creds.get('type', '')
 
     # Extract the type-specific sub-dict and merge into params.
+    # Example: creds = {'type': 'oauth2', 'oauth2': {'token': '...'}}
     type_data = creds.get(cred_type, {})
     if not isinstance(type_data, dict) or not type_data:
         demisto.info(
-            'UCP: interpolate_ucp_params: No fields to merge for '
+            '[UCP][CommonServerPython.py]: interpolate_ucp_params: No fields to merge for '
             'type="{}".'.format(cred_type)
         )
         return
 
     demisto.debug(
-        'UCP: interpolate_ucp_params: Merging {} field(s) into params '
+        '[UCP][CommonServerPython.py]: interpolate_ucp_params: Merging {} field(s) into params '
         'for type="{}": {}'.format(
             len(type_data), cred_type, list(type_data.keys())
         )
     )
     demisto.callingContext['params'].update(type_data)
     _UCP_AUTH_PARAMS_INJECTED = True
-    demisto.debug('UCP: interpolate_ucp_params: Params injected successfully.')
+    demisto.debug('[UCP][CommonServerPython.py]: interpolate_ucp_params: Params injected successfully.')
 
-
+###########################################
+#     End of UCP Functions     #
+###########################################
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
