@@ -2,16 +2,10 @@ var URI_PREFIX = '/services/data/v63.0/';
 var SESSION_DATA = '';
 
 function getNewToken() {
-    console.log('Salesforce: getNewToken: ENTRY — performing OAuth2 password grant token exchange');
     var client_id = params.credentials_client_secret !== null ? params.credentials_client_secret.identifier : params.clientID;
     var client_secret = params.credentials_client_secret !== null ? params.credentials_client_secret.password : params.clientSecret;
-    console.log('Salesforce: getNewToken: client_id=' + (client_id ? client_id.substring(0, 10) + '...' : '<null>')
-        + ', has_client_secret=' + (client_secret ? 'yes' : 'no')
-        + ', username=' + (params.credentials ? params.credentials.identifier : '<null>'));
     if  (client_id === null || client_secret === null)
         return('Consumer Key and Consumer Secret must be provided.')
-    var tokenUrl = params.InstanceURL + '/services/oauth2/token';
-    console.log('Salesforce: getNewToken: Requesting token from URL=' + tokenUrl);
     var request = {
         grant_type: 'password',
         client_id: client_id,
@@ -22,7 +16,7 @@ function getNewToken() {
 
     var body = encodeToURLQuery(request).substr(1);
     var response = http(
-        tokenUrl,
+        params.InstanceURL + '/services/oauth2/token',
         {
             Method: 'POST',
             Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
@@ -31,27 +25,14 @@ function getNewToken() {
         params.insecure === false,
         params.useproxy
     );
-    console.log('Salesforce: getNewToken: Response StatusCode=' + response.StatusCode);
     if (response.StatusCode < 200 || response.StatusCode >= 300) {
-        console.log('Salesforce: getNewToken: FAILED. StatusCode=' + response.StatusCode
-            + ', Body=' + (response.Body ? response.Body.substring(0, 500) : 'empty'));
         throw 'Failed to get new token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
     }
-    var tokenData = JSON.parse(response.Body);
-    console.log('Salesforce: getNewToken: SUCCESS. response_keys=' + Object.keys(tokenData).join(',')
-        + ', instance_url=' + (tokenData.instance_url || 'N/A')
-        + ', token_type=' + (tokenData.token_type || 'N/A')
-        + ', has_access_token=' + (tokenData.access_token ? 'yes' : 'no'));
-    return tokenData;
+    return JSON.parse(response.Body);
 }
 
 
 function sendRequest(method, url, body, token) {
-    var tokenPreview = token ? token.substring(0, 10) + '...' : '<no-token>';
-    console.log('Salesforce: sendRequest: ENTRY. method=' + method
-        + ', url=' + url
-        + ', has_body=' + (body ? 'yes' : 'no')
-        + ', token_preview=' + tokenPreview);
     var headers = {};
     if (token) {
         headers['Authorization'] = ['Bearer ' + token];
@@ -59,8 +40,7 @@ function sendRequest(method, url, body, token) {
     if (method == 'POST' || method == 'PATCH') {
         headers['Content-Type'] = ['application/json'];
     }
-    console.log('Salesforce: sendRequest: header_keys=' + Object.keys(headers).join(','));
-    var response = http(
+    return http(
         url,
         {
             Method: method,
@@ -70,52 +50,29 @@ function sendRequest(method, url, body, token) {
         params.insecure === false,
         params.useproxy
     );
-    console.log('Salesforce: sendRequest: Response StatusCode=' + response.StatusCode
-        + ', method=' + method + ', url=' + url);
-    return response;
 }
 
 function sendRequestInSession(method, uri, body) {
-    var fullUrl = SESSION_DATA.instance_url + URI_PREFIX + uri;
-    console.log('Salesforce: sendRequestInSession: method=' + method + ', url=' + fullUrl
-        + ', has_body=' + (body ? 'yes' : 'no')
-        + ', has_access_token=' + (SESSION_DATA && SESSION_DATA.access_token ? 'yes' : 'no'));
     if (!SESSION_DATA || !SESSION_DATA.access_token) {
-        console.log('Salesforce: sendRequestInSession: FATAL — no access token in SESSION_DATA. '
-            + 'SESSION_DATA keys: ' + (SESSION_DATA ? Object.keys(SESSION_DATA).join(',') : 'null'));
         throw "Failed to get access token for Salesforce integration.";
     }
-    var response = sendRequest(method, fullUrl, body, SESSION_DATA.access_token);
-    console.log('Salesforce: sendRequestInSession: initial response StatusCode=' + response.StatusCode);
+    var response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
     if (response.StatusCode === 401) {
-        // ── UCP: Try refreshing from BE first, fall back to legacy token exchange ──
-        console.log('Salesforce: sendRequestInSession: received 401 for ' + method + ' ' + uri
-            + '. Attempting credential refresh...');
-        var ucpCreds = getUcpCredentials({fromCache: false});
-        if (ucpCreds) {
-            var newToken = ucpCreds.access_token || ucpCreds.key;
-            var tokenPreview = newToken ? newToken.substring(0, 10) + '...' : '<empty>';
-            console.log('Salesforce: sendRequestInSession: 401 retry — using refreshed UCP credentials. '
-                + 'type=' + (ucpCreds.type || 'N/A')
-                + ', token_preview=' + tokenPreview
-                + ', expires_at=' + (ucpCreds.expires_at || 'static'));
-            SESSION_DATA.access_token = newToken;
+        // ── UCP: invalidate cache and get fresh credentials, fall back to legacy ──
+        if (shouldUseUcpAuth()) {
+            invalidateUcpCredentialsCache(getUcpMethodUniqueId());
+            var ucpCreds = getUcpCredentials({fromCache: false});
+            if (ucpCreds) {
+                SESSION_DATA.access_token = ucpCreds.access_token || ucpCreds.key || '';
+            }
         } else {
-            console.log('Salesforce: sendRequestInSession: 401 retry — UCP not available, '
-                + 'falling back to legacy getNewToken() OAuth2 password grant...');
             SESSION_DATA = getNewToken();
-            console.log('Salesforce: sendRequestInSession: 401 retry — legacy token obtained. '
-                + 'instance_url=' + (SESSION_DATA ? SESSION_DATA.instance_url : 'null'));
         }
         response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
-        console.log('Salesforce: sendRequestInSession: 401 retry result StatusCode=' + response.StatusCode);
     }
     if (response.StatusCode < 200 || response.StatusCode >= 300) {
-        console.log('Salesforce: sendRequestInSession: FAILED. StatusCode=' + response.StatusCode
-            + ', uri=' + uri + ', Body=' + (response.Body ? response.Body.substring(0, 500) : 'empty'));
-        throw 'Failed to run command uri: ' + uri + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
+            throw 'Failed to run command uri: ' + uri + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
     }
-    console.log('Salesforce: sendRequestInSession: SUCCESS. StatusCode=' + response.StatusCode + ', uri=' + uri);
     return response;
 }
 
@@ -879,35 +836,15 @@ function fetchIncident() {
 
     return incidents;
 }
-
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
-console.log('Salesforce init: Detecting UCP mode via isUcpEnabled()...');
-console.log("Params: " + JSON.stringify(params));
-var _ucpCreds = isUcpEnabled() ? getUcpCredentials() : null;
-if (_ucpCreds) {
-    var _ucpToken = _ucpCreds.access_token || _ucpCreds.key || '';
-    var _ucpTokenPreview = _ucpToken ? _ucpToken.substring(0, 10) + '...' : '<empty>';
-    var _instanceUrl = params.InstanceURL || '';
-    console.log('Salesforce init: UCP mode ENABLED. '
-        + 'cred_type=' + (_ucpCreds.type || 'N/A')
-        + ', token_type=' + (_ucpCreds.token_type || 'N/A')
-        + ', token_preview=' + _ucpTokenPreview
-        + ', expires_at=' + (_ucpCreds.expires_at || 'static')
-        + ', instance_url=' + _instanceUrl);
+if (!shouldUseUcpAuth()) {
+    var _ucpCreds = getUcpCredentials();
     SESSION_DATA = {
-        access_token: _ucpToken,
-        instance_url: _instanceUrl
+        access_token: _ucpCreds ? (_ucpCreds.access_token || _ucpCreds.key || '') : '',
+        instance_url: params.InstanceURL || ''
     };
-    console.log('Salesforce init: SESSION_DATA initialized for UCP mode. '
-        + 'instance_url=' + SESSION_DATA.instance_url
-        + ', has_access_token=' + (SESSION_DATA.access_token ? 'yes' : 'no'));
 } else {
-    console.log('Salesforce init: UCP not available — legacy mode. '
-        + 'Performing OAuth2 password grant via getNewToken()...');
     SESSION_DATA = getNewToken();
-    console.log('Salesforce init: Legacy token obtained. '
-        + 'instance_url=' + (SESSION_DATA ? SESSION_DATA.instance_url : 'null')
-        + ', has_access_token=' + (SESSION_DATA && SESSION_DATA.access_token ? 'yes' : 'no'));
 }
 // The command input arg holds the command sent from the user.
 var response;
@@ -950,11 +887,9 @@ switch (command) {
     case 'salesforce-push-comment-threads':
         return pushCommentThread(args.id, args.text);
     case 'test-module':
-        console.log('Testing Salesforce connection...');
         try {
             sendRequestInSession('GET', '', '');
         } catch (err) {
-            console.log('Connection test failed with error: ' + err);
             return 'Connection test failed with error: ' + err + '.';
         }
         return 'ok';

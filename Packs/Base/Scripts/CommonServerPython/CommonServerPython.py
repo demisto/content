@@ -13700,6 +13700,8 @@ def _extract_ucp_expiry(creds: dict) -> Optional[float]:
         dt = datetime.fromisoformat(expires_at_str.replace('Z', '+00:00'))
         return dt.timestamp()
     except (ValueError, AttributeError):
+        # TODO, Discuss if this is a good idea, or just raise an error
+        demisto.error("[UCP][CommonServerPython]Failed to parse UCP credentials expiry time")
         # Unparseable — fall back to 5 minutes from now
         return time.time() + 300
 

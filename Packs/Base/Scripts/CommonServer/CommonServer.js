@@ -2121,11 +2121,59 @@ function fileResult(file_name, file_content,entryType=null, human_readable_optio
 // Mirrors the Python UCP functions in CommonServerPython.py
 
 var _UCP_AUTH_PARAMS_INJECTED = false;
+var _UCP_REFRESH_THRESHOLD_SECONDS = 30;
 var _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation';
 var _UCP_COMMAND_CAPABILITIES = {
     'fetch-incidents': 'collection-and-ingestion',
     'fetch-assets': 'collection-and-ingestion'
 };
+
+// ── UCP TTL Cache (mirrors Python _ttl_cache) ──
+var _ucpCredentialsCache = {};
+
+/**
+ * Extract the expiry epoch (seconds) from a UCP credentials response.
+ * Looks for expires_at (ISO-8601 string) at the top level, then inside
+ * the type-specific sub-dict (e.g. creds.oauth2.expires_at).
+ *
+ * @param {Object} creds - Raw credentials from getUCPCredentials().
+ * @return {Number|null} Unix epoch in seconds, or null for static credentials.
+ */
+function _extractUcpExpiry(creds) {
+    var credType = creds.type || '';
+    var typeData = (credType && creds[credType]) ? creds[credType] : {};
+    var expiresAtStr = creds.expires_at || (typeof typeData === 'object' ? typeData.expires_at : null);
+    if (!expiresAtStr) {
+        return null;
+    }
+    try {
+        var dt = new Date(expiresAtStr);
+        if (isNaN(dt.getTime())) {
+            // Unparseable — fall back to 5 minutes from now
+            return (Date.now() / 1000) + 300;
+        }
+        return dt.getTime() / 1000;
+    } catch (e) {
+        return (Date.now() / 1000) + 300;
+    }
+}
+
+/**
+ * Invalidate a specific entry in the UCP credentials cache.
+ * Used before retrying after a 401 to force a fresh fetch.
+ *
+ * @param {String} methodUniqueId - The method_unique_id to invalidate.
+ */
+function invalidateUcpCredentialsCache(methodUniqueId) {
+    delete _ucpCredentialsCache[methodUniqueId];
+}
+
+/**
+ * Clear all entries from the UCP credentials cache.
+ */
+function clearUcpCredentialsCache() {
+    _ucpCredentialsCache = {};
+}
 
 
 /**
@@ -2337,16 +2385,40 @@ function getUcpCredentials(options) {
 
     var methodId = getUcpMethodUniqueId(options.capability, options.subCapability);
 
+    // ── Check client-side TTL cache ──
+    if (fromCache) {
+        var cached = _ucpCredentialsCache[methodId];
+        if (cached) {
+            var now = Date.now() / 1000;
+            var expiry = cached.expiry;
+            if (expiry === null) {
+                // Static credentials — never expire
+                console.log('UCP: getUcpCredentials: returning cached static credentials for ' + methodId);
+                return cached.result;
+            }
+            if (now < (expiry - _UCP_REFRESH_THRESHOLD_SECONDS)) {
+                console.log('UCP: getUcpCredentials: returning cached credentials for ' + methodId
+                    + ' (expires in ' + Math.round(expiry - now) + 's)');
+                return cached.result;
+            }
+            // Stale — fall through to re-fetch
+            console.log('UCP: getUcpCredentials: cached credentials stale for ' + methodId + ', re-fetching...');
+        }
+    }
+
     try {
-        console.log('UCP: getUcpCredentials: calling getUCPCredentials(method_unique_id='
-            + methodId + ', from_cache=' + fromCache + ')...');
-        var creds = getUCPCredentials(methodId, fromCache);
+        console.log('UCP: getUcpCredentials: fetching fresh credentials for method_unique_id=' + methodId);
+        var creds = getUCPCredentials(methodId, false);
         if (!creds) {
             console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined.');
             return null;
         }
 
         var flatCreds = _flattenUcpCredentials(creds);
+
+        // Store in client-side cache with TTL
+        var expiry = _extractUcpExpiry(creds);
+        _ucpCredentialsCache[methodId] = {result: flatCreds, expiry: expiry};
 
         // Log credential metadata without exposing secrets
         var tokenPreview = '';
@@ -2359,7 +2431,8 @@ function getUcpCredentials(options) {
         }
         console.log('UCP: getUcpCredentials: SUCCESS. type=' + flatCreds.type
             + ', preview=' + tokenPreview
-            + ', expires_at=' + (flatCreds.expires_at || 'static'));
+            + ', expires_at=' + (flatCreds.expires_at || 'static')
+            + ', cached_expiry=' + (expiry !== null ? expiry : 'never'));
         return flatCreds;
     } catch (e) {
         console.log('UCP: getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
