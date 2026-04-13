@@ -750,25 +750,25 @@ def agentixCommands(command, args):
             - "rateMessage": Rate a specific message in the conversation
         args (dict): Command arguments. The structure depends on the command:
             - For "sendToConversation": {
-                "channel_id": str (required),
-                "thread_id": str (required),
-                "message": str (required),
-                "username": str (required),
-                "agent_id": str (optional, required on second call)
+                    "channel_id": str (required),
+                    "thread_id": str (required),
+                    "message": str (required),
+                    "username": str (required),
+                    "agent_id": str (optional, required on second call)
               }
             - For "resetConversation": {
-                "channel_id": str (required),
-                "thread_id": str (required),
-                "username": str (required)
+                    "channel_id": str (required),
+                    "thread_id": str (required),
+                    "username": str (required)
               }
             - For "rateMessage": {
-                "channel_id": str (required),
-                "thread_id": str (required),
-                "message_id": str (required),
-                "username": str (required),
-                "is_liked": bool (required),
-                "improvement_suggestion": str (required if is_liked=false),
-                "issues": list[str] (required if is_liked=false)
+                    "channel_id": str (required),
+                    "thread_id": str (required),
+                    "message_id": str (required),
+                    "username": str (required),
+                    "is_liked": bool (required),
+                    "improvement_suggestion": str (required if is_liked=false),
+                    "issues": list[str] (required if is_liked=false)
               }
 
     Returns:
