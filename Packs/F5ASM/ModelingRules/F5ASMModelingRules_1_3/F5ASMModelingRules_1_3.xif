@@ -1,8 +1,8 @@
 [MODEL: dataset="F5_ASM_raw"]
 alter
         cs3_request_user_agent = arrayindex(regextract(cs3 ,"[Uu]ser\-[Aa]gent:\s*([^:]+)\s+\S+\:"), 0),
-        cs3_request_referrer = arrayindex(regextract(cs3 ,"[Rr]eferer\:\s*([^\s]+)"), 0),
-        cs3_request_host = arrayindex(regextract(cs3 ,"[Hh]ost:\s*([^\s]+)"), 0),
+        cs3_request_referrer = arrayindex(regextract(cs3 ,"[Rr]eferer\:\s*([^\s\\]+)"), 0),
+        cs3_request_host = arrayindex(regextract(cs3 ,"[Hh]ost:\s*([^\s\\]+)"), 0),
         cs3_request_content_type = arrayindex(regextract(cs3 ,"[Cc]ontent\-[Tt]ype\:\s*([^:]+)\s+\S+\:"), 0),
         cs3_request_cookie = arrayindex(regextract(cs3 ,"Cookie:\s*(.*)\s*X-Forwarded-For:"), 0),
         src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
