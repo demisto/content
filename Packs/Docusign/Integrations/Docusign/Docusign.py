@@ -859,7 +859,7 @@ def test_module() -> str:
     # Verify the access token works by calling the /oauth/userinfo endpoint
     auth_client.get_user_info(auth_client.access_token)
     demisto.debug(f"{LOG_PREFIX}test-module: API call to /oauth/userinfo succeeded.")
-    return "ok"
+    return "Test completed successfully."
 
 
 def get_events_command(auth_client: AuthClient) -> CommandResults:
@@ -915,7 +915,7 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
         if command == "test-module":
-            return_results("Please run the command docusign-auth-test to test the full authentication flow and API connectivity.")
+            return_results("Please run the command 'docusign-auth-test' to test the full authentication flow and API connectivity.")
 
         elif command == "docusign-auth-test":
             return_results(test_module())

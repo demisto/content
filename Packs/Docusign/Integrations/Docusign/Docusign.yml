@@ -97,6 +97,7 @@ script:
     arguments:
     - name: event_type
       required: true
+      auto: PREDEFINED
       description: The type of events to fetch.
       predefined:
       - Customer events
