@@ -749,19 +749,19 @@ def agentixCommands(command, args):
             - "resetConversation": Reset/clear the current conversation
             - "rateMessage": Rate a specific message in the conversation
         args (dict): Command arguments. The structure depends on the command:
-            - For "sendToConversation": {
+            - For "sendToConversation":
                     "channel_id": str (required),
                     "thread_id": str (required),
                     "message": str (required),
                     "username": str (required),
                     "agent_id": str (optional, required on second call)
-              }
-            - For "resetConversation": {
+              
+            - For "resetConversation":
                     "channel_id": str (required),
                     "thread_id": str (required),
                     "username": str (required)
-              }
-            - For "rateMessage": {
+            
+            - For "rateMessage":
                     "channel_id": str (required),
                     "thread_id": str (required),
                     "message_id": str (required),
@@ -769,7 +769,7 @@ def agentixCommands(command, args):
                     "is_liked": bool (required),
                     "improvement_suggestion": str (required if is_liked=false),
                     "issues": list[str] (required if is_liked=false)
-              }
+            
 
     Returns:
         dict: Command execution response object with the following structure:
