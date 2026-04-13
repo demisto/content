@@ -73,5 +73,4 @@ fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
 supportedModules:
-- agentix
 - xsiam
