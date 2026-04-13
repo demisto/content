@@ -80,7 +80,7 @@ script:
       description: The unique case number to assign to the new case.
     - name: custom_field_values
       required: false
-      description: A JSON object containing custom field values for the case.
+      description: 'A JSON object containing custom field values for the case. For example, custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}".'
     outputs:
     - contextPath: MagnetAutomate.Case.id
       description: The unique identifier of the created case.
@@ -165,7 +165,7 @@ script:
       description: Whether to continue the workflow if decryption fails.
     - name: custom_field_values
       required: false
-      description: A JSON object containing custom field values for the workflow run.
+      description: 'A JSON object containing custom field values for the workflow run. For example, custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}".'
     - name: assigned_node_name
       required: false
       description: The name of the specific node to assign the workflow run to.
