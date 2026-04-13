@@ -15,7 +15,7 @@
     ],
     "useCases": [],
     "keywords": [],
-    "itemPrefixes": ["CTIX"],
+    "itemPrefix": ["ctix"],
     "githubUser": [],
     "marketplaces": [
         "xsoar",
