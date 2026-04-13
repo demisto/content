@@ -681,7 +681,7 @@ script:
       name: ttl
     description: Change job settings to share its results to all Splunk users, and change its TTL.
     name: splunk-job-share
-  dockerimage: demisto/splunksdk-py3:1.0.0.5493343
+  dockerimage: demisto/splunksdk-py3:1.0.0.7241125
   isfetch: true
   ismappable: true
   isremotesyncin: true
