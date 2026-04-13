@@ -339,7 +339,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.8160132
   type: python
 tests:
 - Pwned v2 test
