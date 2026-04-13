@@ -33,7 +33,7 @@ Gets events from KOI. This command is used for developing/debugging and is to be
 
 #### Human Readable Output
 
->### KOI Event Collector Events
+>### KOI Events
 >
 >|id|source_log_type|_time|severity|status|
 >|---|---|---|---|---|

@@ -15,15 +15,15 @@ from ContentClientApiModule import *
 urllib3.disable_warnings()
 
 """
-Koi Event Collector
-Integration for fetching Alerts and Audit Logs from the Koi API.
+KOI
+Integration for fetching Alerts and Audit Logs from the KOI API.
 """
 
 # region Constants and helpers
 # =================================
 # Constants and helpers
 # =================================
-INTEGRATION_NAME = "Koi Event Collector"
+INTEGRATION_NAME = "KOI"
 
 
 class Config:
@@ -83,7 +83,7 @@ VALID_AUDIT_TYPES = [
 
 
 def get_formatted_utc_time(date_input: str | None) -> str:
-    """Parse input and return the formatted UTC time string for Koi API.
+    """Parse input and return the formatted UTC time string for KOI API.
 
     Args:
         date_input: Date string to parse (e.g., '3 days ago', '2024-01-01T00:00:00Z')
@@ -253,9 +253,9 @@ def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[
 
 
 class Client(ContentClient):
-    """Koi API client.
+    """KOI API client.
 
-    Extends ContentClient with Koi-specific functionality including
+    Extends ContentClient with KOI-specific functionality including
     Bearer token authentication and API methods for alerts and audit logs.
     """
 
@@ -266,11 +266,11 @@ class Client(ContentClient):
         verify: bool,
         proxy: bool,
     ):
-        """Initialize the Koi client.
+        """Initialize the KOI client.
 
         Args:
-            base_url: Koi API server URL.
-            api_key: Koi API key for Bearer token authentication.
+            base_url: KOI API server URL.
+            api_key: KOI API key for Bearer token authentication.
             verify: Whether to verify SSL certificates.
             proxy: Whether to use proxy settings.
         """
@@ -286,7 +286,7 @@ class Client(ContentClient):
             verify=verify,
             proxy=proxy,
             auth_handler=auth_handler,
-            client_name="Koi",
+            client_name="KOI",
             timeout=60,
             retry_policy=retry_policy,
         )
@@ -300,7 +300,7 @@ class Client(ContentClient):
         page_size: int = Config.DEFAULT_PAGE_SIZE,
         audit_types: list[str] | None = None,
     ) -> list[dict]:
-        """Fetch a single page of events from the Koi API.
+        """Fetch a single page of events from the KOI API.
 
         This is the single unified method used by all commands (test-module,
         fetch-events, get-events) to retrieve events from the API.
@@ -368,7 +368,7 @@ def test_module(client: Client) -> str:
     """Test API connectivity by fetching a small number of events.
 
     Args:
-        client: The Koi client.
+        client: The KOI client.
 
     Returns:
         'ok' if test passed, otherwise raises an exception.
@@ -411,7 +411,7 @@ def fetch_events_with_pagination(
     (test-module, fetch-events, get-events).
 
     Args:
-        client: The Koi client.
+        client: The KOI client.
         log_type: The LogType to fetch.
         created_after: Start time (ISO 8601).
         created_before: End time (ISO 8601) or None.
@@ -474,7 +474,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
     """Manual command to get events for debugging/development.
 
     Args:
-        client: The Koi client.
+        client: The KOI client.
         args: Command arguments.
         params: Integration parameters.
 
@@ -523,7 +523,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Event",
+        outputs_prefix="KOI.Event",
         outputs_key_field="id",
         outputs=all_events,
     )
@@ -561,7 +561,7 @@ def _fetch_single_log_type(
         - Uses demisto.debug() for logging (thread-safe in XSOAR runtime).
 
     Args:
-        client: The Koi client (thread-safe — ContentClient uses httpx which is thread-safe).
+        client: The KOI client (thread-safe — ContentClient uses httpx which is thread-safe).
         log_type: The LogType to fetch (ALERTS or AUDIT).
         last_run: Immutable copy of the current last_run state dict.
         max_events: Maximum events to fetch per type.
@@ -671,7 +671,7 @@ def fetch_events_command(client: Client) -> None:
         - Merge happens after all threads complete (no concurrent writes).
 
     Args:
-        client: The Koi client.
+        client: The KOI client.
     """
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
@@ -742,7 +742,7 @@ COMMAND_MAP: dict[str, Any] = {
 
 
 def main() -> None:
-    """Main entry point for Koi integration."""
+    """Main entry point for KOI integration."""
     demisto.debug(f"{INTEGRATION_NAME} integration started")
     command = demisto.command()
 

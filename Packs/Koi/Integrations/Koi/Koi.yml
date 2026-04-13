@@ -83,7 +83,7 @@ configuration:
   advanced: true
   required: false
 description: KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
-display: KOI Event Collector
+display: KOI
 name: KOI
 script:
   commands:
