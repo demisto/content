@@ -14659,28 +14659,28 @@ script:
       required: true
       description: The AWS account ID.
     outputs:
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterName
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.FilterName
       description: The name of the metric filter.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterPattern
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.FilterPattern
       description: A symbolic description of how CloudWatch Logs should interpret the data in each log event.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricName
       description: The name of the CloudWatch metric.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricNamespace
       description: The namespace of the CloudWatch metric.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricValue
       description: The value to publish to the CloudWatch metric when a filter pattern matches a log event.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.DefaultValue
       description: The value to emit when a filter pattern does not match a log event. This value can be null.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.creationTime
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.CreationTime
       description: The creation time of the metric filter, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
       type: date
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.logGroupName
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.LogGroupName
       description: The name of the log group.
       type: string
     - contextPath: AWS.CloudWatchLogs.MetricFiltersNextToken
