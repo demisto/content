@@ -2266,6 +2266,9 @@ script:
         - contextPath: Core.Case.resolve_comment
           description: Comments added when resolving the case. May be null.
           type: String
+        - contextPath: Core.Case.resolve_reason
+          description: The reason for resolving the case (e.g. known_issue, duplicate, false_positive, other, true_positive, security_testing). May be null.
+          type: String
         - contextPath: Core.Case.resolved_timestamp
           description: Timestamp when the case was resolved.
           type: Number
@@ -2343,9 +2346,10 @@ script:
           type: Date
         - contextPath: Core.CasesMetadata.returned_count
           description: The actual number of cases that match all filter criteria and returned in this specific response.
-          type: String
+          type: Number
         - contextPath: Core.CasesMetadata.filtered_count
           description: The total number of cases in the system that match all filter criteria.
+          type: Number
     - name: core-get-appsec-issues
       description: "Retrieves application security issues based on specified filters."
       arguments:
@@ -2619,7 +2623,10 @@ script:
             - "false"
         - name: custom_fields
           description: |
-            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            A JSON encoded string representing custom field name-value pairs to update.
+            Preferred format: a JSON object where each key is a field name and each value is the field value (e.g., `{"field1": "value1", "multiselect_field": ["a", "b"]}`).
+            Legacy format also supported: a list of single-key objects (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            For multiSelect fields, the value must be a JSON array (e.g., `["option1", "option2"]`).
           type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
