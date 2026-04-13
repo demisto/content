@@ -452,7 +452,7 @@ Gets all breached email addresses for a domain.
 
 #### Command Example
 
-`pwned-breaches-for-domain-list domain="adobe.com"`
+```pwned-breaches-for-domain-list domain="adobe.com"```
 
 ### pwned-subscribed-domains-list
 
@@ -465,8 +465,7 @@ Gets the list of subscribed domains.
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
-| --- | --- | --- |
+This command has no arguments.
 
 #### Context Output
 
@@ -480,7 +479,7 @@ Gets the list of subscribed domains.
 
 #### Command Example
 
-`pwned-subscribed-domains-list`
+```pwned-subscribed-domains-list```
 
 ### pwned-breach-get
 
@@ -513,7 +512,38 @@ Gets a single breached site by breach name.
 
 #### Command Example
 
-`pwned-breach-get breach_name="Adobe"`
+```!pwned-breach-get breach_name="Adobe"```
+
+#### Context Example
+
+```json
+{
+    "DBotScore": {
+        "Indicator": "adobe.com",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "domain",
+        "Vendor": "Have I Been Pwned? V2"
+    },
+    "Domain": {
+        "Name": "adobe.com",
+        "Pwned-V2": {
+            "Compromised": {
+                "Reporters": "Adobe",
+                "Vendor": "Have I Been Pwned? V2"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Breach: Adobe
+
+>|Latest breach domain name|Breach Date|Added Date|Pwn Count|
+>|---|---|---|---|
+>| adobe.com | 2013-10-04 | 2013-12-04T00:00:00Z | 152445165 |
 
 ### pwned-latest-breach-get
 
@@ -526,8 +556,7 @@ Gets the most recently added breach.
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
-| --- | --- | --- |
+This command has no arguments.
 
 #### Context Output
 
@@ -545,4 +574,35 @@ Gets the most recently added breach.
 
 #### Command Example
 
-`pwned-latest-breach-get`
+```!pwned-latest-breach-get```
+
+#### Context Example
+
+```json
+{
+    "DBotScore": {
+        "Indicator": "hallmark.com",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "domain",
+        "Vendor": "Have I Been Pwned? V2"
+    },
+    "Domain": {
+        "Name": "hallmark.com",
+        "Pwned-V2": {
+            "Compromised": {
+                "Reporters": "Hallmark",
+                "Vendor": "Have I Been Pwned? V2"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Latest Breach
+
+>|Latest breach domain name|Breach Date|Added Date|Pwn Count|
+>|---|---|---|---|
+>| hallmark.com | 2026-03-31 | 2026-04-12T02:01:11Z | 1736520 |
