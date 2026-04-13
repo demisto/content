@@ -4,6 +4,7 @@ commonfields:
 name: Infocyte
 display: Infocyte
 category: Endpoint
+provider: Kaseya
 description: Infocyte can pivot off incidents to automate triage, validate events with forensic data and enabling dynamic response actions against any or all host using both agentless or agented endpoint access.
 configuration:
 - display: Instance Name (e.g., https://<cname>.infocyte.com)
@@ -73,7 +74,7 @@ script:
       description: Task ID used with taskstatus.
       type: string
     - contextPath: Infocyte.Task.type
-      description: Task type (SCAN or RESPONSE)
+      description: Task type (SCAN or RESPONSE).
       type: string
     - contextPath: Infocyte.Task.target
       description: Hostname or IP address of the provided target.
@@ -433,13 +434,13 @@ script:
       description: Number of engines and threat intel sources that analyzed the object.
       type: number
     - contextPath: Infocyte.Alert.synapseScore
-      description: Infocyte proprietary machine learning score on maliciousness. Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good
+      description: Infocyte proprietary machine learning score on maliciousness. Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good.
       type: number
     - contextPath: Infocyte.Alert.size
       description: Size of the object/file in bytes.
       type: number
     - contextPath: Infocyte.Alert.flagname
-      description: Name of user assigned flag in Infocyte on this artifact
+      description: Name of user assigned flag in Infocyte on this artifact.
       type: string
     - contextPath: Infocyte.Alert.flagWeight
       description: User-assigned score assigned to the flag (0-10). 0 is least critical, 10 is most critical.

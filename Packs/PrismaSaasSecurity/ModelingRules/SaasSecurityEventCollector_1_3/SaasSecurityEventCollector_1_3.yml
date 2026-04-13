@@ -4,3 +4,6 @@ name: Prisma SAAS Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- agentix
+- xsiam

@@ -101,7 +101,7 @@ class TestFetchIndicators:
         else:
             assert not results
 
-    process_items_params = [      # noqa: PIE794
+    process_items_params = [  # noqa: PIE794
         (threats[0], "randommd5", FeedIndicatorType.File, 0, 4),
         (threats[0], "6ad00a19ab3e47e4b54b2792a7b47a13", FeedIndicatorType.File, 2, 4),
         ({}, "", "", 0, 0),

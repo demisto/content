@@ -2,6 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Endpoint
+provider: Palo Alto Networks
 commonfields:
   id: Cortex XDR - XQL Query Engine
   version: -1
@@ -1587,6 +1588,85 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
+  - arguments:
+    - description: Whether to return an extended view.
+      name: extra_data
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call.
+      isArray: true
+      name: xql_query_name
+    - description: A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call.
+      isArray: true
+      name: xql_query_tag
+    description: Gets a list of XQL queries from the library.
+    name: xdr-xql-library-list
+    outputs:
+    - contextPath: PaloAltoNetworksXQL.Library.id
+      description: The unique identifier of the saved query.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.Library.name
+      description: The name of the XQL query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.description
+      description: A description of what the query searches for.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.query_text
+      description: The actual XQL query syntax.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.created_at
+      description: The date and time when the query was created (in Unix Epoch format).
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.Library.modified_at
+      description: The date and time when the query was last modified (in Unix Epoch format).
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.Library.created_by
+      description: The email address of the user who created the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.modified_by
+      description: The email address of the user who last modified the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.created_by_pretty
+      description: The display name that created the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.modified_by_pretty
+      description: The display name that last modified the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.is_private
+      description: Whether the query is private to the user or shared.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXQL.Library.content_global_id
+      description: The global content identifier.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.Library.labels
+      description: A list of labels associated with the query.
+      type: String
+  - arguments:
+    - description: Whether to override existing queries.
+      name: override_existing
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - description: 'The new XQL query. For example: "dataset = xdr_data |limit 1".'
+      name: xql_query
+    - description: The name of the new XQL query. The XQL query name should be unique.
+      name: xql_query_name
+    - description: A new XQL query tags.
+      name: xql_query_tag
+    description: Creates or updates XQL query in the library.
+    name: xdr-xql-library-create
+  - arguments:
+    - description: A comma-separated list of XQL query names to delete. When using this argument, you cannot delete queries by xql_query_tag in the same request.
+      isArray: true
+      name: xql_query_name
+    - description: A comma-separated list of XQL query tags. When using this argument, you cannot delete queries by xql_query_name in the same request.
+      isArray: true
+      name: xql_query_tag
+    description: Deletes XQL queries from the library.
+    name: xdr-xql-library-delete
   dockerimage: demisto/python3:3.12.12.6151721
   runonce: false
   script: '-'

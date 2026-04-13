@@ -1,0 +1,12 @@
+{
+	"id": "Trellix Incident Classifier",
+	"name": "Trellix Incident Classifier",
+	"description": "Trellix Incident Classifier",
+	"defaultIncidentType": "Trellix Incident",
+	"keyTypeMap": {
+        "trellix_alerts": "Trellix Incident"
+	},
+    "fromVersion": "6.0.0",
+    "version": -1,
+    "type": "classification"
+}

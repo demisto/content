@@ -1727,9 +1727,7 @@ def test_test_module(mocker):
         oauth_params=OAUTH_PARAMS,
     )
 
-    with pytest.raises(Exception) as e:
-        module(client)
-    assert "Test button cannot be used when using OAuth 2.0" in str(e)
+    assert result[0] == "ok"
 
 
 def test_oauth_test_module(mocker):
@@ -2527,6 +2525,45 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     assert sorted(result.modified_incident_ids) == sorted(
         [record.get("sys_id") for record in api_response.get("result") if "sys_id" in record]
     )
+
+
+def test_get_modified_remote_data_unparseable_last_update(requests_mock, mocker):
+    """
+    Given:
+        - lastUpdate is "0" (uninitialized dbotMirrorLastSync sent by XSOAR)
+
+    When:
+        - Running get-modified-remote-data
+
+    Then:
+        - The command does not raise an error and falls back to epoch time (1970-01-01 00:00:00)
+    """
+    mocker.patch.object(demisto, "debug")
+    url = "https://test.service-now.com/api/now/v2/"
+    client = Client(
+        url,
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+    params = {
+        "sysparm_limit": "100",
+        "sysparm_offset": "0",
+        "sysparm_query": "sys_updated_on>1970-01-01 00:00:00",
+        "sysparm_fields": "sys_id",
+    }
+    requests_mock.request("GET", f"{url}table/ticket_type?{urlencode(params)}", json={"result": []})
+    result = get_modified_remote_data_command(client, {"lastUpdate": "0"})
+    assert result.modified_incident_ids == []
 
 
 @pytest.mark.parametrize(
@@ -4019,3 +4056,282 @@ def test_client_jwt_param_usage(mocker):
     )
     assert hasattr(client.snow_client, "jwt")
     assert client.snow_client.jwt == "jwt_token_stub"
+
+
+class TestCredentialFlowEndToEnd:
+    """End-to-end tests for the new basic_credentials / credentials flow in ServiceNowv2 main()."""
+
+    BASE_PARAMS = {
+        "url": "https://test.service-now.com",
+        "insecure": False,
+        "proxy": False,
+        "use_oauth": False,
+        "use_jwt": False,
+        "incident_name": None,
+        "file_tag_from_service_now": "FromServiceNow",
+        "file_tag": "ForServiceNow",
+        "comment_tag": "comments",
+        "comment_tag_from_servicenow": "CommentFromServiceNow",
+        "work_notes_tag": "work_notes",
+        "work_notes_tag_from_servicenow": "WorkNoteFromServiceNow",
+    }
+
+    def test_basic_auth_with_basic_credentials(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials param provides username and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The request uses basic auth with the credentials from basic_credentials.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
+            "credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        return_outputs_mock = mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used with basic_credentials values
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        # Basic auth header should be present (base64 encoded basic_user:basic_pass)
+        assert "Basic" in auth
+        return_outputs_mock.assert_called_once()
+
+    def test_basic_auth_legacy_fallback(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials param is empty (no username/password).
+            - credentials param has identifier and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The request uses basic auth with legacy fallback from credentials.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {},
+            "credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "debug")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        return_outputs_mock = mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used with legacy fallback values
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Basic" in auth
+        return_outputs_mock.assert_called_once()
+
+    def test_oauth_uses_credentials_for_client_id_secret(self, mocker, requests_mock):
+        """
+        Given:
+            - use_oauth is True.
+            - credentials provides client_id (identifier) and client_secret (password).
+        When:
+            - main() is called with the 'servicenow-oauth-test' command.
+        Then:
+            - OAuth flow is used (get_access_token is called).
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "use_oauth": True,
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
+            "credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="servicenow-oauth-test")
+        mocker.patch.object(ServiceNowClient, "get_access_token", return_value="mock_token")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+
+        main()
+
+        # Verify OAuth was used (Bearer token in request)
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Bearer" in auth
+
+    def test_jwt_and_oauth_both_enabled_raises_error(self, mocker):
+        """
+        Given:
+            - Both use_jwt and use_oauth are True.
+        When:
+            - main() is called.
+        Then:
+            - A ValueError is raised indicating only one auth method should be chosen.
+        """
+        params = {
+            **self.BASE_PARAMS,
+            "use_jwt": True,
+            "use_oauth": True,
+            "basic_credentials": {},
+            "credentials": {"identifier": "id", "password": "secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+
+        with pytest.raises(ValueError, match="authentication method"):
+            main()
+
+    def test_basic_auth_partial_credentials_triggers_fallback(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials has username but no password.
+            - credentials has identifier and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The Client falls back to credentials for both username and password.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {"identifier": "partial_user", "password": ""},
+            "credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "debug")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used (fallback to credentials)
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Basic" in auth
+
+
+class TestCreateItemOrderFixes:
+    """Tests for the two bugs fixed in XSUP-65101:
+    1. servicecatalog order_now endpoint must use v1 even when instance is configured with v2.
+    2. sysparm_no_validation support via the no_validation argument.
+    """
+
+    BASE_CLIENT_ARGS = (
+        "https://test.service-now.com/api/now/v2/",  # server_url (v2 configured)
+        "https://test.service-now.com/api/sn_sc/v2/",  # sc_server_url (v2 configured)
+        "https://test.service-now.com/api/sn_chg_rest/v2/",  # cr_server_url
+        "username",
+        "password",
+        False,  # verify
+        "7 days",
+        "",
+        10,
+        "opened_at",
+        "incident",
+        False,
+        "incident",
+    )
+
+    def _make_client(self) -> Client:
+        return Client(*self.BASE_CLIENT_ARGS, display_date_format="yyyy-MM-dd")
+
+    def test_construct_url_order_now_downgrades_v2_to_v1(self):
+        """
+        Given
+        - A Client configured with API version v2 (sc_server_url contains /v2/)
+        When
+        - _construct_url is called with sc_api=True and a path ending in /order_now
+        Then
+        - The resulting URL must use /v1/ instead of /v2/ (ServiceNow does not support v2 for order_now)
+        """
+        client = self._make_client()
+        url = client._construct_url(
+            custom_api="",
+            sc_api=True,
+            cr_api=False,
+            path="servicecatalog/items/abc123/order_now",
+            get_attachments=False,
+        )
+        assert "/v2/" not in url, "order_now URL must not contain /v2/"
+        assert "/v1/" in url, "order_now URL must be downgraded to /v1/"
+
+    def test_construct_url_order_now_no_downgrade_when_sc_api_false(self):
+        """
+        Given
+        - A Client configured with API version v2
+        When
+        - _construct_url is called with sc_api=False and a path ending in /order_now
+        Then
+        - The resulting URL must still contain /v2/ (the downgrade is exclusive to sc_api calls)
+        """
+        client = self._make_client()
+        url = client._construct_url(
+            custom_api="",
+            sc_api=False,
+            cr_api=False,
+            path="some/items/abc123/order_now",
+            get_attachments=False,
+        )
+        assert "/v2/" in url, "Non-sc_api order_now URL must NOT be downgraded to /v1/"
+        assert "/v1/" not in url, "Non-sc_api order_now URL must not contain /v1/"
+
+    def test_create_item_order_no_validation_false_by_default(self, mocker):
+        """
+        Given
+        - create_item_order is called without the no_validation argument
+        When
+        - The method builds the request body
+        Then
+        - sysparm_no_validation must NOT be present in the body (preserves existing behaviour)
+        """
+        client = self._make_client()
+        mock_send = mocker.patch.object(
+            client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}}
+        )
+
+        client.create_item_order("item_id", "1", {})
+
+        call_kwargs = mock_send.call_args
+        body = call_kwargs[1].get("body") or call_kwargs[0][2]
+        assert "sysparm_no_validation" not in body
+
+    def test_create_item_order_no_validation_true_adds_flag(self, mocker):
+        """
+        Given
+        - create_item_order is called with no_validation=True
+        When
+        - The method builds the request body
+        Then
+        - sysparm_no_validation=True must be present in the body
+        """
+        client = self._make_client()
+        mock_send = mocker.patch.object(
+            client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}}
+        )
+
+        client.create_item_order("item_id", "1", {}, no_validation=True)
+
+        call_kwargs = mock_send.call_args
+        body = call_kwargs[1].get("body") or call_kwargs[0][2]
+        assert body.get("sysparm_no_validation") == "true"

@@ -16,6 +16,7 @@ detaileddescription: >-
 
   ---
 category: Utilities
+provider: Nivel Technologies
 configuration:
 - name: apiKey
   display: API Key
@@ -43,16 +44,16 @@ script:
   commands:
   - arguments:
     - name: mac
-      description: MAC address to lookup. Can be any of the formats;  00-11-22-33-44-55, 00:11:22:33:44:55, 00.11.22.33.44.55, 001122334455, 0011.2233.4455
+      description: MAC address to lookup. Can be any of the formats;  00-11-22-33-44-55, 00:11:22:33:44:55, 00.11.22.33.44.55, 001122334455, 0011.2233.4455.
       required: true
     description: Resolves a MAC address to a vendor name.
     name: macvendors-lookup-mac
     outputs:
     - contextPath: MACVendors.mac
-      description: MAC Address
+      description: MAC Address.
       type: string
     - contextPath: MACVendors.vendor
-      description: Vendor Name
+      description: Vendor Name.
       type: string
   runonce: false
   script: "-"

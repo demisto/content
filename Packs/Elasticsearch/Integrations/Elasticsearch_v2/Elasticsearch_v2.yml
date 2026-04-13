@@ -1,4 +1,5 @@
 category: Database
+provider: Elastic
 sectionorder:
 - Connect
 - Collect
@@ -12,8 +13,30 @@ configuration:
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
-- additionalinfo: Provide Username + Password instead of API key + API ID
-  display: Username for server login
+- display: Authorization type
+  defaultvalue: Basic auth
+  additionalinfo: |-
+    Select the authentication type and enter the appropriate credentials:
+    - Basic Auth: Enter Username and Password.
+    - Bearer Auth: Enter Username and Password.
+    - API Key Auth: Enter the API Key ID and API Key.
+  name: auth_type
+  options:
+  - Basic auth
+  - Bearer auth
+  - API key auth
+  type: 15
+  section: Connect
+  required: true
+- additionalinfo: Use for API key auth
+  display: API key ID
+  displaypassword: API Key
+  name: api_key_auth_credentials
+  type: 9
+  section: Connect
+  required: false
+- additionalinfo: Use for Basic auth. Optionally you can use Username as an API key ID and Password as an API key for API Key auth.
+  display: Username
   name: credentials
   type: 9
   section: Connect
@@ -43,34 +66,36 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Index from which to fetch incidents (CSV)
+- display: Index to fetch incidents from
   name: fetch_index
   type: 0
   section: Collect
   required: false
+  additionalinfo: CSV
 - display: Query String
   name: fetch_query
   type: 0
   additionalinfo: |-
+    Query string uses the Lucene syntax.
+    For more information about the Lucene syntax, see the link in the help section.
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
-- display: Index time field (for sorting sort and limiting data)
+- display: Index time field
   name: fetch_time_field
   type: 0
   section: Collect
   required: false
-  additionalinfo: |-
-    The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+  additionalinfo: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
 - display: Raw Query
   name: raw_query
   type: 12
   additionalinfo: |-
-    Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
+    Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
+    Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
+    For more information see the link in the help section.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
@@ -87,6 +112,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: For more information see the explanation in the help section.
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
@@ -95,13 +121,14 @@ configuration:
   advanced: true
   required: false
 - defaultvalue: '3 days'
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp
   name: fetch_time
   type: 0
   section: Collect
   required: false
+  additionalinfo: <number> <time unit>, e.g., 12 hours, 7 days
 - defaultvalue: '50'
-  display: The maximum number of results to return per fetch.
+  display: The maximum number of results per fetch
   name: fetch_size
   type: 0
   section: Collect
@@ -436,7 +463,7 @@ script:
     outputs:
     - contextPath: Elasticsearch.ESQLSearch
       description: ES|QL search result.
-  dockerimage: demisto/elasticsearch:1.0.0.4861252
+  dockerimage: demisto/elasticsearch:1.0.0.5954979
   isfetch: true
   runonce: false
   script: '-'

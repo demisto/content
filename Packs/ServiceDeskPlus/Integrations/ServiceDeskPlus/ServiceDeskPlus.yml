@@ -1,4 +1,5 @@
 category: Case Management
+provider: Zoho Corporation
 commonfields:
   id: ServiceDeskPlus
   version: -1
@@ -560,7 +561,7 @@ script:
       required: true
     description: Closes the specified request.
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   runonce: false
   script: '-'

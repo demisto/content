@@ -1,4 +1,5 @@
 category: Authentication & Identity Management
+provider: Okta
 sectionorder:
 - Connect
 - Collect
@@ -358,6 +359,13 @@ script:
     - description: Maximum number of polling calls.
       name: max_polling_calls
       defaultValue: 10
+    - auto: PREDEFINED
+      description: Specifies whether the command should poll the status of the push factor.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: Enrolls and verifies a push factor for the specified user.
     name: okta-verify-push-factor
     outputs:
@@ -376,8 +384,33 @@ script:
     - contextPath: Okta.Metadata.x-rate-limit-reset
       description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
       type: Number
+    - contextPath: Okta.PollingStatusURL
+      description: The polling URL for the push factor challenge.
+      type: String
     compliantpolicies:
     - User Soft Remediation
+  - arguments:
+    - description: The url to poll.
+      name: polling_url
+      required: true
+    description: Checks the status of the push factor mfa.
+    name: okta-verify-mfa-status
+    outputs:
+    - contextPath: Okta.FactorResult.ID
+      description: The push factor challenge ID.
+      type: String
+    - contextPath: Okta.FactorResult.factorResult
+      description: The status of the push factor.
+      type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
@@ -1524,8 +1557,15 @@ script:
     - description: Okta User ID.
       name: userId
       required: true
+    - description: When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      name: revokeOauthTokens
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: |-
-      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. By default, OpenID Connect and OAuth refresh and access tokens issued to the user are revoked. Token revocation can be disabled if needed.
       For more information and examples:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     name: okta-clear-user-sessions

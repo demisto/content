@@ -83,9 +83,9 @@ MIRROR_DIRECTION = {
     "Incoming And Outgoing": "Both",
 }
 
-PACK_VERSION = get_pack_version() or "1.3.0"
+PACK_VERSION = get_pack_version() or "1.3.1"
 CALLING_PLATFORM_VERSION = "XSOAR"
-CONNECTOR_NAME_VERSION = f"Bitsight - {PACK_VERSION}"
+CONNECTOR_NAME_VERSION = f"XSOAR: Bitsight - version {PACK_VERSION}"
 # Disable insecure warnings
 urllib3.disable_warnings()
 

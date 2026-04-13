@@ -1,4 +1,5 @@
 category: Network Security
+provider: LevelBlue
 commonfields:
   id: trustwave secure email gateway
   version: -1
@@ -221,7 +222,7 @@ script:
       description: The number of safe clicks in the statistics.in the statistics.
       type: Number
     - contextPath: TrustwaveSEG.Statistics.unsafeClicks
-      description: The number of unsafe clicks
+      description: The number of unsafe clicks.
       type: Number
     - contextPath: TrustwaveSEG.Statistics.unsafeUrls
       description: The number of unsafe URLs in the statistics.
@@ -632,7 +633,7 @@ script:
     - description: 'The time the message was logged (e.g., 1618934189). Can be retrieved from the find message endpoint. '
       name: time_logged
       required: true
-    - description: 'The message that should be shown with the message on Spiderlabs. (e.g., "This message is spam...")'
+    - description: 'The message that should be shown with the message on Spiderlabs. (e.g., "This message is spam...").'
       name: spam_report_message
       required: true
     - auto: PREDEFINED

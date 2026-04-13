@@ -116,6 +116,7 @@ def test_validate_email_sent(email_cc, email_bcc, expected_result, mocker):
         "item_id",
         "12345678",
         "test.onmicrosoft.com",
+        "test.from.mail",
     )
     assert result == expected_result
 
@@ -136,7 +137,7 @@ def test_validate_email_sent_fails(mocker):
     mocker.patch.object(demisto, "debug")
     return_error_mock = mocker.patch("SendEmailReply.return_error")
     with pytest.raises(Exception):
-        validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")
+        validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "", "")
     assert return_error_mock.call_count == 1
     assert (
         return_error_mock.call_args[0][0]
@@ -163,12 +164,14 @@ def test_validate_email_sent_fails(mocker):
                 "5",
                 "12345678",
                 "soc_sender@company.com",
+                "from_mail",
             ),
             {
                 "to": "end_user@company.com",
                 "inReplyTo": "5",
                 "subject": "<12345678> Email Subject",
                 "cc": "cc_user@company.com",
+                "from": "from_mail",
                 "bcc": "bcc_user@company.com",
                 "htmlBody": "<html><body>Reply body.</body></html",
                 "body": "Reply body.",
@@ -193,6 +196,7 @@ def test_validate_email_sent_fails(mocker):
                 ["10", "12"],
                 "5",
                 "12345678",
+                "",
                 "",
             ),
             {
@@ -224,12 +228,14 @@ def test_validate_email_sent_fails(mocker):
                 "5",
                 "12345678",
                 "soc_sender@company.com",
+                "from_mail",
             ),
             {
                 "to": "end_user@company.com",
                 "inReplyTo": "5",
                 "subject": "<12345678> [2] Email Subject",
                 "cc": "cc_user@company.com",
+                "from": "from_mail",
                 "bcc": "bcc_user@company.com",
                 "htmlBody": "<html><body>Reply body.</body></html",
                 "body": "Reply body.",
@@ -254,6 +260,7 @@ def test_validate_email_sent_fails(mocker):
                 ["10", "12"],
                 "5",
                 "12345678",
+                "",
                 "",
             ),
             {
@@ -322,6 +329,22 @@ GET_EMAIL_RECIPIENTS = [
         "",
         "",
         {"test123@gmail.com", "test1@gmail.com", "avishai@demistodev.onmicrosoft.com"},
+    ),
+    # Mailbox is configured with different capitalization, but should still be removed.
+    (
+        '["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
+        "test123@gmail.com",
+        "",
+        "AVISHAI@DEMISTODEV.ONMICROSOFT.COM",
+        {"test123@gmail.com", "test1@gmail.com"},
+    ),
+    # Service mail is configured with different capitalization, but should still be removed.
+    (
+        '["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
+        "test123@gmail.com",
+        "AVISHAI@DEMISTODEV.ONMICROSOFT.COM",
+        "",
+        {"test123@gmail.com", "test1@gmail.com"},
     ),
 ]
 
@@ -533,7 +556,10 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
     from SendEmailReply import create_thread_context
 
     # Mock function to get current time string to match the expected result
-    mocker.patch("SendEmailReply.get_utc_now", return_value=datetime.strptime("2022-02-04T20:58:20UTC", "%Y-%m-%dT%H:%M:%SUTC"))
+    mocker.patch(
+        "SendEmailReply.get_current_time_in_timezone",
+        return_value="2022-02-04T20:58:20UTC",
+    )
     mocker.patch.object(SendEmailReply, "get_email_threads", return_value=email_threads)
     append_context_mocker = mocker.patch.object(SendEmailReply, "appendContext", return_value=True)
     create_thread_context(
@@ -550,6 +576,7 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
         "end_user@company.com",
         "123",
         "",
+        time_zone="UTC",
     )
     call_args = append_context_mocker.call_args
     if scenario == "thread_found":
@@ -613,6 +640,8 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "attachment.txt",
                 "<html><body>Email Body</body></html>",  # context_html_body
+                "from.mail",
+                "UTC",
             ),
             (  # Expected result for send_new_mail_request
                 1,
@@ -630,6 +659,8 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "Email Body + Signature",  # Updated context_html_body
+                "from.mail",
+                "UTC",
             ),
             "Mail sent successfully. To: end_user@company.com",
         ),
@@ -650,6 +681,8 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "attachment.txt",
                 "<html><body>Email Body</body></html>",
+                "from.mail",
+                "UTC",
             ),
             (  # Expected result for send_new_mail_request
                 1,
@@ -667,6 +700,8 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "Email Body + Signature",
+                "from.mail",
+                "UTC",
             ),
             "Mail sent successfully. To: end_user@company.com Cc: cc_user@company.com",
         ),
@@ -687,6 +722,8 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "attachment.txt",
                 "<html><body>Email Body</body></html>",
+                "from_mail",
+                "UTC",
             ),
             (  # Expected result for send_new_mail_request
                 1,
@@ -704,6 +741,8 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "Email Body + Signature",
+                "from_mail",
+                "UTC",
             ),
             "Mail sent successfully. To: end_user@company.com Bcc: bcc_user@company.com",
         ),
@@ -775,6 +814,8 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
         "soc_sender@company.com",
         "",
         False,
+        "",
+        time_zone="UTC",
     )
     send_new_email_args = send_new_email_mocker.call_args
     return_error_args = return_error_mocker.call_args
@@ -796,6 +837,8 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
             "soc_sender@company.com",
             "",
             "<html><body>Resending email.</body></html>",
+            "",
+            "UTC",
         )
     if expected_result == "fail":
         assert return_error_args.args[0] == (
@@ -843,6 +886,7 @@ def test_single_thread_reply(email_code, mocker):
         "soc_sender@company.com",
         10,
         "soc_sender@company.com",
+        "",
     )
     validate_mail_sent_call_args = validate_email_sent_mocker.call_args
     execute_command_call_args = execute_command_mocker.call_args
@@ -861,6 +905,7 @@ def test_single_thread_reply(email_code, mocker):
         10,
         "12345678",
         "soc_sender@company.com",
+        "",
     )
     if not email_code:
         assert execute_command_call_args.args == ("setIncident", {"id": 1, "customFields": {"emailgeneratedcode": "12345678"}})
@@ -886,6 +931,8 @@ def test_single_thread_reply(email_code, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "",
+                "",
+                "UTC",
             ),
             {
                 "to": "end_user@company.com",
@@ -917,6 +964,8 @@ def test_single_thread_reply(email_code, mocker):
                 "12345678",
                 "",
                 "",
+                "from.mail",
+                "UTC",
             ),
             {
                 "to": "end_user@company.com",
@@ -928,6 +977,7 @@ def test_single_thread_reply(email_code, mocker):
                 "bodyType": "html",
                 "attachIDs": "10,12",
                 "replyTo": "soc_sender@company.com",
+                "from": "from.mail",
             },
         ),
     ],
@@ -1015,6 +1065,8 @@ def test_multi_thread_new(scenario, mocker):
             "bcc_user@company.com",
             "soc_sender@company.com",
             "",
+            "",
+            time_zone="UTC",
         )
         call_args = return_error_mocker.call_args
         assert call_args.args[0] == expected
@@ -1035,6 +1087,8 @@ def test_multi_thread_new(scenario, mocker):
             "bcc_user@company.com",
             "soc_sender@company.com",
             "",
+            "",
+            time_zone="UTC",
         )
         set_incident_call_args = set_incident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
@@ -1055,6 +1109,8 @@ def test_multi_thread_new(scenario, mocker):
             "soc_sender@company.com",
             "",
             "<html>Some HTML</html>",
+            "",
+            "UTC",
         )
         assert send_new_email_mocker_args.args == valid_args
         assert reset_fields_mocker.called is True
@@ -1075,6 +1131,8 @@ def test_multi_thread_new(scenario, mocker):
             "bcc_user@company.com",
             "soc_sender@company.com",
             "",
+            "",
+            time_zone="UTC",
         )
         set_incident_call_args = set_incident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
@@ -1095,6 +1153,8 @@ def test_multi_thread_new(scenario, mocker):
             "soc_sender@company.com",
             "",
             "<html>Some HTML</html>",
+            "",
+            "UTC",
         )
         assert send_new_email_mocker_args.args == valid_args
         assert reset_fields_mocker.called is True
@@ -1192,6 +1252,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            time_zone="UTC",
         )
         expected = (
             0,
@@ -1223,6 +1285,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            "UTC",
         )
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
@@ -1259,6 +1323,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            time_zone="UTC",
         )
 
         expected = (
@@ -1291,6 +1357,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            "UTC",
         )
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
@@ -1328,6 +1396,7 @@ def test_multi_thread_reply(scenario, mocker):
             "dm7iVXBwAkkBJXBb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",
             "87692312",
             "soc_sender@company.com",
+            "",
         )
         create_context_expected = (
             "87692312",
@@ -1343,6 +1412,7 @@ def test_multi_thread_reply(scenario, mocker):
             "end_user@company.com",
             1,
             "",
+            "UTC",
         )
 
         # Execute the tested function
@@ -1359,6 +1429,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            time_zone="UTC",
         )
 
         validate_email_sent_call_args = validate_email_sent_mocker.call_args
@@ -1432,6 +1504,7 @@ def test_main(new_thread, mocker):
             "soc_sender@company.com",
             "123456",
             "mail-sender-instance-1",
+            None,
             False,
         )
         assert single_thread_reply_args.args == expected_args
@@ -1452,6 +1525,8 @@ def test_main(new_thread, mocker):
             "test_bcc@example.com",
             "mail-sender-instance-1",
             "None",
+            None,
+            "UTC",
         )
         assert multi_thread_new_args.args == expected_args
     elif new_thread == "false":
@@ -1469,6 +1544,8 @@ def test_main(new_thread, mocker):
             "mail-sender-instance-1",
             "None",
             False,
+            None,
+            "UTC",
         )
         assert multi_thread_reply_args.args == expected_args
 

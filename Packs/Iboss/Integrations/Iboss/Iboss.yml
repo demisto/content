@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Iboss
 description: Manage block lists, manage allow lists, and perform domain, IP, and/or URL reputation and categorization lookups.
 commonfields:
   id: iboss
@@ -178,7 +179,7 @@ script:
       description: The actual score.
       type: Number
     - contextPath: Domain.Malicious.Description
-      description: The indicator context description
+      description: The indicator context description.
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor that indicator context originated from.
@@ -187,19 +188,19 @@ script:
       description: The domain.
       type: String
     - contextPath: iboss.Domain.isSafeUrl
-      description: Whether entity is deemed safe
+      description: Whether entity is deemed safe.
       type: Number
     - contextPath: iboss.Domain.categories
       description: The entity categories.
       type: String
     - contextPath: DBotScore.activeMalwareSubscription
-      description: Whether active malware subscription is active
+      description: Whether active malware subscription is active.
       type: Number
     - contextPath: iboss.Domain.categorized
       description: Whether entity is categorized.
       type: Number
     - contextPath: iboss.Domain.googleSafeBrowsingDescription
-      description: Google safe browsing description
+      description: Google safe browsing description.
       type: String
     - contextPath: iboss.Domain.message
       description: Entity lookup message.
@@ -217,10 +218,10 @@ script:
       description: Whether Google safe browsing check was successful.
       type: Number
     - contextPath: iboss.Domain.googleSafeBrowsingSupport
-      description: Whether Google safe browsing is supported
+      description: Whether Google safe browsing is supported.
       type: String
     - contextPath: iboss.Domain.malwareEngineAnalysisDescription
-      description: Malware engine analysis description
+      description: Malware engine analysis description.
       type: String
     - contextPath: iboss.Domain.malwareEngineAnalysisEnabled
       description: Whether the malware engine analysis is enabled.
@@ -232,7 +233,7 @@ script:
       description: Whether the entity was deemed safe by the malware engine.
       type: Number
     - contextPath: iboss.Domain.malwareEngineResultCode
-      description: The result code from the malware engine analysis
+      description: The result code from the malware engine analysis.
       type: String
     - contextPath: iboss.Domain.realtimeCloudLookupDomainIsGrey
       description: Whether realtime cloud lookup is grey.
@@ -325,7 +326,7 @@ script:
       description: The actual score.
       type: Number
     - contextPath: IP.Malicious.Description
-      description: The indicator context description
+      description: The indicator context description.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor that indicator context originated from.
@@ -334,19 +335,19 @@ script:
       description: The IP address.
       type: String
     - contextPath: iboss.IP.isSafeUrl
-      description: Whether entity is deemed safe
+      description: Whether entity is deemed safe.
       type: Number
     - contextPath: iboss.IP.categories
       description: The entity categories.
       type: String
     - contextPath: DBotScore.activeMalwareSubscription
-      description: Whether active malware subscription is active
+      description: Whether active malware subscription is active.
       type: Number
     - contextPath: iboss.IP.categorized
       description: Whether entity is categorized.
       type: Number
     - contextPath: iboss.IP.googleSafeBrowsingDescription
-      description: Google safe browsing description
+      description: Google safe browsing description.
       type: String
     - contextPath: iboss.IP.message
       description: Entity lookup message.
@@ -364,10 +365,10 @@ script:
       description: Whether Google safe browsing check was successful.
       type: Number
     - contextPath: iboss.IP.googleSafeBrowsingSupport
-      description: Whether Google safe browsing is supported
+      description: Whether Google safe browsing is supported.
       type: String
     - contextPath: iboss.IP.malwareEngineAnalysisDescription
-      description: Malware engine analysis description
+      description: Malware engine analysis description.
       type: String
     - contextPath: iboss.IP.malwareEngineAnalysisEnabled
       description: Whether the malware engine analysis is enabled.
@@ -379,7 +380,7 @@ script:
       description: Whether the entity was deemed safe by the malware engine.
       type: Number
     - contextPath: iboss.IP.malwareEngineResultCode
-      description: The result code from the malware engine analysis
+      description: The result code from the malware engine analysis.
       type: String
     - contextPath: iboss.IP.realtimeCloudLookupDomainIsGrey
       description: Whether realtime cloud lookup is grey.
@@ -528,7 +529,7 @@ script:
       description: The actual score.
       type: Number
     - contextPath: URL.Malicious.Description
-      description: The indicator context description
+      description: The indicator context description.
       type: String
     - contextPath: URL.Malicious.Vendor
       description: The vendor that indicator context originated from.
@@ -537,19 +538,19 @@ script:
       description: The URL.
       type: String
     - contextPath: iboss.URL.isSafeUrl
-      description: Whether entity is deemed safe
+      description: Whether entity is deemed safe.
       type: Number
     - contextPath: iboss.URL.categories
       description: The entity categories.
       type: String
     - contextPath: DBotScore.activeMalwareSubscription
-      description: Whether active malware subscription is active
+      description: Whether active malware subscription is active.
       type: Number
     - contextPath: iboss.URL.categorized
       description: Whether entity is categorized.
       type: Number
     - contextPath: iboss.URL.googleSafeBrowsingDescription
-      description: Google safe browsing description
+      description: Google safe browsing description.
       type: String
     - contextPath: iboss.URL.message
       description: Entity lookup message.
@@ -567,10 +568,10 @@ script:
       description: Whether Google safe browsing check was successful.
       type: Number
     - contextPath: iboss.URL.googleSafeBrowsingSupport
-      description: Whether Google safe browsing is supported
+      description: Whether Google safe browsing is supported.
       type: String
     - contextPath: iboss.URL.malwareEngineAnalysisDescription
-      description: Malware engine analysis description
+      description: Malware engine analysis description.
       type: String
     - contextPath: iboss.URL.malwareEngineAnalysisEnabled
       description: Whether the malware engine analysis is enabled.
@@ -582,7 +583,7 @@ script:
       description: Whether the entity was deemed safe by the malware engine.
       type: Number
     - contextPath: iboss.URL.malwareEngineResultCode
-      description: The result code from the malware engine analysis
+      description: The result code from the malware engine analysis.
       type: String
     - contextPath: iboss.URL.realtimeCloudLookupDomainIsGrey
       description: Whether realtime cloud lookup is grey.

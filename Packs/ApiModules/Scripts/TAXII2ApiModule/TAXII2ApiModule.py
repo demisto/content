@@ -90,6 +90,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {  # pragma: no cover
     "location": FeedIndicatorType.Location,
     "vulnerability": FeedIndicatorType.CVE,
     "x509-certificate": FeedIndicatorType.X509,
+    "software": FeedIndicatorType.Software,
 }
 STIX_SUPPORTED_TYPES = {
     "url": ("value",),
@@ -781,7 +782,10 @@ class XSOAR2STIXParser:
         else:
             pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
-        labels = self.get_labels_for_indicator(xsoar_indicator.get("score"))
+        score_labels = self.get_labels_for_indicator(xsoar_indicator.get("score")) or []
+        custom_tags = (xsoar_indicator.get("CustomFields") or {}).get("tags") or []
+        merged_labels = list({*score_labels, *[str(t).lower().replace(" ", "-") for t in custom_tags]})
+        labels = merged_labels or score_labels
 
         stix_domain_object: Dict[str, Any] = assign_params(
             type=stix_type,
@@ -811,7 +815,7 @@ class XSOAR2STIXParser:
         Returns:
             The uuid that represents the indicator according to STIX.
         """
-        if stixid := xsoar_indicator.get("CustomFields", {}).get("stixid"):
+        if stixid := (xsoar_indicator.get("CustomFields") or {}).get("stixid"):
             return stixid
         value = value if value else xsoar_indicator.get("value")
         if stix_type == "attack-pattern":
@@ -974,12 +978,15 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_1:
-            custom_fields = xsoar_indicator.get("CustomFields", {})
+            custom_fields = xsoar_indicator.get("CustomFields", {}) or {}
             stix_type = stix_object["type"]
             if stix_type == "malware":
                 stix_object["is_family"] = custom_fields.get("ismalwarefamily", False)
             elif stix_type == "report" and (published := custom_fields.get("published")):
                 stix_object["published"] = published
+            if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
+                tags = custom_fields.get("tags") or [stix_object["type"]]
+                stix_object["labels"] = [str(x).lower().replace(" ", "-") for x in tags]
         return stix_object
 
     def add_sdo_required_field_2_0(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
@@ -1924,6 +1931,15 @@ class STIX2XSOARParser(BaseClient):
         """
         return self.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping="name")
 
+    def parse_sco_software_indicator(self, software_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses software indicator type to cortex format.
+
+        Args:
+            software_obj (dict): indicator as an observable object of software type.
+        """
+        return self.parse_general_sco_indicator(sco_object=software_obj, value_mapping="name")
+
     def parse_sco_account_indicator(self, account_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Parses account indicator type to cortex format.
@@ -2467,6 +2483,7 @@ class STIX2XSOARParser(BaseClient):
             "autonomous-system": self.parse_sco_autonomous_system_indicator,
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
+            "software": self.parse_sco_software_indicator,
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "identity": self.parse_identity,

@@ -1,4 +1,5 @@
 category: IT Services
+provider: Open Source
 commonfields:
   id: AnsibleOpenSSL
   version: -1
@@ -52,7 +53,7 @@ configuration:
   name: become_password
   type: 4
   required: false
-description: Control OpenSSL on a remote Linux hosts
+description: Control OpenSSL on a remote Linux hosts.
 display: Ansible OpenSSL
 fromversion: 6.0.0
 name: AnsibleOpenSSL
@@ -309,7 +310,7 @@ script:
     name: openssl-certificate
     outputs:
     - contextPath: OpenSSL.OpensslCertificate.filename
-      description: Path to the generated Certificate
+      description: Path to the generated Certificate.
       type: string
     - contextPath: OpenSSL.OpensslCertificate.backup_file
       description: Name of backup file created.
@@ -337,7 +338,7 @@ script:
     name: openssl-certificate-info
     outputs:
     - contextPath: OpenSSL.OpensslCertificateInfo.expired
-      description: Whether the certificate is expired (i.e. `notAfter` is in the past)
+      description: Whether the certificate is expired (i.e. `notAfter` is in the past).
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.basic_constraints
       description: Entries in the `basic_constraints` extension, or `none` if extension is not present.
@@ -352,7 +353,7 @@ script:
       description: Whether the `extended_key_usage` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCertificateInfo.extensions_by_oid
-      description: Returns a dictionary for every extension OID
+      description: Returns a dictionary for every extension OID.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.key_usage
       description: Entries in the `key_usage` extension, or `none` if extension is not present.
@@ -385,13 +386,13 @@ script:
       description: The certificate's subject as an ordered list of tuples.
       type: unknown
     - contextPath: OpenSSL.OpensslCertificateInfo.not_after
-      description: '`notAfter` date as ASN.1 TIME'
+      description: '`notAfter` date as ASN.1 TIME.'
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.not_before
-      description: '`notBefore` date as ASN.1 TIME'
+      description: '`notBefore` date as ASN.1 TIME.'
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.public_key
-      description: Certificate's public key in PEM format
+      description: Certificate's public key in PEM format.
       type: string
     - contextPath: OpenSSL.OpensslCertificateInfo.public_key_fingerprints
       description: 'Fingerprints of certificate''s public key. For every hash algorithm available, the fingerprint is computed.'
@@ -562,28 +563,28 @@ script:
     name: openssl-csr
     outputs:
     - contextPath: OpenSSL.OpensslCsr.privatekey
-      description: Path to the TLS/SSL private key the CSR was generated for
+      description: Path to the TLS/SSL private key the CSR was generated for.
       type: string
     - contextPath: OpenSSL.OpensslCsr.filename
-      description: Path to the generated Certificate Signing Request
+      description: Path to the generated Certificate Signing Request.
       type: string
     - contextPath: OpenSSL.OpensslCsr.subject
-      description: A list of the subject tuples attached to the CSR
+      description: A list of the subject tuples attached to the CSR.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.subjectAltName
-      description: The alternative names this CSR is valid for
+      description: The alternative names this CSR is valid for.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.keyUsage
-      description: Purpose for which the public key may be used
+      description: Purpose for which the public key may be used.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.extendedKeyUsage
-      description: Additional restriction on the public key purposes
+      description: Additional restriction on the public key purposes.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.basicConstraints
-      description: Indicates if the certificate belongs to a CA
+      description: Indicates if the certificate belongs to a CA.
       type: unknown
     - contextPath: OpenSSL.OpensslCsr.ocsp_must_staple
-      description: Indicates whether the certificate has the OCSP Must Staple feature enabled
+      description: Indicates whether the certificate has the OCSP Must Staple feature enabled.
       type: boolean
     - contextPath: OpenSSL.OpensslCsr.backup_file
       description: Name of backup file created.
@@ -623,7 +624,7 @@ script:
       description: Whether the `extended_key_usage` extension is critical.
       type: boolean
     - contextPath: OpenSSL.OpensslCsrInfo.extensions_by_oid
-      description: Returns a dictionary for every extension OID
+      description: Returns a dictionary for every extension OID.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.key_usage
       description: Entries in the `key_usage` extension, or `none` if extension is not present.
@@ -650,7 +651,7 @@ script:
       description: The CSR's subject as an ordered list of tuples.
       type: unknown
     - contextPath: OpenSSL.OpensslCsrInfo.public_key
-      description: CSR's public key in PEM format
+      description: CSR's public key in PEM format.
       type: string
     - contextPath: OpenSSL.OpensslCsrInfo.public_key_fingerprints
       description: 'Fingerprints of CSR''s public key. For every hash algorithm available, the fingerprint is computed.'
@@ -747,7 +748,7 @@ script:
       predefined:
       - export
       - parse
-    - description: List of other certificates to include. Pre 2.8 this parameter was called `ca_certificates`
+    - description: List of other certificates to include. Pre 2.8 this parameter was called `ca_certificates`.
       isArray: true
       name: other_certificates
     - description: 'The path to read certificates and private keys from. Must be in PEM format.'
@@ -981,16 +982,16 @@ script:
     name: openssl-privatekey-info
     outputs:
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.can_load_key
-      description: Whether the module was able to load the private key from disk
+      description: Whether the module was able to load the private key from disk.
       type: boolean
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.can_parse_key
-      description: Whether the module was able to parse the private key
+      description: Whether the module was able to parse the private key.
       type: boolean
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.key_is_consistent
       description: 'Whether the key is consistent. Can also return `none` next to `yes` and `no`, to indicate that consistency couldn''t be checked. In case the check returns `no`, the module will fail.'
       type: boolean
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_key
-      description: Private key's public key in PEM format
+      description: Private key's public key in PEM format.
       type: string
     - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_key_fingerprints
       description: 'Fingerprints of private key''s public key. For every hash algorithm available, the fingerprint is computed.'
@@ -1126,12 +1127,12 @@ script:
       isArray: true
       name: host
       required: true
-    - description: The host to get the cert for (IP is fine)
+    - description: The host to get the cert for (IP is fine).
       name: ansible-module-host
       required: true
     - description: 'A PEM file containing one or more root certificates; if present, the cert will be validated against these root certs. Note that this only validates the certificate is signed by the chain; not that the cert is valid for the host presenting it.'
       name: ca_cert
-    - description: The port to connect to
+    - description: The port to connect to.
       name: port
       required: true
     - description: Proxy host used when get a certificate.
@@ -1140,7 +1141,7 @@ script:
       description: Proxy port used when get a certificate.
       name: proxy_port
     - defaultValue: '10'
-      description: The timeout in seconds
+      description: The timeout in seconds.
       name: timeout
     - auto: PREDEFINED
       defaultValue: auto
@@ -1154,34 +1155,34 @@ script:
     name: openssl-get-certificate
     outputs:
     - contextPath: OpenSSL.GetCertificate.cert
-      description: The certificate retrieved from the port
+      description: The certificate retrieved from the port.
       type: string
     - contextPath: OpenSSL.GetCertificate.expired
-      description: Boolean indicating if the cert is expired
+      description: Boolean indicating if the cert is expired.
       type: boolean
     - contextPath: OpenSSL.GetCertificate.extensions
-      description: Extensions applied to the cert
+      description: Extensions applied to the cert.
       type: unknown
     - contextPath: OpenSSL.GetCertificate.issuer
-      description: Information about the issuer of the cert
+      description: Information about the issuer of the cert.
       type: unknown
     - contextPath: OpenSSL.GetCertificate.not_after
-      description: Expiration date of the cert
+      description: Expiration date of the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.not_before
-      description: Issue date of the cert
+      description: Issue date of the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.serial_number
-      description: The serial number of the cert
+      description: The serial number of the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.signature_algorithm
-      description: The algorithm used to sign the cert
+      description: The algorithm used to sign the cert.
       type: string
     - contextPath: OpenSSL.GetCertificate.subject
-      description: Information about the subject of the cert (OU, CN, etc)
+      description: Information about the subject of the cert (OU, CN, etc).
       type: unknown
     - contextPath: OpenSSL.GetCertificate.version
-      description: The version number of the certificate
+      description: The version number of the certificate.
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

@@ -4,7 +4,7 @@ import json
 import re
 from collections.abc import Callable
 from operator import itemgetter
-
+from enum import Enum
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -14,6 +14,11 @@ from re import Match
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     "Other": "resolved_other",
@@ -148,6 +153,9 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+MAX_GET_ISSUES_LIMIT = 50
+ALERTS_TABLE = "ALERTS_VIEW_TABLE"
+
 # Filter object query operators
 EQ = "EQ"
 NEQ = "NEQ"
@@ -187,6 +195,7 @@ class CoreClient(BaseClient):
         json_data=None,  # type: ignore[override]
         params=None,
         data=None,
+        files: dict | None = None,
         timeout=None,
         raise_on_status=False,
         ok_codes=None,
@@ -224,6 +233,10 @@ class CoreClient(BaseClient):
             :param data: The data to send in a 'POST' request.
 
 
+            :type files: ``dict``
+            :param files: The file data to send in a multipart/form-data 'POST' request.
+
+
             :type raise_on_status ``bool``
                 :param raise_on_status: Similar meaning to ``raise_on_redirect``:
                     whether we should raise an exception, or return a response,
@@ -247,6 +260,7 @@ class CoreClient(BaseClient):
                 json_data=json_data,
                 params=params,
                 data=data,
+                files=files,
                 timeout=timeout,
                 raise_on_status=raise_on_status,
                 ok_codes=ok_codes,
@@ -1369,6 +1383,13 @@ class CoreClient(BaseClient):
             json_data={"request_data": {"user_emails": user_emails, "role_name": ""}},
         )
 
+    def get_webapp_counts(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_counts",
+            json_data=request_data,
+        )
+
     def terminate_on_agent(
         self,
         url_suffix_endpoint: str,
@@ -1417,6 +1438,13 @@ class CoreClient(BaseClient):
         )
         return response.get("reply")
 
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data/",
+            json_data=request_data,
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
@@ -1431,6 +1459,267 @@ class AlertFilterArg:
             return self.option_mapper.get(value, value)
 
         return value
+
+
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        operator: str
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        WILDCARD = ("WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        IPLIST_MATCH = ("IPLIST_MATCH", "OR")
+        IP_MATCH = ("IP_MATCH", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
+        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
+        NEQ = ("NEQ", "AND")
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(
+            self,
+            field_name: str,
+            filter_type: "FilterType",
+            values: Any,
+            mappings: dict[str, "FilterType"],
+        ):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(
+        self,
+        name: str,
+        type: "FilterType",
+        values: Any,
+        mappings: dict[str, "FilterType"],
+    ):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start is not None and end is not None:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                values_list = [field.values]
+            else:
+                values_list = field.values
+
+            search_values = []
+            for value in values_list:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [
+                        FilterType.IS_EMPTY,
+                        FilterType.NIS_EMPTY,
+                    ]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        start_time, end_time = None, None
+
+        if end_time_str and not start_time_str:
+            start_time = 0
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str | None,
+    on_demand_fields: list | None = None,
+    sort_order: str | None = "DESC",
+    start_page: int = 0,
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    sort = (
+        [
+            {
+                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
+                "ORDER": sort_order,
+            }
+        ]
+        if sort_field
+        else []
+    )
+    filter_data = {
+        "sort": sort,
+        "paging": {"from": start_page, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
+
+
+def build_webapp_counts_request_data(
+    table_name: str,
+    filter_dict: dict,
+    extra_data: Any | None = None,
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_counts endpoint.
+
+    Args:
+        table_name: The name of the table to query
+        filter_dict: The filter dictionary to apply
+        start_page: The starting index for pagination (default: 0)
+        limit: The limit for pagination (default: 100)
+        extra_data: Optional extra data to include in the request
+
+    Returns:
+        dict: Request data formatted for the get_counts endpoint
+    """
+
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "extraData": extra_data,
+        "filter_data": {
+            "filter": filter_dict,
+        },
+    }
 
 
 def catch_and_exit_gracefully(e):
@@ -1713,6 +2002,7 @@ def create_filter_from_args(args: dict) -> dict:
                     delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
                     search_value = str(delta_in_milliseconds)
 
+            demisto.debug(f"Processing search field: {arg_properties.search_field}")
             and_operator_list.append(
                 {"SEARCH_FIELD": arg_properties.search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
             )
@@ -2053,6 +2343,7 @@ def retrieve_all_endpoints(
     username,
 ):
     endpoints_page = endpoints
+    demisto.debug(f"retrieve_all_endpoints: starting with {len(endpoints)} endpoints from page {page_number}")
     # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
     while endpoints_page:
         page_number += 1
@@ -2077,7 +2368,11 @@ def retrieve_all_endpoints(
             status=status,
             username=username,
         )
+        demisto.debug(f"retrieve_all_endpoints: page {page_number} returned {len(endpoints_page)} endpoints")
+        if endpoints_page:
+            demisto.debug(f"retrieve_all_endpoints: first endpoint ID in page: {endpoints_page[0].get('endpoint_id')}")
         endpoints += endpoints_page
+    demisto.debug(f"retrieve_all_endpoints: finished with total {len(endpoints)} endpoints")
     return endpoints
 
 
@@ -2131,6 +2426,11 @@ def get_endpoints_command(client, args):
     sort_by_first_seen = args.get("sort_by_first_seen")
     sort_by_last_seen = args.get("sort_by_last_seen")
 
+    # When fetching all results without explicit sort, use sort_by_first_seen to ensure stable pagination
+    if all_results and not sort_by_first_seen and not sort_by_last_seen:
+        sort_by_first_seen = "asc"
+        demisto.debug("get_endpoints_command: all_results=true without explicit sort, defaulting to sort_by_first_seen=asc")
+
     username = argToList(args.get("username"))
 
     endpoints = client.get_endpoints(
@@ -2179,6 +2479,23 @@ def get_endpoints_command(client, args):
             status,
             username,
         )
+        # Deduplicate endpoints by endpoint_id to handle any API inconsistencies
+        seen_endpoint_ids = set()
+        unique_endpoints = []
+        duplicates_found = 0
+        for endpoint in endpoints:
+            endpoint_id = endpoint.get("endpoint_id")
+            if endpoint_id not in seen_endpoint_ids:
+                seen_endpoint_ids.add(endpoint_id)
+                unique_endpoints.append(endpoint)
+            else:
+                duplicates_found += 1
+                demisto.debug(f"get_endpoints_command: duplicate endpoint_id found and removed: {endpoint_id}")
+
+        if duplicates_found > 0:
+            demisto.info(f"get_endpoints_command: removed {duplicates_found} duplicate endpoint(s) from results")
+
+        endpoints = unique_endpoints
 
     if convert_timestamp_to_datestring:
         endpoints = convert_timestamps_to_datestring(endpoints)
@@ -2198,7 +2515,9 @@ def get_endpoints_command(client, args):
     if account_context:
         context[Common.Account.CONTEXT_PATH] = account_context
 
-    return CommandResults(readable_output=tableToMarkdown("Endpoints", endpoints), outputs=context, raw_response=endpoints)
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", endpoints, removeNull=True), outputs=context, raw_response=endpoints
+    )
 
 
 def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
@@ -3755,7 +4074,310 @@ ALERT_STATUS_TYPES = {
     "BLOCKED_TRIGGER_4": "prevented (on write)",
 }
 
+ISSUE_FIELDS = {
+    "action_local_port": "action_local_port",
+    "action_local_ip": "action_local_ip",
+    "action_remote_port": "action_remote_port",
+    "action_remote_ip": "action_remote_ip",
+    "actor_process_image_sha256": "actor_process_image_sha256",
+    "action_file_macro_sha256": "action_file_macro_sha256",
+    "issue_source": "alert_source",
+    "user_name": "actor_effective_username",
+    "asset_ids": "asset_ids",
+    "issue_action_status": "alert_action_status",
+    "issue_description": "alert_description",
+    "severity": "severity",
+    "issue_name": "alert_name",
+    "issue_category": "alert_category",
+    "issue_domain": "alert_domain",
+    "start_time": "source_insert_ts",
+    "starred": "starred",
+    "assignee": "assigned_to_pretty",
+    "assignee_mail": "assigned_to",
+    "issue_id": "internal_id",
+    "mitre_technique_id_and_name": "mitre_technique_id_and_name",
+    "status": "status.progress",
+    "actor_process_image_name": "actor_process_image_name",
+    "dst_action_external_hostname": "dst_action_external_hostname",
+    "os_actor_process_image_sha256": "os_actor_process_image_sha256",
+    "agent_id": "agent_id",
+    "Identity_type": "identity_type",
+    "action_external_hostname": "action_external_hostname",
+    "host_ip": "agent_ip_addresses",
+    "actor_process_image_command_line": "actor_process_command_line",
+    "action_process_image_command_line": "action_process_image_command_line",
+    "action_file_image_sha256": "action_file_sha256",
+    "action_registry_name": "action_registry_key_name",
+    "action_registry_key_data": "action_registry_data",
+    "rule_name": "fw_rule",
+    "rule_id": "matching_service_rule_id",
+    "causality_actor_process_image_command_line": "causality_actor_process_command_line",
+    "causality_actor_process_image_sha256": "causality_actor_process_image_sha256",
+    "action_process_image_sha256": "action_process_image_sha256",
+}
+
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
+
+
+def determine_email_or_name(assignee_list: list) -> str:
+    if not assignee_list:
+        return ""
+
+    assignee = assignee_list[0]
+
+    if "@" in assignee:
+        return "email"
+    else:
+        return "name"
+
+
+def determine_issue_assignee_filter_field(assignee_list: list) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (list): The assignee values to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if determine_email_or_name(assignee_list) == "email":
+        return ISSUE_FIELDS["assignee_mail"]
+    else:
+        return ISSUE_FIELDS["assignee"]
+
+
+def create_issues_filter(args) -> dict:
+    """Build filter dictionary for issues based on provided arguments."""
+    filter_builder = FilterBuilder()
+    # To maintain backward compatibility for time_frame
+    filter_builder.add_time_range_field(
+        ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
+    )
+    if args.get("time_frame") and args.get("time_frame") != "custom":
+        filter_builder.add_time_range_field(
+            ISSUE_FIELDS["start_time"], start_time=args.get("time_frame"), end_time=args.get("end_time")
+        )
+    if (starred_arg := args.get("starred")) is not None:
+        filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, argToBoolean(starred_arg))
+    filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.WILDCARD, argToList(args.get("issue_id")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.CONTAINS, argToList(args.get("rule_id")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["causality_actor_process_image_command_line"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("actor_process_image_command_line")),
+    )
+    filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
+    filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("action_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["causality_actor_process_image_sha256"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_sha256")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["action_registry_name"], FilterType.EQ, argToList(args.get("action_registry_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_registry_key_data"], FilterType.CONTAINS, argToList(args.get("action_registry_key_data"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["host_ip"], FilterType.IPLIST_MATCH, argToList(args.get("host_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_ip"], FilterType.IP_MATCH, argToList(args.get("action_local_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_ip"], FilterType.IP_MATCH, argToList(args.get("action_remote_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_port"], FilterType.EQ, argToList(args.get("action_local_port")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_port"], FilterType.EQ, argToList(args.get("action_remote_port")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["dst_action_external_hostname"], FilterType.CONTAINS, argToList(args.get("dst_action_external_hostname"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
+    if issue_domain := args.get("issue_domain"):
+        filter_builder.add_field(
+            ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(ALERT_DOMAIN.get(issue_domain, issue_domain))
+        )
+    filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
+    source_values = [DETECTION_METHOD_HR_TO_MACHINE_NAME.get(val, val) for val in argToList(args.get("issue_source"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_source"], FilterType.CONTAINS, source_values)
+    status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.EQ, status_values)
+    not_status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("not_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.NEQ, not_status_values)
+    severity_values = [SEVERITY_STATUSES.get(val, val) for val in argToList(args.get("severity"))]
+    filter_builder.add_field(ISSUE_FIELDS["severity"], FilterType.EQ, severity_values)
+    action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("issue_action_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_action_status"], FilterType.EQ, action_status_values)
+    filter_builder.add_field_with_mappings(
+        determine_issue_assignee_filter_field(argToList(args.get("assignee", "").lower())),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    filter_dict = filter_builder.to_dict()
+    demisto.debug(f"{filter_dict=}")
+    return filter_dict
+
+
+def get_issues_by_filter_command(client: CoreClient, args: Dict):
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name", None)
+    on_demand_fields = [
+        "action_file_sha256",
+        "action_file_macro_sha256",
+        "action_process_image_sha256",
+        "actor_process_image_sha256",
+        "os_actor_process_image_sha256",
+        "causality_actor_process_image_sha256",
+        "actor_process_command_line",
+        "action_file_path",
+        "alert_action_status",
+        "agent_ip_addresses",
+        "agent_hostname",
+        "Identity_type",
+    ]
+    filter_dict = create_issues_filter(args)
+    custom_filter = {}
+    custom_filter_str = args.get("custom_filter", None)
+
+    if custom_filter_str:
+        try:
+            custom_filter = json.loads(custom_filter_str)
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
+        except Exception as e:
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
+
+    if custom_filter:  # if exists, add custom filter to the built filter
+        if not filter_dict:
+            filter_dict = {"AND": []}
+        if "AND" in custom_filter:
+            filter_obj = custom_filter["AND"]
+            filter_dict["AND"].extend(filter_obj)
+        else:
+            filter_dict["AND"].append(custom_filter)
+
+    page = arg_to_number(args.get("offset")) or arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("limit")) or arg_to_number(args.get("page_size")) or MAX_GET_ISSUES_LIMIT
+    start_index = page * page_size
+    end_index = start_index + page_size
+
+    sort_field = args.get("sort_field", "source_insert_ts")
+    sort_order = args.get("sort_order", "DESC")
+    request_data = build_webapp_request_data(
+        table_name=ALERTS_TABLE,
+        filter_dict=filter_dict,
+        limit=end_index,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=on_demand_fields,
+        start_page=start_index,
+    )
+    demisto.debug(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    demisto.debug(f"{reply=}")
+    data = reply.get("DATA", [])
+
+    filtered_count = int(reply.get("FILTER_COUNT") or "0")
+    returned_count = len(data)
+
+    for issue in data:
+        if "alert_action_status" in issue:
+            action_status = issue.get("alert_action_status")
+            issue["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+    human_readable = [
+        {
+            "Issue ID": alert.get("internal_id"),
+            "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+            "Name": alert.get("alert_name"),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress"))
+            if is_platform()
+            else alert.get("status.progress"),
+            "Category": alert.get("alert_category"),
+            "Action": alert.get("alert_action_status_readable"),
+            "Description": alert.get("alert_description"),
+            "Host IP": alert.get("agent_ip_addresses"),
+            "Host Name": alert.get("agent_hostname"),
+        }
+        for alert in data
+    ]
+    command_results = []
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.Issue",
+            outputs_key_field="internal_id",
+            outputs=data,
+            readable_output=tableToMarkdown("Issue", human_readable),
+            raw_response=data,
+        )
+    )
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.IssueMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
