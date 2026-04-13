@@ -2623,7 +2623,10 @@ script:
             - "false"
         - name: custom_fields
           description: |
-            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            A JSON encoded string representing custom field name-value pairs to update.
+            Preferred format: a JSON object where each key is a field name and each value is the field value (e.g., `{"field1": "value1", "multiselect_field": ["a", "b"]}`).
+            Legacy format also supported: a list of single-key objects (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            For multiSelect fields, the value must be a JSON array (e.g., `["option1", "option2"]`).
           type: String
       outputs:
         - contextPath: Core.Case.modifiedBy

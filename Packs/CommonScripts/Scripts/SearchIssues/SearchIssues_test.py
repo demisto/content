@@ -173,3 +173,96 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
     actual_dict = json.loads(called_args["custom_filter"])
 
     assert actual_dict == expected_dict, "custom_filter structure does not match expected"
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        # empty string values are dropped
+        ({"status": "", "severity": "high"}, {"severity": "high"}),
+        # all empty → empty result
+        ({"status": "", "page": ""}, {}),
+        # empty input dict
+        ({}, {}),
+        # non-empty regular args are kept as-is
+        ({"status": "active", "severity": "low"}, {"status": "active", "severity": "low"}),
+    ],
+)
+def test_remove_empty_string_values_general(args, expected):
+    assert remove_empty_string_values(args) == expected
+
+
+@pytest.mark.parametrize(
+    "key, value, should_keep",
+    [
+        ("page", "1", True),
+        ("page", "0", True),
+        ("page_size", "100", True),
+        ("page", " 3 ", True),
+        ("page_size", " 10 ", True),
+        ("page", "n/a", False),
+        ("page", "invalid_offset", False),
+        ("page", "1.5", False),
+        ("page", "-1", False),
+        ("page", "abc", False),
+        ("page_size", "bad", False),
+        ("page", "", False),
+        ("page_size", "", False),
+    ],
+)
+def test_remove_empty_string_values_numeric_args(key, value, should_keep):
+    result = remove_empty_string_values({key: value})
+    if should_keep:
+        assert result == {key: value}
+    else:
+        assert result == {}
+
+
+@pytest.mark.parametrize(
+    "value, should_keep",
+    [
+        ("42", True),
+        ("1,2,3", True),
+        (["10", "20"], True),
+        ("n/a", False),
+        ("abc", False),
+        ("1,abc,3", False),
+        (["10", "n/a"], False),
+        ("", False),
+    ],
+)
+def test_remove_empty_string_values_numeric_list_args(value, should_keep):
+    result = remove_empty_string_values({"issue_id": value})
+    if should_keep:
+        assert result == {"issue_id": value}
+    else:
+        assert result == {}
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        (
+            # valid regular + valid numeric + valid list
+            {"status": "active", "page": "2", "issue_id": "7,8"},
+            {"status": "active", "page": "2", "issue_id": "7,8"},
+        ),
+        (
+            # empty string dropped, invalid numeric dropped, valid list kept
+            {"severity": "", "page_size": "bad", "issue_id": "1,2"},
+            {"issue_id": "1,2"},
+        ),
+        (
+            # all three categories invalid → empty result
+            {"severity": "", "page": "n/a", "issue_id": "abc"},
+            {},
+        ),
+        (
+            # numeric arg valid, list arg invalid, regular arg kept
+            {"page": "5", "issue_id": "x,y", "status": "closed"},
+            {"page": "5", "status": "closed"},
+        ),
+    ],
+)
+def test_remove_empty_string_values_mixed(args, expected):
+    assert remove_empty_string_values(args) == expected

@@ -503,3 +503,11 @@ script:
 tests:
 - Test-Shodan_v2
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- edr
+- cloud
+- asm
+- cloud_runtime_security
+- cloud_posture
+- exposure_management

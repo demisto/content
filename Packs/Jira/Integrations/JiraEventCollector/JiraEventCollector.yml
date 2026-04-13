@@ -108,7 +108,6 @@ marketplaces:
 - marketplacev2
 - platform
 supportedModules:
-- agentix
 - xsiam
 fromversion: 6.5.0
 triggers:

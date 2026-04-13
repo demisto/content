@@ -2810,23 +2810,37 @@ def parse_custom_fields(custom_fields: str) -> dict:
     """
     Parse and sanitize custom fields from JSON string input.
 
+    Accepts two formats:
+    - Dict: ``{"field1": "value1", "field2": ["a", "b"]}``
+    - List of single-key objects (legacy): ``[{"field1": "value1"}, {"field2": ["a", "b"]}]``
+
     Args:
-        custom_fields: JSON string containing array of custom field objects
+        custom_fields: JSON string in either dict or list-of-objects format.
 
     Returns:
-        dict: Dictionary with sanitized alphanumeric keys and string values,
-              duplicate keys are ignored (first occurrence wins)
+        dict: Dictionary with sanitized alphanumeric keys and native values.
+              Values are passed as-is (no stringification) so that multiselect
+              list values, booleans, and numbers reach the API in the correct type.
+              Duplicate keys are ignored (first occurrence wins).
     """
-    custom_fields = safe_load_json(custom_fields)
+    parsed = safe_load_json(custom_fields)
 
-    parsed_fields = {}
+    parsed_fields: dict = {}
 
-    for custom_field in custom_fields:
-        for key, value in custom_field.items():
-            # Sanitize key: remove non-alphanumeric characters
-            sanitized_key = "".join(char for char in key if char.isalnum())
-            if sanitized_key and sanitized_key not in parsed_fields:
-                parsed_fields[sanitized_key] = str(value)
+    if isinstance(parsed, dict):
+        # New preferred format: {"field1": "value1", "field2": ["a", "b"]}
+        raw_items = list(parsed.items())
+    elif isinstance(parsed, list):
+        # Legacy format: [{"field1": "value1"}, {"field2": ["a", "b"]}]
+        raw_items = [(k, v) for obj in parsed if isinstance(obj, dict) for k, v in obj.items()]
+    else:
+        return {}
+
+    for key, value in raw_items:
+        # Sanitize key: remove non-alphanumeric characters
+        sanitized_key = "".join(char for char in key if char.isalnum())
+        if sanitized_key and sanitized_key not in parsed_fields:
+            parsed_fields[sanitized_key] = value
 
     return parsed_fields
 
@@ -3463,7 +3477,10 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+            "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+        }
         for f in fields_data
         if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
@@ -3480,7 +3497,19 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                 f" be set with custom_fields argument."
             )
         elif field_name in custom_fields:
-            valid_fields[field_name] = field_value
+            field_type = custom_fields[field_name]["field_type"]
+            if field_type == "multiSelect" and not isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
+                    f" Received: {field_value!r}"
+                )
+            elif field_type == "shortText" and isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type shortText and does not accept a list value."
+                    f" Provide a single value instead."
+                )
+            else:
+                valid_fields[field_name] = field_value
         else:
             error_messages.append(f"Field '{field_name}' does not exist.")
 

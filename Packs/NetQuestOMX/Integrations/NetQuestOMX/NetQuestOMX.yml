@@ -140,3 +140,5 @@ script:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

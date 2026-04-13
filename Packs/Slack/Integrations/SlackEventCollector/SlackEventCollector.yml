@@ -88,7 +88,6 @@ marketplaces:
 - marketplacev2
 - platform
 supportedModules:
-- agentix
 - xsiam
 fromversion: 6.8.0
 tests:

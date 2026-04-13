@@ -5450,3 +5450,252 @@ def test_response_size_validator_message_format(mocker):
     assert "20" in warning
     assert "normal usage size" in warning
     assert "exceeds" in warning.lower()
+
+
+# ===================== Tests for add_investigation_note retry/fallback =====================
+
+
+def test_add_investigation_note_success_without_notable_time():
+    """
+    Given:
+        - A mock Splunk service and valid note parameters.
+    When:
+        - add_investigation_note is called and the first service.post call succeeds.
+    Then:
+        - The result matches the expected response.
+        - service.post is called exactly once (without notable_time).
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "note-123", "content": "test note"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.add_investigation_note(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        content="test note",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc/notes",
+        body=json.dumps({"content": "test note"}),
+    )
+
+
+def test_add_investigation_note_fallback_with_notable_time():
+    """
+    Given:
+        - A mock Splunk service where the first service.post call raises an exception.
+    When:
+        - add_investigation_note is called.
+    Then:
+        - The function retries with notable_time=now and returns the result from the second call.
+        - service.post is called exactly twice.
+        - The second call includes notable_time="now".
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "note-456", "content": "fallback note"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.side_effect = [Exception("API error"), mock_response]
+
+    result = splunk.add_investigation_note(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        content="fallback note",
+    )
+
+    assert result == expected_result
+    assert mock_service.post.call_count == 2
+    second_call = mock_service.post.call_args_list[1]
+    assert second_call.kwargs.get("notable_time") == "now"
+
+
+def test_add_investigation_note_both_fail():
+    """
+    Given:
+        - A mock Splunk service where both service.post calls raise exceptions.
+    When:
+        - add_investigation_note is called.
+    Then:
+        - The second exception propagates to the caller.
+        - service.post is called exactly twice.
+    """
+    mock_service = MagicMock()
+    mock_service.post.side_effect = [Exception("First error"), Exception("Second error")]
+
+    with pytest.raises(Exception, match="Second error"):
+        splunk.add_investigation_note(
+            service=mock_service,
+            investigation_or_finding_id="finding-abc",
+            content="will fail",
+        )
+
+    assert mock_service.post.call_count == 2
+
+
+def test_add_investigation_note_with_note_type():
+    """
+    Given:
+        - A mock Splunk service and a note_type parameter is provided.
+    When:
+        - add_investigation_note is called with note_type="Task".
+    Then:
+        - The request body includes both "content" and "type" fields.
+        - service.post is called once with the correct body.
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "note-789", "content": "typed note", "type": "Task"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.add_investigation_note(
+        service=mock_service,
+        investigation_or_finding_id="finding-xyz",
+        content="typed note",
+        note_type="Task",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-xyz/notes",
+        body=json.dumps({"content": "typed note", "type": "Task"}),
+    )
+
+
+# ===================== Tests for update_investigation_or_finding retry/fallback =====================
+
+
+def test_update_investigation_or_finding_success_without_notable_time():
+    """
+    Given:
+        - A mock Splunk service and valid update fields.
+    When:
+        - update_investigation_or_finding is called and the first service.post call succeeds.
+    Then:
+        - The result matches the expected response.
+        - service.post is called exactly once (without notable_time).
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "closed"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="closed",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "closed"}),
+    )
+
+
+def test_update_investigation_or_finding_fallback_with_notable_time():
+    """
+    Given:
+        - A mock Splunk service where the first service.post call raises an exception.
+    When:
+        - update_investigation_or_finding is called.
+    Then:
+        - The function retries with notable_time=now and returns the result from the second call.
+        - service.post is called exactly twice.
+        - The second call includes notable_time="now".
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "owner": "admin"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.side_effect = [Exception("API error"), mock_response]
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        owner="admin",
+    )
+
+    assert result == expected_result
+    assert mock_service.post.call_count == 2
+    second_call = mock_service.post.call_args_list[1]
+    assert second_call.kwargs.get("notable_time") == "now"
+
+
+def test_update_investigation_or_finding_both_fail(mocker):
+    """
+    Given:
+        - A mock Splunk service where both service.post calls raise exceptions.
+    When:
+        - update_investigation_or_finding is called.
+    Then:
+        - The second Exception is raised (from the retry attempt).
+        - service.post is called exactly twice.
+    """
+    mock_service = MagicMock()
+    mock_service.post.side_effect = [Exception("First error"), Exception("Second error")]
+
+    with pytest.raises(Exception, match="Second error"):
+        splunk.update_investigation_or_finding(
+            service=mock_service,
+            investigation_or_finding_id="finding-abc",
+            status="closed",
+        )
+
+    assert mock_service.post.call_count == 2
+
+
+def test_update_investigation_or_finding_no_fields():
+    """
+    Given:
+        - A mock Splunk service and no update fields provided (all None).
+    When:
+        - update_investigation_or_finding is called without any fields.
+    Then:
+        - Returns a dict with success=False and a message about no fields.
+        - service.post is never called.
+    """
+    mock_service = MagicMock()
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+    )
+
+    assert result == {"success": False, "message": "No fields provided to update"}
+    mock_service.post.assert_not_called()
+
+
+def test_update_investigation_or_finding_partial_fields():
+    """
+    Given:
+        - A mock Splunk service and only some update fields provided.
+    When:
+        - update_investigation_or_finding is called with owner and urgency (but not status or disposition).
+    Then:
+        - The request body contains only the provided fields.
+        - service.post is called once with the correct partial body.
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "owner": "admin", "urgency": "high"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        owner="admin",
+        urgency="high",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"owner": "admin", "urgency": "high"}),
+    )
