@@ -14649,3 +14649,669 @@ def test_eks_update_access_entry_command_outputs_key_field(mocker):
     assert result.outputs_key_field == ["clusterName", "principalArn"]
     assert result.outputs["clusterName"] == "prod-cluster"
     assert result.outputs["principalArn"] == "arn:aws:iam::123456789012:role/admin-role"
+
+
+# ==================== CloudWatch Logs Tests ====================
+
+
+def test_log_group_create_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid log group arguments.
+    When: log_group_create_command is called with a successful response.
+    Then: It should return CommandResults with a success message containing the log group name.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.create_log_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.log_group_create_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "my-log-group" in result.readable_output
+    mock_client.create_log_group.assert_called_once_with(logGroupName="my-log-group")
+
+
+def test_log_group_create_command_with_optional_params(mocker):
+    """
+    Given: A mocked CloudWatch Logs client with all optional parameters.
+    When: log_group_create_command is called with kms_key_id, log_group_class, tags, and deletion_protection_enabled.
+    Then: It should pass all parameters to the API call.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.create_log_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "kms_key_id": "arn:aws:kms:us-east-1:123456789012:key/my-key",
+        "log_group_class": "STANDARD",
+        "tags": '{"Environment": "Production"}',
+        "deletion_protection_enabled": "true",
+    }
+
+    result = CloudWatchLogs.log_group_create_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_log_group.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
+    assert call_kwargs["kmsKeyId"] == "arn:aws:kms:us-east-1:123456789012:key/my-key"
+    assert call_kwargs["logGroupClass"] == "STANDARD"
+    assert call_kwargs["tags"] == {"Environment": "Production"}
+    assert call_kwargs["deletionProtectionEnabled"] is True
+
+
+def test_log_stream_create_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid log stream arguments.
+    When: log_stream_create_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.create_log_stream.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "log_stream_name": "my-log-stream",
+    }
+
+    result = CloudWatchLogs.log_stream_create_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "my-log-stream" in result.readable_output
+    assert "my-log-group" in result.readable_output
+    mock_client.create_log_stream.assert_called_once_with(logGroupName="my-log-group", logStreamName="my-log-stream")
+
+
+def test_log_group_delete_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and a valid log group name.
+    When: log_group_delete_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.delete_log_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.log_group_delete_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "my-log-group" in result.readable_output
+    mock_client.delete_log_group.assert_called_once_with(logGroupName="my-log-group")
+
+
+def test_log_stream_delete_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid log stream arguments.
+    When: log_stream_delete_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.delete_log_stream.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "log_stream_name": "my-log-stream",
+    }
+
+    result = CloudWatchLogs.log_stream_delete_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "my-log-stream" in result.readable_output
+    assert "my-log-group" in result.readable_output
+    mock_client.delete_log_stream.assert_called_once_with(logGroupName="my-log-group", logStreamName="my-log-stream")
+
+
+def test_log_events_filter_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns log events.
+    When: log_events_filter_command is called with a log group name.
+    Then: It should return CommandResults with parsed events in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.filter_log_events.return_value = {
+        "events": [
+            {
+                "logStreamName": "stream-1",
+                "timestamp": 1609459200000,
+                "message": "Test log message",
+                "ingestionTime": 1609459201000,
+                "eventId": "event-123",
+            }
+        ],
+        "nextToken": None,
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.log_events_filter_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    events = result.outputs["AWS.CloudWatchLogs.Events(val.EventId && val.EventId == obj.EventId)"]
+    assert len(events) == 1
+    assert events[0]["LogStreamName"] == "stream-1"
+    assert events[0]["Message"] == "Test log message"
+    assert events[0]["EventId"] == "event-123"
+
+
+def test_log_events_filter_command_with_pagination(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns events with a nextToken.
+    When: log_events_filter_command is called.
+    Then: It should include the nextToken in outputs and readable output.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.filter_log_events.return_value = {
+        "events": [
+            {
+                "logStreamName": "stream-1",
+                "timestamp": 1609459200000,
+                "message": "Test",
+                "ingestionTime": 1609459201000,
+                "eventId": "event-123",
+            }
+        ],
+        "nextToken": "abc123token",
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.log_events_filter_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["AWS.CloudWatchLogs(true)"]["EventsNextToken"] == "abc123token"
+    assert "Next Page Token: abc123token" in result.readable_output
+
+
+def test_log_events_filter_command_no_events(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns no events.
+    When: log_events_filter_command is called.
+    Then: It should return CommandResults with "No events were found." message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.filter_log_events.return_value = {"events": [], "nextToken": None}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.log_events_filter_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "No events were found." in result.readable_output
+
+
+def test_log_events_filter_command_with_all_params(mocker):
+    """
+    Given: A mocked CloudWatch Logs client with all optional filter parameters.
+    When: log_events_filter_command is called with all parameters.
+    Then: It should pass all parameters to the API call.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.filter_log_events.return_value = {"events": [], "nextToken": None}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "log_group_identifier": "arn:aws:logs:us-east-1:123456789012:log-group:my-log-group",
+        "log_stream_names": "stream-1,stream-2",
+        "log_stream_name_prefix": "stream-",
+        "start_time": "1609459200000",
+        "end_time": "1609545600000",
+        "filter_pattern": "ERROR",
+        "limit": "100",
+        "next_token": "token123",
+        "unmask": "true",
+    }
+
+    CloudWatchLogs.log_events_filter_command(mock_client, args)
+
+    call_kwargs = mock_client.filter_log_events.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
+    assert call_kwargs["logGroupIdentifier"] == "arn:aws:logs:us-east-1:123456789012:log-group:my-log-group"
+    assert call_kwargs["logStreamNames"] == ["stream-1", "stream-2"]
+    assert call_kwargs["logStreamNamePrefix"] == "stream-"
+    assert call_kwargs["startTime"] == 1609459200000
+    assert call_kwargs["endTime"] == 1609545600000
+    assert call_kwargs["filterPattern"] == "ERROR"
+    assert call_kwargs["limit"] == 100
+    assert call_kwargs["nextToken"] == "token123"
+    assert call_kwargs["unmask"] is True
+
+
+def test_log_groups_describe_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns log groups.
+    When: log_groups_describe_command is called.
+    Then: It should return CommandResults with parsed log groups in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_log_groups.return_value = {
+        "logGroups": [
+            {
+                "logGroupName": "my-log-group",
+                "creationTime": 1609459200000,
+                "arn": "arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*",
+                "retentionInDays": 30,
+                "metricFilterCount": 2,
+                "storedBytes": 1024,
+            }
+        ],
+        "nextToken": None,
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName)"]
+    assert len(data) == 1
+    assert data[0]["LogGroupName"] == "my-log-group"
+    assert data[0]["RetentionInDays"] == 30
+    assert data[0]["MetricFilterCount"] == 2
+    assert data[0]["StoredBytes"] == 1024
+
+
+def test_log_groups_describe_command_with_pagination(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns log groups with a nextToken.
+    When: log_groups_describe_command is called.
+    Then: It should include the nextToken in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_log_groups.return_value = {
+        "logGroups": [{"logGroupName": "group-1", "creationTime": 1609459200000, "arn": "arn:1"}],
+        "nextToken": "next-page-token",
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "1"}
+
+    result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
+
+    assert result.outputs["AWS.CloudWatchLogs(true)"]["LogGroupsNextToken"] == "next-page-token"
+    assert "Next Page Token: next-page-token" in result.readable_output
+
+
+def test_log_groups_describe_command_no_results(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns no log groups.
+    When: log_groups_describe_command is called.
+    Then: It should return CommandResults with "No log groups were found." message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_log_groups.return_value = {"logGroups": [], "nextToken": None}
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
+
+    assert "No log groups were found." in result.readable_output
+
+
+def test_log_streams_describe_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns log streams.
+    When: log_streams_describe_command is called.
+    Then: It should return CommandResults with parsed log streams in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_log_streams.return_value = {
+        "logStreams": [
+            {
+                "logStreamName": "my-stream",
+                "creationTime": 1609459200000,
+                "arn": "arn:aws:logs:us-east-1:123456789012:log-group:my-group:log-stream:my-stream",
+                "firstEventTimestamp": 1609459200000,
+                "lastEventTimestamp": 1609545600000,
+                "storedBytes": 512,
+                "lastIngestionTime": 1609545601000,
+                "uploadSequenceToken": "token-abc",
+            }
+        ],
+        "nextToken": None,
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-group"}
+
+    result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    data = result.outputs["AWS.CloudWatchLogs.LogStreams(val.Arn && val.Arn == obj.Arn)"]
+    assert len(data) == 1
+    assert data[0]["LogStreamName"] == "my-stream"
+    assert data[0]["LogGroupName"] == "my-group"
+    assert data[0]["FirstEventTimestamp"] == 1609459200000
+    assert data[0]["StoredBytes"] == 512
+    assert data[0]["UploadSequenceToken"] == "token-abc"
+
+
+def test_log_streams_describe_command_with_pagination(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns log streams with a nextToken.
+    When: log_streams_describe_command is called.
+    Then: It should include the nextToken in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_log_streams.return_value = {
+        "logStreams": [{"logStreamName": "stream-1", "creationTime": 1609459200000, "arn": "arn:1"}],
+        "nextToken": "stream-next-token",
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-group"}
+
+    result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
+
+    assert result.outputs["AWS.CloudWatchLogs(true)"]["LogStreamsNextToken"] == "stream-next-token"
+
+
+def test_retention_policy_put_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid retention policy arguments.
+    When: retention_policy_put_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.put_retention_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "retention_in_days": "30",
+    }
+
+    result = CloudWatchLogs.retention_policy_put_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "30" in result.readable_output
+    assert "my-log-group" in result.readable_output
+    mock_client.put_retention_policy.assert_called_once_with(logGroupName="my-log-group", retentionInDays=30)
+
+
+def test_retention_policy_delete_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and a valid log group name.
+    When: retention_policy_delete_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.delete_retention_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.retention_policy_delete_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "my-log-group" in result.readable_output
+    mock_client.delete_retention_policy.assert_called_once_with(logGroupName="my-log-group")
+
+
+def test_log_events_put_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid log event arguments.
+    When: log_events_put_command is called.
+    Then: It should return CommandResults with the next sequence token.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.put_log_events.return_value = {"nextSequenceToken": "next-token-abc"}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "log_stream_name": "my-log-stream",
+        "timestamp": "1609459200000",
+        "message": "Test log event",
+    }
+
+    result = CloudWatchLogs.log_events_put_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["NextSequenceToken"] == "next-token-abc"
+    call_kwargs = mock_client.put_log_events.call_args[1]
+    assert call_kwargs["logGroupName"] == "my-log-group"
+    assert call_kwargs["logStreamName"] == "my-log-stream"
+    assert call_kwargs["logEvents"][0]["timestamp"] == 1609459200000
+    assert call_kwargs["logEvents"][0]["message"] == "Test log event"
+
+
+def test_log_events_put_command_with_sequence_token(mocker):
+    """
+    Given: A mocked CloudWatch Logs client with a sequence token argument.
+    When: log_events_put_command is called with a sequence_token.
+    Then: It should include the sequenceToken in the API call.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.put_log_events.return_value = {"nextSequenceToken": "next-token-def"}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "log_stream_name": "my-log-stream",
+        "timestamp": "1609459200000",
+        "message": "Test",
+        "sequence_token": "prev-token-abc",
+    }
+
+    CloudWatchLogs.log_events_put_command(mock_client, args)
+
+    call_kwargs = mock_client.put_log_events.call_args[1]
+    assert call_kwargs["sequenceToken"] == "prev-token-abc"
+
+
+def test_metric_filter_put_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid metric filter arguments.
+    When: metric_filter_put_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.put_metric_filter.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "filter_name": "ErrorFilter",
+        "filter_pattern": "ERROR",
+        "metric_name": "ErrorCount",
+        "metric_namespace": "MyApp",
+        "metric_value": "1",
+    }
+
+    result = CloudWatchLogs.metric_filter_put_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "ErrorFilter" in result.readable_output
+    assert "my-log-group" in result.readable_output
+    call_kwargs = mock_client.put_metric_filter.call_args[1]
+    assert call_kwargs["filterName"] == "ErrorFilter"
+    assert call_kwargs["filterPattern"] == "ERROR"
+    assert call_kwargs["metricTransformations"][0]["metricName"] == "ErrorCount"
+
+
+def test_metric_filter_put_command_with_optional_params(mocker):
+    """
+    Given: A mocked CloudWatch Logs client with all optional metric filter parameters.
+    When: metric_filter_put_command is called with default_value, dimensions, unit, and apply_on_transformed_logs.
+    Then: It should pass all parameters to the API call.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.put_metric_filter.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "filter_name": "ErrorFilter",
+        "filter_pattern": "ERROR",
+        "metric_name": "ErrorCount",
+        "metric_namespace": "MyApp",
+        "metric_value": "1",
+        "default_value": "0",
+        "dimensions": '{"EventType": "$.eventType"}',
+        "unit": "Count",
+        "apply_on_transformed_logs": "true",
+    }
+
+    CloudWatchLogs.metric_filter_put_command(mock_client, args)
+
+    call_kwargs = mock_client.put_metric_filter.call_args[1]
+    transformation = call_kwargs["metricTransformations"][0]
+    assert transformation["defaultValue"] == 0.0
+    assert transformation["dimensions"] == {"EventType": "$.eventType"}
+    assert transformation["unit"] == "Count"
+    assert call_kwargs["applyOnTransformedLogs"] is True
+
+
+def test_metric_filter_delete_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client and valid metric filter arguments.
+    When: metric_filter_delete_command is called with a successful response.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.delete_metric_filter.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "log_group_name": "my-log-group",
+        "filter_name": "ErrorFilter",
+    }
+
+    result = CloudWatchLogs.metric_filter_delete_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "ErrorFilter" in result.readable_output
+    assert "my-log-group" in result.readable_output
+    mock_client.delete_metric_filter.assert_called_once_with(logGroupName="my-log-group", filterName="ErrorFilter")
+
+
+def test_metric_filters_describe_command_success(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns metric filters.
+    When: metric_filters_describe_command is called.
+    Then: It should return CommandResults with parsed metric filters in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_metric_filters.return_value = {
+        "metricFilters": [
+            {
+                "filterName": "ErrorFilter",
+                "filterPattern": "ERROR",
+                "creationTime": 1609459200000,
+                "logGroupName": "my-log-group",
+                "metricTransformations": [{"metricName": "ErrorCount", "metricNamespace": "MyApp", "metricValue": "1"}],
+            }
+        ],
+        "nextToken": None,
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    raw = result.outputs["AWS.CloudWatchLogs.MetricFilters(val.FilterName && val.FilterName == obj.FilterName)"]
+    assert len(raw) == 1
+    assert raw[0]["filterName"] == "ErrorFilter"
+
+
+def test_metric_filters_describe_command_with_pagination(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns metric filters with a nextToken.
+    When: metric_filters_describe_command is called.
+    Then: It should include the nextToken in outputs.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_metric_filters.return_value = {
+        "metricFilters": [
+            {
+                "filterName": "Filter1",
+                "filterPattern": "ERROR",
+                "creationTime": 1609459200000,
+                "logGroupName": "my-log-group",
+            }
+        ],
+        "nextToken": "metric-next-token",
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-log-group"}
+
+    result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
+
+    assert result.outputs["AWS.CloudWatchLogs(true)"]["MetricFiltersNextToken"] == "metric-next-token"
+    assert "Next Page Token: metric-next-token" in result.readable_output
+
+
+def test_metric_filters_describe_command_no_results(mocker):
+    """
+    Given: A mocked CloudWatch Logs client that returns no metric filters.
+    When: metric_filters_describe_command is called.
+    Then: It should return CommandResults with "No metric filters were found." message.
+    """
+    from AWS import CloudWatchLogs
+
+    mock_client = mocker.Mock()
+    mock_client.describe_metric_filters.return_value = {"metricFilters": [], "nextToken": None}
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
+
+    assert "No metric filters were found." in result.readable_output

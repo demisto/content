@@ -5329,12 +5329,12 @@ Lists the specified metric filters. You can list all the metric filters or filte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.MetricFilters.filterName | string | The name of the metric filter. |
-| AWS.CloudWatchLogs.MetricFilters.filterPattern | string | A symbolic description of how CloudWatch Logs should interpret the data in each log event. |
-| AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName | string | The name of the CloudWatch metric. |
-| AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace | string | The namespace of the CloudWatch metric. |
-| AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue | string | The value to publish to the CloudWatch metric when a filter pattern matches a log event. |
-| AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue | string | The value to emit when a filter pattern does not match a log event. This value can be null. |
-| AWS.CloudWatchLogs.MetricFilters.creationTime | date | The creation time of the metric filter, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
-| AWS.CloudWatchLogs.MetricFilters.logGroupName | string | The name of the log group. |
+| AWS.CloudWatchLogs.MetricFilters.FilterName | string | The name of the metric filter. |
+| AWS.CloudWatchLogs.MetricFilters.FilterPattern | string | A symbolic description of how CloudWatch Logs should interpret the data in each log event. |
+| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricName | string | The name of the CloudWatch metric. |
+| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricNamespace | string | The namespace of the CloudWatch metric. |
+| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricValue | string | The value to publish to the CloudWatch metric when a filter pattern matches a log event. |
+| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.DefaultValue | string | The value to emit when a filter pattern does not match a log event. This value can be null. |
+| AWS.CloudWatchLogs.MetricFilters.CreationTime | date | The creation time of the metric filter, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
+| AWS.CloudWatchLogs.MetricFilters.LogGroupName | string | The name of the log group. |
 | AWS.CloudWatchLogs.MetricFiltersNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
