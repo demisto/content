@@ -1,5 +1,6 @@
 import gzip
 import json
+import importlib
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -1185,3 +1186,27 @@ def test_xql_library_delete_command(mocker):
 
     assert response.readable_output == "XQL queries deleted successfully."
     res.assert_called_once_with({"request_data": {"xql_query_names": ["test_query"], "xql_query_tags": ["test_tag"]}})
+
+
+def test_is_core_available_calculation_with_bypass_true(mocker):
+    """
+    Given:
+    - bypass_internal_call is "true"
+    - Version requirements are met
+    - Not using engine
+    When:
+    - Reloading CoreXQLApiModule
+    Then:
+    - IS_CORE_AVAILABLE should be False
+    """
+    mocker.patch("CoreXQLApiModule.demisto.params", return_value={"bypass_internal_call": "true"})
+    mocker.patch("CoreXQLApiModule.is_xsiam", return_value=True)
+    mocker.patch("CoreXQLApiModule.is_platform", return_value=False)
+    mocker.patch("CoreXQLApiModule.is_demisto_version_ge", return_value=True)
+    mocker.patch("CoreXQLApiModule.is_using_engine", return_value=False)
+
+    import CoreXQLApiModule
+    importlib.reload(CoreXQLApiModule)
+
+
+    assert CoreXQLApiModule.IS_CORE_AVAILABLE is False

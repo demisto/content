@@ -11,10 +11,14 @@ urllib3.disable_warnings()
 DEFAULT_LIMIT = 100
 SERVER_VERSION = "8.7.0"
 BUILD_VERSION = "1247804"
-# To use apiCall, the machine must have a version greater than 8.7.0-1247804,
-# and is_using_engine()=False.
+
+# To use apiCall, the following must be met:
+# - bypass_internal_call is False,
+# - version > 8.7.0-1247804,
+# - and is_using_engine() is False.
 IS_CORE_AVAILABLE = (
-    (is_xsiam() or is_platform())
+    not argToBoolean(demisto.params().get("bypass_internal_call", "false"))
+    and (is_xsiam() or is_platform())
     and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION)
     and not is_using_engine()
 )

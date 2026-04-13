@@ -37,6 +37,16 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- supportedModules: []
+  section: Connect
+  advanced: true
+  display: Force External Query
+  name: bypass_internal_call
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: If enabled, forces the system to query the external server directly,
+    bypassing available internal calls.
 description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
 display: Cortex XDR - XQL Query Engine
 name: Cortex XDR - XQL Query Engine

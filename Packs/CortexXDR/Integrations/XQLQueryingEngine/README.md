@@ -13,6 +13,7 @@ For additional information see [Predefined User Roles for Cortex XDR](https://do
 | API Key | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
+| Force External Query | False |
 
 ## Commands
 
