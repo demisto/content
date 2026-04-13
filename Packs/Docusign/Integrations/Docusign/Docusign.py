@@ -915,7 +915,9 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
         if command == "test-module":
-            return_results("Please run the command 'docusign-auth-test' to test the full authentication flow and API connectivity.")
+            return_results(
+                "Please run the command 'docusign-auth-test' to test the full authentication flow and API connectivity."
+            )
 
         elif command == "docusign-auth-test":
             return_results(test_module())
