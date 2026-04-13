@@ -1,10 +1,13 @@
 ## Cyber Triage Integration
 
-Initiate non-persistent endpoint agent forensic triage collections on Windows endpoints directly from Cortex XSOAR.
+Deploy the Cyber Triage Collector from XSOR to a Windows endpoint to gather data for a SOC investigation.  Cyber Triage automates the analysis of endpoint data to make sure you can quickly focus on the relevant data. 
 
 This integration was integrated and tested with Cyber Triage v3.16.0.
 
-Documentation can be found at [https://docs.cybertriage.com/](https://docs.cybertriage.com/).
+Cyber Triage Website: [https://cybertriage.com](https://cybertriage.com/)
+User Manual: [https://docs.cybertriage.com/](https://docs.cybertriage.com/)
+Download: [https://www.cybertriage.com/download-eval/](https://www.cybertriage.com/download-eval/)
+
 
 ## Requirements
 
