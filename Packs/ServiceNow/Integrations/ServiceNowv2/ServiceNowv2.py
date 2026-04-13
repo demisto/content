@@ -11,7 +11,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -3500,7 +3500,9 @@ def get_modified_remote_data_command(
 ) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
-    assert parsed_date is not None, f"could not parse {remote_args.last_update}"
+    if parsed_date is None:
+        demisto.debug(f"Could not parse lastUpdate='{remote_args.last_update}', falling back to epoch (1970-01-01 00:00:00)")
+        parsed_date = datetime(1970, 1, 1, tzinfo=UTC)
     last_update = parsed_date.strftime(DATE_FORMAT)
 
     demisto.debug(f"Running get-modified-remote-data command. Last update is: {last_update}")
