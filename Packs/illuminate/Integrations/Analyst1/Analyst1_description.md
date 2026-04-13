@@ -1,8 +1,3 @@
-### Partner Contributed Integration
-#### Integration Author: Analyst1
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **Email**: [support@analyst1.com](mailto:support@analyst1.com)
-***
 # Analyst1 Integration Configuration
 
 This integration connects XSOAR to the Analyst1 threat intelligence platform to enrich indicators and manage sensor taskings.
@@ -49,7 +44,3 @@ Enable "Apply Analyst1 entity-type tags to indicators" to automatically tag indi
 For assistance with this integration, contact Analyst1 support:
 - **Email**: support@analyst1.com
 - **Documentation**: https://xsoar.pan.dev/docs/reference/integrations/analyst1
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/analyst1)

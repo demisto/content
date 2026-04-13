@@ -2310,6 +2310,66 @@ def test_analyst1_evidence_search_command_with_optional_filters(mocker, mock_cli
     )
 
 
+def test_analyst1_evidence_search_command_tlp_single_value(mocker, mock_client):
+    """Single TLP string value is passed through to API unchanged"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"tlp": "AMBER"}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] == "AMBER"
+
+
+def test_analyst1_evidence_search_command_tlp_csv_string(mocker, mock_client):
+    """CSV TLP string is passed through to API as comma-separated string"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"tlp": "AMBER,GREEN"}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] == "AMBER,GREEN"
+
+
+def test_analyst1_evidence_search_command_tlp_list_input(mocker, mock_client):
+    """List TLP input (from XSOAR isArray) is joined into comma-separated string"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"tlp": ["AMBER", "GREEN"]}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] == "AMBER,GREEN"
+
+
+def test_analyst1_evidence_search_command_source_id_list_input(mocker, mock_client):
+    """List source_id input (from XSOAR isArray) is joined into comma-separated string"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"source_id": ["1", "2", "3"]}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["source_id"] == "1,2,3"
+
+
+def test_analyst1_evidence_search_command_tlp_none(mocker, mock_client):
+    """When tlp arg is absent, None is passed to search_evidence"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"search_term": "test"}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] is None
+
+
 # --- analyst1_evidence_file_fetch_command tests ---
 
 

@@ -763,6 +763,7 @@ class Client(BaseClient):
                     "client_secret": self._client_secret,
                 },
                 verify=self._verify,
+                timeout=self.timeout,
             )
         except requests.exceptions.RequestException as e:
             raise DemistoException(f"Failed to connect to OAuth2 token endpoint at {self._token_endpoint}: {type(e).__name__}")
@@ -845,6 +846,7 @@ class Client(BaseClient):
             self._ensure_token()
             kwargs["headers"] = self._build_oauth_headers(kwargs.get("headers"))
         kwargs["verify"] = self._verify
+        kwargs.setdefault("timeout", self.timeout)
         response = self._session.request(method, url, **kwargs)
         if response.status_code == 401 and self._auth_method == "oauth2":
             self._token = None
@@ -1613,9 +1615,11 @@ def analyst1_evidence_search_command(client: Client, args: dict) -> CommandResul
     page = argsToInt(args, "page", 1)
     page_size = argsToInt(args, "page_size", 50)
     evidence_type = args.get("evidence_type")
-    tlp = args.get("tlp")
+    tlp_list = argToList(args.get("tlp"))
+    tlp = ",".join(tlp_list) if tlp_list else None
     actor_id = argsToInt(args, "actor_id", 0) if args.get("actor_id") else None
-    source_id = args.get("source_id")
+    source_id_list = argToList(args.get("source_id"))
+    source_id = ",".join(source_id_list) if source_id_list else None
     analyzed_state = args.get("analyzed_state")
     analyzed_date_from = args.get("analyzed_date_from")
     analyzed_date_to = args.get("analyzed_date_to")

@@ -739,7 +739,7 @@ script:
       defaultValue: '200'
     outputs:
     - contextPath: Analyst1.SensorTaskings
-      description: Root JSON for processing all taskings data. .
+      description: Root JSON for processing all taskings data.
     - contextPath: Analyst1.SensorTaskings.id
       description: Sensor ID for this Taskings response.
     - contextPath: Analyst1.SensorTaskings.version
@@ -788,7 +788,7 @@ script:
     - contextPath: Analyst1.SensorTaskings.ConfigFile.warRoomEntry.FileID
       description: FileID from invoking fileResult() in the Common Server Functions. An alternative to the returned config_text in case file processing is preferred.
     - contextPath: Analyst1.SensorTaskings.ConfigFile.warRoomEntry.File
-      description: File Name as saved on the War Room file with fileResult() .
+      description: File Name as saved on the War Room file with fileResult().
     description: Queries the Analyst1 REST API for the current sensor config given a valid Sensor ID. This config file is meant to be directly provided to a device (IDS, IPS, Firewall, SNORT...) for configuration
       replacements.
   - name: analyst1-get-sensor-diff
@@ -851,10 +851,10 @@ script:
       required: true
       description: Analyst1 ID# of the Source to associate the Evidence. It is a best practice to create a 'Reference' source in Analyst1 to which XSOAR may submit.
     - name: fileContent
-      description: Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileConent or fileEntryId must
+      description: Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileContent or fileEntryId must
         be included.
     - name: tlp
-      description: Traffic Light Protocol (TLP) value for the Evidence. If the Evidence is TLP marked that will override this input as the a1bot finds the TLP markings. .
+      description: Traffic Light Protocol (TLP) value for the Evidence. If the Evidence is TLP marked that will override this input as the a1bot finds the TLP markings.
       defaultValue: GREEN
     - name: fileClassification
       default: true
@@ -866,7 +866,7 @@ script:
         will be used in MIME type discovery which does influence extraction by a1bot.
     - name: fileEntryId
       description: Entry ID in XSOAR context. How the File was acquired matters. For instance, if using the http command, setting saveAsFile=yes is very important or the original, real format will be lost
-        in a {"Body":"encoded file"} wrapping. One of fileConent or fileEntryIdmust be included.
+        in a {"Body":"encoded file"} wrapping. One of fileContent or fileEntryId must be included.
     outputs:
     - contextPath: Analyst1.EvidenceSubmit.uuid
       description: The unique GUID tracking this specific Evidence's submission. Can be used to monitor to finish extraction. If empty, check 'message'.
@@ -883,7 +883,7 @@ script:
     - contextPath: Analyst1.EvidenceStatus.id
       description: Evidence ID created by the submission. If 'blank' and message is 'blank', indicates the upload is still procesing.
     - contextPath: Analyst1.EvidenceStatus.message
-      description: If populated, will communicate errors which occurred with the status check or the upload processing. .
+      description: If populated, will communicate errors which occurred with the status check or the upload processing.
     - contextPath: Analyst1.EvidenceStatus.processingComplete
       description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false,
         indicating the upload is still in progress.
@@ -921,8 +921,9 @@ script:
       - xml
       - other
     - name: tlp
-      description: Filter by TLP color (comma-separated for multiple values).
+      description: Filter by TLP color.
       required: false
+      isArray: true
       auto: PREDEFINED
       predefined:
       - UNDETERMINED
@@ -935,8 +936,9 @@ script:
       description: Filter by actor ID.
       required: false
     - name: source_id
-      description: Filter by source ID (comma-separated for multiple).
+      description: Filter by source ID.
       required: false
+      isArray: true
     - name: analyzed_state
       description: Filter by analyzed state.
       required: false
@@ -1020,27 +1022,58 @@ script:
     - contextPath: File.EntryID
       description: The XSOAR entry ID of the downloaded file.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.7444307
   subtype: python3
   runonce: false
-  nativeimage:
-  - '8.8'
-  - '8.6'
 fromversion: 5.0.0
+supportlevelheader: partner
 tests:
 - Analyst1 Integration Demonstration - Test
 - Analyst1 Integration Test
-detaileddescription: "### Partner Contributed Integration\n#### Integration Author: Analyst1\nSupport and maintenance for this integration are provided by the author. Please use the following contact details:\n\
-  - **Email**: [support@analyst1.com](mailto:support@analyst1.com)\n***\n# Analyst1 Integration Configuration\n\nThis integration connects XSOAR to the Analyst1 threat intelligence platform to enrich indicators\
-  \ and manage sensor taskings.\n\n## Configuration Parameters\n\n### Server Configuration\n- **Domain of Analyst1 server**: Enter your Analyst1 server domain in the format `server.analyst1.com`\n  - Do\
-  \ not include `http://` or `https://`\n  - Example: `yourdomain.analyst1.com`\n\n### Authentication\nThis integration supports two authentication methods. Select one via the **Authentication Method**\
-  \ dropdown.\n\n#### Basic Authentication (default)\nEnter the **Username** and **Password** for an Analyst1 account that\
-  \ has the REST role assigned.\n\n#### OAuth2 Client Credentials\n1. In Analyst1, create (or open) an API Key.\n2. Copy\
-  \ the **Client ID** and **Client Secret** from the API Key.\n3. In XSOAR, set **Authentication Method** to *OAuth2 Client\
-  \ Credentials*.\n4. Enter the Client ID in the **Client ID/Username** field and the Client Secret in the **Client Secret/Password**\
-  \ field.\n\n### Risk Score Mapping (Optional)\nThe integration includes configurable risk score mapping parameters that control how Analyst1 risk scores map to XSOAR verdicts:\n- **Lowest**: Default\
-  \ mapping is Benign\n- **Low**: Default mapping is Unknown\n- **Moderate**: Default mapping is Suspicious\n- **High**: Default mapping is Suspicious\n- **Critical**: Default mapping is Malicious\n- **Unknown**:\
-  \ Default mapping is Unknown\n\nThese can be customized based on your organization's risk tolerance and threat response procedures.\n\n### Entity Type Tags (Optional)\nEnable \"Apply Analyst1 entity-type\
-  \ tags to indicators\" to automatically tag indicators with Analyst1 entity classifications such as:\n- Analyst1: Indicator\n- Analyst1: Asset\n- Analyst1: In Private Range\n- Analyst1: Ignored Indicator\n\
-  \n## Support\n\nFor assistance with this integration, contact Analyst1 support:\n- **Email**: support@analyst1.com\n- **Documentation**: https://xsoar.pan.dev/docs/reference/integrations/analyst1\n\n\n\
-  ---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/analyst1)"
+detaileddescription: |-
+  # Analyst1 Integration Configuration
+
+  This integration connects XSOAR to the Analyst1 threat intelligence platform to enrich indicators and manage sensor taskings.
+
+  ## Configuration Parameters
+
+  ### Server Configuration
+  - **Domain of Analyst1 server**: Enter your Analyst1 server domain in the format `server.analyst1.com`
+    - Do not include `http://` or `https://`
+    - Example: `yourdomain.analyst1.com`
+
+  ### Authentication
+  This integration supports two authentication methods. Select one via the **Authentication Method** dropdown.
+
+  #### Basic Authentication (default)
+  Enter the **Username** and **Password** for an Analyst1 account that has the REST role assigned.
+
+  #### OAuth2 Client Credentials
+  1. In Analyst1, create (or open) an API Key.
+  2. Copy the **Client ID** and **Client Secret** from the API Key.
+  3. In XSOAR, set **Authentication Method** to *OAuth2 Client Credentials*.
+  4. Enter the Client ID in the **Client ID/Username** field and the Client Secret in the **Client Secret/Password** field.
+
+  ### Risk Score Mapping (Optional)
+  The integration includes configurable risk score mapping parameters that control how Analyst1 risk scores map to XSOAR verdicts:
+  - **Lowest**: Default mapping is Benign
+  - **Low**: Default mapping is Unknown
+  - **Moderate**: Default mapping is Suspicious
+  - **High**: Default mapping is Suspicious
+  - **Critical**: Default mapping is Malicious
+  - **Unknown**: Default mapping is Unknown
+
+  These can be customized based on your organization's risk tolerance and threat response procedures.
+
+  ### Entity Type Tags (Optional)
+  Enable "Apply Analyst1 entity-type tags to indicators" to automatically tag indicators with Analyst1 entity classifications such as:
+  - Analyst1: Indicator
+  - Analyst1: Asset
+  - Analyst1: In Private Range
+  - Analyst1: Ignored Indicator
+
+  ## Support
+
+  For assistance with this integration, contact Analyst1 support:
+  - **Email**: support@analyst1.com
+  - **Documentation**: https://xsoar.pan.dev/docs/reference/integrations/analyst1
