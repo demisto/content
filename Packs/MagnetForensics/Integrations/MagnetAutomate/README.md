@@ -15,14 +15,14 @@ This integration was integrated and tested with version 0.2.0 of Magnet Automate
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### ma-forensics-custom-fields-list
+### mf-automate-custom-fields-list
 
 ***
 Retrieves a list of custom fields for cases and evidence sources.
 
 #### Base Command
 
-`ma-forensics-custom-fields-list`
+`mf-automate-custom-fields-list`
 
 #### Input
 
@@ -46,16 +46,16 @@ Retrieves a list of custom fields for cases and evidence sources.
 
 #### Command Example
 
-`!ma-forensics-custom-fields-list limit=10`
+`!mf-automate-custom-fields-list limit=10`
 
-### ma-forensics-case-create
+### mf-automate-case-create
 
 ***
-Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to get all available custom fields.
+Creates a new case in Magnet Automate. Use mf-automate-custom-fields-list to get all available custom fields.
 
 #### Base Command
 
-`ma-forensics-case-create`
+`mf-automate-case-create`
 
 #### Input
 
@@ -74,16 +74,16 @@ Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to ge
 
 #### Command Example
 
-`!ma-forensics-case-create case_number="CASE-2024-001" custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}"`
+`!mf-automate-case-create case_number="CASE-2024-001" custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}"`
 
-### ma-forensics-cases-list
+### mf-automate-cases-list
 
 ***
 Retrieves a list of all cases or information about a specific case.
 
 #### Base Command
 
-`ma-forensics-cases-list`
+`mf-automate-cases-list`
 
 #### Input
 
@@ -102,20 +102,20 @@ Retrieves a list of all cases or information about a specific case.
 
 #### Command Example
 
-`!ma-forensics-cases-list limit=5`
+`!mf-automate-cases-list limit=5`
 
 #### Command Example
 
-`!ma-forensics-cases-list case_id=10`
+`!mf-automate-cases-list case_id=10`
 
-### ma-forensics-case-delete
+### mf-automate-case-delete
 
 ***
 Deletes a specific case from Magnet Automate.
 
 #### Base Command
 
-`ma-forensics-case-delete`
+`mf-automate-case-delete`
 
 #### Input
 
@@ -129,16 +129,16 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-case-delete case_id=10`
+`!mf-automate-case-delete case_id=10`
 
-### ma-forensics-case-cancel
+### mf-automate-case-cancel
 
 ***
 Cancels an ongoing case in Magnet Automate.
 
 #### Base Command
 
-`ma-forensics-case-cancel`
+`mf-automate-case-cancel`
 
 #### Input
 
@@ -152,16 +152,16 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-case-cancel case_id=10`
+`!mf-automate-case-cancel case_id=10`
 
-### ma-forensics-workflow-run-start
+### mf-automate-workflow-run-start
 
 ***
 Starts a new workflow run and associates it with a specific case.
 
 #### Base Command
 
-`ma-forensics-workflow-run-start`
+`mf-automate-workflow-run-start`
 
 #### Input
 
@@ -193,16 +193,16 @@ Starts a new workflow run and associates it with a specific case.
 
 #### Command Example
 
-`!ma-forensics-workflow-run-start case_id=10 evidence_number="ExhibitA" type="{\"ImageSource\": {\"path\": \"C:\\\\testdata\\\\image\\\\image123.001\"}}" workflow_id=3 output_path="C:\\testdata\\output" platform="windows" decryption_type="password" decryption_value="MySecretPassword" continue_on_decryption_fail=false custom_field_values="{\"5\": \"Evidence Value A\", \"7\": \"Evidence Value B\"}" assigned_node_name="AGENT1"`
+`!mf-automate-workflow-run-start case_id=10 evidence_number="ExhibitA" type="{\"ImageSource\": {\"path\": \"C:\\\\testdata\\\\image\\\\image123.001\"}}" workflow_id=3 output_path="C:\\testdata\\output" platform="windows" decryption_type="password" decryption_value="MySecretPassword" continue_on_decryption_fail=false custom_field_values="{\"5\": \"Evidence Value A\", \"7\": \"Evidence Value B\"}" assigned_node_name="AGENT1"`
 
-### ma-forensics-workflow-run-list
+### mf-automate-workflow-run-list
 
 ***
 Retrieves a list of all workflow runs for a specific case or details of a specific run.
 
 #### Base Command
 
-`ma-forensics-workflow-run-list`
+`mf-automate-workflow-run-list`
 
 #### Input
 
@@ -232,20 +232,20 @@ Retrieves a list of all workflow runs for a specific case or details of a specif
 
 #### Command Example
 
-`!ma-forensics-workflow-run-list case_id=10`
+`!mf-automate-workflow-run-list case_id=10`
 
 #### Command Example
 
-`!ma-forensics-workflow-run-list case_id=10 run_id=11`
+`!mf-automate-workflow-run-list case_id=10 run_id=11`
 
-### ma-forensics-workflow-run-delete
+### mf-automate-workflow-run-delete
 
 ***
 Deletes a specific workflow run from a case.
 
 #### Base Command
 
-`ma-forensics-workflow-run-delete`
+`mf-automate-workflow-run-delete`
 
 #### Input
 
@@ -260,16 +260,16 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-workflow-run-delete case_id=10 run_id=11`
+`!mf-automate-workflow-run-delete case_id=10 run_id=11`
 
-### ma-forensics-workflow-run-cancel
+### mf-automate-workflow-run-cancel
 
 ***
 Cancels a specific workflow run.
 
 #### Base Command
 
-`ma-forensics-workflow-run-cancel`
+`mf-automate-workflow-run-cancel`
 
 #### Input
 
@@ -284,16 +284,16 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-workflow-run-cancel case_id=10 run_id=11`
+`!mf-automate-workflow-run-cancel case_id=10 run_id=11`
 
-### ma-forensics-merge-workflow-run-start
+### mf-automate-merge-workflow-run-start
 
 ***
 Starts a merge workflow run for multiple existing workflow runs.
 
 #### Base Command
 
-`ma-forensics-merge-workflow-run-start`
+`mf-automate-merge-workflow-run-start`
 
 #### Input
 
@@ -319,16 +319,16 @@ Starts a merge workflow run for multiple existing workflow runs.
 
 #### Command Example
 
-`!ma-forensics-merge-workflow-run-start case_id=10 run_ids="1,2,3" workflow_id=3 output_path="C:\\testdata\\output" assigned_node_name="AGENT1"`
+`!mf-automate-merge-workflow-run-start case_id=10 run_ids="1,2,3" workflow_id=3 output_path="C:\\testdata\\output" assigned_node_name="AGENT1"`
 
-### ma-forensics-workflow-list
+### mf-automate-workflow-list
 
 ***
 Retrieves a list of all available workflows.
 
 #### Base Command
 
-`ma-forensics-workflow-list`
+`mf-automate-workflow-list`
 
 #### Input
 
@@ -349,16 +349,16 @@ Retrieves a list of all available workflows.
 
 #### Command Example
 
-`!ma-forensics-workflow-list limit=10`
+`!mf-automate-workflow-list limit=10`
 
-### ma-forensics-workflow-delete
+### mf-automate-workflow-delete
 
 ***
 Deletes a specific workflow from Magnet Automate.
 
 #### Base Command
 
-`ma-forensics-workflow-delete`
+`mf-automate-workflow-delete`
 
 #### Input
 
@@ -372,16 +372,16 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-workflow-delete workflow_id=5`
+`!mf-automate-workflow-delete workflow_id=5`
 
-### ma-forensics-workflow-get
+### mf-automate-workflow-get
 
 ***
-Retrieves detailed information and export data for a specific workflow. Use ma-forensics-workflow-list to get all available workflows.
+Retrieves detailed information and export data for a specific workflow. Use mf-automate-workflow-list to get all available workflows.
 
 #### Base Command
 
-`ma-forensics-workflow-get`
+`mf-automate-workflow-get`
 
 #### Input
 
@@ -409,16 +409,16 @@ Retrieves detailed information and export data for a specific workflow. Use ma-f
 
 #### Command Example
 
-`!ma-forensics-workflow-get workflow_id=5`
+`!mf-automate-workflow-get workflow_id=5`
 
-### ma-forensics-node-create
+### mf-automate-node-create
 
 ***
 Creates a new node (agent) in Magnet Automate.
 
 #### Base Command
 
-`ma-forensics-node-create`
+`mf-automate-node-create`
 
 #### Input
 
@@ -442,16 +442,16 @@ Creates a new node (agent) in Magnet Automate.
 
 #### Command Example
 
-`!ma-forensics-node-create name="NODE-002" address="automate-node-2" working_directory="C:\\automate\\temp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.0.0\", \"applicationPath\": \"C:\\\\Program Files\\\\Magnet Forensics\\\\Magnet AUTOMATE\\\\agent\\\\AXIOM Process\\\\AXIOMProcess.CLI.exe\"}]"`
+`!mf-automate-node-create name="NODE-002" address="automate-node-2" working_directory="C:\\automate\\temp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.0.0\", \"applicationPath\": \"C:\\\\Program Files\\\\Magnet Forensics\\\\Magnet AUTOMATE\\\\agent\\\\AXIOM Process\\\\AXIOMProcess.CLI.exe\"}]"`
 
-### ma-forensics-nodes-list
+### mf-automate-nodes-list
 
 ***
 Retrieves a list of all available nodes (agents).
 
 #### Base Command
 
-`ma-forensics-nodes-list`
+`mf-automate-nodes-list`
 
 #### Input
 
@@ -473,16 +473,16 @@ Retrieves a list of all available nodes (agents).
 
 #### Command Example
 
-`!ma-forensics-nodes-list limit=10`
+`!mf-automate-nodes-list limit=10`
 
-### ma-forensics-node-update
+### mf-automate-node-update
 
 ***
 Updates the configuration of an existing node.
 
 #### Base Command
 
-`ma-forensics-node-update`
+`mf-automate-node-update`
 
 #### Input
 
@@ -499,16 +499,16 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-node-update node_id=1 address="automate-node-updated" working_directory="C:\\automate\\updatedTemp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.1.0\"}]"`
+`!mf-automate-node-update node_id=1 address="automate-node-updated" working_directory="C:\\automate\\updatedTemp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.1.0\"}]"`
 
-### ma-forensics-node-delete
+### mf-automate-node-delete
 
 ***
 Deletes a specific node from Magnet Automate.
 
 #### Base Command
 
-`ma-forensics-node-delete`
+`mf-automate-node-delete`
 
 #### Input
 
@@ -522,4 +522,4 @@ There is no context output for this command.
 
 #### Command Example
 
-`!ma-forensics-node-delete node_id=1`
+`!mf-automate-node-delete node_id=1`

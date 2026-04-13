@@ -33,7 +33,7 @@ name: MagnetAutomate
 script:
   commands:
 
-  - name: ma-forensics-custom-fields-list
+  - name: mf-automate-custom-fields-list
     description: Retrieves a list of custom fields for cases and evidence sources.
     execution: false
     arguments:
@@ -71,8 +71,8 @@ script:
       description: The variable name associated with the custom field.
       type: String
 
-  - name: ma-forensics-case-create
-    description: Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to get all available custom fields.
+  - name: mf-automate-case-create
+    description: Creates a new case in Magnet Automate. Use mf-automate-custom-fields-list to get all available custom fields.
     execution: false
     arguments:
     - name: case_number
@@ -92,7 +92,7 @@ script:
       description: The custom field values associated with the case.
       type: Unknown
 
-  - name: ma-forensics-cases-list
+  - name: mf-automate-cases-list
     description: Retrieves a list of all cases or information about a specific case.
     execution: false
     arguments:
@@ -115,7 +115,7 @@ script:
       description: The case number.
       type: String
 
-  - name: ma-forensics-case-delete
+  - name: mf-automate-case-delete
     description: Deletes a specific case from Magnet Automate.
     execution: false
     arguments:
@@ -123,7 +123,7 @@ script:
       required: true
       description: The unique identifier of the case to delete.
 
-  - name: ma-forensics-case-cancel
+  - name: mf-automate-case-cancel
     description: Cancels an ongoing case in Magnet Automate.
     execution: false
     arguments:
@@ -131,7 +131,7 @@ script:
       required: true
       description: The unique identifier of the case to cancel.
 
-  - name: ma-forensics-workflow-run-start
+  - name: mf-automate-workflow-run-start
     description: Starts a new workflow run and associates it with a specific case.
     execution: false
     arguments:
@@ -192,7 +192,7 @@ script:
       description: The version of Magnet Automate used for the run.
       type: String
 
-  - name: ma-forensics-workflow-run-list
+  - name: mf-automate-workflow-run-list
     description: Retrieves a list of all workflow runs for a specific case or details of a specific run.
     execution: false
     arguments:
@@ -248,7 +248,7 @@ script:
       description: A list of completed stages in the workflow run.
       type: Unknown
 
-  - name: ma-forensics-workflow-run-delete
+  - name: mf-automate-workflow-run-delete
     description: Deletes a specific workflow run from a case.
     execution: false
     arguments:
@@ -259,7 +259,7 @@ script:
       required: true
       description: The unique identifier of the workflow run to delete.
 
-  - name: ma-forensics-workflow-run-cancel
+  - name: mf-automate-workflow-run-cancel
     description: Cancels a specific workflow run.
     execution: false
     arguments:
@@ -270,7 +270,7 @@ script:
       required: true
       description: The unique identifier of the workflow run to cancel.
 
-  - name: ma-forensics-merge-workflow-run-start
+  - name: mf-automate-merge-workflow-run-start
     description: Starts a merge workflow run for multiple existing workflow runs.
     execution: false
     arguments:
@@ -313,7 +313,7 @@ script:
       description: The version of Magnet Automate used.
       type: String
 
-  - name: ma-forensics-workflow-list
+  - name: mf-automate-workflow-list
     description: Retrieves a list of all available workflows.
     execution: false
     arguments:
@@ -342,7 +342,7 @@ script:
       description: The default output path for the workflow.
       type: String
 
-  - name: ma-forensics-workflow-delete
+  - name: mf-automate-workflow-delete
     description: Deletes a specific workflow from Magnet Automate.
     execution: false
     arguments:
@@ -350,8 +350,8 @@ script:
       required: true
       description: The unique identifier of the workflow to delete.
 
-  - name: ma-forensics-workflow-get
-    description: Retrieves detailed information and export data for a specific workflow. Use ma-forensics-workflow-list to get all available workflows.
+  - name: mf-automate-workflow-get
+    description: Retrieves detailed information and export data for a specific workflow. Use mf-automate-workflow-list to get all available workflows.
     execution: false
     arguments:
     - name: workflow_id
@@ -398,7 +398,7 @@ script:
       description: The date and time the workflow was exported.
       type: Date
 
-  - name: ma-forensics-node-create
+  - name: mf-automate-node-create
     description: Creates a new node (agent) in Magnet Automate.
     execution: false
     arguments:
@@ -434,7 +434,7 @@ script:
       description: A list of applications installed on the node.
       type: Unknown
 
-  - name: ma-forensics-nodes-list
+  - name: mf-automate-nodes-list
     description: Retrieves a list of all available nodes (agents).
     execution: false
     arguments:
@@ -466,7 +466,7 @@ script:
       description: A list of applications installed on the node.
       type: Unknown
 
-  - name: ma-forensics-node-update
+  - name: mf-automate-node-update
     description: Updates the configuration of an existing node.
     execution: false
     arguments:
@@ -483,7 +483,7 @@ script:
       required: false
       description: A JSON array of applications installed on the node.
 
-  - name: ma-forensics-node-delete
+  - name: mf-automate-node-delete
     description: Deletes a specific node from Magnet Automate.
     execution: false
     arguments:

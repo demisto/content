@@ -256,7 +256,7 @@ def test_module_authentication_error(mocker: MockerFixture, client: "MagnetAutom
 # endregion
 
 
-# region ma-forensics-custom-fields-list
+# region mf-automate-custom-fields-list
 
 
 class TestCustomFieldsListArgs:
@@ -359,7 +359,7 @@ def test_custom_fields_list_command(mocker: MockerFixture, client: "MagnetAutoma
 
 # endregion
 
-# region ma-forensics-case-create
+# region mf-automate-case-create
 
 
 class TestCaseCreateArgs:
@@ -450,7 +450,7 @@ def test_case_create_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
 # endregion
 
-# region ma-forensics-cases-list
+# region mf-automate-cases-list
 
 
 class TestCasesListArgs:
@@ -572,7 +572,7 @@ def test_cases_list_command_single(mocker: MockerFixture, client: "MagnetAutomat
 
 # endregion
 
-# region ma-forensics-case-delete
+# region mf-automate-case-delete
 
 
 class TestCaseDeleteArgs:
@@ -625,7 +625,7 @@ def test_case_delete_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
 # endregion
 
-# region ma-forensics-case-cancel
+# region mf-automate-case-cancel
 
 
 class TestCaseCancelArgs:
@@ -678,7 +678,7 @@ def test_case_cancel_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
 # endregion
 
-# region ma-forensics-workflow-run-start
+# region mf-automate-workflow-run-start
 
 
 class TestWorkflowRunStartArgs:
@@ -1004,7 +1004,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
 
 # endregion
 
-# region ma-forensics-workflow-run-list
+# region mf-automate-workflow-run-list
 
 
 class TestWorkflowRunListArgs:
@@ -1145,7 +1145,7 @@ def test_workflow_run_list_command_all(mocker: MockerFixture, client: "MagnetAut
 # endregion
 
 
-# region ma-forensics-workflow-run-delete
+# region mf-automate-workflow-run-delete
 
 
 class TestWorkflowRunDeleteArgs:
@@ -1205,7 +1205,7 @@ def test_workflow_run_delete_command(mocker: MockerFixture, client: "MagnetAutom
 
 # endregion
 
-# region ma-forensics-workflow-run-cancel
+# region mf-automate-workflow-run-cancel
 
 
 class TestWorkflowRunCancelArgs:
@@ -1266,7 +1266,7 @@ def test_workflow_run_cancel_command(mocker: MockerFixture, client: "MagnetAutom
 # endregion
 
 
-# region ma-forensics-merge-workflow-run-start
+# region mf-automate-merge-workflow-run-start
 
 
 class TestMergeWorkflowRunStartArgs:
@@ -1403,7 +1403,7 @@ def test_merge_workflow_run_start_command(mocker: MockerFixture, client: "Magnet
 # endregion
 
 
-# region ma-forensics-workflow-list
+# region mf-automate-workflow-list
 
 
 class TestWorkflowListArgs:
@@ -1506,7 +1506,7 @@ def test_workflow_list_command(mocker: MockerFixture, client: "MagnetAutomateCli
 # endregion
 
 
-# region ma-forensics-workflow-delete
+# region mf-automate-workflow-delete
 
 
 class TestWorkflowDeleteArgs:
@@ -1560,7 +1560,7 @@ def test_workflow_delete_command(mocker: MockerFixture, client: "MagnetAutomateC
 # endregion
 
 
-# region ma-forensics-workflow-get
+# region mf-automate-workflow-get
 
 
 class TestWorkflowGetArgs:
@@ -1623,7 +1623,7 @@ def test_workflow_get_command(mocker: MockerFixture, client: "MagnetAutomateClie
 # endregion
 
 
-# region ma-forensics-node-create
+# region mf-automate-node-create
 
 
 class TestNodeCreateArgs:
@@ -1750,7 +1750,7 @@ def test_node_create_command(mocker: MockerFixture, client: "MagnetAutomateClien
 # endregion
 
 
-# region ma-forensics-nodes-list
+# region mf-automate-nodes-list
 
 
 class TestNodesListArgs:
@@ -1854,7 +1854,7 @@ def test_nodes_list_command(mocker: MockerFixture, client: "MagnetAutomateClient
 # endregion
 
 
-# region ma-forensics-node-update
+# region mf-automate-node-update
 
 
 class TestNodeUpdateArgs:
@@ -1992,7 +1992,7 @@ def test_node_update_command(mocker: MockerFixture, client: "MagnetAutomateClien
 # endregion
 
 
-# region ma-forensics-node-delete
+# region mf-automate-node-delete
 
 
 class TestNodeDeleteArgs:

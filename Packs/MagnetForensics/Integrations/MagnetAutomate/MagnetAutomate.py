@@ -493,7 +493,7 @@ def test_module(client: MagnetAutomateClient) -> str:
 # endregion
 
 
-# region ma-forensics-custom-fields-list
+# region mf-automate-custom-fields-list
 class CustomFieldsListArgs(ContentBaseModel):
     limit: int | None = Field(50, alias="limit")
     all_results: bool = Field(False, alias="all_results")
@@ -511,7 +511,7 @@ class CustomFieldsListArgs(ContentBaseModel):
 
 def custom_fields_list_command(client: MagnetAutomateClient, args: CustomFieldsListArgs) -> CommandResults:
     """
-    Executes the ma-forensics-custom-fields-list command.
+    Executes the mf-automate-custom-fields-list command.
 
     Retrieves a list of custom fields for cases and evidence sources from Magnet Automate,
     optionally filtered by a workflow ID.
@@ -563,7 +563,7 @@ def custom_fields_list_command(client: MagnetAutomateClient, args: CustomFieldsL
 
 # endregion
 
-# region ma-forensics-case-create
+# region mf-automate-case-create
 
 
 class CaseCreateArgs(ContentBaseModel):
@@ -578,7 +578,7 @@ class CaseCreateArgs(ContentBaseModel):
 
 def case_create_command(client: MagnetAutomateClient, args: CaseCreateArgs) -> CommandResults:
     """
-    Executes the ma-forensics-case-create command.
+    Executes the mf-automate-case-create command.
 
     Creates a new case in Magnet Automate with the specified case number and optional custom field values.
 
@@ -614,7 +614,7 @@ def case_create_command(client: MagnetAutomateClient, args: CaseCreateArgs) -> C
 
 # endregion
 
-# region ma-forensics-cases-list
+# region mf-automate-cases-list
 
 
 class CasesListArgs(ContentBaseModel):
@@ -640,7 +640,7 @@ class CasesListArgs(ContentBaseModel):
 
 def cases_list_command(client: MagnetAutomateClient, args: CasesListArgs) -> CommandResults:
     """
-    Executes the ma-forensics-cases-list command.
+    Executes the mf-automate-cases-list command.
 
     Retrieves a list of all cases or detailed information about a specific case from Magnet Automate.
 
@@ -709,7 +709,7 @@ def cases_list_command(client: MagnetAutomateClient, args: CasesListArgs) -> Com
 
 # endregion
 
-# region ma-forensics-case-delete
+# region mf-automate-case-delete
 
 
 class CaseDeleteArgs(ContentBaseModel):
@@ -723,7 +723,7 @@ class CaseDeleteArgs(ContentBaseModel):
 
 def case_delete_command(client: MagnetAutomateClient, args: CaseDeleteArgs) -> CommandResults:
     """
-    Executes the ma-forensics-case-delete command.
+    Executes the mf-automate-case-delete command.
 
     Deletes a specific case from Magnet Automate using its unique identifier.
 
@@ -741,7 +741,7 @@ def case_delete_command(client: MagnetAutomateClient, args: CaseDeleteArgs) -> C
 
 # endregion
 
-# region ma-forensics-case-cancel
+# region mf-automate-case-cancel
 
 
 class CaseCancelArgs(ContentBaseModel):
@@ -755,7 +755,7 @@ class CaseCancelArgs(ContentBaseModel):
 
 def case_cancel_command(client: MagnetAutomateClient, args: CaseCancelArgs) -> CommandResults:
     """
-    Executes the ma-forensics-case-cancel command.
+    Executes the mf-automate-case-cancel command.
 
     Cancels an ongoing case in Magnet Automate using its unique identifier.
 
@@ -773,7 +773,7 @@ def case_cancel_command(client: MagnetAutomateClient, args: CaseCancelArgs) -> C
 
 # endregion
 
-# region ma-forensics-workflow-run-start
+# region mf-automate-workflow-run-start
 
 
 class WorkflowRunStartArgs(ContentBaseModel):
@@ -817,7 +817,7 @@ class WorkflowRunStartArgs(ContentBaseModel):
 
 def workflow_run_start_command(client: MagnetAutomateClient, args: WorkflowRunStartArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-run-start command.
+    Executes the mf-automate-workflow-run-start command.
 
     Starts a new workflow run in Magnet Automate and associates it with a specific case.
     Supports various options such as evidence type, decryption, and custom fields.
@@ -884,7 +884,7 @@ def workflow_run_start_command(client: MagnetAutomateClient, args: WorkflowRunSt
 
 # endregion
 
-# region ma-forensics-workflow-run-list
+# region mf-automate-workflow-run-list
 
 
 class WorkflowRunListArgs(ContentBaseModel):
@@ -963,7 +963,7 @@ def workflow_run_list_markdown(results: list[dict[str, Any]], title: str) -> str
 
 def workflow_run_list_command(client: MagnetAutomateClient, args: WorkflowRunListArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-run-list command.
+    Executes the mf-automate-workflow-run-list command.
 
     Retrieves a list or a specific workflow run associated with a specific case.
 
@@ -1009,7 +1009,7 @@ def workflow_run_list_command(client: MagnetAutomateClient, args: WorkflowRunLis
 
 # endregion
 
-# region ma-forensics-workflow-run-delete
+# region mf-automate-workflow-run-delete
 
 
 class WorkflowRunDeleteArgs(ContentBaseModel):
@@ -1029,7 +1029,7 @@ class WorkflowRunDeleteArgs(ContentBaseModel):
 
 def workflow_run_delete_command(client: MagnetAutomateClient, args: WorkflowRunDeleteArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-run-delete command.
+    Executes the mf-automate-workflow-run-delete command.
 
     Deletes a specific workflow run from a case in Magnet Automate.
 
@@ -1047,7 +1047,7 @@ def workflow_run_delete_command(client: MagnetAutomateClient, args: WorkflowRunD
 
 # endregion
 
-# region ma-forensics-workflow-run-cancel
+# region mf-automate-workflow-run-cancel
 
 
 class WorkflowRunCancelArgs(ContentBaseModel):
@@ -1067,7 +1067,7 @@ class WorkflowRunCancelArgs(ContentBaseModel):
 
 def workflow_run_cancel_command(client: MagnetAutomateClient, args: WorkflowRunCancelArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-run-cancel command.
+    Executes the mf-automate-workflow-run-cancel command.
 
     Cancels a specific workflow run in Magnet Automate.
 
@@ -1085,7 +1085,7 @@ def workflow_run_cancel_command(client: MagnetAutomateClient, args: WorkflowRunC
 
 # endregion
 
-# region ma-forensics-merge-workflow-run-start
+# region mf-automate-merge-workflow-run-start
 
 
 class MergeWorkflowRunStartArgs(ContentBaseModel):
@@ -1113,7 +1113,7 @@ class MergeWorkflowRunStartArgs(ContentBaseModel):
 
 def merge_workflow_run_start_command(client: MagnetAutomateClient, args: MergeWorkflowRunStartArgs) -> CommandResults:
     """
-    Executes the ma-forensics-merge-workflow-run-start command.
+    Executes the mf-automate-merge-workflow-run-start command.
 
     Starts a merge workflow run for multiple existing workflow runs in Magnet Automate.
 
@@ -1167,7 +1167,7 @@ def merge_workflow_run_start_command(client: MagnetAutomateClient, args: MergeWo
 
 # endregion
 
-# region ma-forensics-workflow-list
+# region mf-automate-workflow-list
 
 
 class WorkflowListArgs(ContentBaseModel):
@@ -1220,7 +1220,7 @@ def workflow_list_markdown(results: list[dict[str, Any]]) -> str:
 
 def workflow_list_command(client: MagnetAutomateClient, args: WorkflowListArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-list command.
+    Executes the mf-automate-workflow-list command.
 
     Retrieves a list of available workflows from Magnet Automate.
 
@@ -1247,7 +1247,7 @@ def workflow_list_command(client: MagnetAutomateClient, args: WorkflowListArgs) 
 
 # endregion
 
-# region ma-forensics-workflow-delete
+# region mf-automate-workflow-delete
 
 
 class WorkflowDeleteArgs(ContentBaseModel):
@@ -1261,7 +1261,7 @@ class WorkflowDeleteArgs(ContentBaseModel):
 
 def workflow_delete_command(client: MagnetAutomateClient, args: WorkflowDeleteArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-delete command.
+    Executes the mf-automate-workflow-delete command.
 
     Deletes a specific workflow from Magnet Automate.
 
@@ -1279,7 +1279,7 @@ def workflow_delete_command(client: MagnetAutomateClient, args: WorkflowDeleteAr
 
 # endregion
 
-# region ma-forensics-workflow-get
+# region mf-automate-workflow-get
 
 
 class WorkflowGetArgs(ContentBaseModel):
@@ -1339,7 +1339,7 @@ def workflow_get_markdown(results: dict[str, Any], workflow_id: int) -> str:
 
 def workflow_get_command(client: MagnetAutomateClient, args: WorkflowGetArgs) -> CommandResults:
     """
-    Executes the ma-forensics-workflow-get command.
+    Executes the mf-automate-workflow-get command.
 
     Retrieves detailed information about a specific workflow from Magnet Automate.
 
@@ -1369,7 +1369,7 @@ def workflow_get_command(client: MagnetAutomateClient, args: WorkflowGetArgs) ->
 
 # endregion
 
-# region ma-forensics-node-create
+# region mf-automate-node-create
 
 
 class NodeCreateArgs(ContentBaseModel):
@@ -1386,7 +1386,7 @@ class NodeCreateArgs(ContentBaseModel):
 
 def node_create_command(client: MagnetAutomateClient, args: NodeCreateArgs) -> CommandResults:
     """
-    Executes the ma-forensics-node-create command.
+    Executes the mf-automate-node-create command.
 
     Creates a new node (agent) in Magnet Automate with the specified configuration.
 
@@ -1418,7 +1418,7 @@ def node_create_command(client: MagnetAutomateClient, args: NodeCreateArgs) -> C
 
 # endregion
 
-# region ma-forensics-nodes-list
+# region mf-automate-nodes-list
 
 
 class NodesListArgs(ContentBaseModel):
@@ -1438,7 +1438,7 @@ class NodesListArgs(ContentBaseModel):
 
 def nodes_list_command(client: MagnetAutomateClient, args: NodesListArgs) -> CommandResults:
     """
-    Executes the ma-forensics-nodes-list command.
+    Executes the mf-automate-nodes-list command.
 
     Retrieves a list of all nodes (agents) configured in Magnet Automate.
 
@@ -1477,7 +1477,7 @@ def nodes_list_command(client: MagnetAutomateClient, args: NodesListArgs) -> Com
 
 # endregion
 
-# region ma-forensics-node-update
+# region mf-automate-node-update
 
 
 class NodeUpdateArgs(ContentBaseModel):
@@ -1499,7 +1499,7 @@ class NodeUpdateArgs(ContentBaseModel):
 
 def node_update_command(client: MagnetAutomateClient, args: NodeUpdateArgs) -> CommandResults:
     """
-    Executes the ma-forensics-node-update command.
+    Executes the mf-automate-node-update command.
 
     Updates the configuration of an existing node in Magnet Automate.
 
@@ -1522,7 +1522,7 @@ def node_update_command(client: MagnetAutomateClient, args: NodeUpdateArgs) -> C
 
 # endregion
 
-# region ma-forensics-node-delete
+# region mf-automate-node-delete
 
 
 class NodeDeleteArgs(ContentBaseModel):
@@ -1536,7 +1536,7 @@ class NodeDeleteArgs(ContentBaseModel):
 
 def node_delete_command(client: MagnetAutomateClient, args: NodeDeleteArgs) -> CommandResults:
     """
-    Executes the ma-forensics-node-delete command.
+    Executes the mf-automate-node-delete command.
 
     Deletes a specific node from Magnet Automate.
 
@@ -1657,55 +1657,55 @@ def main() -> None:
             case "test-module":
                 return_results(test_module(client))
 
-            case "ma-forensics-custom-fields-list":
+            case "mf-automate-custom-fields-list":
                 return_results(custom_fields_list_command(client, execution.custom_fields_list_args))
 
-            case "ma-forensics-case-create":
+            case "mf-automate-case-create":
                 return_results(case_create_command(client, execution.case_create_args))
 
-            case "ma-forensics-cases-list":
+            case "mf-automate-cases-list":
                 return_results(cases_list_command(client, execution.cases_list_args))
 
-            case "ma-forensics-case-delete":
+            case "mf-automate-case-delete":
                 return_results(case_delete_command(client, execution.case_delete_args))
 
-            case "ma-forensics-case-cancel":
+            case "mf-automate-case-cancel":
                 return_results(case_cancel_command(client, execution.case_cancel_args))
 
-            case "ma-forensics-workflow-run-start":
+            case "mf-automate-workflow-run-start":
                 return_results(workflow_run_start_command(client, execution.workflow_run_start_args))
 
-            case "ma-forensics-workflow-run-list":
+            case "mf-automate-workflow-run-list":
                 return_results(workflow_run_list_command(client, execution.workflow_run_list_args))
 
-            case "ma-forensics-workflow-run-delete":
+            case "mf-automate-workflow-run-delete":
                 return_results(workflow_run_delete_command(client, execution.workflow_run_delete_args))
 
-            case "ma-forensics-workflow-run-cancel":
+            case "mf-automate-workflow-run-cancel":
                 return_results(workflow_run_cancel_command(client, execution.workflow_run_cancel_args))
 
-            case "ma-forensics-merge-workflow-run-start":
+            case "mf-automate-merge-workflow-run-start":
                 return_results(merge_workflow_run_start_command(client, execution.merge_workflow_run_start_args))
 
-            case "ma-forensics-workflow-list":
+            case "mf-automate-workflow-list":
                 return_results(workflow_list_command(client, execution.workflow_list_args))
 
-            case "ma-forensics-workflow-delete":
+            case "mf-automate-workflow-delete":
                 return_results(workflow_delete_command(client, execution.workflow_delete_args))
 
-            case "ma-forensics-workflow-get":
+            case "mf-automate-workflow-get":
                 return_results(workflow_get_command(client, execution.workflow_get_args))
 
-            case "ma-forensics-node-create":
+            case "mf-automate-node-create":
                 return_results(node_create_command(client, execution.node_create_args))
 
-            case "ma-forensics-nodes-list":
+            case "mf-automate-nodes-list":
                 return_results(nodes_list_command(client, execution.nodes_list_args))
 
-            case "ma-forensics-node-update":
+            case "mf-automate-node-update":
                 return_results(node_update_command(client, execution.node_update_args))
 
-            case "ma-forensics-node-delete":
+            case "mf-automate-node-delete":
                 return_results(node_delete_command(client, execution.node_delete_args))
 
             case _:
