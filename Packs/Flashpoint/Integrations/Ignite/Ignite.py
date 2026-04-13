@@ -1234,8 +1234,10 @@ def create_relationships_list_for_community_search(client, indicators, ip):
         for ip_address in ip_address_data:
             if is_ip_valid(ip_address, True):
                 if len(relationships) >= MAX_COMMUNITY_SEARCH_RELATIONSHIPS:
-                    demisto.debug(f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
-                                "for community search. truncating the rest of the relationships.")
+                    demisto.debug(
+                        f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
+                        "for community search. truncating the rest of the relationships."
+                    )
                     break
                 relationships.append(
                     EntityRelationship(
@@ -1254,8 +1256,10 @@ def create_relationships_list_for_community_search(client, indicators, ip):
 
         for indicator in indicator_data:
             if len(relationships) >= MAX_COMMUNITY_SEARCH_RELATIONSHIPS:
-                demisto.debug(f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
-                              "for community search. truncating the rest of the relationships.")
+                demisto.debug(
+                    f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
+                    "for community search. truncating the rest of the relationships."
+                )
                 break
             relationships.append(
                 EntityRelationship(
