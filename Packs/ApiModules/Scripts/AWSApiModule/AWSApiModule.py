@@ -1,8 +1,9 @@
-import boto3
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 from botocore.config import Config
-from CommonServerPython import *
 
-from CommonServerUserPython import *
+
+
 
 STS_ENDPOINTS = {
     "us-gov-west-1": "https://sts.us-gov-west-1.amazonaws.com",

@@ -1,9 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from botocore.exceptions import ClientError
 import re
 from typing import TYPE_CHECKING, Any, NamedTuple
 
-import demistomock as demisto
+
 from AWSApiModule import *
-from CommonServerPython import *
+
 
 # The following imports are used only for type hints and autocomplete.
 # They are not used at runtime, and not exist in the docker image.
@@ -1465,6 +1468,227 @@ def test_module(ssm_client: "SSMClient") -> str:
     return "ok"
 
 
+def parse_parameter_filters(filters_str):
+    """
+    Parse user-provided filters string into AWS ParameterFilters format.
+
+    Input format:
+    Key=Path,Option=Recursive,Values=/prod/;Key=Type,Option=Equals,Values=SecureString
+
+    Output:
+    [
+        {"Key": "Path", "Option": "Recursive", "Values": ["/prod/"]},
+        {"Key": "Type", "Option": "Equals", "Values": ["SecureString"]}
+    ]
+    """
+
+    filters = []
+
+    # If no filters, return empty list
+    if not filters_str:
+        return filters
+
+    # Split multiple filter with ";""
+    for item in filters_str.split(";"):
+        parts = item.split(",")
+        f = {}
+
+        # Set Key and Value e.g. if Key=Path -> k="Key", v="Path"
+        for part in parts:
+            k, v = part.split("=", 1)
+
+            if k == "Key":
+                f["Key"] = v
+            # If Options then k="Option" and v = Equals, BeginsWith, Recursive, etc.
+            elif k == "Option":
+                f["Option"] = v
+            # Values handle multiple values. e.g. Values=SecureString|String
+            elif k == "Values":
+                f["Values"] = [val.strip() for val in v.split("|")]
+
+        if f:
+            filters.append(f)
+
+    return filters
+
+
+def parse_tags(tag_str):
+    """
+    Parse user-provided tag string into dictionary.
+
+    Input:
+    Env=Prod,Owner=DevOps
+
+    Output:
+    {
+        "Env": "Prod",
+        "Owner": "DevOps"
+    }
+    """
+    tags = {}
+
+    # if not tags then return empty
+    if not tag_str:
+        return tags
+
+    # dl=abc@b.com → k="dl", v="abc@b.com"
+    for pair in tag_str.split(","):
+        k, v = pair.split("=", 1)
+        # Removes extra spaces if any spaces before or after the key or value
+        tags[k.strip()] = v.strip()
+
+    return tags
+
+
+def get_all_parameters(client, parameter_filters=None, max_results=None):
+    """
+    Retrieve SSM parameters using AWS paginator.
+
+    - Supports AWS-side filtering using ParameterFilters
+    - Handles pagination automatically
+    - Supports optional max_results limit to stop early
+    """
+
+    paginator = client.get_paginator("describe_parameters")
+
+    paginate_args = {}
+    if parameter_filters:
+        paginate_args["ParameterFilters"] = parameter_filters
+
+    page_iterator = paginator.paginate(**paginate_args)
+
+    all_params = []
+
+    for page in page_iterator:
+        params = page.get("Parameters", [])
+
+        if max_results:
+            remaining = max_results - len(all_params)
+            all_params.extend(params[:remaining])
+            if len(all_params) >= max_results:
+                break
+        else:
+            all_params.extend(params)
+
+    return all_params
+
+
+def get_aws_tags(client, parameters, tag_filters):
+    """
+    Fetch tags for each parameter and optionally filter by tags.
+
+    Behavior:
+    - ALWAYS fetch tags
+    - If tag_filters provided → apply AND logic filtering
+    - Returns enriched parameter list with Tags field
+    """
+
+    results = []
+
+    for param in parameters:
+        name = param.get("Name")
+
+        try:
+            tags_resp = client.list_tags_for_resource(
+                ResourceType='Parameter',
+                ResourceId=name
+            )
+        except Exception as e:
+            demisto.error(f"Failed fetching tags for {name}: {str(e)}")
+            continue
+
+        tag_list = tags_resp.get("TagList", [])
+        tag_dict = {t["Key"]: t["Value"] for t in tag_list}
+
+        # Apply filtering ONLY if tag filters exist
+        if tag_filters:
+            if not all(tag_dict.get(k) == v for k, v in tag_filters.items()):
+                continue
+
+        param_copy = param.copy()
+        param_copy["Tags"] = tag_dict
+
+        results.append(param_copy)
+
+    return results
+
+
+def list_parameters_command(args: dict[str, Any], ssm_client: "SSMClient") -> CommandResults:
+    """
+    Main XSOAR command implementation.
+
+    Supports:
+    - AWS ParameterFilters
+    - Dynamic tag filtering
+    - Always returning tags
+    - Default behavior: return all parameters if no filters/tags provided
+    """
+
+    try:
+        filters_str = args.get("filters")
+        tags_str = args.get("tags")
+        max_results = int(args.get("max_results", 0)) or None
+
+        parameter_filters = parse_parameter_filters(filters_str)
+        tag_filters = parse_tags(tags_str)
+
+        # Guard condition - If no tags or filter provided, return error
+
+        # if not parameter_filters and not tag_filters:
+        #     return CommandResults(
+        #         readable_output="You must provide at least one of: filters or tags"
+        #     )
+
+        if tag_filters and not parameter_filters:
+            demisto.info("Tag-only filtering may be slow for large environments")
+
+        # Step 1: Fetch parameters
+        parameters = get_all_parameters(
+            ssm_client,
+            parameter_filters=parameter_filters if parameter_filters else None,
+            max_results=max_results
+        )
+
+        # Step 2: fetch aws tags
+        parameters = get_aws_tags(
+            ssm_client,
+            parameters,
+            tag_filters
+        )
+
+        outputs = []
+        table_data = []
+
+        for p in parameters:
+            entry = {
+                "Name": p.get("Name"),
+                "Type": p.get("Type"),
+                "KeyId": p.get("KeyId"),
+                # "LastModifiedDate": str(p.get("LastModifiedDate")),
+                "Tags": p.get("Tags", {})
+            }
+
+            outputs.append(entry)
+            table_data.append(entry)
+
+        readable_output = tableToMarkdown(
+            "AWS SSM Parameters",
+            table_data,
+            removeNull=True
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Parameter",
+            outputs_key_field="Name",
+            outputs=outputs,
+            readable_output=readable_output
+        )
+
+    except Exception as e:
+        demisto.error(f"AWS SSM describe parameters failed: {str(e)}")
+        return_error(f"Failed to describe parameters: {str(e)}")
+
+
 def main():
     params = demisto.params()
     command = demisto.command()
@@ -1480,6 +1704,8 @@ def main():
     aws_role_policy = None  # added it for using AWSClient class without changing the code
     timeout = params["timeout"]
     retries = params["retries"]
+
+    # aws_tags = params["AWSTags"]
 
     validate_params(
         aws_default_region,
@@ -1546,6 +1772,9 @@ def main():
                 results = run_command_command(args, ssm_client)
             case "aws-ssm-command-cancel":
                 results = cancel_command_command(args, ssm_client)
+
+            case "aws-ssm-parameter-list":
+                results = list_parameters_command(args, ssm_client)
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)

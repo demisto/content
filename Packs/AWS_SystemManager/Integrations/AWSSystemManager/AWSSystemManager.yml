@@ -1,5 +1,4 @@
 category: Utilities
-provider: Amazon
 commonfields:
   id: AWS - System Manager
   version: -1
@@ -62,7 +61,7 @@ configuration:
 - display: Retries
   name: retries
   type: 0
-  defaultvalue: 5
+  defaultvalue: '5'
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   section: Connect
@@ -1597,7 +1596,7 @@ script:
       name: tag_value
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
-      defaultValue: 30
+      defaultValue: '30'
     - description: |-
         'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'
         Example for execute the command in the war-room:
@@ -1670,7 +1669,7 @@ script:
       name: roleSessionDuration
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
-      defaultValue: 30
+      defaultValue: '30'
     - description: The execution ID of the Automation to stop.
       name: automation_execution_id
       required: true
@@ -1689,7 +1688,7 @@ script:
       - 'false'
     - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution.
       name: first_run
-      defaultValue: true
+      defaultValue: 'true'
       hidden: true
     - description: The timeout in seconds until polling ends.
       name: timeout
@@ -1731,7 +1730,7 @@ script:
       name: execution_id
     - description: The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results.
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     description: If the argument execution_id is provided, the command returns detailed information about a particular Automation execution. if not provided, the command provides details about all active and terminated Automation executions.
@@ -2053,7 +2052,7 @@ script:
       name: command_id
     - description: The maximum number of items to return for this call.
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     description: Lists the commands requested by users of the Amazon Web Services account.
@@ -2210,10 +2209,10 @@ script:
       name: document_version
     - description: The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%.
       name: max_concurrency
-      defaultValue: 50
+      defaultValue: '50'
     - description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%.
       name: max_errors
-      defaultValue: 0
+      defaultValue: '0'
     - description: The required and optional parameters specified in the document being run.
       name: parameters
       type: keyValue
@@ -2225,7 +2224,7 @@ script:
       name: output_s3_key_prefix
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
-      defaultValue: 30
+      defaultValue: '30'
     - description: A unique identifier for this command. This is for the polling to work, not for the user.
       name: command_id
       hidden: true
@@ -2379,10 +2378,10 @@ script:
       name: include_polling
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
-      defaultValue: 30
+      defaultValue: '30'
     - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution.
       name: first_run
-      defaultValue: true
+      defaultValue: 'true'
       hidden: true
     - description: The timeout in seconds until polling ends.
       name: timeout
@@ -2393,17 +2392,24 @@ script:
     polling: true
     description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
     name: aws-ssm-command-cancel
-  isfetch: false
+  - arguments:
+    - description: Enter the Filter or Tag for aws ssm parameters.
+      name: filter
+    - description: Enter the Tag for aws ssm parameters.
+      name: tags
+    - description: Maximum number of parameters to return.
+      name: max_results
+    description: Returns a list of AWS Parameter with tags.
+    name: aws-ssm-parameter-list
+    outputs:
+    - contextPath: AWS.SSM.Parameter.Name
+      description: Name of the AWS SSM parameter.
+      type: unknown
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.5533693
+  dockerimage: demisto/boto3py3:1.0.0.8187750
 fromversion: 6.9.0
-marketplaces:
-- xsoar
-- marketplacev2
-- xpanse
-- platform
 tests:
 - No tests (auto formatted)
