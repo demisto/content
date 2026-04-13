@@ -35,14 +35,14 @@ Retrieves a list of custom fields for cases and evidence sources.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.CustomFields.id | Number | The unique identifier of the custom field. |
-| MagnetForensics.CustomFields.name | String | The name of the custom field. |
-| MagnetForensics.CustomFields.type | String | The data type of the custom field. |
-| MagnetForensics.CustomFields.elementType | Unknown | The element type of the custom field. |
-| MagnetForensics.CustomFields.description | String | A description of the custom field. |
-| MagnetForensics.CustomFields.required | Boolean | Whether the custom field is required. |
-| MagnetForensics.CustomFields.exposeInWorkflow | Boolean | Whether the custom field is exposed in workflows. |
-| MagnetForensics.CustomFields.variableName | String | The variable name associated with the custom field. |
+| MagnetAutomate.CustomFields.id | Number | The unique identifier of the custom field. |
+| MagnetAutomate.CustomFields.name | String | The name of the custom field. |
+| MagnetAutomate.CustomFields.type | String | The data type of the custom field. |
+| MagnetAutomate.CustomFields.elementType | Unknown | The element type of the custom field. |
+| MagnetAutomate.CustomFields.description | String | A description of the custom field. |
+| MagnetAutomate.CustomFields.required | Boolean | Whether the custom field is required. |
+| MagnetAutomate.CustomFields.exposeInWorkflow | Boolean | Whether the custom field is exposed in workflows. |
+| MagnetAutomate.CustomFields.variableName | String | The variable name associated with the custom field. |
 
 #### Command Example
 
@@ -68,9 +68,9 @@ Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to ge
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.Case.id | Number | The unique identifier of the created case. |
-| MagnetForensics.Case.caseNumber | String | The case number assigned to the case. |
-| MagnetForensics.Case.customFieldValues | Unknown | The custom field values associated with the case. |
+| MagnetAutomate.Case.id | Number | The unique identifier of the created case. |
+| MagnetAutomate.Case.caseNumber | String | The case number assigned to the case. |
+| MagnetAutomate.Case.customFieldValues | Unknown | The custom field values associated with the case. |
 
 #### Command Example
 
@@ -97,8 +97,8 @@ Retrieves a list of all cases or information about a specific case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.Case.id | Number | The unique identifier of the case. |
-| MagnetForensics.Case.caseNumber | String | The case number. |
+| MagnetAutomate.Case.id | Number | The unique identifier of the case. |
+| MagnetAutomate.Case.caseNumber | String | The case number. |
 
 #### Command Example
 
@@ -183,13 +183,13 @@ Starts a new workflow run and associates it with a specific case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.WorkflowRun.id | Number | The unique identifier of the started workflow run. |
-| MagnetForensics.WorkflowRun.path | String | The path to the workflow run data. |
-| MagnetForensics.WorkflowRun.version | Number | The version of the workflow run. |
-| MagnetForensics.WorkflowRun.caseId | Number | The identifier of the associated case. |
-| MagnetForensics.WorkflowRun.caseTypeId | Number | The identifier of the case type. |
-| MagnetForensics.WorkflowRun.basePath | String | The base path for the workflow run. |
-| MagnetForensics.WorkflowRun.automateVersion | String | The version of Magnet Automate used for the run. |
+| MagnetAutomate.WorkflowRun.id | Number | The unique identifier of the started workflow run. |
+| MagnetAutomate.WorkflowRun.path | String | The path to the workflow run data. |
+| MagnetAutomate.WorkflowRun.version | Number | The version of the workflow run. |
+| MagnetAutomate.WorkflowRun.caseId | Number | The identifier of the associated case. |
+| MagnetAutomate.WorkflowRun.caseTypeId | Number | The identifier of the case type. |
+| MagnetAutomate.WorkflowRun.basePath | String | The base path for the workflow run. |
+| MagnetAutomate.WorkflowRun.automateVersion | String | The version of Magnet Automate used for the run. |
 
 #### Command Example
 
@@ -217,18 +217,18 @@ Retrieves a list of all workflow runs for a specific case or details of a specif
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.WorkflowRun.id | Number | The unique identifier of the workflow run. |
-| MagnetForensics.WorkflowRun.evidence | Unknown | Details about the evidence associated with the run. |
-| MagnetForensics.WorkflowRun.status | String | The current status of the workflow run. |
-| MagnetForensics.WorkflowRun.workflowId | Number | The identifier of the workflow being run. |
-| MagnetForensics.WorkflowRun.currentStage | Unknown | Information about the current stage of the workflow run. |
-| MagnetForensics.WorkflowRun.outputPath | String | The output path for the workflow run. |
-| MagnetForensics.WorkflowRun.startDateTime | Date | The date and time when the workflow run started. |
-| MagnetForensics.WorkflowRun.endDateTime | Date | The date and time when the workflow run ended. |
-| MagnetForensics.WorkflowRun.automateVersion | String | The version of Magnet Automate used. |
-| MagnetForensics.WorkflowRun.createdBy | Unknown | Information about the user who created the workflow run. |
-| MagnetForensics.WorkflowRun.duration | Number | The duration of the workflow run in seconds. |
-| MagnetForensics.WorkflowRun.completedStages | Unknown | A list of completed stages in the workflow run. |
+| MagnetAutomate.WorkflowRun.id | Number | The unique identifier of the workflow run. |
+| MagnetAutomate.WorkflowRun.evidence | Unknown | Details about the evidence associated with the run. |
+| MagnetAutomate.WorkflowRun.status | String | The current status of the workflow run. |
+| MagnetAutomate.WorkflowRun.workflowId | Number | The identifier of the workflow being run. |
+| MagnetAutomate.WorkflowRun.currentStage | Unknown | Information about the current stage of the workflow run. |
+| MagnetAutomate.WorkflowRun.outputPath | String | The output path for the workflow run. |
+| MagnetAutomate.WorkflowRun.startDateTime | Date | The date and time when the workflow run started. |
+| MagnetAutomate.WorkflowRun.endDateTime | Date | The date and time when the workflow run ended. |
+| MagnetAutomate.WorkflowRun.automateVersion | String | The version of Magnet Automate used. |
+| MagnetAutomate.WorkflowRun.createdBy | Unknown | Information about the user who created the workflow run. |
+| MagnetAutomate.WorkflowRun.duration | Number | The duration of the workflow run in seconds. |
+| MagnetAutomate.WorkflowRun.completedStages | Unknown | A list of completed stages in the workflow run. |
 
 #### Command Example
 
@@ -309,13 +309,13 @@ Starts a merge workflow run for multiple existing workflow runs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.WorkflowRun.id | Number | The unique identifier of the started merge workflow run. |
-| MagnetForensics.WorkflowRun.path | String | The path to the merge workflow run data. |
-| MagnetForensics.WorkflowRun.version | Number | The version of the workflow run. |
-| MagnetForensics.WorkflowRun.caseId | Number | The identifier of the associated case. |
-| MagnetForensics.WorkflowRun.caseTypeId | Number | The identifier of the case type. |
-| MagnetForensics.WorkflowRun.basePath | String | The base path for the workflow run. |
-| MagnetForensics.WorkflowRun.automateVersion | String | The version of Magnet Automate used. |
+| MagnetAutomate.WorkflowRun.id | Number | The unique identifier of the started merge workflow run. |
+| MagnetAutomate.WorkflowRun.path | String | The path to the merge workflow run data. |
+| MagnetAutomate.WorkflowRun.version | Number | The version of the workflow run. |
+| MagnetAutomate.WorkflowRun.caseId | Number | The identifier of the associated case. |
+| MagnetAutomate.WorkflowRun.caseTypeId | Number | The identifier of the case type. |
+| MagnetAutomate.WorkflowRun.basePath | String | The base path for the workflow run. |
+| MagnetAutomate.WorkflowRun.automateVersion | String | The version of Magnet Automate used. |
 
 #### Command Example
 
@@ -341,11 +341,11 @@ Retrieves a list of all available workflows.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.Workflow.id | Number | The unique identifier of the workflow. |
-| MagnetForensics.Workflow.name | String | The name of the workflow. |
-| MagnetForensics.Workflow.type.name | String | The name of the workflow type. |
-| MagnetForensics.Workflow.description | String | A description of the workflow. |
-| MagnetForensics.Workflow.outputPath | String | The default output path for the workflow. |
+| MagnetAutomate.Workflow.id | Number | The unique identifier of the workflow. |
+| MagnetAutomate.Workflow.name | String | The name of the workflow. |
+| MagnetAutomate.Workflow.type.name | String | The name of the workflow type. |
+| MagnetAutomate.Workflow.description | String | A description of the workflow. |
+| MagnetAutomate.Workflow.outputPath | String | The default output path for the workflow. |
 
 #### Command Example
 
@@ -393,19 +393,19 @@ Retrieves detailed information and export data for a specific workflow. Use ma-f
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.Workflow.id | Number | The unique identifier of the workflow. |
-| MagnetForensics.Workflow.automateVersion | String | The version of Magnet Automate the workflow was created in. |
-| MagnetForensics.Workflow.name | String | The name of the workflow. |
-| MagnetForensics.Workflow.description | String | A description of the workflow. |
-| MagnetForensics.Workflow.sourceType | String | The type of evidence source the workflow accepts. |
-| MagnetForensics.Workflow.sourceConfig | Unknown | Configuration details for the evidence source. |
-| MagnetForensics.Workflow.outputPath | String | The output path for the workflow. |
-| MagnetForensics.Workflow.keylistPath | String | The path to the keylist used by the workflow. |
-| MagnetForensics.Workflow.passwordListPath | String | The path to the password list used by the workflow. |
-| MagnetForensics.Workflow.continueOnDecryptionFail | String | Whether the workflow continues if decryption fails. |
-| MagnetForensics.Workflow.distribution | String | The distribution settings for the workflow. |
-| MagnetForensics.Workflow.localMode | Boolean | Whether the workflow runs in local mode. |
-| MagnetForensics.Workflow.timeExported | Date | The date and time when the workflow was exported. |
+| MagnetAutomate.Workflow.id | Number | The unique identifier of the workflow. |
+| MagnetAutomate.Workflow.automateVersion | String | The version of Magnet Automate the workflow was created in. |
+| MagnetAutomate.Workflow.name | String | The name of the workflow. |
+| MagnetAutomate.Workflow.description | String | A description of the workflow. |
+| MagnetAutomate.Workflow.sourceType | String | The type of evidence source the workflow accepts. |
+| MagnetAutomate.Workflow.sourceConfig | Unknown | Configuration details for the evidence source. |
+| MagnetAutomate.Workflow.outputPath | String | The output path for the workflow. |
+| MagnetAutomate.Workflow.keylistPath | String | The path to the keylist used by the workflow. |
+| MagnetAutomate.Workflow.passwordListPath | String | The path to the password list used by the workflow. |
+| MagnetAutomate.Workflow.continueOnDecryptionFail | String | Whether the workflow continues if decryption fails. |
+| MagnetAutomate.Workflow.distribution | String | The distribution settings for the workflow. |
+| MagnetAutomate.Workflow.localMode | Boolean | Whether the workflow runs in local mode. |
+| MagnetAutomate.Workflow.timeExported | Date | The date and time when the workflow was exported. |
 
 #### Command Example
 
@@ -433,12 +433,12 @@ Creates a new node (agent) in Magnet Automate.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.Node.id | Number | The unique identifier of the created node. |
-| MagnetForensics.Node.name | String | The name of the node. |
-| MagnetForensics.Node.status | String | The current status of the node. |
-| MagnetForensics.Node.workingDirectory | String | The working directory of the node. |
-| MagnetForensics.Node.address | String | The network address of the node. |
-| MagnetForensics.Node.applications | Unknown | A list of applications installed on the node. |
+| MagnetAutomate.Node.id | Number | The unique identifier of the created node. |
+| MagnetAutomate.Node.name | String | The name of the node. |
+| MagnetAutomate.Node.status | String | The current status of the node. |
+| MagnetAutomate.Node.workingDirectory | String | The working directory of the node. |
+| MagnetAutomate.Node.address | String | The network address of the node. |
+| MagnetAutomate.Node.applications | Unknown | A list of applications installed on the node. |
 
 #### Command Example
 
@@ -464,12 +464,12 @@ Retrieves a list of all available nodes (agents).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MagnetForensics.Node.id | Number | The unique identifier of the node. |
-| MagnetForensics.Node.name | String | The name of the node. |
-| MagnetForensics.Node.status | String | The current status of the node. |
-| MagnetForensics.Node.workingDirectory | String | The working directory of the node. |
-| MagnetForensics.Node.address | String | The network address of the node. |
-| MagnetForensics.Node.applications | Unknown | A list of applications installed on the node. |
+| MagnetAutomate.Node.id | Number | The unique identifier of the node. |
+| MagnetAutomate.Node.name | String | The name of the node. |
+| MagnetAutomate.Node.status | String | The current status of the node. |
+| MagnetAutomate.Node.workingDirectory | String | The working directory of the node. |
+| MagnetAutomate.Node.address | String | The network address of the node. |
+| MagnetAutomate.Node.applications | Unknown | A list of applications installed on the node. |
 
 #### Command Example
 

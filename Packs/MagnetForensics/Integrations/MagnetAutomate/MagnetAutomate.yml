@@ -46,28 +46,28 @@ script:
       defaultValue: false
       description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
-    - contextPath: MagnetForensics.CustomFields.id
+    - contextPath: MagnetAutomate.CustomFields.id
       description: The unique identifier of the custom field.
       type: Number
-    - contextPath: MagnetForensics.CustomFields.name
+    - contextPath: MagnetAutomate.CustomFields.name
       description: The name of the custom field.
       type: String
-    - contextPath: MagnetForensics.CustomFields.type
+    - contextPath: MagnetAutomate.CustomFields.type
       description: The data type of the custom field.
       type: String
-    - contextPath: MagnetForensics.CustomFields.elementType
+    - contextPath: MagnetAutomate.CustomFields.elementType
       description: The element type of the custom field.
       type: Unknown
-    - contextPath: MagnetForensics.CustomFields.description
+    - contextPath: MagnetAutomate.CustomFields.description
       description: A description of the custom field.
       type: String
-    - contextPath: MagnetForensics.CustomFields.required
+    - contextPath: MagnetAutomate.CustomFields.required
       description: Whether the custom field is required.
       type: Boolean
-    - contextPath: MagnetForensics.CustomFields.exposeInWorkflow
+    - contextPath: MagnetAutomate.CustomFields.exposeInWorkflow
       description: Whether the custom field is exposed in workflows.
       type: Boolean
-    - contextPath: MagnetForensics.CustomFields.variableName
+    - contextPath: MagnetAutomate.CustomFields.variableName
       description: The variable name associated with the custom field.
       type: String
 
@@ -82,13 +82,13 @@ script:
       required: false
       description: A JSON object containing custom field values for the case.
     outputs:
-    - contextPath: MagnetForensics.Case.id
+    - contextPath: MagnetAutomate.Case.id
       description: The unique identifier of the created case.
       type: Number
-    - contextPath: MagnetForensics.Case.caseNumber
+    - contextPath: MagnetAutomate.Case.caseNumber
       description: The case number assigned to the case.
       type: String
-    - contextPath: MagnetForensics.Case.customFieldValues
+    - contextPath: MagnetAutomate.Case.customFieldValues
       description: The custom field values associated with the case.
       type: Unknown
 
@@ -108,10 +108,10 @@ script:
       defaultValue: false
       description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
-    - contextPath: MagnetForensics.Case.id
+    - contextPath: MagnetAutomate.Case.id
       description: The unique identifier of the case.
       type: Number
-    - contextPath: MagnetForensics.Case.caseNumber
+    - contextPath: MagnetAutomate.Case.caseNumber
       description: The case number.
       type: String
 
@@ -170,25 +170,25 @@ script:
       required: false
       description: The name of the specific node to assign the workflow run to.
     outputs:
-    - contextPath: MagnetForensics.WorkflowRun.id
+    - contextPath: MagnetAutomate.WorkflowRun.id
       description: The unique identifier of the started workflow run.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.path
+    - contextPath: MagnetAutomate.WorkflowRun.path
       description: The path to the workflow run data.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.version
+    - contextPath: MagnetAutomate.WorkflowRun.version
       description: The version of the workflow run.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.caseId
+    - contextPath: MagnetAutomate.WorkflowRun.caseId
       description: The identifier of the associated case.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.caseTypeId
+    - contextPath: MagnetAutomate.WorkflowRun.caseTypeId
       description: The identifier of the case type.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.basePath
+    - contextPath: MagnetAutomate.WorkflowRun.basePath
       description: The base path for the workflow run.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.automateVersion
+    - contextPath: MagnetAutomate.WorkflowRun.automateVersion
       description: The version of Magnet Automate used for the run.
       type: String
 
@@ -211,40 +211,40 @@ script:
       defaultValue: false
       description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
-    - contextPath: MagnetForensics.WorkflowRun.id
+    - contextPath: MagnetAutomate.WorkflowRun.id
       description: The unique identifier of the workflow run.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.evidence
+    - contextPath: MagnetAutomate.WorkflowRun.evidence
       description: Details about the evidence associated with the run.
       type: Unknown
-    - contextPath: MagnetForensics.WorkflowRun.status
+    - contextPath: MagnetAutomate.WorkflowRun.status
       description: The current status of the workflow run.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.workflowId
+    - contextPath: MagnetAutomate.WorkflowRun.workflowId
       description: The identifier of the workflow being run.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.currentStage
+    - contextPath: MagnetAutomate.WorkflowRun.currentStage
       description: Information about the current stage of the workflow run.
       type: Unknown
-    - contextPath: MagnetForensics.WorkflowRun.outputPath
+    - contextPath: MagnetAutomate.WorkflowRun.outputPath
       description: The output path for the workflow run.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.startDateTime
+    - contextPath: MagnetAutomate.WorkflowRun.startDateTime
       description: The date and time the workflow run started.
       type: Date
-    - contextPath: MagnetForensics.WorkflowRun.endDateTime
+    - contextPath: MagnetAutomate.WorkflowRun.endDateTime
       description: The date and time the workflow run ended.
       type: Date
-    - contextPath: MagnetForensics.WorkflowRun.automateVersion
+    - contextPath: MagnetAutomate.WorkflowRun.automateVersion
       description: The version of Magnet Automate used.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.createdBy
+    - contextPath: MagnetAutomate.WorkflowRun.createdBy
       description: Information about the user who created the workflow run.
       type: Unknown
-    - contextPath: MagnetForensics.WorkflowRun.duration
+    - contextPath: MagnetAutomate.WorkflowRun.duration
       description: The duration of the workflow run in seconds.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.completedStages
+    - contextPath: MagnetAutomate.WorkflowRun.completedStages
       description: A list of completed stages in the workflow run.
       type: Unknown
 
@@ -291,25 +291,25 @@ script:
       required: false
       description: The name of the specific node to assign the merge workflow run to.
     outputs:
-    - contextPath: MagnetForensics.WorkflowRun.id
+    - contextPath: MagnetAutomate.WorkflowRun.id
       description: The unique identifier of the started merge workflow run.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.path
+    - contextPath: MagnetAutomate.WorkflowRun.path
       description: The path to the merge workflow run data.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.version
+    - contextPath: MagnetAutomate.WorkflowRun.version
       description: The version of the workflow run.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.caseId
+    - contextPath: MagnetAutomate.WorkflowRun.caseId
       description: The identifier of the associated case.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.caseTypeId
+    - contextPath: MagnetAutomate.WorkflowRun.caseTypeId
       description: The identifier of the case type.
       type: Number
-    - contextPath: MagnetForensics.WorkflowRun.basePath
+    - contextPath: MagnetAutomate.WorkflowRun.basePath
       description: The base path for the workflow run.
       type: String
-    - contextPath: MagnetForensics.WorkflowRun.automateVersion
+    - contextPath: MagnetAutomate.WorkflowRun.automateVersion
       description: The version of Magnet Automate used.
       type: String
 
@@ -326,19 +326,19 @@ script:
       defaultValue: false
       description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
-    - contextPath: MagnetForensics.Workflow.id
+    - contextPath: MagnetAutomate.Workflow.id
       description: The unique identifier of the workflow.
       type: Number
-    - contextPath: MagnetForensics.Workflow.name
+    - contextPath: MagnetAutomate.Workflow.name
       description: The name of the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.type.name
+    - contextPath: MagnetAutomate.Workflow.type.name
       description: The name of the workflow type.
       type: String
-    - contextPath: MagnetForensics.Workflow.description
+    - contextPath: MagnetAutomate.Workflow.description
       description: A description of the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.outputPath
+    - contextPath: MagnetAutomate.Workflow.outputPath
       description: The default output path for the workflow.
       type: String
 
@@ -358,43 +358,43 @@ script:
       required: true
       description: The unique identifier of the workflow to retrieve.
     outputs:
-    - contextPath: MagnetForensics.Workflow.id
+    - contextPath: MagnetAutomate.Workflow.id
       description: The unique identifier of the workflow.
       type: Number
-    - contextPath: MagnetForensics.Workflow.automateVersion
+    - contextPath: MagnetAutomate.Workflow.automateVersion
       description: The version of Magnet Automate the workflow was created in.
       type: String
-    - contextPath: MagnetForensics.Workflow.name
+    - contextPath: MagnetAutomate.Workflow.name
       description: The name of the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.description
+    - contextPath: MagnetAutomate.Workflow.description
       description: A description of the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.sourceType
+    - contextPath: MagnetAutomate.Workflow.sourceType
       description: The type of evidence source the workflow accepts.
       type: String
-    - contextPath: MagnetForensics.Workflow.sourceConfig
+    - contextPath: MagnetAutomate.Workflow.sourceConfig
       description: Configuration details for the evidence source.
       type: Unknown
-    - contextPath: MagnetForensics.Workflow.outputPath
+    - contextPath: MagnetAutomate.Workflow.outputPath
       description: The output path for the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.keylistPath
+    - contextPath: MagnetAutomate.Workflow.keylistPath
       description: The path to the keylist used by the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.passwordListPath
+    - contextPath: MagnetAutomate.Workflow.passwordListPath
       description: The path to the password list used by the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.continueOnDecryptionFail
+    - contextPath: MagnetAutomate.Workflow.continueOnDecryptionFail
       description: Whether the workflow continues if decryption fails.
       type: String
-    - contextPath: MagnetForensics.Workflow.distribution
+    - contextPath: MagnetAutomate.Workflow.distribution
       description: The distribution settings for the workflow.
       type: String
-    - contextPath: MagnetForensics.Workflow.localMode
+    - contextPath: MagnetAutomate.Workflow.localMode
       description: Whether the workflow runs in local mode.
       type: Boolean
-    - contextPath: MagnetForensics.Workflow.timeExported
+    - contextPath: MagnetAutomate.Workflow.timeExported
       description: The date and time the workflow was exported.
       type: Date
 
@@ -415,22 +415,22 @@ script:
       required: false
       description: A JSON array of applications installed on the node.
     outputs:
-    - contextPath: MagnetForensics.Node.id
+    - contextPath: MagnetAutomate.Node.id
       description: The unique identifier of the created node.
       type: Number
-    - contextPath: MagnetForensics.Node.name
+    - contextPath: MagnetAutomate.Node.name
       description: The name of the node.
       type: String
-    - contextPath: MagnetForensics.Node.status
+    - contextPath: MagnetAutomate.Node.status
       description: The current status of the node.
       type: String
-    - contextPath: MagnetForensics.Node.workingDirectory
+    - contextPath: MagnetAutomate.Node.workingDirectory
       description: The working directory of the node.
       type: String
-    - contextPath: MagnetForensics.Node.address
+    - contextPath: MagnetAutomate.Node.address
       description: The network address of the node.
       type: String
-    - contextPath: MagnetForensics.Node.applications
+    - contextPath: MagnetAutomate.Node.applications
       description: A list of applications installed on the node.
       type: Unknown
 
@@ -447,22 +447,22 @@ script:
       defaultValue: false
       description: Whether to return all of the results. Overrides the limit argument if used.
     outputs:
-    - contextPath: MagnetForensics.Node.id
+    - contextPath: MagnetAutomate.Node.id
       description: The unique identifier of the node.
       type: Number
-    - contextPath: MagnetForensics.Node.name
+    - contextPath: MagnetAutomate.Node.name
       description: The name of the node.
       type: String
-    - contextPath: MagnetForensics.Node.status
+    - contextPath: MagnetAutomate.Node.status
       description: The current status of the node.
       type: String
-    - contextPath: MagnetForensics.Node.workingDirectory
+    - contextPath: MagnetAutomate.Node.workingDirectory
       description: The working directory of the node.
       type: String
-    - contextPath: MagnetForensics.Node.address
+    - contextPath: MagnetAutomate.Node.address
       description: The network address of the node.
       type: String
-    - contextPath: MagnetForensics.Node.applications
+    - contextPath: MagnetAutomate.Node.applications
       description: A list of applications installed on the node.
       type: Unknown
 

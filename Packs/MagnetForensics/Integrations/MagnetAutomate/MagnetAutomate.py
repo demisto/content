@@ -11,7 +11,7 @@ from BaseContentApiModule import *
 
 # region Constants
 
-BASE_CONTEXT_OUTPUT_PREFIX = "MagnetForensics"
+BASE_CONTEXT_OUTPUT_PREFIX = "MagnetAutomate"
 
 # endregion
 

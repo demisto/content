@@ -346,7 +346,7 @@ def test_custom_fields_list_command(mocker: MockerFixture, client: "MagnetAutoma
 
     response = custom_fields_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.CustomFields"
+    assert response.outputs_prefix == "MagnetAutomate.CustomFields"
     assert response.outputs_key_field == "id"
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore
@@ -438,7 +438,7 @@ def test_case_create_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
     response = case_create_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Case"
+    assert response.outputs_prefix == "MagnetAutomate.Case"
     assert response.outputs_key_field == "id"
 
     outputs: dict[str, Any] = response.outputs  # type: ignore
@@ -530,7 +530,7 @@ def test_cases_list_command_all(mocker: MockerFixture, client: "MagnetAutomateCl
 
     response = cases_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Case"
+    assert response.outputs_prefix == "MagnetAutomate.Case"
     assert response.outputs_key_field == "id"
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore
@@ -560,7 +560,7 @@ def test_cases_list_command_single(mocker: MockerFixture, client: "MagnetAutomat
 
     response = cases_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Case"
+    assert response.outputs_prefix == "MagnetAutomate.Case"
     assert response.outputs_key_field == "id"
 
     outputs: dict[str, Any] = response.outputs  # type: ignore
@@ -979,7 +979,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
 
     response = workflow_run_start_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.WorkflowRun"
+    assert response.outputs_prefix == "MagnetAutomate.WorkflowRun"
     assert response.outputs_key_field == "id"
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore
@@ -1101,7 +1101,7 @@ def test_workflow_run_list_command_specific(mocker: MockerFixture, client: "Magn
 
     response = workflow_run_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.WorkflowRun"
+    assert response.outputs_prefix == "MagnetAutomate.WorkflowRun"
     assert response.outputs_key_field == "id"
 
     output: dict[str, Any] = response.outputs  # type: ignore
@@ -1130,7 +1130,7 @@ def test_workflow_run_list_command_all(mocker: MockerFixture, client: "MagnetAut
 
     response = workflow_run_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.WorkflowRun"
+    assert response.outputs_prefix == "MagnetAutomate.WorkflowRun"
     assert response.outputs_key_field == "id"
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore
@@ -1382,7 +1382,7 @@ def test_merge_workflow_run_start_command(mocker: MockerFixture, client: "Magnet
 
     response = merge_workflow_run_start_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.WorkflowRun"
+    assert response.outputs_prefix == "MagnetAutomate.WorkflowRun"
     assert response.outputs_key_field == "id"
 
     outputs: dict[str, Any] = response.outputs  # type: ignore
@@ -1491,7 +1491,7 @@ def test_workflow_list_command(mocker: MockerFixture, client: "MagnetAutomateCli
 
     response = workflow_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Workflow"
+    assert response.outputs_prefix == "MagnetAutomate.Workflow"
     assert response.outputs_key_field == "id"
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore
@@ -1608,7 +1608,7 @@ def test_workflow_get_command(mocker: MockerFixture, client: "MagnetAutomateClie
 
     response = workflow_get_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Workflow"
+    assert response.outputs_prefix == "MagnetAutomate.Workflow"
     assert response.outputs_key_field == "id"
 
     outputs: dict[str, Any] = response.outputs  # type: ignore
@@ -1724,7 +1724,7 @@ def test_node_create_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
     response = node_create_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Node"
+    assert response.outputs_prefix == "MagnetAutomate.Node"
     assert response.outputs_key_field == "id"
 
     outputs: dict[str, Any] = response.outputs  # type: ignore
@@ -1838,7 +1838,7 @@ def test_nodes_list_command(mocker: MockerFixture, client: "MagnetAutomateClient
 
     response = nodes_list_command(client, args)
 
-    assert response.outputs_prefix == "MagnetForensics.Node"
+    assert response.outputs_prefix == "MagnetAutomate.Node"
     assert response.outputs_key_field == "id"
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore
