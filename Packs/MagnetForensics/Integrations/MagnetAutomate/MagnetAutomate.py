@@ -498,12 +498,12 @@ class CustomFieldsListArgs(ContentBaseModel):
     limit: int | None = Field(50, alias="limit")
     all_results: bool = Field(False, alias="all_results")
 
-    @validator("limit", pre=True)
+    @validator("limit", pre=True, allow_reuse=True)
     @classmethod
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @validator("all_results", pre=True)
+    @validator("all_results", pre=True, allow_reuse=True)
     @classmethod
     def validate_all_results(cls, v):
         return argToBoolean(v)
@@ -570,7 +570,7 @@ class CaseCreateArgs(ContentBaseModel):
     case_number: str = Field(alias="case_number")
     custom_field_values: dict[str, Any] | None = Field(None, alias="custom_field_values")
 
-    @validator("custom_field_values", pre=True)
+    @validator("custom_field_values", pre=True, allow_reuse=True)
     @classmethod
     def validate_custom_field_values(cls, v):
         return validate_json(v)
@@ -622,17 +622,17 @@ class CasesListArgs(ContentBaseModel):
     limit: int | None = Field(50, alias="limit")
     all_results: bool = Field(False, alias="all_results")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v)
 
-    @validator("limit", pre=True)
+    @validator("limit", pre=True, allow_reuse=True)
     @classmethod
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @validator("all_results", pre=True)
+    @validator("all_results", pre=True, allow_reuse=True)
     @classmethod
     def validate_all_results(cls, v):
         return argToBoolean(v)
@@ -715,7 +715,7 @@ def cases_list_command(client: MagnetAutomateClient, args: CasesListArgs) -> Com
 class CaseDeleteArgs(ContentBaseModel):
     case_id: int = Field(alias="case_id")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
@@ -747,7 +747,7 @@ def case_delete_command(client: MagnetAutomateClient, args: CaseDeleteArgs) -> C
 class CaseCancelArgs(ContentBaseModel):
     case_id: int = Field(alias="case_id")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
@@ -789,27 +789,27 @@ class WorkflowRunStartArgs(ContentBaseModel):
     custom_field_values: dict[str, Any] | None = Field(None, alias="custom_field_values")
     assigned_node_name: str | None = Field(None, alias="assigned_node_name")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("evidence_type", pre=True)
+    @validator("evidence_type", pre=True, allow_reuse=True)
     @classmethod
     def validate_evidence_type(cls, v):
         return validate_json(v)
 
-    @validator("workflow_id", pre=True)
+    @validator("workflow_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_workflow_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("continue_on_decryption_fail", pre=True)
+    @validator("continue_on_decryption_fail", pre=True, allow_reuse=True)
     @classmethod
     def validate_continue_on_decryption_fail(cls, v):
         return arg_to_bool_or_none(v)
 
-    @validator("custom_field_values", pre=True)
+    @validator("custom_field_values", pre=True, allow_reuse=True)
     @classmethod
     def validate_custom_field_values(cls, v):
         return validate_json(v)
@@ -893,22 +893,22 @@ class WorkflowRunListArgs(ContentBaseModel):
     limit: int | None = Field(50, alias="limit")
     all_results: bool = Field(False, alias="all_results")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("run_id", pre=True)
+    @validator("run_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_run_id(cls, v):
         return arg_to_number(v)
 
-    @validator("limit", pre=True)
+    @validator("limit", pre=True, allow_reuse=True)
     @classmethod
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @validator("all_results", pre=True)
+    @validator("all_results", pre=True, allow_reuse=True)
     @classmethod
     def validate_all_results(cls, v):
         return argToBoolean(v)
@@ -1016,12 +1016,12 @@ class WorkflowRunDeleteArgs(ContentBaseModel):
     case_id: int = Field(alias="case_id")
     run_id: int = Field(alias="run_id")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("run_id", pre=True)
+    @validator("run_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_run_id(cls, v):
         return arg_to_number(v, required=True)
@@ -1054,12 +1054,12 @@ class WorkflowRunCancelArgs(ContentBaseModel):
     case_id: int = Field(alias="case_id")
     run_id: int = Field(alias="run_id")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("run_id", pre=True)
+    @validator("run_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_run_id(cls, v):
         return arg_to_number(v, required=True)
@@ -1095,17 +1095,17 @@ class MergeWorkflowRunStartArgs(ContentBaseModel):
     output_path: str | None = Field(None, alias="output_path")
     assigned_node_name: str | None = Field(None, alias="assigned_node_name")
 
-    @validator("case_id", pre=True)
+    @validator("case_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("run_ids", pre=True)
+    @validator("run_ids", pre=True, allow_reuse=True)
     @classmethod
     def validate_run_ids(cls, v):
         return argToList(v, transform=lambda x: arg_to_number(x, required=True))
 
-    @validator("workflow_id", pre=True)
+    @validator("workflow_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_workflow_id(cls, v):
         return arg_to_number(v, required=True)
@@ -1174,12 +1174,12 @@ class WorkflowListArgs(ContentBaseModel):
     limit: int | None = Field(50, alias="limit")
     all_results: bool = Field(False, alias="all_results")
 
-    @validator("limit", pre=True)
+    @validator("limit", pre=True, allow_reuse=True)
     @classmethod
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @validator("all_results", pre=True)
+    @validator("all_results", pre=True, allow_reuse=True)
     @classmethod
     def validate_all_results(cls, v):
         return argToBoolean(v)
@@ -1253,7 +1253,7 @@ def workflow_list_command(client: MagnetAutomateClient, args: WorkflowListArgs) 
 class WorkflowDeleteArgs(ContentBaseModel):
     workflow_id: int = Field(alias="workflow_id")
 
-    @validator("workflow_id", pre=True)
+    @validator("workflow_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_workflow_id(cls, v):
         return arg_to_number(v, required=True)
@@ -1285,7 +1285,7 @@ def workflow_delete_command(client: MagnetAutomateClient, args: WorkflowDeleteAr
 class WorkflowGetArgs(ContentBaseModel):
     workflow_id: int = Field(alias="workflow_id")
 
-    @validator("workflow_id", pre=True)
+    @validator("workflow_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_workflow_id(cls, v):
         return arg_to_number(v, required=True)
@@ -1378,7 +1378,7 @@ class NodeCreateArgs(ContentBaseModel):
     working_directory: str | None = Field(None, alias="working_directory")
     applications_json: Any | None = Field(None, alias="applications_json")
 
-    @validator("applications_json", pre=True)
+    @validator("applications_json", pre=True, allow_reuse=True)
     @classmethod
     def validate_applications_json(cls, v):
         return validate_json(v)
@@ -1425,12 +1425,12 @@ class NodesListArgs(ContentBaseModel):
     limit: int | None = Field(50, alias="limit")
     all_results: bool = Field(False, alias="all_results")
 
-    @validator("limit", pre=True)
+    @validator("limit", pre=True, allow_reuse=True)
     @classmethod
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @validator("all_results", pre=True)
+    @validator("all_results", pre=True, allow_reuse=True)
     @classmethod
     def validate_all_results(cls, v):
         return argToBoolean(v)
@@ -1486,12 +1486,12 @@ class NodeUpdateArgs(ContentBaseModel):
     working_directory: str | None = Field(None, alias="working_directory")
     applications_json: Any | None = Field(None, alias="applications_json")
 
-    @validator("node_id", pre=True)
+    @validator("node_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_node_id(cls, v):
         return arg_to_number(v, required=True)
 
-    @validator("applications_json", pre=True)
+    @validator("applications_json", pre=True, allow_reuse=True)
     @classmethod
     def validate_applications_json(cls, v):
         return validate_json(v)
@@ -1528,7 +1528,7 @@ def node_update_command(client: MagnetAutomateClient, args: NodeUpdateArgs) -> C
 class NodeDeleteArgs(ContentBaseModel):
     node_id: int = Field(alias="node_id")
 
-    @validator("node_id", pre=True)
+    @validator("node_id", pre=True, allow_reuse=True)
     @classmethod
     def validate_node_id(cls, v):
         return arg_to_number(v, required=True)
