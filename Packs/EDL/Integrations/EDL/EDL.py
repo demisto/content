@@ -871,11 +871,6 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
             # this could generate more than num entries according to PAGE_SIZE
             # Handle DomainGlob type indicators even when value doesn't start with "*."
             if indicator.startswith("*.") or ioc_type == FeedIndicatorType.DomainGlob:
-                # For DomainGlob type, ensure we have the wildcard form
-                if not indicator.startswith("*."):
-                    # Platform returned bare domain for DomainGlob - reconstruct wildcard
-                    indicator = "*." + indicator
-
                 domain = str(indicator.lstrip("*."))
                 # if we should ignore TLDs and the domain is a TLD
                 if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:
