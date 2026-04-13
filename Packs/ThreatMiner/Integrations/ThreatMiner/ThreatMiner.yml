@@ -6,16 +6,21 @@ display: ThreatMiner
 category: Data Enrichment & Threat Intelligence
 provider: ThreatConnect
 description: Data Mining for Threat Intelligence.
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Maximum results per query, enter 'all' to get unlimited results
   name: limit_results
   defaultvalue: "30"
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
+  section: Collect
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -30,15 +35,18 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: ThreatMiner API URL
   name: threatminer_url
   defaultvalue: https://api.threatminer.org/v2/
   type: 0
   required: true
+  section: Connect
 script:
   script: ''
   type: python
@@ -293,7 +301,7 @@ script:
       type: string
     description: Retrieves data from ThreatMiner about a specified file.
   runonce: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
 tests:
 - ThreatMiner-Test
 fromversion: 5.0.0
