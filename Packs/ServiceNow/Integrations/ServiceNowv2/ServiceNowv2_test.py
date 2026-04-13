@@ -2529,6 +2529,45 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     )
 
 
+def test_get_modified_remote_data_unparseable_last_update(requests_mock, mocker):
+    """
+    Given:
+        - lastUpdate is "0" (uninitialized dbotMirrorLastSync sent by XSOAR)
+
+    When:
+        - Running get-modified-remote-data
+
+    Then:
+        - The command does not raise an error and falls back to epoch time (1970-01-01 00:00:00)
+    """
+    mocker.patch.object(demisto, "debug")
+    url = "https://test.service-now.com/api/now/v2/"
+    client = Client(
+        url,
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+    params = {
+        "sysparm_limit": "100",
+        "sysparm_offset": "0",
+        "sysparm_query": "sys_updated_on>1970-01-01 00:00:00",
+        "sysparm_fields": "sys_id",
+    }
+    requests_mock.request("GET", f"{url}table/ticket_type?{urlencode(params)}", json={"result": []})
+    result = get_modified_remote_data_command(client, {"lastUpdate": "0"})
+    assert result.modified_incident_ids == []
+
+
 @pytest.mark.parametrize(
     "sys_created_on, expected",
     [
