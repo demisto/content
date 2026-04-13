@@ -64,6 +64,12 @@ Follow the steps below to create and configure a DocuSign application for use wi
 * Navigate to the **Organization** tab from the left sidebar.
 * Copy the **Organization ID** from the URL.
 
+#### 10. Configure and Test
+
+* Configure and save the instance.
+* To use the Docusign integration and allow access to Docusign events, an administrator has to approve our app using an admin consent flow by running the ***!docusign-generate-consent-url*** command.
+* Run the command ***!docusign-auth-test*** to test the full authentication flow and API connectivity.
+
 ---
 
 ## Go-Live - Customer events data type
