@@ -683,7 +683,6 @@ def azure_get_risky_user(
         demisto.debug(f"Searching Azure Risky Users by userPrincipalName: {search_value}")
         list_command_args = {
             "using-brand": command.brand,
-            "limit": "1",
         }
         # Execute the list command and manually filter by userPrincipalName
         entry_context, human_readable, readable_errors = run_execute_command("azure-risky-users-list", list_command_args)
