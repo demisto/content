@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of ServiceNowGenericF
 
 ## Configure ServiceNowGenericFeed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The format should be https://company.service-now.com/ | True |
@@ -41,7 +40,7 @@ retrieve indicators from ServiceNow
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of indicators that can be returned. Default is 1. | Optional | 
+| limit | The number of indicators that can be returned. Default is 1. | Optional |
 
 #### Context Output
 

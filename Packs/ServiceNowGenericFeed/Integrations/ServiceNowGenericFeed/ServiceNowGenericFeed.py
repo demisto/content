@@ -4,7 +4,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from ServiceNowApiModule import *  # noqa: E402
 
-class ServiceNowClient(BaseClient):
+
+class Client(BaseClient):
     def __init__(
         self,
         credentials: dict,
@@ -293,7 +294,7 @@ class ServiceNowClient(BaseClient):
 """COMMAND FUNCTIONS"""
 
 
-def test_module(client: ServiceNowClient) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -310,8 +311,7 @@ def test_module(client: ServiceNowClient) -> str:
 
     if client.use_oauth and not client.use_jwt:
         return_error(
-            "Test button cannot be used when using OAuth 2.0 for this integration "
-             "Please use the !servicenow-cmdb-oauth-login"
+            "Test button cannot be used when using OAuth 2.0 for this integration " "Please use the !servicenow-cmdb-oauth-login"
         )
 
     response = client.http_request(method="GET", url_suffix="/api/now/table/incident?sysparm_limit=1")
@@ -321,7 +321,7 @@ def test_module(client: ServiceNowClient) -> str:
         return "Test failed. Please check your instance URL and credentials."
 
 
-def list_records_from_url(client: ServiceNowClient, server_url: str) -> tuple:
+def list_records_from_url(client: Client, server_url: str) -> tuple:
     """
     Function to list the records
     """
@@ -355,7 +355,7 @@ def create_indicator_object(indicator_list: list, feedtags: list, indicator_fiel
     for ind in indicator_list:
         indicator_type = auto_detect_indicator_type(ind.get(indicator_field))
         if not indicator_type:
-            return_error(f"Could not detect indicator type for value {ind.get(indicator_field)}. Please check the indicator field and value.")
+            return_error(f"Could not detect indicator type for value {ind.get(indicator_field)}")
         indicator_obj = {
             "value": ind.get(indicator_field),
             "type": indicator_type,
@@ -382,7 +382,7 @@ def main() -> None:
     client_id = client_secret = ""
     credentials = params.get("credentials", {})
     use_oauth = params.get("use_oauth", False)
-    use_jwt = argToBool(params.get("use_jwt", False))
+    use_jwt = argToBoolean(params.get("use_jwt", False))
     feedtags = argToList(params.get("feedTags"))
     server_url = params.get("query_url")
     indicator_field = params.get("indicator_field")
@@ -415,7 +415,7 @@ def main() -> None:
             "aud": client_id,
         }
 
-    client = ServiceNowClient(
+    client = Client(
         credentials=credentials,
         use_oauth=use_oauth,
         client_id=client_id,
@@ -425,14 +425,13 @@ def main() -> None:
         proxy=proxy,
         jwt_params=jwt_params,
     )
-
+    command = demisto.command()
     try:
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif demisto.command() == "fetch-indicators":
-
             _, response = list_records_from_url(client, server_url)
             if response.get("result"):
                 indicators = response.get("result", [])
