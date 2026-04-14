@@ -359,7 +359,7 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
 
     if found_key is None:
         return False, None
-
+    demisto.debug(f"Dedup match: {item.message_id=}, {found_key=}, {clean_id=}")
     stored_time = exclude_ids[found_key]
 
     # If stored_time is "" or None, it means it was from an old fetch (List format).
@@ -1791,7 +1791,7 @@ def fetch_last_emails(
                     f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
                 )
                 continue
-            demisto.debug(f"Appending {item.subject=}")
+            demisto.debug(f"Appending {item.subject=} with {item.message_id=}")
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
