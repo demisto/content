@@ -1483,12 +1483,44 @@ script:
       required: true
     description: Sends request to disable user account.
     name: cbp-user-disable
+    outputs:
+    - contextPath: CBP.UserDisable.Department
+      description: The department of the user.
+      type: String
+    - contextPath: CBP.UserDisable.EmailAddress
+      description: The email of the user.
+      type: String
+    - contextPath: CBP.UserDisable.Enabled
+      description: Whether the account is enabled or disabled.
+      type: String
+    - contextPath: CBP.UserDisable.ID
+      description: The ID of the user in Carbon Black.
+      type: String 
+    - contextPath: CBP.UserDisable.Name
+      description: The name of the user account.
+      type: String 
   - arguments:
     - description: Email address of user account to retrieve data for.
       name: user_email
       required: true
     description: Retrieve all user account data.
     name: cbp-user-data-retrieve
+    outputs:
+    - contextPath: CBP.UserDisable.Department
+      description: The department of the user.
+      type: String
+    - contextPath: CBP.UserDisable.EmailAddress
+      description: The email of the user.
+      type: String
+    - contextPath: CBP.UserDisable.Enabled
+      description: Whether the account is enabled or disabled.
+      type: String
+    - contextPath: CBP.UserDisable.ID
+      description: The ID of the user in Carbon Black.
+      type: String 
+    - contextPath: CBP.UserDisable.Name
+      description: The name of the user account.
+      type: String 
   dockerimage: demisto/python3:3.12.13.7444307
   subtype: python3
   isfetch: true
