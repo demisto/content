@@ -108,13 +108,13 @@ configuration:
   section: Collect
   additionalinfo: 'Choose the mirroring direction for Wiz issues. Default is None (no mirroring).'
 - name: mirror_limit
-  display: Maximum number of incidents to mirror each time
+  display: Mirror API page size
   defaultvalue: '50'
   type: 0
   required: false
   section: Collect
   advanced: true
-  additionalinfo: 'Maximum number of issues to check for changes per mirror cycle (1-500).'
+  additionalinfo: 'Page size for mirror API calls (1-500). All modified issues are fetched using this as the page size.'
 - name: comment_tag
   display: Tag for comment mirroring
   defaultvalue: comments
