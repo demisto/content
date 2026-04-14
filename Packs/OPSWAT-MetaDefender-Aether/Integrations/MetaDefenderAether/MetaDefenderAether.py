@@ -1,6 +1,5 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import Common
 
 """ IMPORTS """
 from typing import Any
@@ -159,8 +158,9 @@ def build_one_reputation_result(report: dict[str, Any]):
     return results
 
 
-def build_serach_query_result(analyses: list[dict]) -> CommandResults:
-    def build_analysis_hr(analysis: dict[str, Any]) -> dict[str, Any]:
+def build_search_query_result(analyses: list[dict]) -> list[CommandResults]:
+    command_results = []
+    for analysis in analyses:
         file_result = analysis.get("file", {})
         hr_analysis = {
             "Id": analysis.get("id"),
@@ -173,11 +173,8 @@ def build_serach_query_result(analyses: list[dict]) -> CommandResults:
             "Type": file_result.get("short_type"),
             "Tags": analysis.get("tags"),
         }
-        return hr_analysis
 
-    def build_indicator_object(analysis: dict[str, Any]):
         score = Common.DBotScore.NONE
-
         verdict = analysis.get("verdict", "UNKNOWN")
         if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
             score = Common.DBotScore.GOOD
@@ -186,51 +183,29 @@ def build_serach_query_result(analyses: list[dict]) -> CommandResults:
         elif verdict.upper() == "SUSPICIOUS":
             score = Common.DBotScore.SUSPICIOUS
 
-        analysis_file = analysis.get("file", {})
         dbot_score = Common.DBotScore(
-            indicator=analysis_file.get("sha256"),
+            indicator=file_result.get("sha256"),
             indicator_type=DBotScoreType.FILE,
             integration_name="MetaDefender Aether",
             score=score,
         )
 
-        file = Common.File(
-            name=analysis_file.get("name"),
-            sha256=analysis_file.get("sha256"),
+        file_indicator = Common.File(
+            name=file_result.get("name"),
+            sha256=file_result.get("sha256"),
             dbot_score=dbot_score,
         )
 
-        results = CommandResults(
+        command_result = CommandResults(
+            outputs=analysis,
+            readable_output=tableToMarkdown("Analysis Result:", hr_analysis),
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Analysis",
-            outputs_key_field="sha256",
-            indicator=file,
+            outputs_key_field="id",
+            indicator=file_indicator
         )
-        return results
+        command_results.append(command_result)
 
-    hr_headers = [
-        "Id",
-        "SampleName",
-        "SHA256",
-        "Verdict",
-        "State",
-        "Date",
-        "MIMEType",
-        "Type",
-        "Tags",
-    ]
-
-    hr_analysis_ls = []
-
-    for analysis in analyses:
-        hr_analysis_ls.append(build_analysis_hr(analysis))
-
-    command_result = CommandResults(
-        outputs=analyses,
-        readable_output=tableToMarkdown("Analysis Result:", hr_analysis_ls, hr_headers),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Analysis",
-    )
-
-    return command_result
+    return command_results
 
 
 def sample_submission(client: Client, args: dict[str, Any]) -> PollResult:
@@ -253,8 +228,8 @@ def sample_submission(client: Client, args: dict[str, Any]) -> PollResult:
 def build_reputation_result(api_reponse: dict[str, Any]):
     reports = api_reponse.get("reports", [])
     command_res_ls = []
-    for report in reports:
-        command_res_ls.append(build_one_reputation_result(reports[report]))
+    for report in reports.values():
+        command_res_ls.append(build_one_reputation_result(report))
     return command_res_ls
 
 
@@ -350,7 +325,9 @@ def search_query_command(client: Client, args: dict[str, Any]):
         while continue_query:
             response = client.get_search_query(query_string, page, page_size)
             actual_items = response.get("items", [])
-            total_available_items = response.get("count", len(items))
+            total_available_items = response.get("count")
+            if total_available_items is None:
+                total_available_items = len(items) + len(actual_items)
             # queried all or reached the limit
             if total_available_items == len(items) or len(items) >= limit:
                 continue_query = False
@@ -359,7 +336,7 @@ def search_query_command(client: Client, args: dict[str, Any]):
         items = items[0:limit]
 
     if items:
-        return build_serach_query_result(items)
+        return build_search_query_result(items)
     return CommandResults(readable_output="No Results were found.")
 
 

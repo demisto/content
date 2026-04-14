@@ -1,5 +1,4 @@
 from typing import Any
-from urllib import response
 from CommonServerPython import DemistoException
 import json
 import pytest
