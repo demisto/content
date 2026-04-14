@@ -2790,10 +2790,10 @@ def _mirror_status_to_wiz(issue_id, xsoar_status, delta):
     try:
         if status_lower in ("resolved", "done", "closed"):
             resolution_reason = delta.get("resolutionReason", DEFAULT_RESOLUTION_REASON)
-            resolve_issue(issue_id=issue_id, resolution_reason=resolution_reason, resolution_note="")
+            reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
         elif status_lower in ("rejected",):
             reject_reason = delta.get("resolutionReason", DEFAULT_RESOLUTION_REASON)
-            reject_issue(issue_id=issue_id, reject_reason=reject_reason, reject_comment="")
+            reject_or_resolve_issue(issue_id, reject_reason, "Status mirrored from Cortex XSOAR", "REJECTED")
         elif status_lower in ("active", "open", "reopened"):
             reopen_issue(issue_id=issue_id, reopen_note="")
         elif status_lower in ("in_progress", "in progress"):
@@ -2808,7 +2808,7 @@ def _handle_incident_closed(remote_id):
     """Handle XSOAR incident closed → resolve Wiz issue."""
     demisto.debug(f"_handle_incident_closed: resolving {remote_id}")
     try:
-        resolve_issue(issue_id=remote_id, resolution_reason=DEFAULT_RESOLUTION_REASON, resolution_note="Resolved from XSOAR")
+        reject_or_resolve_issue(remote_id, DEFAULT_RESOLUTION_REASON, "Resolved from Cortex XSOAR", "RESOLVED")
     except Exception as e:
         demisto.debug(f"_handle_incident_closed: failed (may already be resolved): {e}")
 
