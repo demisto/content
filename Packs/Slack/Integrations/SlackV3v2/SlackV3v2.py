@@ -381,7 +381,12 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         )
 
     async def get_conversation_context_formatted(
-        self, channel_id: str, thread_ts: str, bot_id: str, current_message_ts: str
+        self,
+        channel_id: str,
+        thread_ts: str,
+        bot_id: str,
+        current_message_ts: str,
+        max_context_messages: int = AssistantMessagingHandler.MAX_CONTEXT_MESSAGES,
     ) -> str:
         """
         Retrieves and formats Slack conversation context.
@@ -392,6 +397,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             thread_ts: The thread timestamp
             bot_id: The bot user ID
             current_message_ts: The current message timestamp
+            max_context_messages: Maximum number of previous messages to include as context
 
         Returns:
             Formatted context string
@@ -443,8 +449,8 @@ class SlackAssistantHandler(AssistantMessagingHandler):
 
                     context_messages.append({"user": user_name, "text": msg_text, "ts": msg_ts})
 
-                # Limit to 5 messages
-                if len(context_messages) >= 5:
+                # Limit context messages
+                if len(context_messages) >= max_context_messages:
                     break
 
             # Use base class formatting

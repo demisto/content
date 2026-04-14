@@ -432,6 +432,9 @@ class AssistantMessagingHandler:
     # Integration context key for assistant conversations
     CONTEXT_KEY = "assistant_context"
 
+    # Maximum number of previous messages to include as conversation context
+    MAX_CONTEXT_MESSAGES = 5
+
     def __init__(self):
         """Initialize the messaging handler"""
 
@@ -994,7 +997,7 @@ class AssistantMessagingHandler:
             channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
         )
 
-    async def _handle_feedback_action(
+    async def _handle_action_feedback(
         self,
         action_value: str,
         channel_id: str,
@@ -1102,7 +1105,7 @@ class AssistantMessagingHandler:
 
         # OPTION 1: Feedback Buttons
         if action_id == AssistantActionIds.FEEDBACK.value:
-            await self._handle_feedback_action(
+            await self._handle_action_feedback(
                 action_value=action_value,
                 channel_id=channel_id,
                 thread_id=thread_id,
@@ -1122,137 +1125,219 @@ class AssistantMessagingHandler:
 
         # OPTION 2: Agent Selection
         if action_id == AssistantActionIds.AGENT_SELECTION.value:
-            selected_option = action.get("selected_option", {})
-            option_value = selected_option.get("value", "")
-            original_message = assistant[assistant_id_key].get("message", "")
-
-            if user_id == locked_user:
-                # Correct user selected an agent
-                selected_agent_id = option_value.replace(AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX.value, "")
-                selected_agent_name = selected_option.get("text", {}).get("text", "")
-
-                # Send message to backend with selected agent
-                raw_response = demisto.agentixCommands(
-                    BackendCommand.SEND_TO_CONVERSATION,
-                    {
-                        "channel_id": channel_id,
-                        "thread_id": thread_id,
-                        "message": original_message,
-                        "username": user_email,
-                        "agent_id": selected_agent_id,
-                    },
-                )
-
-                backend_response = self.handle_backend_response(raw_response, "sendToConversation (agent selection)")
-
-                if backend_response.success:
-                    # Update the original message to show selection
-                    await self.update_message(channel_id, message_id, text=f"Selected agent: {selected_agent_name}", blocks=[])
-
-                    # Send help hint as ephemeral message to the user
-                    if bot_id:
-                        help_hint = AssistantMessages.HELP_HINT.format(bot_tag=self.format_user_mention(bot_id))
-                        await self.send_message_async(
-                            channel_id, help_hint, thread_id=thread_id, user_id=user_id
-                        )
-
-                    # Send thinking indicator
-                    thinking_response = await self.send_message_async(
-                        channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
-                    )
-                    thinking_ts = thinking_response.get("ts") if thinking_response else None
-
-                    # Update status
-                    assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
-                    assistant[assistant_id_key]["selected_agent"] = selected_agent_id
-                    assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
-
-                    # Store thinking message ID if sent successfully
-                    if thinking_ts:
-                        assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
-                else:
-                    # Backend call failed - show appropriate error message
-                    if backend_response.error_type == BackendErrorType.WRONG_USER:
-                        error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
-                    elif backend_response.error_type:
-                        error_msg = backend_response.error_type.user_message
-                    else:
-                        error_msg = AssistantMessages.AGENT_SELECTION_FAILED
-                        if backend_response.error_code:
-                            error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
-                    
-                    await self.send_message_async(
-                        channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-                    )
-                    # Keep the conversation in AWAITING_AGENT_SELECTION status so user can try again
-            else:
-                # Wrong user trying to select
-                error_msg = AssistantMessages.CANNOT_SELECT_AGENT.format(locked_user_tag=self.format_user_mention(locked_user))
-                await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+            await self._handle_action_agent_selection(
+                action=action,
+                user_id=user_id,
+                user_email=user_email,
+                channel_id=channel_id,
+                thread_id=thread_id,
+                message_id=message_id,
+                assistant=assistant,
+                assistant_id_key=assistant_id_key,
+                locked_user=locked_user,
+                bot_id=bot_id,
+            )
 
         # OPTION 3: Sensitive Action Approval
         elif action_id in [AssistantActionIds.APPROVAL_YES.value, AssistantActionIds.APPROVAL_NO.value]:
-            if user_id == locked_user:
-                # Correct user responded
-                is_approved = action_id == AssistantActionIds.APPROVAL_YES.value
-
-                # Send response to backend
-                raw_response = demisto.agentixCommands(
-                    BackendCommand.SEND_TO_CONVERSATION,
-                    {
-                        "channel_id": channel_id,
-                        "thread_id": thread_id,
-                        "message": "Yes" if is_approved else "No",
-                        "username": user_email,
-                    },
-                )
-                backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
-
-                if backend_response.success:
-                    # Update the original message
-                    decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_CANCELLED
-                    original_blocks = message.get("blocks", [])
-                    updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
-                    updated_blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]})
-
-                    try:
-                        await self.update_message(channel_id, message_id, blocks=updated_blocks)
-                    except Exception as e:
-                        demisto.error(f"Failed to update approval message: {e}")
-                        # Fallback
-                        await self.update_message(channel_id, message_id, text=decision_indicator, blocks=[])
-
-                    # Send thinking indicator
-                    thinking_response = await self.send_message_async(
-                        channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
-                    )
-                    thinking_ts = thinking_response.get("ts") if thinking_response else None
-
-                    # Update status
-                    assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
-                    assistant[assistant_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
-                    assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
-
-                    # Store thinking message ID if sent successfully
-                    if thinking_ts:
-                        assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
-                else:
-                    # Backend call failed - show appropriate error
-                    if backend_response.error_type == BackendErrorType.WRONG_USER:
-                        error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
-                    elif backend_response.error_type:
-                        error_msg = backend_response.error_type.user_message
-                    else:
-                        error_msg = "Failed to process your response. Please try again."
-                        if backend_response.error_code:
-                            error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
-                    await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
-            else:
-                # Wrong user trying to respond
-                error_msg = AssistantMessages.CANNOT_APPROVE_ACTION.format(locked_user_tag=self.format_user_mention(locked_user))
-                await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+            await self._handle_action_sensitive_action_approval(
+                action_id=action_id,
+                user_id=user_id,
+                user_email=user_email,
+                channel_id=channel_id,
+                thread_id=thread_id,
+                message=message,
+                message_id=message_id,
+                assistant=assistant,
+                assistant_id_key=assistant_id_key,
+                locked_user=locked_user,
+            )
 
         return assistant
+
+    async def _handle_action_agent_selection(
+        self,
+        action: dict,
+        user_id: str,
+        user_email: str,
+        channel_id: str,
+        thread_id: str,
+        message_id: str,
+        assistant: dict,
+        assistant_id_key: str,
+        locked_user: str,
+        bot_id: str,
+    ) -> None:
+        """
+        Handles agent selection actions from the dropdown UI.
+
+        Args:
+            action: The action dict from the payload
+            user_id: The user ID
+            user_email: The user's email
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message_id: The message ID
+            assistant: The assistant context dictionary (mutated in place)
+            assistant_id_key: The unique key for this conversation
+            locked_user: The user ID that owns the conversation
+            bot_id: The bot user ID (used for help hint)
+        """
+        selected_option = action.get("selected_option", {})
+        option_value = selected_option.get("value", "")
+        original_message = assistant[assistant_id_key].get("message", "")
+
+        if user_id == locked_user:
+            # Correct user selected an agent
+            selected_agent_id = option_value.replace(AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX.value, "")
+            selected_agent_name = selected_option.get("text", {}).get("text", "")
+
+            # Send message to backend with selected agent
+            raw_response = demisto.agentixCommands(
+                BackendCommand.SEND_TO_CONVERSATION,
+                {
+                    "channel_id": channel_id,
+                    "thread_id": thread_id,
+                    "message": original_message,
+                    "username": user_email,
+                    "agent_id": selected_agent_id,
+                },
+            )
+
+            backend_response = self.handle_backend_response(raw_response, "sendToConversation (agent selection)")
+
+            if backend_response.success:
+                # Update the original message to show selection
+                await self.update_message(channel_id, message_id, text=f"Selected agent: {selected_agent_name}", blocks=[])
+
+                # Send help hint as ephemeral message to the user
+                if bot_id:
+                    help_hint = AssistantMessages.HELP_HINT.format(bot_tag=self.format_user_mention(bot_id))
+                    await self.send_message_async(
+                        channel_id, help_hint, thread_id=thread_id, user_id=user_id
+                    )
+
+                # Send thinking indicator
+                thinking_response = await self.send_message_async(
+                    channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+                )
+                thinking_ts = thinking_response.get("ts") if thinking_response else None
+
+                # Update status
+                assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
+                assistant[assistant_id_key]["selected_agent"] = selected_agent_id
+                assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+
+                # Store thinking message ID if sent successfully
+                if thinking_ts:
+                    assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
+            else:
+                # Backend call failed - show appropriate error message
+                if backend_response.error_type == BackendErrorType.WRONG_USER:
+                    error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                elif backend_response.error_type:
+                    error_msg = backend_response.error_type.user_message
+                else:
+                    error_msg = AssistantMessages.AGENT_SELECTION_FAILED
+                    if backend_response.error_code:
+                        error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+                
+                await self.send_message_async(
+                    channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+                )
+                # Keep the conversation in AWAITING_AGENT_SELECTION status so user can try again
+        else:
+            # Wrong user trying to select
+            error_msg = AssistantMessages.CANNOT_SELECT_AGENT.format(locked_user_tag=self.format_user_mention(locked_user))
+            await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+
+    async def _handle_action_sensitive_action_approval(
+        self,
+        action_id: str,
+        user_id: str,
+        user_email: str,
+        channel_id: str,
+        thread_id: str,
+        message: dict,
+        message_id: str,
+        assistant: dict,
+        assistant_id_key: str,
+        locked_user: str,
+    ) -> None:
+        """
+        Handles sensitive action approval/rejection actions.
+
+        Args:
+            action_id: The action ID (approve or reject)
+            user_id: The user ID
+            user_email: The user's email
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message: The original message dict from payload
+            message_id: The message ID
+            assistant: The assistant context dictionary (mutated in place)
+            assistant_id_key: The unique key for this conversation
+            locked_user: The user ID that owns the conversation
+        """
+        if user_id == locked_user:
+            # Correct user responded
+            is_approved = action_id == AssistantActionIds.APPROVAL_YES.value
+
+            # Send response to backend
+            raw_response = demisto.agentixCommands(
+                BackendCommand.SEND_TO_CONVERSATION,
+                {
+                    "channel_id": channel_id,
+                    "thread_id": thread_id,
+                    "message": "Yes" if is_approved else "No",
+                    "username": user_email,
+                },
+            )
+            backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
+
+            if backend_response.success:
+                # Update the original message
+                decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_CANCELLED
+                original_blocks = message.get("blocks", [])
+                updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
+                updated_blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]})
+
+                try:
+                    await self.update_message(channel_id, message_id, blocks=updated_blocks)
+                except Exception as e:
+                    demisto.error(f"Failed to update approval message: {e}")
+                    # Fallback
+                    await self.update_message(channel_id, message_id, text=decision_indicator, blocks=[])
+
+                # Send thinking indicator
+                thinking_response = await self.send_message_async(
+                    channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+                )
+                thinking_ts = thinking_response.get("ts") if thinking_response else None
+
+                # Update status
+                assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
+                assistant[assistant_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
+                assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+
+                # Store thinking message ID if sent successfully
+                if thinking_ts:
+                    assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
+            else:
+                # Backend call failed - show appropriate error
+                if backend_response.error_type == BackendErrorType.WRONG_USER:
+                    error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                elif backend_response.error_type:
+                    error_msg = backend_response.error_type.user_message
+                else:
+                    error_msg = "Failed to process your response. Please try again."
+                    if backend_response.error_code:
+                        error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+                await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+        else:
+            # Wrong user trying to respond
+            error_msg = AssistantMessages.CANNOT_APPROVE_ACTION.format(locked_user_tag=self.format_user_mention(locked_user))
+            await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
 
     def format_context_messages(self, context_messages: list[dict]) -> str:
         """
@@ -1278,7 +1363,12 @@ class AssistantMessagingHandler:
         return "\n".join(context_lines)
 
     async def get_conversation_context_formatted(
-        self, channel_id: str, thread_id: str, bot_id: str, current_message_id: str
+        self,
+        channel_id: str,
+        thread_id: str,
+        bot_id: str,
+        current_message_id: str,
+        max_context_messages: int = MAX_CONTEXT_MESSAGES,
     ) -> str:
         """
         Retrieves and formats conversation context.
@@ -1289,6 +1379,7 @@ class AssistantMessagingHandler:
             thread_id: The thread ID
             bot_id: The bot user ID
             current_message_id: The current message ID
+            max_context_messages: Maximum number of previous messages to include as context
 
         Returns:
             Formatted context string
@@ -1382,7 +1473,7 @@ class AssistantMessagingHandler:
                 await self.send_message_async(channel_id, message_to_send, thread_id=thread_id, ephemeral=True, user_id=user_id)
             return assistant
 
-        # Get conversation context (up to 5 previous messages)
+        # Get conversation context
         context = await self.get_conversation_context_formatted(channel_id, thread_id, bot_id, message_id)
 
         # Replace bot mention with friendly display name for backend

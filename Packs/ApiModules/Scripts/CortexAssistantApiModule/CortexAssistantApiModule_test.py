@@ -87,7 +87,8 @@ class MockMessagingHandler(AssistantMessagingHandler):
         pass
 
     async def get_conversation_context_formatted(self, channel_id: str, thread_id: str,
-                                                  bot_id: str, current_message_id: str) -> str:
+                                                  bot_id: str, current_message_id: str,
+                                                  max_context_messages: int = 5) -> str:
         return ""
 
 
