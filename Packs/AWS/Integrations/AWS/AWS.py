@@ -8143,6 +8143,8 @@ class CloudWatchLogs:
 
         readable = tableToMarkdown("AWS CloudWatch Logs Events", events) if events else "No events were found."
         next_token = response.get("nextToken")
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
 
         outputs = {
             "AWS.CloudWatchLogs.Events(val.EventId && val.EventId == obj.EventId)": events,
@@ -8916,6 +8918,7 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:PutMetricFilter",
     "logs:DeleteMetricFilter",
     "logs:DescribeMetricFilters",
+    "logs:TagResource",
 ]
 
 COMMAND_SERVICE_MAP = {
