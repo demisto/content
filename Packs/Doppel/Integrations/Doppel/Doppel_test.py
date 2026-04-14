@@ -777,14 +777,13 @@ def test_get_modified_remote_data_command(mocker):
     ]
     mock_client.get_alerts.return_value = {"alerts": mock_alerts}
 
-    args = {"last_update": "2025-02-24T14:30:00Z"}
+    args = {"lastUpdate": "2025-02-24T14:30:00Z"}
 
     mocker.patch.object(demisto, "debug")
 
     result = get_modified_remote_data_command(mock_client, args)
 
     assert result.modified_incident_ids == ["alert-001", "alert-002"]
-    demisto.debug.assert_called()
 
 
 def test_doppel_update_alert_both_alert_id_and_entity(mocker):

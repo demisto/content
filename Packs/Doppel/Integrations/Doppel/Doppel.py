@@ -227,11 +227,10 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     if not last_update:
         demisto.debug(f"Warning: Could not parse timestamp: {last_update_str}")
         return None, []
-    
+
     demisto.debug(f"Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}")
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
-    demisto.debug("Updated Doppel Alert")
-    demisto.debug(f"Received alert data for {doppel_alert_id}: {updated_doppel_alert}")
+    demisto.debug(f"Received alert data for {doppel_alert_id}")
     audit_logs = updated_doppel_alert.get("audit_logs")
     demisto.debug(f'The alert contains {len(audit_logs or "")} audit logs')
 
@@ -618,7 +617,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     last_update = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(  # type: ignore[union-attr]
         DOPPEL_API_DATE_FORMAT
     )
-    
+
     query_params = {
         "last_activity_timestamp": last_update,
     }
