@@ -2612,25 +2612,25 @@ script:
         description: The initial database name that you provided (if required) when you created the DB instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.Endpoint.Address
-        description: Specifies the DNS address of the DB instance.
+        description: The DNS address of the DB instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.Endpoint.Port
-        description: Specifies the port that the database engine is listening on.
+        description: The port that the database engine is listening on.
         type: Number
       - contextPath: AWS.RDS.DBInstances.Endpoint.HostedZoneId
-        description: Specifies the ID that Amazon Route 53 assigns when you create a hosted zone.
+        description: The ID that Amazon Route 53 assigns when you create a hosted zone.
         type: String
       - contextPath: AWS.RDS.DBInstances.AllocatedStorage
-        description: The amount of storage in gibibytes (GiB) allocated for the DB instance.
+        description: The amount of storage in GiB allocated for the DB instance.
         type: Number
       - contextPath: AWS.RDS.DBInstances.InstanceCreateTime
-        description: The date and time when the DB instance was created.
+        description: The date and time the DB instance was created.
         type: String
       - contextPath: AWS.RDS.DBInstances.PreferredBackupWindow
         description: The daily time range during which automated backups are created if automated backups are enabled, as determined by the BackupRetentionPeriod.
         type: String
       - contextPath: AWS.RDS.DBInstances.BackupRetentionPeriod
-        description: The number of days for which automatic DB snapshots are retained.
+        description: The number of days automatic DB snapshots are retained.
         type: Number
       - contextPath: AWS.RDS.DBInstances.DBSecurityGroups.DBSecurityGroupName
         description: The name of the DB security group.
@@ -2657,16 +2657,16 @@ script:
         description: The name of the DB subnet group.
         type: String
       - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupDescription
-        description: Provides the description of the DB subnet group.
+        description: The description of the DB subnet group.
         type: String
       - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.VpcId
-        description: Provides the VpcId of the DB subnet group.
+        description: The VpcId of the DB subnet group.
         type: String
       - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.SubnetGroupStatus
-        description: Provides the status of the DB subnet group.
+        description: The status of the DB subnet group.
         type: String
       - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.Subnets
-        description: Contains a list of Subnet elements.
+        description: A list of Subnet elements.
         type: Unknown
       - contextPath: AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupArn
         description: The Amazon Resource Name (ARN) for the DB subnet group.
@@ -2675,10 +2675,10 @@ script:
         description: The network type of the DB subnet group.
         type: String
       - contextPath: AWS.RDS.DBInstances.PreferredMaintenanceWindow
-        description: The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC).
+        description: The weekly time range during which system maintenance can occur, in UTC.
         type: String
       - contextPath: AWS.RDS.DBInstances.UpgradeRolloutOrder
-        description: This data type represents the order in which the instances are upgraded.
+        description: The order in which the instances are upgraded.
         type: String
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceClass
         description: The name of the compute and memory capacity class for the DB instance.
@@ -2690,10 +2690,10 @@ script:
         description: The port for the DB instance.
         type: Number
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.BackupRetentionPeriod
-        description: The number of days for which automated backups are retained.
+        description: The number of days automated backups are retained.
         type: Number
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.MultiAZ
-        description: Indicates whether the Single-AZ DB instance will change to a Multi-AZ deployment.
+        description: Whether the Single-AZ DB instance will change to a Multi-AZ deployment.
         type: String
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.EngineVersion
         description: The database engine version.
@@ -2720,7 +2720,7 @@ script:
         description: The DB subnet group for the DB instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.PendingCloudwatchLogsExports
-        description: A list of the log types whose configuration is still pending. In other words, these log types are in the process of being activated or deactivated.
+        description: A list of log types whose configuration is still pending, they are in the process of being activated or deactivated.
         type: Unknown
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.ProcessorFeatures
         description: The number of CPU cores and the number of threads per core for the DB instance class of the DB instance.
@@ -2732,13 +2732,13 @@ script:
         description: The number of minutes to pause the automation.
         type: String
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.MultiTenant
-        description: Indicates whether the DB instance will change to the multi-tenant configuration (TRUE) or the single-tenant configuration (FALSE).
+        description: Whether the DB instance will change to the multi-tenant configuration (TRUE) or the single-tenant configuration (FALSE).
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.IAMDatabaseAuthenticationEnabled
-        description: Indicates whether mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts is enabled.
+        description: Whether mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts is enabled.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.DedicatedLogVolume
-        description: Indicates whether the DB instance has a dedicated log volume (DLV) enabled.
+        description: Whether the DB instance has a dedicated log volume (DLV) enabled.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.Engine
         description: The database engine of the DB instance.
@@ -2750,13 +2750,13 @@ script:
         description: The latest time to which a database in this DB instance can be restored with point-in-time restore.
         type: String
       - contextPath: AWS.RDS.DBInstances.MultiAZ
-        description: Indicates whether the DB instance is a Multi-AZ deployment. This setting doesn’t apply to RDS Custom DB instances.
+        description: Whether the DB instance is a Multi-AZ deployment. This setting doesn’t apply to RDS Custom DB instances.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.EngineVersion
         description: The version of the database engine.
         type: String
       - contextPath: AWS.RDS.DBInstances.AutoMinorVersionUpgrade
-        description: Indicates whether minor version patches are applied automatically.
+        description: Whether minor version patches are applied automatically.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.ReadReplicaSourceDBInstanceIdentifier
         description: The identifier of the source DB instance if this DB instance is a read replica.
@@ -2786,16 +2786,16 @@ script:
         description: The status of the DB instance’s option group membership.
         type: String
       - contextPath: AWS.RDS.DBInstances.CharacterSetName
-        description: If present, specifies the name of the character set that this instance is associated with.
+        description: Specifies the name of the character set that this instance is associated with.
         type: String
       - contextPath: AWS.RDS.DBInstances.NcharCharacterSetName
         description: The name of the NCHAR character set for the Oracle DB instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.SecondaryAvailabilityZone
-        description: If present, specifies the name of the secondary Availability Zone for a DB instance with multi-AZ support.
+        description: Specifies the name of the secondary Availability Zone for a DB instance with multi-AZ support.
         type: String
       - contextPath: AWS.RDS.DBInstances.PubliclyAccessible
-        description: Indicates whether the DB instance is publicly accessible.
+        description: Whether the DB instance is publicly accessible.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.StatusInfos
         description: The status of a read replica.
@@ -2813,10 +2813,10 @@ script:
         description: The port that the DB instance listens on.
         type: Number
       - contextPath: AWS.RDS.DBInstances.DBClusterIdentifier
-        description: If the DB instance is a member of a DB cluster, indicates the name of the DB cluster that the DB instance is a member of.
+        description: The name of the DB cluster that the DB instance is a member of (if it is a member of a DB cluster).
         type: String
       - contextPath: AWS.RDS.DBInstances.StorageEncrypted
-        description: Indicates whether the DB instance is encrypted.
+        description: Whether the DB instance is encrypted.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.KmsKeyId
         description: If StorageEncrypted is enabled, the Amazon Web Services KMS key identifier for the encrypted DB instance.
@@ -2849,10 +2849,10 @@ script:
         description: The IPv4 DNS IP addresses of the primary and secondary Active Directory domain controllers.
         type: String
       - contextPath: AWS.RDS.DBInstances.CopyTagsToSnapshot
-        description: Indicates whether tags are copied from the DB instance to snapshots of the DB instance.
+        description: Whether tags are copied from the DB instance to snapshots of the DB instance.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.MonitoringInterval
-        description: The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance.
+        description: The interval, in seconds, for collecting Enhanced Monitoring metrics.
         type: Number
       - contextPath: AWS.RDS.DBInstances.EnhancedMonitoringResourceArn
         description: The Amazon Resource Name (ARN) of the Amazon CloudWatch Logs log stream that receives the Enhanced Monitoring metrics data for the DB instance.
@@ -2870,13 +2870,13 @@ script:
         description: The time zone of the DB instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.IAMDatabaseAuthenticationEnabled
-        description: Indicates whether mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts is enabled for the DB instance.
+        description: Whether mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts is enabled for the DB instance.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.DatabaseInsightsMode
         description: The mode of Database Insights that is enabled for the instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.PerformanceInsightsEnabled
-        description: Indicates whether Performance Insights is enabled for the DB instance.
+        description: Whether Performance Insights is enabled for the DB instance.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.PerformanceInsightsKMSKeyId
         description: The Amazon Web Services KMS key identifier for encryption of Performance Insights data.
@@ -2891,7 +2891,7 @@ script:
         description: The number of CPU cores and the number of threads per core for the DB instance class of the DB instance.
         type: Unknown
       - contextPath: AWS.RDS.DBInstances.DeletionProtection
-        description: Indicates whether the DB instance has deletion protection enabled.
+        description: Whether the DB instance has deletion protection enabled.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.AssociatedRoles.RoleArn
         description: 'The Amazon Resource Name (ARN) of the role.'
@@ -2927,7 +2927,7 @@ script:
         description: 'The time when the DB instance will resume full automation mode.'
         type: String
       - contextPath: AWS.RDS.DBInstances.CustomerOwnedIpEnabled
-        description: 'A value that indicates whether the DB instance has a customer-owned IP address.'
+        description: 'Whether the DB instance has a customer-owned IP address.'
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.NetworkType
         description: 'The network type of the DB instance.'
@@ -2945,7 +2945,7 @@ script:
         description: 'The mode of the activity stream.'
         type: String
       - contextPath: AWS.RDS.DBInstances.ActivityStreamEngineNativeAuditFieldsIncluded
-        description: 'A value that indicates whether the native audit fields are included in the activity stream.'
+        description: 'Whether the native audit fields are included in the activity stream.'
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.AwsBackupRecoveryPointArn
         description: 'The Amazon Resource Name (ARN) of the recovery point in AWS Backup.'
@@ -2957,7 +2957,7 @@ script:
         description: 'The backup target of the DB instance.'
         type: String
       - contextPath: AWS.RDS.DBInstances.AutomaticRestartTime
-        description: 'The time when the DB instance is scheduled for automatic restart.'
+        description: The time the DB instance is scheduled for automatic restart.
         type: String
       - contextPath: AWS.RDS.DBInstances.CustomIamInstanceProfile
         description: 'The instance profile associated with the DB instance.'
@@ -2990,13 +2990,13 @@ script:
         description: 'The percentage of the estimated data that has been transferred.'
         type: String
       - contextPath: AWS.RDS.DBInstances.MultiTenant
-        description: 'Indicates whether the DB instance is a multi-tenant instance.'
+        description: 'Whether the DB instance is a multi-tenant instance.'
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.DedicatedLogVolume
-        description: 'Indicates whether the DB instance has a dedicated log volume.'
+        description: 'Whether the DB instance has a dedicated log volume.'
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.IsStorageConfigUpgradeAvailable
-        description: 'Indicates whether a storage configuration upgrade is available for the DB instance.'
+        description: 'Whether a storage configuration upgrade is available for the DB instance.'
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.EngineLifecycleSupport
         description: 'The life cycle of the DB instance engine.'
@@ -3351,26 +3351,26 @@ script:
         name: cluster_parameter_group_name
       - description: The number of days that automated snapshots are retained. If the value is 0, automated snapshots are disabled.
         name: automated_snapshot_retention_period
-      - description: The default for number of days that a newly created manual snapshot is retained. If the value is -1, the manual snapshot is retained indefinitely.
+      - description: The number of days a newly created manual snapshot is retained. If the value is -1, the manual snapshot is retained indefinitely.
         name: manual_snapshot_retention_period
       - description: The weekly time range (in UTC) during which automated cluster maintenance can occur.
         name: preferred_maintenance_window
       - description: The new version number of the Amazon Redshift engine to upgrade to.
         name: cluster_version
-      - description: If true, major version upgrades will be applied automatically to the cluster during the maintenance window.
+      - description: Whether major version upgrades will be applied automatically to the cluster during the maintenance window.
         name: allow_version_upgrade
         auto: PREDEFINED
         defaultValue: false
         predefined:
           - 'true'
           - 'false'
-      - description: Specifies the name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM.
+      - description: The name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM.
         name: hsm_client_certificate_identifier
-      - description: Specifies the name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM.
+      - description: The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM.
         name: hsm_configuration_identifier
-      - description: "The new identifier for the cluster."
+      - description: The new identifier for the cluster
         name: new_cluster_identifier
-      - description: If true, the cluster can be accessed from a public network. Only clusters in VPCs can be set to be publicly available.
+      - description: Whether the cluster can be accessed from a public network. Only clusters in VPCs can be set to be publicly available.
         name: publicly_accessible
         auto: PREDEFINED
         predefined:
@@ -3378,7 +3378,7 @@ script:
           - 'false'
       - description: The Elastic IP (EIP) address for the cluster.
         name: elastic_ip
-      - description: An option that specifies whether to create the cluster with enhanced VPC routing enabled.
+      - description: Whether to create the cluster with enhanced VPC routing enabled.
         name: enhanced_vpc_routing
         auto: PREDEFINED
         predefined:
@@ -3386,7 +3386,7 @@ script:
           - 'false'
       - description: The name for the maintenance track that you want to assign for the cluster. This name change is asynchronous. The new track name stays in the PendingModifiedValues for the cluster until the next maintenance window. When the maintenance track changes, the cluster is switched to the latest cluster release available for the maintenance track. At this point, the maintenance track name is applied.
         name: maintenance_track_name
-      - description: Indicates whether the cluster is encrypted. If the value is encrypted (true) and you provide a value for the KmsKeyId parameter, we encrypt the cluster with the provided KmsKeyId. If you don’t provide a KmsKeyId, we encrypt with the default key. If the value is not encrypted (false), then the cluster is decrypted.
+      - description: Whether the cluster is encrypted. If the value is encrypted (true) and you provide a value for the KmsKeyId parameter, we encrypt the cluster with the provided KmsKeyId. If you don’t provide a KmsKeyId, we encrypt with the default key. If the value is not encrypted (false), then the cluster is decrypted.
         name: encrypted
         auto: PREDEFINED
         predefined:
@@ -3394,15 +3394,15 @@ script:
           - 'false'
       - description: The Key Management Service (KMS) key ID of the encryption key that you want to use to encrypt data in the cluster.
         name: kms_key_id
-      - description: The option to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster modification is complete.
+      - description: Whether to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster modification is complete.
         name: availability_zone_relocation
         auto: PREDEFINED
         predefined:
           - 'true'
           - 'false'
-      - description: The option to initiate relocation for an Amazon Redshift cluster to the target Availability Zone.
+      - description: Whether to initiate relocation for an Amazon Redshift cluster to the target Availability Zone.
         name: availability_zone
-      - description: The option to change the port of an Amazon Redshift cluster.
+      - description: Whether to change the port of an Amazon Redshift cluster.
         name: port
       - description: The IP address types that the cluster supports.
         name: ip_address_type
@@ -3410,13 +3410,13 @@ script:
         predefined:
           - ipv4
           - dualstack
-      - description: If true and the cluster is currently only deployed in a single Availability Zone, the cluster will be modified to be deployed in two Availability Zones.
+      - description: Whether the cluster will be modified to be deployed in two Availability Zones if the cluster is currently only deployed in a single Availability Zone.
         name: multi_az
         auto: PREDEFINED
         predefined:
           - 'true'
           - 'false'
-      - description: If true, allocates additional compute resources for running automatic optimization operations.
+      - description: Whether to allocate additional compute resources for running automatic optimization operations.
         name: extra_compute_for_automatic_optimization
         auto: PREDEFINED
         defaultValue: false
@@ -3437,7 +3437,7 @@ script:
         description: 'The availability status of the cluster for queries. Possible values are the following: Available, Unavailable, Maintenance, Modifying, Failed.'
         type: String
       - contextPath: AWS.Redshift.Clusters.ModifyStatus
-        description: A value that describes the status of a cluster modification.
+        description: The status of a cluster modification.
         type: String
       - contextPath: AWS.Redshift.Clusters.MasterUsername
         description: The master user name for the cluster. This name is used to connect to the database that is hosted on the cluster.
@@ -3452,7 +3452,7 @@ script:
         description: The port that the database engine is listening on.
         type: Number
       - contextPath: AWS.Redshift.Clusters.Endpoint.VpcEndpoints
-        description: Describes a connection endpoint.
+        description: The connection endpoint description.
         type: Unknown
       - contextPath: AWS.Redshift.Clusters.ClusterCreateTime
         description: The date and time that the cluster was created.
@@ -3461,7 +3461,7 @@ script:
         description: The number of days that automatic cluster snapshots are retained.
         type: Number
       - contextPath: AWS.Redshift.Clusters.ManualSnapshotRetentionPeriod
-        description: The default number of days to retain a manual snapshot.
+        description: The number of days to retain a manual snapshot.
         type: Number
       - contextPath: AWS.Redshift.Clusters.ClusterSecurityGroups.ClusterSecurityGroupName
         description: The name of a cluster security group.
@@ -3482,7 +3482,7 @@ script:
         description: The status of parameter updates.
         type: String
       - contextPath: AWS.Redshift.Clusters.ClusterParameterGroups.ClusterParameterStatusList
-        description: The list of parameter statuses.
+        description: A comma-separated list of parameter statuses.
         type: Unknown
       - contextPath: AWS.Redshift.Clusters.ClusterSubnetGroupName
         description: The name of the subnet group that is associated with the cluster.
@@ -3533,16 +3533,16 @@ script:
         description: The version ID of the Amazon Redshift engine that is running on the cluster.
         type: String
       - contextPath: AWS.Redshift.Clusters.AllowVersionUpgrade
-        description: A boolean value that, if true, indicates that major version upgrades will be applied automatically to the cluster during the maintenance window.
+        description: Whether major version upgrades will be applied automatically to the cluster during the maintenance window.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.NumberOfNodes
         description: The number of compute nodes in the cluster.
         type: Number
       - contextPath: AWS.Redshift.Clusters.PubliclyAccessible
-        description: A boolean value that is true if the cluster can be accessed from a public network.
+        description: Whether the cluster can be accessed from a public network.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.Encrypted
-        description: A boolean value that is true if the cluster is encrypted.
+        description: Whether the cluster is encrypted.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.RestoreStatus.Status
         description: The status of the restore action.
@@ -3563,31 +3563,31 @@ script:
         description: The estimate of the time remaining before the restore will complete.
         type: Number
       - contextPath: AWS.Redshift.Clusters.DataTransferProgress.Status
-        description: Describes the status of the cluster.
+        description: The cluster status.
         type: String
       - contextPath: AWS.Redshift.Clusters.DataTransferProgress.CurrentRateInMegaBytesPerSecond
-        description: Describes the data transfer rate in MB’s per second.
+        description: The data transfer rate in megabytes per second.
         type: Number
       - contextPath: AWS.Redshift.Clusters.DataTransferProgress.TotalDataInMegaBytes
-        description: Describes the total amount of data to be transfered in megabytes.
+        description: The total amount of data to be transfered in megabytes.
         type: Number
       - contextPath: AWS.Redshift.Clusters.DataTransferProgress.DataTransferredInMegaBytes
-        description: Describes the total amount of data that has been transfered in MB’s.
+        description: The total amount of data that has been transfered in MB’s.
         type: Number
       - contextPath: AWS.Redshift.Clusters.DataTransferProgress.EstimatedTimeToCompletionInSeconds
-        description: Describes the estimated number of seconds remaining to complete the transfer.
+        description: The estimated number of seconds remaining to complete the transfer.
         type: Number
       - contextPath: AWS.Redshift.Clusters.DataTransferProgress.ElapsedTimeInSeconds
-        description: Describes the number of seconds that have elapsed during the data transfer.
+        description: The number of seconds that have elapsed during the data transfer.
         type: Number
       - contextPath: AWS.Redshift.Clusters.HsmStatus.HsmClientCertificateIdentifier
-        description: Specifies the name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM.
+        description: The name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM.
         type: String
       - contextPath: AWS.Redshift.Clusters.HsmStatus.HsmConfigurationIdentifier
-        description: Specifies the name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM.
+        description: The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM.
         type: String
       - contextPath: AWS.Redshift.Clusters.HsmStatus.Status
-        description: Reports whether the Amazon Redshift cluster has finished applying any HSM settings changes specified in a modify cluster command.
+        description: Whether the Amazon Redshift cluster has finished applying any HSM settings changes specified in a modify cluster command.
         type: String
       - contextPath: AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.DestinationRegion
         description: The destination region that snapshots are automatically copied to when cross-region snapshot copy is enabled.
@@ -3632,16 +3632,16 @@ script:
         description: The Key Management Service (KMS) key ID of the encryption key used to encrypt data in the cluster.
         type: String
       - contextPath: AWS.Redshift.Clusters.EnhancedVpcRouting
-        description: An option that specifies whether to create the cluster with enhanced VPC routing enabled.
+        description: Whether to create the cluster with enhanced VPC routing enabled.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.IamRoles.IamRoleArn
         description: The Amazon Resource Name (ARN) of the IAM role.
         type: String
       - contextPath: AWS.Redshift.Clusters.IamRoles.ApplyStatus
-        description: A value that describes the status of the IAM role’s association with an Amazon Redshift cluster.
+        description: The status of the IAM role’s association with an Amazon Redshift cluster.
         type: String
       - contextPath: AWS.Redshift.Clusters.PendingActions
-        description: Cluster operations that are waiting to be started.
+        description: The cluster operations that are waiting to be started.
         type: Unknown
       - contextPath: AWS.Redshift.Clusters.MaintenanceTrackName
         description: The name of the maintenance track for the cluster.
@@ -3677,10 +3677,10 @@ script:
         description: Returns the value ClassicResize.
         type: String
       - contextPath: AWS.Redshift.Clusters.ResizeInfo.AllowCancelResize
-        description: A boolean value indicating if the resize operation can be cancelled.
+        description: Whether the resize operation can be cancelled.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.AvailabilityZoneRelocationStatus
-        description: Describes the status of the Availability Zone relocation operation.
+        description: The status of the Availability Zone relocation operation.
         type: String
       - contextPath: AWS.Redshift.Clusters.ClusterNamespaceArn
         description: The namespace Amazon Resource Name (ARN) of the cluster.
@@ -3698,7 +3698,7 @@ script:
         description: The status of the reserved-node exchange request.
         type: String
       - contextPath: AWS.Redshift.Clusters.ReservedNodeExchangeStatus.RequestTime
-        description: A date and time that indicate when the reserved-node exchange was requested.
+        description: The date and time the reserved-node exchange was requested.
         type: String
       - contextPath: AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeId
         description: The identifier of the source reserved node.
@@ -3737,7 +3737,7 @@ script:
         description: The IP address type for the cluster.
         type: String
       - contextPath: AWS.Redshift.Clusters.MultiAZ
-        description: A boolean value that, if true, indicates that the cluster is deployed in two Availability Zones.
+        description: Whether the cluster is deployed in two Availability Zones.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.MultiAZSecondary.AvailabilityZone
         description: The name of the Availability Zone in which the secondary compute unit of the cluster is located.
@@ -3752,7 +3752,7 @@ script:
         description: The Amazon Resource Name (ARN) of the Glue data catalog associated with the cluster enabled with Amazon Redshift federated permissions.
         type: String
       - contextPath: AWS.Redshift.Clusters.ExtraComputeForAutomaticOptimization
-        description: A boolean value that, if true, indicates that the cluster allocates additional compute resources to run automatic optimization operations.
+        description: Whether the cluster allocates additional compute resources to run automatic optimization operations.
         type: String
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
@@ -5995,7 +5995,7 @@ script:
       description: "The launch template version number, $Latest, or $Default."
       required: false
     - name: tags
-      description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
+      description: One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456"
       required: false
     - name: host_id
       description: "The Dedicated Host ID."
@@ -9588,7 +9588,7 @@ script:
       description: A comma-separated list that specifies the entry point to their application, which is typically the location of the runtime executable.
       isArray: true
     - name: image_config_command
-      description: Specifies parameters that you want to pass in with ENTRYPOINT.
+      description: Parameters that you want to pass in with ENTRYPOINT.
     - name: image_config_working_directory
       description: Specifies the working directory.
     - name: ephemeral_storage_size
@@ -9663,7 +9663,7 @@ script:
       description: The amount of memory available to the function at runtime.
       type: Number
     - contextPath: AWS.Lambda.FunctionConfig.LastModified
-      description: The date and time that the function was last updated.
+      description: The date and time the function was last updated.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.CodeSha256
       description: The SHA256 hash of the function's deployment package.
@@ -9681,7 +9681,7 @@ script:
       description: The function's environment variables.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.KMSKeyArn
-      description: The KMS key that's used to encrypt the function's environment variables.
+      description: The KMS key used to encrypt the function's environment variables.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.TracingConfig
       description: The function's X-Ray tracing configuration.
@@ -9744,7 +9744,7 @@ script:
       description: The function's logging configuration.
       type: Unknown
     - contextPath: AWS.Lambda.FunctionConfig.CapacityProviderConfig
-      description: Configuration for Lambda-managed instances used by the capacity provider.
+      description: The configuration for Lambda-managed instances used by the capacity provider.
       type: Unknown
     - contextPath: AWS.Lambda.FunctionConfig.ConfigSha256
       description: The SHA256 hash of the function configuration.

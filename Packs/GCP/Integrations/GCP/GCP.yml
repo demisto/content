@@ -1906,16 +1906,16 @@ script:
     arguments:
     - name: project_id
       required: true
-      description: GCP project ID.
+      description: The GCP project ID.
     - name: dataset_id
       required: true
-      description: Dataset ID of the requested dataset.
+      description: The dataset ID of the requested dataset.
     - name: email
       description: The email address to remove from the dataset access list.
       required: true
     outputs:
       - contextPath: GCP.BigQuery.Datasets.kind
-        description: The type of the resource.
+        description: The resource type.
         type: String
       - contextPath: GCP.BigQuery.Datasets.etag
         description: A hash of the resource.
@@ -1939,7 +1939,7 @@ script:
         description: The default lifetime of all tables in the dataset, in milliseconds.
         type: String
       - contextPath: GCP.BigQuery.Datasets.defaultPartitionExpirationMs
-        description: This default partition expiration, expressed in milliseconds.
+        description: The default partition expiration, in milliseconds.
         type: String
       - contextPath: GCP.BigQuery.Datasets.labels
         description: The labels associated with this dataset.
@@ -1960,7 +1960,7 @@ script:
         description: A special group to grant access to.
         type: String
       - contextPath: GCP.BigQuery.Datasets.access.iamMember
-        description: Some other type of member that appears in the IAM Policy but isn't a user, group, domain, or special group.
+        description: A type of member that appears in the IAM Policy that isn't a user, group, domain, or special group.
         type: String
       - contextPath: GCP.BigQuery.Datasets.access.view
         description: A view from a different dataset to grant access to.
@@ -1969,19 +1969,19 @@ script:
         description: A routine from a different dataset to grant access to.
         type: Unknown
       - contextPath: GCP.BigQuery.Datasets.access.dataset
-        description: A grant authorizing all resources of a particular type in a particular dataset access to this dataset.
+        description: A grant authorizing access to this dataset for all resources of a particular type.
         type: Unknown
       - contextPath: GCP.BigQuery.Datasets.access.condition
-        description: A condition for the binding.
+        description: The binding condition.
         type: Unknown
       - contextPath: GCP.BigQuery.Datasets.creationTime
-        description: The time the dataset was created, in milliseconds since the epoch.
+        description: The time since the epoch the dataset was created, in milliseconds.
         type: String
       - contextPath: GCP.BigQuery.Datasets.lastModifiedTime
-        description: The time the dataset was last modified, in milliseconds since the epoch.
+        description: The time since the epoch the dataset was last modified, in milliseconds.
         type: String
       - contextPath: GCP.BigQuery.Datasets.location
-        description: The geographic location where the dataset should reside.
+        description: The geographic location where the dataset resides.
         type: String
       - contextPath: GCP.BigQuery.Datasets.defaultEncryptionConfiguration
         description: The default encryption configuration for all tables in the dataset.
@@ -1999,25 +1999,25 @@ script:
         description: Reference to a read-only external dataset defined in data catalogs outside of BigQuery.
         type: Unknown
       - contextPath: GCP.BigQuery.Datasets.externalCatalogDatasetOptions
-        description: Options defining open source compatible datasets living in the BigQuery catalog. Contains metadata of open source database, schema or namespace represented by the current dataset.
+        description: Options defining open source compatible datasets in the BigQuery catalog. Contains metadata of the open source database, schema, or namespace of the current dataset.
         type: Unknown
       - contextPath: GCP.BigQuery.Datasets.isCaseInsensitive
-        description: TRUE if the dataset and its table names are case-insensitive, otherwise FALSE.
+        description: True if the dataset and its table names are case-insensitive.
         type: String
       - contextPath: GCP.BigQuery.Datasets.defaultCollation
-        description: Defines the default collation specification of future tables created in the dataset.
+        description: The default collation specification of future tables created in the dataset.
         type: String
       - contextPath: GCP.BigQuery.Datasets.defaultRoundingMode
-        description: Defines the default rounding mode specification of new tables created within this dataset.
+        description: The default rounding mode specification of new tables created within this dataset.
         type: String
       - contextPath: GCP.BigQuery.Datasets.maxTimeTravelHours
-        description: Defines the time travel window in hours.
+        description: The time travel window in hours.
         type: String
       - contextPath: GCP.BigQuery.Datasets.resourceTags
         description: The tags attached to this dataset.
         type: String
       - contextPath: GCP.BigQuery.Datasets.storageBillingModel
-        description: Indicates the billing model that will be applied to the dataset.
+        description: The billing model that will be applied to the dataset.
         type: String
       - contextPath: GCP.BigQuery.Datasets.catalogSource
         description: The origin of the dataset.

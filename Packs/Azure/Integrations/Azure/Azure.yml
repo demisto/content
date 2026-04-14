@@ -2193,7 +2193,7 @@ script:
         type: String
         required: true
   - name: azure-vn-security-group-create
-    description: Create a network security group.
+    description: Creates a network security group.
     arguments:
       - name: subscription_id
         description: The subscription ID.
@@ -2291,10 +2291,10 @@ script:
         description: The security group's ETag.
         type: String
       - contextPath: Azure.VirtualNetworks.SecurityGroups.type
-        description: Resource type.
+        description: The resource type.
         type: String
       - contextPath: Azure.VirtualNetworks.SecurityGroups.location
-        description: Resource location.
+        description: The resource location.
         type: String
       - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.provisioningState
         description: The provisioning state of the network security group resource.
@@ -2765,7 +2765,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command.
+    - description: The name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     outputs:
@@ -2821,7 +2821,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.
+    - description: The name of the virtual machine for which you want to view details. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     - auto: PREDEFINED
@@ -3036,14 +3036,14 @@ script:
       - 'true'
       - 'false'
       type: String
-    - description: If the network interface is configured for accelerated networking.
+    - description: Whether the network interface is configured for accelerated networking.
       name: enable_accelerate_networking
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
       type: String
-    - description: Auxiliary mode of Network Interface resource.
+    - description: The auxiliary mode of the Network Interface resource.
       name: auxiliary_mode
       auto: PREDEFINED
       predefined:
@@ -3051,7 +3051,7 @@ script:
         - Floating
         - AcceleratedConnections
       type: String
-    - description: Auxiliary sku of Network Interface resource.
+    - description: The auxiliary SKU of the Network Interface resource.
       name: auxiliary_sku
       auto: PREDEFINED
       predefined:
@@ -3069,14 +3069,14 @@ script:
     - description: The name of the network security group.
       name: network_security_group_name
       type: String
-    - description: Whether to remove the property networkSecurityGroup from the network interface. Choose yes for removing the networkSecurityGroup.
+    - description: Whether to remove the property networkSecurityGroup from the network interface.
       name: remove_network_security_group
       auto: PREDEFINED
       predefined:
         - yes
         - no
       defaultValue: no
-    - description: Type of Network Interface resource.
+    - description: The type of Network Interface resource.
       name: nic_type
       auto: PREDEFINED
       predefined:
@@ -3099,7 +3099,7 @@ script:
       description: The resource type.
       type: String
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
-      description: Resource tags.
+      description: The resource tags.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.extendedLocation
       description: The extended location of the network interface.
@@ -3117,16 +3117,16 @@ script:
       description: The MAC address of the network interface.
       type: String
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding
-      description: Indicates whether IP forwarding is enabled for the network interface.
+      description: Whether IP forwarding is enabled for the network interface.
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking
-      description: Indicates whether accelerated networking is enabled for the network interface.
+      description: Whether accelerated networking is enabled for the network interface.
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
       description: The network security group associated with the network interface.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.primary
-      description: Indicates whether this is a primary network interface on a virtual machine.
+      description: Whether this is a primary network interface on a virtual machine.
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine
       description: The reference to a virtual machine.
@@ -3135,31 +3135,31 @@ script:
       description: The type of network interface (Standard or Elastic).
       type: String
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode
-      description: Auxiliary mode of Network Interface resource.
+      description: The auxiliary mode of the Network Interface resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku
-      description: Auxiliary sku of Network Interface resource.
+      description: The auxiliary SKU of the Network Interface resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled
-      description: Whether default outbound connectivity for nic was configured or not.
+      description: Whether default outbound connectivity for nic was configured.
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking
-      description: Indicates whether to disable tcp state tracking.
+      description: Whether to disable TCP state tracking.
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration
-      description: A reference to the dscp configuration to which the network interface is linked.
+      description: A reference to the DSCP configuration to which the network interface is linked.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads
       description: A list of references to linked BareMetal resources.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase
-      description: Migration phase of Network Interface resource.
+      description: The migration phase of the Network Interface resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint
       description: A reference to the private endpoint to which the network interface is linked.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService
-      description: Privatelinkservice of the network interface resource.
+      description: The privatelinkservice of the network interface resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid
       description: The resource GUID property of the network interface resource.
@@ -3171,7 +3171,7 @@ script:
       description: Whether the virtual machine this nic is attached to supports encryption.
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType
-      description: WorkloadType of the NetworkInterface for BareMetal resources.
+      description: The workload type of the NetworkInterface for BareMetal resources.
       type: String
 
   - name: azure-vm-public-ip-details-get
@@ -6646,7 +6646,7 @@ script:
         description: The name of the resource.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.etag
-        description: Etag is property returned in Create/Update/Get response of the VM, so that customer can supply it in the header to ensure optimistic updates.
+        description: The ETag of the virtual machine, used to prevent overwriting concurrent updates.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.extendedLocation
         description: The extended location of the Virtual Machine.
@@ -6655,13 +6655,13 @@ script:
         description: The identity of the virtual machine, if configured.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.managedBy
-        description: ManagedBy is set to Virtual Machine Scale Set(VMSS) flex ARM resourceID, if the VM is part of the VMSS. This property is used by platform for internal resource group delete optimization.
+        description: MThe ARM resource ID of the Virtual Machine Scale Set (VMSS) that manages the virtual machine, if applicable. Used for internal resource group delete optimization.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.placement
-        description: 'Placement section specifies the user-defined constraints for virtual machine hardware placement. This property cannot be changed once VM is provisioned. Minimum api-version: 2024-11-01.'
+        description: 'The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01.'
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.plan
-        description: Specifies information about the marketplace image used to create the virtual machine.
+        description: Information about the marketplace image used to create the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.systemData
         description: Azure Resource Manager metadata containing createdBy and modifiedBy information.
@@ -6676,28 +6676,28 @@ script:
         description: The availability set that the virtual machine is in.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
-        description: Specifies the hardware settings for the virtual machine.
+        description: The hardware settings for the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
-        description: Specifies the storage settings for the virtual machine disks.
+        description: The storage settings for the virtual machine disks.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
-        description: Specifies the operating system settings for the virtual machine.
+        description: The operating system settings for the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
-        description: Specifies the network interfaces of the virtual machine.
+        description: The network interfaces of the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
         description: The provisioning state, which only appears in the response.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
-        description: Specifies additional capabilities enabled or disabled on the virtual machine.
+        description: Additional capabilities enabled or disabled on the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
-        description: Specifies the security settings for the virtual machine.
+        description: The security settings for the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
-        description: Specifies the boot diagnostic settings state.
+        description: The boot diagnostic settings state.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
         description: The virtual machine scale set that the virtual machine is in.
@@ -6706,7 +6706,7 @@ script:
         description: The proximity placement group that the virtual machine is in.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy
-        description: Specifies Redeploy, Reboot and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
+        description: The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.priority
         description: The priority for the virtual machine.
@@ -6715,7 +6715,7 @@ script:
         description: The eviction policy for the virtual machine.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
-        description: Specifies the billing related details of a Azure Spot virtual machine.
+        description: The billing related details of a Azure Spot virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.host
         description: The host that the virtual machine is in.
@@ -6724,25 +6724,25 @@ script:
         description: The host group that the virtual machine is in.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
-        description: The license type, which is for bringing your own license scenario.
+        description: The license type for bringing your own license scenario.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
-        description: Specifies the time alloted for all extensions to start.
+        description: The time alloted for all extensions to start.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
         description: The fault domain that the virtual machine is in.
         type: Number
       - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
-        description: Specifies scheduled event related configurations.
+        description: The scheduled event related configurations.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.userData
-        description: UserData for the VM, which must be base-64 encoded.
+        description: The user data for the VM, which must be base-64 encoded.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
-        description: Specifies the capacity reservation related details of a virtual machine.
+        description: The capacity reservation related details of a virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
-        description: Specifies the gallery applications that should be made available to the VM/VMSS.
+        description: The gallery applications that should be made available to the VM/VMSS.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
         description: The time when the virtual machine was created.
@@ -6802,7 +6802,7 @@ script:
         description: The virtual machine instance view.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachinesNextToken
-        description: The URI to fetch the next page of VMs. Call the same command with the next_token argument to get the next page of VMs.
+        description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
         type: String
   isfetch: false
   runonce: false
