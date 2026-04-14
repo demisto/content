@@ -14233,7 +14233,7 @@ script:
       - INFREQUENT_ACCESS
       description: The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost.
     - name: tags
-      description: "The key-value pairs to use for the tags. You can grant users access to certain log groups while preventing them from accessing other log groups, by using tag-based access control. Format: JSON object, e.g. {\"Environment\": \"Production\", \"Team\": \"DevOps\"}."
+      description: "The key-value pairs to use for the tags. Must be separated by a semicolon (;) and specified using the format \"key=abc,value=123;key=fed,value=456\"."
     - name: deletion_protection_enabled
       auto: PREDEFINED
       predefined:
@@ -14440,31 +14440,31 @@ script:
       required: true
       description: The AWS account ID.
     outputs:
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LogGroupName
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName
       description: The name of the log group.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LogStreamName
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName
       description: The name of the log stream.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.CreationTime
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime
       description: The creation time of the stream, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogStreams.Arn
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.Arn
       description: The Amazon Resource Name (ARN) of the log stream.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.FirstEventTimestamp
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.FirstEventTimestamp
       description: The time of the first event, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
       type: date
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LastEventTimestamp
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastEventTimestamp
       description: The time of the most recent log event in the log stream in CloudWatch Logs.
       type: date
-    - contextPath: AWS.CloudWatchLogs.LogStreams.LastIngestionTime
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastIngestionTime
       description: The ingestion time, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
       type: date
-    - contextPath: AWS.CloudWatchLogs.LogStreams.UploadSequenceToken
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.UploadSequenceToken
       description: The sequence token.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogStreams.StoredBytes
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes
       description: The number of bytes stored.
       type: number
     - contextPath: AWS.CloudWatchLogs.LogStreamsNextToken

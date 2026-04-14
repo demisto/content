@@ -7970,7 +7970,7 @@ class CloudWatchLogs:
         if log_group_class := args.get("log_group_class"):
             kwargs["logGroupClass"] = log_group_class
         if tags := args.get("tags"):
-            kwargs["tags"] = json.loads(tags) if isinstance(tags, str) else tags
+            kwargs["tags"] = {tag["Key"]: tag["Value"] for tag in parse_tag_field(tags)}
         if (deletion_protection := args.get("deletion_protection_enabled")) is not None:
             kwargs["deletionProtectionEnabled"] = argToBoolean(deletion_protection)
 
@@ -8143,8 +8143,6 @@ class CloudWatchLogs:
 
         readable = tableToMarkdown("AWS CloudWatch Logs Events", events) if events else "No events were found."
         next_token = response.get("nextToken")
-        if next_token:
-            readable = f"Next Page Token: {next_token}\n\n" + readable
 
         outputs = {
             "AWS.CloudWatchLogs.Events(val.EventId && val.EventId == obj.EventId)": events,
@@ -8298,7 +8296,7 @@ class CloudWatchLogs:
             readable = f"Next Page Token: {next_token}\n\n" + readable
 
         outputs = {
-            "AWS.CloudWatchLogs.LogStreams(val.Arn && val.Arn == obj.Arn)": data,
+            "AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName).LogStreams": data,
             "AWS.CloudWatchLogs(true)": {"LogStreamsNextToken": next_token},
         }
 
@@ -8404,6 +8402,7 @@ class CloudWatchLogs:
         data = {"NextSequenceToken": response.get("nextSequenceToken")}
 
         readable = tableToMarkdown("AWS CloudWatch Log Put Log Events", data)
+        readable = "Successfully created event!\n" + readable
 
         return CommandResults(
             outputs_prefix="AWS.CloudWatchLogs.PutLogEvents",

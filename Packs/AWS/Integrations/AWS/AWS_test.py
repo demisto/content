@@ -14691,7 +14691,7 @@ def test_log_group_create_command_with_optional_params(mocker):
         "log_group_name": "my-log-group",
         "kms_key_id": "arn:aws:kms:us-east-1:123456789012:key/my-key",
         "log_group_class": "STANDARD",
-        "tags": '{"Environment": "Production"}',
+        "tags": "key=Environment,value=Production",
         "deletion_protection_enabled": "true",
     }
 
@@ -15009,7 +15009,7 @@ def test_log_streams_describe_command_success(mocker):
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    data = result.outputs["AWS.CloudWatchLogs.LogStreams(val.Arn && val.Arn == obj.Arn)"]
+    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName).LogStreams"]
     assert len(data) == 1
     assert data[0]["LogStreamName"] == "my-stream"
     assert data[0]["LogGroupName"] == "my-group"
