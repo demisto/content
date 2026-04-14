@@ -2,7 +2,7 @@
     "name": "TrendAI Vision One™",
     "description": "Purpose-built threat defense platform with XDR capabilities that correlate data across email, endpoints, servers, cloud, and networks.",
     "support": "partner",
-    "currentVersion": "4.5.2",
+    "currentVersion": "4.5.5",
     "serverMinVersion": "6.2.0",
     "author": "TrendAI™",
     "url": "https://success.trendmicro.com",
@@ -42,10 +42,6 @@
     ],
     "defaultDataSource": "TrendMicroVisionOneEventCollector",
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]
