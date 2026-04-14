@@ -7,7 +7,7 @@
 >
 > This integration is **not being deprecated** at this time, as not all commands are supported in the Graph API. However, if you currently use Microsoft Sentinel in the Azure portal, Microsoft recommends planning your transition to the Defender portal now.
 >
-> We strongly recommend transitioning to the following integrations for managing incidents, alerts, and indicators:
+> We strongly recommend transitioning to the following integrations for managing incidents and indicators:
 >
 > - [Microsoft Graph Security](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph)
 > - [Microsoft Defender Threat Intelligence](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-threat-intelligence)
