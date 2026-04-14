@@ -2841,6 +2841,8 @@ There is no context output for this command.
 When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
 Therefore, it is recommended to configure only one instance per user to fetch incidents.
 
+Prisma Cloud Compute aggregates alerts occurring within a specific time window into a single alert before sending them to Cortex <~XSOAR>XSOAR</~XSOAR><~XSIAM>XSIAM</~XSIAM>. This may result in fewer <~XSOAR>incidents</~XSOAR><~XSIAM>issues</~XSIAM> created compared to the total number of alerts in the Prisma Cloud Compute console. Individual alert details are preserved in the `aggregatedAlerts` field. To receive alerts separately, set the **Aggregation Period** in your Prisma Cloud alert profile to the minimum value. If the 1-second option is unavailable, contact Prisma Cloud Support to enable the `SAAS_ADDITIONAL_ALERT_AGGREGATION_OPTIONS_ENABLED` feature flag.
+
 ### prisma-cloud-compute-get-alert-profiles
 
 ***
