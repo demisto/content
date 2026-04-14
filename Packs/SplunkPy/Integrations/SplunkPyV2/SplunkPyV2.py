@@ -3048,12 +3048,15 @@ def add_investigation_note(
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}/notes"
 
     demisto.debug(f"Adding note to investigation/finding {investigation_or_finding_id}")
-    query_params = {"notable_time": "now"}
-    response = service.post(endpoint, body=json.dumps(body), **query_params)
+    try:
+        response = service.post(endpoint, body=json.dumps(body))
+    except Exception as e:
+        demisto.debug(f"Failed to add note without notable_time param, retrying with notable_time=now. Error: {e!s}")
+        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+
     response_data = response.body.read()
     result = json.loads(response_data)
     demisto.debug(f"Note added successfully: {result}")
-
     return result
 
 
@@ -3101,10 +3104,6 @@ def update_investigation_or_finding(
         demisto.debug(f"No fields to update for investigation/finding {investigation_or_finding_id}")
         return {"success": False, "message": "No fields provided to update"}
 
-    # Add notable_time query parameter
-    query_params = {"notable_time": "now"}
-
-    # Build the relative endpoint path
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}"
 
     demisto.debug(
@@ -3112,21 +3111,18 @@ def update_investigation_or_finding(
     )
 
     try:
-        # Use service.post() to send POST request to the management port (8089)
-        # Parameters are passed as POST form fields
-        response = service.post(endpoint, body=json.dumps(body), **query_params)
-
-        # Parse the response
-        response_data = response.body.read()
-        result = json.loads(response_data)
-
-        demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
-        return result
-
+        response = service.post(endpoint, body=json.dumps(body))
     except Exception as e:
-        error_msg = f"Failed to update investigation/finding {investigation_or_finding_id} via v2 API: {e!s}"
-        demisto.error(error_msg)
-        raise Exception(error_msg)
+        demisto.debug(
+            f"Failed to update investigation/finding {investigation_or_finding_id} without notable_time param, "
+            f"retrying with notable_time=now. Error: {e!s}"
+        )
+        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+
+    response_data = response.body.read()
+    result = json.loads(response_data)
+    demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
+    return result
 
 
 def severity_to_level(severity: str | None) -> int | float:
