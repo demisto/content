@@ -38,6 +38,7 @@ class Client(BaseClient):
         return "xdr" if is_xsiam() else "xsoartim"
 
     def get_file_report(self, file_hash: str):
+        demisto.info(f"Requesting WildFire report for hash {file_hash}, format 'pdf', with agent={self.agent}")
         return self._http_request(
             "POST",
             url_suffix="/get/report",
