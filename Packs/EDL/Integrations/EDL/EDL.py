@@ -226,9 +226,9 @@ class RequestArguments:
     def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
-        # Fixes legacy query mode silently lost after the first refresh because 
+        # Fixes legacy query mode silently lost after the first refresh because
         # `get_fields_to_present("")` returned "name,type" instead of ""
-        if not fields_to_present or fields_to_present == "use_legacy_query":
+        if fields_to_present == "use_legacy_query" or (not fields_to_present and self.out_format == FORMAT_TEXT):
             return ""
 
         fields_for_format = {
