@@ -882,6 +882,7 @@ script:
       name: request_uid
     - description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
       name: device_uids
+      required: true
     - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive).
       name: created_from_date_time_utc
     - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example createdToDateTimeUtc=2011-12-03T10:15:30.000Z

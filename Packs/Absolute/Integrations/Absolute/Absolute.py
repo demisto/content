@@ -374,6 +374,36 @@ class ClientV3(BaseClient):
         demisto.debug(f"Query string for fetching events: {query}")
         return query
 
+    def add_to_query(self, query, value):
+        if query:
+            query += f"&{value}"
+        else:
+            query = value
+        return  query
+
+    def prepare_wipe_requests_query(self, args: dict, next_page=None) -> str:
+        query = ""
+        created_from = args.get("created_from_date_time_utc")
+        created_to = args.get("created_to_date_time_utc")
+        request_status = args.get("request_status")
+
+        if created_from:
+            created_from_str = f'fromDateTimeUtc={created_from.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+            query = self.add_to_query(query, f"createdFromDateTimeUtc={created_from_str}")
+            # query+=f"createdFromDateTimeUtc={created_from_str}"
+        if created_to:
+            created_to_str = f'fromDateTimeUtc={created_to.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+            query = self.add_to_query(query, f"&createdToDateTimeUtc={created_to_str}")
+            # query+=f"&createdToDateTimeUtc={created_to_str}"
+        if request_status:
+            query = self.add_to_query(query, f"&requestStatus={request_status}")
+            # query +=f"&requestStatus={request_status}"
+        if next_page:
+            query = self.add_to_query(query, f"&nextPage={next_page}")
+            query += f"&nextPage={next_page}"
+        demisto.debug(f"Query string for wipe requests: {query}")
+        return query
+
 
 def validate_absolute_api_url(base_url: str) -> str:
     """Validate the base url, and return the respective api url
@@ -1014,6 +1044,26 @@ def parse_geo_location_outputs(response):
         return parsed_response[0]
     return parsed_response
 
+def parse_wibe_requests(response: list) -> dict | list:
+    parsed_response = []
+    for req in response:
+        parsed_request = {
+            "Request Id": req.get("requestId"),
+            "Request Uid": req.get("requestUid"),
+            "Request Status": req.get("requestStatus"),
+            "Total Devices": req.get("totalDevices"),
+            "Pending": req.get("pending"),
+            "Processing": req.get("processing"),
+            "Completed": req.get("completed"),
+            "Canceled": req.get("canceled"),
+            "Failed": req.get("failed")
+        }
+        parsed_response.append(parsed_request)
+
+    if len(parsed_response) == 1:
+        return parsed_response[0]
+    return parsed_response
+
 
 def get_device_application_list_command(args, client) -> CommandResults:
     """Lists devices applications"""
@@ -1140,6 +1190,87 @@ def get_device_location_command(args, client) -> CommandResults:
     else:
         return CommandResults(readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
+def list_wibe_requests_command(args: dict, client:ClientV3):
+    request_uid = args.get("request_uid")
+    limit = arg_to_number(args.get("limit"))
+    wipe_requests = []
+    if request_uid:
+        raw_res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe/{request_uid}")
+        wipe_requests = [raw_res.get("data")]
+        hr = parse_wibe_requests([raw_res.get("data")])
+        human_readable = tableToMarkdown(f"Wipe Request with ID {request_uid}:", hr, removeNull=True)
+    else:
+        wipe_requests = []
+        next_page = None
+        while len(wipe_requests) < limit:
+            string_query = client.prepare_wipe_requests_query(args, next_page)
+            raw_res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe",
+                                                  query_string=string_query, specific_page=True)
+            wipe_requests.extend(raw_res.get("data"))
+            next_page = raw_res.get("metadata", {}).get("pagination", {}).get("nextPage")
+            if not next_page:
+                break
+        if not wipe_requests:
+            human_readable = "No wipe requests found."
+        else:
+            hr = parse_wibe_requests(wipe_requests)
+            human_readable = tableToMarkdown(f"Wipe Requests:", hr, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="Absolute.WipeRequest",
+        outputs=wipe_requests,
+        readable_output=human_readable,
+    )
+
+
+def cancel_wibe_request_command(args: dict, client:ClientV3):
+    request_uid = args.get("request_uid")
+    body = {
+        "actionUids": argToList(args.get("action_uids")),
+        "cancelAllActions": argToBoolean(args.get("cancel_all_actions", "false"))
+    }
+    raw_res = client.api_request_absolute("POST", f"/v3/actions/wipe/cancel-actions/{request_uid}", body=body)
+    return CommandResults(
+        outputs_prefix="Absolute.WipeRequest",
+        outputs=raw_res,
+        readable_output=f"Wipe actions for the request {request_uid} have been successfully canceled.",
+        raw_response=raw_res
+    )
+
+def create_wibe_request_command(args: dict, client:ClientV3):
+    device_uids = argToList(args.get("device_uids"))
+    mac_user_name = args.get("mac_user_name")
+    mac_pwd = args.get("mac_pwd")
+    body = {
+        "deviceUids": device_uids,
+        "unenrollDevicesAndFreeLicenses": argToBoolean(args.get("unenroll_devices_and_free_licenses", "false"))
+    }
+    if mac_user_name:
+        body["macUsername"] = mac_user_name
+    if mac_pwd:
+        body["macPwd"] = mac_pwd
+
+    raw_res = client.api_request_absolute("POST", f"/v3/actions/requests/wipe", body=body)
+    return CommandResults(
+        outputs_prefix="Absolute.WipeRequest",
+        outputs=raw_res.get("data"),
+        readable_output=f"Wipe request {raw_res.get('data', {}).get('requestUid')} has been successfully created.",
+        raw_response=raw_res)
+
+def list_wibe_actions_command(args: dict, client:ClientV3):
+    request_uid = args.get("request_uid")
+    device_uids = argToList(args.get("device_uids"))
+    if not (request_uid or device_uids):
+        return_error("one of the request_uid or device_uids arguments has to be provied.")
+
+    if request_uid:
+        raw_res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe/{request_uid}")
+        res = [raw_res.get("data")]
+        outputs = parse_wibe_requests(res)
+        human_readable = tableToMarkdown(f"Wipe Request with ID: {request_uid}:", outputs, removeNull=True)
+    if not request_uid:
+        raw_res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe")
+        res = raw_res.get("data")
 
 """ EVENT COLLECTOR """
 
@@ -1312,6 +1443,17 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
+        elif demisto.command() == "absolute-wipe-request-list":
+            return_results(list_wibe_requests_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-cancel":
+            return_results(cancel_wibe_request_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-actions-list":
+            return_results(list_wibe_actions_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-create":
+            return_results(create_wibe_request_command(args=args, client=client_v3))
         else:
             raise NotImplementedError(f"{demisto.command()} is not an existing {INTEGRATION} command.")
 
