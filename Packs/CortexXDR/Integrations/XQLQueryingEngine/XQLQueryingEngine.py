@@ -10,6 +10,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
+IS_CORE_AVAILABLE = False
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_LIMIT = 100
 
