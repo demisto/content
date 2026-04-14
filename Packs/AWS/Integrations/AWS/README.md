@@ -4993,150 +4993,150 @@ Modifies the settings of a cluster. Requires the redshift:ModifyCluster permissi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| cluster_identifier | The unique identifier of the cluster to be modified. | Required | 
-| vpc_security_group_ids | A comma-separated list of VPC security groups to be associated with the cluster. This change is asynchronously applied as soon as possible. | Optional | 
-| cluster_type | The new cluster type. Possible values are: multi-node, single-node. | Optional | 
-| node_type | The new node type of the cluster. If you specify a new node type, you must also specify the number of nodes parameter. Possible values are: dc2.large, dc2.8xlarge, ra3.large, ra3.xlplus, ra3.4xlarge, ra3.16xlarge. | Optional | 
-| number_of_nodes | The new number of nodes of the cluster. If you specify a new number of nodes, you must also specify the node type parameter. | Optional | 
-| cluster_security_groups | A comma-separated list of cluster security groups to be authorized on this cluster. | Optional | 
-| cluster_parameter_group_name | The name of the cluster parameter group to apply to the cluster. This change is applied only after the cluster is rebooted. Constraints: The cluster parameter group must be in the same parameter group family that matches the cluster version. | Optional | 
-| automated_snapshot_retention_period | The number of days that automated snapshots are retained. If the value is 0, automated snapshots are disabled. | Optional | 
-| manual_snapshot_retention_period | The number of days a newly created manual snapshot is retained. If the value is -1, the manual snapshot is retained indefinitely. | Optional | 
-| preferred_maintenance_window | The weekly time range (in UTC) during which automated cluster maintenance can occur. | Optional | 
-| cluster_version | The new version number of the Amazon Redshift engine to upgrade to. | Optional | 
-| allow_version_upgrade | Whether major version upgrades will be applied automatically to the cluster during the maintenance window. Possible values are: true, false. | Optional | 
-| hsm_client_certificate_identifier | The name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM. | Optional | 
-| hsm_configuration_identifier | The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM. | Optional | 
-| new_cluster_identifier | The new identifier for the cluster. | Optional | 
-| publicly_accessible | Whether the cluster can be accessed from a public network. Only clusters in VPCs can be set to be publicly available. Possible values are: true, false. | Optional | 
-| elastic_ip | The Elastic IP (EIP) address for the cluster. | Optional | 
-| enhanced_vpc_routing | Whether to create the cluster with enhanced VPC routing enabled. Possible values are: true, false. | Optional | 
-| maintenance_track_name | The name for the maintenance track that you want to assign for the cluster. This name change is asynchronous. The new track name stays in the PendingModifiedValues for the cluster until the next maintenance window. When the maintenance track changes, the cluster is switched to the latest cluster release available for the maintenance track. At this point, the maintenance track name is applied. | Optional | 
-| encrypted | Whether the cluster is encrypted. If the value is encrypted (true) and you provide a value for the KmsKeyId parameter, we encrypt the cluster with the provided KmsKeyId. If you don’t provide a KmsKeyId, we encrypt with the default key. If the value is not encrypted (false), then the cluster is decrypted. Possible values are: true, false. | Optional | 
-| kms_key_id | The Key Management Service (KMS) key ID of the encryption key that you want to use to encrypt data in the cluster. | Optional | 
-| availability_zone_relocation | Whether to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster modification is complete. Possible values are: true, false. | Optional | 
-| availability_zone | Whether to initiate relocation for an Amazon Redshift cluster to the target Availability Zone. | Optional | 
-| port | Whether to change the port of an Amazon Redshift cluster. | Optional | 
-| ip_address_type | The IP address types that the cluster supports. Possible values are: ipv4, dualstack. | Optional | 
-| multi_az | Whether the cluster will be modified to be deployed in two Availability Zones if the cluster is currently only deployed in a single Availability Zone. Possible values are: true, false. | Optional | 
-| extra_compute_for_automatic_optimization | Whether to allocate additional compute resources for running automatic optimization operations. Possible values are: true, false. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| cluster_identifier | The unique identifier of the cluster to be modified. | Required |
+| vpc_security_group_ids | A comma-separated list of VPC security groups to be associated with the cluster. This change is asynchronously applied as soon as possible. | Optional |
+| cluster_type | The new cluster type. Possible values are: multi-node, single-node. | Optional |
+| node_type | The new node type of the cluster. If you specify a new node type, you must also specify the number of nodes parameter. Possible values are: dc2.large, dc2.8xlarge, ra3.large, ra3.xlplus, ra3.4xlarge, ra3.16xlarge. | Optional |
+| number_of_nodes | The new number of nodes of the cluster. If you specify a new number of nodes, you must also specify the node type parameter. | Optional |
+| cluster_security_groups | A comma-separated list of cluster security groups to be authorized on this cluster. | Optional |
+| cluster_parameter_group_name | The name of the cluster parameter group to apply to the cluster. This change is applied only after the cluster is rebooted. Constraints: The cluster parameter group must be in the same parameter group family that matches the cluster version. | Optional |
+| automated_snapshot_retention_period | The number of days that automated snapshots are retained. If the value is 0, automated snapshots are disabled. | Optional |
+| manual_snapshot_retention_period | The number of days a newly created manual snapshot is retained. If the value is -1, the manual snapshot is retained indefinitely. | Optional |
+| preferred_maintenance_window | The weekly time range (in UTC) during which automated cluster maintenance can occur. | Optional |
+| cluster_version | The new version number of the Amazon Redshift engine to upgrade to. | Optional |
+| allow_version_upgrade | Whether major version upgrades will be applied automatically to the cluster during the maintenance window. Possible values are: true, false. | Optional |
+| hsm_client_certificate_identifier | The name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM. | Optional |
+| hsm_configuration_identifier | The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM. | Optional |
+| new_cluster_identifier | The new identifier for the cluster. | Optional |
+| publicly_accessible | Whether the cluster can be accessed from a public network. Only clusters in VPCs can be set to be publicly available. Possible values are: true, false. | Optional |
+| elastic_ip | The Elastic IP (EIP) address for the cluster. | Optional |
+| enhanced_vpc_routing | Whether to create the cluster with enhanced VPC routing enabled. Possible values are: true, false. | Optional |
+| maintenance_track_name | The name for the maintenance track that you want to assign for the cluster. This name change is asynchronous. The new track name stays in the PendingModifiedValues for the cluster until the next maintenance window. When the maintenance track changes, the cluster is switched to the latest cluster release available for the maintenance track. At this point, the maintenance track name is applied. | Optional |
+| encrypted | Whether the cluster is encrypted. If the value is encrypted (true) and you provide a value for the KmsKeyId parameter, we encrypt the cluster with the provided KmsKeyId. If you don’t provide a KmsKeyId, we encrypt with the default key. If the value is not encrypted (false), then the cluster is decrypted. Possible values are: true, false. | Optional |
+| kms_key_id | The Key Management Service (KMS) key ID of the encryption key that you want to use to encrypt data in the cluster. | Optional |
+| availability_zone_relocation | Whether to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster modification is complete. Possible values are: true, false. | Optional |
+| availability_zone | Whether to initiate relocation for an Amazon Redshift cluster to the target Availability Zone. | Optional |
+| port | Whether to change the port of an Amazon Redshift cluster. | Optional |
+| ip_address_type | The IP address types that the cluster supports. Possible values are: ipv4, dualstack. | Optional |
+| multi_az | Whether the cluster will be modified to be deployed in two Availability Zones if the cluster is currently only deployed in a single Availability Zone. Possible values are: true, false. | Optional |
+| extra_compute_for_automatic_optimization | Whether to allocate additional compute resources for running automatic optimization operations. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Redshift.Clusters.ClusterIdentifier | String | The unique identifier of the cluster. | 
-| AWS.Redshift.Clusters.NodeType | String | The node type for the nodes in the cluster. | 
-| AWS.Redshift.Clusters.ClusterStatus | String | The current state of the cluster. | 
-| AWS.Redshift.Clusters.ClusterAvailabilityStatus | String | The availability status of the cluster for queries. Possible values are the following: Available, Unavailable, Maintenance, Modifying, Failed. | 
-| AWS.Redshift.Clusters.ModifyStatus | String | The status of a cluster modification. | 
-| AWS.Redshift.Clusters.MasterUsername | String | The master user name for the cluster. This name is used to connect to the database that is hosted on the cluster. | 
-| AWS.Redshift.Clusters.DBName | String | The name of the initial database that was created when the cluster was created. | 
-| AWS.Redshift.Clusters.Endpoint.Address | String | The DNS address of the cluster. | 
-| AWS.Redshift.Clusters.Endpoint.Port | Number | The port that the database engine is listening on. | 
-| AWS.Redshift.Clusters.Endpoint.VpcEndpoints | Unknown | The connection endpoint description. | 
-| AWS.Redshift.Clusters.ClusterCreateTime | String | The date and time that the cluster was created. | 
-| AWS.Redshift.Clusters.AutomatedSnapshotRetentionPeriod | Number | The number of days that automatic cluster snapshots are retained. | 
-| AWS.Redshift.Clusters.ManualSnapshotRetentionPeriod | Number | The number of days to retain a manual snapshot. | 
-| AWS.Redshift.Clusters.ClusterSecurityGroups.ClusterSecurityGroupName | String | The name of a cluster security group. | 
-| AWS.Redshift.Clusters.ClusterSecurityGroups.Status | String | The status of the cluster security group. | 
-| AWS.Redshift.Clusters.VpcSecurityGroups.VpcSecurityGroupId | String | The identifier of the VPC security group. | 
-| AWS.Redshift.Clusters.VpcSecurityGroups.Status | String | The status of the VPC security group. | 
-| AWS.Redshift.Clusters.ClusterParameterGroups.ParameterGroupName | String | The name of the parameter group. | 
-| AWS.Redshift.Clusters.ClusterParameterGroups.ParameterApplyStatus | String | The status of parameter updates. | 
-| AWS.Redshift.Clusters.ClusterParameterGroups.ClusterParameterStatusList | Unknown | A comma-separated list of parameter statuses. | 
-| AWS.Redshift.Clusters.ClusterSubnetGroupName | String | The name of the subnet group that is associated with the cluster. | 
-| AWS.Redshift.Clusters.VpcId | String | The identifier of the VPC the cluster is in, if the cluster is in a VPC. | 
-| AWS.Redshift.Clusters.AvailabilityZone | String | The name of the Availability Zone in which the cluster is located. | 
-| AWS.Redshift.Clusters.PreferredMaintenanceWindow | String | The weekly time range \(in UTC\) during which system maintenance can occur. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.MasterUserPassword | String | The pending or in-progress change of the master user password for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.NodeType | String | The pending or in-progress node type for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.NumberOfNodes | Number | The pending or in-progress number of nodes for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.ClusterType | String | The pending or in-progress cluster type for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.ClusterVersion | String | The pending or in-progress cluster version for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.AutomatedSnapshotRetentionPeriod | Number | The pending or in-progress change of the automated snapshot retention period for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.ClusterIdentifier | String | The pending or in-progress change of the new identifier for the cluster. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.PubliclyAccessible | Boolean | The pending or in-progress change of the ability to connect to the cluster from a public network. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.EnhancedVpcRouting | Boolean | An option that specifies whether to create the cluster with enhanced VPC routing enabled. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.MaintenanceTrackName | String | The name of the maintenance track that the cluster will change to during the next maintenance window. | 
-| AWS.Redshift.Clusters.PendingModifiedValues.EncryptionType | String | The encryption type for a cluster. | 
-| AWS.Redshift.Clusters.ClusterVersion | String | The version ID of the Amazon Redshift engine that is running on the cluster. | 
-| AWS.Redshift.Clusters.AllowVersionUpgrade | Boolean | Whether major version upgrades will be applied automatically to the cluster during the maintenance window. | 
-| AWS.Redshift.Clusters.NumberOfNodes | Number | The number of compute nodes in the cluster. | 
-| AWS.Redshift.Clusters.PubliclyAccessible | Boolean | Whether the cluster can be accessed from a public network. | 
-| AWS.Redshift.Clusters.Encrypted | Boolean | Whether the cluster is encrypted. | 
-| AWS.Redshift.Clusters.RestoreStatus.Status | String | The status of the restore action. | 
-| AWS.Redshift.Clusters.RestoreStatus.CurrentRestoreRateInMegaBytesPerSecond | Number | The number of megabytes per second being transferred from the backup storage. | 
-| AWS.Redshift.Clusters.RestoreStatus.SnapshotSizeInMegaBytes | Number | The size of the set of snapshot data that was used to restore the cluster. | 
-| AWS.Redshift.Clusters.RestoreStatus.ProgressInMegaBytes | Number | The number of megabytes that have been transferred from snapshot storage. | 
-| AWS.Redshift.Clusters.RestoreStatus.ElapsedTimeInSeconds | Number | The amount of time an in-progress restore has been running, or the amount of time it took a completed restore to finish. | 
-| AWS.Redshift.Clusters.RestoreStatus.EstimatedTimeToCompletionInSeconds | Number | The estimate of the time remaining before the restore will complete. | 
-| AWS.Redshift.Clusters.DataTransferProgress.Status | String | The cluster status. | 
-| AWS.Redshift.Clusters.DataTransferProgress.CurrentRateInMegaBytesPerSecond | Number | The data transfer rate in megabytes per second. | 
-| AWS.Redshift.Clusters.DataTransferProgress.TotalDataInMegaBytes | Number | The total amount of data to be transfered in megabytes. | 
-| AWS.Redshift.Clusters.DataTransferProgress.DataTransferredInMegaBytes | Number | The total amount of data that has been transfered in MB’s. | 
-| AWS.Redshift.Clusters.DataTransferProgress.EstimatedTimeToCompletionInSeconds | Number | The estimated number of seconds remaining to complete the transfer. | 
-| AWS.Redshift.Clusters.DataTransferProgress.ElapsedTimeInSeconds | Number | The number of seconds that have elapsed during the data transfer. | 
-| AWS.Redshift.Clusters.HsmStatus.HsmClientCertificateIdentifier | String | The name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM. | 
-| AWS.Redshift.Clusters.HsmStatus.HsmConfigurationIdentifier | String | The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM. | 
-| AWS.Redshift.Clusters.HsmStatus.Status | String | Whether the Amazon Redshift cluster has finished applying any HSM settings changes specified in a modify cluster command. | 
-| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.DestinationRegion | String | The destination region that snapshots are automatically copied to when cross-region snapshot copy is enabled. | 
-| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.RetentionPeriod | Number | The number of days that automated snapshots are retained in the destination region after they are copied from a source region. | 
-| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.ManualSnapshotRetentionPeriod | Number | The number of days that automated snapshots are retained in the destination region after they are copied from a source region. If the value is -1, the manual snapshot is retained indefinitely. | 
-| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.SnapshotCopyGrantName | String | The name of the snapshot copy grant. | 
-| AWS.Redshift.Clusters.ClusterPublicKey | String | The public key for the cluster. | 
-| AWS.Redshift.Clusters.ClusterNodes.NodeRole | String | Whether the node is a leader node or a compute node. | 
-| AWS.Redshift.Clusters.ClusterNodes.PrivateIPAddress | String | The private IP address of a node within a cluster. | 
-| AWS.Redshift.Clusters.ClusterNodes.PublicIPAddress | String | The public IP address of a node within a cluster. | 
-| AWS.Redshift.Clusters.ElasticIpStatus.ElasticIp | String | The elastic IP \(EIP\) address for the cluster. | 
-| AWS.Redshift.Clusters.ElasticIpStatus.Status | String | The status of the elastic IP \(EIP\) address. | 
-| AWS.Redshift.Clusters.ClusterRevisionNumber | String | The specific revision number of the database in the cluster. | 
-| AWS.Redshift.Clusters.Tags.Key | String | The key, or name, for the resource tag. | 
-| AWS.Redshift.Clusters.Tags.Value | String | The value for the resource tag. | 
-| AWS.Redshift.Clusters.KmsKeyId | String | The Key Management Service \(KMS\) key ID of the encryption key used to encrypt data in the cluster. | 
-| AWS.Redshift.Clusters.EnhancedVpcRouting | Boolean | Whether to create the cluster with enhanced VPC routing enabled. | 
-| AWS.Redshift.Clusters.IamRoles.IamRoleArn | String | The Amazon Resource Name \(ARN\) of the IAM role. | 
-| AWS.Redshift.Clusters.IamRoles.ApplyStatus | String | The status of the IAM role’s association with an Amazon Redshift cluster. | 
-| AWS.Redshift.Clusters.PendingActions | Unknown | The cluster operations that are waiting to be started. | 
-| AWS.Redshift.Clusters.MaintenanceTrackName | String | The name of the maintenance track for the cluster. | 
-| AWS.Redshift.Clusters.ElasticResizeNumberOfNodeOptions | String | The number of nodes that you can resize the cluster to with the elastic resize method. | 
-| AWS.Redshift.Clusters.DeferredMaintenanceWindows.DeferMaintenanceIdentifier | String | A unique identifier for the maintenance window. | 
-| AWS.Redshift.Clusters.DeferredMaintenanceWindows.DeferMaintenanceStartTime | String | A timestamp for the beginning of the time period when we defer maintenance. | 
-| AWS.Redshift.Clusters.DeferredMaintenanceWindows.DeferMaintenanceEndTime | String | A timestamp for the end of the time period when we defer maintenance. | 
-| AWS.Redshift.Clusters.SnapshotScheduleIdentifier | String | A unique identifier for the cluster snapshot schedule. | 
-| AWS.Redshift.Clusters.SnapshotScheduleState | String | The current state of the cluster snapshot schedule. | 
-| AWS.Redshift.Clusters.ExpectedNextSnapshotScheduleTime | String | The current state of the cluster snapshot schedule. | 
-| AWS.Redshift.Clusters.ExpectedNextSnapshotScheduleTimeStatus | String | The status of next expected snapshot for clusters having a valid snapshot schedule and backups enabled. | 
-| AWS.Redshift.Clusters.NextMaintenanceWindowStartTime | String | The date and time in UTC when system maintenance can begin. | 
-| AWS.Redshift.Clusters.ResizeInfo.ResizeType | String | Returns the value ClassicResize. | 
-| AWS.Redshift.Clusters.ResizeInfo.AllowCancelResize | Boolean | Whether the resize operation can be cancelled. | 
-| AWS.Redshift.Clusters.AvailabilityZoneRelocationStatus | String | The status of the Availability Zone relocation operation. | 
-| AWS.Redshift.Clusters.ClusterNamespaceArn | String | The namespace Amazon Resource Name \(ARN\) of the cluster. | 
-| AWS.Redshift.Clusters.TotalStorageCapacityInMegaBytes | Number | The total storage capacity of the cluster in megabytes. | 
-| AWS.Redshift.Clusters.DefaultIamRoleArn | String | The Amazon Resource Name \(ARN\) for the IAM role set as default for the cluster. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.ReservedNodeExchangeRequestId | String | The identifier of the reserved-node exchange request. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.Status | String | The status of the reserved-node exchange request. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.RequestTime | String | The date and time the reserved-node exchange was requested. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeId | String | The identifier of the source reserved node. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeType | String | The source reserved-node type. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeCount | Number | The source reserved-node count in the cluster. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.TargetReservedNodeOfferingId | String | The identifier of the target reserved node offering. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.TargetReservedNodeType | String | The node type of the target reserved node. | 
-| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.TargetReservedNodeCount | Number | The count of target reserved nodes in the cluster. | 
-| AWS.Redshift.Clusters.CustomDomainName | String | The custom domain name associated with the cluster. | 
-| AWS.Redshift.Clusters.CustomDomainCertificateArn | String | The certificate Amazon Resource Name \(ARN\) for the custom domain name. | 
-| AWS.Redshift.Clusters.CustomDomainCertificateExpiryDate | String | The expiration date for the certificate associated with the custom domain name. | 
-| AWS.Redshift.Clusters.MasterPasswordSecretArn | String | The Amazon Resource Name \(ARN\) for the cluster’s admin user credentials secret. | 
-| AWS.Redshift.Clusters.MasterPasswordSecretKmsKeyId | String | The ID of the Key Management Service \(KMS\) key used to encrypt and store the cluster’s admin credentials secret. | 
-| AWS.Redshift.Clusters.IpAddressType | String | The IP address type for the cluster. | 
-| AWS.Redshift.Clusters.MultiAZ | Boolean | Whether the cluster is deployed in two Availability Zones. | 
-| AWS.Redshift.Clusters.MultiAZSecondary.AvailabilityZone | String | The name of the Availability Zone in which the secondary compute unit of the cluster is located. | 
-| AWS.Redshift.Clusters.MultiAZSecondary.ClusterNodes | String | The nodes in the secondary compute unit. | 
-| AWS.Redshift.Clusters.LakehouseRegistrationStatus | String | The status of the lakehouse registration for the cluster. Indicates whether the cluster is successfully registered with Amazon Redshift federated permissions. | 
-| AWS.Redshift.Clusters.CatalogArn | String | The Amazon Resource Name \(ARN\) of the Glue data catalog associated with the cluster enabled with Amazon Redshift federated permissions. | 
-| AWS.Redshift.Clusters.ExtraComputeForAutomaticOptimization | String | Whether the cluster allocates additional compute resources to run automatic optimization operations. | 
+| AWS.Redshift.Clusters.ClusterIdentifier | String | The unique identifier of the cluster. |
+| AWS.Redshift.Clusters.NodeType | String | The node type for the nodes in the cluster. |
+| AWS.Redshift.Clusters.ClusterStatus | String | The current state of the cluster. |
+| AWS.Redshift.Clusters.ClusterAvailabilityStatus | String | The availability status of the cluster for queries. Possible values are the following: Available, Unavailable, Maintenance, Modifying, Failed. |
+| AWS.Redshift.Clusters.ModifyStatus | String | The status of a cluster modification. |
+| AWS.Redshift.Clusters.MasterUsername | String | The master user name for the cluster. This name is used to connect to the database that is hosted on the cluster. |
+| AWS.Redshift.Clusters.DBName | String | The name of the initial database that was created when the cluster was created. |
+| AWS.Redshift.Clusters.Endpoint.Address | String | The DNS address of the cluster. |
+| AWS.Redshift.Clusters.Endpoint.Port | Number | The port that the database engine is listening on. |
+| AWS.Redshift.Clusters.Endpoint.VpcEndpoints | Unknown | The connection endpoint description. |
+| AWS.Redshift.Clusters.ClusterCreateTime | String | The date and time that the cluster was created. |
+| AWS.Redshift.Clusters.AutomatedSnapshotRetentionPeriod | Number | The number of days that automatic cluster snapshots are retained. |
+| AWS.Redshift.Clusters.ManualSnapshotRetentionPeriod | Number | The number of days to retain a manual snapshot. |
+| AWS.Redshift.Clusters.ClusterSecurityGroups.ClusterSecurityGroupName | String | The name of a cluster security group. |
+| AWS.Redshift.Clusters.ClusterSecurityGroups.Status | String | The status of the cluster security group. |
+| AWS.Redshift.Clusters.VpcSecurityGroups.VpcSecurityGroupId | String | The identifier of the VPC security group. |
+| AWS.Redshift.Clusters.VpcSecurityGroups.Status | String | The status of the VPC security group. |
+| AWS.Redshift.Clusters.ClusterParameterGroups.ParameterGroupName | String | The name of the parameter group. |
+| AWS.Redshift.Clusters.ClusterParameterGroups.ParameterApplyStatus | String | The status of parameter updates. |
+| AWS.Redshift.Clusters.ClusterParameterGroups.ClusterParameterStatusList | Unknown | A comma-separated list of parameter statuses. |
+| AWS.Redshift.Clusters.ClusterSubnetGroupName | String | The name of the subnet group that is associated with the cluster. |
+| AWS.Redshift.Clusters.VpcId | String | The identifier of the VPC the cluster is in, if the cluster is in a VPC. |
+| AWS.Redshift.Clusters.AvailabilityZone | String | The name of the Availability Zone in which the cluster is located. |
+| AWS.Redshift.Clusters.PreferredMaintenanceWindow | String | The weekly time range \(in UTC\) during which system maintenance can occur. |
+| AWS.Redshift.Clusters.PendingModifiedValues.MasterUserPassword | String | The pending or in-progress change of the master user password for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.NodeType | String | The pending or in-progress node type for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.NumberOfNodes | Number | The pending or in-progress number of nodes for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.ClusterType | String | The pending or in-progress cluster type for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.ClusterVersion | String | The pending or in-progress cluster version for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.AutomatedSnapshotRetentionPeriod | Number | The pending or in-progress change of the automated snapshot retention period for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.ClusterIdentifier | String | The pending or in-progress change of the new identifier for the cluster. |
+| AWS.Redshift.Clusters.PendingModifiedValues.PubliclyAccessible | Boolean | The pending or in-progress change of the ability to connect to the cluster from a public network. |
+| AWS.Redshift.Clusters.PendingModifiedValues.EnhancedVpcRouting | Boolean | An option that specifies whether to create the cluster with enhanced VPC routing enabled. |
+| AWS.Redshift.Clusters.PendingModifiedValues.MaintenanceTrackName | String | The name of the maintenance track that the cluster will change to during the next maintenance window. |
+| AWS.Redshift.Clusters.PendingModifiedValues.EncryptionType | String | The encryption type for a cluster. |
+| AWS.Redshift.Clusters.ClusterVersion | String | The version ID of the Amazon Redshift engine that is running on the cluster. |
+| AWS.Redshift.Clusters.AllowVersionUpgrade | Boolean | Whether major version upgrades will be applied automatically to the cluster during the maintenance window. |
+| AWS.Redshift.Clusters.NumberOfNodes | Number | The number of compute nodes in the cluster. |
+| AWS.Redshift.Clusters.PubliclyAccessible | Boolean | Whether the cluster can be accessed from a public network. |
+| AWS.Redshift.Clusters.Encrypted | Boolean | Whether the cluster is encrypted. |
+| AWS.Redshift.Clusters.RestoreStatus.Status | String | The status of the restore action. |
+| AWS.Redshift.Clusters.RestoreStatus.CurrentRestoreRateInMegaBytesPerSecond | Number | The number of megabytes per second being transferred from the backup storage. |
+| AWS.Redshift.Clusters.RestoreStatus.SnapshotSizeInMegaBytes | Number | The size of the set of snapshot data that was used to restore the cluster. |
+| AWS.Redshift.Clusters.RestoreStatus.ProgressInMegaBytes | Number | The number of megabytes that have been transferred from snapshot storage. |
+| AWS.Redshift.Clusters.RestoreStatus.ElapsedTimeInSeconds | Number | The amount of time an in-progress restore has been running, or the amount of time it took a completed restore to finish. |
+| AWS.Redshift.Clusters.RestoreStatus.EstimatedTimeToCompletionInSeconds | Number | The estimate of the time remaining before the restore will complete. |
+| AWS.Redshift.Clusters.DataTransferProgress.Status | String | The cluster status. |
+| AWS.Redshift.Clusters.DataTransferProgress.CurrentRateInMegaBytesPerSecond | Number | The data transfer rate in megabytes per second. |
+| AWS.Redshift.Clusters.DataTransferProgress.TotalDataInMegaBytes | Number | The total amount of data to be transfered in megabytes. |
+| AWS.Redshift.Clusters.DataTransferProgress.DataTransferredInMegaBytes | Number | The total amount of data that has been transfered in MB’s. |
+| AWS.Redshift.Clusters.DataTransferProgress.EstimatedTimeToCompletionInSeconds | Number | The estimated number of seconds remaining to complete the transfer. |
+| AWS.Redshift.Clusters.DataTransferProgress.ElapsedTimeInSeconds | Number | The number of seconds that have elapsed during the data transfer. |
+| AWS.Redshift.Clusters.HsmStatus.HsmClientCertificateIdentifier | String | The name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM. |
+| AWS.Redshift.Clusters.HsmStatus.HsmConfigurationIdentifier | String | The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM. |
+| AWS.Redshift.Clusters.HsmStatus.Status | String | Whether the Amazon Redshift cluster has finished applying any HSM settings changes specified in a modify cluster command. |
+| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.DestinationRegion | String | The destination region that snapshots are automatically copied to when cross-region snapshot copy is enabled. |
+| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.RetentionPeriod | Number | The number of days that automated snapshots are retained in the destination region after they are copied from a source region. |
+| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.ManualSnapshotRetentionPeriod | Number | The number of days that automated snapshots are retained in the destination region after they are copied from a source region. If the value is -1, the manual snapshot is retained indefinitely. |
+| AWS.Redshift.Clusters.ClusterSnapshotCopyStatus.SnapshotCopyGrantName | String | The name of the snapshot copy grant. |
+| AWS.Redshift.Clusters.ClusterPublicKey | String | The public key for the cluster. |
+| AWS.Redshift.Clusters.ClusterNodes.NodeRole | String | Whether the node is a leader node or a compute node. |
+| AWS.Redshift.Clusters.ClusterNodes.PrivateIPAddress | String | The private IP address of a node within a cluster. |
+| AWS.Redshift.Clusters.ClusterNodes.PublicIPAddress | String | The public IP address of a node within a cluster. |
+| AWS.Redshift.Clusters.ElasticIpStatus.ElasticIp | String | The elastic IP \(EIP\) address for the cluster. |
+| AWS.Redshift.Clusters.ElasticIpStatus.Status | String | The status of the elastic IP \(EIP\) address. |
+| AWS.Redshift.Clusters.ClusterRevisionNumber | String | The specific revision number of the database in the cluster. |
+| AWS.Redshift.Clusters.Tags.Key | String | The key, or name, for the resource tag. |
+| AWS.Redshift.Clusters.Tags.Value | String | The value for the resource tag. |
+| AWS.Redshift.Clusters.KmsKeyId | String | The Key Management Service \(KMS\) key ID of the encryption key used to encrypt data in the cluster. |
+| AWS.Redshift.Clusters.EnhancedVpcRouting | Boolean | Whether to create the cluster with enhanced VPC routing enabled. |
+| AWS.Redshift.Clusters.IamRoles.IamRoleArn | String | The Amazon Resource Name \(ARN\) of the IAM role. |
+| AWS.Redshift.Clusters.IamRoles.ApplyStatus | String | The status of the IAM role’s association with an Amazon Redshift cluster. |
+| AWS.Redshift.Clusters.PendingActions | Unknown | The cluster operations that are waiting to be started. |
+| AWS.Redshift.Clusters.MaintenanceTrackName | String | The name of the maintenance track for the cluster. |
+| AWS.Redshift.Clusters.ElasticResizeNumberOfNodeOptions | String | The number of nodes that you can resize the cluster to with the elastic resize method. |
+| AWS.Redshift.Clusters.DeferredMaintenanceWindows.DeferMaintenanceIdentifier | String | A unique identifier for the maintenance window. |
+| AWS.Redshift.Clusters.DeferredMaintenanceWindows.DeferMaintenanceStartTime | String | A timestamp for the beginning of the time period when we defer maintenance. |
+| AWS.Redshift.Clusters.DeferredMaintenanceWindows.DeferMaintenanceEndTime | String | A timestamp for the end of the time period when we defer maintenance. |
+| AWS.Redshift.Clusters.SnapshotScheduleIdentifier | String | A unique identifier for the cluster snapshot schedule. |
+| AWS.Redshift.Clusters.SnapshotScheduleState | String | The current state of the cluster snapshot schedule. |
+| AWS.Redshift.Clusters.ExpectedNextSnapshotScheduleTime | String | The current state of the cluster snapshot schedule. |
+| AWS.Redshift.Clusters.ExpectedNextSnapshotScheduleTimeStatus | String | The status of next expected snapshot for clusters having a valid snapshot schedule and backups enabled. |
+| AWS.Redshift.Clusters.NextMaintenanceWindowStartTime | String | The date and time in UTC when system maintenance can begin. |
+| AWS.Redshift.Clusters.ResizeInfo.ResizeType | String | Returns the value ClassicResize. |
+| AWS.Redshift.Clusters.ResizeInfo.AllowCancelResize | Boolean | Whether the resize operation can be cancelled. |
+| AWS.Redshift.Clusters.AvailabilityZoneRelocationStatus | String | The status of the Availability Zone relocation operation. |
+| AWS.Redshift.Clusters.ClusterNamespaceArn | String | The namespace Amazon Resource Name \(ARN\) of the cluster. |
+| AWS.Redshift.Clusters.TotalStorageCapacityInMegaBytes | Number | The total storage capacity of the cluster in megabytes. |
+| AWS.Redshift.Clusters.DefaultIamRoleArn | String | The Amazon Resource Name \(ARN\) for the IAM role set as default for the cluster. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.ReservedNodeExchangeRequestId | String | The identifier of the reserved-node exchange request. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.Status | String | The status of the reserved-node exchange request. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.RequestTime | String | The date and time the reserved-node exchange was requested. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeId | String | The identifier of the source reserved node. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeType | String | The source reserved-node type. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.SourceReservedNodeCount | Number | The source reserved-node count in the cluster. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.TargetReservedNodeOfferingId | String | The identifier of the target reserved node offering. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.TargetReservedNodeType | String | The node type of the target reserved node. |
+| AWS.Redshift.Clusters.ReservedNodeExchangeStatus.TargetReservedNodeCount | Number | The count of target reserved nodes in the cluster. |
+| AWS.Redshift.Clusters.CustomDomainName | String | The custom domain name associated with the cluster. |
+| AWS.Redshift.Clusters.CustomDomainCertificateArn | String | The certificate Amazon Resource Name \(ARN\) for the custom domain name. |
+| AWS.Redshift.Clusters.CustomDomainCertificateExpiryDate | String | The expiration date for the certificate associated with the custom domain name. |
+| AWS.Redshift.Clusters.MasterPasswordSecretArn | String | The Amazon Resource Name \(ARN\) for the cluster’s admin user credentials secret. |
+| AWS.Redshift.Clusters.MasterPasswordSecretKmsKeyId | String | The ID of the Key Management Service \(KMS\) key used to encrypt and store the cluster’s admin credentials secret. |
+| AWS.Redshift.Clusters.IpAddressType | String | The IP address type for the cluster. |
+| AWS.Redshift.Clusters.MultiAZ | Boolean | Whether the cluster is deployed in two Availability Zones. |
+| AWS.Redshift.Clusters.MultiAZSecondary.AvailabilityZone | String | The name of the Availability Zone in which the secondary compute unit of the cluster is located. |
+| AWS.Redshift.Clusters.MultiAZSecondary.ClusterNodes | String | The nodes in the secondary compute unit. |
+| AWS.Redshift.Clusters.LakehouseRegistrationStatus | String | The status of the lakehouse registration for the cluster. Indicates whether the cluster is successfully registered with Amazon Redshift federated permissions. |
+| AWS.Redshift.Clusters.CatalogArn | String | The Amazon Resource Name \(ARN\) of the Glue data catalog associated with the cluster enabled with Amazon Redshift federated permissions. |
+| AWS.Redshift.Clusters.ExtraComputeForAutomaticOptimization | String | Whether the cluster allocates additional compute resources to run automatic optimization operations. |
 
 ### aws-rds-db-instances-describe
 
@@ -5151,162 +5151,162 @@ Returns information about provisioned RDS instances. Requires the rds:DescribeDB
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| db_instance_identifier | The user-supplied instance identifier or the Amazon Resource Name (ARN) of the DB instance. If this parameter is specified, information from only the specific DB instance is returned. This parameter isn't case-sensitive. | Optional | 
-| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional | 
-| limit | The maximum number of records to include in the response. If more records exist than the specified limit value, a pagination token is included in the response so that the remaining results can be retrieved. The minimum value is 20, the maximum is 100. | Optional | 
-| next_token | An optional pagination token provided by a previous request. If this parameter is specified, the response includes only records beyond the token, up to the value specified by limit. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| db_instance_identifier | The user-supplied instance identifier or the Amazon Resource Name (ARN) of the DB instance. If this parameter is specified, information from only the specific DB instance is returned. This parameter isn't case-sensitive. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
+| limit | The maximum number of records to include in the response. If more records exist than the specified limit value, a pagination token is included in the response so that the remaining results can be retrieved. The minimum value is 20, the maximum is 100. | Optional |
+| next_token | An optional pagination token provided by a previous request. If this parameter is specified, the response includes only records beyond the token, up to the value specified by limit. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.RDS.DBInstancesNextToken | String | An optional pagination token provided by a previous request. | 
-| AWS.RDS.DBInstances.DBInstanceIdentifier | String | The user-supplied database identifier. This identifier is the unique key that identifies a DB instance. | 
-| AWS.RDS.DBInstances.DBInstanceClass | String | The name of the compute and memory capacity class of the DB instance. | 
-| AWS.RDS.DBInstances.Engine | String | The database engine used for this DB instance. | 
-| AWS.RDS.DBInstances.DBInstanceStatus | String | The current state of this database. | 
-| AWS.RDS.DBInstances.MasterUsername | String | The master username for the DB instance. | 
-| AWS.RDS.DBInstances.DBName | String | The initial database name that you provided \(if required\) when you created the DB instance. | 
-| AWS.RDS.DBInstances.Endpoint.Address | String | The DNS address of the DB instance. | 
-| AWS.RDS.DBInstances.Endpoint.Port | Number | The port that the database engine is listening on. | 
-| AWS.RDS.DBInstances.Endpoint.HostedZoneId | String | The ID that Amazon Route 53 assigns when you create a hosted zone. | 
-| AWS.RDS.DBInstances.AllocatedStorage | Number | The amount of storage in GiB allocated for the DB instance. | 
-| AWS.RDS.DBInstances.InstanceCreateTime | String | The date and time the DB instance was created. | 
-| AWS.RDS.DBInstances.PreferredBackupWindow | String | The daily time range during which automated backups are created if automated backups are enabled, as determined by the BackupRetentionPeriod. | 
-| AWS.RDS.DBInstances.BackupRetentionPeriod | Number | The number of days automatic DB snapshots are retained. | 
-| AWS.RDS.DBInstances.DBSecurityGroups.DBSecurityGroupName | String | The name of the DB security group. | 
-| AWS.RDS.DBInstances.DBSecurityGroups.Status | String | The status of the DB security group. | 
-| AWS.RDS.DBInstances.VpcSecurityGroups.VpcSecurityGroupId | String | The name of the VPC security group. | 
-| AWS.RDS.DBInstances.VpcSecurityGroups.Status | String | The membership status of the VPC security group. | 
-| AWS.RDS.DBInstances.DBParameterGroups.DBParameterGroupName | String | The name of the DB parameter group. | 
-| AWS.RDS.DBInstances.DBParameterGroups.ParameterApplyStatus | String | The status of parameter updates. | 
-| AWS.RDS.DBInstances.AvailabilityZone | String | The name of the Availability Zone where the DB instance is located. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupName | String | The name of the DB subnet group. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupDescription | String | The description of the DB subnet group. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.VpcId | String | The VpcId of the DB subnet group. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.SubnetGroupStatus | String | The status of the DB subnet group. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.Subnets | Unknown | A list of Subnet elements. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupArn | String | The Amazon Resource Name \(ARN\) for the DB subnet group. | 
-| AWS.RDS.DBInstances.DBSubnetGroup.SupportedNetworkTypes | String | The network type of the DB subnet group. | 
-| AWS.RDS.DBInstances.PreferredMaintenanceWindow | String | The weekly time range during which system maintenance can occur, in UTC. | 
-| AWS.RDS.DBInstances.UpgradeRolloutOrder | String | The order in which the instances are upgraded. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceClass | String | The name of the compute and memory capacity class for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.AllocatedStorage | Number | The allocated storage size for the DB instance specified in gibibytes \(GiB\). | 
-| AWS.RDS.DBInstances.PendingModifiedValues.Port | Number | The port for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.BackupRetentionPeriod | Number | The number of days automated backups are retained. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.MultiAZ | String | Whether the Single-AZ DB instance will change to a Multi-AZ deployment. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.EngineVersion | String | The database engine version. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.LicenseModel | String | The license model for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.Iops | Number | The Provisioned IOPS value for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.StorageThroughput | Number | The storage throughput of the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceIdentifier | String | The database identifier for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.StorageType | String | The storage type of the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.CACertificateIdentifier | String | The identifier of the CA certificate for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.DBSubnetGroupName | String | The DB subnet group for the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.PendingCloudwatchLogsExports | Unknown | A list of log types whose configuration is still pending, they are in the process of being activated or deactivated. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.ProcessorFeatures | Unknown | The number of CPU cores and the number of threads per core for the DB instance class of the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.AutomationMode | String | The automation mode of the RDS Custom DB instance: full or all-paused. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.ResumeFullAutomationModeTime | String | The number of minutes to pause the automation. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.MultiTenant | Boolean | Whether the DB instance will change to the multi-tenant configuration \(TRUE\) or the single-tenant configuration \(FALSE\). | 
-| AWS.RDS.DBInstances.PendingModifiedValues.IAMDatabaseAuthenticationEnabled | Boolean | Whether mapping of Amazon Web Services Identity and Access Management \(IAM\) accounts to database accounts is enabled. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.DedicatedLogVolume | Boolean | Whether the DB instance has a dedicated log volume \(DLV\) enabled. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.Engine | String | The database engine of the DB instance. | 
-| AWS.RDS.DBInstances.PendingModifiedValues.AdditionalStorageVolumes | Unknown | The additional storage volume modifications that are pending for the DB instance. | 
-| AWS.RDS.DBInstances.LatestRestorableTime | String | The latest time to which a database in this DB instance can be restored with point-in-time restore. | 
-| AWS.RDS.DBInstances.MultiAZ | Boolean | Whether the DB instance is a Multi-AZ deployment. This setting doesn’t apply to RDS Custom DB instances. | 
-| AWS.RDS.DBInstances.EngineVersion | String | The version of the database engine. | 
-| AWS.RDS.DBInstances.AutoMinorVersionUpgrade | Boolean | Whether minor version patches are applied automatically. | 
-| AWS.RDS.DBInstances.ReadReplicaSourceDBInstanceIdentifier | String | The identifier of the source DB instance if this DB instance is a read replica. | 
-| AWS.RDS.DBInstances.ReadReplicaDBInstanceIdentifiers | String | The identifiers of the read replicas associated with this DB instance. | 
-| AWS.RDS.DBInstances.ReadReplicaDBClusterIdentifiers | String | The identifiers of Aurora DB clusters to which the RDS DB instance is replicated as a read replica. | 
-| AWS.RDS.DBInstances.ReplicaMode | String | The open mode of a Db2 or an Oracle read replica. | 
-| AWS.RDS.DBInstances.LicenseModel | String | The license model information for this DB instance. | 
-| AWS.RDS.DBInstances.Iops | Number | The Provisioned IOPS \(I/O operations per second\) value for the DB instance. | 
-| AWS.RDS.DBInstances.StorageThroughput | Number | The storage throughput for the DB instance. | 
-| AWS.RDS.DBInstances.OptionGroupMemberships.OptionGroupName | String | The name of the option group that the instance belongs to. | 
-| AWS.RDS.DBInstances.OptionGroupMemberships.Status | String | The status of the DB instance’s option group membership. | 
-| AWS.RDS.DBInstances.CharacterSetName | String | Specifies the name of the character set that this instance is associated with. | 
-| AWS.RDS.DBInstances.NcharCharacterSetName | String | The name of the NCHAR character set for the Oracle DB instance. | 
-| AWS.RDS.DBInstances.SecondaryAvailabilityZone | String | Specifies the name of the secondary Availability Zone for a DB instance with multi-AZ support. | 
-| AWS.RDS.DBInstances.PubliclyAccessible | Boolean | Whether the DB instance is publicly accessible. | 
-| AWS.RDS.DBInstances.StatusInfos | Unknown | The status of a read replica. | 
-| AWS.RDS.DBInstances.StorageType | String | The storage type associated with the DB instance. | 
-| AWS.RDS.DBInstances.StorageEncryptionType | String | The type of encryption used to protect data at rest in the DB instance. | 
-| AWS.RDS.DBInstances.TdeCredentialArn | String | The ARN from the key store with which the instance is associated for TDE encryption. | 
-| AWS.RDS.DBInstances.DbInstancePort | Number | The port that the DB instance listens on. | 
-| AWS.RDS.DBInstances.DBClusterIdentifier | String | The name of the DB cluster that the DB instance is a member of \(if it is a member of a DB cluster\). | 
-| AWS.RDS.DBInstances.StorageEncrypted | Boolean | Whether the DB instance is encrypted. | 
-| AWS.RDS.DBInstances.KmsKeyId | String | If StorageEncrypted is enabled, the Amazon Web Services KMS key identifier for the encrypted DB instance. | 
-| AWS.RDS.DBInstances.DbiResourceId | String | The Amazon Web Services Region-unique, immutable identifier for the DB instance. | 
-| AWS.RDS.DBInstances.CACertificateIdentifier | String | The identifier of the CA certificate for this DB instance. | 
-| AWS.RDS.DBInstances.DomainMemberships.Domain | String | The identifier of the Active Directory Domain. | 
-| AWS.RDS.DBInstances.DomainMemberships.Status | String | The status of the Active Directory Domain membership for the DB instance or cluster. | 
-| AWS.RDS.DBInstances.DomainMemberships.FQDN | String | The fully qualified domain name \(FQDN\) of the Active Directory Domain. | 
-| AWS.RDS.DBInstances.DomainMemberships.IAMRoleName | String | The name of the IAM role used when making API calls to the Directory Service. | 
-| AWS.RDS.DBInstances.DomainMemberships.OU | String | The Active Directory organizational unit for the DB instance or cluster. | 
-| AWS.RDS.DBInstances.DomainMemberships.AuthSecretArn | String | The ARN for the Secrets Manager secret with the credentials for the user that’s a member of the domain. | 
-| AWS.RDS.DBInstances.DomainMemberships.DnsIps | String | The IPv4 DNS IP addresses of the primary and secondary Active Directory domain controllers. | 
-| AWS.RDS.DBInstances.CopyTagsToSnapshot | Boolean | Whether tags are copied from the DB instance to snapshots of the DB instance. | 
-| AWS.RDS.DBInstances.MonitoringInterval | Number | The interval, in seconds, for collecting Enhanced Monitoring metrics. | 
-| AWS.RDS.DBInstances.EnhancedMonitoringResourceArn | String | The Amazon Resource Name \(ARN\) of the Amazon CloudWatch Logs log stream that receives the Enhanced Monitoring metrics data for the DB instance. | 
-| AWS.RDS.DBInstances.MonitoringRoleArn | String | The ARN for the IAM role that permits RDS to send Enhanced Monitoring metrics to Amazon CloudWatch Logs. | 
-| AWS.RDS.DBInstances.PromotionTier | Number | The order of priority in which an Aurora Replica is promoted to the primary instance after a failure of the existing primary instance. | 
-| AWS.RDS.DBInstances.DBInstanceArn | String | The Amazon Resource Name \(ARN\) for the DB instance. | 
-| AWS.RDS.DBInstances.Timezone | String | The time zone of the DB instance. | 
-| AWS.RDS.DBInstances.IAMDatabaseAuthenticationEnabled | Boolean | Whether mapping of Amazon Web Services Identity and Access Management \(IAM\) accounts to database accounts is enabled for the DB instance. | 
-| AWS.RDS.DBInstances.DatabaseInsightsMode | String | The mode of Database Insights that is enabled for the instance. | 
-| AWS.RDS.DBInstances.PerformanceInsightsEnabled | Boolean | Whether Performance Insights is enabled for the DB instance. | 
-| AWS.RDS.DBInstances.PerformanceInsightsKMSKeyId | String | The Amazon Web Services KMS key identifier for encryption of Performance Insights data. | 
-| AWS.RDS.DBInstances.PerformanceInsightsRetentionPeriod | Number | The number of days to retain Performance Insights data. | 
-| AWS.RDS.DBInstances.EnabledCloudwatchLogsExports | Unknown | A list of log types that this DB instance is configured to export to CloudWatch Logs. | 
-| AWS.RDS.DBInstances.ProcessorFeatures | Unknown | The number of CPU cores and the number of threads per core for the DB instance class of the DB instance. | 
-| AWS.RDS.DBInstances.DeletionProtection | Boolean | Whether the DB instance has deletion protection enabled. | 
-| AWS.RDS.DBInstances.AssociatedRoles.RoleArn | String | The Amazon Resource Name \(ARN\) of the role. | 
-| AWS.RDS.DBInstances.AssociatedRoles.FeatureName | String | The name of the feature for the IAM role. | 
-| AWS.RDS.DBInstances.AssociatedRoles.Status | String | The status of the IAM role association. | 
-| AWS.RDS.DBInstances.ListenerEndpoint.Address | String | The DNS address of the DB instance listener endpoint. | 
-| AWS.RDS.DBInstances.ListenerEndpoint.Port | Number | The port that the database engine is listening on for the listener endpoint. | 
-| AWS.RDS.DBInstances.ListenerEndpoint.HostedZoneId | String | The ID of the Amazon Route 53 hosted zone that contains the listener endpoint. | 
-| AWS.RDS.DBInstances.MaxAllocatedStorage | Number | The upper limit to which Amazon RDS can automatically scale the storage of the DB instance. | 
-| AWS.RDS.DBInstances.TagList.Key | String | The key of a tag. | 
-| AWS.RDS.DBInstances.TagList.Value | String | The value of a tag. | 
-| AWS.RDS.DBInstances.AutomationMode | String | The automation mode of the DB instance. | 
-| AWS.RDS.DBInstances.ResumeFullAutomationModeTime | String | The time when the DB instance will resume full automation mode. | 
-| AWS.RDS.DBInstances.CustomerOwnedIpEnabled | Boolean | Whether the DB instance has a customer-owned IP address. | 
-| AWS.RDS.DBInstances.NetworkType | String | The network type of the DB instance. | 
-| AWS.RDS.DBInstances.ActivityStreamStatus | String | The status of the activity stream. | 
-| AWS.RDS.DBInstances.ActivityStreamKmsKeyId | String | The AWS KMS key identifier for encryption of the activity stream. | 
-| AWS.RDS.DBInstances.ActivityStreamKinesisStreamName | String | The name of the Amazon Kinesis data stream used for the activity stream. | 
-| AWS.RDS.DBInstances.ActivityStreamMode | String | The mode of the activity stream. | 
-| AWS.RDS.DBInstances.ActivityStreamEngineNativeAuditFieldsIncluded | Boolean | Whether the native audit fields are included in the activity stream. | 
-| AWS.RDS.DBInstances.AwsBackupRecoveryPointArn | String | The Amazon Resource Name \(ARN\) of the recovery point in AWS Backup. | 
-| AWS.RDS.DBInstances.DBInstanceAutomatedBackupsReplications.DBInstanceAutomatedBackupsArn | String | The Amazon Resource Name \(ARN\) of the replicated automated backups. | 
-| AWS.RDS.DBInstances.BackupTarget | String | The backup target of the DB instance. | 
-| AWS.RDS.DBInstances.AutomaticRestartTime | String | The time the DB instance is scheduled for automatic restart. | 
-| AWS.RDS.DBInstances.CustomIamInstanceProfile | String | The instance profile associated with the DB instance. | 
-| AWS.RDS.DBInstances.ActivityStreamPolicyStatus | String | The status of the policy used for the activity stream. | 
-| AWS.RDS.DBInstances.CertificateDetails.CAIdentifier | String | The CA identifier of the certificate. | 
-| AWS.RDS.DBInstances.CertificateDetails.ValidTill | String | The expiration date of the certificate. | 
-| AWS.RDS.DBInstances.DBSystemId | String | The DB system identifier of the DB instance. | 
-| AWS.RDS.DBInstances.MasterUserSecret.SecretArn | String | The Amazon Resource Name \(ARN\) of the secret. | 
-| AWS.RDS.DBInstances.MasterUserSecret.SecretStatus | String | The status of the secret. | 
-| AWS.RDS.DBInstances.MasterUserSecret.KmsKeyId | String | The AWS KMS key identifier that is used to encrypt the secret. | 
-| AWS.RDS.DBInstances.ReadReplicaSourceDBClusterIdentifier | String | The identifier of the source DB cluster if this DB instance is a read replica. | 
-| AWS.RDS.DBInstances.PercentProgress | String | The percentage of the estimated data that has been transferred. | 
-| AWS.RDS.DBInstances.MultiTenant | Boolean | Whether the DB instance is a multi-tenant instance. | 
-| AWS.RDS.DBInstances.DedicatedLogVolume | Boolean | Whether the DB instance has a dedicated log volume. | 
-| AWS.RDS.DBInstances.IsStorageConfigUpgradeAvailable | Boolean | Whether a storage configuration upgrade is available for the DB instance. | 
-| AWS.RDS.DBInstances.EngineLifecycleSupport | String | The life cycle of the DB instance engine. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.VolumeName | String | The name of the storage volume. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageVolumeStatus | String | The status of the storage volume. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.AllocatedStorage | Number | The allocated storage for the storage volume. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.IOPS | Number | The IOPS for the storage volume. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.MaxAllocatedStorage | Number | The maximum allocated storage for the storage volume. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageThroughput | Number | The storage throughput for the storage volume. | 
-| AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageType | String | The storage type for the storage volume. | 
-| AWS.RDS.DBInstances.StorageVolumeStatus | String | The detailed status information for storage volumes associated with the DB instance. | 
+| AWS.RDS.DBInstancesNextToken | String | An optional pagination token provided by a previous request. |
+| AWS.RDS.DBInstances.DBInstanceIdentifier | String | The user-supplied database identifier. This identifier is the unique key that identifies a DB instance. |
+| AWS.RDS.DBInstances.DBInstanceClass | String | The name of the compute and memory capacity class of the DB instance. |
+| AWS.RDS.DBInstances.Engine | String | The database engine used for this DB instance. |
+| AWS.RDS.DBInstances.DBInstanceStatus | String | The current state of this database. |
+| AWS.RDS.DBInstances.MasterUsername | String | The master username for the DB instance. |
+| AWS.RDS.DBInstances.DBName | String | The initial database name that you provided \(if required\) when you created the DB instance. |
+| AWS.RDS.DBInstances.Endpoint.Address | String | The DNS address of the DB instance. |
+| AWS.RDS.DBInstances.Endpoint.Port | Number | The port that the database engine is listening on. |
+| AWS.RDS.DBInstances.Endpoint.HostedZoneId | String | The ID that Amazon Route 53 assigns when you create a hosted zone. |
+| AWS.RDS.DBInstances.AllocatedStorage | Number | The amount of storage in GiB allocated for the DB instance. |
+| AWS.RDS.DBInstances.InstanceCreateTime | String | The date and time the DB instance was created. |
+| AWS.RDS.DBInstances.PreferredBackupWindow | String | The daily time range during which automated backups are created if automated backups are enabled, as determined by the BackupRetentionPeriod. |
+| AWS.RDS.DBInstances.BackupRetentionPeriod | Number | The number of days automatic DB snapshots are retained. |
+| AWS.RDS.DBInstances.DBSecurityGroups.DBSecurityGroupName | String | The name of the DB security group. |
+| AWS.RDS.DBInstances.DBSecurityGroups.Status | String | The status of the DB security group. |
+| AWS.RDS.DBInstances.VpcSecurityGroups.VpcSecurityGroupId | String | The name of the VPC security group. |
+| AWS.RDS.DBInstances.VpcSecurityGroups.Status | String | The membership status of the VPC security group. |
+| AWS.RDS.DBInstances.DBParameterGroups.DBParameterGroupName | String | The name of the DB parameter group. |
+| AWS.RDS.DBInstances.DBParameterGroups.ParameterApplyStatus | String | The status of parameter updates. |
+| AWS.RDS.DBInstances.AvailabilityZone | String | The name of the Availability Zone where the DB instance is located. |
+| AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupName | String | The name of the DB subnet group. |
+| AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupDescription | String | The description of the DB subnet group. |
+| AWS.RDS.DBInstances.DBSubnetGroup.VpcId | String | The VpcId of the DB subnet group. |
+| AWS.RDS.DBInstances.DBSubnetGroup.SubnetGroupStatus | String | The status of the DB subnet group. |
+| AWS.RDS.DBInstances.DBSubnetGroup.Subnets | Unknown | A list of Subnet elements. |
+| AWS.RDS.DBInstances.DBSubnetGroup.DBSubnetGroupArn | String | The Amazon Resource Name \(ARN\) for the DB subnet group. |
+| AWS.RDS.DBInstances.DBSubnetGroup.SupportedNetworkTypes | String | The network type of the DB subnet group. |
+| AWS.RDS.DBInstances.PreferredMaintenanceWindow | String | The weekly time range during which system maintenance can occur, in UTC. |
+| AWS.RDS.DBInstances.UpgradeRolloutOrder | String | The order in which the instances are upgraded. |
+| AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceClass | String | The name of the compute and memory capacity class for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.AllocatedStorage | Number | The allocated storage size for the DB instance specified in gibibytes \(GiB\). |
+| AWS.RDS.DBInstances.PendingModifiedValues.Port | Number | The port for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.BackupRetentionPeriod | Number | The number of days automated backups are retained. |
+| AWS.RDS.DBInstances.PendingModifiedValues.MultiAZ | String | Whether the Single-AZ DB instance will change to a Multi-AZ deployment. |
+| AWS.RDS.DBInstances.PendingModifiedValues.EngineVersion | String | The database engine version. |
+| AWS.RDS.DBInstances.PendingModifiedValues.LicenseModel | String | The license model for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.Iops | Number | The Provisioned IOPS value for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.StorageThroughput | Number | The storage throughput of the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.DBInstanceIdentifier | String | The database identifier for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.StorageType | String | The storage type of the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.CACertificateIdentifier | String | The identifier of the CA certificate for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.DBSubnetGroupName | String | The DB subnet group for the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.PendingCloudwatchLogsExports | Unknown | A list of log types whose configuration is still pending, they are in the process of being activated or deactivated. |
+| AWS.RDS.DBInstances.PendingModifiedValues.ProcessorFeatures | Unknown | The number of CPU cores and the number of threads per core for the DB instance class of the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.AutomationMode | String | The automation mode of the RDS Custom DB instance: full or all-paused. |
+| AWS.RDS.DBInstances.PendingModifiedValues.ResumeFullAutomationModeTime | String | The number of minutes to pause the automation. |
+| AWS.RDS.DBInstances.PendingModifiedValues.MultiTenant | Boolean | Whether the DB instance will change to the multi-tenant configuration \(TRUE\) or the single-tenant configuration \(FALSE\). |
+| AWS.RDS.DBInstances.PendingModifiedValues.IAMDatabaseAuthenticationEnabled | Boolean | Whether mapping of Amazon Web Services Identity and Access Management \(IAM\) accounts to database accounts is enabled. |
+| AWS.RDS.DBInstances.PendingModifiedValues.DedicatedLogVolume | Boolean | Whether the DB instance has a dedicated log volume \(DLV\) enabled. |
+| AWS.RDS.DBInstances.PendingModifiedValues.Engine | String | The database engine of the DB instance. |
+| AWS.RDS.DBInstances.PendingModifiedValues.AdditionalStorageVolumes | Unknown | The additional storage volume modifications that are pending for the DB instance. |
+| AWS.RDS.DBInstances.LatestRestorableTime | String | The latest time to which a database in this DB instance can be restored with point-in-time restore. |
+| AWS.RDS.DBInstances.MultiAZ | Boolean | Whether the DB instance is a Multi-AZ deployment. This setting doesn’t apply to RDS Custom DB instances. |
+| AWS.RDS.DBInstances.EngineVersion | String | The version of the database engine. |
+| AWS.RDS.DBInstances.AutoMinorVersionUpgrade | Boolean | Whether minor version patches are applied automatically. |
+| AWS.RDS.DBInstances.ReadReplicaSourceDBInstanceIdentifier | String | The identifier of the source DB instance if this DB instance is a read replica. |
+| AWS.RDS.DBInstances.ReadReplicaDBInstanceIdentifiers | String | The identifiers of the read replicas associated with this DB instance. |
+| AWS.RDS.DBInstances.ReadReplicaDBClusterIdentifiers | String | The identifiers of Aurora DB clusters to which the RDS DB instance is replicated as a read replica. |
+| AWS.RDS.DBInstances.ReplicaMode | String | The open mode of a Db2 or an Oracle read replica. |
+| AWS.RDS.DBInstances.LicenseModel | String | The license model information for this DB instance. |
+| AWS.RDS.DBInstances.Iops | Number | The Provisioned IOPS \(I/O operations per second\) value for the DB instance. |
+| AWS.RDS.DBInstances.StorageThroughput | Number | The storage throughput for the DB instance. |
+| AWS.RDS.DBInstances.OptionGroupMemberships.OptionGroupName | String | The name of the option group that the instance belongs to. |
+| AWS.RDS.DBInstances.OptionGroupMemberships.Status | String | The status of the DB instance’s option group membership. |
+| AWS.RDS.DBInstances.CharacterSetName | String | Specifies the name of the character set that this instance is associated with. |
+| AWS.RDS.DBInstances.NcharCharacterSetName | String | The name of the NCHAR character set for the Oracle DB instance. |
+| AWS.RDS.DBInstances.SecondaryAvailabilityZone | String | Specifies the name of the secondary Availability Zone for a DB instance with multi-AZ support. |
+| AWS.RDS.DBInstances.PubliclyAccessible | Boolean | Whether the DB instance is publicly accessible. |
+| AWS.RDS.DBInstances.StatusInfos | Unknown | The status of a read replica. |
+| AWS.RDS.DBInstances.StorageType | String | The storage type associated with the DB instance. |
+| AWS.RDS.DBInstances.StorageEncryptionType | String | The type of encryption used to protect data at rest in the DB instance. |
+| AWS.RDS.DBInstances.TdeCredentialArn | String | The ARN from the key store with which the instance is associated for TDE encryption. |
+| AWS.RDS.DBInstances.DbInstancePort | Number | The port that the DB instance listens on. |
+| AWS.RDS.DBInstances.DBClusterIdentifier | String | The name of the DB cluster that the DB instance is a member of \(if it is a member of a DB cluster\). |
+| AWS.RDS.DBInstances.StorageEncrypted | Boolean | Whether the DB instance is encrypted. |
+| AWS.RDS.DBInstances.KmsKeyId | String | If StorageEncrypted is enabled, the Amazon Web Services KMS key identifier for the encrypted DB instance. |
+| AWS.RDS.DBInstances.DbiResourceId | String | The Amazon Web Services Region-unique, immutable identifier for the DB instance. |
+| AWS.RDS.DBInstances.CACertificateIdentifier | String | The identifier of the CA certificate for this DB instance. |
+| AWS.RDS.DBInstances.DomainMemberships.Domain | String | The identifier of the Active Directory Domain. |
+| AWS.RDS.DBInstances.DomainMemberships.Status | String | The status of the Active Directory Domain membership for the DB instance or cluster. |
+| AWS.RDS.DBInstances.DomainMemberships.FQDN | String | The fully qualified domain name \(FQDN\) of the Active Directory Domain. |
+| AWS.RDS.DBInstances.DomainMemberships.IAMRoleName | String | The name of the IAM role used when making API calls to the Directory Service. |
+| AWS.RDS.DBInstances.DomainMemberships.OU | String | The Active Directory organizational unit for the DB instance or cluster. |
+| AWS.RDS.DBInstances.DomainMemberships.AuthSecretArn | String | The ARN for the Secrets Manager secret with the credentials for the user that’s a member of the domain. |
+| AWS.RDS.DBInstances.DomainMemberships.DnsIps | String | The IPv4 DNS IP addresses of the primary and secondary Active Directory domain controllers. |
+| AWS.RDS.DBInstances.CopyTagsToSnapshot | Boolean | Whether tags are copied from the DB instance to snapshots of the DB instance. |
+| AWS.RDS.DBInstances.MonitoringInterval | Number | The interval, in seconds, for collecting Enhanced Monitoring metrics. |
+| AWS.RDS.DBInstances.EnhancedMonitoringResourceArn | String | The Amazon Resource Name \(ARN\) of the Amazon CloudWatch Logs log stream that receives the Enhanced Monitoring metrics data for the DB instance. |
+| AWS.RDS.DBInstances.MonitoringRoleArn | String | The ARN for the IAM role that permits RDS to send Enhanced Monitoring metrics to Amazon CloudWatch Logs. |
+| AWS.RDS.DBInstances.PromotionTier | Number | The order of priority in which an Aurora Replica is promoted to the primary instance after a failure of the existing primary instance. |
+| AWS.RDS.DBInstances.DBInstanceArn | String | The Amazon Resource Name \(ARN\) for the DB instance. |
+| AWS.RDS.DBInstances.Timezone | String | The time zone of the DB instance. |
+| AWS.RDS.DBInstances.IAMDatabaseAuthenticationEnabled | Boolean | Whether mapping of Amazon Web Services Identity and Access Management \(IAM\) accounts to database accounts is enabled for the DB instance. |
+| AWS.RDS.DBInstances.DatabaseInsightsMode | String | The mode of Database Insights that is enabled for the instance. |
+| AWS.RDS.DBInstances.PerformanceInsightsEnabled | Boolean | Whether Performance Insights is enabled for the DB instance. |
+| AWS.RDS.DBInstances.PerformanceInsightsKMSKeyId | String | The Amazon Web Services KMS key identifier for encryption of Performance Insights data. |
+| AWS.RDS.DBInstances.PerformanceInsightsRetentionPeriod | Number | The number of days to retain Performance Insights data. |
+| AWS.RDS.DBInstances.EnabledCloudwatchLogsExports | Unknown | A list of log types that this DB instance is configured to export to CloudWatch Logs. |
+| AWS.RDS.DBInstances.ProcessorFeatures | Unknown | The number of CPU cores and the number of threads per core for the DB instance class of the DB instance. |
+| AWS.RDS.DBInstances.DeletionProtection | Boolean | Whether the DB instance has deletion protection enabled. |
+| AWS.RDS.DBInstances.AssociatedRoles.RoleArn | String | The Amazon Resource Name \(ARN\) of the role. |
+| AWS.RDS.DBInstances.AssociatedRoles.FeatureName | String | The name of the feature for the IAM role. |
+| AWS.RDS.DBInstances.AssociatedRoles.Status | String | The status of the IAM role association. |
+| AWS.RDS.DBInstances.ListenerEndpoint.Address | String | The DNS address of the DB instance listener endpoint. |
+| AWS.RDS.DBInstances.ListenerEndpoint.Port | Number | The port that the database engine is listening on for the listener endpoint. |
+| AWS.RDS.DBInstances.ListenerEndpoint.HostedZoneId | String | The ID of the Amazon Route 53 hosted zone that contains the listener endpoint. |
+| AWS.RDS.DBInstances.MaxAllocatedStorage | Number | The upper limit to which Amazon RDS can automatically scale the storage of the DB instance. |
+| AWS.RDS.DBInstances.TagList.Key | String | The key of a tag. |
+| AWS.RDS.DBInstances.TagList.Value | String | The value of a tag. |
+| AWS.RDS.DBInstances.AutomationMode | String | The automation mode of the DB instance. |
+| AWS.RDS.DBInstances.ResumeFullAutomationModeTime | String | The time when the DB instance will resume full automation mode. |
+| AWS.RDS.DBInstances.CustomerOwnedIpEnabled | Boolean | Whether the DB instance has a customer-owned IP address. |
+| AWS.RDS.DBInstances.NetworkType | String | The network type of the DB instance. |
+| AWS.RDS.DBInstances.ActivityStreamStatus | String | The status of the activity stream. |
+| AWS.RDS.DBInstances.ActivityStreamKmsKeyId | String | The AWS KMS key identifier for encryption of the activity stream. |
+| AWS.RDS.DBInstances.ActivityStreamKinesisStreamName | String | The name of the Amazon Kinesis data stream used for the activity stream. |
+| AWS.RDS.DBInstances.ActivityStreamMode | String | The mode of the activity stream. |
+| AWS.RDS.DBInstances.ActivityStreamEngineNativeAuditFieldsIncluded | Boolean | Whether the native audit fields are included in the activity stream. |
+| AWS.RDS.DBInstances.AwsBackupRecoveryPointArn | String | The Amazon Resource Name \(ARN\) of the recovery point in AWS Backup. |
+| AWS.RDS.DBInstances.DBInstanceAutomatedBackupsReplications.DBInstanceAutomatedBackupsArn | String | The Amazon Resource Name \(ARN\) of the replicated automated backups. |
+| AWS.RDS.DBInstances.BackupTarget | String | The backup target of the DB instance. |
+| AWS.RDS.DBInstances.AutomaticRestartTime | String | The time the DB instance is scheduled for automatic restart. |
+| AWS.RDS.DBInstances.CustomIamInstanceProfile | String | The instance profile associated with the DB instance. |
+| AWS.RDS.DBInstances.ActivityStreamPolicyStatus | String | The status of the policy used for the activity stream. |
+| AWS.RDS.DBInstances.CertificateDetails.CAIdentifier | String | The CA identifier of the certificate. |
+| AWS.RDS.DBInstances.CertificateDetails.ValidTill | String | The expiration date of the certificate. |
+| AWS.RDS.DBInstances.DBSystemId | String | The DB system identifier of the DB instance. |
+| AWS.RDS.DBInstances.MasterUserSecret.SecretArn | String | The Amazon Resource Name \(ARN\) of the secret. |
+| AWS.RDS.DBInstances.MasterUserSecret.SecretStatus | String | The status of the secret. |
+| AWS.RDS.DBInstances.MasterUserSecret.KmsKeyId | String | The AWS KMS key identifier that is used to encrypt the secret. |
+| AWS.RDS.DBInstances.ReadReplicaSourceDBClusterIdentifier | String | The identifier of the source DB cluster if this DB instance is a read replica. |
+| AWS.RDS.DBInstances.PercentProgress | String | The percentage of the estimated data that has been transferred. |
+| AWS.RDS.DBInstances.MultiTenant | Boolean | Whether the DB instance is a multi-tenant instance. |
+| AWS.RDS.DBInstances.DedicatedLogVolume | Boolean | Whether the DB instance has a dedicated log volume. |
+| AWS.RDS.DBInstances.IsStorageConfigUpgradeAvailable | Boolean | Whether a storage configuration upgrade is available for the DB instance. |
+| AWS.RDS.DBInstances.EngineLifecycleSupport | String | The life cycle of the DB instance engine. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.VolumeName | String | The name of the storage volume. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageVolumeStatus | String | The status of the storage volume. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.AllocatedStorage | Number | The allocated storage for the storage volume. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.IOPS | Number | The IOPS for the storage volume. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.MaxAllocatedStorage | Number | The maximum allocated storage for the storage volume. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageThroughput | Number | The storage throughput for the storage volume. |
+| AWS.RDS.DBInstances.AdditionalStorageVolumes.StorageType | String | The storage type for the storage volume. |
+| AWS.RDS.DBInstances.StorageVolumeStatus | String | The detailed status information for storage volumes associated with the DB instance. |
 
 ### aws-lambda-function-configuration-update
 
@@ -5321,81 +5321,81 @@ Updates the configuration for a Lambda function. Requires the lambda:UpdateFunct
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
-| function_name | The name or ARN of the Lambda function. | Required | 
-| role | The Amazon Resource Name (ARN) of the function's execution role. | Optional | 
-| handler | The name of the method within your code that Lambda calls to execute your function. | Optional | 
-| description | A description of the function. | Optional | 
-| timeout | The amount of time that Lambda allows a function to run before stopping it. Default is 3. | Optional | 
-| memory_size | The amount of memory, in MB, that your function has access to. Default is 128. | Optional | 
-| subnet_ids | A comma-separated list of VPC subnet IDs. | Optional | 
-| security_group_ids | A comma-separated list of VPC security group IDs. | Optional | 
-| ipv6_allowed_for_dualstack | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Possible values are: true, false. | Optional | 
-| environment | Environment variable key-value pairs. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional | 
-| runtime | The identifier of the function's runtime. | Optional | 
-| target_arn | The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic for the dead-letter queue configuration. | Optional | 
-| kms_key_arn | The ARN of the AWS Key Management Service (KMS) key to use for encryption. | Optional | 
-| tracing_config_mode | The tracing mode. Set Mode to Active to sample and trace a subset of incoming requests with X-Ray. Possible values are: Active, PassThrough. | Optional | 
-| revision_id | A revision ID to update the function only if it matches. | Optional | 
-| layers | A comma-separated list of function layers ARNs. | Optional | 
-| file_system_configs | An key-value pairs string for EFS file system configurations where the key is the Arn and the value is LocalMountPath. Arn is the Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system. The LocalMountPath is the path where the function can access the file system, starting with /mnt/. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional | 
-| image_config_entry_point | A comma-separated list that specifies the entry point to their application, which is typically the location of the runtime executable. | Optional | 
-| image_config_command | Parameters that you want to pass in with ENTRYPOINT. | Optional | 
-| image_config_working_directory | Specifies the working directory. | Optional | 
-| ephemeral_storage_size | The size of the function’s /tmp directory. | Optional | 
-| snap_start_apply_on | Set to PublishedVersions to create a snapshot of the initialized execution environment when you publish a function version. Possible values are: PublishedVersions, None. | Optional | 
-| log_format | The format in which Lambda sends your function’s application and system logs to CloudWatch. Possible values are: JSON, Text. | Optional | 
-| application_log_level | Set this property to filter the application logs for your function that Lambda sends to CloudWatch. Possible values are: TRACE, DEBUG, INFO, WARN, ERROR, FATAL. | Optional | 
-| system_log_level | Set this property to filter the system logs for your function that Lambda sends to CloudWatch. Possible values are: DEBUG, INFO, WARN. | Optional | 
-| log_group | The name of the Amazon CloudWatch log group the function sends logs to. By default, Lambda functions send logs to a default log group named /aws/lambda/&lt;function name&gt;. To use a different log group, enter an existing log group or enter a new log group name. | Optional | 
-| capacity_provider_arn | The Amazon Resource Name (ARN) of the capacity provider. | Optional | 
-| per_execution_env_max_concurrency | The maximum number of concurrent execution environments that can run on each compute instance. | Optional | 
-| execution_env_memory_per_cpu | The amount of memory in GiB allocated per vCPU for execution environments. | Optional | 
-| durable_retention_period | The number of days to retain execution history after a durable execution completes. After this period, execution history is no longer available through the GetDurableExecutionHistory API. For example, enter '4' for 4 days. | Optional | 
-| durable_execution_timeout | The maximum time (in seconds) that a durable execution can run before timing out. This timeout applies to the entire durable execution, not individual function invocations. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| function_name | The name or ARN of the Lambda function. | Required |
+| role | The Amazon Resource Name (ARN) of the function's execution role. | Optional |
+| handler | The name of the method within your code that Lambda calls to execute your function. | Optional |
+| description | A description of the function. | Optional |
+| timeout | The amount of time that Lambda allows a function to run before stopping it. Default is 3. | Optional |
+| memory_size | The amount of memory, in MB, that your function has access to. Default is 128. | Optional |
+| subnet_ids | A comma-separated list of VPC subnet IDs. | Optional |
+| security_group_ids | A comma-separated list of VPC security group IDs. | Optional |
+| ipv6_allowed_for_dualstack | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Possible values are: true, false. | Optional |
+| environment | Environment variable key-value pairs. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional |
+| runtime | The identifier of the function's runtime. | Optional |
+| target_arn | The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic for the dead-letter queue configuration. | Optional |
+| kms_key_arn | The ARN of the AWS Key Management Service (KMS) key to use for encryption. | Optional |
+| tracing_config_mode | The tracing mode. Set Mode to Active to sample and trace a subset of incoming requests with X-Ray. Possible values are: Active, PassThrough. | Optional |
+| revision_id | A revision ID to update the function only if it matches. | Optional |
+| layers | A comma-separated list of function layers ARNs. | Optional |
+| file_system_configs | An key-value pairs string for EFS file system configurations where the key is the Arn and the value is LocalMountPath. Arn is the Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system. The LocalMountPath is the path where the function can access the file system, starting with /mnt/. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional |
+| image_config_entry_point | A comma-separated list that specifies the entry point to their application, which is typically the location of the runtime executable. | Optional |
+| image_config_command | Parameters that you want to pass in with ENTRYPOINT. | Optional |
+| image_config_working_directory | Specifies the working directory. | Optional |
+| ephemeral_storage_size | The size of the function’s /tmp directory. | Optional |
+| snap_start_apply_on | Set to PublishedVersions to create a snapshot of the initialized execution environment when you publish a function version. Possible values are: PublishedVersions, None. | Optional |
+| log_format | The format in which Lambda sends your function’s application and system logs to CloudWatch. Possible values are: JSON, Text. | Optional |
+| application_log_level | Set this property to filter the application logs for your function that Lambda sends to CloudWatch. Possible values are: TRACE, DEBUG, INFO, WARN, ERROR, FATAL. | Optional |
+| system_log_level | Set this property to filter the system logs for your function that Lambda sends to CloudWatch. Possible values are: DEBUG, INFO, WARN. | Optional |
+| log_group | The name of the Amazon CloudWatch log group the function sends logs to. By default, Lambda functions send logs to a default log group named /aws/lambda/&lt;function name&gt;. To use a different log group, enter an existing log group or enter a new log group name. | Optional |
+| capacity_provider_arn | The Amazon Resource Name (ARN) of the capacity provider. | Optional |
+| per_execution_env_max_concurrency | The maximum number of concurrent execution environments that can run on each compute instance. | Optional |
+| execution_env_memory_per_cpu | The amount of memory in GiB allocated per vCPU for execution environments. | Optional |
+| durable_retention_period | The number of days to retain execution history after a durable execution completes. After this period, execution history is no longer available through the GetDurableExecutionHistory API. For example, enter '4' for 4 days. | Optional |
+| durable_execution_timeout | The maximum time (in seconds) that a durable execution can run before timing out. This timeout applies to the entire durable execution, not individual function invocations. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. | 
-| AWS.Lambda.FunctionConfig.FunctionArn | String | The function's Amazon Resource Name \(ARN\). | 
-| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function's runtime. | 
-| AWS.Lambda.FunctionConfig.Role | String | The function's execution role. | 
-| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. | 
-| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function's deployment package, in bytes. | 
-| AWS.Lambda.FunctionConfig.Description | String | The function's description. | 
-| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
-| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. | 
-| AWS.Lambda.FunctionConfig.LastModified | String | The date and time the function was last updated. | 
-| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function's deployment package. | 
-| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. | 
-| AWS.Lambda.FunctionConfig.VpcConfig | Unknown | The function's networking configuration. | 
-| AWS.Lambda.FunctionConfig.DeadLetterConfig | Unknown | The function's dead-letter queue. | 
-| AWS.Lambda.FunctionConfig.Environment | String | The function's environment variables. | 
-| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The KMS key used to encrypt the function's environment variables. | 
-| AWS.Lambda.FunctionConfig.TracingConfig | Unknown | The function's X-Ray tracing configuration. | 
-| AWS.Lambda.FunctionConfig.MasterArn | String | For Lambda@Edge functions, the ARN of the main function. | 
-| AWS.Lambda.FunctionConfig.RevisionId | String | The latest updated revision of the function or alias. | 
-| AWS.Lambda.FunctionConfig.Layers | Unknown | The function's layers. | 
-| AWS.Lambda.FunctionConfig.State | String | The current state of the function. | 
-| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function's current state. | 
-| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the function's current state. | 
-| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. | 
-| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. | 
-| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update that was performed on the function. | 
-| AWS.Lambda.FunctionConfig.FileSystemConfigs | Unknown | The function's Amazon EFS file system configurations. | 
-| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. | 
-| AWS.Lambda.FunctionConfig.ImageConfigResponse | Unknown | The function's image configuration values. | 
-| AWS.Lambda.FunctionConfig.SigningProfileVersionArn | String | The ARN of the signing profile version. | 
-| AWS.Lambda.FunctionConfig.SigningJobArn | String | The ARN of the signing job. | 
-| AWS.Lambda.FunctionConfig.Architectures | Unknown | The instruction set architecture that the function supports. | 
-| AWS.Lambda.FunctionConfig.EphemeralStorage | Number | The size of the function's /tmp directory. | 
-| AWS.Lambda.FunctionConfig.SnapStart | String | The function's SnapStart setting. | 
-| AWS.Lambda.FunctionConfig.RuntimeVersionConfig | Unknown | The ARN of the runtime and any errors that occurred. | 
-| AWS.Lambda.FunctionConfig.LoggingConfig | Unknown | The function's logging configuration. | 
-| AWS.Lambda.FunctionConfig.CapacityProviderConfig | Unknown | The configuration for Lambda-managed instances used by the capacity provider. | 
-| AWS.Lambda.FunctionConfig.ConfigSha256 | String | The SHA256 hash of the function configuration. | 
-| AWS.Lambda.FunctionConfig.DurableConfig | Unknown | The function’s durable execution configuration settings, if the function is configured for durability. | 
-| AWS.Lambda.FunctionConfig.TenancyConfig | Unknown | The function’s tenant isolation configuration settings. Determines whether the Lambda function runs on a shared or dedicated infrastructure per unique tenant. | 
+| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. |
+| AWS.Lambda.FunctionConfig.FunctionArn | String | The function's Amazon Resource Name \(ARN\). |
+| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function's runtime. |
+| AWS.Lambda.FunctionConfig.Role | String | The function's execution role. |
+| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function's deployment package, in bytes. |
+| AWS.Lambda.FunctionConfig.Description | String | The function's description. |
+| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.FunctionConfig.LastModified | String | The date and time the function was last updated. |
+| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function's deployment package. |
+| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. |
+| AWS.Lambda.FunctionConfig.VpcConfig | Unknown | The function's networking configuration. |
+| AWS.Lambda.FunctionConfig.DeadLetterConfig | Unknown | The function's dead-letter queue. |
+| AWS.Lambda.FunctionConfig.Environment | String | The function's environment variables. |
+| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The KMS key used to encrypt the function's environment variables. |
+| AWS.Lambda.FunctionConfig.TracingConfig | Unknown | The function's X-Ray tracing configuration. |
+| AWS.Lambda.FunctionConfig.MasterArn | String | For Lambda@Edge functions, the ARN of the main function. |
+| AWS.Lambda.FunctionConfig.RevisionId | String | The latest updated revision of the function or alias. |
+| AWS.Lambda.FunctionConfig.Layers | Unknown | The function's layers. |
+| AWS.Lambda.FunctionConfig.State | String | The current state of the function. |
+| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function's current state. |
+| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the function's current state. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs | Unknown | The function's Amazon EFS file system configurations. |
+| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse | Unknown | The function's image configuration values. |
+| AWS.Lambda.FunctionConfig.SigningProfileVersionArn | String | The ARN of the signing profile version. |
+| AWS.Lambda.FunctionConfig.SigningJobArn | String | The ARN of the signing job. |
+| AWS.Lambda.FunctionConfig.Architectures | Unknown | The instruction set architecture that the function supports. |
+| AWS.Lambda.FunctionConfig.EphemeralStorage | Number | The size of the function's /tmp directory. |
+| AWS.Lambda.FunctionConfig.SnapStart | String | The function's SnapStart setting. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig | Unknown | The ARN of the runtime and any errors that occurred. |
+| AWS.Lambda.FunctionConfig.LoggingConfig | Unknown | The function's logging configuration. |
+| AWS.Lambda.FunctionConfig.CapacityProviderConfig | Unknown | The configuration for Lambda-managed instances used by the capacity provider. |
+| AWS.Lambda.FunctionConfig.ConfigSha256 | String | The SHA256 hash of the function configuration. |
+| AWS.Lambda.FunctionConfig.DurableConfig | Unknown | The function’s durable execution configuration settings, if the function is configured for durability. |
+| AWS.Lambda.FunctionConfig.TenancyConfig | Unknown | The function’s tenant isolation configuration settings. Determines whether the Lambda function runs on a shared or dedicated infrastructure per unique tenant. |
