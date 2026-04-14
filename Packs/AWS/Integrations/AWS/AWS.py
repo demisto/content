@@ -7938,6 +7938,204 @@ class SSM:
             ),
         )
 
+    @staticmethod
+    def add_tags_to_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or overwrites one or more tags for the specified SSM resource.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): A dictionary containing the resource type, resource ID, and tags to add.
+
+        Returns:
+            CommandResults: A success message indicating the tags were added.
+        """
+        resource_type = args.get("resource_type", "")
+        resource_id = args.get("resource_id", "")
+        tags = parse_tag_field(args.get("tags"))
+
+        kwargs = {
+            "ResourceType": resource_type,
+            "ResourceId": resource_id,
+            "Tags": tags,
+        }
+        print_debug_logs(client, f"add_tags_to_resource {kwargs=}")
+
+        response = client.add_tags_to_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Tags successfully added to SSM resource '{resource_id}'.",
+        )
+
+    @staticmethod
+    def remove_tags_from_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Removes one or more tags from the specified SSM resource.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): A dictionary containing the resource type, resource ID, and tag keys to remove.
+
+        Returns:
+            CommandResults: A success message indicating the tags were removed.
+        """
+        kwargs = {
+            "ResourceType": args.get("resource_type"),
+            "ResourceId": args.get("resource_id"),
+            "TagKeys": argToList(args.get("tag_keys")),
+        }
+        print_debug_logs(client, f"remove_tags_from_resource {kwargs=}")
+
+        response = client.remove_tags_from_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"Tags successfully removed from SSM resource '{args.get('resource_id')}'.",
+        )
+
+    @staticmethod
+    def list_tags_for_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns a list of the tags assigned to the specified SSM resource.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including resource_type and resource_id.
+
+        Returns:
+            CommandResults: An object containing the tag list for the specified resource.
+        """
+        resource_id = args.get("resource_id")
+        kwargs = {
+            "ResourceType": args.get("resource_type"),
+            "ResourceId": resource_id,
+        }
+        print_debug_logs(client, f"list_tags_for_resource {kwargs=}")
+
+        response = client.list_tags_for_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        tag_list = response.get("TagList", [])
+        if not tag_list:
+            return CommandResults(readable_output=f"No tags found for SSM resource '{resource_id}'.")
+
+        outputs = {"ResourceId": resource_id, "TagList": tag_list}
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Tag",
+            outputs_key_field="ResourceId",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                f"Tags for SSM resource '{resource_id}'",
+                tag_list,
+                headers=["Key", "Value"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def inventory_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Queries SSM inventory information for managed nodes.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including optional filters, limit,
+                next_token, and include_inactive_instance flag.
+
+        Returns:
+            CommandResults: Results containing inventory entities with instance information
+                flattened from the AWS:InstanceInformation data type.
+        """
+        # Apply status filter: active only by default; extend to inactive when requested
+        status_values = ["Active"]
+        if argToBoolean(args.get("include_inactive_instance", "false")):
+            status_values.extend(["Stopped", "Terminated", "ConnectionLost"])
+
+        kwargs: Dict[str, Any] = {
+            "Filters": [
+                {"Key": "AWS:InstanceInformation.InstanceStatus", "Values": status_values, "Type": "Equal"}
+            ],
+        }
+
+        if extra_filters := parse_name_value_type_format_filter(args.get("filters")):
+            kwargs["Filters"].extend(extra_filters)
+
+        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1, max_limit=50)
+        kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Listing SSM inventory with parameters: {kwargs}")
+
+        response = client.get_inventory(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        entities = response.get("Entities", [])
+
+        if not entities:
+            return CommandResults(readable_output="No inventory entities found.")
+
+        # Flatten AWS:InstanceInformation data into each entity
+        for entity in entities:
+            instance_info = entity.get("Data", {}).pop("AWS:InstanceInformation", {})
+            entity.update(instance_info)
+            entity.pop("Data", None)
+
+        readable_entities = []
+        for entity in entities:
+            for content in entity.get("Content", []):
+                readable_entities.append(
+                    {
+                        "Id": entity.get("Id"),
+                        "InstanceId": content.get("InstanceId"),
+                        "ComputerName": content.get("ComputerName"),
+                        "PlatformType": content.get("PlatformType"),
+                        "PlatformName": content.get("PlatformName"),
+                        "AgentVersion": content.get("AgentVersion"),
+                        "IpAddress": content.get("IpAddress"),
+                        "ResourceType": content.get("ResourceType"),
+                        "InstanceStatus": content.get("InstanceStatus"),
+                    }
+                )
+            if not entity.get("Content"):
+                readable_entities.append({"Id": entity.get("Id")})
+
+        outputs = {
+            "AWS.SSM.Inventory(val.Id && val.Id == obj.Id)": entities,
+            "AWS.SSM(true)": {"InventoryNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Inventory",
+                readable_entities,
+                headers=[
+                    "Id",
+                    "InstanceId",
+                    "ComputerName",
+                    "PlatformType",
+                    "PlatformName",
+                    "AgentVersion",
+                    "IpAddress",
+                    "ResourceType",
+                    "InstanceStatus",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -8103,8 +8301,12 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-fleets-describe": EC2.describe_fleets_command,
     "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
     "aws-ec2-fleet-modify": EC2.modify_fleet_command,
+    "aws-ssm-inventory-list": SSM.inventory_list_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
+    "aws-ssm-tag-add": SSM.add_tags_to_resource_command,
+    "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
+    "aws-ssm-tag-list": SSM.list_tags_for_resource_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
     "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
@@ -8119,6 +8321,10 @@ COMMANDS_MAPPING: dict[str, Callable] = {
 }
 
 REQUIRED_ACTIONS: list[str] = [
+    "ssm:GetInventory",
+    "ssm:AddTagsToResource",
+    "ssm:RemoveTagsFromResource",
+    "ssm:ListTagsForResource",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
