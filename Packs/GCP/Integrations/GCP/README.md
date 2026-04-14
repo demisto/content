@@ -1480,6 +1480,7 @@ Returns the specified network.
 | GCP.Compute.Networks.routingConfig | string | The network\-level routing configuration for this network. Used by Cloud Router to determine what type of network\-wide routing behavior to enforce. |
 | GCP.Compute.Networks.routingConfig.routingMode | string | The network\-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
+
 ### gcp-bq-dataset-policy-remove
 
 ***

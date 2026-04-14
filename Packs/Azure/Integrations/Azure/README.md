@@ -1761,6 +1761,7 @@ Gets all security rules in a network security group.
 | Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
 ### azure-compute-vm-list
 
 ***
