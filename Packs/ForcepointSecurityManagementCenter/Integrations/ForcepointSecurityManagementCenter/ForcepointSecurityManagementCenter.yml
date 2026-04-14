@@ -700,22 +700,22 @@ script:
       description: The comment for the engine.
       type: String
   - arguments:
-    - description: List of engine names to refresh.
+    - description: A comma-separated list of engine names to refresh.
       isArray: true
       name: engine_name
       required: true
-    - description: List of polling refresh task ids.
+    - description: A comma-separated list of polling refresh task IDs.
       isArray: true
       name: task_ids
       required: false
       hidden: true
     - name: interval_in_seconds
-      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60-90 second range.
+      description: The interval in seconds between polling attempts. To prevent search timeouts, set this value within the 60-90 second range.
       defaultValue: '60'
     - name: timeout_in_seconds
-      description: Timeout for polling in seconds.
+      description: The timeout for polling in seconds.
       defaultValue: '600'
-    description: Refreshes the specified engines. Use forcepoint-smc-engine-list command to list the engines in the system.
+    description: Refreshes the specified engines. Use the forcepoint-smc-engine-list command to list the engines in the system.
     name: forcepoint-smc-engine-refresh
     polling: true
   isfetch: false
