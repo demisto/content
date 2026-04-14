@@ -332,38 +332,35 @@ def pwned_breaches_for_domain_list_command(args_dict: dict) -> tuple[list, list,
         args_dict: demisto.args() dictionary. Expected key: ``domain`` (comma-separated list).
 
     Returns:
-        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+        Tuple of (markdown_list, entry_context_list, api_response_list).
     """
     domain_list: list[str] = argToList(args_dict.get("domain", ""))
 
-    md_list: list[str] = []
-    ec_list: list[dict] = []
-    api_res_list: list = []
+    markdown_list: list[str] = []
+    entry_context_list: list[dict] = []
+    api_response_list: list = []
 
     for domain in domain_list:
         api_res = http_request("GET", f"breachedDomain/{domain}")
 
         if api_res is None:
-            md_list.append(f"### Breaches for domain: *{domain}*\nThe domain does not have any email addresses")
-            ec_list.append({})
-            api_res_list.append(None)
+            markdown_list.append(f"### Breaches for domain: *{domain}*\nThe domain does not have any email addresses")
+            entry_context_list.append({})
+            api_response_list.append(None)
             continue
 
-        # api_res is a dict {alias: [breach_name, ...], ...}
-        # Build HR table with columns: Domain, Account (alias), Breaches
         table_data = [
             {"Domain": domain, "Account": alias, "Breaches": ", ".join(breaches)} for alias, breaches in api_res.items()
         ]
         md = tableToMarkdown(f"Breaches for domain: {domain}", table_data, ["Domain", "Account", "Breaches"])
 
-        # Build entry context under "Domain.Pwned-V2.Breaches"
         ec: dict = {"Domain.Pwned-V2.Breaches": api_res}
 
-        md_list.append(md)
-        ec_list.append(ec)
-        api_res_list.append(api_res)
+        markdown_list.append(md)
+        entry_context_list.append(ec)
+        api_response_list.append(api_res)
 
-    return md_list, ec_list, api_res_list
+    return markdown_list, entry_context_list, api_response_list
 
 
 def pwned_subscribed_domains_list_command(args_dict: dict) -> tuple[list, list, list]:
@@ -373,14 +370,13 @@ def pwned_subscribed_domains_list_command(args_dict: dict) -> tuple[list, list, 
     No input arguments required.
 
     Returns:
-        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+        Tuple of (markdown_list, entry_context_list, api_response_list).
     """
     api_res = http_request("GET", "subscribedDomains")
 
     if api_res is None:
         return ["No subscribed domains found."], [{}], [None]
 
-    # Build HR table
     hr_headers = [
         "DomainName",
         "PwnCount",
@@ -390,7 +386,6 @@ def pwned_subscribed_domains_list_command(args_dict: dict) -> tuple[list, list, 
     ]
     md = tableToMarkdown("Subscribed Domains", api_res, hr_headers)
 
-    # Build entry context
     ec: dict = {"Pwned-V2.SubscribedDomain": api_res}
 
     return [md], [ec], [api_res]
@@ -406,14 +401,13 @@ def pwned_latest_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
     Should reuse ``domain_to_entry_context()`` for context and dBotScore handling.
 
     Returns:
-        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+        Tuple of (markdown_list, entry_context_list, api_response_list).
     """
     api_res = http_request("GET", "latestBreach")
 
     if api_res is None:
         return ["No latest breach found."], [{}], [None]
 
-    # Build HR table
     table_data = [
         {
             "Latest breach domain name": api_res.get("Domain", ""),
@@ -424,7 +418,6 @@ def pwned_latest_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
     ]
     md = tableToMarkdown("Latest Breach", table_data, ["Latest breach domain name", "Breach Date", "Added Date", "Pwn Count"])
 
-    # Build entry context reusing domain_to_entry_context()
     domain = api_res.get("Domain", "")
     ec = domain_to_entry_context(domain, [api_res])
     # append api response to populated context template
@@ -444,7 +437,7 @@ def pwned_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
         args_dict: demisto.args() dictionary. Expected key: ``breach_name``.
 
     Returns:
-        Tuple of (md_list, ec_list, api_res_list) matching the existing command pattern.
+        Tuple of (markdown_list, entry_context_list, api_response_list).
     """
     breach_name: str = args_dict.get("breach_name", "")
 
@@ -453,7 +446,6 @@ def pwned_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
     if api_res is None:
         return [f"No breach found for name: {breach_name}"], [{}], [None]
 
-    # Build HR table (same format as latest breach per design doc)
     table_data = [
         {
             "Latest breach domain name": api_res.get("Domain", ""),
@@ -466,7 +458,6 @@ def pwned_breach_get_command(args_dict: dict) -> tuple[list, list, list]:
         f"Breach: {breach_name}", table_data, ["Latest breach domain name", "Breach Date", "Added Date", "Pwn Count"]
     )
 
-    # Build entry context reusing domain_to_entry_context()
     domain = api_res.get("Domain", "")
     ec = domain_to_entry_context(domain, [api_res])
     # append api response to populated context template
