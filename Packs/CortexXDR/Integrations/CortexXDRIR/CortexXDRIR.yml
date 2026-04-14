@@ -162,6 +162,15 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: If enabled, forces the system to connect to the external tenant directly,
+    bypassing available internal calls.
+  display: Force External Tenant
+  name: bypass_internal_call
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: "false"
 - additionalinfo: 'Whether the XDR tenant mode is prevent only'
   display: Prevent Only Mode
   name: prevent_only

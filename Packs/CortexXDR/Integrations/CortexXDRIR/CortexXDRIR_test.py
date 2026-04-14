@@ -8,6 +8,7 @@ from CommonServerPython import CommandResults, DemistoException, urljoin
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR, XSOAR_RESOLVED_STATUS_TO_XDR
 from CortexXDRIR import XDR_OPEN_STATUS_TO_XSOAR, XDR_TO_XSOAR, XSOAR_TO_XDR, get_xsoar_close_reasons
 from freezegun import freeze_time
+import importlib
 
 XDR_URL = "https://api.xdrurl.com"
 
@@ -3866,3 +3867,27 @@ def test_endpoint_triage_command(mocker, args, expected_request_data):
     assert result.outputs == mock_reply
     assert result.raw_response == mock_reply
     assert "Triage Endpoint Results" in result.readable_output
+
+
+def test_is_forward_user_run_rbac_calculation_with_bypass_true(mocker):
+    """
+    Given:
+    - bypass_internal_call is "true"
+    - Version requirements are met
+    - Not using engine
+    When:
+    - Reloading CoreIRApiModule
+    Then:
+    - FORWARD_USER_RUN_RBAC should be False
+    """
+    mocker.patch("CoreIRApiModule.demisto.params", return_value={"bypass_internal_call": "true"})
+    mocker.patch("CoreIRApiModule.is_xsiam", return_value=True)
+    mocker.patch("CoreIRApiModule.is_platform", return_value=False)
+    mocker.patch("CoreIRApiModule.is_demisto_version_ge", return_value=True)
+    mocker.patch("CoreIRApiModule.is_using_engine", return_value=False)
+
+    import CoreIRApiModule
+
+    importlib.reload(CoreIRApiModule)
+
+    assert CoreIRApiModule.FORWARD_USER_RUN_RBAC is False
