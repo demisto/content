@@ -1,32 +1,48 @@
-# ServiceNowGenericFeed
+This is a feed integration for extracting indicators from ServiceNow
+This integration was integrated and tested with version xx of ServiceNowGenericFeed.
 
-ServiceNowGenericFeed is a feed integration that pulls records from a ServiceNow CMDB API endpoint and ingests them as indicators into Threat Intelligence Management (TIM).
+## Configure ServiceNowGenericFeed in Cortex
 
-## Configure ServiceNowGenericFeed in Cortex XSOAR
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| integrationReliability | Reliability of the source providing the intelligence data. | False |
-| url | Server URL (e.g., https://api.xsoar-example.com). Default: https://company.service-now.com/ | True |
-| credentials | API Key (username/password). | True |
-| feedTags | Tags applied to fetched indicators. | False |
-| query_url | The API route of the requested information in ServiceNow. | False |
-| indicator_field | Field used to build indicator values. | False |
+| Server URL | The format should be https://company.service-now.com/ | True |
+| Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
+| Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
+| Password |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch indicators |  | True |
+| Indicator Verdict | Indicators from this integration instance will be marked with this verdict | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Feed Expiration Policy |  | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Tags | The tag applied to the indicator when being forwarded into the TIM | False |
+| Query URL | The API route of the requested information in ServiceNow | True |
+| Indicator Field | The field needed from the ServiceNow response which contains the indicator value | True |
 
 ## Commands
 
-This integration is a feed and does not expose custom commands.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-## Fetch Indicators
+### snow-get-indicators
 
-When the integration runs **fetch-indicators**, it:
+***
+retrieve indicators from ServiceNow
 
-1. Calls the ServiceNow CMDB API using **query_url**
-2. Extracts records from the `result` field
-3. Builds indicator objects using **indicator_field**
-4. Adds indicators to TIM with **feedTags**
+#### Base Command
 
-## Notes
+`snow-get-indicators`
 
-- If **query_url** is not configured, the integration returns an error.
-- If no records are returned from ServiceNow, the integration returns an error.
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The number of indicators that can be returned. Default is 1. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

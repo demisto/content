@@ -1,5 +1,7 @@
+
+
 import pytest
-from ServiceNowGenericFeed import Client
+from ServiceNowGenericFeed import ServiceNowClient
 from ServiceNowGenericFeed import list_records_from_url, create_indicator_object, add_indicators_to_tim
 
 CREATE_INDICATOR_PACK = [
@@ -155,7 +157,7 @@ def test_records_list_command(requests_mock):
 
     requests_mock.get(full_url, json=mock_response)
 
-    client = Client(
+    client = ServiceNowClient(
         credentials={"identifier": "user", "password": "pass"},
         url=base_url,
         verify=False,
