@@ -1748,18 +1748,48 @@ def extract_issue_id_from_comment_url(comment_url: str) -> str:
     return ""
 
 
-def text_to_adf(text: str) -> Dict[str, Any]:
+def text_to_adf(text: str | dict[str, Any]) -> Dict[str, Any]:
     """This function receives a text and converts the text to Atlassian Document Format (ADF),
     which is used in order to send data to the API (such as, summary, content, when creating an issue for instance).
     This format is only currently used for Jira Cloud.
 
     Args:
-        text (str): A text to convert to ADF.
+        text (str | dict[str, Any]): A text or dictionary to convert to ADF.
 
     Returns:
         Dict[str, Any]: An ADF object (dictionary).
     """
-    return {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"text": text, "type": "text"}]}]}
+
+    def is_adf_json(adf: Any) -> bool:
+        return bool(
+            isinstance(adf, dict)
+            and "version"
+            in adf  # The "version" field is required in ADF, and it should be an integer greater than or equal to 1.
+            and int(adf["version"]) >= 1
+            and "type" in adf  # The "type" field is required in ADF, and for root-level ADF objects, it should be "doc".
+            and adf["type"] == "doc"
+            and "content" in adf  # The "content" field is required in ADF, and it should be a list of content nodes.
+            and isinstance(adf["content"], list)
+            and all(isinstance(node, dict) and "type" in node for node in adf["content"])
+        )
+
+    try:
+        # Try to parse the text as JSON. If it is a valid JSON, we will test it for proper ADF and return it as is.
+        adf = None
+        if isinstance(text, str):
+            adf = json.loads(text)
+        elif isinstance(text, dict):
+            adf = text
+        if is_adf_json(adf):
+            return adf
+    except Exception:
+        pass
+
+    return {
+        "type": "doc",
+        "version": 1,
+        "content": [{"type": "paragraph", "content": [{"text": text, "type": "text"}]}],
+    }
 
 
 def get_specific_fields_ids(
