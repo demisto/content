@@ -189,8 +189,8 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": ["azure-sql-db-threat-policy-update"],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update", "azure-sqldb-security-alert-policy-update"],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": ["azure-sql-db-threat-policy-update", "azure-sqldb-security-alert-policy-update"],
     "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update"],
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
@@ -3652,9 +3652,18 @@ def sql_db_threat_policy_update_command(client: AzureClient, params: dict[str, A
         headerTransform=string_to_table_header,
     )
 
+    if demisto.command() == "azure-sql-db-threat-policy-update":
+        demisto.debug("Using the old command name, use old context.")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="Azure.SqlDBThreatPolicy",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.SqlDBThreatPolicy",
+        outputs_prefix="Azure.SqlDB.SecurityAlertPolicies",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -4837,6 +4846,7 @@ def main():  # pragma: no cover
             "azure-acr-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
+            "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
             "azure-nsg-security-groups-list": nsg_security_groups_list_command,

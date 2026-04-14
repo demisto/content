@@ -1981,6 +1981,75 @@ script:
       name: db_name
       required: true
     - auto: PREDEFINED
+      description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
+      name: email_account_admins_enabled
+      predefined:
+        - 'true'
+        - 'false'
+    - description: Subscription ID.
+      name: subscription_id
+      required: true
+    - description: The name of the resource group.
+      name: resource_group_name
+      required: true
+    description: updates a database's security alert policy.
+    name: azure-sqldb-security-alert-policy-update
+    outputs:
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.kind
+      description: Kind of threat policy.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.location
+      description: Threat policy location.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
+      description: Threat policy ID.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
+      description: Threat policy name.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.type
+      description: Threat policy type.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.state
+      description: Threat policy state.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.creationTime
+      description: Threat policy creation time.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.retentionDays
+      description: Number of days to keep in the Threat Detection audit logs.
+      type: Number
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey
+      description: The identifier key of the Threat Detection audit storage account.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageEndpoint
+      description: Threat Detection audit storage account.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins
+      description: Email accounts administrators who the alert is sent to.
+      type: Boolean
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAddresses
+      description: List of email addresses to which the alert is sent.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.disabledAlerts
+      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.useServerDefault
+      description: Whether to use the default server policy.
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.databaseName
+      description: The name of the database that the threat policy is related to.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.serverName
+      description: The name of server that the threat policy is related to.
+      type: String
+  - arguments:
+    - description: Server name.
+      name: server_name
+      required: true
+    - description: Database name.
+      name: db_name
+      required: true
+    - auto: PREDEFINED
       description: The state of the transparent data encryption.
       name: state
       predefined:
