@@ -1730,6 +1730,21 @@ def checkAPIerrors(query, variables):
     return response_json
 
 
+def _fetch_all_issue_nodes(query, variables):
+    """Fetch all issue nodes from a paginated issues query."""
+    response_json = checkAPIerrors(query, variables)
+    nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes", []))
+
+    while response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage"):
+        variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
+        response_json = checkAPIerrors(query, variables)
+        page_nodes = response_json.get("data", {}).get("issues", {}).get("nodes", [])
+        if page_nodes:
+            nodes += page_nodes
+
+    return nodes
+
+
 def translate_severity(issue):
     """
     Translate issue severity to demisto
@@ -2021,14 +2036,7 @@ def fetch_issues(max_fetch):
     demisto.info(f"Fetching Issues for {variables}")
 
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
-    response_json = checkAPIerrors(query, variables)
-
-    issues = response_json["data"]["issues"]["nodes"]
-    while response_json["data"]["issues"]["pageInfo"]["hasNextPage"]:
-        variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
-        response_json = checkAPIerrors(query, variables)
-        if response_json["data"]["issues"]["nodes"] != []:
-            issues += response_json["data"]["issues"]["nodes"]
+    issues = _fetch_all_issue_nodes(query, variables)
 
     incidents = []
     for issue in issues:
@@ -2174,19 +2182,7 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     demisto.info(f"Query is {query}")
     demisto.info(f"Issue variables is {issue_variables}")
 
-    response_json = checkAPIerrors(query, issue_variables)
-
-    demisto.info(f"The API response is {response_json}")
-
-    issues = {}
-    if response_json["data"]["issues"]["nodes"] != []:
-        issues = response_json["data"]["issues"]["nodes"]
-    while response_json["data"]["issues"]["pageInfo"]["hasNextPage"]:
-        issue_variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
-        response_json = checkAPIerrors(query, issue_variables)
-        if response_json["data"]["issues"]["nodes"] != []:
-            issues += response_json["data"]["issues"]["nodes"]
-
+    issues = _fetch_all_issue_nodes(query, issue_variables)
     return issues
 
 
@@ -2681,8 +2677,7 @@ def get_modified_remote_data_command(args):
         "filterBy": {"statusChangedAt": {"after": last_update}},
     }
 
-    response_json = checkAPIerrors(PULL_ISSUES_QUERY, variables)
-    issues = response_json.get("data", {}).get("issues", {}).get("nodes", [])
+    issues = _fetch_all_issue_nodes(PULL_ISSUES_QUERY, variables)
 
     modified_ids = [issue.get("id") for issue in issues if issue.get("id")]
     demisto.debug(f"get_modified_remote_data: found {len(modified_ids)} modified issues")
