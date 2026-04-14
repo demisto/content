@@ -509,6 +509,26 @@ Gets a single breached site by breach name.
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
+| Domain.Pwned-V2.AddedDate | Date | The date and time the breach was added to the system. |
+| Domain.Pwned-V2.Attribution | String | The attribution of the breach. |
+| Domain.Pwned-V2.BreachDate | Date | The date the breach occurred. |
+| Domain.Pwned-V2.DataClasses | Unknown | The types of data that were compromised in the breach. |
+| Domain.Pwned-V2.Description | String | A description of the breach. |
+| Domain.Pwned-V2.DisclosureUrl | String | The URL where the breach was disclosed. |
+| Domain.Pwned-V2.Domain | String | The domain of the breach. |
+| Domain.Pwned-V2.IsFabricated | Boolean | Whether the breach is fabricated. |
+| Domain.Pwned-V2.IsMalware | Boolean | Whether the breach is related to malware. |
+| Domain.Pwned-V2.IsRetired | Boolean | Whether the breach is retired. |
+| Domain.Pwned-V2.IsSensitive | Boolean | Whether the breach is sensitive. |
+| Domain.Pwned-V2.IsSpamList | Boolean | Whether the breach is a spam list. |
+| Domain.Pwned-V2.IsStealerLog | Boolean | Whether the breach is a stealer log. |
+| Domain.Pwned-V2.IsSubscriptionFree | Boolean | Whether the breach is subscription free. |
+| Domain.Pwned-V2.IsVerified | Boolean | Whether the breach is verified. |
+| Domain.Pwned-V2.LogoPath | String | The path to the logo of the breach. |
+| Domain.Pwned-V2.ModifiedDate | Date | The date and time the breach was last modified. |
+| Domain.Pwned-V2.Name | String | The name of the breach. |
+| Domain.Pwned-V2.PwnCount | Number | The number of accounts compromised in the breach. |
+| Domain.Pwned-V2.Title | String | The title of the breach. |
 
 #### Command Example
 
@@ -596,6 +616,26 @@ This command has no arguments.
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
+| Domain.Pwned-V2.AddedDate | Date | The date and time the breach was added to the system. |
+| Domain.Pwned-V2.Attribution | String | The attribution of the breach. |
+| Domain.Pwned-V2.BreachDate | Date | The date the breach occurred. |
+| Domain.Pwned-V2.DataClasses | Unknown | The types of data that were compromised in the breach. |
+| Domain.Pwned-V2.Description | String | A description of the breach. |
+| Domain.Pwned-V2.DisclosureUrl | String | The URL where the breach was disclosed. |
+| Domain.Pwned-V2.Domain | String | The domain of the breach. |
+| Domain.Pwned-V2.IsFabricated | Boolean | Whether the breach is fabricated. |
+| Domain.Pwned-V2.IsMalware | Boolean | Whether the breach is related to malware. |
+| Domain.Pwned-V2.IsRetired | Boolean | Whether the breach is retired. |
+| Domain.Pwned-V2.IsSensitive | Boolean | Whether the breach is sensitive. |
+| Domain.Pwned-V2.IsSpamList | Boolean | Whether the breach is a spam list. |
+| Domain.Pwned-V2.IsStealerLog | Boolean | Whether the breach is a stealer log. |
+| Domain.Pwned-V2.IsSubscriptionFree | Boolean | Whether the breach is subscription free. |
+| Domain.Pwned-V2.IsVerified | Boolean | Whether the breach is verified. |
+| Domain.Pwned-V2.LogoPath | String | The path to the logo of the breach. |
+| Domain.Pwned-V2.ModifiedDate | Date | The date and time the breach was last modified. |
+| Domain.Pwned-V2.Name | String | The name of the breach. |
+| Domain.Pwned-V2.PwnCount | Number | The number of accounts compromised in the breach. |
+| Domain.Pwned-V2.Title | String | The title of the breach. |
 
 #### Command Example
 

@@ -311,6 +311,66 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: Domain.Pwned-V2.AddedDate
+      description: The date and time the breach was added to the system.
+      type: Date
+    - contextPath: Domain.Pwned-V2.Attribution
+      description: The attribution of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.BreachDate
+      description: The date the breach occurred.
+      type: Date
+    - contextPath: Domain.Pwned-V2.DataClasses
+      description: The types of data that were compromised in the breach.
+      type: Unknown
+    - contextPath: Domain.Pwned-V2.Description
+      description: A description of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.DisclosureUrl
+      description: The URL where the breach was disclosed.
+      type: String
+    - contextPath: Domain.Pwned-V2.Domain
+      description: The domain of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.IsFabricated
+      description: Whether the breach is fabricated.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsMalware
+      description: Whether the breach is related to malware.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsRetired
+      description: Whether the breach is retired.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsSensitive
+      description: Whether the breach is sensitive.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsSpamList
+      description: Whether the breach is a spam list.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsStealerLog
+      description: Whether the breach is a stealer log.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsSubscriptionFree
+      description: Whether the breach is subscription free.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsVerified
+      description: Whether the breach is verified.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.LogoPath
+      description: The path to the logo of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.ModifiedDate
+      description: The date and time the breach was last modified.
+      type: Date
+    - contextPath: Domain.Pwned-V2.Name
+      description: The name of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.PwnCount
+      description: The number of accounts compromised in the breach.
+      type: Number
+    - contextPath: Domain.Pwned-V2.Title
+      description: The title of the breach.
+      type: String
   - arguments:
     - default: true
       description: The name of the breach to retrieve.
@@ -346,6 +406,66 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: Domain.Pwned-V2.AddedDate
+      description: The date and time the breach was added to the system.
+      type: Date
+    - contextPath: Domain.Pwned-V2.Attribution
+      description: The attribution of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.BreachDate
+      description: The date the breach occurred.
+      type: Date
+    - contextPath: Domain.Pwned-V2.DataClasses
+      description: The types of data that were compromised in the breach.
+      type: Unknown
+    - contextPath: Domain.Pwned-V2.Description
+      description: A description of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.DisclosureUrl
+      description: The URL where the breach was disclosed.
+      type: String
+    - contextPath: Domain.Pwned-V2.Domain
+      description: The domain of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.IsFabricated
+      description: Whether the breach is fabricated.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsMalware
+      description: Whether the breach is related to malware.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsRetired
+      description: Whether the breach is retired.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsSensitive
+      description: Whether the breach is sensitive.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsSpamList
+      description: Whether the breach is a spam list.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsStealerLog
+      description: Whether the breach is a stealer log.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsSubscriptionFree
+      description: Whether the breach is subscription free.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.IsVerified
+      description: Whether the breach is verified.
+      type: Boolean
+    - contextPath: Domain.Pwned-V2.LogoPath
+      description: The path to the logo of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.ModifiedDate
+      description: The date and time the breach was last modified.
+      type: Date
+    - contextPath: Domain.Pwned-V2.Name
+      description: The name of the breach.
+      type: String
+    - contextPath: Domain.Pwned-V2.PwnCount
+      description: The number of accounts compromised in the breach.
+      type: Number
+    - contextPath: Domain.Pwned-V2.Title
+      description: The title of the breach.
+      type: String
   runonce: false
   script: '-'
   subtype: python3
