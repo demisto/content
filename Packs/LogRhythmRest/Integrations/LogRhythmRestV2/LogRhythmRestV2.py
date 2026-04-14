@@ -1,11 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import mimetypes
 import re
 import sys
 
 import dateparser
-import demistomock as demisto  # noqa: F401
+
 import urllib3
-from CommonServerPython import *  # noqa: F401
+
 
 urllib3.disable_warnings()
 
@@ -107,6 +109,14 @@ QUERY_TYPES_MAP = {
     "process_name": {"filter_type": 41, "value_type": 4},
     "object_": {"filter_type": 34, "value_type": 4},
     "ipaddress": {"filter_type": 17, "value_type": 5},
+    "action": {"filter_type": 154, "value_type": 4},
+    "vendor_message_id": {"filter_type": 37, "value_type": 4},
+    "status": {"filter_type": 150, "value_type": 4},
+    "result": {"filter_type": 141, "value_type": 4},
+    "classification": {"filter_type": 10, "value_type": 4},
+    "destination_nat_ip": {"filter_type": 106, "value_type": 5},
+    "nat_ip": {"filter_type": 126, "value_type": 5},
+    "source_nat_ip": {"filter_type": 105, "value_type": 5},
 }
 
 SOURCE_TYPE_MAP = {
@@ -1481,6 +1491,14 @@ class Client(BaseClient):
         process_name,
         object_,
         ipaddress,
+        action,
+        vendor_message_id,
+        status,
+        result,
+        classification,
+        destination_nat_ip,
+        nat_ip,
+        source_nat_ip,
         max_message,
         query_timeout,
         entity_id,
@@ -2374,6 +2392,14 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
     process_name = args.get("process_name")
     object_ = args.get("object")
     ipaddress = args.get("ip_address")
+    action = args.get("action")
+    vendor_message_id = args.get("vendor_message_id")
+    status = args.get("status")
+    result = args.get("result")
+    classification = args.get("classification")
+    destination_nat_ip = args.get("destination_nat_ip")
+    nat_ip = args.get("nat_ip")
+    source_nat_ip = args.get("source_nat_ip")
     max_message = args.get("max_message")
     query_timeout = args.get("query_timeout")
     entity_id = args.get("entity_id")
@@ -2393,6 +2419,14 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
         process_name,
         object_,
         ipaddress,
+        action,
+        vendor_message_id,
+        status,
+        result,
+        classification,
+        destination_nat_ip,
+        nat_ip,
+        source_nat_ip,
         max_message,
         query_timeout,
         entity_id,
