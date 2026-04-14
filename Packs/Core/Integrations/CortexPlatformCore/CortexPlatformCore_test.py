@@ -3937,6 +3937,7 @@ def test_add_cases_extra_data_empty_list(mocker):
 @pytest.mark.parametrize(
     "custom_fields_json,expected",
     [
+        # --- Legacy list-of-objects format ---
         (
             '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
             {"field1": "value1", "field2": "value2", "field3": "value3"},
@@ -3950,16 +3951,38 @@ def test_add_cases_extra_data_empty_list(mocker):
         ('[{"---": "value1", "@#$": "value2"}]', {}),
         ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
         ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+        # multiSelect field in legacy format: list value preserved as-is
+        ('[{"multifield": ["opt1", "opt2"]}]', {"multifield": ["opt1", "opt2"]}),
+        # mixed legacy: string field and multiSelect list field
+        (
+            '[{"textfield": "hello"}, {"multifield": ["opt1", "opt2"]}]',
+            {"textfield": "hello", "multifield": ["opt1", "opt2"]},
+        ),
+        # --- New preferred dict format ---
+        # Simple dict with string values
+        ('{"field1": "value1", "field2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with multiSelect list value
+        ('{"textfield": "hello", "multifield": ["opt1", "opt2"]}', {"textfield": "hello", "multifield": ["opt1", "opt2"]}),
+        # Dict with special chars in keys (sanitized)
+        ('{"field-1": "value1", "field_2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with numeric value (not stringified)
+        ('{"numfield": 42}', {"numfield": 42}),
+        # Dict with boolean value (not stringified)
+        ('{"boolfield": true}', {"boolfield": True}),
+        # Empty dict
+        ("{}", {}),
     ],
 )
 def test_parse_custom_fields(custom_fields_json, expected):
     """
     Given:
-        A JSON string containing custom fields and expected parsed result.
+        A JSON string containing custom fields in either dict or list-of-objects format.
     When:
         The parse_custom_fields function is called with the JSON string.
     Then:
-        The function should return a dictionary with normalized field names matching the expected result.
+        The function should return a dictionary with sanitized alphanumeric keys.
+        Values are passed as-is (no stringification): lists, booleans, and numbers are preserved.
+        Both the new dict format and the legacy list-of-objects format are supported.
     """
     from CortexPlatformCore import parse_custom_fields
 
@@ -6575,28 +6598,27 @@ def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "First script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": False,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    },
-                    {
-                        "script_uid": "uid2",
-                        "description": "Second script",
-                        "name": "test_script",
-                        "windows_supported": False,
-                        "linux_supported": True,
-                        "macos_supported": False,
-                        "script_inputs": [],
-                    },
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "First script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": False,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                },
+                {
+                    "script_uid": "uid2",
+                    "description": "Second script",
+                    "name": "test_script",
+                    "windows_supported": False,
+                    "linux_supported": True,
+                    "macos_supported": False,
+                    "script_inputs": [],
+                },
+            ],
         ),
         CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
     ]
@@ -6631,8 +6653,8 @@ def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
 
     mock_scripts_result = Mock()
     mock_scripts_result = [
-        CommandResults(outputs={"Scripts": []}),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs_prefix="Core.Scripts", outputs=[]),
+        CommandResults(outputs={"filtered_count": "0", "returned_count": "0"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6658,21 +6680,20 @@ def test_run_script_agentix_command_script_requires_parameters_but_none_provided
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6724,21 +6745,20 @@ def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -6775,21 +6795,20 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -8737,8 +8756,18 @@ def test_validate_custom_fields_success(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
-                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {
+                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
+                {
+                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
             ]
         }
     }
@@ -8767,11 +8796,17 @@ def test_validate_custom_fields_system_field(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "System Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": True,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
                 {
                     "CUSTOM_FIELD_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8807,6 +8842,7 @@ def test_validate_custom_fields_non_existent_field(mocker):
                     "CUSTOM_FIELD_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8820,6 +8856,164 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a string value instead of a list.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a list value.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": "single_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "multi_field" not in valid_fields
+    assert "multiSelect" in error_messages
+    assert "list" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted as valid and no error messages are returned.
+        validate_custom_fields does not enforce type — the list is passed through as-is.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"multi_field": ["value1", "value2"]}
+    assert not error_messages
+
+
+def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
+    """
+    GIVEN:
+        A shortText custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a single value.
+        (shortText is an enum field that does not accept arrays, per be3 validation logic.)
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"single_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "single_field" not in valid_fields
+    assert "does not accept a list value" in error_messages
+
+
+@pytest.mark.parametrize(
+    "field_type",
+    [
+        "shortText",
+        "longText",
+        "number",
+        "boolean",
+        "date",
+        "markdown",
+        "html",
+        "url",
+        "user",
+        "role",
+        "grid",
+        "tagsSelect",
+        "json",
+    ],
+)
+def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field_type):
+    """
+    GIVEN:
+        A non-enum custom field (e.g. shortText, boolean, date, etc.) provided with a string value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted — non-enum types have no list restriction at the content layer
+        (the backend handles further type validation).
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "My Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": field_type,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"my_field": "some_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "my_field" in valid_fields
+    assert not error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#
