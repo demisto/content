@@ -1732,6 +1732,7 @@ def checkAPIerrors(query, variables):
 
 def _fetch_all_issue_nodes(query, variables):
     """Fetch all issue nodes from a paginated issues query."""
+    variables = dict(variables)
     response_json = checkAPIerrors(query, variables)
     nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes", []))
 
@@ -2756,7 +2757,8 @@ def update_remote_system_command(args):
         _handle_field_changes(remote_id, parsed_args.delta, skip_status=incident_closed)
 
     if incident_closed:
-        _handle_incident_closed(remote_id)
+        resolution_reason = parsed_args.delta.get("resolutionReason") if parsed_args.delta else None
+        _handle_incident_closed(remote_id, resolution_reason=resolution_reason)
 
     if parsed_args.entries:
         _handle_outgoing_entries(remote_id, parsed_args.entries)
@@ -2804,13 +2806,14 @@ def _mirror_status_to_wiz(issue_id, xsoar_status, delta):
         demisto.error(f"_mirror_status_to_wiz: failed to update status to '{xsoar_status}': {e}")
 
 
-def _handle_incident_closed(remote_id):
+def _handle_incident_closed(remote_id, resolution_reason=None):
     """Handle XSOAR incident closed → resolve Wiz issue."""
-    demisto.debug(f"_handle_incident_closed: resolving {remote_id}")
+    reason = resolution_reason or DEFAULT_RESOLUTION_REASON
+    demisto.debug(f"_handle_incident_closed: resolving {remote_id} with reason={reason}")
     try:
-        reject_or_resolve_issue(remote_id, DEFAULT_RESOLUTION_REASON, "Resolved from Cortex XSOAR", "RESOLVED")
+        reject_or_resolve_issue(remote_id, reason, "Resolved from Cortex XSOAR", "RESOLVED")
     except Exception as e:
-        demisto.debug(f"_handle_incident_closed: failed (may already be resolved): {e}")
+        demisto.info(f"_handle_incident_closed: failed (may already be resolved): {e}")
 
 
 def _handle_outgoing_entries(remote_id, entries):
