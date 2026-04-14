@@ -14,7 +14,7 @@ alter
 alter
     xdm.event.type = "authentication",
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
-    xdm.event.original_event_type = api_object_type,
+    xdm.event.original_event_type = coalesce(LoginSubtype, api_object_type),
     xdm.source.port = to_integer(0),
     xdm.target.port = to_integer(0),
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
@@ -724,6 +724,12 @@ filter api_object_type ~= "LoginEvent"
         Platform ~= "Android", XDM_CONST.OS_FAMILY_ANDROID,
         Platform IN("*iPhone*", "*iPad*", "*iOS*"), XDM_CONST.OS_FAMILY_IOS,
         Platform ~= "Linux", XDM_CONST.OS_FAMILY_LINUX),
+    xdm.source.host.device_category = if(
+        Platform ~= "Unknown", null,
+        Platform IN("*Windows*", "*Mac*"), "Computer",
+        Platform IN("*Android*", "*iOS*"), "Mobile",
+        Platform ~= "iPad", "Tablet",
+        "Computer"),
     xdm.event.outcome = if(
         Status = "Success", XDM_CONST.OUTCOME_SUCCESS,
         XDM_CONST.OUTCOME_FAILED),
@@ -747,6 +753,7 @@ filter api_object_type ~= "LoginEvent"
     xdm.target.ipv4 = "",
     xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
     xdm.source.application.name = Browser,
+    xdm.source.application.version = arrayindex(regextract(Browser, "\d+"),0),
     xdm.network.http.browser = Browser,
     xdm.source.location.city = City,
     xdm.source.location.country = Country,
@@ -760,7 +767,7 @@ filter api_object_type ~= "LoginEvent"
     xdm.event.description = LoginType,
     xdm.logon.type = if(
         LoginType IN("Application", "ChatterCommunityPortalUnPwd","AppExchange","ChatterCommunityThirdPartySso", "EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "LightningLogin", "PasswordlessLogin", "Portal", "PortalThirdPartySso", "PrmPortalThirdPartySso", "PrmPortal", "saml", "SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite", "Saml2", "SelfService"),XDM_CONST.LOGON_TYPE_INTERACTIVE,
-        LoginType IN("NetworksPortalApiOnly", "Oauth*", "OtherApi","Partner"), XDM_CONST.LOGON_TYPE_SERVICE),
+        LoginType IN("NetworksPortalApiOnly", "Oauth*", "OtherApi","Partner", "Remote Access*"), XDM_CONST.LOGON_TYPE_SERVICE),
     xdm.event.operation_sub_type = if(
         LoginType IN("ChatterCommunityPortalUnPwd" ,"EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "Portal", "PrmPortal", "SelfService"), "password",
         LoginType IN("AppExchange", "LightningLogin"), "application",
@@ -804,7 +811,8 @@ filter api_object_type ~= "LoginAsEvent"
     xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp),
     xdm.target.ipv4 = "",
     xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
-    xdm.source.application.name = Application,
+    xdm.source.application.name = Browser,
+    xdm.source.application.version = arrayindex(regextract(Browser, "\d+"),0),
     xdm.source.host.os = Platform,
     xdm.source.host.os_family = if(
         Platform ~= "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
@@ -812,14 +820,20 @@ filter api_object_type ~= "LoginAsEvent"
         Platform ~= "Android", XDM_CONST.OS_FAMILY_ANDROID,
         Platform IN("*iPhone*", "*iPad*", "*iOS*"), XDM_CONST.OS_FAMILY_IOS,
         Platform ~= "Linux", XDM_CONST.OS_FAMILY_LINUX),
+    xdm.source.host.device_category = if(
+        Platform ~= "Unknown", null,
+        Platform IN("*Windows*", "*Mac*"), "Computer",
+        Platform IN("*Android*", "*iOS*"), "Mobile",
+        Platform ~= "iPad", "Tablet",
+        "Computer"),
     xdm.network.session_id = SessionKey,
     xdm.target.url = TargetUrl,
     xdm.target.resource.id = TargetUrl,
     xdm.target.resource.name = if(TargetUrl != null, "Salesforce"),
     xdm.event.description = LoginType,
     xdm.logon.type = if(
-        LoginType IN("Application", "ChatterCommunityPortalUnPwd","AppExchange","ChatterCommunityThirdPartySso", "EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "LightningLogin", "PasswordlessLogin", "Portal", "PortalThirdPartySso", "PrmPortalThirdPartySso", "PrmPortal", "saml", "SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite", "Saml2", "SelfService", "SelfService"),XDM_CONST.LOGON_TYPE_INTERACTIVE,
-        LoginType IN("NetworksPortalApiOnly", "Oauth*", "OtherApi","Partner"), XDM_CONST.LOGON_TYPE_SERVICE),
+        LoginType IN("Application", "ChatterCommunityPortalUnPwd","AppExchange","ChatterCommunityThirdPartySso", "EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "LightningLogin", "PasswordlessLogin", "Portal", "PortalThirdPartySso", "PrmPortalThirdPartySso", "PrmPortal", "saml", "SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite", "Saml2", "SelfService"),XDM_CONST.LOGON_TYPE_INTERACTIVE,
+        LoginType IN("NetworksPortalApiOnly", "Oauth*", "OtherApi","Partner", "Remote Access*"), XDM_CONST.LOGON_TYPE_SERVICE),
     xdm.event.operation_sub_type = if(
         LoginType IN("ChatterCommunityPortalUnPwd" ,"EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "Portal", "PrmPortal", "SelfService"), "password",
         LoginType IN("AppExchange", "LightningLogin"), "application",
