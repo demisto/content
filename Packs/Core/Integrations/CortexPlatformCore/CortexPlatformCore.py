@@ -826,7 +826,7 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             data=request_body,
-            headers={**self._headers, "content-type": "application/json"},
+            headers=self._headers,
             url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
 
@@ -850,7 +850,7 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             data=policy_payload,
-            headers={**self._headers, "content-type": "application/json"},
+            headers=self._headers,
             url_suffix="/public_api/appsec/v1/policies",
         )
 
