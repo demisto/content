@@ -2086,7 +2086,17 @@ def retrieve_user_data():
     user_email = args.get("user_email")
     query = f"name:{user_email}"
     params = {'q': query}
-    return_outputs(http_request("GET", f"/user", params=params))
+    
+    user_data = http_request("GET", f"/user", params=params)
+
+    human_readable = tableToMarkdown("User Data", user_data, headers=[])
+
+    result = CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="CBP.UserData",
+        outputs=user_data)
+
+    return_results(result)
 
 
 def disable_user_command():
@@ -2100,7 +2110,17 @@ def disable_user_command():
     payload = {
         "enabled": False
     }
-    return_outputs(http_request("PUT", f"/user/{user_id}", data=json.dumps(payload)))
+    
+    user_data = http_request("PUT", f"/user/{user_id}", data=json.dumps(payload))
+
+    human_readable = tableToMarkdown("User Data", user_data, headers=[])
+
+    result = CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="CBP.UserDisable",
+        outputs=user_data)
+
+    return_results(result)
 
 
 def fetch_incidents():
