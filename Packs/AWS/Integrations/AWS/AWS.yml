@@ -2533,7 +2533,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instances-describe
-    description: Returns information about provisioned RDS instances.
+    description: Returns information about provisioned RDS instances. Requires the rds:DescribeDBInstances permission.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -3275,7 +3275,7 @@ script:
         defaultValue: 'all'
         hidden: true
   - name: aws-redshift-cluster-modify
-    description: Modifies the settings of a cluster.
+    description: Modifies the settings of a cluster. Requires the redshift:ModifyCluster permission.
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -9494,7 +9494,7 @@ script:
       type: string
 
   - name: aws-lambda-function-configuration-update
-    description: Updates the configuration for a Lambda function.
+    description: Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission.
     arguments:
     - name: account_id
       required: true
