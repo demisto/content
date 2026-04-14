@@ -180,6 +180,14 @@ configuration:
   required: false
 script:
   commands:
+  - name: qradar-reference-data-bulk-load
+    arguments:
+      - name: reference_data_type
+        description: The type of reference data set to upload to.
+      - name: reference_data_name
+        description: The name of the reference data set.
+      - name: data
+        description: the data to upload.
   - name: qradar-offenses-list
     outputs:
     - contextPath: QRadar.Offense.Description
