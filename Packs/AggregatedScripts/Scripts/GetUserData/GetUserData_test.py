@@ -1110,32 +1110,28 @@ class TestGetUserData:
     def test_azure_list_risky_users(self, mocker: MockerFixture):
         """
         Given:
-            A Command object for azure_list_risky_users.
+            A Command object for azure_list_risky_users with a user ID (not email).
         When:
             The function is called with the Command object.
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
-        user_name = "azure_user"
-        command = Command("Azure Risky Users", "azure-risky-user-get", {"user_id": user_name})
-        mock_outputs = {"id": "azure_user", "riskLevel": "HIGH"}
-        expected_account = [
-            {
-                "ID": "azure_user",
-                "RiskLevel": "HIGH",
-                "Source": "Azure Risky Users",
-                "Brand": "Azure Risky Users",
-                "Username": "azure_user",
-                "Instance": None,
+        user_id = "azure_user_id"
+        command = Command("Azure Risky Users", "azure-risky-user-get", {"id": user_id})
+        mock_response = {
+            "AzureRiskyUsers.RiskyUser": {
+                "id": "azure_user_id",
+                "userDisplayName": "Azure User",
+                "userPrincipalName": "azure.user@example.com",
+                "riskLevel": "HIGH",
             }
-        ]
+        }
 
         mocker.patch(
             "GetUserData.run_execute_command",
-            return_value=([mock_outputs], "Human readable output", []),
+            return_value=([mock_response], "Human readable output", []),
         )
         mocker.patch("GetUserData.get_output_key", return_value="AzureRiskyUsers.RiskyUser")
-        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
         result = azure_get_risky_user(command, additional_fields=True)
@@ -1143,7 +1139,11 @@ class TestGetUserData:
         assert isinstance(result, tuple)
         assert len(result) == 2
         assert isinstance(result[0], list)
-        assert result[1] == expected_account
+        assert len(result[1]) == 1
+        assert result[1][0]["ID"] == "azure_user_id"
+        assert result[1][0]["Username"] == "Azure User"
+        assert result[1][0]["Email"] == "azure.user@example.com"
+        assert result[1][0]["RiskLevel"] == "HIGH"
 
     def test_azure_get_risky_user_with_email(self, mocker: MockerFixture):
         """
@@ -1156,7 +1156,7 @@ class TestGetUserData:
         """
         user_email = "test.user@example.com"
         command = Command("AzureRiskyUsers", "azure-risky-user-get", {"id": user_email})
-        
+
         mock_list_response = {
             "AzureRiskyUsers.RiskyUser": [
                 {
