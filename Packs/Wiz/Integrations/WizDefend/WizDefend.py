@@ -16,6 +16,7 @@ DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_LIMIT = 250
 API_MIN_FETCH = 10
 API_MAX_FETCH = 1000
+API_REQUEST_TIMEOUT = 115  # seconds; must be under the Apollo Router timeout (120s)
 API_END_CURSOR: Optional[str] = ""
 MAX_DAYS_FIRST_FETCH_DETECTIONS = 2
 FETCH_INTERVAL_MINIMUM_MIN = 10
@@ -94,6 +95,7 @@ class DemistoParams:
     RAW_JSON = "rawJSON"
     SEVERITY = "severity"
     MIRROR_ID = "dbotMirrorId"
+    DETAILS = "details"
     AFTER_TIME = "after_time"
     URL = "url"
     IS_FETCH = "isFetch"
@@ -141,6 +143,7 @@ class WizApiVariables:
     PATCH = "patch"
     NOTE = "note"
     RESOLUTION_REASON = "resolutionReason"
+    DESCRIPTION = "description"
 
 
 class WizThreatVariables:
@@ -1040,6 +1043,9 @@ class FetchIncident:
         self.stored_before = self.last_run_data.get(WizApiVariables.BEFORE)
         self.last_run_time = self.get_last_run_time()
 
+        # Read fetch interval for lagged window calculation
+        self.fetch_interval_minutes = self._get_fetch_interval_minutes()
+
         self._validate_and_reset_params()
 
     def get_last_run_time(self):
@@ -1081,6 +1087,18 @@ class FetchIncident:
             last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
 
         return last_run
+
+    def _get_fetch_interval_minutes(self):
+        """Read incidentFetchInterval from params, returning validated minutes or the default."""
+        try:
+            demisto_params = demisto.params()
+            fetch_interval_str = demisto_params.get(DemistoParams.INCIDENT_FETCH_INTERVAL, str(FETCH_INTERVAL_MINIMUM_MIN))
+            validation_response = validate_fetch_interval(fetch_interval_str)
+            if validation_response.is_valid:
+                return validation_response.minutes_value
+        except Exception:
+            pass
+        return FETCH_INTERVAL_MINIMUM_MIN
 
     def reset_params(self, reason="Invalid parameters detected"):
         """
@@ -1325,11 +1343,16 @@ class FetchIncident:
     def get_api_before_parameter(self):
         """
         Get the 'before' parameter value for the GraphQL API call.
+
+        Fresh runs use a lagged boundary (now - fetch_interval) so consecutive
+        windows don't overlap with near-real-time data that may still be settling.
         """
         if self.should_continue_previous_run():
             before_time = self.stored_before
         else:
-            before_time = self.api_start_run_time
+            api_start = datetime.strptime(self.api_start_run_time, DEMISTO_OCCURRED_FORMAT)
+            lagged = api_start - timedelta(minutes=self.fetch_interval_minutes)
+            before_time = lagged.strftime(DEMISTO_OCCURRED_FORMAT)
 
         return before_time
 
@@ -1396,7 +1419,7 @@ class FetchIncident:
             DemistoParams.TIME: self.api_start_run_time,
             WizApiResponse.END_CURSOR: API_END_CURSOR,
             WizApiVariables.AFTER: self.stored_after,
-            WizApiVariables.BEFORE: self.stored_after,
+            WizApiVariables.BEFORE: self.stored_before,
         }
 
         # Save using setLastRun
@@ -1515,7 +1538,7 @@ def get_entries(query, variables, wiz_type):
     demisto.info(f"Invoking Wiz API with variables {json.dumps(variables)}")
 
     try:
-        response = requests.post(url=URL, json=data, headers=HEADERS)
+        response = requests.post(url=URL, json=data, headers=HEADERS, timeout=API_REQUEST_TIMEOUT)
         response_json = response.json()
 
         demisto.info(f"Wiz API response status code is {response.status_code}")
@@ -1611,6 +1634,19 @@ def translate_severity(detection):
     return None
 
 
+def build_fallback_description(detection):
+    rule_name = detection.get(WizApiVariables.RULE_MATCH, {}).get(
+        WizApiVariables.RULE, {}
+    ).get(WizApiVariables.NAME)
+    severity = detection.get(WizApiVariables.SEVERITY, "Unknown")
+    detection_id = detection.get(WizApiVariables.ID, "Unknown")
+    parts = [f"{severity} severity detection"]
+    if rule_name:
+        parts.append(f"triggered by rule '{rule_name}'")
+    parts.append(f"(ID: {detection_id})")
+    return " ".join(parts)
+
+
 def build_incidents(detection):
     if detection is None:
         return {}
@@ -1625,6 +1661,7 @@ def build_incidents(detection):
         DemistoParams.RAW_JSON: json.dumps(detection),
         DemistoParams.SEVERITY: translate_severity(detection),
         DemistoParams.MIRROR_ID: str(detection[WizApiVariables.ID]),
+        DemistoParams.DETAILS: detection.get(WizApiVariables.DESCRIPTION, ""),
     }
 
 
@@ -3169,9 +3206,11 @@ def get_filtered_detections(
 
     wiz_detections = query_detections(variables=detection_variables, paginate=paginate, max_fetch=max_fetch)
 
-    if add_detection_url:
-        for detection in wiz_detections:
+    for detection in wiz_detections:
+        if add_detection_url:
             detection[WizApiVariables.URL] = get_detection_url(detection)
+        if not detection.get(WizApiVariables.DESCRIPTION):
+            detection[WizApiVariables.DESCRIPTION] = build_fallback_description(detection)
 
     return wiz_detections
 

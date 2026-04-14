@@ -2782,6 +2782,50 @@ def test_set_issue_note_truncates_long_note(mock_get_entries):
     assert sent_text.endswith("... [truncated]")
 
 
+def test_build_fallback_description_with_rule():
+    detection = {
+        "id": "det-123",
+        "severity": "CRITICAL",
+        "ruleMatch": {"rule": {"name": "suspicious activity detected"}},
+    }
+    result = build_fallback_description(detection)
+    assert result == "CRITICAL severity detection triggered by rule 'suspicious activity detected' (ID: det-123)"
+
+
+def test_build_fallback_description_without_rule():
+    detection = {"id": "det-456", "severity": "HIGH"}
+    result = build_fallback_description(detection)
+    assert result == "HIGH severity detection (ID: det-456)"
+
+
+def test_build_fallback_description_minimal():
+    result = build_fallback_description({})
+    assert result == "Unknown severity detection (ID: Unknown)"
+
+
+def test_build_incidents_includes_details():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "CRITICAL",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "description": "Suspicious activity detected",
+        "ruleMatch": {"rule": {"name": "test rule", "sourceType": "THREAT_DETECTION", "securitySubCategories": []}},
+    }
+    result = build_incidents(detection)
+    assert result[DemistoParams.DETAILS] == "Suspicious activity detected"
+
+
+def test_build_incidents_null_description_gets_empty_string():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "HIGH",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "ruleMatch": {"rule": {"name": "test rule", "sourceType": "THREAT_DETECTION", "securitySubCategories": []}},
+    }
+    result = build_incidents(detection)
+    assert result[DemistoParams.DETAILS] == ""
+
+
 @pytest.mark.parametrize(
     "threat_notes,delete_success_count,should_succeed",
     [
@@ -4192,8 +4236,8 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
         ), f"{scenario_name}: get_api_after_parameter should return last_run_time ({time}) after reset"
 
         assert (
-            fetch_manager.get_api_before_parameter() == "2022-01-03T12:00:00Z"
-        ), f"{scenario_name}: get_api_before_parameter should return current time after reset"
+            fetch_manager.get_api_before_parameter() == "2022-01-03T11:50:00Z"
+        ), f"{scenario_name}: get_api_before_parameter should return current time - fetch_interval after reset"
 
         assert (
             fetch_manager.get_api_cursor_parameter() is None
@@ -4238,6 +4282,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "cursor789",
         ),
         # Valid fresh fetch scenarios (no cursor, valid or missing fields)
+        # expected_before is now current_time - fetch_interval (10m) = 11:50:00Z
         (
             "valid_fresh_fetch_with_after_before",
             None,
@@ -4246,7 +4291,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2021-12-31T00:00:00Z",
             False,
             "2022-01-03T08:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         (
@@ -4257,7 +4302,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2021-12-31T00:00:00Z",
             False,
             "2022-01-03T08:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         (
@@ -4268,7 +4313,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2022-01-03T05:00:00Z",
             False,
             "2022-01-03T10:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         # Edge cases that should NOT trigger reset
@@ -4280,7 +4325,7 @@ def test_reset_function_invocation_and_values(scenario_name, end_cursor, after, 
             "2021-12-31T00:00:00Z",
             False,
             "2022-01-03T02:00:00Z",
-            "2022-01-03T12:00:00Z",
+            "2022-01-03T11:50:00Z",
             None,
         ),
         (
@@ -4389,7 +4434,7 @@ def test_boundary_conditions_no_reset():
 
         # Should return the original values
         assert fetch_manager.get_api_after_parameter() == exactly_10_hours_ago
-        assert fetch_manager.get_api_before_parameter() == "2022-01-03T12:00:00Z"  # Current time for fresh fetch
+        assert fetch_manager.get_api_before_parameter() == "2022-01-03T11:50:00Z"  # Current time - fetch_interval for fresh fetch
         assert not fetch_manager.should_continue_previous_run()  # No cursor
 
 
@@ -4495,7 +4540,7 @@ def test_fetch_incident_save_pagination_context_no_reset(mock_set_last_run):
             assert call_args[DemistoParams.TIME] == "2022-01-03T12:00:00Z"
             assert call_args[WizApiResponse.END_CURSOR] == "new_cursor_value"
             assert call_args[WizApiVariables.AFTER] == "2022-01-03T08:00:00Z"  # stored_after preserved
-            assert call_args[WizApiVariables.BEFORE] == "2022-01-03T08:00:00Z"  # ALSO stored_after (this is the key behavior)
+            assert call_args[WizApiVariables.BEFORE] == "2022-01-03T10:00:00Z"  # stored_before preserved
 
         finally:
             WizDefend.API_END_CURSOR = original_cursor
@@ -4800,7 +4845,7 @@ def test_fetch_incident_api_variables(after, before, end_cursor, need_reset):
         if need_reset:
             # After reset, values should be from reset_params logic
             expected_after_from_reset = "2022-01-03T06:00:00Z"  # last_run_time
-            expected_before_from_reset = "2022-01-03T12:00:00Z"  # current time
+            expected_before_from_reset = "2022-01-03T11:50:00Z"  # current time - fetch_interval (10m)
             expected_cursor_from_reset = None  # cursor cleared
 
             assert (
@@ -4826,11 +4871,11 @@ def test_fetch_incident_api_variables(after, before, end_cursor, need_reset):
 
             # Expected before_time logic:
             # - If continuing pagination (end_cursor exists): use stored_before
-            # - If fresh fetch: use current time
+            # - If fresh fetch: use current time - fetch_interval (10m lag)
             if end_cursor:  # Pagination
                 expected_before = before  # Should use stored_before directly
             else:  # Fresh fetch
-                expected_before = "2022-01-03T12:00:00Z"  # current time
+                expected_before = "2022-01-03T11:50:00Z"  # current time - 10m fetch interval
 
             # Expected end_cursor: should match input
             expected_cursor = end_cursor
@@ -4995,9 +5040,10 @@ def test_reset_params_comprehensive(
                 assert error_message_contains in error_call_args
 
         # Check validation calls for None last_run_time cases
+        # validate_fetch_interval is called in __init__ (_get_fetch_interval_minutes) and in reset_params
         if last_run_time is None and not exception_during_calc:
             expected_param = fetch_interval_param if fetch_interval_param is not None else str(FETCH_INTERVAL_MINIMUM_MIN)
-            mock_validate_fetch_interval.assert_called_once_with(expected_param)
+            mock_validate_fetch_interval.assert_called_with(expected_param)
 
         # Verify info logging for reset and completion
         assert mock_info.call_count >= 2  # At least "Resetting fetch parameters" and "Reset fetch incidents parameter complete"
