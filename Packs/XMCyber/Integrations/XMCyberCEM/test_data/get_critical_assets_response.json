@@ -1,0 +1,101 @@
+{
+    "data": [
+        {
+            "id": "0000000000000000000",
+            "entityId": "0000000000000000000",
+            "source_entity": {
+                "name": "FileServer",
+                "id": "0000000000000000000",
+                "isAsset": true,
+                "subType": "windows",
+                "subTypeDisplayName": "Device"
+            },
+            "typeDisplayName": "Device",
+            "lastCompromised": "2025-12-19T12:59:40.945Z",
+            "riskScore": {
+                "severity": "critical",
+                "severityScore": 89
+            },
+            "chokePointScore": {
+                "severity": "critical",
+                "severityScore": 100
+            },
+            "labels": {
+                "id": []
+            },
+            "xmLabels": {
+                "id": [
+                    "RDP server",
+                    "Public IP"
+                ]
+            },
+            "isWatched": false
+        },
+        {
+            "id": "0000000000000000001",
+            "entityId": "0000000000000000001",
+            "source_entity": {
+                "name": "DatabaseServer",
+                "id": "0000000000000000001",
+                "isAsset": true,
+                "subType": "windows",
+                "subTypeDisplayName": "Device"
+            },
+            "typeDisplayName": "Device",
+            "lastCompromised": "2025-12-20T10:30:00.000Z",
+            "riskScore": {
+                "severity": "high",
+                "severityScore": 75
+            },
+            "chokePointScore": {
+                "severity": "high",
+                "severityScore": 85
+            },
+            "labels": {
+                "id": []
+            },
+            "xmLabels": {
+                "id": [
+                    "SQL Server"
+                ]
+            },
+            "isWatched": true
+        },
+        {
+            "id": "0000000000000000002",
+            "entityId": "0000000000000000002",
+            "source_entity": {
+                "name": "DomainController",
+                "id": "0000000000000000002",
+                "isAsset": true,
+                "subType": "windows",
+                "subTypeDisplayName": "Device"
+            },
+            "typeDisplayName": "Device",
+            "lastCompromised": "2025-12-18T08:00:00.000Z",
+            "riskScore": {
+                "severity": "critical",
+                "severityScore": 95
+            },
+            "chokePointScore": {
+                "severity": "critical",
+                "severityScore": 100
+            },
+            "labels": {
+                "id": []
+            },
+            "xmLabels": {
+                "id": [
+                    "Domain Controller"
+                ]
+            },
+            "isWatched": true
+        }
+    ],
+    "paging": {
+        "page": 1,
+        "pageSize": 3,
+        "total": 135,
+        "totalPages": 45
+    }
+}
