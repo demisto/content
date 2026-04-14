@@ -528,10 +528,35 @@ Gets a single breached site by breach name.
     "Domain": {
         "Name": "adobe.com",
         "Pwned-V2": {
+            "AddedDate": "2013-12-04T00:00:00Z",
+            "Attribution": null,
+            "BreachDate": "2013-10-04",
             "Compromised": {
                 "Reporters": "Adobe",
                 "Vendor": "Have I Been Pwned? V2"
-            }
+            },
+            "DataClasses": [
+                "Email addresses",
+                "Password hints",
+                "Passwords",
+                "Usernames"
+            ],
+            "Description": "In October 2013, 153 million Adobe accounts were breached with each containing an internal ID, username, email, <em>encrypted</em> password and a password hint in plain text. The password cryptography was poorly done and many were quickly resolved back to plain text. The unencrypted hints also <a href=\"http://www.troyhunt.com/2013/11/adobe-credentials-and-serious.html\" target=\"_blank\" rel=\"noopener\">disclosed much about the passwords</a> adding further to the risk that hundreds of millions of Adobe customers already faced.",
+            "DisclosureUrl": null,
+            "Domain": "adobe.com",
+            "IsFabricated": false,
+            "IsMalware": false,
+            "IsRetired": false,
+            "IsSensitive": false,
+            "IsSpamList": false,
+            "IsStealerLog": false,
+            "IsSubscriptionFree": false,
+            "IsVerified": true,
+            "LogoPath": "https://logos.haveibeenpwned.com/Adobe.png",
+            "ModifiedDate": "2022-05-15T23:52:49Z",
+            "Name": "Adobe",
+            "PwnCount": 152445165,
+            "Title": "Adobe"
         }
     }
 }
@@ -590,10 +615,36 @@ This command has no arguments.
     "Domain": {
         "Name": "hallmark.com",
         "Pwned-V2": {
+            "AddedDate": "2026-04-12T02:01:11Z",
+            "Attribution": null,
+            "BreachDate": "2026-03-31",
             "Compromised": {
                 "Reporters": "Hallmark",
                 "Vendor": "Have I Been Pwned? V2"
-            }
+            },
+            "DataClasses": [
+                "Email addresses",
+                "Names",
+                "Phone numbers",
+                "Physical addresses",
+                "Support tickets"
+            ],
+            "Description": "In March 2026, <a href=\"https://cybernews.com/security/hallmark-data-breach-shinyhunters/\" target=\"_blank\" rel=\"noopener\">Hallmark suffered an alleged breach and subsequent extortion</a> after attackers gained access to data stored within Salesforce. The data was later published after the extortion deadline passed, exposing 1.7M unique email addresses across both Hallmark and the Hallmark+ streaming service, along with names, phone numbers, physical addresses and support tickets.",
+            "DisclosureUrl": null,
+            "Domain": "hallmark.com",
+            "IsFabricated": false,
+            "IsMalware": false,
+            "IsRetired": false,
+            "IsSensitive": false,
+            "IsSpamList": false,
+            "IsStealerLog": false,
+            "IsSubscriptionFree": false,
+            "IsVerified": true,
+            "LogoPath": "https://logos.haveibeenpwned.com/Hallmark.png",
+            "ModifiedDate": "2026-04-12T02:01:11Z",
+            "Name": "Hallmark",
+            "PwnCount": 1736520,
+            "Title": "Hallmark"
         }
     }
 }
