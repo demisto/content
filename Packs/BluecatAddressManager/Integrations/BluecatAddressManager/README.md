@@ -683,7 +683,7 @@
 </tr>
 <tr>
 <td style="width: 208px;">include_ha</td>
-<td style="width: 418px;">When set to true, the returned xHA server object includes details for the xHA status of the nodes. When set to false, only basic information is returned without polling xHA status. Default is true.</td>
+<td style="width: 418px;">When set to true, the returned xHA server object includes details for the xHA status of the nodes. When set to false, only basic information is returned without polling xHA status.</td>
 <td style="width: 114px;">Optional</td>
 </tr>
 </tbody>
@@ -707,12 +707,12 @@
 <tr>
 <td style="width: 372px;">BlueCat.AddressManager.Entity.Name</td>
 <td style="width: 52px;">String</td>
-<td style="width: 316px;">Name of the entity.</td>
+<td style="width: 316px;">The entity name.</td>
 </tr>
 <tr>
 <td style="width: 372px;">BlueCat.AddressManager.Entity.Type</td>
 <td style="width: 52px;">String</td>
-<td style="width: 316px;">Type of the entity (e.g., HostRecord, IP4Address).</td>
+<td style="width: 316px;">The entity type.</td>
 </tr>
 <tr>
 <td style="width: 372px;">BlueCat.AddressManager.Entity.AbsoluteName</td>
@@ -727,17 +727,17 @@
 <tr>
 <td style="width: 372px;">BlueCat.AddressManager.Entity.Parents.ID</td>
 <td style="width: 52px;">Number</td>
-<td style="width: 316px;">ID of the parent entity.</td>
+<td style="width: 316px;">The parent entity ID.</td>
 </tr>
 <tr>
 <td style="width: 372px;">BlueCat.AddressManager.Entity.Parents.Type</td>
 <td style="width: 52px;">String</td>
-<td style="width: 316px;">Type of the parent entity.</td>
+<td style="width: 316px;">The parent entity type.</td>
 </tr>
 <tr>
 <td style="width: 372px;">BlueCat.AddressManager.Entity.Parents.Name</td>
 <td style="width: 52px;">String</td>
-<td style="width: 316px;">Name of the parent entity.</td>
+<td style="width: 316px;">The parent entity name.</td>
 </tr>
 </tbody>
 </table>
