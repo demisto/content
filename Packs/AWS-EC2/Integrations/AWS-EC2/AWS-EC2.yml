@@ -143,7 +143,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  additionalinfo: The region to be used for the STS client creation process.
+  additionalinfo: The AWS region used to create the STS client. Set this explicitly when STS calls must target a fixed region regardless of the command's target region.
 - display: AWS organization accounts
   name: accounts_to_access
   type: 0

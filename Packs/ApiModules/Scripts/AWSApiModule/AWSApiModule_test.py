@@ -435,83 +435,15 @@ def test_aws_session_sts_endpoint_url(mocker, params, region, expected_sts_endpo
 
 
 @pytest.mark.parametrize(
-    "params, region, expected_sts_region",
+    "sts_region, region, expected_sts_region, aws_access_key_id, aws_secret_access_key",
     [
-        (
-            {
-                "aws_default_region": "us-east-1",
-                "aws_role_arn": "role_arn_param",
-                "aws_role_session_name": "role_session_name_param",
-                "aws_access_key_id": "test_access_key",
-                "aws_role_session_duration": None,
-                "sts_endpoint_url": None,
-                "aws_role_policy": None,
-                "aws_secret_access_key": "test_secret_key",
-                "verify_certificate": False,
-                "timeout": 60,
-                "retries": 3,
-                "sts_region": "eu-west-1",
-            },
-            "us-west-2",
-            "eu-west-1",
-        ),
-        (
-            {
-                "aws_default_region": "us-east-1",
-                "aws_role_arn": "role_arn_param",
-                "aws_role_session_name": "role_session_name_param",
-                "aws_access_key_id": "test_access_key",
-                "aws_role_session_duration": None,
-                "sts_endpoint_url": None,
-                "aws_role_policy": None,
-                "aws_secret_access_key": "test_secret_key",
-                "verify_certificate": False,
-                "timeout": 60,
-                "retries": 3,
-                "sts_region": None,
-            },
-            "us-west-2",
-            "us-west-2",
-        ),
-        (
-            {
-                "aws_default_region": "us-east-1",
-                "aws_role_arn": "role_arn_param",
-                "aws_role_session_name": "role_session_name_param",
-                "aws_access_key_id": "test_access_key",
-                "aws_role_session_duration": None,
-                "sts_endpoint_url": None,
-                "aws_role_policy": None,
-                "aws_secret_access_key": "test_secret_key",
-                "verify_certificate": False,
-                "timeout": 60,
-                "retries": 3,
-                "sts_region": None,
-            },
-            None,
-            "us-east-1",
-        ),
-        (
-            {
-                "aws_default_region": "us-east-1",
-                "aws_role_arn": "role_arn_param",
-                "aws_role_session_name": "role_session_name_param",
-                "aws_access_key_id": None,
-                "aws_role_session_duration": None,
-                "sts_endpoint_url": None,
-                "aws_role_policy": None,
-                "aws_secret_access_key": None,
-                "verify_certificate": False,
-                "timeout": 60,
-                "retries": 3,
-                "sts_region": "eu-west-1",
-            },
-            "us-west-2",
-            "eu-west-1",
-        ),
+        ("eu-west-1", "us-west-2", "eu-west-1", "test_access_key", "test_secret_key"),
+        (None, "us-west-2", "us-west-2", "test_access_key", "test_secret_key"),
+        (None, None, "us-east-1", "test_access_key", "test_secret_key"),
+        ("eu-west-1", "us-west-2", "eu-west-1", None, None),
     ],
 )
-def test_aws_session_sts_region(mocker, params, region, expected_sts_region):
+def test_aws_session_sts_region(mocker, sts_region, region, expected_sts_region, aws_access_key_id, aws_secret_access_key):
     """
     Given
     - Case A: sts_region is explicitly provided.
@@ -528,6 +460,21 @@ def test_aws_session_sts_region(mocker, params, region, expected_sts_region):
     - Case C: Verify that the sts client is created with the aws_default_region.
     - Case D: Verify that the sts client is created with the sts_region.
     """
+    params = {
+        "aws_default_region": "us-east-1",
+        "aws_role_arn": "role_arn_param",
+        "aws_role_session_name": "role_session_name_param",
+        "aws_role_session_duration": None,
+        "sts_endpoint_url": None,
+        "aws_role_policy": None,
+        "verify_certificate": False,
+        "timeout": 60,
+        "retries": 3,
+        "sts_region": sts_region,
+        "aws_access_key_id": aws_access_key_id,
+        "aws_secret_access_key": aws_secret_access_key,
+    }
+
     sts_client_mock = MagicMock()
     mocker.patch.object(
         sts_client_mock,
