@@ -180,7 +180,7 @@ script:
       name: type
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: An optional boolean flag for REST calls that sets the level of detail when retrieving xHA pair server objects. When set to true, the returned xHA server object includes details for the xHA status of the nodes. When set to false, only basic information is returned without polling xHA status. Default is true.
+      description: An optional boolean flag for REST calls that sets the level of detail when retrieving xHA pair server objects. When set to true, the returned xHA server object includes details for the xHA status of the nodes. When set to false, only basic information is returned without polling xHA status.
       name: include_ha
       predefined:
       - 'true'
@@ -192,10 +192,10 @@ script:
       description: The address manager ID of the entity.
       type: Number
     - contextPath: BlueCat.AddressManager.Entity.Name
-      description: Name of the entity.
+      description: The entity name.
       type: String
     - contextPath: BlueCat.AddressManager.Entity.Type
-      description: Type of the entity.
+      description: The entity type.
       type: String
     - contextPath: BlueCat.AddressManager.Entity.AbsoluteName
       description: The absolute (fully qualified) DNS name of the entity.
@@ -204,13 +204,13 @@ script:
       description: The IP address(es) associated with the entity.
       type: String
     - contextPath: BlueCat.AddressManager.Entity.Parents.ID
-      description: ID of the parent entity.
+      description: The parent entity ID.
       type: Number
     - contextPath: BlueCat.AddressManager.Entity.Parents.Type
-      description: Type of the parent entity.
+      description: The parent entity type.
       type: String
     - contextPath: BlueCat.AddressManager.Entity.Parents.Name
-      description: Name of the parent entity.
+      description: The parent entity name.
       type: String
   dockerimage: demisto/python3:3.12.12.7090913
   runonce: false
