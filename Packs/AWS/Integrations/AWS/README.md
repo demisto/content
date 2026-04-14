@@ -4996,7 +4996,7 @@ Creates a log group with the specified name.
 | log_group_name | The name of the log group. Log group names can be between 1 and 512 characters long. Allowed characters are a-z, A-Z, 0-9, '_' (underscore), '-' (hyphen), '/' (forward slash), '.' (period), and '#' (number sign). | Required |
 | kms_key_id | The Amazon Resource Name (ARN) of the KMS key to use when encrypting log data. | Optional |
 | log_group_class | The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost. Possible values are: STANDARD, INFREQUENT_ACCESS. | Optional |
-| tags | The key-value pairs to use for the tags. You can grant users access to certain log groups while preventing them from accessing other log groups, by using tag-based access control. Format: JSON object, e.g. {"Environment": "Production", "Team": "DevOps"}. | Optional |
+| tags | The key-value pairs to use for the tags. Must be separated by a semicolon \(;\) and specified using the format "key=abc,value=123;key=fed,value=456". | Optional |
 | deletion_protection_enabled | Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false. Possible values are: true, false. | Optional |
 | region | The AWS Region. | Required |
 | account_id | The AWS account ID. | Required |
@@ -5170,15 +5170,15 @@ Lists the log streams for the specified log group. You can list all the log stre
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.LogStreams.LogGroupName | string | The name of the log group. |
-| AWS.CloudWatchLogs.LogStreams.LogStreamName | string | The name of the log stream. |
-| AWS.CloudWatchLogs.LogStreams.CreationTime | number | The creation time of the stream, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
-| AWS.CloudWatchLogs.LogStreams.Arn | string | The Amazon Resource Name \(ARN\) of the log stream. |
-| AWS.CloudWatchLogs.LogStreams.FirstEventTimestamp | date | The time of the first event, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
-| AWS.CloudWatchLogs.LogStreams.LastEventTimestamp | date | The time of the most recent log event in the log stream in CloudWatch Logs. |
-| AWS.CloudWatchLogs.LogStreams.LastIngestionTime | date | The ingestion time, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
-| AWS.CloudWatchLogs.LogStreams.UploadSequenceToken | string | The sequence token. |
-| AWS.CloudWatchLogs.LogStreams.StoredBytes | number | The number of bytes stored. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName | string | The name of the log group. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName | string | The name of the log stream. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime | number | The creation time of the stream, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.Arn | string | The Amazon Resource Name \(ARN\) of the log stream. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.FirstEventTimestamp | date | The time of the first event, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.LastEventTimestamp | date | The time of the most recent log event in the log stream in CloudWatch Logs. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.LastIngestionTime | date | The ingestion time, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.UploadSequenceToken | string | The sequence token. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes | number | The number of bytes stored. |
 | AWS.CloudWatchLogs.LogStreamsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
 ### aws-cloudwatch-retention-policy-put
