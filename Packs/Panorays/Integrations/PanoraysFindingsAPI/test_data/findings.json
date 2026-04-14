@@ -1,0 +1,12 @@
+{
+    "data": [
+        {
+            "id": "123",
+            "category": "Network Security",
+            "asset_name": "panorays.com",
+            "severity": "High",
+            "status": "Open",
+            "finding_text": "Sample finding for unit test"
+        }
+    ]
+}
