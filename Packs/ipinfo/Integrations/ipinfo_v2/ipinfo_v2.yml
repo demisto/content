@@ -124,19 +124,19 @@ script:
       type: String
     - contextPath: IP.Relationships.EntityA
       description: The source of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.EntityB
       description: The destination of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.Relationship
       description: The name of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.EntityAType
       description: The type of the source of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Geo.Location
       description: The IP geographic location (coordinates as lat:lon).
       type: String
