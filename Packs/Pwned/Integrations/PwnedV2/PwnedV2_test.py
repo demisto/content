@@ -577,7 +577,7 @@ def test_pwned_breach_get_command_with_results(mocker):
                 "AddedDate": "2013-12-04T00:00:00Z",
                 "ModifiedDate": "2022-05-15T23:52:49Z",
                 "PwnCount": 152445165,
-                "Description": 'In October 2013, 153 million Adobe accounts were breached.',
+                "Description": "In October 2013, 153 million Adobe accounts were breached.",
                 "LogoPath": "https://logos.haveibeenpwned.com/Adobe.png",
                 "Attribution": None,
                 "DisclosureUrl": None,
