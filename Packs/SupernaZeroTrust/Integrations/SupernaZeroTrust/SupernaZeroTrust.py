@@ -100,7 +100,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     base_url = (params.get("base_url") or "").rstrip("/")
     creds = params.get("credentials") or {}
-    api_key = creds.get("password")  # Authentication param: password holds the secret
+    api_key = creds.get("password") or ""  # Authentication param: password holds the secret
     insecure = bool(params.get("insecure"))
     proxy = bool(params.get("proxy"))
 
