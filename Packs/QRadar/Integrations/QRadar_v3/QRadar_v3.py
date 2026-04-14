@@ -815,7 +815,7 @@ class Client(BaseClient):
     def get_reference_data_bulk_task_status(self, task_id: int):
         return self.http_request(method="GET", url_suffix=f"/reference_data_collections/set_bulk_update_tasks/{task_id}")
 
-    def reference_data_bulk_call(self, name: str, type: str, data: str) -> dict:
+    def reference_data_bulk_call(self, name: str, type: str, data: dict[Any, Any] | list[dict[Any, Any]]) -> dict:
         """Calls bulk upload endpoint
 
         Args:
@@ -833,6 +833,13 @@ class Client(BaseClient):
             url_suffix=f"/reference_data/{type}/bulk_load/{name}",
             json_data=data,
             additional_headers=headers,
+        )
+
+    def reference_data_delete(self, name: str, type: str, purge: bool) -> dict:
+        headers = {"Content-Type": "application/json"}
+        _http_params = {"purge_only": purge}
+        return self.http_request(
+            method="DELETE", url_suffix=f"/reference_data/{type}/{name}", additional_headers=headers, params=_http_params
         )
 
     def geolocations_for_ip(self, filter_: str | None = None, fields: str | None = None):
@@ -3763,7 +3770,7 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
     return CommandResults(readable_output=human_readable, raw_response=response)
 
 
-def qradar_reference_data_bulk_load(client: Client, args: dict) -> CommandResults:
+def qradar_reference_data_bulk_load_command(client: Client, args: dict) -> CommandResults:
     """Bulk loads reference data to a reference data map
 
     Args:
@@ -3779,12 +3786,10 @@ def qradar_reference_data_bulk_load(client: Client, args: dict) -> CommandResult
     data = args.get("data", None)
     if reference_data_name is None:
         raise ValueError("reference_data_name is required")
-    if reference_data_name is None:
-        raise ValueError("reference_data_name is required")
-    if data is None:
-        raise ValueError("data is required")
     if reference_data_type not in ["maps", "map_of_sets"]:
         raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
+    if data is None:
+        raise ValueError("data is required")
     # TODO: Implement API Call
     resp = client.reference_data_bulk_call(name=reference_data_name, type=reference_data_type, data=data)
 
@@ -3795,6 +3800,21 @@ def qradar_reference_data_bulk_load(client: Client, args: dict) -> CommandResult
         outputs=resp,
         raw_response=resp,
     )
+
+
+def qradar_reference_data_delete_command(client: Client, args: dict) -> CommandResults:
+    reference_data_type = args.get("reference_data_type", None)
+    reference_data_name = args.get("reference_data_name", None)
+    reference_data_purge = args.get("reference_data_purge", False)
+
+    if reference_data_name is None:
+        raise ValueError("reference_data_name is required")
+    if reference_data_type not in ["maps", "map_of_sets"]:
+        raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
+
+    client.reference_data_delete(reference_data_name, reference_data_type, reference_data_purge)
+
+    return CommandResults()
 
 
 def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
@@ -5570,6 +5590,84 @@ def main() -> None:  # pragma: no cover
             timeout=timeout,
         )
         # All command names with or are for supporting QRadar v2 command names for backward compatibility
+        commands = {
+            "qradar-offenses-list": qradar_offenses_list_command,
+            "qradar-offenses": qradar_offenses_list_command,
+            "qradar-offense-by-id": qradar_offenses_list_command,
+            "qradar-offense-update": qradar_offense_update_command,
+            "qradar-update-offense": qradar_offense_update_command,
+            "qradar-closing-reasons": qradar_closing_reasons_list_command,
+            "qradar-get-closing-reasons": qradar_closing_reasons_list_command,
+            "qradar-offense-notes-list": qradar_offense_notes_list_command,
+            "qradar-get-note": qradar_offense_notes_list_command,
+            "qradar-offense-note-create": qradar_offense_notes_create_command,
+            "qradar-create-note": qradar_offense_notes_create_command,
+            "qradar-rules-list": qradar_rules_list_command,
+            "qradar-rule-groups-list": qradar_rule_groups_list_command,
+            "qradar-assets-list": qradar_assets_list_command,
+            "qradar-get-assets": qradar_assets_list_command,
+            "qradar-get-asset-by-id": qradar_assets_list_command,
+            "qradar-saved-searches-list": qradar_saved_searches_list_command,
+            "qradar-searches-list": qradar_searches_list_command,
+            "qradar-search-create": lambda client, args: qradar_search_create_command(client, params, args),
+            "qradar-searches": lambda client, args: qradar_search_create_command(client, params, args),
+            "qradar-search-status-get": qradar_search_status_get_command,
+            "qradar-get-search": qradar_search_status_get_command,
+            "qradar-search-results-get": qradar_search_results_get_command,
+            "qradar-get-search-results": qradar_search_results_get_command,
+            "qradar-search-cancel": qradar_search_cancel_command,
+            "qradar-search-delete": qradar_search_delete_command,
+            "qradar-reference-sets-list": qradar_reference_sets_list_command,
+            "qradar-get-reference-by-name": qradar_reference_sets_list_command,
+            "qradar-reference-set-create": qradar_reference_set_create_command,
+            "qradar-create-reference-set": qradar_reference_set_create_command,
+            "qradar-reference-set-delete": qradar_reference_set_delete_command,
+            "qradar-delete-reference-set": qradar_reference_set_delete_command,
+            "qradar-reference-set-value-upsert": lambda client, args: qradar_reference_set_value_upsert_command(
+                args, client, params
+            ),
+            "qradar-create-reference-set-value": lambda client, args: qradar_reference_set_value_upsert_command(
+                args, client, params
+            ),
+            "qradar-update-reference-set-value": lambda client, args: qradar_reference_set_value_upsert_command(
+                args, client, params
+            ),
+            "qradar-reference-set-value-delete": qradar_reference_set_value_delete_command,
+            "qradar-delete-reference-set-value": qradar_reference_set_value_delete_command,
+            "qradar-domains-list": qradar_domains_list_command,
+            "qradar-get-domains": qradar_domains_list_command,
+            "qradar-get-domain-by-id": qradar_domains_list_command,
+            "qradar-indicators-upload": lambda client, args: qradar_indicators_upload_command(args, client, params),
+            "qradar-upload-indicators": lambda client, args: qradar_indicators_upload_command(args, client, params),
+            "qradar-geolocations-for-ip": qradar_geolocations_for_ip_command,
+            "qradar-log-sources-list": qradar_log_sources_list_command,
+            "qradar-get-custom-properties": qradar_get_custom_properties_command,
+            "qradar-ips-source-get": qradar_ips_source_get_command,
+            "qradar-ips-local-destination-get": qradar_ips_local_destination_get_command,
+            "qradar-reset-last-run": lambda client, args: qradar_reset_last_run_command(),
+            "get-mapping-fields": lambda client, args: qradar_get_mapping_fields_command(client),
+            "qradar-search-retrieve-events": lambda client, args: qradar_search_retrieve_events_command(client, params, args),
+            "qradar-remote-network-cidr-create": qradar_remote_network_cidr_create_command,
+            "qradar-remote-network-cidr-list": qradar_remote_network_cidr_list_command,
+            "qradar-remote-network-cidr-delete": qradar_remote_network_cidr_delete_command,
+            "qradar-remote-network-cidr-update": qradar_remote_network_cidr_update_command,
+            "qradar-remote-network-deploy-execution": qradar_remote_network_deploy_execution_command,
+            "qradar-event-collectors-list": qradar_event_collectors_list_command,
+            "qradar-wincollect-destinations-list": qradar_wincollect_destinations_list_command,
+            "qradar-disconnected-log-collectors-list": qradar_disconnected_log_collectors_list_command,
+            "qradar-log-source-types-list": qradar_log_source_types_list_command,
+            "qradar-log-source-protocol-types-list": qradar_log_source_protocol_types_list_command,
+            "qradar-log-source-extensions-list": qradar_log_source_extensions_list_command,
+            "qradar-log-source-languages-list": qradar_log_source_languages_list_command,
+            "qradar-log-source-groups-list": qradar_log_source_groups_list_command,
+            "qradar-log-source-delete": qradar_log_source_delete_command,
+            "qradar-log-source-create": qradar_log_source_create_command,
+            "qradar-log-source-update": qradar_log_source_update_command,
+            "qradar-print-context": lambda client, args: qradar_print_context_command(),
+            "qradar-reference-data-bulk-load": qradar_reference_data_bulk_load_command,
+            "qradar-delete-reference-data": qradar_reference_data_delete_command,
+        }
+
         if command == "test-module":
             validate_integration_context()
             return_results(test_module_command(client, params))
@@ -5582,124 +5680,6 @@ def main() -> None:  # pragma: no cover
             support_multithreading()
             long_running_execution_command(client, params)
 
-        elif command in [
-            "qradar-offenses-list",
-            "qradar-offenses",
-            "qradar-offense-by-id",
-        ]:
-            return_results(qradar_offenses_list_command(client, args))
-
-        elif command in ["qradar-offense-update", "qradar-update-offense"]:
-            return_results(qradar_offense_update_command(client, args))
-
-        elif command in ["qradar-closing-reasons", "qradar-get-closing-reasons"]:
-            return_results(qradar_closing_reasons_list_command(client, args))
-
-        elif command in ["qradar-offense-notes-list", "qradar-get-note"]:
-            return_results(qradar_offense_notes_list_command(client, args))
-
-        elif command in ["qradar-offense-note-create", "qradar-create-note"]:
-            return_results(qradar_offense_notes_create_command(client, args))
-
-        elif command == "qradar-rules-list":
-            return_results(qradar_rules_list_command(client, args))
-
-        elif command == "qradar-rule-groups-list":
-            return_results(qradar_rule_groups_list_command(client, args))
-
-        elif command in [
-            "qradar-assets-list",
-            "qradar-get-assets",
-            "qradar-get-asset-by-id",
-        ]:
-            return_results(qradar_assets_list_command(client, args))
-
-        elif command == "qradar-saved-searches-list":
-            return_results(qradar_saved_searches_list_command(client, args))
-
-        elif command == "qradar-searches-list":
-            return_results(qradar_searches_list_command(client, args))
-
-        elif command in ["qradar-search-create", "qradar-searches"]:
-            return_results(qradar_search_create_command(client, params, args))
-
-        elif command in ["qradar-search-status-get", "qradar-get-search"]:
-            return_results(qradar_search_status_get_command(client, args))
-
-        elif command in [
-            "qradar-search-results-get",
-            "qradar-get-search-results",
-        ]:
-            return_results(qradar_search_results_get_command(client, args))
-
-        elif command == "qradar-search-cancel":
-            return_results(qradar_search_cancel_command(client, args))
-
-        elif command == "qradar-search-delete":
-            return_results(qradar_search_delete_command(client, args))
-
-        elif command in [
-            "qradar-reference-sets-list",
-            "qradar-get-reference-by-name",
-        ]:
-            return_results(qradar_reference_sets_list_command(client, args))
-
-        elif command in [
-            "qradar-reference-set-create",
-            "qradar-create-reference-set",
-        ]:
-            return_results(qradar_reference_set_create_command(client, args))
-
-        elif command in [
-            "qradar-reference-set-delete",
-            "qradar-delete-reference-set",
-        ]:
-            return_results(qradar_reference_set_delete_command(client, args))
-
-        elif command in [
-            "qradar-reference-set-value-upsert",
-            "qradar-create-reference-set-value",
-            "qradar-update-reference-set-value",
-        ]:
-            return_results(qradar_reference_set_value_upsert_command(args, client, params))
-
-        elif command in [
-            "qradar-reference-set-value-delete",
-            "qradar-delete-reference-set-value",
-        ]:
-            return_results(qradar_reference_set_value_delete_command(client, args))
-
-        elif command in [
-            "qradar-domains-list",
-            "qradar-get-domains",
-            "qradar-get-domain-by-id",
-        ]:
-            return_results(qradar_domains_list_command(client, args))
-
-        elif command in ["qradar-indicators-upload", "qradar-upload-indicators"]:
-            return_results(qradar_indicators_upload_command(args, client, params))
-
-        elif command == "qradar-geolocations-for-ip":
-            return_results(qradar_geolocations_for_ip_command(client, args))
-
-        elif command == "qradar-log-sources-list":
-            return_results(qradar_log_sources_list_command(client, args))
-
-        elif command == "qradar-get-custom-properties":
-            return_results(qradar_get_custom_properties_command(client, args))
-
-        elif command == "qradar-ips-source-get":
-            return_results(qradar_ips_source_get_command(client, args))
-
-        elif command == "qradar-ips-local-destination-get":
-            return_results(qradar_ips_local_destination_get_command(client, args))
-
-        elif command == "qradar-reset-last-run":
-            return_results(qradar_reset_last_run_command())
-
-        elif command == "get-mapping-fields":
-            return_results(qradar_get_mapping_fields_command(client))
-
         elif command == "get-remote-data":
             validate_integration_context()
             return_results(get_remote_data_command(client, params, args))
@@ -5708,63 +5688,8 @@ def main() -> None:  # pragma: no cover
             validate_integration_context()
             return_results(get_modified_remote_data_command(client, params, args))
 
-        elif command == "qradar-search-retrieve-events":
-            return_results(qradar_search_retrieve_events_command(client, params, args))
-
-        elif command == "qradar-remote-network-cidr-create":
-            return_results(qradar_remote_network_cidr_create_command(client, args))
-
-        elif command == "qradar-remote-network-cidr-list":
-            return_results(qradar_remote_network_cidr_list_command(client, args))
-
-        elif command == "qradar-remote-network-cidr-delete":
-            return_results(qradar_remote_network_cidr_delete_command(client, args))
-
-        elif command == "qradar-remote-network-cidr-update":
-            return_results(qradar_remote_network_cidr_update_command(client, args))
-
-        elif command == "qradar-remote-network-deploy-execution":
-            return_results(qradar_remote_network_deploy_execution_command(client, args))
-
-        elif command == "qradar-event-collectors-list":
-            return_results(qradar_event_collectors_list_command(client, args))
-
-        elif command == "qradar-wincollect-destinations-list":
-            return_results(qradar_wincollect_destinations_list_command(client, args))
-
-        elif command == "qradar-disconnected-log-collectors-list":
-            return_results(qradar_disconnected_log_collectors_list_command(client, args))
-
-        elif command == "qradar-log-source-types-list":
-            return_results(qradar_log_source_types_list_command(client, args))
-
-        elif command == "qradar-log-source-protocol-types-list":
-            return_results(qradar_log_source_protocol_types_list_command(client, args))
-
-        elif command == "qradar-log-source-extensions-list":
-            return_results(qradar_log_source_extensions_list_command(client, args))
-
-        elif command == "qradar-log-source-languages-list":
-            return_results(qradar_log_source_languages_list_command(client, args))
-
-        elif command == "qradar-log-source-groups-list":
-            return_results(qradar_log_source_groups_list_command(client, args))
-
-        elif command == "qradar-log-source-delete":
-            return_results(qradar_log_source_delete_command(client, args))
-
-        elif command == "qradar-log-source-create":
-            return_results(qradar_log_source_create_command(client, args))
-
-        elif command == "qradar-log-source-update":
-            return_results(qradar_log_source_update_command(client, args))
-
-        elif command == "qradar-print-context":
-            return_results(qradar_print_context_command())
-
-        elif command == "qradar-reference-data-bulk-load":
-            return_results(qradar_reference_data_bulk_load(client, args))
-
+        elif command in commands:
+            return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
 

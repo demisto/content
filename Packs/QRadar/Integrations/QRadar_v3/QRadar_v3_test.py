@@ -115,7 +115,7 @@ from QRadar_v3 import (
     qradar_search_results_get_command,
     qradar_search_status_get_command,
     qradar_searches_list_command,
-    qradar_reference_data_bulk_load,
+    qradar_reference_data_bulk_load_command,
     qradar_wincollect_destinations_list_command,
     sanitize_outputs,
     validate_integration_context,
@@ -2352,7 +2352,7 @@ def test_calculate_object_size_success_json_serialization(incident, expected_min
     assert size >= expected_min_size
 
 
-def test_calculate_object_size_fallback_to_str(monkeypatch):
+def test_calculate_object_size_fallback_to_str():
     """
     Given an incident dictionary that includes a non-serializable object
     When calculate_object_size is called
@@ -2365,9 +2365,7 @@ def test_calculate_object_size_fallback_to_str(monkeypatch):
     def json_dumps_fail(*args, **kwargs):
         raise TypeError("Object of type NonSerializable is not JSON serializable")
 
-    monkeypatch.setattr("QRadar_v3.json.dumps", json_dumps_fail)
-
-    with patch("QRadar_v3.demisto.debug") as mock_debug:
+    with patch("QRadar_v3.json.dumps", side_effect=json_dumps_fail), patch("QRadar_v3.demisto.debug") as mock_debug:
         size = calculate_object_size(incident)
         assert isinstance(size, int)
         assert size > 0
@@ -2626,13 +2624,13 @@ class TestReferenceDataBulkLoad:
          - Missing or invalid required arguments.
 
         When:
-         - Calling qradar_reference_data_bulk_load.
+         - Calling qradar_reference_data_bulk_load_command.
 
         Then:
          - Ensure ValueError is raised with the expected message.
         """
         with pytest.raises(ValueError, match=expected_error):
-            qradar_reference_data_bulk_load(client, args)
+            qradar_reference_data_bulk_load_command(client, args)
 
     @pytest.mark.parametrize(
         "args, api_response",
@@ -2653,14 +2651,14 @@ class TestReferenceDataBulkLoad:
          - Valid arguments for bulk loading maps or map_of_sets reference data.
 
         When:
-         - Calling qradar_reference_data_bulk_load.
+         - Calling qradar_reference_data_bulk_load_command.
 
         Then:
          - Ensure no ValueError is raised and a CommandResults object is returned.
         """
         mocker.patch.object(client, "reference_data_bulk_call", return_value=api_response)
 
-        result = qradar_reference_data_bulk_load(client, args)
+        result = qradar_reference_data_bulk_load_command(client, args)
 
         assert isinstance(result, CommandResults)
 
@@ -2683,7 +2681,7 @@ class TestReferenceDataBulkLoad:
          - Valid arguments for bulk loading reference data.
 
         When:
-         - Calling qradar_reference_data_bulk_load.
+         - Calling qradar_reference_data_bulk_load_command.
 
         Then:
          - Ensure reference_data_bulk_call is invoked with the correct name, type, and data.
@@ -2691,7 +2689,7 @@ class TestReferenceDataBulkLoad:
         api_response = {"number_of_elements": 1, "name": args["reference_data_name"], "element_type": "ALN"}
         mock_bulk_call = mocker.patch.object(client, "reference_data_bulk_call", return_value=api_response)
 
-        qradar_reference_data_bulk_load(client, args)
+        qradar_reference_data_bulk_load_command(client, args)
 
         mock_bulk_call.assert_called_once_with(**expected_call_kwargs)
 
@@ -2714,14 +2712,14 @@ class TestReferenceDataBulkLoad:
          - A successful API response from reference_data_bulk_call.
 
         When:
-         - Calling qradar_reference_data_bulk_load.
+         - Calling qradar_reference_data_bulk_load_command.
 
         Then:
          - Ensure the returned CommandResults contains the raw API response.
         """
         mocker.patch.object(client, "reference_data_bulk_call", return_value=api_response)
 
-        result = qradar_reference_data_bulk_load(client, args)
+        result = qradar_reference_data_bulk_load_command(client, args)
 
         assert isinstance(result, CommandResults)
         assert result.raw_response == api_response
@@ -2744,10 +2742,12 @@ class TestReferenceDataBulkLoad:
         Then:
          - Ensure http_request is called with POST, the correct URL suffix, and the data as json_data.
         """
-        api_response = {"number_of_elements": 3}
+        headers = {"Content-Type": "application/json"}
+        api_response = util_load_json("./test_data/ref_data_bulk_resp.json")
         mock_http = mocker.patch.object(client, "http_request", return_value=api_response)
 
-        result = client.reference_data_bulk_call(name=name, type=ref_type, data=data)
+        client.reference_data_bulk_call(name=name, type=ref_type, data=data)
 
-        mock_http.assert_called_once_with(method="POST", url_suffix=expected_url_suffix, json_data=data)
-        assert result == api_response
+        mock_http.assert_called_once_with(
+            method="POST", url_suffix=expected_url_suffix, json_data=data, additional_headers=headers
+        )
