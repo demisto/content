@@ -4,7 +4,7 @@ import demistomock as demisto
 import GitHub
 import pytest
 import requests_mock
-from CommonServerPython import CommandResults
+from CommonServerPython import CommandResults, DemistoException
 from GitHub import (
     add_issue_to_project_board_command,
     get_branch_command,
@@ -542,3 +542,82 @@ def test_http_request():
         response = http_request("POST", "/test", data=None)
     assert response == {}
     assert not mock_req.last_request.text
+
+
+def test_github_revoke_credentials_success(mocker):
+    """
+    Given:
+      - A list of valid GitHub credential tokens.
+    When:
+      - Calling the 'github_revoke_credentials_command' function.
+    Then:
+      - Ensure the revocation request succeeds with a 202 status code.
+      - Ensure the Authorization header is NOT sent.
+    """
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USE_SSL = True
+    GitHub.HEADERS = {"Authorization": "Bearer should_not_be_sent"}
+
+    mock_args = {"credentials": "ghp_abc123,github_pat_xyz456"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mocker_results = mocker.patch("GitHub.return_results")
+
+    with requests_mock.Mocker() as m:
+        mock_req = m.post(f"{REGULAR_BASE_URL}/credentials/revoke", status_code=202)
+        GitHub.github_revoke_credentials_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].readable_output == "Successfully submitted 2 credential(s) for revocation."
+    assert "Authorization" not in mock_req.last_request.headers
+    assert mock_req.last_request.headers["Accept"] == "application/vnd.github+json"
+    body = json.loads(mock_req.last_request.text)
+    assert body == {"credentials": ["ghp_abc123", "github_pat_xyz456"]}
+
+
+def test_github_revoke_credentials_invalid_prefix(mocker):
+    """
+    Given:
+      - A credential with an unsupported prefix.
+    When:
+      - Calling the 'github_revoke_credentials_command' function.
+    Then:
+      - Ensure a DemistoException is raised with an appropriate message.
+    """
+    mock_args = {"credentials": "ghp_valid,invalid_token_abc"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(DemistoException, match="invalid prefixes"):
+        GitHub.github_revoke_credentials_command()
+
+
+def test_github_revoke_credentials_empty(mocker):
+    """
+    Given:
+      - An empty credentials argument.
+    When:
+      - Calling the 'github_revoke_credentials_command' function.
+    Then:
+      - Ensure a DemistoException is raised indicating credentials are required.
+    """
+    mock_args = {"credentials": ""}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(DemistoException, match="'credentials' argument is required"):
+        GitHub.github_revoke_credentials_command()
+
+
+def test_github_revoke_credentials_too_many(mocker):
+    """
+    Given:
+      - More than 1000 credentials.
+    When:
+      - Calling the 'github_revoke_credentials_command' function.
+    Then:
+      - Ensure a DemistoException is raised about the 1000 token limit.
+    """
+    tokens = [f"ghp_token{i}" for i in range(1001)]
+    mock_args = {"credentials": ",".join(tokens)}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(DemistoException, match="maximum of 1000 credentials"):
+        GitHub.github_revoke_credentials_command()
