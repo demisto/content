@@ -825,10 +825,9 @@ script:
       - "Failed"
       - "Scheduled"
       - "PendingApproval"
-    - description: The page number for pagination.
-      name: page
     - description: Pagination limit - maximum number of events to return.
       name: limit
+      defaultvalue: 50
     description: Get all information about wibe requests.
     name: absolute-wipe-request-list
     outputs:
@@ -896,10 +895,9 @@ script:
       - "Processing"
       - "Failed"
       - "Pending"
-    - description: The page number for pagination.
-      name: page
     - description: Pagination limit - maximum number of events to return.
       name: limit
+      defaultvalue: 50
     description: Get the status of actions by devices or by request.
     name: absolute-wipe-actions-list
     outputs:
@@ -948,19 +946,19 @@ script:
     name: absolute-wipe-request-cancel
     outputs:
     - contextPath: Absolute.WipeRequest.code
-      description: ''
+      description: 'request code.'
       type: String
     - contextPath: Absolute.WipeRequest.message
-      description: ''
+      description: 'request message.'
       type: String
     - contextPath: Absolute.WipeRequest.details.message
-      description: ''
+      description: 'request details.'
       type: String
     - contextPath: Absolute.WipeRequest.details.code
-      description: ''
+      description: 'request details message.'
       type: String
     - contextPath: Absolute.WipeRequest.details.field
-      description: ''
+      description: 'request details field.'
       type: String
   - arguments:
     - description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.

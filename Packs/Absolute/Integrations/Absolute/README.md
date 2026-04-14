@@ -1100,3 +1100,127 @@ In the ***absolute-device-application-list*** command, the following argument wa
   - *Absolute.DeviceUnenroll.Serial*
   - *Absolute.DeviceUnenroll.SystemName*
   - *Absolute.DeviceUnenroll.Username*
+
+### absolute-wipe-request-list
+
+***
+Get all information about wibe requests.
+
+#### Base Command
+
+`absolute-wipe-request-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_uid | The system-defined unique identifier of the Device Action request. | Optional |
+| created_from_date_time_utc | Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). | Optional |
+| created_to_date_time_utc | Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example createdToDateTimeUtc=2011-12-03T10:15:30.000Z. | Optional |
+| request_status | Filters results to include responses where requestStatus equals the given value. Possible values are: Init, Canceled, Completed, InProgress, Failed, Scheduled, PendingApproval. | Optional |
+| limit | Pagination limit - maximum number of events to return. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Absolute.WipeRequest.totalDevices | Number | Total devices. |
+| Absolute.WipeRequest.pending | Number | number of pending requests. |
+| Absolute.WipeRequest.processing | Number | number of processing requests. |
+| Absolute.WipeRequest.completed | Number | number of processing requests. |
+| Absolute.WipeRequest.canceled | Number | number of canceled requests. |
+| Absolute.WipeRequest.failed | Number | number of failed requests. |
+| Absolute.WipeRequest.requestId | String | The system-defined Request ID. |
+| Absolute.WipeRequest.requestUid | String | The unique identifier of the request. |
+| Absolute.WipeRequest.requestStatus | String | The request status. |
+| Absolute.WipeRequest.createdDateTimeUtc | Date | Created date. |
+| Absolute.WipeRequest.updatedDateTimeUtc | Date | Updated date. |
+| Absolute.WipeRequest.requester | String | Requester name. |
+| Absolute.WipeRequest.macUsername | String | mac username. |
+| Absolute.WipeRequest.macPwd | String | Mac PWD. |
+| Absolute.WipeRequest.unenrollDevicesAndFreeLicenses | Boolean | unenroll devices. |
+
+### absolute-wipe-actions-list
+
+***
+Get the status of actions by devices or by request.
+
+#### Base Command
+
+`absolute-wipe-actions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_uid | The system-defined unique identifier of the Device Action request. | Optional |
+| device_uids | The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices. | Required |
+| created_from_date_time_utc | Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). | Optional |
+| created_to_date_time_utc | Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example createdToDateTimeUtc=2011-12-03T10:15:30.000Z. | Optional |
+| action_status | Filters results to include responses where action_status equals the given value. Possible values are: Canceled, Succeeded, Processing, Failed, Pending. | Optional |
+| limit | Pagination limit - maximum number of events to return. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Absolute.WipeAction.actionUid | String | The system-defined Action ID. |
+| Absolute.WipeAction.requestUid | String |  The system-defined Request UID. |
+| Absolute.WipeAction.deviceUid | String | The system-defined Defined Uid. |
+| Absolute.WipeAction.deviceName | String | The system-defined Defined Name. |
+| Absolute.WipeAction.esn | String | The system-defined ESN. |
+| Absolute.WipeAction.updatedDateTimeUtc | Date | The action updated date. |
+| Absolute.WipeAction.createdDateTimeUtc | Date | The action created date. |
+| Absolute.WipeAction.actionStatus | String | The action status. |
+| Absolute.WipeAction.certificateUid | String | The action certificate Uid. |
+
+### absolute-wipe-request-create
+
+***
+Create a Wipe request for the devices.
+
+#### Base Command
+
+`absolute-wipe-request-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_uids | The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices. | Required |
+| mac_user_name | The username of the user with administrative rights (applies to Mac devices only. | Optional |
+| mac_pwd | The password of the user with administrative rights (applies to Mac devices only). | Optional |
+| unenroll_devices_and_free_licenses | Indicates whether a Windows device should be unenrolled after the Wipe is complete. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Absolute.WipeRequest.requestUid | String | The system-defined Request UID. |
+
+### absolute-wipe-request-cancel
+
+***
+Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
+
+#### Base Command
+
+`absolute-wipe-request-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_uid | The system-defined unique identifier of the Device Action request. | Required |
+| action_uids | The system-defined unique identifiers of the actions included in the request. | Required |
+| cancel_all_actions | Indicates whether all actions in the request should be canceled. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Absolute.WipeRequest.code | String | request code. |
+| Absolute.WipeRequest.message | String | request message. |
+| Absolute.WipeRequest.details.message | String | request details. |
+| Absolute.WipeRequest.details.code | String | request details message. |
+| Absolute.WipeRequest.details.field | String | request details field. |
