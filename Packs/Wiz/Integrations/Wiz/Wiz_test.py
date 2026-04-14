@@ -1819,7 +1819,7 @@ def test_mirror_limit_validation(mock_check_api, limit_input, expected_first):
     assert call_variables["first"] == expected_first
 
 
-@patch("Wiz.resolve_issue")
+@patch("Wiz.reject_or_resolve_issue")
 def test_handle_field_changes_status_resolved(mock_resolve):
     """Test _handle_field_changes with resolved status"""
     from Wiz import _handle_field_changes
@@ -1828,7 +1828,7 @@ def test_handle_field_changes_status_resolved(mock_resolve):
     _handle_field_changes("11111111-1111-1111-1111-111111111111", {"status": "resolved", "resolutionReason": "ISSUE_FIXED"})
 
     mock_resolve.assert_called_once_with(
-        issue_id="11111111-1111-1111-1111-111111111111", resolution_reason="ISSUE_FIXED", resolution_note=""
+        "11111111-1111-1111-1111-111111111111", "ISSUE_FIXED", "Status mirrored from Cortex XSOAR", "RESOLVED"
     )
 
 
@@ -1881,7 +1881,7 @@ def test_handle_field_changes_clear_due_date(mock_clear_due):
     mock_clear_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111")
 
 
-@patch("Wiz.resolve_issue")
+@patch("Wiz.reject_or_resolve_issue")
 def test_handle_incident_closed(mock_resolve):
     """Test _handle_incident_closed resolves issue in Wiz"""
     from Wiz import _handle_incident_closed
@@ -1890,9 +1890,10 @@ def test_handle_incident_closed(mock_resolve):
     _handle_incident_closed("11111111-1111-1111-1111-111111111111")
 
     mock_resolve.assert_called_once_with(
-        issue_id="11111111-1111-1111-1111-111111111111",
-        resolution_reason=DEFAULT_RESOLUTION_REASON,
-        resolution_note="Resolved from XSOAR",
+        "11111111-1111-1111-1111-111111111111",
+        DEFAULT_RESOLUTION_REASON,
+        "Resolved from Cortex XSOAR",
+        "RESOLVED",
     )
 
 
