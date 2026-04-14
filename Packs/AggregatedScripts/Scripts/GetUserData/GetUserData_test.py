@@ -1145,6 +1145,43 @@ class TestGetUserData:
         assert isinstance(result[0], list)
         assert result[1] == expected_account
 
+    def test_azure_get_risky_user_with_email(self, mocker: MockerFixture):
+        """
+        Given:
+            A Command object for azure_get_risky_user with an email address (userPrincipalName).
+        When:
+            The function is called with the Command object containing an email.
+        Then:
+            It uses azure-risky-users-list command and filters by userPrincipalName, returning the matching user.
+        """
+        user_email = "test.user@example.com"
+        command = Command("AzureRiskyUsers", "azure-risky-user-get", {"id": user_email})
+        
+        mock_list_response = {
+            "AzureRiskyUsers.RiskyUser": [
+                {
+                    "id": "user-id-123",
+                    "userPrincipalName": "test.user@example.com",
+                    "userDisplayName": "Test User",
+                    "riskLevel": "high",
+                }
+            ]
+        }
+
+        mocker.patch(
+            "GetUserData.run_execute_command",
+            return_value=([mock_list_response], "Human readable output", []),
+        )
+        mocker.patch("GetUserData.get_output_key", return_value="AzureRiskyUsers.RiskyUser")
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        result = azure_get_risky_user(command, additional_fields=True)
+
+        assert len(result[1]) == 1
+        assert result[1][0]["Email"] == user_email
+        assert result[1][0]["Username"] == "Test User"
+        assert result[1][0]["RiskLevel"] == "high"
+
     def test_prisma_cloud_get_user(self, mocker: MockerFixture):
         """
         Given:
@@ -2322,6 +2359,7 @@ def test_userid_arg_mapping_to_adapter(mocker: MockerFixture, brand_name, comman
     "brand_name,command_name,adapter_fn,expected_key,expected_value",
     [
         ("Active Directory Query v2", "ad-get-user", "ad_get_user", "email", "john@example.com"),
+        ("AzureRiskyUsers", "azure-risky-user-get", "azure_get_risky_user", "id", "john@example.com"),
         ("Okta IAM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
         ("AWS-ILM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
         ("GSuiteAdmin", "gsuite-user-get", "gsuite_get_user", "user", "john@example.com"),
