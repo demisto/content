@@ -112,11 +112,9 @@ script:
         - contextPath: VeloCloud.Event.segmentName
           description: Name of the network segment.
           type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8160132
   isfetchevents: true
   runonce: false
 fromversion: 6.5.0
-marketplaces:
-- marketplacev2
 tests:
 - No tests (auto formatted)
