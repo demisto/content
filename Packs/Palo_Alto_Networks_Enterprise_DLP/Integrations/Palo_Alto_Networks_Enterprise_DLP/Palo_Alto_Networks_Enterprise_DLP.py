@@ -16,6 +16,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
+MAX_SAMPLES = 10
 MAX_FETCH = 50  # "soft" upper limit
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
@@ -477,19 +478,23 @@ def get_last_run_from_context(integration_context: dict[str, Any]) -> dict[str, 
     """
     Get the last run state for incident fetching.
     Uses in-memory `LOCAL_LAST_RUN` during long running execution for performance and consistency.
-    Falls back to `demisto.getIntegrationContext()` if container is freshly deployed.
+    Falls back on `demisto.getLastRun()` and `demisto.getIntegrationContext()` if container is freshly deployed.
 
     Returns:
         dict[str, Any]: Dictionary containing optional start_timestamp and last_ids from previous fetch.
     """
     if LOCAL_LAST_RUN:
-        demisto.debug(f"Returning in-memory last_run={LOCAL_LAST_RUN} .")
+        demisto.debug(f"Returning last_run={LOCAL_LAST_RUN} from source=in-memory.")
         return LOCAL_LAST_RUN
 
-    if integration_context:
-        server_last_run = integration_context.get(LAST_RUN_KEY) or {}
-        demisto.debug(f"Returning server-stored last_run={server_last_run}.")
-        return server_last_run
+    if raw_last_run := demisto.getLastRun():
+        demisto.debug(f"Returning last_run={raw_last_run} from source=raw demisto.")
+        return raw_last_run
+
+    if integration_context and integration_context.get(LAST_RUN_KEY) is not None:
+        context_last_run = integration_context.get(LAST_RUN_KEY) or {}
+        demisto.debug(f"Returning last_run={context_last_run} from source=integration context.")
+        return context_last_run
 
     demisto.debug("Falling back on empty last run.")
     return {}
@@ -638,13 +643,14 @@ def fetch_notifications(
 
     if not is_reset_triggered():
         demisto.debug(f"Creating {len(new_incidents)} incidents: {[inc.get('name') for inc in new_incidents]}.")
-        demisto.createIncidents(new_incidents)
+        demisto.createIncidents(new_incidents, lastRun=next_run)
 
         demisto.debug(f"Updating integration context with {next_run=}.")
         integration_context = update_context_with_last_run(next_run, integration_context)
 
-        demisto.debug(f"Updating integration context with access token and {len(new_incidents)} sample incidents.")
-        integration_context.update({ACCESS_TOKEN: client.access_token, "samples": new_incidents})
+        samples = new_incidents[:MAX_SAMPLES]
+        demisto.debug(f"Updating integration context with access token and {len(samples)} sample incidents.")
+        integration_context.update({ACCESS_TOKEN: client.access_token, "samples": samples})
         demisto.setIntegrationContext(integration_context)
 
     elif new_incidents:

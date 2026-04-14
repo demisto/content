@@ -452,7 +452,7 @@ def test_create_incident(incident_type_input, expected_type):
         ),
     ],
 )
-def test_get_last_run_from_context(local_last_run, integration_context, expected_result):
+def test_get_last_run_from_context(local_last_run, integration_context, expected_result, mocker):
     """
     Given:
         - Various states of LOCAL_LAST_RUN and integration context.
@@ -466,6 +466,7 @@ def test_get_last_run_from_context(local_last_run, integration_context, expected
     LOCAL_LAST_RUN.clear()
     LOCAL_LAST_RUN.update(local_last_run)
 
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     result = get_last_run_from_context(integration_context)
 
     assert result == expected_result
