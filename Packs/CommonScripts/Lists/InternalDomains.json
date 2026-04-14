@@ -16,5 +16,9 @@
     "fromVersion": "6.5.0",
     "marketplaces": [
         "xsoar"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
