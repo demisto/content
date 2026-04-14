@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Palo Alto Networks
 sectionorder:
 - Connect
 - Collect
@@ -119,6 +120,7 @@ script:
   - arguments:
     - description: Domain to enrich.
       name: domain
+      default: true
       required: true
       isArray: true
     description: Enrich a domain with Unit 42 threat intelligence context.
@@ -178,6 +180,7 @@ script:
   - arguments:
     - description: URL to enrich.
       name: url
+      default: true
       required: true
       isArray: true
     description: Enrich a URL with Unit 42 threat intelligence context.
@@ -237,6 +240,7 @@ script:
   - arguments:
     - description: File hash to enrich (SHA256).
       name: file
+      default: true
       required: true
       isArray: true
     description: Enrich a file hash with Unit 42 threat intelligence context.
@@ -299,7 +303,7 @@ script:
     - contextPath: Unit42.File.EnrichedThreatObjectAssociation
       description: Enriched threat object association.
       type: Unknown
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: '-'
   subtype: python3

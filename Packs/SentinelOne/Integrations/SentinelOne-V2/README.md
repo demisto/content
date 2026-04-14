@@ -14,6 +14,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Fetch incidents from type |  | False |
+| Fetch incidents from UAM Alert type |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
 | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
 | Defines Alert severity to fetch. Supported values: Low, Medium, High, Critical. |  | False |

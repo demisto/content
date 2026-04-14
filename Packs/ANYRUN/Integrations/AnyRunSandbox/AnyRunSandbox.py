@@ -1,27 +1,32 @@
-import json
-import time
-
 import demistomock as demisto
-import requests
 from CommonServerPython import *
 
 from anyrun import RunTimeException
 from anyrun.connectors import SandboxConnector
 from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
-from anyrun.connectors.sandbox.operation_systems import WindowsConnector, LinuxConnector, AndroidConnector
+from anyrun.connectors.sandbox.operation_systems import (
+    WindowsConnector,
+    LinuxConnector,
+    AndroidConnector,
+)
 
 
-VERSION = "PA-XSOAR:2.1.0"
+VERSION = "PA-XSOAR:2.3.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
 
-ANYRUN_TO_SOAR_INDICATOR = {"ip": "IP", "url": "URL", "domain": "Domain", "sha256": "File SHA-256"}
+ANYRUN_TO_SOAR_INDICATOR = {
+    "ip": "IP",
+    "url": "URL",
+    "domain": "Domain",
+    "sha256": "File SHA-256",
+}
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
-        with BaseSandboxConnector(get_authentication(params)) as connector:
+        with BaseSandboxConnector(get_authentication(params), trust_env=argToBoolean(params.get("proxy", False))) as connector:
             connector.check_authorization()
             return "ok"
     except RunTimeException as exception:
@@ -50,25 +55,6 @@ def get_file_content(args: dict) -> dict:  # pragma: no cover
     return args
 
 
-def make_api_call(params: dict, method: str, endpoint_url: str, payload: dict) -> None:  # pragma: no cover
-    """
-    Process api call to XSOAR endpoints
-
-    :param params: Demisto params
-    :param method: HTTP Request method
-    :param endpoint_url: Target url
-    :param payload: Request payload
-    """
-    fqdn = params.get("soar_fqdn")
-    api_key_id = params.get("soar_api_key_id")
-    api_key = params.get("soar_api_key")
-
-    url = f"{fqdn}/xsoar/public/v1/{endpoint_url}"
-    headers = {"Authorization": api_key, "x-xdr-auth-id": api_key_id}
-
-    requests.request(method, url, headers=headers, json=payload)
-
-
 def build_context_path(analysis_type: str, connector: WindowsConnector | LinuxConnector | AndroidConnector) -> str | None:
     if analysis_type == "file":
         if isinstance(connector, WindowsConnector):
@@ -89,8 +75,10 @@ def build_context_path(analysis_type: str, connector: WindowsConnector | LinuxCo
     return None
 
 
-def wait_for_the_task_to_complete(
-    args: dict, analysis_type: str, connector: WindowsConnector | LinuxConnector | AndroidConnector
+def start_analyse(
+    args: dict,
+    analysis_type: str,
+    connector: WindowsConnector | LinuxConnector | AndroidConnector,
 ) -> None:  # pragma: no cover
     """
     Process Sandbox analysis
@@ -106,34 +94,51 @@ def wait_for_the_task_to_complete(
     else:
         task_uuid = connector.run_url_analysis(**args)
 
-    time.sleep(10)
-    for _ in connector.get_task_status(task_uuid):
-        pass
+    return_results(
+        CommandResults(
+            outputs_prefix="ANYRUN.SandboxURL",
+            outputs=f"Link to the interactive analysis: https://app.any.run/tasks/{task_uuid}",
+            ignore_auto_extract=True,
+        )
+    )
 
     return_results(
-        CommandResults(outputs_prefix=build_context_path(analysis_type, connector), outputs=task_uuid, ignore_auto_extract=True)
+        CommandResults(
+            outputs_prefix=build_context_path(analysis_type, connector),
+            outputs=task_uuid,
+            ignore_auto_extract=True,
+        )
     )
 
 
 def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
-        wait_for_the_task_to_complete(args, analysis_type, connector)
+        start_analyse(args, analysis_type, connector)
 
 
 def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.linux(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
-        wait_for_the_task_to_complete(args, analysis_type, connector)
+        start_analyse(args, analysis_type, connector)
 
 
 def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.android(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
-        wait_for_the_task_to_complete(args, analysis_type, connector)
+        start_analyse(args, analysis_type, connector)
 
 
 def detonate_file_widows(params: dict, args: dict) -> None:  # pragma: no cover
@@ -164,7 +169,10 @@ def delete_task(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
         connector.delete_task(task_uuid)
 
@@ -175,7 +183,10 @@ def download_analysis_sample(params: dict, args: dict, download_type: str) -> No
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
         if download_type == "pcap":
             return_results(fileResult(f"{task_uuid}_traffic_dump.pcap", connector.download_pcap(task_uuid)))
@@ -186,40 +197,69 @@ def get_analysis_verdict(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
+        for _ in connector.get_task_status(task_uuid):
+            pass
+
         verdict = connector.get_analysis_verdict(task_uuid)
 
         return_results(
-            CommandResults(outputs_prefix="ANYRUN.SandboxAnalysisReportVerdict", outputs=verdict, ignore_auto_extract=True)
+            CommandResults(
+                outputs_prefix="ANYRUN.SandboxAnalysisReportVerdict",
+                outputs=verdict,
+                ignore_auto_extract=True,
+            )
         )
 
 
 def get_user_limits(params: dict) -> None:  # pragma: no cover
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
         user_limits = connector.get_user_limits().get("data").get("limits")
 
-    return_results(CommandResults(outputs_prefix="ANYRUN.SandboxLimits", outputs=user_limits, ignore_auto_extract=True))
+    return_results(
+        CommandResults(
+            outputs_prefix="ANYRUN.SandboxLimits",
+            outputs=user_limits,
+            ignore_auto_extract=True,
+        )
+    )
 
 
 def get_analysis_history(params: dict, args: dict) -> None:  # pragma: no cover
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
         analysis_history = connector.get_analysis_history(**args)
 
-    return_results(CommandResults(outputs_prefix="ANYRUN.SandboxHistory", outputs=analysis_history, ignore_auto_extract=True))
+    return_results(
+        CommandResults(
+            outputs_prefix="ANYRUN.SandboxHistory",
+            outputs=analysis_history,
+            ignore_auto_extract=True,
+        )
+    )
 
 
-def process_indicators(params: dict, report: dict, task_uuid: str, incident_id: int) -> None:  # pragma: no cover
+def create_indicators(report: dict, task_uuid: str) -> None:  # pragma: no cover
     """
     Excludes IOCs from the analysis report. Sends them to Threat Intel
 
     :param report: Analysis report
     """
-    indicators: list[dict[str, str]] = []
+    output: list[dict[str, str]] = []
+    indicators: list[dict] = []
 
     for indicator in report:
         reputation = indicator.get("reputation")
@@ -235,31 +275,34 @@ def process_indicators(params: dict, report: dict, task_uuid: str, incident_id: 
 
         indicator_type = ANYRUN_TO_SOAR_INDICATOR.get(indicator.get("type"), "")
 
-        payload = {
-            "indicator": {
-                "indicator_type": indicator_type,
+        indicators.append(
+            {
+                "type": indicator_type,
                 "value": indicator.get("ioc"),
                 "score": score,
-                "vendor": "ANY.RUN",
-                "CustomFields": {
+                "fields": {
                     "vendor": "ANY.RUN",
                     "service": "ANY.RUN Cloud Sandbox",
                     "description": f"https://app.any.run/tasks/{task_uuid}",
                 },
-                "investigationIDs": [incident_id],
             }
-        }
-
-        make_api_call(params, "POST", "indicator/create", payload)
-        indicators.append(
-            {"type": indicator_type, "value": indicator.get("ioc"), "verdict": SCORE_TO_VERDICT.get(reputation, "")}
         )
+
+        output.append(
+            {
+                "type": indicator_type,
+                "value": indicator.get("ioc"),
+                "verdict": SCORE_TO_VERDICT.get(reputation, ""),
+            }
+        )
+
+    demisto.createIndicators(indicators)
 
     return_results(
         CommandResults(
             readable_output=tableToMarkdown(
                 "Indicators from ANY.RUN Cloud Sandbox",
-                indicators,
+                output,
                 headers=["type", "value", "verdict"],
                 headerTransform=string_to_table_header,
             ),
@@ -271,24 +314,35 @@ def process_indicators(params: dict, report: dict, task_uuid: str, incident_id: 
 def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid", "")
     report_format = args.get("report_format")
-    incident_info = args.get("incident_info")
-
-    if isinstance(incident_info, str):
-        incident_info = json.loads(incident_info)
-
-    incident_id = incident_info.get("id")
 
     with SandboxConnector.windows(
-        get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")
+        get_authentication(params),
+        integration=VERSION,
+        trust_env=argToBoolean(params.get("proxy", False)),
+        verify_ssl=not params.get("insecure"),
     ) as connector:
         report = connector.get_analysis_report(task_uuid, report_format=report_format)
 
         if report_format == "html":
             return_results(fileResult(f"anyrun_report_{task_uuid}.html", report))
         elif report_format == "summary":
-            return_results(CommandResults(outputs_prefix="ANYRUN.SandboxAnalysis", outputs=report, ignore_auto_extract=True))
-        elif report_format == "ioc":
-            process_indicators(params, report, task_uuid, incident_id)
+            return_results(
+                CommandResults(
+                    outputs_prefix="ANYRUN.SandboxAnalysis",
+                    outputs=report,
+                    ignore_auto_extract=True,
+                )
+            )
+        elif report_format == "ioc" and report:
+            create_indicators(report, task_uuid)
+
+            return_results(
+                CommandResults(
+                    outputs_prefix="ANYRUN.IOCs",
+                    outputs=",".join(indicator.get("ioc") for indicator in report) if report else "",
+                    ignore_auto_extract=True,
+                )
+            )
 
 
 def main():  # pragma: no cover

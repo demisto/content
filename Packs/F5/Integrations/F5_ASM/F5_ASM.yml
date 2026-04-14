@@ -1,4 +1,5 @@
 category: IT Services
+provider: F5
 commonfields:
   id: F5 ASM
   version: -1
@@ -19,7 +20,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Manages F5 firewall
+description: Manages F5 firewall.
 display: F5 Application Security Manager (WAF)
 name: F5 ASM
 script:
@@ -29,7 +30,7 @@ script:
       name: self_link
     - description: A unique type identifier.
       name: kind
-    - description: items
+    - description: Items.
       name: items
     description: Lists all F5 Application Security Manager (ASM) policies.
     name: f5-asm-policy-list
@@ -117,7 +118,7 @@ script:
       description: The creation time of the policy.
       type: String
     - contextPath: f5.Policy.selfLink
-      description: Policy self link
+      description: Policy self link.
       type: String
   - arguments:
     - description: Link to the policy to apply.
@@ -1354,7 +1355,7 @@ script:
     - defaultValue: None
       description: The ID of the IP address. The ID or display name must be filled. Default is "None".
       name: ip_id
-    - description: IP address
+    - description: IP address.
       name: ip_address
       required: true
     - auto: PREDEFINED
@@ -1440,7 +1441,7 @@ script:
     - defaultValue: None
       description: The ID of the IP address. The ID or display name must be filled. Default is "None".
       name: ip_id
-    - description: IP address
+    - description: IP address.
       name: ip_address
       required: true
     description: Deletes an existing IP address on allow list from a policy.
@@ -2108,7 +2109,7 @@ script:
     - description: The display name of the JSON profile. The ID or display name must be filled.
       name: json_name
       required: true
-    - description: Optional description for the JSON profile
+    - description: Optional description for the JSON profile.
       name: description
     - defaultValue: any
       description: The maximum total length of JSON data. Default is "any".
@@ -2230,7 +2231,7 @@ script:
     name: f5-asm-policy-xml-profiles-list
     outputs:
     - contextPath: f5.XMLProfile.id
-      description: The ID of the XML profile
+      description: The ID of the XML profile.
       type: String
     - contextPath: f5.XMLProfile.name
       description: The display name of the XML profile.

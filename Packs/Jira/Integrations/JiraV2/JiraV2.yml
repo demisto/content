@@ -1,4 +1,5 @@
 category: Case Management
+provider: Atlassian
 commonfields:
   id: jira-v2
   version: -1
@@ -614,8 +615,6 @@ tests:
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
 supportedModules:
-- X3
-- X5
 - agentix
 - xsiam
 - edr

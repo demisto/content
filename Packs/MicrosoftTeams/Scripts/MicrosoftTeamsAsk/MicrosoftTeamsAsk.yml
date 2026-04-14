@@ -24,8 +24,10 @@ args:
 - description: A CSV list of additional options (in case more than 2 options are required. Used only for if the form type is "predefined-options"). Options cannot contain whitespaces.
   name: additional_options
 - default: true
-  description: Team member to which to send the question.
+  description: The question recipient. Accepts the team member's email address or username.
   name: team_member
+- description: The question recipient. Accepts the user's email address or username.
+  name: user_id
 - description: Task ID of the playbook task to close with the reply. If not provided, no playbook task will be closed.
   name: task_id
 - description: Channel to which to send the question.
@@ -44,7 +46,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.13.7444307
 tests:
 - No test
 dependson:

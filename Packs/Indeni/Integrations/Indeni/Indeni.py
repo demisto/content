@@ -27,9 +27,7 @@ def http_request(method, full_url, params=None, data=None):
     res = requests.request(method, full_url, verify=USE_SSL, params=params, json=data, headers=HEADERS)
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
-        return_error(
-            f"Error in API call to Indeni Integration [{res.status_code}] - {res.reason} for endpoint {full_url}"
-        )
+        return_error(f"Error in API call to Indeni Integration [{res.status_code}] - {res.reason} for endpoint {full_url}")
 
     return res.json()
 

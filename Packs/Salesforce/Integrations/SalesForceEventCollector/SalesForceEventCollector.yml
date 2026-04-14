@@ -4,6 +4,7 @@ commonfields:
 name: Salesforce Event Collector
 display: Salesforce Event Collector (Deprecated)
 category: Analytics & SIEM
+provider: Salesforce
 deprecated: true
 description: Deprecated. Use Cortex XSIAM/XDR Salesforce integration instead.
 configuration:
@@ -79,3 +80,8 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests
+supportedModules:
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

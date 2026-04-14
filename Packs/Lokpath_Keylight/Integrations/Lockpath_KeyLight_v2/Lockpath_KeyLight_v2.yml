@@ -1,4 +1,5 @@
 category: Case Management
+provider: Navex Global
 commonfields:
   id: Lockpath KeyLight v2
   version: -1
@@ -159,7 +160,7 @@ script:
       name: component_id
       required: true
     - defaultValue: '0'
-      description: The index of the page of result to return. Must be >= 0
+      description: The index of the page of result to return. Must be >= 0.
       name: page_index
     - defaultValue: '10'
       description: The index of the page of result to return. Must be between 0 and 100.
@@ -376,7 +377,7 @@ script:
       description: The fields in the record.
       type: String
     - contextPath: Keylight.Record.ID
-      description: The record ID
+      description: The record ID.
       type: String
   - arguments:
     - description: The user ID.
@@ -423,4 +424,6 @@ script:
   script: '-'
   type: python
   subtype: python3
+tests:
+- No tests
 fromversion: 5.0.0

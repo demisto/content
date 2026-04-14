@@ -1,4 +1,5 @@
 category: Email
+provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -788,7 +789,7 @@ script:
       required: true
     - description: Flag for rate limit retry.
       name: ran_once_flag
-    description: Moves a message to a different folder.
+    description: Move a message to another folder. This operation creates a new copy of the message in the destination folder and deletes the original message. As a result, the message ID changes.
     name: msgraph-mail-move-email
     outputs:
     - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
@@ -1068,13 +1069,13 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.4834757
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
   script: ''
   type: python
   subtype: python3
 tests:
-- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
+- MicrosoftGraphMailSingleUser-Test_dev
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0

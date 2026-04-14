@@ -9,10 +9,106 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name | The name of the integration | True |
-| Exchange Online URL | https://outlook.office365.com | True |
+| Exchange Online URL | <https://outlook.office365.com> | True |
 | Certificate | A txt certificate encoded in Base64. | True |
 | The organization used in app-only authentication. |  | True |
 | The application ID from the Azure portal |  | True |
+
+### App authentication
+
+To use this integration, you need to connect an application with a certificate.
+
+1. Create the application:
+   1. Access [Azure AD portal](https://portal.azure.com/).
+   2. Navigate to **Home** > **App registrations**.
+   3. Click **New Registration**, give the application a name (for example: **EWS**) and click **Register**.
+   4. In the left menu of the newly created application, click **API permissions**.
+   5. Click **Add a permission**.
+   6. In the Request API permissions page, click **APIs my organization uses**.
+   7. Search for **Office 365 Exchange Online**.
+   8. Click **Application permissions**.
+   9. Under Exchange, click the **ExchangeManageAsApp** checkbox.
+   10. Click **Add permissions**.
+   11. Click **Grant admin consent**.
+
+2. Create the certificate in Cortex XSOAR/XSIAM.
+   1. Run the **CreateCertificate** command in the Playground to acquire the certificate.
+
+      ***!CreateCertificate days=<# of days> password=`password`***
+
+     *Note: Remember your password since you will need it to create your integration instance.*
+
+   2. Download the certificateBase34.txt file.
+   3. Open the downloaded txt file and copy the text.
+   4. In the integration instance configuration, paste the text in the **Certificate** field.
+
+3. Attach the .cer file to your Azure app.
+    1. In the Cortex XSOAR/XSIAM Playground, download the publickey.cer file
+    2. In the Azure application, in the left menu, click **Certificates & secrets**.
+    3. In the Certificates tab, upload the publickey.cer file.
+
+4. Assign Azure AD roles to the application.
+   1. You have two options:
+      - Assign Azure AD roles to the application.
+      - Assign custom role groups to the application using service principals.
+   2. In the [Azure AD portal](https://portal.azure.com/), search for **Microsoft Entra roles and administrators** in the Search box.
+   3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
+      name of the role (not the checkbox) in the results.
+      - The role **Security Administrator** is eligible for this integration.
+   4. On the Assignments page that opens, select **Add assignments**.
+   5. In the Add assignments flyout that opens, find and select the app that you created in Step 1.
+
+Note: The information in the Playground is sensitive information. You should delete the information by running the following command:
+
+   ***!DeleteContext all=yes***
+
+5. In Cortex XSOAR/XSIAM, in the integration instance configuration, enter your saved password in the **Password** field.
+6. In Azure, go to Entra ID (Overview blade) and copy the **Primary domain** field.
+7. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the Domain name in **The organization used in app-only authentication** field.
+8. In the Azure app, navigate to **Home** > **App registration** > **application name** and copy the Application (client) ID.
+9. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
+
+### Verify that the admin account has sufficient Exchange Online permissions
+
+For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
+
+1. Open the Microsoft Purview Portal: <https://purview.microsoft.com/>
+2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
+3. In the top bar, select: **Settings → Roles and scopes**
+4. In the left sidebar, select: **Role Groups**
+5. Search for the following role groups:
+   - **Organization Management** – the most privileged role and fully supported for this integration.
+   - **Security Administrator** – a highly privileged security role that also provides full access.
+6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
+7. If not listed, click **Edit → Add Users** and assign the required roles.
+
+- Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
+
+## Troubleshooting and Testing
+
+### Common Issues and Solutions
+
+#### **`The role assigned to application 'app-id' isn't supported in this scenario.`**
+
+**Scenario:**  
+When running 'Test', you receive the error:  
+*“The role assigned to application `app-id` isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
+
+**Solution:**  
+Verify that the application has the correct directory role assigned in the **Entra ID portal**.  
+See the **“App authentication”** section above for detailed guidance.
+
+---
+
+#### **`The term 'cmdlet' is not recognized as a name of a cmdlet…`**
+
+**Scenario:**  
+When running a command, you receive an error similar to:  
+*“The term `cmdlet` is not recognized as a name of a cmdlet, function, script file, or executable program…”*
+
+**Solution:**  
+Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.  
+Refer to the **“Exchange Online permissions”** section above to confirm the correct roles are assigned and detailed guidance.
 
 ## Commands
 
@@ -483,11 +579,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_type | List type to retrieve items from. | Required |
-| list_subtype | List subtype to retrieve items from.  | Optional |
+| list_subtype | List subtype to retrieve items from. | Optional |
 | action | Action to filter entries by. | Required |
 | expiration_date | Enter a specific date and time to filter entries by using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
 | no_expiration | Filter list items that are set to never expire. | Optional |
-| entry | Specif8ic entry value to retrieve. | Optional |
+| entry | Specific entry value to retrieve. | Optional |
 
 #### Context Output
 
@@ -682,16 +778,16 @@ Export quarantine messages.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                 | **Required** |
+| --- |-----------------------------------------------------------------| --- |
 | identities | A comma-separated list of identities of the messages to export. | Optional |
-| identity | The identity of a single message to export. | Optional |
-| compress_output | Specify whether the output should be compressed. | Optional |
-| entity_type | The type of entity being exported. | Optional |
-| force_conversion_to_mime | Specify whether to force conversion to MIME format. | Optional |
-| password | Password to encrypt the exported file. | Optional |
-| reason_for_export | Reason for exporting the message. | Optional |
-| recipient_address | Email address to send the exported message to. | Optional |
+| identity | The identity of a single message to export.                     | Optional |
+| compress_output | Specify whether the output should be compressed.                | Optional |
+| entity_type | The type of entity being exported.                              | Optional |
+| force_conversion_to_mime | Specify whether to force conversion to MIME format.             | Optional |
+| password | Password to encrypt the exported file. Using this argument requires 'compress_output' argument to be set to true.                         | Optional |
+| reason_for_export | Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.                              | Optional |
+| recipient_address | Filters the results by the recipient's email address.                  | Optional |
 
 #### Context Output
 
@@ -736,32 +832,32 @@ Retrieve quarantine messages.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| identity | The identity of a single message to retrieve. | Optional |
-| entity_type | The type of entity being retrieved. | Optional |
-| recipient_address | Email address of the recipient. | Optional |
-| sender_address | Email address of the sender. | Optional |
-| teams_conversation_types | Types of Teams conversations to retrieve. | Optional |
-| direction | Direction of the message (Inbound/Outbound). | Optional |
-| domain | Domain associated with the message. | Optional |
-| end_expires_date | End date for the message expiration. | Optional |
-| end_received_date | End date for when the message was received. | Optional |
-| include_messages_from_blocked_sender_address | Include messages from blocked sender addresses. | Optional |
-| message_id | ID of the message. | Optional |
-| my_items | Include only items belonging to the user. | Optional |
-| page | Page number for pagination. | Optional |
-| page_size | Number of items per page. | Optional |
-| policy_name | Name of the policy associated with the message. | Optional |
-| policy_types | Types of policies associated with the message. | Optional |
-| quarantine_types | Types of quarantine associated with the message. | Optional |
-| recipient_tag | Tag associated with the recipient. | Optional |
-| release_status | Release status of the message. | Optional |
-| reported | Include only reported messages. | Optional |
-| start_expires_date | Start date for the message expiration. | Optional |
-| start_received_date | Start date for when the message was received. | Optional |
-| subject | Subject of the message. | Optional |
-| type | Type of the message. | Optional |
+| **Argument Name** | **Description**                                                                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| identity | The identity of a single message to retrieve.                                                                                                    | Optional |
+| entity_type | Filters by entity workload type.                                                                                                                 | Optional |
+| recipient_address | Filters by the recipient email address.                                                                                                          | Optional |
+| sender_address | Filters by the sender email address.                                                                                                             | Optional |
+| teams_conversation_types | Filters by one or more Teams conversation types. Deprecated, as this parameter is not available in the PowerShell type used in this integration. | Optional |
+| direction | The message direction (inbound or outbound).                                                                                                     | Optional |
+| domain | Domain associated with the message.                                                                                                              | Optional |
+| end_expires_date | End date for the message expiration.                                                                                                             | Optional |
+| end_received_date | The end of the received message date range. Supports the format 'MM/dd/yyyy HH:mm:ss'.                                                           | Optional |
+| include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses.                                                                                       | Optional |
+| message_id | The internet message ID (client ID) found in the email headers.                                                                                  | Optional |
+| my_items | Include only items belonging to the user.                                                                                                        | Optional |
+| page | Page number for pagination.                                                                                                                      | Optional |
+| page_size | The number of items per page. Maximum is 1000. Default is 50.                                                                                    | Optional |
+| policy_name | Name of the policy associated with the message.                                                                                                  | Optional |
+| policy_types | Filter by types of policies.                                                                                                                     | Optional |
+| quarantine_types | Filters by one or more quarantine types.                                                                                                         | Optional |
+| recipient_tag | Filters by the priority tag associated with the recipient.                                                                                       | Optional |
+| release_status | Filters by the message release status.                                                                                                           | Optional |
+| reported | Whether to include only reported messages.                                                                                                       | Optional |
+| start_expires_date | Start date for the message expiration.                                                                                                           | Optional |
+| start_received_date | The start of the received message date range. Supported format  'MM/dd/yyyy HH:mm:ss'.                                                           | Optional |
+| subject | Subject of the message.                                                                                                                          | Optional |
+| type | Type of the message.                                                                                                                             | Optional |
 
 #### Context Output
 
@@ -939,7 +1035,7 @@ Retrieve quarantine messages.
 ### ews-release-quarantinemessage
 
 ***
-Release quarantine messages.
+Releases the quarantined messages. Uses the PowerShell Release-QuarantineMessage cmdlet.
 
 #### Base Command
 
@@ -949,15 +1045,15 @@ Release quarantine messages.
 
 | **Argument Name**      | **Description**                                            | **Required** |
 |------------------------|------------------------------------------------------------|--------------|
-| user                   | The user associated with the quarantine message.           | Optional |
+| user                   | The email address of the user you want to release the quarantined message to.           | Optional |
 | identities             | A comma-separated list of identities of the messages to release. | Optional |
 | identity               | The identity of a single message to release.               | Optional |
 | release_to_all         | Specify whether to release the message to all recipients.  | Optional |
 | allow_sender           | Specify whether to allow the sender.                       | Optional |
-| entity_type            | The type of entity being released.                         | Optional |
+| entity_type            | The entity workload type being released.                         | Optional |
 | force                  | Specify whether to force the release.                      | Optional |
 | report_false_positive  | Specify whether to report the message as a false positive. | Optional |
-| action_type            | The type of action to take when releasing the message.     | Optional |
+| action_type            | The action to perform on the quarantined message.     | Optional |
 
 #### Context Output
 
@@ -2028,7 +2124,7 @@ List all mail flow rules (transport rules) in the organization.
 >
 >| Name | State | Priority | Comment | WhenChanged | CreatedBy |
 >| --- | --- | --- | --- | --- | --- |
->| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Ed Testmaner |
 >| demisto-2 | Enabled | 2 | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons |
 >| demisto-3 | Enabled | 3 | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner |
 
@@ -2077,7 +2173,7 @@ Get a mail flow rule (transport rules) in the organization.
 >
 >| Name | State | Priority | Comment | WhenChanged | CreatedBy |
 >| --- | --- | --- | --- | --- | --- |
->| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Ed Testmaner |
 
 ### ews-mail-flow-rule-remove
 

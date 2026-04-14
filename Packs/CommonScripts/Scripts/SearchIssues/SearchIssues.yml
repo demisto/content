@@ -1,5 +1,5 @@
 args:
-  - description: The unique ID of the issue.
+  - description: The unique numeric ID of the issue (integer only, e.g. 12345). Do not pass placeholder values such as 'n/a', 'unknown', or any non-numeric string.
     isArray: true
     name: issue_id
   - auto: PREDEFINED
@@ -100,16 +100,19 @@ args:
       - DESC
       - ASC
   - defaultValue: "0"
-    description: The first page from which we bring the issues.
-    isArray: true
+    description: The starting offset for pagination (integer only, e.g. 0, 50, 100).
     name: offset
+    deprecated: true
   - defaultValue: "50"
-    description: The last page from which we bring the issues.
-    isArray: true
+    description: The maximum number of issues to return (integer only, e.g. 50, 100).
     name: limit
-  - description: Additional output fields.
-    isArray: true
-    name: additional_output_fields
+    deprecated: true
+  - defaultValue: "0"
+    description: The page number for the issues to return for pagination. (integer only, e.g. 0, 50, 100).
+    name: page
+  - defaultValue: "50"
+    description: The number of issues to return per page. (integer only, e.g. 50, 100).
+    name: page_size
   - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
     name: start_time
   - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
@@ -171,9 +174,15 @@ outputs:
   - contextPath: Core.Issue.internal_id
     description: The internal ID of the issue.
     type: String
+  - contextPath: Core.Issue.case_ids
+    description: The case IDs associated with the issue.
+    type: String
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
+  - contextPath: Core.Issue.endpoint_id
+    description: The endpoint ID associated with the issue.
+    type: List
   - contextPath: Core.Issue.status.progress
     description: The progress status of the issue.
     type: String
@@ -183,8 +192,8 @@ outputs:
   - contextPath: Core.Issue.assigned_to
     description: The user assigned to the issue.
     type: String
-  - contextPath: Core.Issue.assetid
-    description: The asset ID related to the issue.
+  - contextPath: Core.Issue.asset_ids
+    description: The asset IDs related to the issue.
     type: String
   - contextPath: Core.Issue.action_file_macro_sha256
     description: File Macro SHA256 hash of the action file macro.
@@ -225,16 +234,32 @@ outputs:
   - contextPath: Core.Issue.Identity_type
     description: The identity type of the account.
     type: String
+  - contextPath: Core.IssueMetadata.returned_count
+    description: The actual number of issues that match all filter criteria and returned in this specific response.
+    type: Number
+  - contextPath: Core.IssueMetadata.filtered_count
+    description: The total number of issues in the system that match all filter criteria.
+    type: Number
 isInternal: true
+dependson:
+  must:
+  - core-get-issues
 script: "-"
 subtype: python3
 tags:
   - Utility
 timeout: "0"
 type: python
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.12.7090913
 fromversion: 5.0.0
 tests:
   - No tests (auto formatted)
 marketplaces:
   - platform
+supportedModules:
+  - xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr

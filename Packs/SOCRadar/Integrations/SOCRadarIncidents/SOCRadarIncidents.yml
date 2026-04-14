@@ -1,35 +1,45 @@
 category: Analytics & SIEM
+provider: SOCRadar
 commonfields:
   id: SOCRadarIncidents
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: The API Key to use for connection to SOCRadar
   display: API Key
   name: apikey
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 - defaultvalue: 3 days
   display: First Fetch Time
   name: first_fetch
   type: 0
+  section: Collect
   required: false
 - additionalinfo: Company ID in SOCRadar to fetch incidents.
   display: Company ID
   name: socradar_company_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Select severity level(s) of incidents to fetch. Leave blank to fetch all.
   display: Severity Level
   name: severity
@@ -39,12 +49,14 @@ configuration:
   - Medium
   - High
   type: 16
+  section: Collect
   required: false
 - additionalinfo: Maximum number of incidents to fetch in each integration execution interval.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
+  section: Collect
   required: false
 - additionalinfo: Fetch Incidents by resolution status (All, Resolved, Not Resolved)
   defaultvalue: All
@@ -55,6 +67,7 @@ configuration:
   - Resolved
   - Not Resolved
   type: 15
+  section: Collect
   required: false
 - additionalinfo: Fetch Incidents by false positive status (All, FP, Not FP)
   defaultvalue: All
@@ -65,21 +78,24 @@ configuration:
   - FP
   - Not FP
   type: 15
+  section: Collect
   required: false
 - additionalinfo: Fetch incidents which belong to this particular main type.
   display: Incident Main Type
   name: incident_main_type
   type: 0
+  section: Collect
   required: false
 - additionalinfo: Fetch incidents which belong to this particular sub type.
   display: Incident Sub Type
   name: incident_sub_type
   type: 0
+  section: Collect
   required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
+  section: Collect
 defaultclassifier: SOCRadar Incident Classifier
 defaultmapperin: SOCRadar Incident Mapper
 defaultmapperout: 'null'
@@ -104,7 +120,7 @@ script:
       name: comments
     description: Marks incident as resolved in SOCRadar platform.
     name: socradar-mark-incident-resolved
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6796194
   isfetch: true
   runonce: false
   script: '-'

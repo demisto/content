@@ -2,6 +2,7 @@ sectionorder:
 - Connect
 - Collect
 category: Cloud Services
+provider: Google
 commonfields:
   id: GoogleGemini
   version: -1

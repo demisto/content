@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Fortra
 sectionorder:
 - Connect
 - Collect
@@ -91,3 +92,5 @@ marketplaces:
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

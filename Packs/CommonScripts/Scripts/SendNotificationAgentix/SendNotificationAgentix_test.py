@@ -205,3 +205,31 @@ def test_send_notification_multiple_invalid_args():
     error_message = str(exc_info.value)
     assert "are not supported for brand - Mattermost" in error_message
     assert all(arg in error_message for arg in ["team", "channel_id", "invalid_arg"])
+
+
+@pytest.mark.parametrize("brand, mapped_arg", [("Microsoft Teams", "message_id"), ("Slack", "threadID")])
+def test_send_notification_with_thread_id(mocker, brand, mapped_arg):
+    """
+    Given:
+        - valid brand (Teams/Slack) and thread_id argument
+    When:
+        - calling send_notification_by_brand
+    Then:
+        - demisto.executeCommand should be called with correct parameters, mapping thread_id correctly
+    """
+    mock_execute_command = mocker.patch.object(demisto, "executeCommand")
+
+    args = {"message": "Test notification", "thread_id": "12345"}
+
+    send_notification_by_brand(brand, args)
+
+    expected_args = {
+        "using-brand": BRAND_MAPPING.get(brand, {}).get("brand"),
+        "message": "Test notification",
+        mapped_arg: "12345",
+    }
+
+    mock_execute_command.assert_called_once_with(
+        "send-notification",
+        args=expected_args,
+    )

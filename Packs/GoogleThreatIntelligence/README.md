@@ -40,7 +40,7 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Multi-angular detection for files via crowdsourced {[YARA](https://virustotal.github.io/yara/), [SIGMA](https://blog.virustotal.com/2021/05/context-is-king-part-i-crowdsourced.html), [IDS](https://docs.virustotal.com/docs/crowdsourced-ids-rules)} rules.
 - Allowlist (benign) information through the [aggregation of goodware indicators and provenance details](https://blog.virustotal.com/2021/08/introducing-known-distributors.html).
 - Dynamic analysis for files through detonation in [multiple home-grown and 3rd-party partner](https://blog.virustotal.com/search/label/multisandbox) sandbox solutions.
-- Extended file context and metadata through static analysis tools such as sigcheck’s authenticode signature extractor, MS Office macro VBA dissectors, Didier Stevens’ PDF tools, etc.
+- Extended file context and metadata through static analysis tools such as sigcheck’s authenticode signature extractor, MS Office macro VBA dissectors, Didier S PDF tools, etc.
 - Community comments and assessments coming from over 2M monthly users of the free [www.virustotal.com](https://www.virustotal.com/gui/) public site.
 - Threat graph schema tying together the files, domains, IPs and URLs in the dataset through relationships such as downloaded files, communicating files, passive DNS resolutions, etc.
 - Passive DNS information listing historical domains seen behind a given IP address and detailing all infrastructure changes for a given domain.
@@ -51,6 +51,11 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Operational and strategic intelligence through crowdsourcing of OSINT sources digging into threat campaigns and threat actors.
 - Advanced faceted/elastic searches over the {file, domain, IP, URL} corpus to identify IoCs that match certain criteria, e.g. list all MS Office documents that when opened launch a powershell script and end up exhibiting network communication.
 - Download any file in the Google Threat Intelligence corpus and reroute it to other analysis systems you own.
+- Analysis and listing of Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
+- Enable outgoing mirroring for DTM Alerts, maintaining synchronized alert status and tags with XSOAR.
+- Enable outgoing mirroring for ASM Issues, maintaining synchronized status, tags, and notes with XSOAR.
+- Fetch DTM Alerts using filter parameters supported by the Google Threat Intelligence API.
+- Fetch ASM Issues into XSOAR as incidents for centralized incident management.
 
 **Popular tasks**
 
@@ -65,6 +70,9 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Cover blindspots in your EDR by feeding it lists of highly relevant and undetected threats identified through the use of YARA in Google Threat Intelligence.
 - Derive scores based on malicious observations and relationships for IPs transacting with your business.
 - Assign a severity score to issues identified in a vulnerability scan of your networks.
+- Enrich Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
+- Ingest DTM Alerts into XSOAR as incidents with supported outgoing mirroring of status and tags.
+- Ingest ASM Issues into XSOAR as incidents with supported outgoing mirroring of status, tags, and notes.
 
 **Additional information**
 

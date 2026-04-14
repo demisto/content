@@ -614,7 +614,7 @@ tasks:
       brand: PingOne
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       username:
         simple: joe.smith
@@ -624,6 +624,72 @@ tasks:
         "position": {
           "x": 50,
           "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2f5a5d8b-7c6f-4e5a-9f7b-6c6c6c1a2a10
+    type: regular
+    task:
+      id: 2f5a5d8b-7c6f-4e5a-9f7b-6c6c6c1a2a10
+      version: -1
+      name: pingone-password-force-change
+      script: PingOne|||pingone-password-force-change
+      type: regular
+      iscommand: true
+      brand: PingOne
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      username:
+        simple: emma.sharp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4b248dc2-2a2d-4c4f-9f86-7b5e1b77d6f2
+    type: regular
+    task:
+      id: 4b248dc2-2a2d-4c4f-9f86-7b5e1b77d6f2
+      version: -1
+      name: pingone-read-password-state
+      script: PingOne|||pingone-read-password-state
+      type: regular
+      iscommand: true
+      brand: PingOne
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      username:
+        simple: emma.sharp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3250
         }
       }
     note: false
@@ -650,7 +716,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3200
+          "y": 3400
         }
       }
     note: false
@@ -667,7 +733,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3215,
+        "height": 3415,
         "width": 380,
         "x": 50,
         "y": 50

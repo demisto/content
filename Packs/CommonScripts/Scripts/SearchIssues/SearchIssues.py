@@ -1,8 +1,6 @@
 import json
-from datetime import datetime
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import dateparser
 
 EQ = "EQ"
 OUTPUT_KEYS = [
@@ -11,6 +9,8 @@ OUTPUT_KEYS = [
     "Identity_type",
     "issue_name",
     "issue_source",
+    "case_ids",
+    "agent_id",
     "actor_process_image_sha256",
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",
@@ -20,7 +20,6 @@ OUTPUT_KEYS = [
     "os_actor_process_image_sha256",
     "action_file_macro_sha256",
     "status.progress",
-    "assetid",
     "asset_ids",
     "assigned_to_pretty",
     "assigned_to",
@@ -36,54 +35,27 @@ SEARCH_SHA256_FIELDS = [
 ]
 
 
-def remove_empty_string_values(args):
-    """Remove empty string values from the args dictionary."""
-    return {key: value for key, value in args.items() if value != ""}
+NUMERIC_ARGS = {"page", "page_size"}
+NUMERIC_LIST_ARGS = {"issue_id"}
 
 
-def prepare_start_end_time(args: dict):
+def remove_empty_string_values(args: dict) -> dict:
+    """Remove empty/invalid values from the args dictionary.
+    - Removes keys with empty string values.
+    - For numeric args, removes non-numeric values to prevent be3 crashes (e.g. 'n/a', 'invalid_offset').
     """
-    Prepare and validate start and end time parameters from args dictionary.
 
-    Parses start_time and end_time from string format to ISO format and validates
-    that when end_time is provided, start_time must also be provided. If only start_time
-    is provided, sets end_time to current time. Sets time_frame to 'custom' when both
-    times are specified.
+    def is_valid(key, value):
+        if value == "":
+            return False
+        if key in NUMERIC_ARGS:
+            return str(value).strip().isdigit()
+        if key in NUMERIC_LIST_ARGS:
+            parts = argToList(value)
+            return bool(parts) and all(str(part).strip().isdigit() for part in parts)
+        return True
 
-    Args:
-        args (dict): Dictionary containing start_time and end_time parameters
-
-    Raises:
-        DemistoException: If end_time is provided without start_time
-
-    Side Effects:
-        Modifies the args dictionary in place by:
-        - Converting start_time and end_time to ISO format
-        - Setting time_frame to 'custom' when both times are present
-        - Setting end_time to current time if only start_time is provided
-
-    """
-    start_time = args.get("start_time", "")
-    end_time = args.get("end_time", "")
-
-    if end_time and not start_time:
-        raise DemistoException("When end time is provided start_time must be provided as well.")
-
-    if start_time := dateparser.parse(start_time):
-        start_time = start_time.strftime("%Y-%m-%dT%H:%M:%S")
-
-    if end_time := dateparser.parse(end_time):
-        end_time = end_time.strftime("%Y-%m-%dT%H:%M:%S")
-
-    if start_time and not end_time:
-        # Set end_time to default now.
-        end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-    if start_time and end_time:
-        # When working with start time and end time need to specify time_frame custom.
-        args["time_frame"] = "custom"
-        args["start_time"] = start_time
-        args["end_time"] = end_time
+    return {key: value for key, value in args.items() if is_valid(key, value)}
 
 
 def create_sha_search_field_query(sha_search_field: str, search_type: str, sha_list: list[str]) -> Optional[dict]:
@@ -159,13 +131,9 @@ def prepare_sha256_custom_field(args: dict) -> Optional[str]:
 def main():  # pragma: no cover
     try:
         args: dict = demisto.args()
-        prepare_start_end_time(args)
-
-        if additional_output_fields := args.pop("additional_output_fields", []):
-            OUTPUT_KEYS.extend(additional_output_fields)
-
         # Return only specific fields to the context.
         args["output_keys"] = ",".join(OUTPUT_KEYS)
+
         sha256_custom_field = prepare_sha256_custom_field(args)
         if sha256_custom_field:
             args["custom_filter"] = sha256_custom_field
@@ -174,8 +142,9 @@ def main():  # pragma: no cover
             args["issue_domain"] = f"DOMAIN_{issue_domain.upper().replace(' ', '_')}"
 
         args = remove_empty_string_values(args)
+
         demisto.debug(f"Calling core-get-issues with arguments: {args}")
-        results: dict = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
+        results = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
 
         if is_error(results):
             error = get_error(results)
@@ -185,7 +154,18 @@ def main():  # pragma: no cover
         context = results.get("EntryContext", {}).get("Core.Issue(val.internal_id && val.internal_id == obj.internal_id)")
         human_readable: str = results.get("HumanReadable", "")
 
-        return_results(CommandResults(outputs=context, outputs_prefix="Core.Issue", readable_output=human_readable))
+        for item in context or []:
+            if "agent_id" in item:
+                item["endpoint_id"] = item.pop("agent_id")
+
+        return_results(
+            CommandResults(
+                outputs=context,
+                outputs_prefix="Core.Issue",
+                outputs_key_field="internal_id",
+                readable_output=human_readable,
+            )
+        )
 
     except DemistoException as error:
         return_error(f"Failed to execute SearchIssues. Error:\n{error}", error)
