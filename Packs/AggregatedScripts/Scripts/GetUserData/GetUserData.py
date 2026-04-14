@@ -675,21 +675,60 @@ def azure_get_risky_user(
     additional_fields: bool,
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
+    readable_outputs_list.extend(readable_errors)
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
 
-    # Check if we're searching by email (userPrincipalName)
-    search_value = command.args.get("id", "")
-    if "@" in search_value:
-        # Use list command with filter for email addresses
-        demisto.debug(f"Searching Azure Risky Users by userPrincipalName: {search_value}")
-        list_command_args = {
-            "using-brand": command.brand,
-        }
-        # Execute the list command and manually filter by userPrincipalName
-        entry_context, human_readable, readable_errors = run_execute_command("azure-risky-users-list", list_command_args)
-    else:
-        # Use get command for user IDs
-        entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("AzureRiskyUsers.RiskyUser", output)
+        outputs = get_outputs(output_key, output)
 
+        # Extract fields without removing them from outputs yet
+        user_id = outputs.get("id")
+        user_principal_name = outputs.get("userPrincipalName")
+        user_display_name = outputs.get("userDisplayName")
+        risk_level = outputs.pop("riskLevel", None)
+
+        # Remove the fields we're using directly
+        outputs.pop("id", None)
+        outputs.pop("userPrincipalName", None)
+        outputs.pop("userDisplayName", None)
+
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                id=user_id,
+                risk_level=risk_level,
+                username=user_display_name or user_id,
+                email_address=user_principal_name,
+                instance=output.get("instance"),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
+
+    return readable_outputs_list, account_outputs
+
+
+def azure_list_risky_users(
+    command: Command,
+    additional_fields: bool,
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    """
+    List risky users and filter by email address (userPrincipalName).
+    The email to filter by is passed in command.args["filter_email"].
+
+    Args:
+        command: Command object with brand, command name, and args including filter_email.
+        additional_fields: Whether to include additional fields.
+
+    Returns:
+        Tuple of readable outputs and user outputs.
+    """
+    readable_outputs_list = []
+    user_email = command.args.pop("filter_email", "")
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
 
@@ -698,23 +737,21 @@ def azure_get_risky_user(
         output_key = get_output_key("AzureRiskyUsers.RiskyUser", output)
         outputs_list = output.get(output_key, [])
 
-        # Handle both single dict and list of dicts
-        if isinstance(outputs_list, dict):
-            outputs_list = [outputs_list]
-        elif not isinstance(outputs_list, list):
+        # Ensure we have a list
+        if not isinstance(outputs_list, list):
             outputs_list = []
 
         for outputs in outputs_list:
             if not outputs:
                 continue
 
-            # If searching by email, filter the results
-            if "@" in search_value:
+            # Filter by userPrincipalName if email was provided
+            if user_email:
                 user_principal_name = outputs.get("userPrincipalName", "")
-                if user_principal_name.lower() != search_value.lower():
+                if user_principal_name.lower() != user_email.lower():
                     continue
 
-            # Extract fields without removing them from outputs yet
+            # Extract fields
             user_id = outputs.get("id")
             user_principal_name = outputs.get("userPrincipalName")
             user_display_name = outputs.get("userDisplayName")
@@ -1172,10 +1209,10 @@ def main():
             readable_output, outputs = get_data(
                 modules=modules,
                 brand_name="AzureRiskyUsers",
-                command_name="azure-risky-user-get",
-                arg_name="id",
+                command_name="azure-risky-users-list",
+                arg_name="filter_email",
                 arg_value=user_email,
-                cmd=azure_get_risky_user,
+                cmd=azure_list_risky_users,
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:

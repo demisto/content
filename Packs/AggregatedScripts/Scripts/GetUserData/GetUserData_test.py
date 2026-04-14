@@ -22,6 +22,7 @@ from GetUserData import (
     get_data,
     prisma_cloud_get_user,
     azure_get_risky_user,
+    azure_list_risky_users,
     iam_get_user,
     gsuite_get_user,
 )
@@ -1145,17 +1146,17 @@ class TestGetUserData:
         assert result[1][0]["Email"] == "azure.user@example.com"
         assert result[1][0]["RiskLevel"] == "HIGH"
 
-    def test_azure_get_risky_user_with_email(self, mocker: MockerFixture):
+    def test_azure_list_risky_users_with_email(self, mocker: MockerFixture):
         """
         Given:
-            A Command object for azure_get_risky_user with an email address (userPrincipalName).
+            A Command object for azure_list_risky_users with an email address to filter.
         When:
-            The function is called with the Command object containing an email.
+            The function is called with the Command object containing filter_email.
         Then:
-            It uses azure-risky-users-list command and filters by userPrincipalName, returning the matching user.
+            It filters by userPrincipalName and returns the matching user.
         """
         user_email = "test.user@example.com"
-        command = Command("AzureRiskyUsers", "azure-risky-user-get", {"id": user_email})
+        command = Command("AzureRiskyUsers", "azure-risky-users-list", {"filter_email": user_email})
 
         mock_list_response = {
             "AzureRiskyUsers.RiskyUser": [
@@ -1175,7 +1176,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_output_key", return_value="AzureRiskyUsers.RiskyUser")
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = azure_get_risky_user(command, additional_fields=True)
+        result = azure_list_risky_users(command, additional_fields=True)
 
         assert len(result[1]) == 1
         assert result[1][0]["Email"] == user_email
@@ -2215,6 +2216,7 @@ def _mute_all_other_adapters(mocker: MockerFixture, except_fn: str | None = None
         "iam_get_user",  # <- shared by Okta IAM and AWS-ILM
         "gsuite_get_user",
         "azure_get_risky_user",
+        "azure_list_risky_users",
     }
     for fn in fns:
         if fn == except_fn:
@@ -2359,7 +2361,7 @@ def test_userid_arg_mapping_to_adapter(mocker: MockerFixture, brand_name, comman
     "brand_name,command_name,adapter_fn,expected_key,expected_value",
     [
         ("Active Directory Query v2", "ad-get-user", "ad_get_user", "email", "john@example.com"),
-        ("AzureRiskyUsers", "azure-risky-user-get", "azure_get_risky_user", "id", "john@example.com"),
+        ("AzureRiskyUsers", "azure-risky-users-list", "azure_list_risky_users", "filter_email", "john@example.com"),
         ("Okta IAM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
         ("AWS-ILM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
         ("GSuiteAdmin", "gsuite-user-get", "gsuite_get_user", "user", "john@example.com"),
