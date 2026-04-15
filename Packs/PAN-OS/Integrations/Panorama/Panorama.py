@@ -12312,12 +12312,9 @@ class FirewallCommand:
                         # Add information about Panorama pushed policy, if any
                         pushed_rule_entry = pushed_rulebase_results.get(result.name)
                         if pushed_rule_entry:
-                            demisto.debug(f"{debug_prefix} Rule {result.name} found in Panorama pushed policy")
                             result.is_from_panorama = True
                             result.position = pushed_rule_entry.position
                             result.from_dg_name = pushed_rule_entry.loc
-                        else:
-                            demisto.debug(f"{debug_prefix} Rule {result.name} not found in Panorama pushed policy")
 
                         result_data.append(result)
 
