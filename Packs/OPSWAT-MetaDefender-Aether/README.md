@@ -2,7 +2,10 @@ MetaDefender Aether (previously known as MetaDefender Sandbox) is a next-generat
 
 
 ## What does this pack do?
+
 This pack includes the MetaDefender Aether basic integration that do the following:
+
 ### MetaDefender Aether integration:
+
 - Upload a file or URL resource for scan and get the results.
 - Search for reports with a query parameter.
