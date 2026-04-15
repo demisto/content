@@ -3,5 +3,5 @@ variables:
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "infra__validate-AS104-displayLabel-usage_CRTX-236166"
+    ref: "private-content_validate-AS104-displayLabel-usage_CRTX-236166"
     project: "${CI_PROJECT_NAMESPACE}/infra"
