@@ -4463,7 +4463,25 @@ async def process_vulnerability_batches(
 
     while True:
         # Fetch one batch (SEQUENTIAL - must wait for pagination token)
-        vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+        try:
+            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+        except ContentClientError as e:
+            # Check if this is an expired cursor error by parsing the API response
+            error_str = str(e)
+            if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
+                log_falcon_assets(
+                    f"Pagination cursor expired. Saved cursor from previous fetch is no longer valid. "
+                    f"Clearing state and starting fresh. Previous progress ({total_fetched} vulnerabilities) will be discarded.",
+                    "warning"
+                )
+                # Clear integration context completely to start fresh
+                context_store.write({})
+                log_falcon_assets("Integration context cleared. Next fetch will start from beginning.", "info")
+                # Re-raise to abort this fetch - next cycle will start fresh
+                raise
+            else:
+                # Different error - re-raise without clearing state
+                raise
 
         # Extract unique AIDs from this batch
         extract_unique_aids(vulnerabilities, unique_aids)

@@ -9042,6 +9042,76 @@ class TestSpotlightFetchAssets:
             await fetch_spotlight_assets()
 
     @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_expired_cursor_recovery(self, mocker):
+        """
+        Test that fetch_spotlight_assets detects expired pagination cursors and clears state.
+        
+        This test verifies the fix for XSUP-66416 where saved cursors from interrupted fetches
+        caused repeated failures with "Search context expired" errors.
+        
+        Given:
+            - Integration context has a saved cursor from a previous fetch
+            - The saved cursor is expired (CrowdStrike returns 404 "Search context expired")
+        When:
+            - fetch_spotlight_assets is called
+        Then:
+            - The expired cursor error is detected
+            - Integration context is cleared
+            - Error is re-raised to abort this fetch
+            - Next fetch will start fresh
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets, ContentClientError
+        
+        # 1. Setup Mocks
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+        
+        # Mock context store with saved expired cursor
+        mock_context_store = mocker.Mock()
+        mock_context_store.read.return_value = {
+            "spotlight_assets": {
+                "cursor": "expired_cursor_token",
+                "metadata": {"total_fetched_until_now": 340000, "snapshot_id": "old_snapshot"}
+            }
+        }
+        mocker.patch("CrowdStrikeFalcon.ContentClientContextStore", return_value=mock_context_store)
+        
+        # Mock load_spotlight_state to return saved state with expired cursor
+        mock_state = mocker.Mock()
+        mock_state.cursor = "expired_cursor_token"
+        mock_state.metadata = {"total_fetched_until_now": 340000}
+        mocker.patch(
+            "CrowdStrikeFalcon.load_spotlight_state",
+            return_value=(mock_state, "old_snapshot", 340000, set(), set())
+        )
+        
+        # Mock fetch to raise expired cursor error
+        expired_cursor_error = ContentClientError(
+            'Request failed: {"errors": [{"code": 404, "message": "Search context expired, \'after\' key no longer valid"}]}'
+        )
+        mock_fetch_batch = mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
+            new_callable=mocker.AsyncMock,
+            side_effect=expired_cursor_error
+        )
+        
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        
+        # 2. Execute and verify error is raised
+        with pytest.raises(ContentClientError, match="Search context expired"):
+            await fetch_spotlight_assets()
+        
+        # 3. Verify context was cleared
+        mock_context_store.write.assert_called_once_with({})
+        
+        # 4. Verify fetch was attempted with the expired cursor
+        mock_fetch_batch.assert_awaited_once()
+
+
+class TestAssetsDeviceHandler:
+    @pytest.mark.asyncio
     async def test_handler_trigger_enrichment(self, mocker):
         """
         Tests that the AssetsDeviceHandler triggers enrichment when the batch limit is exceeded.
