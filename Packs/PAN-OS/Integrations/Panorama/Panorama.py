@@ -12178,15 +12178,6 @@ class FirewallCommand:
         pushed_config_cmd = f"<show><config><pushed-shared-policy><vsys>{vsys_name}</vsys></pushed-shared-policy></config></show>"
         pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
 
-        # print full response for debugging
-        pushed_config_response_result = pushed_config_response.find("result")
-        if pushed_config_response_result is not None:
-            pushed_config_response_result_str = ET.tostring(pushed_config_response_result, encoding="unicode")
-        else:
-            pushed_config_response_result_str = ""
-
-        demisto.debug(f"[get_pushed_shared_policy_rules] Pushed config response:\n{pushed_config_response_result_str}")
-
         # Panorama rules can exist in pre-rulebase or post-rulebase
         for position in ["pre-rulebase", "post-rulebase"]:
             panorama_xpath = f".//panorama/{position}/{rulebase_type}/rules/entry"
@@ -12202,7 +12193,6 @@ class FirewallCommand:
                     entry.policy_type = rulebase_type
                     entry.position = position.replace("-", "_")
                     pushed_rulebase_results[entry.name] = entry
-                    demisto.debug(f"[get_pushed_shared_policy_rules] Found pushed shared policy rule: {entry.name} in {position}")
 
         return pushed_rulebase_results
 
