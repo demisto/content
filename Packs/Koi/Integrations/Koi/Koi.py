@@ -91,6 +91,32 @@ VALID_AUDIT_TYPES = [
     "vetting",
 ]
 
+# Valid marketplace values for allowlist operations
+VALID_MARKETPLACES = [
+    "chocolatey",
+    "chrome_web_store",
+    "claude_desktop_extensions",
+    "cursor",
+    "docker",
+    "edge_add_ons",
+    "firefox_add_ons",
+    "github_mcp_registry",
+    "homebrew",
+    "hugging_face",
+    "jetbrains",
+    "linux",
+    "mac",
+    "notepad++",
+    "npm",
+    "office_add_ins",
+    "open_vsx_registry",
+    "pypi",
+    "visual_studio",
+    "vscode",
+    "windows",
+    "windsurf",
+]
+
 
 def get_formatted_utc_time(date_input: str | None) -> str:
     """Parse input and return the formatted UTC time string for KOI API.
@@ -398,6 +424,47 @@ class Client(ContentClient):
         items = response.get("items", [])
         demisto.debug(f"[API] Allowlist response received: {len(items)} items")
         return response
+
+    def remove_allowlist_item(
+        self,
+        item_id: str,
+        marketplace: str,
+        created_by: str | None = None,
+        notes: str | None = None,
+    ) -> None:
+        """Remove an item from the global allowlist.
+
+        Args:
+            item_id: The unique identifier of the item to remove.
+            marketplace: The source marketplace corresponding to the item_id.
+            created_by: Optional email of the user associated with the removal.
+            notes: Optional additional context or notes regarding the removal.
+        """
+        body: dict[str, Any] = {
+            "item_id": item_id,
+            "marketplace": marketplace,
+        }
+        if created_by:
+            body["created_by"] = created_by
+        if notes:
+            body["notes"] = notes
+
+        demisto.debug(
+            f"[API] Removing allowlist item: {item_id} (marketplace={marketplace}, " f"created_by={created_by}, notes={notes})"
+        )
+
+        self._http_request(
+            method="DELETE",
+            url_suffix=API_ALLOWLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(
+            f"[API] Successfully removed allowlist item: {item_id} (marketplace={marketplace}, "
+            f"created_by={created_by}, notes={notes})"
+        )
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -923,6 +990,40 @@ def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
+def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Remove an item from the global allowlist.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (item_id, marketplace, created_by, notes).
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-allowlist-item-remove triggered")
+
+    item_id: str = args["item_id"]
+    marketplace: str = args["marketplace"]
+    created_by: str | None = args.get("created_by")
+    notes: str | None = args.get("notes")
+
+    if marketplace not in VALID_MARKETPLACES:
+        raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+
+    client.remove_allowlist_item(
+        item_id=item_id,
+        marketplace=marketplace,
+        created_by=created_by,
+        notes=notes,
+    )
+
+    demisto.debug(f"[Command Result] Allowlist item '{item_id}' removed successfully")
+
+    return CommandResults(
+        readable_output=f"Allowlist item '{item_id}' (marketplace: {marketplace}) was removed successfully.",
+    )
+
+
 # endregion
 
 # region Main router
@@ -936,6 +1037,7 @@ COMMAND_MAP: dict[str, Any] = {
     "fetch-events": fetch_events_command,
     "koi-policy-list": koi_policy_list_command,
     "koi-allowlist-get": koi_allowlist_get_command,
+    "koi-allowlist-item-remove": koi_allowlist_item_remove_command,
 }
 
 

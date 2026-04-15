@@ -13,6 +13,7 @@ from Koi import (
     API_POLICIES,
     API_ALLOWLIST,
     VALID_AUDIT_TYPES,
+    VALID_MARKETPLACES,
     COMMAND_MAP,
     get_log_types_from_titles,
     extract_time_from_event,
@@ -25,6 +26,7 @@ from Koi import (
     fetch_events_command,
     koi_policy_list_command,
     koi_allowlist_get_command,
+    koi_allowlist_item_remove_command,
     get_formatted_utc_time,
     parse_date_or_use_current,
     main,
@@ -1275,6 +1277,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_allowlist_result")
 
+    def test_main_routes_allowlist_item_remove(self, mocker):
+        """Test main routes koi-allowlist-item-remove command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-allowlist-item-remove")
+        mocker.patch.object(demisto, "args", return_value={"item_id": "ext-123", "marketplace": "vscode"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_allowlist_remove = mocker.MagicMock(return_value="mock_allowlist_remove_result")
+        COMMAND_MAP["koi-allowlist-item-remove"] = mock_allowlist_remove
+
+        main()
+
+        mock_return.assert_called_once_with("mock_allowlist_remove_result")
+
 
 # endregion
 
@@ -1528,6 +1553,124 @@ class TestClientGetAllowlist:
 
         assert result == empty_response
         assert result["items"] == []
+
+
+# endregion
+
+# region Allowlist item remove command tests
+
+
+class TestKoiAllowlistItemRemoveCommand:
+    """Tests for the koi-allowlist-item-remove command."""
+
+    def test_allowlist_item_remove_success(self, mock_client, mocker):
+        """Test koi-allowlist-item-remove successfully removes an item."""
+        mocker.patch.object(mock_client, "remove_allowlist_item", return_value=None)
+
+        args = {"item_id": "ext-123", "marketplace": "vscode"}
+        result = koi_allowlist_item_remove_command(mock_client, args)
+
+        assert "was removed successfully" in result.readable_output
+        assert "ext-123" in result.readable_output
+        assert "vscode" in result.readable_output
+        assert result.outputs is None
+        mock_client.remove_allowlist_item.assert_called_once_with(
+            item_id="ext-123",
+            marketplace="vscode",
+            created_by=None,
+            notes=None,
+        )
+
+    def test_allowlist_item_remove_with_optional_params(self, mock_client, mocker):
+        """Test koi-allowlist-item-remove with created_by and notes."""
+        mocker.patch.object(mock_client, "remove_allowlist_item", return_value=None)
+
+        args = {
+            "item_id": "ext-456",
+            "marketplace": "chrome_web_store",
+            "created_by": "admin@example.com",
+            "notes": "No longer needed",
+        }
+        result = koi_allowlist_item_remove_command(mock_client, args)
+
+        assert "was removed successfully" in result.readable_output
+        assert "ext-456" in result.readable_output
+        assert "chrome_web_store" in result.readable_output
+        mock_client.remove_allowlist_item.assert_called_once_with(
+            item_id="ext-456",
+            marketplace="chrome_web_store",
+            created_by="admin@example.com",
+            notes="No longer needed",
+        )
+
+    def test_allowlist_item_remove_invalid_marketplace(self, mock_client, mocker):
+        """Test koi-allowlist-item-remove raises error for invalid marketplace."""
+        args = {"item_id": "ext-123", "marketplace": "invalid_marketplace"}
+
+        with pytest.raises(DemistoException, match="Invalid marketplace"):
+            koi_allowlist_item_remove_command(mock_client, args)
+
+    @pytest.mark.parametrize("marketplace", VALID_MARKETPLACES)
+    def test_allowlist_item_remove_all_valid_marketplaces(self, mock_client, mocker, marketplace):
+        """Test koi-allowlist-item-remove accepts all valid marketplace values."""
+        mocker.patch.object(mock_client, "remove_allowlist_item", return_value=None)
+
+        args = {"item_id": "test-item", "marketplace": marketplace}
+        result = koi_allowlist_item_remove_command(mock_client, args)
+
+        assert "was removed successfully" in result.readable_output
+
+
+class TestClientRemoveAllowlistItem:
+    """Tests for the Client.remove_allowlist_item method."""
+
+    def test_remove_allowlist_item_required_params(self, mock_client, mocker):
+        """Test that remove_allowlist_item sends correct DELETE request with required params."""
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 204
+        mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+
+        mock_client.remove_allowlist_item(item_id="ext-123", marketplace="vscode")
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "DELETE"
+        assert call_kwargs["url_suffix"] == API_ALLOWLIST
+        assert call_kwargs["json_data"]["item_id"] == "ext-123"
+        assert call_kwargs["json_data"]["marketplace"] == "vscode"
+        assert "created_by" not in call_kwargs["json_data"]
+        assert "notes" not in call_kwargs["json_data"]
+        assert call_kwargs["resp_type"] == "response"
+        assert call_kwargs["ok_codes"] == (204,)
+
+    def test_remove_allowlist_item_all_params(self, mock_client, mocker):
+        """Test that remove_allowlist_item sends all params when provided."""
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 204
+        mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+
+        mock_client.remove_allowlist_item(
+            item_id="ext-456",
+            marketplace="chrome_web_store",
+            created_by="admin@example.com",
+            notes="Removing for security reasons",
+        )
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["json_data"]["item_id"] == "ext-456"
+        assert call_kwargs["json_data"]["marketplace"] == "chrome_web_store"
+        assert call_kwargs["json_data"]["created_by"] == "admin@example.com"
+        assert call_kwargs["json_data"]["notes"] == "Removing for security reasons"
+
+    def test_remove_allowlist_item_api_error(self, mock_client, mocker):
+        """Test that remove_allowlist_item propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [404] - Not Found"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.remove_allowlist_item(item_id="nonexistent", marketplace="vscode")
 
 
 # endregion
