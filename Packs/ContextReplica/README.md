@@ -1,0 +1,1 @@
+The script can download the exact replica of the Json context, as how it is in XSOAR issue/Incident context in UI.
