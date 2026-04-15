@@ -1306,6 +1306,7 @@ def create_issue_recommendations_readable_output(issue_ids: list[str], all_recom
         "severity",
         "description",
         "remediation",
+        "network_reachability",
     ]
 
     # Flags to track what headers we need to append
