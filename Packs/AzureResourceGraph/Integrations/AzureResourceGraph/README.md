@@ -43,6 +43,7 @@ To use The Azure Resource Graph, you must have appropriate rights in Azure role-
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+| Gov Account | Select this checkbox if you are using a US Government cloud account \(GCC-High\). When enabled, the integration uses the US Government management endpoint and Azure US GCC-High cloud configuration. | False |
 
 ## Commands
 
