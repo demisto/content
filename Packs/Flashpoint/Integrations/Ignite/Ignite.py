@@ -233,7 +233,15 @@ class Client(BaseClient):
     Client to use in integration with powerful http_request.
     """
 
-    def __init__(self, url, headers, verify, proxy, create_relationships, reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT):
+    def __init__(
+        self,
+        url,
+        headers,
+        verify,
+        proxy,
+        create_relationships,
+        reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT,
+    ):
         """Initialize class object.
 
         :type url: ``str``
@@ -1900,7 +1908,7 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
                             f"{client.reputation_enrichments_limit} entries for indicator "
                             f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
                         )
-                        indicator["enrichments"][enr_key] = enr_val[:client.reputation_enrichments_limit]
+                        indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
                 limited_indicators.append(indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
@@ -2943,7 +2951,10 @@ def main():
 
     create_relationships = argToBoolean(params.get("create_relationships", True))
 
-    reputation_enrichments_limit = arg_to_number(params.get("reputation_enrichments_limit", DEFAULT_REPUTATION_CONTEXT_LIMIT)) or DEFAULT_REPUTATION_CONTEXT_LIMIT
+    reputation_enrichments_limit = (
+        arg_to_number(params.get("reputation_enrichments_limit", DEFAULT_REPUTATION_CONTEXT_LIMIT))
+        or DEFAULT_REPUTATION_CONTEXT_LIMIT
+    )
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
