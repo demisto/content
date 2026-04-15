@@ -2748,6 +2748,4 @@ class TestReferenceDataBulkLoad:
 
         client.reference_data_bulk_call(name=name, type=ref_type, data=data)
 
-        mock_http.assert_called_once_with(
-            method="POST", url_suffix=expected_url_suffix, json_data=data, additional_headers=headers
-        )
+        mock_http.assert_called_once_with(method="POST", url_suffix=expected_url_suffix, data=data, additional_headers=headers)

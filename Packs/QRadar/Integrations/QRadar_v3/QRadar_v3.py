@@ -815,7 +815,7 @@ class Client(BaseClient):
     def get_reference_data_bulk_task_status(self, task_id: int):
         return self.http_request(method="GET", url_suffix=f"/reference_data_collections/set_bulk_update_tasks/{task_id}")
 
-    def reference_data_bulk_call(self, name: str, type: str, data: dict[Any, Any] | list[dict[Any, Any]]) -> dict:
+    def reference_data_bulk_call(self, name: str, type: str, data: dict[Any, Any]) -> dict:
         """Calls bulk upload endpoint
 
         Args:
@@ -831,7 +831,7 @@ class Client(BaseClient):
         return self.http_request(
             method="POST",
             url_suffix=f"/reference_data/{type}/bulk_load/{name}",
-            json_data=data,
+            data=data,
             additional_headers=headers,
         )
 
@@ -3771,7 +3771,13 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
 
 
 def qradar_reference_data_bulk_load_command(client: Client, args: dict) -> CommandResults:
-    """Bulk loads reference data to a reference data map
+    """Bulk loads reference data to a reference data map.
+
+    possible arguments:
+    - reference_data_type (Required): The type of reference data set to upload to. Valid values are `maps` or
+        `map_of_sets`, `tables`.
+    - reference_data_name (Required): The name of the reference data set.
+    - data (Required): The data payload to upload to the reference data set.
 
     Args:
         client (Client): The demisto api client
@@ -3803,6 +3809,21 @@ def qradar_reference_data_bulk_load_command(client: Client, args: dict) -> Comma
 
 
 def qradar_reference_data_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Deletes or purges a reference data map or map of sets in QRadar.
+    possible arguments:
+    - reference_data_type (Required): The type of reference data set to delete.
+      Valid values are `maps` or `map_of_sets`, `tables`.
+    - reference_data_name (Required): The name of the reference data set to delete.
+    - reference_data_purge: If `true`, only the contents of the reference data set are purged and the set remains.
+
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     reference_data_type = args.get("reference_data_type", None)
     reference_data_name = args.get("reference_data_name", None)
     reference_data_purge = args.get("reference_data_purge", False)
@@ -3812,9 +3833,12 @@ def qradar_reference_data_delete_command(client: Client, args: dict) -> CommandR
     if reference_data_type not in ["maps", "map_of_sets"]:
         raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
 
-    client.reference_data_delete(reference_data_name, reference_data_type, reference_data_purge)
+    response = client.reference_data_delete(reference_data_name, reference_data_type, reference_data_purge)
 
-    return CommandResults()
+    return CommandResults(
+        readable_output=f"Reference data set '{reference_data_name}' delete request submitted.",
+        raw_response=response,
+    )
 
 
 def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
@@ -5665,7 +5689,7 @@ def main() -> None:  # pragma: no cover
             "qradar-log-source-update": qradar_log_source_update_command,
             "qradar-print-context": lambda client, args: qradar_print_context_command(),
             "qradar-reference-data-bulk-load": qradar_reference_data_bulk_load_command,
-            "qradar-delete-reference-data": qradar_reference_data_delete_command,
+            "qradar-reference-data-delete": qradar_reference_data_delete_command,
         }
 
         if command == "test-module":
