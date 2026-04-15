@@ -2192,6 +2192,135 @@ script:
         description: "The resource group name."
         type: String
         required: true
+  - name: azure-vn-security-group-create
+    description: Creates a network security group. Requires the Microsoft.Network/networkSecurityGroups/write permission.
+    arguments:
+      - name: subscription_id
+        description: The subscription ID.
+        required: true
+      - name: resource_group_name
+        description: The resource group name.
+        required: true
+      - name: security_group_name
+        description: The name of the network security group.
+        required: true
+      - name: location
+        description: The location of the network security group.
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - australiacentral
+        - australiacentral2
+        - australiaeast
+        - australiasoutheast
+        - brazilsouth
+        - brazilsoutheast
+        - brazilus
+        - canadacentral
+        - canadaeast
+        - centralindia
+        - centralus
+        - centraluseuap
+        - eastasia
+        - eastus
+        - eastus2
+        - eastus2euap
+        - francecentral
+        - francesouth
+        - germanynorth
+        - germanywestcentral
+        - israelcentral
+        - italynorth
+        - japaneast
+        - japanwest
+        - jioindiacentral
+        - jioindiawest
+        - koreacentral
+        - koreasouth
+        - malaysiasouth
+        - mexicocentral
+        - newzealandnorth
+        - northcentralus
+        - northeurope
+        - norwayeast
+        - norwaywest
+        - polandcentral
+        - qatarcentral
+        - southafricanorth
+        - southafricawest
+        - southcentralus
+        - southeastasia
+        - southindia
+        - spaincentral
+        - swedencentral
+        - swedensouth
+        - switzerlandnorth
+        - switzerlandwest
+        - uaecentral
+        - uaenorth
+        - uksouth
+        - ukwest
+        - westcentralus
+        - westeurope
+        - westindia
+        - westus
+        - westus2
+        - westus3
+        - australiaeastfoundational
+        - austriaeast
+        - chilecentral
+        - eastusslv
+        - indonesiacentral
+        - israelnorthwest
+        - malaysiawest
+        - southcentralus2
+        - southeastus
+        - southeastus3
+        - southwestus
+        - usgovarizona
+        - usgovtexas
+        - usgovvirginia
+    outputs:
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.name
+        description: The security group's name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.id
+        description: The security group's ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.etag
+        description: The security group's ETag.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.location
+        description: The resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.provisioningState
+        description: The provisioning state of the network security group resource.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid
+        description: The resource GUID property of the network security group resource.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.flushConnection
+        description: When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation.
+        type: Boolean
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.securityRules
+        description: A collection of security rules of the network security group.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules
+        description: A collection of the default security rules of the network security group.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.flowLogs
+        description: A collection of references to flow log resources.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces
+        description: A collection of references to network interfaces.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.subnets
+        description: A collection of references to subnets.
+        type: Unknown
+      
   - name: azure-nsg-security-rule-get
     description: Get a specific rule.
     outputs:
@@ -2636,7 +2765,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+    - description: The name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     outputs:
@@ -2661,7 +2790,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     - auto: PREDEFINED
@@ -2692,7 +2821,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+    - description: The name of the virtual machine for which you want to view details. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     - auto: PREDEFINED
@@ -2809,6 +2938,242 @@ script:
     - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
+  - name: azure-vn-network-interface-update
+    description: Updates a network interface.Requires the Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action permissions.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+      type: String
+    - description: The resource group to which the network interface belongs.
+      name: resource_group_name
+      required: true
+      type: String
+    - description: The name of the network interface to update.
+      name: network_interface_name
+      required: true
+      type: String
+    - name: location
+      description: The location of the network security group.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - australiacentral
+        - australiacentral2
+        - australiaeast
+        - australiasoutheast
+        - brazilsouth
+        - brazilsoutheast
+        - brazilus
+        - canadacentral
+        - canadaeast
+        - centralindia
+        - centralus
+        - centraluseuap
+        - eastasia
+        - eastus
+        - eastus2
+        - eastus2euap
+        - francecentral
+        - francesouth
+        - germanynorth
+        - germanywestcentral
+        - israelcentral
+        - italynorth
+        - japaneast
+        - japanwest
+        - jioindiacentral
+        - jioindiawest
+        - koreacentral
+        - koreasouth
+        - malaysiasouth
+        - mexicocentral
+        - newzealandnorth
+        - northcentralus
+        - northeurope
+        - norwayeast
+        - norwaywest
+        - polandcentral
+        - qatarcentral
+        - southafricanorth
+        - southafricawest
+        - southcentralus
+        - southeastasia
+        - southindia
+        - spaincentral
+        - swedencentral
+        - swedensouth
+        - switzerlandnorth
+        - switzerlandwest
+        - uaecentral
+        - uaenorth
+        - uksouth
+        - ukwest
+        - westcentralus
+        - westeurope
+        - westindia
+        - westus
+        - westus2
+        - westus3
+        - australiaeastfoundational
+        - austriaeast
+        - chilecentral
+        - eastusslv
+        - indonesiacentral
+        - israelnorthwest
+        - malaysiawest
+        - southcentralus2
+        - southeastus
+        - southeastus3
+        - southwestus
+        - usgovarizona
+        - usgovtexas
+        - usgovvirginia
+    - description: Whether to enable IP forwarding for the network interface.
+      name: enable_ip_forwarding
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+    - description: Whether the network interface is configured for accelerated networking.
+      name: enable_accelerate_networking
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+    - description: The auxiliary mode of the Network Interface resource.
+      name: auxiliary_mode
+      auto: PREDEFINED
+      predefined:
+        - MaxConnections
+        - Floating
+        - AcceleratedConnections
+      type: String
+    - description: The auxiliary SKU of the Network Interface resource.
+      name: auxiliary_sku
+      auto: PREDEFINED
+      predefined:
+        - A1
+        - A2
+        - A4
+        - A8
+      type: String
+    - description: A comma-separated list of DNS server IP addresses for the network interface.
+      name: dns_servers
+      isArray: true
+    - description: The internal DNS name label for the network interface.
+      name: internal_dns_name_label
+      type: String
+    - description: The name of the network security group.
+      name: network_security_group_name
+      type: String
+    - description: Whether to remove the property networkSecurityGroup from the network interface.
+      name: remove_network_security_group
+      auto: PREDEFINED
+      predefined:
+        - yes
+        - no
+      defaultValue: no
+    - description: The type of Network Interface resource.
+      name: nic_type
+      auto: PREDEFINED
+      predefined:
+        - Standard
+        - Elastic
+    outputs:
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+      description: The network interface ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+      description: The network interface name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+      description: The Azure region where the network interface is deployed.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+      description: A unique read-only string that changes whenever the network interface resource is updated.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
+      description: The resource tags.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.extendedLocation
+      description: The extended location of the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+      description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+      description: The list of IP configurations for the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
+      description: The DNS configuration of the network interface, including DNS servers and domain name.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress
+      description: The MAC address of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding
+      description: Whether IP forwarding is enabled for the network interface.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking
+      description: Whether accelerated networking is enabled for the network interface.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
+      description: The network security group associated with the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.primary
+      description: Whether this is a primary network interface on a virtual machine.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine
+      description: The reference to a virtual machine.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
+      description: The type of network interface (Standard or Elastic).
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode
+      description: The auxiliary mode of the Network Interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku
+      description: The auxiliary SKU of the Network Interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled
+      description: Whether default outbound connectivity for nic was configured.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking
+      description: Whether to disable TCP state tracking.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration
+      description: A reference to the DSCP configuration to which the network interface is linked.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads
+      description: A list of references to linked BareMetal resources.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase
+      description: The migration phase of the Network Interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint
+      description: A reference to the private endpoint to which the network interface is linked.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService
+      description: The privatelinkservice of the network interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid
+      description: The resource GUID property of the network interface resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations
+      description: A list of TapConfigurations of the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.vnetEncryptionSupported
+      description: Whether the virtual machine this nic is attached to supports encryption.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType
+      description: The workload type of the NetworkInterface for BareMetal resources.
+      type: String
+
   - name: azure-vm-public-ip-details-get
     description: Gets the properties of a given public IP address.
     arguments:
@@ -6253,6 +6618,192 @@ script:
     hidden: true
     quickaction: true
     prettyname: Enable SSL on Postgres Server
+  - name: azure-compute-vm-list
+    description: Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Requires the Microsoft.Compute/virtualMachines/read permission.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID."
+      required: true
+    - name: resource_group_name
+      description: "The name of the resource group."
+      required: true
+    - name: next_token
+      description: "The URI to fetch the next page of results."
+    outputs:
+      - contextPath: Azure.Compute.VirtualMachines.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.location
+        description: The location of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.tags
+        description: The tags of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.id
+        description: The ID of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.etag
+        description: The ETag of the virtual machine, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation
+        description: The extended location of the Virtual Machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity
+        description: The identity of the virtual machine, if configured.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.managedBy
+        description: MThe ARM resource ID of the Virtual Machine Scale Set (VMSS) that manages the virtual machine, if applicable. Used for internal resource group delete optimization.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.placement
+        description: 'The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01.'
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan
+        description: Information about the marketplace image used to create the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.systemData
+        description: Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The availability zones.
+        type: Unknown.
+      - contextPath: Azure.Compute.VirtualMachines.properties.vmId
+        description: The unique ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.availabilitySet
+        description: The availability set that the virtual machine is in.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
+        description: The hardware settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
+        description: The storage settings for the virtual machine disks.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
+        description: The operating system settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
+        description: The network interfaces of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
+        description: Additional capabilities enabled or disabled on the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
+        description: The security settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
+        description: The boot diagnostic settings state.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
+        description: The virtual machine scale set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.proximityPlacementGroup
+        description: The proximity placement group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy
+        description: The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.priority
+        description: The priority for the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.evictionPolicy
+        description: The eviction policy for the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
+        description: The billing related details of a Azure Spot virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.host
+        description: The host that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.hostGroup
+        description: The host group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
+        description: The license type for bringing your own license scenario.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
+        description: The time alloted for all extensions to start.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
+        description: The fault domain that the virtual machine is in.
+        type: Number
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
+        description: The scheduled event related configurations.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.userData
+        description: The user data for the VM, which must be base-64 encoded.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
+        description: The capacity reservation related details of a virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
+        description: The gallery applications that should be made available to the VM/VMSS.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
+        description: The time when the virtual machine was created.
+        type: Date
+      - contextPath: Azure.Compute.VirtualMachines.plan.name
+        description: The plan name.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.publisher
+        description: The publisher of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.product
+        description: The product of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.promotionCode
+        description: The promotion code of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.properties
+        description: The properties of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.resources.id
+        description: The ID of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.location
+        description: The location of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.tags
+        description: The tags of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity.principalId
+        description: The principal ID of the identity.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.identity.tenantId
+        description: The tenant ID of the identity.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.identity.type
+        description: The type of the identity.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.identity.userAssignedIdentities
+        description: The list of user assigned identities associated with the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The zones of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation.name
+        description: The name of the extended location.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation.type
+        description: The type of the extended location.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
+        description: The virtual machine instance view.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachinesNextToken
+        description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
+        type: String
   isfetch: false
   runonce: false
   script: '-'
