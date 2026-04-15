@@ -38,10 +38,35 @@ configuration:
   required: false
   section: Connect
   advanced: true
-- display: Long running instance
-  name: longRunning
+- display: Fetch incidents
+  name: isFetch
   type: 8
   required: false
+  defaultvalue: 'true'
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: "Data Loss Prevention"
+  required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+  section: Collect
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  defaultvalue: 60 minutes
+  required: false
+  section: Collect
+- name: max_fetch
+  display: Maximum number of incidents per fetch
+  defaultvalue: '50'
+  required: false
+  type: 0
   section: Collect
 - display: DLP Regions
   name: dlp_regions
@@ -71,23 +96,6 @@ configuration:
   type: 12
   additionalinfo: The message to send to the user to ask for feedback.
   defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour activity on *$app_name* was blocked due to company policy. The data in this activity contains sensitive information which violates *$data_profile_name* policy.\n\nfilename - *$file_name* \n\n $snippets\n\n
-  required: false
-  section: Collect
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  type: 0
-  defaultvalue: 60 minutes
-  required: false
-  section: Collect
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  required: false
-  section: Collect
-- display: Incident type
-  name: incidentType
-  type: 13
-  defaultvalue: "Data Loss Prevention"
   required: false
   section: Collect
 description: Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
@@ -191,11 +199,11 @@ script:
       type: string
     description: Gets the Slack bot message to send to the user for gathering feedback.
   - name: pan-dlp-reset-last-run
-    arguments: []
-    description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+    deprecated: true
+    description: Deprecated. Reset the "last run" timestamp via the integration instance configuration window.
   dockerimage: demisto/python3:3.12.13.7444307
   isFetchSamples: true
-  longRunning: true
+  isfetch: true
   script: '-'
   subtype: python3
   type: python

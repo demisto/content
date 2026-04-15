@@ -20,7 +20,8 @@ Make sure the toggle at the bottom is switched on.
 | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Long running instance |  | False |
+| Fetch incidents |  | False |
+| Maximum number of incidents per fetch | Default value is 50. | False |
 | First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
 | DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
@@ -135,7 +136,7 @@ Gets the Slack bot message to send to the user for gathering feedback.
 ### pan-dlp-reset-last-run
 
 ***
-Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+Deprecated.  Reset the "last run" timestamp via the integration instance configuration window.
 
 #### Base Command
 
@@ -143,8 +144,7 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
