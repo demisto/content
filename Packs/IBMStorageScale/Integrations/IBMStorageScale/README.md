@@ -157,6 +157,42 @@ This command has no arguments.
 
 ---
 
+#### 3. ibm-storage-scale-list-snapshots
+
+Lists snapshots from IBM Storage Scale. By default, returns all snapshots across all file systems. Use the `filesystem` argument to filter by a specific file system, and `snapshot_name` to retrieve a specific snapshot.
+
+```
+!ibm-storage-scale-list-snapshots
+!ibm-storage-scale-list-snapshots filesystem=gpfs0
+!ibm-storage-scale-list-snapshots filesystem=gpfs0 snapshot_name=snap1
+```
+
+##### Arguments
+
+| Argument | Description | Required |
+| --- | --- | --- |
+| filesystem | The filesystem name to list snapshots for. If not specified, defaults to all filesystems. | False |
+| snapshot_name | The name of a specific snapshot to retrieve. This is the path of the snapshot. | False |
+| limit | The maximum number of snapshots to return. The default is 50. | False |
+| all_results | Whether to retrieve all results. If true, the limit argument is ignored. | False |
+
+##### Context Output
+
+| Path | Type | Description |
+| --- | --- | --- |
+| IBMStorageScale.Snapshot.snapshotName | String | The snapshot name. This is the path of the snapshot. |
+| IBMStorageScale.Snapshot.filesystemName | String | The file system that is the target of the snapshot. |
+| IBMStorageScale.Snapshot.filesetName | String | For a fileset snapshot, the fileset that is a target of the snapshot. |
+| IBMStorageScale.Snapshot.oid | Number | Internal identifier that is used for paging. |
+| IBMStorageScale.Snapshot.snapID | Number | The snapshot ID. |
+| IBMStorageScale.Snapshot.status | String | The snapshot status. |
+| IBMStorageScale.Snapshot.created | String | The date and time when the snapshot was created. |
+| IBMStorageScale.Snapshot.quotas | String | Any quotas that are applied to the fileset. |
+| IBMStorageScale.Snapshot.snapType | String | The AFM type of the snapshot, including "afm_snap", "afm_recovery", "afm_failover", "afm_rpo", "afm_baserpo", and "Invalid". |
+| IBMStorageScale.Snapshot.expirationTime | String | The date and time after which the snapshot is deleted. |
+
+---
+
 ## Troubleshooting
 
 * **Authorization Error**: If you receive an authorization error (e.g., 401 or 403 status code), verify that the provided username and password are correct and that the user has been assigned the **ProtocolAdmin** role.

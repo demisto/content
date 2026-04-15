@@ -7,7 +7,7 @@ commonfields:
   id: IBM Storage Scale
   version: -1
 name: IBM Storage Scale
-display: IBM Storage Scale Beta
+display: IBM Storage Scale
 description: |
   Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
 detaileddescription: ''
@@ -128,6 +128,57 @@ script:
     - contextPath: IBMStorageScale.Debug.error_details
       description: Error details if connection failed.
       type: String
-beta: true
+  - name: ibm-storage-scale-list-snapshots
+    description: Lists snapshots from IBM Storage Scale. By default, returns all snapshots across all file systems. Use the filesystem argument to filter by a specific file system, and snapshot_name to retrieve a specific snapshot.
+    arguments:
+    - name: filesystem
+      description: The filesystem name to list snapshots for. If not specified, defaults to all filesystems.
+      required: false
+    - name: snapshot_name
+      description: The name of a specific snapshot to retrieve. This is the path of the snapshot.
+      required: false
+    - name: limit
+      description: The maximum number of snapshots to return.
+      defaultValue: 50
+      required: false
+    - name: all_results
+      description: Whether to retrieve all results. If true, the limit argument is ignored.
+      defaultValue: 'false'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: IBMStorageScale.Snapshot.snapshotName
+      description: The name of the snapshot.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.filesystemName
+      description: The filesystem name.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.filesetName
+      description: The fileset name associated with the snapshot.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.oid
+      description: The unique identifier for the snapshot.
+      type: Number
+    - contextPath: IBMStorageScale.Snapshot.snapID
+      description: The snapshot ID.
+      type: Number
+    - contextPath: IBMStorageScale.Snapshot.status
+      description: The status of the snapshot.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.created
+      description: The date and time when the snapshot was created.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.quotas
+      description: The quota information for the snapshot.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.snapType
+      description: The type of the snapshot.
+      type: String
+    - contextPath: IBMStorageScale.Snapshot.expirationTime
+      description: The expiration date and time of the snapshot.
+      type: String
 tests:
 - No tests (auto formatted)
