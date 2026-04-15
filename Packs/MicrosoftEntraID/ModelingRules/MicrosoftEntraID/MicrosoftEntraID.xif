@@ -185,6 +185,7 @@ filter category in("Administrative", "Policy", "Alert") and (CategoryValue = nul
 | alter
         xdm.event.type = arrayindex(split(operationName, "/"), 0),
         xdm.target.cloud.project_hierarchy = if(arraystring(split(properties -> hierarchy, "/"), "") != "", split(properties -> hierarchy, "/"), arraystring(arraycreate(properties -> tenantId, properties -> subscriptionId), "") != "", arraycreate(properties -> tenantId, properties -> subscriptionId), null),
+        xdm.target.cloud.project_id = if(json_extract_scalar(properties , "$.subscriptionId") != null, json_extract_scalar(properties , "$.subscriptionId"), arraystring(split(properties -> hierarchy, "/"), "") != "", arrayindex(split(properties -> hierarchy, "/"), -1)),
         xdm.network.rule = if(category = "Policy", to_string (properties -> policies), null),
         xdm.alert.severity = if(to_string(SEVERITY) != "" and to_string(SEVERITY) != null, to_string(SEVERITY), null),
         xdm.alert.name = if(ALERT_NAME != "" and ALERT_NAME != null, ALERT_NAME, ruleName != "" and ruleName != null, ruleName, null),
@@ -239,7 +240,12 @@ filter category not in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePr
 [MODEL:dataset = "msft_azure_ad_raw"]
 alter
   get_riskLevelAggregated = if(riskLevelAggregated = "none", null, riskLevelAggregated),
-  get_riskLevelDuringSignIn = if(riskLevelDuringSignIn = "none", null, riskLevelDuringSignIn)
+  get_riskLevelDuringSignIn = if(riskLevelDuringSignIn = "none", null, riskLevelDuringSignIn),
+  get_status_failureReason = status -> failureReason,
+  get_status_additionalDetails = status -> additionalDetails,
+  get_status_errorCode = status -> errorCode,
+  get_location_city = location -> city,
+  get_location_country = location -> countryOrRegion
 | alter
   check_ipAddress_v4 = arrayindex(regextract(ipAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
   check_ipAddress_v6 = arrayindex(regextract(ipAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
@@ -299,8 +305,10 @@ alter
                                   check_os_field ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
                                   check_os_field ~= "scada", XDM_CONST.OS_FAMILY_SCADA, 
                                   check_os_field = null, null, to_string(check_os_field)),
-  xdm.event.outcome_reason = status -> failureReason,
-  xdm.alert.description = status -> additionalDetails,
+  xdm.event.outcome_reason = if(get_status_errorCode != null, concat(get_status_failureReason, " [Error Code: ", get_status_errorCode, "]"), get_status_failureReason),
+  xdm.alert.description = get_status_additionalDetails,
+  xdm.source.location.city = if(get_location_city != null and get_location_city != "", get_location_city, null),
+  xdm.source.location.country = if(get_location_country != null and get_location_country != "", get_location_country, null),
   xdm.network.http.browser = deviceDetail -> browser,
   xdm.network.rule = to_string(appliedConditionalAccessPolicies),
   xdm.event.description = to_string(arrayconcat(authenticationProcessingDetails -> [], networkLocationDetails -> [], authenticationDetails -> []));
