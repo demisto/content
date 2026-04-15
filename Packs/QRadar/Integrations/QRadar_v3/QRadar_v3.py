@@ -3792,17 +3792,16 @@ def qradar_reference_data_bulk_load_command(client: Client, args: dict) -> Comma
     data = args.get("data", None)
     if reference_data_name is None:
         raise ValueError("reference_data_name is required")
-    if reference_data_type not in ["maps", "map_of_sets"]:
+    if reference_data_type not in ["maps", "map_of_sets", "tables"]:
         raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
     if data is None:
         raise ValueError("data is required")
-    # TODO: Implement API Call
     resp = client.reference_data_bulk_call(name=reference_data_name, type=reference_data_type, data=data)
 
     return CommandResults(
-        readable_output="Set updates",
+        readable_output=tableToMarkdown("Reference Update", resp, removeNull=True),
         outputs_prefix="QRadar.Reference",
-        outputs_key_field="Name",
+        outputs_key_field="name",
         outputs=resp,
         raw_response=resp,
     )
@@ -3830,7 +3829,7 @@ def qradar_reference_data_delete_command(client: Client, args: dict) -> CommandR
 
     if reference_data_name is None:
         raise ValueError("reference_data_name is required")
-    if reference_data_type not in ["maps", "map_of_sets"]:
+    if reference_data_type not in ["maps", "map_of_sets", "tables"]:
         raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
 
     response = client.reference_data_delete(reference_data_name, reference_data_type, reference_data_purge)
