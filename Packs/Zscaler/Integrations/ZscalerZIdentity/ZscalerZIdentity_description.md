@@ -1,4 +1,3 @@
-
 ## Zscaler Internet Access via ZIdentity
 
 This integration connects to the Zscaler Internet Access (ZIA) API using **OAuth 2.0 client credentials** authentication via ZIdentity, replacing the legacy session-based authentication.
