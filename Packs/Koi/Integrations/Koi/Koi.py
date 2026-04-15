@@ -30,6 +30,7 @@ API_BASE = "/api/external/v2"
 API_ALERTS = f"{API_BASE}/alerts"
 API_AUDIT_LOGS = f"{API_BASE}/audit-logs"
 API_POLICIES = f"{API_BASE}/policies"
+API_ALLOWLIST = f"{API_BASE}/policies/allowlist"
 
 
 class Config:
@@ -379,6 +380,23 @@ class Client(ContentClient):
         )
 
         demisto.debug("[API] Policies response received")
+        return response
+
+    def get_allowlist(self) -> dict[str, Any]:
+        """Fetch all items in the allowlist from the Koi API.
+
+        Returns:
+            The full API response dictionary containing 'items' list.
+        """
+        demisto.debug("[API] Fetching allowlist")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=API_ALLOWLIST,
+        )
+
+        items = response.get("items", [])
+        demisto.debug(f"[API] Allowlist response received: {len(items)} items")
         return response
 
     def send_events(self, events: list[dict]) -> None:
@@ -862,6 +880,49 @@ def _fetch_policies_with_pagination(
     return policies
 
 
+def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Retrieve all items in the allowlist.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (unused, no inputs for this command).
+
+    Returns:
+        CommandResults with the allowlist items.
+    """
+    demisto.debug("[Command] koi-allowlist-get triggered")
+
+    response = client.get_allowlist()
+    items = response.get("items", [])
+
+    demisto.debug(f"[Command Result] Retrieved {len(items)} allowlist items")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Allowlist",
+        items,
+        headers=[
+            "item_id",
+            "item_name",
+            "item_display_name",
+            "marketplace",
+            "publisher_name",
+            "package_name",
+            "notes",
+            "created_by",
+            "created_at",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Allowlist",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
 # endregion
 
 # region Main router
@@ -874,6 +935,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-get-events": get_events_command,
     "fetch-events": fetch_events_command,
     "koi-policy-list": koi_policy_list_command,
+    "koi-allowlist-get": koi_allowlist_get_command,
 }
 
 

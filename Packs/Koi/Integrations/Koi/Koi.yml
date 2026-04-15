@@ -164,6 +164,37 @@ script:
     - contextPath: Koi.Policy.updated_at
       description: The last update time of the policy in ISO 8601 format.
       type: Date
+  - name: koi-allowlist-get
+    description: Retrieves all items in the allowlist.
+    arguments: []
+    outputs:
+    - contextPath: Koi.Allowlist.item_id
+      description: The unique identifier of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.item_name
+      description: The name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.item_display_name
+      description: The display name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.marketplace
+      description: The marketplace of the allowlist item (e.g., vscode).
+      type: String
+    - contextPath: Koi.Allowlist.publisher_name
+      description: The publisher name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.package_name
+      description: The package name of the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.notes
+      description: Notes associated with the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.created_by
+      description: The user who created the allowlist item.
+      type: String
+    - contextPath: Koi.Allowlist.created_at
+      description: The creation time of the allowlist item in ISO 8601 format.
+      type: Date
   runonce: false
   script: '-'
   type: python

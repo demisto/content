@@ -11,6 +11,7 @@ from Koi import (
     Config,
     LogType,
     API_POLICIES,
+    API_ALLOWLIST,
     VALID_AUDIT_TYPES,
     COMMAND_MAP,
     get_log_types_from_titles,
@@ -23,6 +24,7 @@ from Koi import (
     get_events_command,
     fetch_events_command,
     koi_policy_list_command,
+    koi_allowlist_get_command,
     get_formatted_utc_time,
     parse_date_or_use_current,
     main,
@@ -66,6 +68,12 @@ def empty_response() -> dict:
 def policies_response() -> dict:
     """Fixture for a mock policies API response."""
     return load_test_data("policies_response.json")
+
+
+@pytest.fixture
+def allowlist_response() -> dict:
+    """Fixture for a mock allowlist API response."""
+    return load_test_data("allowlist_response.json")
 
 
 @pytest.fixture
@@ -1244,6 +1252,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_policy_result")
 
+    def test_main_routes_allowlist_get(self, mocker):
+        """Test main routes koi-allowlist-get command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-allowlist-get")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_allowlist_get = mocker.MagicMock(return_value="mock_allowlist_result")
+        COMMAND_MAP["koi-allowlist-get"] = mock_allowlist_get
+
+        main()
+
+        mock_return.assert_called_once_with("mock_allowlist_result")
+
 
 # endregion
 
@@ -1414,6 +1445,89 @@ class TestClientGetPolicies:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["params"]["page_size"] == Config.MAX_PAGE_SIZE
+
+
+# endregion
+
+# region Allowlist command tests
+
+
+class TestKoiAllowlistGetCommand:
+    """Tests for the koi-allowlist-get command."""
+
+    def test_allowlist_get_returns_items(self, mock_client, allowlist_response, mocker):
+        """Test koi-allowlist-get returns all allowlist items."""
+        mocker.patch.object(mock_client, "get_allowlist", return_value=allowlist_response)
+
+        args: dict[str, str] = {}
+        result = koi_allowlist_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Allowlist"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["item_id"] == "ext-123"
+        assert result.outputs[0]["item_name"] == "My Extension"
+        assert result.outputs[1]["item_id"] == "ext-456"
+
+    def test_allowlist_get_empty_response(self, mock_client, mocker):
+        """Test koi-allowlist-get when no items are returned."""
+        mocker.patch.object(mock_client, "get_allowlist", return_value={"items": []})
+
+        args: dict[str, str] = {}
+        result = koi_allowlist_get_command(mock_client, args)
+
+        assert result.outputs == []
+        assert "Allowlist" in result.readable_output
+
+    def test_allowlist_get_outputs_and_readable(self, mock_client, allowlist_response, mocker):
+        """Test that all expected fields are present in outputs and readable output contains data."""
+        mocker.patch.object(mock_client, "get_allowlist", return_value=allowlist_response)
+
+        args: dict[str, str] = {}
+        result = koi_allowlist_get_command(mock_client, args)
+
+        # Verify readable output contains key data
+        assert "My Extension" in result.readable_output
+        assert "admin@example.com" in result.readable_output
+        assert "vscode" in result.readable_output
+
+        # Verify all fields in outputs
+        item = result.outputs[0]
+        assert item["item_id"] == "ext-123"
+        assert item["item_name"] == "My Extension"
+        assert item["item_display_name"] == "My Extension Display Name"
+        assert item["marketplace"] == "vscode"
+        assert item["publisher_name"] == "My Publisher"
+        assert item["package_name"] == "my-package"
+        assert item["notes"] == "Approved for development purposes"
+        assert item["created_by"] == "admin@example.com"
+        assert item["created_at"] == "2025-04-23T17:22:24.023Z"
+
+
+class TestClientGetAllowlist:
+    """Tests for the Client.get_allowlist method."""
+
+    def test_get_allowlist_params(self, mock_client, allowlist_response, mocker):
+        """Test that get_allowlist calls the correct endpoint with no params."""
+        mocker.patch.object(mock_client, "_http_request", return_value=allowlist_response)
+
+        result = mock_client.get_allowlist()
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["url_suffix"] == API_ALLOWLIST
+        assert "params" not in call_kwargs
+        assert result == allowlist_response
+
+    def test_get_allowlist_empty(self, mock_client, mocker):
+        """Test get_allowlist with empty response."""
+        empty_response = {"items": []}
+        mocker.patch.object(mock_client, "_http_request", return_value=empty_response)
+
+        result = mock_client.get_allowlist()
+
+        assert result == empty_response
+        assert result["items"] == []
 
 
 # endregion
