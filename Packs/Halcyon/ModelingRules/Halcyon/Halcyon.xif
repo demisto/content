@@ -45,7 +45,7 @@ filter alertType != null
 filter alertType = null
 | alter
     xdm.event.type = "Event",
-    xdm.event.id = id,
+    xdm.event.id = coalesce(id, guid),
     xdm.event.operation_sub_type = summary -> driverAction,
     xdm.source.cloud.project_id = tenantId,
     xdm.observer.action = action,

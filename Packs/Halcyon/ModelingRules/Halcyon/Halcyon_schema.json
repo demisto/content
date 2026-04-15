@@ -47,6 +47,10 @@
         "bytes": {
             "type": "int",
             "is_array": false
+        },
+        "guid": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
