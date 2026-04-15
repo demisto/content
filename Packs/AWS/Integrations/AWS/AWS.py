@@ -7944,7 +7944,7 @@ class CloudWatchLogs:
     service = AWSServices.CloudWatchLogs
 
     @staticmethod
-    def log_group_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_group_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a log group with the specified name.
 
@@ -7981,10 +7981,10 @@ class CloudWatchLogs:
                 readable_output=f"Successfully created log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def log_stream_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_stream_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a log stream for the specified log group.
 
@@ -8013,10 +8013,10 @@ class CloudWatchLogs:
                 f"in log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def log_group_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_group_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified log group and permanently deletes all the archived log events
         associated with the log group.
@@ -8043,10 +8043,10 @@ class CloudWatchLogs:
                 readable_output=f"Successfully deleted log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def log_stream_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_stream_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified log stream and permanently deletes all the archived log events
         associated with the log stream.
@@ -8076,10 +8076,10 @@ class CloudWatchLogs:
                 f"from log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def log_events_filter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_events_filter_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists log events from the specified log group. You can list all the log events or filter
         the results using a filter pattern, a time range, and the name of the log stream.
@@ -8158,7 +8158,7 @@ class CloudWatchLogs:
         )
 
     @staticmethod
-    def log_groups_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_groups_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the specified log groups. You can list all your log groups or filter the results by prefix.
 
@@ -8232,7 +8232,7 @@ class CloudWatchLogs:
         )
 
     @staticmethod
-    def log_streams_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_streams_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the log streams for the specified log group.
 
@@ -8309,7 +8309,7 @@ class CloudWatchLogs:
         )
 
     @staticmethod
-    def retention_policy_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def retention_policy_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Sets the retention of the specified log group.
 
@@ -8338,10 +8338,10 @@ class CloudWatchLogs:
                 f"for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def retention_policy_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def retention_policy_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified retention policy. Log events do not expire if they belong
         to log groups without a retention policy.
@@ -8364,10 +8364,10 @@ class CloudWatchLogs:
                 readable_output=f"Successfully deleted retention policy for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def log_events_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def log_events_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Uploads a batch of log events to the specified log stream.
 
@@ -8414,7 +8414,7 @@ class CloudWatchLogs:
         )
 
     @staticmethod
-    def metric_filter_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def metric_filter_put_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates or updates a metric filter and associates it with the specified log group.
 
@@ -8443,7 +8443,7 @@ class CloudWatchLogs:
             "metricNamespace": args.get("metric_namespace"),
             "metricValue": args.get("metric_value"),
         }
-        if (default_value := args.get("default_value")) is not None:
+        if default_value := args.get("default_value"):
             metric_transformation["defaultValue"] = float(default_value)
         if dimensions := args.get("dimensions"):
             metric_transformation["dimensions"] = json.loads(dimensions) if isinstance(dimensions, str) else dimensions
@@ -8468,10 +8468,10 @@ class CloudWatchLogs:
                 f"for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def metric_filter_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def metric_filter_delete_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified metric filter.
 
@@ -8500,10 +8500,10 @@ class CloudWatchLogs:
                 f"from log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
-        return None  # type: ignore
+        return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def metric_filters_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def metric_filters_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the specified metric filters.
 
