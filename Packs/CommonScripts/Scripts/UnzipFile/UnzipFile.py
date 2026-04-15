@@ -1,8 +1,10 @@
 import os
 import shutil
+import subprocess
 import sys
 import zipfile as z
 from os.path import isdir, isfile
+from pathlib import Path
 from subprocess import PIPE, Popen
 from tempfile import mkdtemp
 
@@ -140,9 +142,9 @@ def extract_using_unrar(file_path, dir_path, password=None):
 
 def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     if ".tar.gz" in file_name:
-        cmd = ["tar", "-xzvf", file_path, "-C", dir_path]
+        cmd = ["tar", "-xzvf", file_path, "-C", dir_path, "--no-same-owner", "--no-same-permissions"]
     elif file_name.endswith(".tar"):
-        cmd = ["tar", "-xf", file_path, "-C", dir_path]
+        cmd = ["tar", "-xf", file_path, "-C", dir_path, "--no-same-owner", "--no-same-permissions"]
     else:
         cmd = []
         demisto.debug(f"{file_name=} didn't match any condition. {cmd=}")
@@ -231,9 +233,14 @@ def upload_files(excluded_dirs, excluded_files, dir_path):
         results = []
         # extracted files can be in sub directories so we save the base names of
         # the files and also the full path of the file
-        files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
+        files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa: F812
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
         for file_path, file_name in files_dic.items():
+            real = os.path.realpath(file_path)
+            safe_base = os.path.realpath(dir_path) + os.sep
+            if Path(file_path).is_symlink() or not real.startswith(safe_base):
+                demisto.debug(f"Skipping out-of-tree entry: {file_path} -> {real}")
+                continue
             with open(file_path, "rb") as _file:
                 demisto.results(fileResult(file_name, _file.read()))
         results.append(
@@ -280,6 +287,7 @@ def main():
         file_info = get_zip_path(args)
         password = get_password(args)
         excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=password, zip_tool=zip_tool)
+        subprocess.run(["find", dir_path, "-type", "l", "-delete"], capture_output=True, check=False)
         upload_files(excluded_dirs, excluded_files, dir_path)
 
     except Exception as e:

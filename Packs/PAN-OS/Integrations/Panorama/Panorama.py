@@ -40,6 +40,7 @@ from panos.device import Vsys
 from panos.network import Zone
 from urllib.error import HTTPError
 
+import os
 import shutil
 
 """ IMPORTS """
@@ -9094,7 +9095,7 @@ def panorama_upload_content_update_file_command(args: dict):
     category = args.get("category")
     entry_id = args.get("entryID")
     file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
+    file_name = os.path.basename(demisto.getFilePath(entry_id)["name"])
     shutil.copy(file_path, file_name)
     with open(file_name, "rb") as file:
         params = {"type": "import", "category": category, "key": API_KEY}
@@ -9109,7 +9110,7 @@ def panorama_upload_content_update_file_command(args: dict):
             outputs=content_upload_info,
         )
 
-    shutil.rmtree(file_name, ignore_errors=True)
+    os.remove(file_name)
     return results
 
 

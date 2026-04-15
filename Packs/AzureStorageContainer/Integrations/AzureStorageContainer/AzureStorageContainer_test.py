@@ -615,3 +615,49 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert "ok" in AzureStorageContainer.return_results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
+
+
+def test_put_blob_request_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components and no explicit file_name.
+    When:
+        - Calling put_blob_request.
+    Then:
+        - Verify that only the basename of the file name is used as the blob name.
+    """
+    import os
+    import demistomock as demisto
+    from AzureStorageContainer import ASClient
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+    mock_copy = mocker.patch("shutil.copy")
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
+
+    client = ASClient(
+        app_id="test_app",
+        subscription_id="test_sub",
+        resource_group_name="test_rg",
+        storage_account_name="test_account",
+        verify=False,
+        proxy=False,
+        connection_params={
+            "auth_type": "Device Code",
+            "tenant_id": "test_tenant",
+            "auth_code": "",
+            "redirect_uri": "",
+            "enc_key": "",
+        },
+    )
+    mocker.patch.object(client.ms_client, "http_request", return_value=mocker.MagicMock(status_code=201))
+
+    client.put_blob_request(container_name="test-container", file_entry_id="entry1")
+
+    # Verify shutil.copy was called with the sanitized basename only
+    copy_call_args = mock_copy.call_args[0]
+    assert copy_call_args[1] == "passwd"
+    assert os.path.basename(copy_call_args[1]) == copy_call_args[1]

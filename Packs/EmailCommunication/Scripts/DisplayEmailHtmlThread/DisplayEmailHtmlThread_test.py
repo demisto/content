@@ -218,3 +218,253 @@ def test_rewrites_single_img_src_without_account():
     html = '<img src="xsoar/entry/download/12345">'
     result = rewrite_img_src(html)
     assert result == html
+
+
+class TestSanitizeHtmlBody:
+    """Tests for sanitize_html_body - validates safe HTML output encoding."""
+
+    def test_sanitize_html_body_strips_disallowed_tags(self, mocker):
+        """
+        Given
+        - An HTML body containing tags not in the allowlist
+        When
+        - sanitize_html_body is called with bleach available
+        Then
+        - Disallowed tags are removed from the output
+        """
+        import types
+        import DisplayEmailHtmlThread
+
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False):
+            import re
+
+            result = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            return result
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        result = DisplayEmailHtmlThread.sanitize_html_body('<p>Hello</p><script>alert("test")</script><b>World</b>')
+        assert "<script>" not in result
+        assert "Hello" in result
+        assert "World" in result
+
+    def test_sanitize_html_body_preserves_allowed_tags(self):
+        """
+        Given
+        - An HTML body containing only allowed tags
+        When
+        - sanitize_html_body is called
+        Then
+        - All allowed tags are preserved in the output
+        """
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        html_input = "<p>Hello <b>World</b></p><br><div>Content</div>"
+        result = sanitize_html_body(html_input)
+        assert "Hello" in result
+        assert "World" in result
+        assert "Content" in result
+
+    def test_sanitize_html_body_handles_empty_string(self):
+        """
+        Given
+        - An empty HTML body
+        When
+        - sanitize_html_body is called
+        Then
+        - An empty string is returned
+        """
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        assert sanitize_html_body("") == ""
+
+    def test_sanitize_html_body_removes_event_handler_tags(self, mocker):
+        """
+        Given
+        - An HTML body containing tags with inline event handlers
+        When
+        - sanitize_html_body is called with bleach available
+        Then
+        - The disallowed tags are removed
+        """
+        import types
+        import DisplayEmailHtmlThread
+
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False):
+            import re
+
+            result = re.sub(r"<iframe[^>]*>.*?</iframe>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            return result
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        result = DisplayEmailHtmlThread.sanitize_html_body('<div>Safe</div><iframe src="http://example.com"></iframe>')
+        assert "<iframe" not in result
+        assert "Safe" in result
+
+
+class TestSetEmailReplyHeaderEncoding:
+    """Tests for set_email_reply - validates header field output encoding."""
+
+    def test_set_email_reply_encodes_html_in_from_field(self):
+        """
+        Given
+        - An email 'from' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from="<user>test@example.com",
+            email_to="recipient@example.com",
+            email_cc="",
+            email_subject="Test Subject",
+            html_body="<p>Body</p>",
+            email_time="2022-01-01T00:00:00UTC",
+            attachment_names="file.txt",
+        )
+        assert "&lt;user&gt;" in result
+        assert "<user>" not in result
+
+    def test_set_email_reply_encodes_html_in_to_field(self):
+        """
+        Given
+        - An email 'to' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="<admin>recipient@example.com",
+            email_cc="",
+            email_subject="Test Subject",
+            html_body="<p>Body</p>",
+            email_time="2022-01-01T00:00:00UTC",
+            attachment_names="",
+        )
+        assert "&lt;admin&gt;" in result
+
+    def test_set_email_reply_encodes_html_in_cc_field(self):
+        """
+        Given
+        - An email 'cc' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="recipient@example.com",
+            email_cc="<manager>cc@example.com",
+            email_subject="Test Subject",
+            html_body="<p>Body</p>",
+            email_time="2022-01-01T00:00:00UTC",
+            attachment_names="",
+        )
+        assert "&lt;manager&gt;" in result
+
+    def test_set_email_reply_encodes_html_in_subject_field(self):
+        """
+        Given
+        - An email 'subject' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="recipient@example.com",
+            email_cc="",
+            email_subject="<Important> Alert & Notice",
+            html_body="<p>Body</p>",
+            email_time="2022-01-01T00:00:00UTC",
+            attachment_names="",
+        )
+        assert "&lt;Important&gt;" in result
+        assert "&amp;" in result
+
+    def test_set_email_reply_encodes_html_in_time_field(self):
+        """
+        Given
+        - An email 'time' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="recipient@example.com",
+            email_cc="",
+            email_subject="Test Subject",
+            html_body="<p>Body</p>",
+            email_time="<time>2022-01-01",
+            attachment_names="",
+        )
+        assert "&lt;time&gt;" in result
+
+    def test_set_email_reply_encodes_attachment_names(self):
+        """
+        Given
+        - Attachment names containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The attachment names in the output are properly encoded
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="recipient@example.com",
+            email_cc="",
+            email_subject="Test Subject",
+            html_body="<p>Body</p>",
+            email_time="2022-01-01T00:00:00UTC",
+            attachment_names="<file>.txt",
+        )
+        assert "&lt;file&gt;" in result
+
+    def test_set_email_reply_handles_none_fields(self):
+        """
+        Given
+        - None values for all header fields
+        When
+        - set_email_reply is called
+        Then
+        - No error is raised and the output is valid
+        """
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            email_from=None,
+            email_to=None,
+            email_cc=None,
+            email_subject=None,
+            html_body=None,
+            email_time=None,
+            attachment_names=None,
+        )
+        assert "From:" in result
+        assert "To:" in result

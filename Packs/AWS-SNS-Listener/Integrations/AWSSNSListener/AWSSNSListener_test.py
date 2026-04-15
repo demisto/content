@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 import requests
 from AWSSNSListener import SNSCertificateManager, handle_notification, is_valid_integration_credentials
+from CommonServerPython import DemistoException
 
 VALID_PAYLOAD = {
     "Type": "Notification",
@@ -109,3 +110,40 @@ def test_invalid_credentials(mock_httpBasicCredentials, mock_params):
     token = "sometoken"
     result, header_name = is_valid_integration_credentials(mock_httpBasicCredentials, request_headers, token)
     assert result is False
+
+
+class TestValidateSnsUrl:
+    """Tests for URL format validation in _validate_sns_url."""
+
+    def test_valid_aws_sns_url_accepted(self):
+        """Test that a valid AWS SNS URL passes validation."""
+        from AWSSNSListener import _validate_sns_url
+
+        _validate_sns_url("https://sns.us-east-1.amazonaws.com/cert.pem", "SigningCertURL")
+
+    def test_valid_aws_china_url_accepted(self):
+        """Test that a valid AWS China region URL passes validation."""
+        from AWSSNSListener import _validate_sns_url
+
+        _validate_sns_url("https://sns.cn-north-1.amazonaws.com.cn/cert.pem", "SigningCertURL")
+
+    def test_non_https_url_rejected(self):
+        """Test that a non-HTTPS URL is rejected."""
+        from AWSSNSListener import _validate_sns_url
+
+        with pytest.raises(DemistoException, match="must use HTTPS"):
+            _validate_sns_url("http://sns.us-east-1.amazonaws.com/cert.pem", "SigningCertURL")
+
+    def test_non_aws_host_rejected(self):
+        """Test that a non-AWS host is rejected."""
+        from AWSSNSListener import _validate_sns_url
+
+        with pytest.raises(DemistoException, match="not an AWS SNS endpoint"):
+            _validate_sns_url("https://attacker.example.com/cert.pem", "SigningCertURL")
+
+    def test_aws_like_subdomain_rejected(self):
+        """Test that a URL with an AWS-like subdomain on a different host is rejected."""
+        from AWSSNSListener import _validate_sns_url
+
+        with pytest.raises(DemistoException, match="not an AWS SNS endpoint"):
+            _validate_sns_url("https://sns.us-east-1.amazonaws.com.evil.com/cert.pem", "SigningCertURL")

@@ -245,3 +245,45 @@ def test_decoding_url():
     indicator = URIObject.decode(props)[0]
     assert indicator.get("indicator") == "www.a.com"
     assert indicator.get("type") == "Domain"
+
+
+def test_poll_collection_uses_safe_xml_parser_settings(mocker):
+    """
+    Given:
+        - A TAXIIClient that polls a collection.
+    When:
+        - The _poll_collection method invokes etree.iterparse.
+    Then:
+        - Verify that safe XML parser settings are used:
+          resolve_entities=False, load_dtd=False, no_network=True.
+    """
+    mock_iterparse = mocker.patch("FeedTAXII.etree.iterparse", return_value=iter([]))
+
+    mock_response = mocker.MagicMock()
+    mock_response.raw = mocker.MagicMock()
+    mock_response.raw.decode_content = True
+
+    client = TAXIIClient(
+        url="https://test.com",
+        collection="test_collection",
+        credentials={"username": "user", "password": "pass"},
+        cert_text=None,
+        key_text=None,
+        verify=False,
+    )
+    mocker.patch.object(client, "_send_request", return_value=mock_response)
+
+    # Call _poll_collection - it will use iterparse on the response
+    # We use StopIteration since iterparse returns empty iterator
+    try:
+        gen = client._poll_collection("https://test.com/poll", None, None)
+        next(gen)
+    except StopIteration:
+        pass
+
+    mock_iterparse.assert_called_once()
+    call_kwargs = mock_iterparse.call_args
+    # Check keyword arguments for safe XML parser configuration
+    assert call_kwargs[1].get("resolve_entities") is False, "resolve_entities should be False"
+    assert call_kwargs[1].get("load_dtd") is False, "load_dtd should be False"
+    assert call_kwargs[1].get("no_network") is True, "no_network should be True"

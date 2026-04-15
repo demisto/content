@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 
+import html as html_module
 import json
 import logging
 import mimetypes
@@ -178,18 +179,20 @@ def pretty_print_comment(comment: dict, title: str = None) -> str:
 
 
 def pretty_print_comment_html(comment: dict, title: str = None) -> str:
+    safe_comment = html_module.escape(comment["comment"])
+    safe_username = html_module.escape(comment["addedByUser"]["userName"])
     string = f"<h2>{title}</h2>" if title else ""
     string += "<small>"
-    string += f"<em>Added by {comment['addedByUser']['userName']} at "
+    string += f"<em>Added by {safe_username} at "
     string += f"{pretty_print_date(comment['addedTime'])}</em><br>"
     string += f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>" if comment["lastUpdatedTime"] else ""
     if comment["associatedAttachments"]:
         string += "<em>Associated attachment(s): "
         for attachment in comment["associatedAttachments"]:
-            string += f"{attachment.get('name', '')} "
+            string += f"{html_module.escape(attachment.get('name', ''))} "
         string += "</em><br>"
     string += "</small>"
-    string += f"{comment['comment']}"
+    string += f"{safe_comment}"
     return string
 
 

@@ -1,3 +1,4 @@
+import html as html_module
 import json
 import random
 import re
@@ -6,6 +7,67 @@ from zoneinfo import ZoneInfo
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+ALLOWED_EMAIL_TAGS = {
+    "p",
+    "br",
+    "div",
+    "span",
+    "b",
+    "i",
+    "u",
+    "a",
+    "img",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "pre",
+    "code",
+    "blockquote",
+    "strong",
+    "em",
+    "hr",
+    "font",
+    "center",
+    "small",
+    "big",
+    "sub",
+    "sup",
+    "dl",
+    "dt",
+    "dd",
+    "caption",
+    "style",
+}
+
+
+def sanitize_html_body(html_body: str) -> str:
+    """Sanitize email body HTML using an allowlist of tags.
+
+    When bleach is available, strips disallowed tags while preserving safe ones.
+    When bleach is not available, returns the HTML as-is since full escaping
+    would break legitimate formatting in an HTML rendering context.
+    """
+    try:
+        import bleach  # type: ignore[import-untyped]
+
+        return bleach.clean(html_body, tags=ALLOWED_EMAIL_TAGS, strip=True)
+    except ImportError:
+        demisto.debug("bleach is not available; HTML sanitization skipped")
+        return html_body
+
 
 ERROR_TEMPLATE = "ERROR: PreprocessEmail - {function_name}: {reason}"
 
@@ -79,13 +141,15 @@ def create_email_html(email_html="", entry_id_list=[]):
         saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
         if "-attachmentName-" in image_name:
             content_id = image_name.split("-attachmentName-", 1)[0]
-        if re.search(rf'(src="cid:{content_id}")', email_html):
+        safe_content_id = re.escape(content_id)
+        safe_image_name = re.escape(image_name)
+        if re.search(rf'(src="cid:{safe_content_id}")', email_html):
             email_html = re.sub(
-                f'src="cid:{content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
+                f'src="cid:{safe_content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
             )
-        elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
+        elif re.search(f'src="[^>]+"(?=[^>]+alt="{safe_image_name}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+"(?=[^>]+alt="{image_name}")',
+                f'src="[^>]+"(?=[^>]+alt="{safe_image_name}")',
                 f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}",
                 email_html,
             )
@@ -163,17 +227,20 @@ def set_email_reply(email_from, email_to, email_cc, html_body, attachments):
         str. Email reply.
 
     """
+    safe_from = html_module.escape(email_from or "")
+    safe_to = html_module.escape(email_to or "")
+    safe_cc = html_module.escape(email_cc or "")
     email_reply = f"""
-    From: *{email_from}*
-    To: *{email_to}*
-    CC: *{email_cc}*
+    From: *{safe_from}*
+    To: *{safe_to}*
+    CC: *{safe_cc}*
 
     """
     if attachments:
-        attachment_names = [attachment.get("name", "") for attachment in attachments]
+        attachment_names = [html_module.escape(attachment.get("name", "")) for attachment in attachments]
         email_reply += f"Attachments: {attachment_names}\n\n"
 
-    email_reply += f"{html_body}\n"
+    email_reply += f"{sanitize_html_body(html_body or '')}\n"
 
     return email_reply
 

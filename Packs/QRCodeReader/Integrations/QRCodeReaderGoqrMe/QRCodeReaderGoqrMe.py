@@ -1,3 +1,4 @@
+import os
 import shutil
 
 import demistomock as demisto  # noqa: F401
@@ -17,7 +18,7 @@ URL = "http://api.qrserver.com/"
 def read_qr_code(verify=True):
     entry_id = demisto.args().get("entry_id")
     file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
+    file_name = os.path.basename(demisto.getFilePath(entry_id)["name"])
 
     try:
         shutil.copy(file_path, file_name)
@@ -34,7 +35,7 @@ def read_qr_code(verify=True):
             return_error(str(res.text))
 
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        os.remove(file_name)
 
 
 def test_qr_api(verify=True):

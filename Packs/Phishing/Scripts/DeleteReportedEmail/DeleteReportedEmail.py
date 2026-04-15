@@ -1,3 +1,4 @@
+import re
 import time
 from collections.abc import Callable
 from urllib.parse import quote, unquote
@@ -271,6 +272,23 @@ def delete_email(
         search_result = execute_command(search_function, search_args)
         if not search_result or isinstance(search_result, str):
             raise MissingEmailException
+
+        # Defense-in-depth: verify the returned message matches the expected one
+        expected_mid = search_args.get("message-id", "")
+        if isinstance(search_result, list) and search_result:
+            first_result = search_result[0]
+            # MSGraph returns results under "value"; Gmail/EWS return directly
+            if isinstance(first_result, dict):
+                results_to_check = first_result.get("value", [first_result])
+                if isinstance(results_to_check, dict):
+                    results_to_check = [results_to_check]
+                for res in results_to_check:
+                    returned_msg_id = res.get("internetMessageId") or res.get("rfc822msgid", "")
+                    if returned_msg_id and returned_msg_id.strip("<>") != expected_mid.strip("<>"):
+                        raise DemistoException(
+                            f"Search returned message {returned_msg_id} but expected {expected_mid}; refusing delete"
+                        )
+
         delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
         delete_args = delete_args_function(search_args)  # type: ignore
@@ -291,7 +309,10 @@ def get_search_args(args: dict):
     """
     incident_info = demisto.incident()
     custom_fields = incident_info.get("CustomFields", {})
-    message_id = custom_fields.get("reportedemailmessageid")
+    message_id = custom_fields.get("reportedemailmessageid", "")
+    # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
+    if not re.fullmatch(r"<[^\s<>]+@[^\s<>]+>", message_id):
+        raise DemistoException(f"Refusing suspicious Message-ID: {message_id!r}")
     user_id = custom_fields.get("reportedemailto")
     email_subject = custom_fields.get("reportedemailsubject")
     from_user_id = custom_fields.get("reportedemailfrom")
@@ -325,12 +346,12 @@ def get_search_args(args: dict):
         "message-id": message_id,
     }
     additional_args = {
-        "Gmail": {"query": f"Rfc822msgid:{message_id}", "user-id": user_id},
+        "Gmail": {"query": f'rfc822msgid:"{message_id}"', "user-id": user_id},
         "EWSO365": {"target-mailbox": user_id},
         "EWS v2": {"target-mailbox": user_id},
         "MicrosoftGraphMail": {
             "user_id": user_id,
-            "odata": f'"$filter=internetMessageId eq ' f"'{quote(unquote(message_id))}'\"",  # noqa: ISC001
+            "odata": "$filter=internetMessageId eq '{}'".format(quote(unquote(message_id)).replace("'", "''")),
         },
         "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
         "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},

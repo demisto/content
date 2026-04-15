@@ -1,7 +1,68 @@
+import html as html_module
 import re
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+ALLOWED_EMAIL_TAGS = {
+    "p",
+    "br",
+    "div",
+    "span",
+    "b",
+    "i",
+    "u",
+    "a",
+    "img",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "pre",
+    "code",
+    "blockquote",
+    "strong",
+    "em",
+    "hr",
+    "font",
+    "center",
+    "small",
+    "big",
+    "sub",
+    "sup",
+    "dl",
+    "dt",
+    "dd",
+    "caption",
+    "style",
+}
+
+
+def sanitize_html_body(html_body: str) -> str:
+    """Sanitize email body HTML using an allowlist of tags.
+
+    When bleach is available, strips disallowed tags while preserving safe ones.
+    When bleach is not available, returns the HTML as-is since full escaping
+    would break legitimate formatting in an HTML rendering context.
+    """
+    try:
+        import bleach  # type: ignore[import-untyped]
+
+        return bleach.clean(html_body, tags=ALLOWED_EMAIL_TAGS, strip=True)
+    except ImportError:
+        demisto.debug("bleach is not available; HTML sanitization skipped")
+        return html_body
 
 
 def create_email_html(email_html="", entry_id_list=None):
@@ -13,9 +74,10 @@ def create_email_html(email_html="", entry_id_list=None):
     for entry_id in entry_id_list:
         # Handling inline attachments from Gmail mailboxes
         saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
-        if re.search(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', email_html):
+        safe_pattern_name = re.escape(entry_id[0])
+        if re.search(f'src="[^>]+"(?=[^>]+alt="{safe_pattern_name}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
+                f'src="[^>]+"(?=[^>]+alt="{safe_pattern_name}")',
                 f"src={account_name}/{saas_xsoar_xsiam_prefix}entry/download/{entry_id[1]}",
                 email_html,
             )
@@ -64,17 +126,21 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, at
     Returns:
         str. Email reply.
     """
+    safe_from = html_module.escape(email_from or "")
+    safe_to = html_module.escape(email_to or "")
+    safe_cc = html_module.escape(email_cc or "")
+    safe_subject = html_module.escape(email_subject or "")
     single_reply = f"""
-    From: {email_from}
-    To: {email_to}
-    CC: {email_cc}
-    Subject: {email_subject}
+    From: {safe_from}
+    To: {safe_to}
+    CC: {safe_cc}
+    Subject: {safe_subject}
     """
     if attachments:
-        attachment_names = [attachment.get("name", "") for attachment in attachments]
+        attachment_names = [html_module.escape(attachment.get("name", "")) for attachment in attachments]
         single_reply += f"Attachments: {attachment_names}\n"
 
-    single_reply += f"\n{html_body}\n"
+    single_reply += f"\n{sanitize_html_body(html_body or '')}\n"
 
     return single_reply
 

@@ -9494,3 +9494,38 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
         if no_new_hits_since is not None:
             last_hit_dt = datetime.strptime(r.last_hit_timestamp, "%Y-%m-%dT%H:%M:%SZ")
             assert last_hit_dt <= no_new_hits_since
+
+
+def test_upload_content_update_file_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components.
+    When:
+        - Calling panorama_upload_content_update_file_command.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+    import os
+    from Panorama import panorama_upload_content_update_file_command
+
+    mocker.patch("Panorama.URL", "https://test.com")
+    mocker.patch("Panorama.API_KEY", "test_key")
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd", "id": "entry1"},
+    )
+    mock_copy = mocker.patch("shutil.copy")
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
+    mocker.patch("os.remove")
+    mocker.patch(
+        "Panorama.http_request",
+        return_value={"response": {"msg": "OK", "@status": "success"}},
+    )
+
+    panorama_upload_content_update_file_command({"category": "content", "entryID": "entry1"})
+
+    # Verify shutil.copy was called with the sanitized basename only
+    copy_call_args = mock_copy.call_args[0]
+    assert copy_call_args[1] == "passwd"
+    assert os.path.basename(copy_call_args[1]) == copy_call_args[1]

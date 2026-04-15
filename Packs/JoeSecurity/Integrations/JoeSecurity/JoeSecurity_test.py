@@ -30,3 +30,32 @@ def test_analyse_sample_file_request(mocker):
     result = analyse_sample_file_request(123456, False, True, comments='', systems='')
 
     assert result.get('sample')[0] == 'abc/def.txt'
+
+
+def test_analyse_sample_file_uses_basename(mocker):
+    """
+    Given:
+        A file with a name containing directory path components.
+    When:
+        joe-analysis-submit-sample is running.
+    Then:
+        Verify that os.path.basename is applied to sanitize the file name.
+    """
+    import os
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'params', return_value={'url': 'www.example.com'})
+    mocker.patch('JoeSecurity.http_post', side_effect=mock_http_post)
+    mocker.patch('JoeSecurity.info_request', side_effect=mock_info_request)
+    mocker.patch('JoeSecurity.analysis_to_entry', side_effect=mock_analysis_to_entry)
+    mocker.patch.object(
+        demisto, 'getFilePath',
+        return_value={'path': 'README.md', 'name': '/tmp/evil/../../../etc/passwd'}
+    )
+
+    from JoeSecurity import analyse_sample_file_request
+    result = analyse_sample_file_request(123456, False, True, comments='', systems='')
+
+    # The file name used should be the basename only
+    file_name_used = result.get('sample')[0]
+    assert file_name_used == os.path.basename(file_name_used)
+    assert file_name_used == 'passwd'

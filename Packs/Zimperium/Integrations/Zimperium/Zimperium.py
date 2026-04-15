@@ -1,3 +1,4 @@
+import os
 import shutil
 from dateparser import parse
 import urllib3
@@ -159,7 +160,7 @@ class Client(BaseClient):
         """
 
         file_path = demisto.getFilePath(entry_id).get("path")
-        file_name = demisto.getFilePath(entry_id).get("name")
+        file_name = os.path.basename(demisto.getFilePath(entry_id).get("name"))
         if not file_path or not file_name:
             raise Exception("Failed to find the file to upload for analysis.")
         try:
@@ -180,7 +181,7 @@ class Client(BaseClient):
         except Exception as err:
             raise Exception(str(err))
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            os.remove(file_name)
 
         return result
 

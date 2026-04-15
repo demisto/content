@@ -1130,3 +1130,252 @@ def test_create_email_html_no_image_to_insert(html, entry_id_list, expected_resu
     from PreprocessEmail import create_email_html
 
     assert create_email_html(html, entry_id_list) == expected_result
+
+
+class TestSanitizeHtmlBody:
+    """Tests for sanitize_html_body - validates safe HTML output encoding."""
+
+    def test_sanitize_html_body_strips_disallowed_tags(self, mocker):
+        """
+        Given
+        - An HTML body containing tags not in the allowlist
+        When
+        - sanitize_html_body is called with bleach available
+        Then
+        - Disallowed tags are removed from the output
+        """
+        import types
+        import PreprocessEmail
+
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False):
+            import re
+
+            result = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            return result
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        result = PreprocessEmail.sanitize_html_body('<p>Hello</p><script>alert("test")</script><b>World</b>')
+        assert "<script>" not in result
+        assert "Hello" in result
+        assert "World" in result
+
+    def test_sanitize_html_body_preserves_allowed_tags(self):
+        """
+        Given
+        - An HTML body containing only allowed tags
+        When
+        - sanitize_html_body is called
+        Then
+        - All allowed tags are preserved in the output
+        """
+        from PreprocessEmail import sanitize_html_body
+
+        html_input = "<p>Hello <b>World</b></p><br><div>Content</div>"
+        result = sanitize_html_body(html_input)
+        assert "Hello" in result
+        assert "World" in result
+        assert "Content" in result
+
+    def test_sanitize_html_body_handles_empty_string(self):
+        """
+        Given
+        - An empty HTML body
+        When
+        - sanitize_html_body is called
+        Then
+        - An empty string is returned
+        """
+        from PreprocessEmail import sanitize_html_body
+
+        assert sanitize_html_body("") == ""
+
+    def test_sanitize_html_body_removes_object_tags(self, mocker):
+        """
+        Given
+        - An HTML body containing object/embed tags
+        When
+        - sanitize_html_body is called with bleach available
+        Then
+        - The disallowed tags are removed
+        """
+        import types
+        import PreprocessEmail
+
+        mock_bleach = types.ModuleType("bleach")
+
+        def mock_clean(html, tags=None, strip=False):
+            import re
+
+            result = re.sub(r"<object[^>]*>.*?</object>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            return result
+
+        mock_bleach.clean = mock_clean
+        mocker.patch.dict("sys.modules", {"bleach": mock_bleach})
+
+        result = PreprocessEmail.sanitize_html_body('<div>Safe</div><object data="http://example.com"></object>')
+        assert "<object" not in result
+        assert "Safe" in result
+
+
+class TestSetEmailReplyHeaderEncoding:
+    """Tests for set_email_reply - validates header field output encoding."""
+
+    def test_set_email_reply_encodes_html_in_from_field(self):
+        """
+        Given
+        - An email 'from' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply(
+            email_from="<user>test@example.com",
+            email_to="recipient@example.com",
+            email_cc="",
+            html_body="<p>Body</p>",
+            attachments=None,
+        )
+        assert "&lt;user&gt;" in result
+        assert "<user>" not in result
+
+    def test_set_email_reply_encodes_html_in_to_field(self):
+        """
+        Given
+        - An email 'to' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="<admin>recipient@example.com",
+            email_cc="",
+            html_body="<p>Body</p>",
+            attachments=None,
+        )
+        assert "&lt;admin&gt;" in result
+
+    def test_set_email_reply_encodes_html_in_cc_field(self):
+        """
+        Given
+        - An email 'cc' field containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The output contains encoded entities instead of raw angle brackets
+        """
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="recipient@example.com",
+            email_cc="<manager>cc@example.com",
+            html_body="<p>Body</p>",
+            attachments=None,
+        )
+        assert "&lt;manager&gt;" in result
+
+    def test_set_email_reply_encodes_attachment_names(self):
+        """
+        Given
+        - Attachments with names containing HTML-like characters
+        When
+        - set_email_reply is called
+        Then
+        - The attachment names in the output are properly encoded
+        """
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply(
+            email_from="sender@example.com",
+            email_to="recipient@example.com",
+            email_cc="",
+            html_body="<p>Body</p>",
+            attachments=[{"name": "<file>.txt"}],
+        )
+        assert "&lt;file&gt;" in result
+
+    def test_set_email_reply_handles_none_fields(self):
+        """
+        Given
+        - None values for all header fields
+        When
+        - set_email_reply is called
+        Then
+        - No error is raised and the output is valid
+        """
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply(
+            email_from=None,
+            email_to=None,
+            email_cc=None,
+            html_body=None,
+            attachments=None,
+        )
+        assert "From:" in result
+        assert "To:" in result
+
+
+class TestCreateEmailHtmlRegexSafety:
+    """Tests for create_email_html - validates safe regex pattern handling."""
+
+    def test_create_email_html_with_special_chars_in_content_id(self):
+        """
+        Given
+        - A content_id containing regex special characters (e.g., parentheses, dots)
+        When
+        - create_email_html is called
+        Then
+        - No regex error is raised and the function completes successfully
+        """
+        from PreprocessEmail import create_email_html
+
+        html_input = '<img src="cid:id(1)+test" alt="image.png">'
+        entry_id_list = [("id(1)+test-attachmentName-image.png", "42@100")]
+        result = create_email_html(html_input, entry_id_list)
+        assert isinstance(result, str)
+        assert "entry/download/42@100" in result
+
+    def test_create_email_html_with_special_chars_in_image_name(self):
+        """
+        Given
+        - An image name containing regex special characters
+        When
+        - create_email_html is called with alt-tag matching path
+        Then
+        - No regex error is raised and the function completes successfully
+        """
+        from PreprocessEmail import create_email_html
+
+        html_input = '<img src="cid:test" alt="file[1](2).png">'
+        entry_id_list = [("file[1](2).png", "42@100")]
+        result = create_email_html(html_input, entry_id_list)
+        assert isinstance(result, str)
+
+    def test_create_email_html_with_brackets_in_content_id(self):
+        """
+        Given
+        - A content_id containing square brackets
+        When
+        - create_email_html is called
+        Then
+        - No regex error is raised and the function completes successfully
+        """
+        from PreprocessEmail import create_email_html
+
+        html_input = '<img src="cid:id[1]" alt="image.png">'
+        entry_id_list = [("id[1]-attachmentName-image.png", "42@100")]
+        result = create_email_html(html_input, entry_id_list)
+        assert isinstance(result, str)
+        assert "entry/download/42@100" in result

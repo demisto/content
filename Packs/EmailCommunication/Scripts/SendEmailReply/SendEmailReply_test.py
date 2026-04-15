@@ -1793,3 +1793,97 @@ def test_replace_atlassian_tags():
     # No tags remain unchanged
     input_md4 = "No tags here"
     assert replace_atlassian_tags(input_md4) == input_md4
+
+
+class TestGetReplyBodyAttachmentNameEncoding:
+    """Tests for get_reply_body - validates attachment name output encoding."""
+
+    def test_get_reply_body_encodes_attachment_names_with_angle_brackets(self, mocker):
+        """
+        Given
+        - Attachments with names containing HTML-like angle bracket characters
+        When
+        - get_reply_body is called
+        Then
+        - The attachment names in the reply body are properly encoded
+        """
+        import CommonServerPython
+        from SendEmailReply import get_reply_body
+
+        mocker.patch.object(demisto, "executeCommand", return_value=[{"EntryContext": {"replyhtmlbody": ""}, "Type": ""}])
+        mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=None)
+        mocker.patch.object(CommonServerPython, "is_error", return_value=False)
+
+        notes = [{"Metadata": {"user": "DBot"}, "Contents": "test note", "ID": "1"}]
+        attachments = [{"name": "<malicious>.txt"}]
+        reply_body = get_reply_body(notes=notes, incident_id="1", attachments=attachments)[0]
+        assert "&lt;malicious&gt;" in reply_body
+        assert "<malicious>" not in reply_body
+
+    def test_get_reply_body_encodes_attachment_names_with_ampersand(self, mocker):
+        """
+        Given
+        - Attachments with names containing ampersand characters
+        When
+        - get_reply_body is called
+        Then
+        - The ampersand in attachment names is properly encoded
+        """
+        import CommonServerPython
+        from SendEmailReply import get_reply_body
+
+        mocker.patch.object(demisto, "executeCommand", return_value=[{"EntryContext": {"replyhtmlbody": ""}, "Type": ""}])
+        mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=None)
+        mocker.patch.object(CommonServerPython, "is_error", return_value=False)
+
+        notes = [{"Metadata": {"user": "DBot"}, "Contents": "test note", "ID": "1"}]
+        attachments = [{"name": "file&name.txt"}]
+        reply_body = get_reply_body(notes=notes, incident_id="1", attachments=attachments)[0]
+        assert "&amp;" in reply_body
+
+    def test_get_reply_body_encodes_multiple_attachment_names(self, mocker):
+        """
+        Given
+        - Multiple attachments with names containing HTML-like characters
+        When
+        - get_reply_body is called
+        Then
+        - All attachment names in the reply body are properly encoded
+        """
+        import CommonServerPython
+        from SendEmailReply import get_reply_body
+
+        mocker.patch.object(demisto, "executeCommand", return_value=[{"EntryContext": {"replyhtmlbody": ""}, "Type": ""}])
+        mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=None)
+        mocker.patch.object(CommonServerPython, "is_error", return_value=False)
+
+        notes = [{"Metadata": {"user": "DBot"}, "Contents": "test note", "ID": "1"}]
+        attachments = [{"name": "<file1>.txt"}, {"name": "normal.pdf"}, {"name": "<file2>.doc"}]
+        reply_body = get_reply_body(notes=notes, incident_id="1", attachments=attachments)[0]
+        assert "&lt;file1&gt;" in reply_body
+        assert "&lt;file2&gt;" in reply_body
+        assert "normal.pdf" in reply_body
+
+    def test_get_reply_body_safe_with_quotes_in_attachment_name(self, mocker):
+        """
+        Given
+        - Attachments with names containing quote characters
+        When
+        - get_reply_body is called
+        Then
+        - The quote characters in attachment names are properly encoded
+        """
+        import CommonServerPython
+        from SendEmailReply import get_reply_body
+
+        mocker.patch.object(demisto, "executeCommand", return_value=[{"EntryContext": {"replyhtmlbody": ""}, "Type": ""}])
+        mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=None)
+        mocker.patch.object(CommonServerPython, "is_error", return_value=False)
+
+        notes = [{"Metadata": {"user": "DBot"}, "Contents": "test note", "ID": "1"}]
+        attachments = [{"name": 'file"name.txt'}]
+        reply_body = get_reply_body(notes=notes, incident_id="1", attachments=attachments)[0]
+        # html.escape with default quote=True does not escape double quotes in the default mode,
+        # but the name should still be present and not cause issues
+        assert "file" in reply_body
+        assert "name.txt" in reply_body

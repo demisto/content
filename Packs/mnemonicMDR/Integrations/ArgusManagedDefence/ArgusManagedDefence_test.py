@@ -1,3 +1,4 @@
+import html as html_module
 import json
 
 BASE_URL = "https://api.mnemonic.no"
@@ -731,3 +732,58 @@ def test_download_case_attachments_command(requests_mock):
     for file in result:
         assert file.get("File") == "filename"
         assert file.get("Type") == 3  # File
+
+
+class TestPrettyPrintCommentHtml:
+    """Tests for output encoding in pretty_print_comment_html."""
+
+    @staticmethod
+    def _make_comment(comment_text: str = "hello", username: str = "user1", attachments: list | None = None) -> dict:
+        return {
+            "comment": comment_text,
+            "addedByUser": {"userName": username},
+            "addedTime": "2024-01-01T00:00:00Z",
+            "lastUpdatedTime": None,
+            "associatedAttachments": attachments or [],
+        }
+
+    def test_comment_text_output_encoding(self):
+        """Test that special characters in comment text are encoded in output."""
+        from ArgusManagedDefence import pretty_print_comment_html
+
+        comment = self._make_comment(comment_text="<script>alert(1)</script>")
+        result = pretty_print_comment_html(comment)
+        assert "<script>" not in result
+        assert html_module.escape("<script>alert(1)</script>") in result
+
+    def test_username_output_encoding(self):
+        """Test that special characters in username are encoded in output."""
+        from ArgusManagedDefence import pretty_print_comment_html
+
+        comment = self._make_comment(username="<script>alert(1)</script>")
+        result = pretty_print_comment_html(comment)
+        assert "<script>" not in result
+        assert html_module.escape("<script>alert(1)</script>") in result
+
+    def test_attachment_name_output_encoding(self):
+        """Test that special characters in attachment names are encoded in output."""
+        from ArgusManagedDefence import pretty_print_comment_html
+
+        comment = self._make_comment(attachments=[{"name": "<img src=x onerror=alert(1)>"}])
+        result = pretty_print_comment_html(comment)
+        assert "<img " not in result
+        assert html_module.escape("<img src=x onerror=alert(1)>") in result
+
+    def test_normal_text_passes_through(self):
+        """Test that normal text is preserved correctly after encoding."""
+        from ArgusManagedDefence import pretty_print_comment_html
+
+        comment = self._make_comment(
+            comment_text="Normal comment text",
+            username="john.doe",
+            attachments=[{"name": "report.pdf"}],
+        )
+        result = pretty_print_comment_html(comment)
+        assert "Normal comment text" in result
+        assert "john.doe" in result
+        assert "report.pdf" in result
