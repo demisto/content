@@ -34,7 +34,6 @@ class SlackAssistantMessages(AssistantMessages):
 
     # Step/Plan display (Slack-specific with emoji)
     PLAN_LABEL = "*Plan*"
-    PLAN_LABEL_UPDATING = "*Plan (updating...)*"
     PLAN_ICON = ":clipboard:"
 
     @classmethod
@@ -58,9 +57,14 @@ class SlackAssistantMessages(AssistantMessages):
         return message
 
 
-def parse_to_rich_text_elements(text: str) -> list[dict]:
+# Slack requires at least one element in a rich_text_section; a single space is the minimal placeholder.
+EMPTY_RICH_TEXT_ELEMENTS: list[dict] = [{"type": "text", "text": " "}]
+
+
+def parse_md_to_rich_text_elements(text: str) -> list[dict]:
     """
     Parses markdown-formatted text and converts it to Slack rich_text elements.
+    https://docs.slack.dev/reference/block-kit/blocks/rich-text-block/
 
     Supported markdown syntax:
     - Bold: **text** → {"type": "text", "text": "text", "style": {"bold": True}}
@@ -92,7 +96,7 @@ def parse_to_rich_text_elements(text: str) -> list[dict]:
         ]
     """
     if not text:
-        return [{"type": "text", "text": " "}]
+        return list(EMPTY_RICH_TEXT_ELEMENTS)
 
     # Define regex patterns for each markdown syntax
     # Order matters: more specific patterns first
@@ -159,10 +163,10 @@ def parse_to_rich_text_elements(text: str) -> list[dict]:
 
         elements.append(element)
 
-    return elements if elements else [{"type": "text", "text": " "}]
+    return elements if elements else list(EMPTY_RICH_TEXT_ELEMENTS)
 
 
-def create_rich_cell(text: str) -> dict:
+def create_rich_table_cell(text: str) -> dict:
     """
     Creates a Slack table cell as raw_text.
 
@@ -220,45 +224,44 @@ def parse_md_table_to_slack_table(md_text: str) -> dict | None:
     if not md_text or not md_text.strip():
         return None
 
-    lines = [line.strip() for line in md_text.strip().split("\n")]
-    if not lines:
+    rows = [row.strip() for row in md_text.strip().split("\n")]
+    if not rows:
         return None
 
-    rows = []
-    SEPARATOR_PATTERN = r"^[\s|:-]+$"  # Matches lines like |---|---| or | --- | --- |
+    table_rows = []
+    SEPARATOR_PATTERN = r"^[\s|:-]+$"  # Matches rows like |---|---| or | --- | --- |
 
-    for line in lines:
-        # Skip separator lines (|---|---|)
-        if re.match(SEPARATOR_PATTERN, line):
+    for row in rows:
+        # Skip separator rows (|---|---|)
+        if re.match(SEPARATOR_PATTERN, row):
             continue
 
-        # Split line by | delimiter
-        raw_cells = [cell.strip() for cell in line.split("|")]
+        # Split row by | delimiter
+        raw_cells = [cell.strip() for cell in row.split("|")]
 
         # Remove empty cells from leading/trailing |
-        if line.startswith("|"):
+        if row.startswith("|"):
             raw_cells.pop(0)
-        if line.endswith("|"):
+        if row.endswith("|"):
             raw_cells.pop()
 
         if not raw_cells:
             continue
 
         # Convert each cell to Slack table cell format
-        slack_row = [create_rich_cell(cell) for cell in raw_cells]
-        rows.append(slack_row)
+        table_rows.append([create_rich_table_cell(cell) for cell in raw_cells])
 
-    if not rows:
+    if not table_rows:
         return None
 
     return {
         "type": "table",
         "column_settings": [{"is_wrapped": True}],  # Allow text wrapping in cells
-        "rows": rows,
+        "rows": table_rows,
     }
 
 
-def process_text_part(text: str) -> list[dict]:
+def process_md_text_part(text: str) -> list[dict]:
     """
     Processes markdown text and converts it to Slack Block Kit blocks.
 
@@ -325,7 +328,7 @@ def process_text_part(text: str) -> list[dict]:
                         RichTextListElement(
                             style=current_list_style,  # type: ignore[arg-type]
                             elements=[
-                                RichTextSectionElement(elements=parse_to_rich_text_elements(item))  # type: ignore[arg-type]
+                                RichTextSectionElement(elements=parse_md_to_rich_text_elements(item))  # type: ignore[arg-type]
                                 for item in current_list_items
                             ],
                         )
@@ -342,7 +345,7 @@ def process_text_part(text: str) -> list[dict]:
                 sub_blocks.append(
                     RichTextBlock(
                         elements=[
-                            RichTextSectionElement(elements=parse_to_rich_text_elements(para_text))  # type: ignore[arg-type]
+                            RichTextSectionElement(elements=parse_md_to_rich_text_elements(para_text))  # type: ignore[arg-type]
                         ]
                     ).to_dict()
                 )
@@ -436,7 +439,7 @@ def process_text_part(text: str) -> list[dict]:
     return sub_blocks
 
 
-def prepare_slack_message(message: str, message_type: str) -> tuple[list, list]:
+def format_md_to_slack_message(message: str, message_type: str) -> tuple[list, list]:
     """
     Converts markdown-formatted message to Slack Block Kit format.
 
@@ -506,7 +509,7 @@ def prepare_slack_message(message: str, message_type: str) -> tuple[list, list]:
         else:
             # This part is regular text (may contain headers, lists, code blocks, etc.)
             if part.strip():
-                blocks.extend(process_text_part(part))
+                blocks.extend(process_md_text_part(part))
 
     # Step 3: Wrap blocks in attachments based on message type
 
@@ -582,7 +585,7 @@ def prepare_slack_merged_step_messages(step_contents: list[str]) -> tuple[list, 
             merged_blocks.append(DividerBlock().to_dict())
 
         # Process each step's content through the full markdown pipeline
-        step_blocks = process_text_part(content)
+        step_blocks = process_md_text_part(content)
         merged_blocks.extend(step_blocks)
 
     attachments = [

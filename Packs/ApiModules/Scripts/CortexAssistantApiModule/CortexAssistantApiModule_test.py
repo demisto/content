@@ -36,10 +36,11 @@ class MockMessagingHandler(AssistantMessagingHandler):
         return {"ts": "1234567890.123456"}
 
     async def update_message(self, channel_id: str, message_id: str, text: str = "", blocks: list | None = None):
-        self.updated_messages.append({"channel_id": channel_id, "message_id": message_id, "text": text})
+        self.updated_messages.append({"channel_id": channel_id, "message_id": message_id, "text": text, "blocks": blocks})
 
-    def delete_message(self, channel_id: str, message_id: str):
+    def delete_message(self, channel_id: str, message_id: str) -> tuple[bool, dict]:
         self.deleted_messages.append({"channel_id": channel_id, "message_id": message_id})
+        return True, {"ok": True}
 
     async def get_user_info(self, user_id: str) -> dict:
         return {"id": user_id, "email": "test@example.com"}
@@ -865,3 +866,61 @@ def test_backend_response_includes_error_code(mocker):
     assert result.success is False
     assert result.error_code == 999
     assert result.error_type == BackendErrorType.UNKNOWN
+
+
+@pytest.mark.asyncio
+async def test_sensitive_action_approval_decision_indicator_before_feedback(mocker: MockerFixture):
+    """
+    Given:
+    	A successful sensitive action approval with blocks containing content, actions, and feedback.
+    When:
+    	The approval action is handled.
+    Then:
+    	The decision indicator is inserted before the feedback block, not appended at the end.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "agentixCommands", return_value={"success": True})
+
+    handler = MockMessagingHandler()
+    assistant = {
+        "conv1": {
+            "user": "U123",
+            "status": AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value,
+            "last_updated": datetime.now(UTC).timestamp(),
+        }
+    }
+
+    # Simulate original message blocks: content → actions (approval) → feedback
+    message = {
+        "ts": "msg_ts",
+        "blocks": [
+            {"type": "section", "text": {"type": "mrkdwn", "text": "Sensitive action details"}},
+            {"type": "actions", "elements": [{"type": "button", "text": {"type": "plain_text", "text": "Proceed"}}]},
+            {"type": "actions", "elements": [{"type": "button", "text": {"type": "plain_text", "text": "Good response"}}]},
+        ],
+    }
+
+    await handler._handle_action_sensitive_action_approval(
+        action_id=AssistantActionIds.APPROVAL_YES.value,
+        user_id="U123",
+        user_email="user@example.com",
+        channel_id="C123",
+        thread_id="T123",
+        message=message,
+        message_id="msg_ts",
+        assistant=assistant,
+        assistant_id_key="conv1",
+        locked_user="U123",
+    )
+
+    # Verify the update_message was called with correct block order
+    updated = handler.updated_messages[0]
+    blocks = updated["blocks"]
+
+    # After removing the approval actions block:
+    # [content, decision_indicator, feedback_actions]
+    assert len(blocks) == 3
+    assert blocks[0]["type"] == "section"  # content
+    assert blocks[1]["type"] == "context"  # decision indicator
+    assert blocks[1]["elements"][0]["text"] == AssistantMessages.DECISION_APPROVED
+    assert blocks[2]["type"] == "actions"  # feedback buttons (last)

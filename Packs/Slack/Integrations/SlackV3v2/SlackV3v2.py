@@ -2,6 +2,8 @@ import asyncio
 import concurrent
 import logging.handlers
 import ssl
+import re
+import json
 import threading
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
@@ -18,9 +20,6 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-
-import json
-import re
 
 from SlackUtilsApiModule import *
 
@@ -181,7 +180,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         self,
         channel_id: str,
         message_ts: str,
-    ):
+    ) -> tuple[bool, dict]:
         """
         Delete an existing Slack message.
         Implements the abstract method from AssistantMessagingHandler.
@@ -189,9 +188,13 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         Args:
             channel_id: The Slack channel ID
             message_ts: The message timestamp
+
+        Returns:
+            A tuple of (success, response).
         """
-        body: Dict = {"channel": channel_id, "ts": message_ts}
-        return send_slack_request_sync(CLIENT, "chat.delete", body=body)
+        body: dict = {"channel": channel_id, "ts": message_ts}
+        response = send_slack_request_sync(CLIENT, "chat.delete", body=body)
+        return response.get("ok", False), dict(response)
 
     async def get_user_info(self, user_id: str) -> dict:
         """
@@ -259,7 +262,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         Returns:
             Tuple of (blocks, attachments)
         """
-        return prepare_slack_message(message, message_type)
+        return format_md_to_slack_message(message, message_type)
 
     def prepare_merged_step_blocks(self, step_contents: list[str]) -> tuple[list, list]:
         """
@@ -404,10 +407,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         """
         try:
             # Get conversation history
-            response = await send_slack_request_async(
-                ASYNC_CLIENT, "conversations.replies", http_verb="GET", body={"channel": channel_id, "ts": thread_ts, "limit": 20}
-            )
-            messages: list[dict] = response.get("messages", [])
+            messages = await self.get_thread_last_messages(channel_id, thread_ts)
 
             if not messages:
                 demisto.debug(f"No conversation history found for thread {thread_ts}")
@@ -2795,8 +2795,11 @@ def send_message_to_destinations(
 
     for destination in destinations:
         body["channel"] = destination
-        if ephemeral_message and user_id:
-            body["user"] = user_id
+        if ephemeral_message:
+            if user_id:
+                body["user"] = user_id
+            else:
+                demisto.info(f"Ephemeral message requested but no user_id provided for channel {destination}")
         response = send_slack_request_sync(CLIENT, post_method, body=body, bot_name=bot_name)
 
     return response

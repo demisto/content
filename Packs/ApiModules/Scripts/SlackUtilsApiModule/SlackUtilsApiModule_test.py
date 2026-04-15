@@ -3,11 +3,11 @@ import json
 import demistomock as demisto
 from SlackUtilsApiModule import (
     SlackAssistantMessages,
-    parse_to_rich_text_elements,
-    create_rich_cell,
+    parse_md_to_rich_text_elements,
+    create_rich_table_cell,
     parse_md_table_to_slack_table,
-    process_text_part,
-    prepare_slack_message,
+    process_md_text_part,
+    format_md_to_slack_message,
     create_agent_selection_blocks,
     get_feedback_buttons_block,
     get_approval_buttons_block,
@@ -80,7 +80,7 @@ def test_parse_to_rich_text_elements_plain_text():
     Then:
         Returns single text element.
     """
-    result = parse_to_rich_text_elements("Hello world")
+    result = parse_md_to_rich_text_elements("Hello world")
     assert len(result) == 1
     assert result[0]["type"] == "text"
     assert result[0]["text"] == "Hello world"
@@ -95,7 +95,7 @@ def test_parse_to_rich_text_elements_bold():
     Then:
         Returns text element with bold style.
     """
-    result = parse_to_rich_text_elements("**bold text**")
+    result = parse_md_to_rich_text_elements("**bold text**")
     assert len(result) == 1
     assert result[0]["type"] == "text"
     assert result[0]["text"] == "bold text"
@@ -111,7 +111,7 @@ def test_parse_to_rich_text_elements_code():
     Then:
         Returns text element with code style.
     """
-    result = parse_to_rich_text_elements("`code here`")
+    result = parse_md_to_rich_text_elements("`code here`")
     assert len(result) == 1
     assert result[0]["type"] == "text"
     assert result[0]["text"] == "code here"
@@ -127,7 +127,7 @@ def test_parse_to_rich_text_elements_link():
     Then:
         Returns link element with text and url.
     """
-    result = parse_to_rich_text_elements("[Click here](https://example.com)")
+    result = parse_md_to_rich_text_elements("[Click here](https://example.com)")
     assert len(result) == 1
     assert result[0]["type"] == "link"
     assert result[0]["text"] == "Click here"
@@ -143,7 +143,7 @@ def test_parse_to_rich_text_elements_url():
     Then:
         Returns link element with URL as both text and url.
     """
-    result = parse_to_rich_text_elements("https://example.com")
+    result = parse_md_to_rich_text_elements("https://example.com")
     assert len(result) == 1
     assert result[0]["type"] == "link"
     assert result[0]["url"] == "https://example.com"
@@ -158,7 +158,7 @@ def test_parse_to_rich_text_elements_mixed():
     Then:
         Returns multiple elements with correct styles.
     """
-    result = parse_to_rich_text_elements("Hello **bold** and `code`")
+    result = parse_md_to_rich_text_elements("Hello **bold** and `code`")
     assert len(result) == 4
     assert result[0]["text"] == "Hello "
     assert result[1]["text"] == "bold"
@@ -177,7 +177,7 @@ def test_parse_to_rich_text_elements_empty():
     Then:
         Returns single space element.
     """
-    result = parse_to_rich_text_elements("")
+    result = parse_md_to_rich_text_elements("")
     assert len(result) == 1
     assert result[0]["text"] == " "
 
@@ -196,7 +196,7 @@ def test_create_rich_cell_plain_text():
     Then:
         Returns raw_text type cell.
     """
-    result = create_rich_cell("Plain text")
+    result = create_rich_table_cell("Plain text")
     assert result["type"] == "raw_text"
     assert result["text"] == "Plain text"
 
@@ -210,7 +210,7 @@ def test_create_rich_cell_formatted_text():
     Then:
         Returns raw_text type cell (Slack table cells don't support rich formatting).
     """
-    result = create_rich_cell("**Bold text**")
+    result = create_rich_table_cell("**Bold text**")
     assert result["type"] == "raw_text"
     assert result["text"] == "**Bold text**"
 
@@ -224,7 +224,7 @@ def test_create_rich_cell_with_url_falls_back_to_raw_text():
     Then:
         Returns raw_text type (Slack table cells don't support link elements).
     """
-    result = create_rich_cell("https://example.com/incident-view?caseId=1")
+    result = create_rich_table_cell("https://example.com/incident-view?caseId=1")
     assert result["type"] == "raw_text"
     assert result["text"] == "https://example.com/incident-view?caseId=1"
 
@@ -238,7 +238,7 @@ def test_create_rich_cell_with_markdown_link_falls_back_to_raw_text():
     Then:
         Returns raw_text type (Slack table cells don't support link elements).
     """
-    result = create_rich_cell("[Click here](https://example.com)")
+    result = create_rich_table_cell("[Click here](https://example.com)")
     assert result["type"] == "raw_text"
     assert result["text"] == "[Click here](https://example.com)"
 
@@ -252,7 +252,7 @@ def test_create_rich_cell_empty():
     Then:
         Returns raw_text with single space.
     """
-    result = create_rich_cell("")
+    result = create_rich_table_cell("")
     assert result["type"] == "raw_text"
     assert result["text"] == " "
 
@@ -327,7 +327,7 @@ def test_process_text_part_header():
     Then:
         Returns header block.
     """
-    result = process_text_part("# My Header")
+    result = process_md_text_part("# My Header")
     assert len(result) == 1
     assert result[0]["type"] == "header"
     assert result[0]["text"]["text"] == "My Header"
@@ -342,7 +342,7 @@ def test_process_text_part_bullet_list():
     Then:
         Returns rich_text block with bullet list.
     """
-    result = process_text_part("- Item 1\n- Item 2")
+    result = process_md_text_part("- Item 1\n- Item 2")
     assert len(result) == 1
     assert result[0]["type"] == "rich_text"
     assert result[0]["elements"][0]["type"] == "rich_text_list"
@@ -358,7 +358,7 @@ def test_process_text_part_numbered_list():
     Then:
         Returns rich_text block with ordered list.
     """
-    result = process_text_part("1. First\n2. Second")
+    result = process_md_text_part("1. First\n2. Second")
     assert len(result) == 1
     assert result[0]["type"] == "rich_text"
     assert result[0]["elements"][0]["style"] == "ordered"
@@ -373,7 +373,7 @@ def test_process_text_part_code_block():
     Then:
         Returns rich_text block with preformatted element.
     """
-    result = process_text_part("```python\nprint('hello')\n```")
+    result = process_md_text_part("```python\nprint('hello')\n```")
     assert len(result) == 1
     assert result[0]["type"] == "rich_text"
     assert result[0]["elements"][0]["type"] == "rich_text_preformatted"
@@ -388,7 +388,7 @@ def test_process_text_part_paragraph():
     Then:
         Returns rich_text block with section element.
     """
-    result = process_text_part("This is a paragraph")
+    result = process_md_text_part("This is a paragraph")
     assert len(result) == 1
     assert result[0]["type"] == "rich_text"
     assert result[0]["elements"][0]["type"] == "rich_text_section"
@@ -408,7 +408,7 @@ def test_prepare_slack_message_model_type(mocker):
     Then:
         Returns blocks without attachments.
     """
-    blocks, attachments = prepare_slack_message("Hello", AssistantMessageType.MODEL.value)
+    blocks, attachments = format_md_to_slack_message("Hello", AssistantMessageType.MODEL.value)
     assert len(blocks) > 0
     assert len(attachments) == 0
 
@@ -422,7 +422,7 @@ def test_prepare_slack_message_step_type(mocker):
     Then:
         Returns empty blocks with gray attachment.
     """
-    blocks, attachments = prepare_slack_message("Step 1", AssistantMessageType.STEP.value)
+    blocks, attachments = format_md_to_slack_message("Step 1", AssistantMessageType.STEP.value)
     assert len(blocks) == 0
     assert len(attachments) == 1
     assert attachments[0]["color"] == "#D1D2D3"
@@ -437,7 +437,7 @@ def test_prepare_slack_message_error_type(mocker):
     Then:
         Returns empty blocks with red attachment.
     """
-    blocks, attachments = prepare_slack_message("Error", AssistantMessageType.ERROR.value)
+    blocks, attachments = format_md_to_slack_message("Error", AssistantMessageType.ERROR.value)
     assert len(blocks) == 0
     assert len(attachments) == 1
     assert attachments[0]["color"] == "#FF0000"
@@ -454,7 +454,7 @@ def test_prepare_slack_message_invalid_type(mocker):
     """
     mocker.patch.object(demisto, "error")
     with pytest.raises(ValueError) as exc_info:
-        prepare_slack_message("Test", "invalid_type")
+        format_md_to_slack_message("Test", "invalid_type")
     assert "Invalid message_type" in str(exc_info.value)
 
 
@@ -467,7 +467,7 @@ def test_prepare_slack_message_empty():
     Then:
         Returns empty blocks and attachments.
     """
-    blocks, attachments = prepare_slack_message("", AssistantMessageType.MODEL.value)
+    blocks, attachments = format_md_to_slack_message("", AssistantMessageType.MODEL.value)
     assert blocks == []
     assert attachments == []
 
@@ -763,7 +763,7 @@ def test_process_text_part_divider():
     Then:
         Returns divider block.
     """
-    result = process_text_part("---")
+    result = process_md_text_part("---")
     assert len(result) == 1
     assert result[0]["type"] == "divider"
 
@@ -777,7 +777,7 @@ def test_process_text_part_header_with_bold():
     Then:
         Returns header block with bold formatting removed.
     """
-    result = process_text_part("### **Case Details**")
+    result = process_md_text_part("### **Case Details**")
     assert len(result) == 1
     assert result[0]["type"] == "header"
     assert result[0]["text"]["text"] == "Case Details"
@@ -792,7 +792,7 @@ def test_process_text_part_header_with_multiple_formatting():
     Then:
         Returns header block with all formatting removed.
     """
-    result = process_text_part("## **Bold** and `code` and _italic_")
+    result = process_md_text_part("## **Bold** and `code` and _italic_")
     assert len(result) == 1
     assert result[0]["type"] == "header"
     assert result[0]["text"]["text"] == "Bold and code and italic"
@@ -808,7 +808,7 @@ def test_process_text_part_complex_with_dividers():
         Returns blocks in correct order with dividers.
     """
     text = "### **Case Details**\n\n---\n\nSome content"
-    result = process_text_part(text)
+    result = process_md_text_part(text)
 
     assert len(result) == 3
     assert result[0]["type"] == "header"

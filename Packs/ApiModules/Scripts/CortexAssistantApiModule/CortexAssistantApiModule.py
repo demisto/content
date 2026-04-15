@@ -402,7 +402,7 @@ class AssistantMessages:
 
     # Decision indicators
     DECISION_APPROVED = "✅ *Approved*"
-    DECISION_CANCELLED = "❌ *Cancelled*"
+    DECISION_DECLINED = "❌ *Declined*"
 
 
 # Mapping from BackendErrorType → default user-facing message
@@ -499,7 +499,7 @@ class AssistantMessagingHandler:
         self,
         channel_id: str,
         message_id: str,
-    ):
+    ) -> tuple[bool, dict]:
         """
         Delete an existing message.
         Must be implemented by subclass.
@@ -507,8 +507,13 @@ class AssistantMessagingHandler:
         Args:
             channel_id: The channel/conversation ID
             message_id: The message ID
+
+        Returns:
+            A tuple of (success, response) where success is a bool indicating
+            whether the deletion succeeded, and response is the platform-specific
+            response dict for logging purposes.
         """
-        raise NotImplementedError("Subclass must implement delete_message_sync()")
+        raise NotImplementedError("Subclass must implement delete_message()")
 
     async def get_user_info(self, user_id: str) -> dict:
         """
@@ -536,7 +541,7 @@ class AssistantMessagingHandler:
         Returns:
             List of messages
         """
-        raise NotImplementedError("Subclass must implement get_thread_history()")
+        raise NotImplementedError("Subclass must implement get_thread_last_messages()")
 
     def format_user_mention(self, user_id: str) -> str:
         """
@@ -1296,11 +1301,15 @@ class AssistantMessagingHandler:
             backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
 
             if backend_response.success:
-                # Update the original message
-                decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_CANCELLED
+                # Update the original message: replace the actions block with a decision indicator,
+                # keeping it above the feedback buttons (which are the last block).
+                decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_DECLINED
                 original_blocks = message.get("blocks", [])
                 updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
-                updated_blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]})
+                decision_block = {"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]}
+                # Insert before the last block (feedback buttons) to maintain visual order
+                feedback_index = len(updated_blocks) - 1 if updated_blocks else 0
+                updated_blocks.insert(feedback_index, decision_block)
 
                 try:
                     await self.update_message(channel_id, message_id, blocks=updated_blocks)
@@ -1714,10 +1723,13 @@ class AssistantMessagingHandler:
         if assistant_id_key in assistant_context:
             thinking_ts = assistant_context[assistant_id_key].get(THINKING_MESSAGE_ID_KEY)
             if thinking_ts:
+                error_prefix = f"Failed to delete thinking indicator {thinking_ts} in {channel_id}"
                 try:
-                    self.delete_message(channel_id, thinking_ts)
+                    success, response = self.delete_message(channel_id, thinking_ts)
+                    if not success:
+                        demisto.error(f"{error_prefix}: {response}")
                 except Exception as e:
-                    demisto.error(f"Failed to delete thinking indicator: {e}")
+                    demisto.error(f"{error_prefix}: {e}")
                 assistant_context[assistant_id_key].pop(THINKING_MESSAGE_ID_KEY, None)
 
         # Group messages by type category
