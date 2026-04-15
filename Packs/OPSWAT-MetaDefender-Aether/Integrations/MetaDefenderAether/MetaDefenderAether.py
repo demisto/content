@@ -114,7 +114,7 @@ def build_one_reputation_result(report: dict[str, Any]):
     final_verdict = report.get("finalVerdict", {})
     threat_level = final_verdict.get("threatLevel", 0)
     # Threatlevel based on https://www.opswat.com/docs/filescan/datasheet/verdict
-    if threat_level == 0 or not isinstance(threat_level, (int, float)):
+    if threat_level == 0 or not isinstance(threat_level, int | float):
         score = Common.DBotScore.NONE
     elif threat_level <= 0.25:
         score = Common.DBotScore.GOOD
