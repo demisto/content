@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: DummyCollector
+  id: HelloWorld
   version: -1
 configuration:
 - display: Server URL
@@ -22,13 +22,13 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Dummy Collector integration for testing purposes.
-display: Dummy Collector
-name: DummyCollector
+description: Hello World integration for testing purposes.
+display: Hello World
+name: HelloWorld
 script:
   commands:
-  - name: okta-get-events
-    description: Retrieves events from Okta. (Not implemented)
+  - name: helloworld-get-events
+    description: Retrieves events from Hello World. (Not implemented)
     arguments: []
   dockerimage: demisto/python3:3.12.12.5490952
   runonce: false

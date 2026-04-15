@@ -1,6 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
+""" CONSTANTS """
+
+VENDOR = "hello"
+PRODUCT = "world"
+
 ''' MAIN FUNCTION '''
 
 
@@ -12,8 +17,8 @@ def main() -> None:
     try:
         if command == 'test-module':
             return_results('ok')
-        elif command == 'okta-get-events':
-            raise NotImplementedError('The okta-get-events command is not implemented.')
+        elif command == 'helloworld-get-events':
+            raise NotImplementedError('The helloworld-get-events command is not implemented.')
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
