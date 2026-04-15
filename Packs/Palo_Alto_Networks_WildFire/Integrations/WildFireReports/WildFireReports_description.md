@@ -13,7 +13,7 @@ This API key is used in the *API Key* field in the integration configuration.
 
 #### Troubleshooting: Override Agent (Advanced)
 
-The *Override Agent* advanced parameter is available for cases where the automatic agent detection fails (e.g., API requests return errors or `test-module` fails due to an incorrect agent header). By default, the integration auto-detects the correct agent based on the platform. Only change this setting if instructed to do so by support or if auto-detection is not working correctly.
+The *Override Agent* advanced parameter is available for cases where the automatic agent detection fails (e.g., API requests return errors or the **Test** button fails due to an incorrect agent header). By default, the integration auto-detects the correct agent based on the platform. Only change this setting if instructed to do so by support or if auto-detection is not working correctly.
 
 Available options:
 - **auto** (default) — Auto-detect based on the platform.
