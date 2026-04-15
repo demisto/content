@@ -25,6 +25,12 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # =================================
 INTEGRATION_NAME = "KOI"
 
+# ---------- API Endpoint Paths ----------
+API_BASE = "/api/external/v2"
+API_ALERTS = f"{API_BASE}/alerts"
+API_AUDIT_LOGS = f"{API_BASE}/audit-logs"
+API_POLICIES = f"{API_BASE}/policies"
+
 
 class Config:
     """Global static configuration."""
@@ -39,6 +45,9 @@ class Config:
     DEFAULT_PAGE_SIZE = 100
     MAX_PAGE_SIZE = 500
     MAX_PAGES_PER_FETCH = 10
+    DEFAULT_PAGE = 1
+    DEFAULT_LIMIT = 100
+    MAX_LIMIT = 500
 
     # Fetch defaults
     DEFAULT_MAX_FETCH = 5000
@@ -56,8 +65,8 @@ class Config:
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    ALERTS = ("alerts", "Alerts", "/api/external/v2/alerts")
-    AUDIT = ("audit", "Audit", "/api/external/v2/audit-logs")
+    ALERTS = ("alerts", "Alerts", API_ALERTS)
+    AUDIT = ("audit", "Audit", API_AUDIT_LOGS)
 
     def __init__(self, type_string: str, title: str, api_endpoint: str):
         self.type_string = type_string
@@ -341,6 +350,36 @@ class Client(ContentClient):
         demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
 
         return events
+
+    def get_policies(
+        self,
+        page: int,
+        page_size: int,
+    ) -> dict[str, Any]:
+        """Fetch a single page of policies from the Koi API.
+
+        Args:
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+
+        Returns:
+            The full API response dictionary containing 'policies' list and 'total_count'.
+        """
+        params: dict[str, Any] = {
+            "page": page,
+            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+        }
+
+        demisto.debug(f"[API] Fetching policies | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=API_POLICIES,
+            params=params,
+        )
+
+        demisto.debug("[API] Policies response received")
+        return response
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -727,6 +766,102 @@ def fetch_events_command(client: Client) -> None:
     demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
 
 
+def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List policies with pagination support.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' policies.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (page, page_size, limit).
+
+    Returns:
+        CommandResults with the policy list.
+    """
+    demisto.debug("[Command] koi-policy-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        # Single-page mode: fetch the requested page
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.get_policies(page=page_arg, page_size=page_size)
+        policies = response.get("policies", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(policies)} policies (total_count={total_count})")
+    else:
+        # Auto-paginate mode: fetch pages until limit is reached
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        policies = _fetch_policies_with_pagination(client, limit=limit)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Policies",
+        policies,
+        headers=["id", "name", "description", "action", "enabled", "group_ids", "creator_fullname", "created_at", "updated_at"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Policy",
+        outputs_key_field="id",
+        outputs=policies,
+    )
+
+
+def _fetch_policies_with_pagination(
+    client: Client,
+    limit: int,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through policies until limit is reached.
+
+    Args:
+        client: The Koi client.
+        limit: Maximum total number of policies to collect.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of policy dictionaries.
+    """
+    policies: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(policies) < limit:
+        response = client.get_policies(page=page, page_size=page_size)
+        page_policies = response.get("policies", [])
+
+        if not page_policies:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        policies.extend(page_policies)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_policies)} policies. Total: {len(policies)}")
+
+        if len(page_policies) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(policies) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(policies)} policies to limit {limit}")
+        policies = policies[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(policies)} policies")
+    return policies
+
+
 # endregion
 
 # region Main router
@@ -738,6 +873,7 @@ COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
     "koi-get-events": get_events_command,
     "fetch-events": fetch_events_command,
+    "koi-policy-list": koi_policy_list_command,
 }
 
 
@@ -781,8 +917,11 @@ def main() -> None:
             return_results(result)
         elif command == "fetch-events":
             command_func(client)
-        else:
+        elif command == "koi-get-events":
             result = command_func(client, demisto.args(), params)
+            return_results(result)
+        else:
+            result = command_func(client, demisto.args())
             return_results(result)
 
     except Exception as error:

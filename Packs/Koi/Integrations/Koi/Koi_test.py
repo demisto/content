@@ -6,6 +6,28 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import *  # noqa
 
+from Koi import (
+    Client,
+    Config,
+    LogType,
+    API_POLICIES,
+    VALID_AUDIT_TYPES,
+    COMMAND_MAP,
+    get_log_types_from_titles,
+    extract_time_from_event,
+    add_time_to_events,
+    get_event_id,
+    deduplicate_events,
+    fetch_events_with_pagination,
+    test_module as koi_test_module,
+    get_events_command,
+    fetch_events_command,
+    koi_policy_list_command,
+    get_formatted_utc_time,
+    parse_date_or_use_current,
+    main,
+)
+
 
 # region Test Data Loading
 TEST_DATA_DIR = Path(__file__).parent / "test_data"
@@ -41,10 +63,14 @@ def empty_response() -> dict:
 
 
 @pytest.fixture
+def policies_response() -> dict:
+    """Fixture for a mock policies API response."""
+    return load_test_data("policies_response.json")
+
+
+@pytest.fixture
 def mock_client(mocker):
     """Fixture for a mocked Koi Client."""
-    from Koi import Client
-
     mocker.patch.object(Client, "__init__", return_value=None)
     client = Client.__new__(Client)
     return client
@@ -69,8 +95,6 @@ class TestGetLogTypesFromTitles:
     )
     def test_valid_titles(self, titles: list[str], expected_type_strings: list[str]):
         """Test converting valid user-facing titles to LogType enum members."""
-        from Koi import get_log_types_from_titles
-
         result = get_log_types_from_titles(titles)
         assert [lt.type_string for lt in result] == expected_type_strings
 
@@ -85,8 +109,6 @@ class TestGetLogTypesFromTitles:
     )
     def test_invalid_titles(self, titles: list[str]):
         """Test that invalid titles raise DemistoException."""
-        from Koi import get_log_types_from_titles
-
         with pytest.raises(Exception, match="Invalid event type"):
             get_log_types_from_titles(titles)
 
@@ -101,16 +123,12 @@ class TestExtractTimeFromEvent:
 
     def test_alert_event_with_epoch_ms(self):
         """Test extracting time from an alert event with epoch ms timestamp."""
-        from Koi import extract_time_from_event, LogType
-
         event = {"finding_info": {"created_time": 1704067200000}}
         result = extract_time_from_event(event, LogType.ALERTS)
         assert result == "2024-01-01T00:00:00Z"
 
     def test_audit_event_with_iso_string(self):
         """Test extracting time from an audit event with ISO 8601 string."""
-        from Koi import extract_time_from_event, LogType
-
         event = {"created_at": "2024-01-01T00:00:00Z"}
         result = extract_time_from_event(event, LogType.AUDIT)
         assert result == "2024-01-01T00:00:00Z"
@@ -126,8 +144,6 @@ class TestExtractTimeFromEvent:
     )
     def test_missing_time_field(self, event: dict, log_type_name: str):
         """Test extracting time when the field is missing returns None."""
-        from Koi import extract_time_from_event, LogType
-
         log_type = LogType[log_type_name]
         result = extract_time_from_event(event, log_type)
         assert result is None
@@ -161,8 +177,6 @@ class TestAddTimeToEvents:
     )
     def test_events_with_time(self, events, log_type_name, expected_time, expected_source):
         """Test enriching events with _time and source_log_type."""
-        from Koi import add_time_to_events, LogType
-
         log_type = LogType[log_type_name]
         add_time_to_events(events, log_type)
 
@@ -171,8 +185,6 @@ class TestAddTimeToEvents:
 
     def test_missing_time_field(self):
         """Test enriching events when time field is missing still sets source_log_type."""
-        from Koi import add_time_to_events, LogType
-
         events = [{"id": "audit-001"}]
         add_time_to_events(events, LogType.AUDIT)
 
@@ -201,14 +213,10 @@ class TestGetEventId:
     )
     def test_valid_id_fields(self, event: dict, expected_id: str):
         """Test extracting event ID from various field names."""
-        from Koi import get_event_id
-
         assert get_event_id(event) == expected_id
 
     def test_no_id_field(self):
         """Test that missing ID field returns None."""
-        from Koi import get_event_id
-
         assert get_event_id({}) is None
         assert get_event_id({"name": "test"}) is None
 
@@ -249,15 +257,11 @@ class TestDeduplicateEvents:
     )
     def test_deduplication(self, events: list, last_ids: list, expected_count: int):
         """Test deduplication with various scenarios."""
-        from Koi import deduplicate_events
-
         result = deduplicate_events(events, last_fetched_ids=last_ids)
         assert len(result) == expected_count
 
     def test_no_duplicates_found(self):
         """Test dedup when none of the events match previous IDs (covers line 237)."""
-        from Koi import deduplicate_events
-
         events = [{"id": "3"}, {"id": "4"}]
         result = deduplicate_events(events, last_fetched_ids=["1", "2"])
         assert len(result) == 2
@@ -273,8 +277,6 @@ class TestClient:
 
     def test_get_events_page_alerts(self, mock_client, alerts_response, mocker):
         """Test fetching a page of alerts."""
-        from Koi import LogType
-
         mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
 
         events = mock_client.get_events_page(
@@ -289,8 +291,6 @@ class TestClient:
 
     def test_get_events_page_audit(self, mock_client, audit_response, mocker):
         """Test fetching a page of audit logs."""
-        from Koi import LogType
-
         mocker.patch.object(mock_client, "_http_request", return_value=audit_response)
 
         events = mock_client.get_events_page(
@@ -306,8 +306,6 @@ class TestClient:
 
     def test_get_events_page_with_created_at_lte(self, mock_client, alerts_response, mocker):
         """Test fetching events with created_at_lte parameter (covers line 322)."""
-        from Koi import LogType
-
         mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
 
         events = mock_client.get_events_page(
@@ -325,8 +323,6 @@ class TestClient:
 
     def test_sort_direction_asc_alerts(self, mock_client, alerts_response, mocker):
         """Test that sort_direction=asc is passed to the API for alerts."""
-        from Koi import LogType, Config
-
         mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
 
         mock_client.get_events_page(
@@ -341,8 +337,6 @@ class TestClient:
 
     def test_sort_direction_asc_audit(self, mock_client, audit_response, mocker):
         """Test that sort_direction=asc is passed to the API for audit logs."""
-        from Koi import LogType, Config
-
         mocker.patch.object(mock_client, "_http_request", return_value=audit_response)
 
         mock_client.get_events_page(
@@ -357,8 +351,6 @@ class TestClient:
 
     def test_get_events_page_empty(self, mock_client, empty_response, mocker):
         """Test fetching when no events are returned."""
-        from Koi import LogType
-
         mocker.patch.object(mock_client, "_http_request", return_value=empty_response)
 
         events = mock_client.get_events_page(
@@ -380,8 +372,6 @@ class TestFetchEventsWithPagination:
 
     def test_single_page(self, mock_client, alerts_response, mocker):
         """Test fetching events that fit in a single page."""
-        from Koi import fetch_events_with_pagination, LogType
-
         mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
 
         events = fetch_events_with_pagination(
@@ -395,8 +385,6 @@ class TestFetchEventsWithPagination:
 
     def test_multiple_pages(self, mock_client, mocker):
         """Test fetching events across multiple pages."""
-        from Koi import fetch_events_with_pagination, LogType, Config
-
         # page_size = min(MAX_PAGE_SIZE, max_events) = min(500, 1000) = 500
         # page1 must have exactly page_size items to trigger next page fetch
         page_size = Config.MAX_PAGE_SIZE
@@ -416,8 +404,6 @@ class TestFetchEventsWithPagination:
 
     def test_empty_response(self, mock_client, mocker):
         """Test fetching when API returns no events."""
-        from Koi import fetch_events_with_pagination, LogType
-
         mocker.patch.object(mock_client, "get_events_page", return_value=[])
 
         events = fetch_events_with_pagination(
@@ -431,8 +417,6 @@ class TestFetchEventsWithPagination:
 
     def test_max_events_limit(self, mock_client, mocker):
         """Test that max_events limit is respected."""
-        from Koi import fetch_events_with_pagination, LogType
-
         large_page = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(500)]
         mocker.patch.object(mock_client, "get_events_page", return_value=large_page)
 
@@ -447,8 +431,6 @@ class TestFetchEventsWithPagination:
 
     def test_max_pages_limit(self, mock_client, mocker):
         """Test pagination stops at MAX_PAGES_PER_FETCH (covers lines 438-439)."""
-        from Koi import fetch_events_with_pagination, LogType, Config
-
         page_size = Config.MAX_PAGE_SIZE
         # Return full pages every time to force pagination to continue
         full_page = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(page_size)]
@@ -475,30 +457,24 @@ class TestTestModule:
 
     def test_success(self, mock_client, mocker):
         """Test successful test-module."""
-        from Koi import test_module
-
         mocker.patch.object(mock_client, "get_events_page", return_value=[{"id": "1"}])
 
-        result = test_module(mock_client)
+        result = koi_test_module(mock_client)
         assert result == "ok"
 
     def test_auth_failure(self, mock_client, mocker):
         """Test test-module with authentication failure."""
-        from Koi import test_module
-
         mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("401 Unauthorized"))
 
-        result = test_module(mock_client)
+        result = koi_test_module(mock_client)
         assert "Authorization Error" in result
 
     def test_non_auth_failure_reraises(self, mock_client, mocker):
         """Test test-module re-raises non-auth errors (covers line 378)."""
-        from Koi import test_module
-
         mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("Connection timeout"))
 
         with pytest.raises(Exception, match="Connection timeout"):
-            test_module(mock_client)
+            koi_test_module(mock_client)
 
 
 class TestGetEventsCommand:
@@ -506,8 +482,6 @@ class TestGetEventsCommand:
 
     def test_get_events_alerts_and_audit(self, mock_client, alerts_response, audit_response, mocker):
         """Test get-events command fetching both alerts and audit logs."""
-        from Koi import get_events_command
-
         mocker.patch.object(
             mock_client,
             "get_events_page",
@@ -524,8 +498,6 @@ class TestGetEventsCommand:
 
     def test_get_events_push_to_xsiam(self, mock_client, alerts_response, mocker):
         """Test get-events command with push to XSIAM."""
-        from Koi import get_events_command
-
         mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
         mock_send = mocker.patch.object(mock_client, "send_events")
 
@@ -544,7 +516,6 @@ class TestFetchEventsCommand:
 
     def test_first_run(self, mock_client, alerts_response, audit_response, mocker):
         """Test fetch-events on first run (no last_run state)."""
-        from Koi import fetch_events_command, LogType
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
@@ -577,8 +548,6 @@ class TestFetchEventsCommand:
 
     def test_subsequent_run_with_dedup(self, mock_client, alerts_response, mocker):
         """Test fetch-events on subsequent run with deduplication."""
-        from Koi import fetch_events_command
-
         mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
         mocker.patch.object(
             demisto,
@@ -609,8 +578,6 @@ class TestFetchEventsCommand:
 
     def test_no_events(self, mock_client, mocker):
         """Test fetch-events when no events are returned."""
-        from Koi import fetch_events_command
-
         mocker.patch.object(mock_client, "get_events_page", return_value=[])
         mocker.patch.object(
             demisto,
@@ -631,8 +598,6 @@ class TestFetchEventsCommand:
 
     def test_all_events_are_duplicates(self, mock_client, alerts_response, mocker):
         """Test fetch-events when all returned events are duplicates (covers line 578)."""
-        from Koi import fetch_events_command
-
         mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
         mocker.patch.object(
             demisto,
@@ -659,8 +624,6 @@ class TestFetchEventsCommand:
 
     def test_hwm_timestamp_unchanged_merges_ids(self, mock_client, mocker):
         """Test that when HWM timestamp hasn't changed, IDs are merged (covers line 594)."""
-        from Koi import fetch_events_command
-
         # Events with same timestamp as last_fetch
         events = [
             {"id": "alert-003", "finding_info": {"created_time": 1704067200000}},
@@ -695,8 +658,6 @@ class TestFetchEventsCommand:
 
     def test_last_event_missing_time(self, mock_client, mocker):
         """Test fetch-events when last event has no time field (covers line 600)."""
-        from Koi import fetch_events_command
-
         # Audit event without created_at
         events = [{"id": "audit-no-time"}]
         mocker.patch.object(mock_client, "get_events_page", return_value=events)
@@ -720,7 +681,6 @@ class TestFetchEventsCommand:
 
     def test_alerts_failure_does_not_block_audit(self, mock_client, audit_response, mocker):
         """Test that if alerts fetching fails, audit logs are still fetched and sent."""
-        from Koi import fetch_events_command, LogType
 
         # Alerts raises an exception, audit returns data
         def side_effect_get_events_page(**kwargs):
@@ -756,7 +716,6 @@ class TestFetchEventsCommand:
 
     def test_audit_failure_does_not_block_alerts(self, mock_client, alerts_response, mocker):
         """Test that if audit fetching fails, alerts are still fetched and sent."""
-        from Koi import fetch_events_command, LogType
 
         # Alerts returns data, audit raises an exception
         def side_effect_get_events_page(**kwargs):
@@ -896,7 +855,6 @@ class TestLastRunState:
         expected_event_count: int,
     ):
         """Parametrized test for last_run state management across all scenarios."""
-        from Koi import fetch_events_command, LogType
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
@@ -940,7 +898,6 @@ class TestLastRunState:
 
     def test_last_run_ids_stored_per_type(self, mock_client, mocker):
         """Test that IDs are stored independently per event type in last_run."""
-        from Koi import fetch_events_command, LogType
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
@@ -973,7 +930,6 @@ class TestLastRunState:
 
     def test_last_run_single_get_single_set(self, mock_client, alerts_response, audit_response, mocker):
         """Test that getLastRun is called once and setLastRun is called once (no race condition)."""
-        from Koi import fetch_events_command, LogType
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
@@ -1002,7 +958,6 @@ class TestLastRunState:
 
     def test_last_run_failure_preserves_successful_type_state(self, mock_client, mocker):
         """Test that when one type fails, the other type's state is still saved in last_run."""
-        from Koi import fetch_events_command, LogType
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
@@ -1061,15 +1016,11 @@ class TestParseDate:
     )
     def test_get_formatted_utc_time_valid(self, date_input: str, expected_contains: str):
         """Test formatting valid date strings."""
-        from Koi import get_formatted_utc_time
-
         result = get_formatted_utc_time(date_input)
         assert expected_contains in result
 
     def test_get_formatted_utc_time_none_returns_current(self):
         """Test that None input returns current UTC time."""
-        from Koi import get_formatted_utc_time
-
         result = get_formatted_utc_time(None)
         assert result  # Should return a non-empty string
 
@@ -1083,15 +1034,11 @@ class TestParseDate:
     )
     def test_parse_date_or_use_current_fallback(self, date_input):
         """Test that empty/None input falls back to current UTC."""
-        from Koi import parse_date_or_use_current
-
         result = parse_date_or_use_current(date_input)
         assert isinstance(result, datetime)
 
     def test_parse_date_or_use_current_valid_iso(self):
         """Test parsing a valid ISO 8601 date string."""
-        from Koi import parse_date_or_use_current
-
         result = parse_date_or_use_current("2024-01-01T00:00:00Z")
         assert isinstance(result, datetime)
         assert result.year == 2024
@@ -1100,8 +1047,6 @@ class TestParseDate:
 
     def test_parse_date_or_use_current_unparseable(self, mocker):
         """Test fallback when arg_to_datetime returns None (covers lines 115-116)."""
-        from Koi import parse_date_or_use_current
-
         mocker.patch("Koi.arg_to_datetime", return_value=None)
 
         result = parse_date_or_use_current("completely-invalid-date")
@@ -1118,8 +1063,6 @@ class TestGetEventsCommandErrors:
 
     def test_invalid_event_type(self, mock_client):
         """Test get-events command with invalid event type raises error."""
-        from Koi import get_events_command
-
         args = {"event_type": "InvalidType", "limit": "10", "should_push_events": "false"}
         params = {"event_types_to_fetch": "Alerts"}
 
@@ -1137,8 +1080,6 @@ class TestConfig:
 
     def test_valid_audit_types(self):
         """Test that VALID_AUDIT_TYPES contains all expected types."""
-        from Koi import VALID_AUDIT_TYPES
-
         expected = [
             "approval_requests",
             "devices",
@@ -1157,8 +1098,6 @@ class TestConfig:
 
     def test_config_values(self):
         """Test that Config class has expected default values."""
-        from Koi import Config
-
         assert Config.VENDOR == "koi"
         assert Config.PRODUCT == "koi"
         assert Config.MAX_PAGE_SIZE == 500
@@ -1177,8 +1116,6 @@ class TestMain:
 
     def test_main_test_module(self, mocker):
         """Test main routes test-module command correctly."""
-        from Koi import main
-
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(
             demisto,
@@ -1200,8 +1137,6 @@ class TestMain:
 
     def test_main_unknown_command(self, mocker):
         """Test main raises error for unknown command."""
-        from Koi import main
-
         mocker.patch.object(demisto, "command", return_value="unknown-command")
         mocker.patch.object(
             demisto,
@@ -1221,8 +1156,6 @@ class TestMain:
 
     def test_main_fetch_events(self, mocker):
         """Test main routes fetch-events command correctly (covers lines 664-665)."""
-        from Koi import main, COMMAND_MAP
-
         mocker.patch.object(demisto, "command", return_value="fetch-events")
         mocker.patch.object(
             demisto,
@@ -1244,8 +1177,6 @@ class TestMain:
 
     def test_main_get_events(self, mocker):
         """Test main routes koi-get-events command correctly (covers lines 667-668)."""
-        from Koi import main, COMMAND_MAP
-
         mocker.patch.object(demisto, "command", return_value="koi-get-events")
         mocker.patch.object(demisto, "args", return_value={"limit": "10", "should_push_events": "false"})
         mocker.patch.object(
@@ -1270,8 +1201,6 @@ class TestMain:
 
     def test_main_invalid_audit_types(self, mocker):
         """Test main raises error for invalid audit types filter (covers lines 648-650)."""
-        from Koi import main
-
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(
             demisto,
@@ -1291,6 +1220,200 @@ class TestMain:
 
         mock_return_error.assert_called_once()
         assert "Invalid audit log type" in mock_return_error.call_args[0][0]
+
+    def test_main_routes_policy_list(self, mocker):
+        """Test main routes koi-policy-list command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-policy-list")
+        mocker.patch.object(demisto, "args", return_value={"page": "1", "limit": "10"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_policy_list = mocker.MagicMock(return_value="mock_policy_result")
+        COMMAND_MAP["koi-policy-list"] = mock_policy_list
+
+        main()
+
+        mock_return.assert_called_once_with("mock_policy_result")
+
+
+# endregion
+
+# region Policy command tests
+
+
+class TestKoiPolicyListCommand:
+    """Tests for the koi-policy-list command."""
+
+    def test_policy_list_single_page_mode(self, mock_client, policies_response, mocker):
+        """Test koi-policy-list in single-page mode (page arg provided)."""
+        mocker.patch.object(mock_client, "get_policies", return_value=policies_response)
+
+        args = {"page": "1"}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Policy"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == 1
+        assert result.outputs[0]["name"] == "My Policy"
+        assert result.outputs[1]["id"] == 2
+
+        # Single-page mode: called with page and default page_size
+        mock_client.get_policies.assert_called_once_with(page=1, page_size=Config.DEFAULT_PAGE_SIZE)
+
+    def test_policy_list_single_page_custom_page_size(self, mock_client, policies_response, mocker):
+        """Test koi-policy-list in single-page mode with custom page_size."""
+        mocker.patch.object(mock_client, "get_policies", return_value=policies_response)
+
+        args = {"page": "2", "page_size": "50"}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Policy"
+        mock_client.get_policies.assert_called_once_with(page=2, page_size=50)
+
+    def test_policy_list_single_page_ignores_limit(self, mock_client, policies_response, mocker):
+        """Test that when page is provided, limit is ignored."""
+        mocker.patch.object(mock_client, "get_policies", return_value=policies_response)
+
+        args = {"page": "3", "page_size": "25", "limit": "200"}
+        result = koi_policy_list_command(mock_client, args)
+
+        # Should use single-page mode, not auto-paginate
+        mock_client.get_policies.assert_called_once_with(page=3, page_size=25)
+        assert len(result.outputs) == 2
+
+    def test_policy_list_auto_paginate_default_limit(self, mock_client, policies_response, mocker):
+        """Test koi-policy-list in auto-paginate mode with default limit (no args)."""
+        mocker.patch.object(mock_client, "get_policies", return_value=policies_response)
+
+        args: dict[str, str] = {}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Policy"
+        assert len(result.outputs) == 2
+
+    def test_policy_list_auto_paginate_custom_limit(self, mock_client, mocker):
+        """Test koi-policy-list auto-paginate with custom limit across multiple pages."""
+        page1 = {"policies": [{"id": i} for i in range(Config.MAX_PAGE_SIZE)], "total_count": 600}
+        page2 = {"policies": [{"id": i + Config.MAX_PAGE_SIZE} for i in range(100)], "total_count": 600}
+
+        mocker.patch.object(mock_client, "get_policies", side_effect=[page1, page2])
+
+        args = {"limit": "600"}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert len(result.outputs) == 600
+        assert mock_client.get_policies.call_count == 2
+
+    def test_policy_list_auto_paginate_stops_on_empty(self, mock_client, mocker):
+        """Test auto-paginate stops when API returns empty page after a full page."""
+        # Page 1 returns a full page (MAX_PAGE_SIZE) so pagination continues
+        page1 = {"policies": [{"id": i} for i in range(Config.MAX_PAGE_SIZE)], "total_count": 500}
+        # Page 2 returns empty — pagination stops
+        page2 = {"policies": [], "total_count": 500}
+
+        mocker.patch.object(mock_client, "get_policies", side_effect=[page1, page2])
+
+        args = {"limit": "1000"}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert len(result.outputs) == Config.MAX_PAGE_SIZE
+        assert mock_client.get_policies.call_count == 2
+
+    def test_policy_list_auto_paginate_stops_on_partial_page(self, mock_client, mocker):
+        """Test auto-paginate stops when API returns fewer results than page_size."""
+        # Return fewer than MAX_PAGE_SIZE items — indicates last page
+        partial_page = {"policies": [{"id": i} for i in range(50)], "total_count": 50}
+
+        mocker.patch.object(mock_client, "get_policies", return_value=partial_page)
+
+        args = {"limit": "500"}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert len(result.outputs) == 50
+        mock_client.get_policies.assert_called_once()
+
+    def test_policy_list_auto_paginate_trims_to_limit(self, mock_client, mocker):
+        """Test auto-paginate trims results to the requested limit."""
+        # Return a full page of MAX_PAGE_SIZE items
+        full_page = {"policies": [{"id": i} for i in range(Config.MAX_PAGE_SIZE)], "total_count": 1000}
+
+        mocker.patch.object(mock_client, "get_policies", return_value=full_page)
+
+        args = {"limit": "10"}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert len(result.outputs) == 10
+
+    def test_policy_list_empty_response(self, mock_client, mocker):
+        """Test koi-policy-list when no policies are returned."""
+        mocker.patch.object(mock_client, "get_policies", return_value={"policies": [], "total_count": 0})
+
+        args: dict[str, str] = {}
+        result = koi_policy_list_command(mock_client, args)
+
+        assert result.outputs == []
+        assert "Policies" in result.readable_output
+
+    def test_policy_list_outputs_and_readable(self, mock_client, policies_response, mocker):
+        """Test that all expected fields are present in outputs and readable output contains data."""
+        mocker.patch.object(mock_client, "get_policies", return_value=policies_response)
+
+        args = {"page": "1"}
+        result = koi_policy_list_command(mock_client, args)
+
+        # Verify readable output contains key data
+        assert "My Policy" in result.readable_output
+        assert "block" in result.readable_output
+        assert "John Doe" in result.readable_output
+
+        # Verify all fields in outputs
+        policy = result.outputs[0]
+        assert policy["id"] == 1
+        assert policy["name"] == "My Policy"
+        assert policy["description"] == "This policy blocks high-risk extensions"
+        assert policy["action"] == "block"
+        assert policy["enabled"] is True
+        assert policy["group_ids"] == [1, 2, 3]
+        assert policy["creator_fullname"] == "John Doe"
+        assert policy["created_at"] == "2025-04-23T17:22:24.023Z"
+        assert policy["updated_at"] == "2025-04-23T17:22:24.023Z"
+
+
+class TestClientGetPolicies:
+    """Tests for the Client.get_policies method."""
+
+    def test_get_policies_params(self, mock_client, policies_response, mocker):
+        """Test that get_policies passes correct params and does not send limit to the API."""
+        mocker.patch.object(mock_client, "_http_request", return_value=policies_response)
+
+        result = mock_client.get_policies(page=2, page_size=50)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["url_suffix"] == API_POLICIES
+        assert call_kwargs["params"]["page"] == 2
+        assert call_kwargs["params"]["page_size"] == 50
+        assert "limit" not in call_kwargs["params"]
+        assert result == policies_response
+
+    def test_get_policies_max_page_size_cap(self, mock_client, policies_response, mocker):
+        """Test that page_size is capped at MAX_PAGE_SIZE."""
+        mocker.patch.object(mock_client, "_http_request", return_value=policies_response)
+
+        mock_client.get_policies(page=1, page_size=1000)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["params"]["page_size"] == Config.MAX_PAGE_SIZE
 
 
 # endregion

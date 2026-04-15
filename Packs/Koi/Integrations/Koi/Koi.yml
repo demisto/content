@@ -125,6 +125,45 @@ script:
     - contextPath: KOI.Event.created_at
       description: The creation time of the event (audit logs).
       type: Date
+  - name: koi-policy-list
+    description: Retrieves a list of all policies. Use 'page' and 'page_size' to fetch a specific page, or use 'limit' to auto-paginate and collect up to the specified number of policies. If 'page' is provided, 'limit' is ignored.
+    arguments:
+    - name: page
+      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+    - name: page_size
+      description: Number of results per page. Used in single-page mode with the page argument.
+      defaultValue: '100'
+    - name: limit
+      description: 'Maximum total number of policies to return. When provided without page, auto-paginates to collect up to this many policies (max 500).'
+      defaultValue: '100'
+    outputs:
+    - contextPath: Koi.Policy.id
+      description: The unique identifier of the policy.
+      type: Number
+    - contextPath: Koi.Policy.name
+      description: The name of the policy.
+      type: String
+    - contextPath: Koi.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: Koi.Policy.action
+      description: The action taken by the policy (e.g., block).
+      type: String
+    - contextPath: Koi.Policy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.Policy.group_ids
+      description: List of group IDs associated with the policy.
+      type: Unknown
+    - contextPath: Koi.Policy.creator_fullname
+      description: The full name of the policy creator.
+      type: String
+    - contextPath: Koi.Policy.created_at
+      description: The creation time of the policy in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Policy.updated_at
+      description: The last update time of the policy in ISO 8601 format.
+      type: Date
   runonce: false
   script: '-'
   type: python
