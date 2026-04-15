@@ -5859,9 +5859,6 @@ Detects cover up actions. When you select a “query_purpose” argument, a desi
 
 #### Base Command
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
-
 `microsoft-atp-advanced-hunting-cover-up`
 
 #### Input
