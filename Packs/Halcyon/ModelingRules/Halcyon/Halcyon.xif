@@ -63,6 +63,7 @@ filter alertType = null
     xdm.target.process.executable.sha256 = summary -> artifact.sha256,
     xdm.source.user.identifier = primaryProcess -> userId,
     xdm.source.user.username = coalesce(arrayindex(regextract(primaryProcess -> username, "\\(.+)$"), 0), primaryProcess -> username),
+    xdm.source.user.domain = arrayindex(regextract(primaryProcess->username, "^([^\\]+)\\"), 0),
     xdm.event.outcome_reason = summary -> monitoringReason,
     xdm.source.application.name = summary -> applicationName,
     xdm.source.sent_bytes = to_integer(bytes),
