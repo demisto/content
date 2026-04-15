@@ -466,6 +466,49 @@ class Client(ContentClient):
             f"created_by={created_by}, notes={notes})"
         )
 
+    def add_allowlist_item(
+        self,
+        item_id: str,
+        marketplace: str,
+        created_by: str | None = None,
+        notes: str | None = None,
+    ) -> None:
+        """Add an item to the global allowlist.
+
+        Args:
+            item_id: The unique identifier of the item to add.
+            marketplace: The source marketplace of the item.
+            created_by: Optional email of the user who created this entry.
+            notes: Optional additional notes about the entry.
+        """
+        item: dict[str, Any] = {
+            "item_id": item_id,
+            "marketplace": marketplace,
+        }
+        if created_by:
+            item["created_by"] = created_by
+        if notes:
+            item["notes"] = notes
+
+        body: dict[str, Any] = {"items": [item]}
+
+        demisto.debug(
+            f"[API] Adding allowlist item: {item_id} (marketplace={marketplace}, " f"created_by={created_by}, notes={notes})"
+        )
+
+        self._http_request(
+            method="POST",
+            url_suffix=API_ALLOWLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(
+            f"[API] Successfully added allowlist item: {item_id} (marketplace={marketplace}, "
+            f"created_by={created_by}, notes={notes})"
+        )
+
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
 
@@ -1024,6 +1067,40 @@ def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Add an item to the global allowlist.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (item_id, marketplace, created_by, notes).
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-allowlist-item-add triggered")
+
+    item_id: str = args["item_id"]
+    marketplace: str = args["marketplace"]
+    created_by: str | None = args.get("created_by")
+    notes: str | None = args.get("notes")
+
+    if marketplace not in VALID_MARKETPLACES:
+        raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+
+    client.add_allowlist_item(
+        item_id=item_id,
+        marketplace=marketplace,
+        created_by=created_by,
+        notes=notes,
+    )
+
+    demisto.debug(f"[Command Result] Allowlist item '{item_id}' added successfully")
+
+    return CommandResults(
+        readable_output=f"Allowlist item '{item_id}' (marketplace: {marketplace}) was added successfully.",
+    )
+
+
 # endregion
 
 # region Main router
@@ -1038,6 +1115,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-policy-list": koi_policy_list_command,
     "koi-allowlist-get": koi_allowlist_get_command,
     "koi-allowlist-item-remove": koi_allowlist_item_remove_command,
+    "koi-allowlist-item-add": koi_allowlist_item_add_command,
 }
 
 
