@@ -24,8 +24,7 @@ DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
-MAX_COMMUNITY_SEARCH_RELATIONSHIPS = 50
-MAX_COMMUNITY_SEARCH_ENRICHMENTS = 50
+DEFAULT_REPUTATION_CONTEXT_LIMIT = 50  # Default max entries for both relationships and enrichments per reputation result
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
 MAX_PRODUCT = 10000
@@ -234,7 +233,7 @@ class Client(BaseClient):
     Client to use in integration with powerful http_request.
     """
 
-    def __init__(self, url, headers, verify, proxy, create_relationships):
+    def __init__(self, url, headers, verify, proxy, create_relationships, reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT):
         """Initialize class object.
 
         :type url: ``str``
@@ -251,6 +250,10 @@ class Client(BaseClient):
 
         :type create_relationships: ``bool``
         :param create_relationships: True if integration will create relationships.
+
+        :type reputation_enrichments_limit: ``int``
+        :param reputation_enrichments_limit: Maximum number of enrichment entries stored per reputation
+            command result. Lower values improve performance; higher values preserve more details.
         """
         self.url = url
 
@@ -263,6 +266,7 @@ class Client(BaseClient):
         self.verify = verify
         self.proxy = proxy
         self.create_relationships = create_relationships
+        self.reputation_enrichments_limit = reputation_enrichments_limit
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
@@ -1229,13 +1233,14 @@ def create_relationships_list_v2(client, related_iocs, indicator_value, indicato
 
 def create_relationships_list_for_community_search(client, indicators, ip):
     relationships: list = []
+    limit = client.reputation_enrichments_limit
     if client.create_relationships:
         ip_address_data = indicators.get("enrichments", {}).get("ip_address", [])
         for ip_address in ip_address_data:
             if is_ip_valid(ip_address, True):
-                if len(relationships) >= MAX_COMMUNITY_SEARCH_RELATIONSHIPS:
+                if len(relationships) >= limit:
                     demisto.debug(
-                        f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
+                        f"Reached the maximum limit of relationships: {limit} "
                         "for community search. truncating the rest of the relationships."
                     )
                     break
@@ -1255,9 +1260,9 @@ def create_relationships_list_for_community_search(client, indicators, ip):
         indicator_data += indicators.get("enrichments", {}).get("cve_ids", [])
 
         for indicator in indicator_data:
-            if len(relationships) >= MAX_COMMUNITY_SEARCH_RELATIONSHIPS:
+            if len(relationships) >= limit:
                 demisto.debug(
-                    f"Reached the maximum limit of relationships: {MAX_COMMUNITY_SEARCH_RELATIONSHIPS} "
+                    f"Reached the maximum limit of relationships: {limit} "
                     "for community search. truncating the rest of the relationships."
                 )
                 break
@@ -1889,13 +1894,13 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
             limited_indicators = []
             for indicator in indicators:
                 for enr_key, enr_val in indicator.get("enrichments", {}).items():
-                    if isinstance(enr_val, list) and len(enr_val) > MAX_COMMUNITY_SEARCH_ENRICHMENTS:
+                    if isinstance(enr_val, list) and len(enr_val) > client.reputation_enrichments_limit:
                         demisto.debug(
                             f"Community search for IP {ip}: enrichments[{enr_key}] truncated to "
-                            f"{MAX_COMMUNITY_SEARCH_ENRICHMENTS} entries for indicator "
+                            f"{client.reputation_enrichments_limit} entries for indicator "
                             f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
                         )
-                        indicator["enrichments"][enr_key] = enr_val[:MAX_COMMUNITY_SEARCH_ENRICHMENTS]
+                        indicator["enrichments"][enr_key] = enr_val[:client.reputation_enrichments_limit]
                 limited_indicators.append(indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
@@ -2938,6 +2943,8 @@ def main():
 
     create_relationships = argToBoolean(params.get("create_relationships", True))
 
+    reputation_enrichments_limit = arg_to_number(params.get("reputation_enrichments_limit", DEFAULT_REPUTATION_CONTEXT_LIMIT)) or DEFAULT_REPUTATION_CONTEXT_LIMIT
+
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = argToBoolean(params.get("proxy", False))
@@ -2956,7 +2963,7 @@ def main():
             "X-FP-IntegrationVersion": INTEGRATION_VERSION,
         }
         validate_params(command, params)
-        client = Client(url, headers, verify, proxy, create_relationships)
+        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit)
 
         COMMAND_TO_FUNCTION: dict = {
             "flashpoint-ignite-intelligence-report-search": get_reports_command,
