@@ -21,9 +21,7 @@
         }
     ],
     "DESCRIPTION": "Test Description",
-    "EXTENDED_FIELDS": {
-        "custom_field1": "value1"
-    },
+    "CUSTOM_FIELD1": "value1",
     "HIGH_SEVERITY_ALERTS": 3,
     "HOSTS": [
         "host1",
@@ -55,6 +53,7 @@
             "tag_name": "original_tag2"
         }
     ],
+    "RESOLVE_REASON": "STATUS_060_RESOLVED_FALSE_POSITIVE",
     "RESOLVED_COMMENT": "Issue resolved successfully",
     "RESOLVED_TIMESTAMP": "2023-01-03T00:00:00Z",
     "SCORE": 90,

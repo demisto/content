@@ -9,7 +9,8 @@ permissions:
 jobs:
   check_ai_review_approval_job:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content'
+    # Skip for fork PRs since we do not want to allow secrets access.
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork != true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,7 +19,7 @@ jobs:
         with:
           python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v9
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
       - name: Install python dependencies
         run: |
           poetry install --with github-actions

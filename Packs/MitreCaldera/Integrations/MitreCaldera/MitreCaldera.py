@@ -1003,7 +1003,7 @@ def create_adversary_command(client: Client, args: Dict[str, Any]) -> CommandRes
     name = args.get("name")
     tags = argToList(args.get("tags", []))
     objective = args.get("objective")
-    atomic_ordering = argToList(args.get("adversary_atomic_ordering", []))
+    atomic_ordering = argToList(args.get("atomic_ordering", []))
     plugin = args.get("plugin")
     description = args.get("description")
 

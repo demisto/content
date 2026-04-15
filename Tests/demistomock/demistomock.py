@@ -736,6 +736,164 @@ def executeCommandBatch(commands_list):
     return ""
 
 
+def agentixCommands(command, args):
+    """(System Integrations only)
+    Executes Cortex Assistant commands with given arguments
+    
+    This function is used to interact with Cortex Assistant conversation management system.
+    It supports sending messages, resetting conversations, and rating messages.
+    
+    Args:
+        command (str): Cortex Assistant command name to execute. Supported commands:
+            - "sendToConversation": Send a message to the Cortex Assistant conversation
+            - "resetConversation": Reset/clear the current conversation
+            - "rateMessage": Rate a specific message in the conversation
+        args (dict): Command arguments. The structure depends on the command:
+            - For "sendToConversation":
+                    "channel_id": str (required),
+                    "thread_id": str (required),
+                    "message": str (required),
+                    "username": str (required),
+                    "agent_id": str (optional, required on second call)
+              
+            - For "resetConversation":
+                    "channel_id": str (required),
+                    "thread_id": str (required),
+                    "username": str (required)
+            
+            - For "rateMessage":
+                    "channel_id": str (required),
+                    "thread_id": str (required),
+                    "message_id": str (required),
+                    "username": str (required),
+                    "is_liked": bool (required),
+                    "improvement_suggestion": str (required if is_liked=false),
+                    "issues": list[str] (required if is_liked=false)
+            
+
+    Returns:
+        dict: Command execution response object with the following structure:
+            - On success: {"success": true}
+            - On agent selection (first sendToConversation call): {"agents": [{"id": "uuid", "name": "name"}]}
+            - On failure: {"success": false, "error": "message", "error_code": int}
+
+    Common Error Codes:
+        - 103102: User not found in the system
+        - 103103: Permission denied (user lacks cortex-assistant:action permissions)
+        - 103201: Conversation not found (may have expired)
+        - 103204: Wrong user (conversation belongs to different user)
+
+    Examples:
+        Success - First call (agent selection):
+
+        ```
+        demisto.agentixCommands("sendToConversation", {
+            "channel_id": "C123",
+            "thread_id": "T456",
+            "message": "Hello",
+            "username": "user@example.com"
+        })
+        # Returns: {"agents": [{"id": "agent-uuid-1", "name": "Security Agent"}, {"id": "agent-uuid-2", "name": "IT Agent"}]}
+        ```
+
+        Success - Second call (with agent):
+
+        ```
+        demisto.agentixCommands("sendToConversation", {
+            "channel_id": "C123",
+            "thread_id": "T456",
+            "message": "Hello",
+            "username": "user@example.com",
+            "agent_id": "agent-uuid-1"
+        })
+        # Returns: {"success": true}
+        ```
+
+        Success - Reset conversation:
+
+        ```
+        demisto.agentixCommands("resetConversation", {
+            "channel_id": "C123",
+            "thread_id": "T456",
+            "username": "user@example.com"
+        })
+        # Returns: {"success": true}
+        ```
+
+        Success - Rate message positively:
+
+        ```
+        demisto.agentixCommands("rateMessage", {
+            "channel_id": "C123",
+            "thread_id": "T456",
+            "message_id": "M789",
+            "username": "user@example.com",
+            "is_liked": true
+        })
+        # Returns: {"success": true}
+        ```
+
+        Success - Rate message negatively:
+
+        ```
+        demisto.agentixCommands("rateMessage", {
+            "channel_id": "C123",
+            "thread_id": "T456",
+            "message_id": "M789",
+            "username": "user@example.com",
+            "is_liked": false,
+            "improvement_suggestion": "Response was too generic",
+            "issues": ["Inaccurate", "Not helpful"]
+        })
+        # Returns: {"success": true}
+        ```
+
+        Failure - User not found:
+
+        ```
+        demisto.agentixCommands("sendToConversation", {...})
+        # Returns: {"success": false, "error": "User not found in system", "error_code": 103102}
+        ```
+
+        Failure - Permission denied:
+
+        ```
+        demisto.agentixCommands("sendToConversation", {...})
+        # Returns: {"success": false, "error": "User lacks required Cortex Assistant permissions", "error_code": 103103}
+        ```
+
+        Failure - Conversation not found:
+
+        ```
+        demisto.agentixCommands("rateMessage", {...})
+        # Returns: {"success": false, "error": "Conversation not found", "error_code": 103201}
+        ```
+
+        Failure - Wrong user:
+
+        ```
+        demisto.agentixCommands("sendToConversation", {
+            "channel_id": "C123",
+            "thread_id": "T456",
+            "message": "Hello",
+            "username": "different-user@example.com"
+        })
+        # Returns: {"success": false, "error": "This conversation belongs to another user", "error_code": 103204}
+        ```
+
+    Note:
+        This is a mock implementation for testing purposes. In production, this function
+        communicates with the Cortex Assistant backend service. Only the conversation owner
+        can interact with their conversations.
+    """
+    commands = {
+        "sendToConversation": {"success": True},
+        "resetConversation": {"success": True},
+        "rateMessage": {"success": True},
+    }
+    return commands.get(command, {})
+
+
 def getParam(param):
     """(Integration only)
     Extracts given parameter from the integration parameters object
@@ -1100,7 +1258,7 @@ def searchIndicators(
     searchAfter after the demisto.executeCommand.
     When you run a search for the query type:IP, the return value includes searchAfter
     ```
-    >>> demisto.executeCommand(searchIndicators, "query": 'type:IP', "size" :1000})
+    demisto.executeCommand(searchIndicators, "query": 'type:IP', "size" :1000})
     {
         "iocs": [],
         "searchAfter": [1596106239679, dd7aa6abfcb3adf793922618005b2ad5],
@@ -1109,12 +1267,12 @@ def searchIndicators(
     ```
     You can then use the returned value of searchAfter to iterate over all batches.
     ```
-    >>> res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 1000})
-    >>> search_after_title = 'searchAfter'
-    >>> while search_after_title in res and res[search_after_title] is not None:
-    >>>     demisto.results(res)
-    >>>     res = demisto.executeCommand("searchIndicators",
-    >>>                                 {"query" : 'type:IP', "size" : 1000, "searchAfter" : res[search_after_title]})
+    res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 1000})
+    search_after_title = 'searchAfter'
+    while search_after_title in res and res[search_after_title] is not None:
+        demisto.results(res)
+        res = demisto.executeCommand("searchIndicators",
+                                    {"query" : 'type:IP', "size" : 1000, "searchAfter" : res[search_after_title]})
     ```
     """
     return {}
@@ -1252,7 +1410,7 @@ def searchRelationships(args):
 
     Example (partial results):
     ```
-    >>> demisto.searchRelationships({"entities": ["8.8.8.8", "google.com"], "size": 2})
+    demisto.searchRelationships({"entities": ["8.8.8.8", "google.com"], "size": 2})
         {
         "total": 2,
         "data": [
@@ -1382,5 +1540,15 @@ def _platformAPICall(path=None, method=None, params=None, data=None, timeout=Non
         *Note if data is empty then a GET request is performed instead of a POST.
     Returns:
         dict: The response of the api call
+    """
+    return {}
+
+
+def _Demisto__do(*args, **kwargs):
+    """
+    Mock for the internal _Demisto__do function.
+
+    Returns:
+        dict: An empty mock response object, for consistency with other internal call mocks.
     """
     return {}

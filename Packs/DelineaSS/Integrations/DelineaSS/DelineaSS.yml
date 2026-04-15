@@ -1,5 +1,7 @@
 category: Authentication & Identity Management
 provider: Delinea
+sectionorder:
+- Connect
 commonfields:
   id: DelineaSS
   version: -1
@@ -8,27 +10,33 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetches Credentials
   name: isFetchCredentials
   type: 8
   required: false
+  section: Connect
 - display: Secret IDs (Provide multiple Id's by using ',' example- 1,2,3)
   name: secrets
   type: 12
   required: false
-description: Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
+  section: Connect
+description: Delinea Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 display: DelineaSS
 name: DelineaSS
 script:
@@ -59,7 +67,7 @@ script:
     - description: Search for secret using secret name.
       name: search_name
       required: true
-    description: Search a secret by its name.
+    description: Search for a secret using secret name.
     name: delinea-secret-search-name
     outputs:
     - contextPath: Delinea.Secret.Id
@@ -85,7 +93,7 @@ script:
     - description: Secret ID.
       name: secret_id
       required: true
-    description: Check Out a Secret.
+    description: Check out a secret.
     name: delinea-secret-checkout
     outputs:
     - contextPath: Delinea.Secret.Checkout
@@ -95,7 +103,7 @@ script:
     - description: Secret ID.
       name: secret_id
       required: true
-    description: Check In a secret.
+    description: Check in a secret.
     name: delinea-secret-checkin
     outputs:
     - contextPath: Delinea.Secret.Checkin
@@ -128,7 +136,7 @@ script:
       - 'false'
     - description: Secret policy ID.
       name: secretpolicyid
-    description: Create a new Secret folder.
+    description: Create a new folder.
     name: delinea-folder-create
     outputs:
     - contextPath: Delinea.Folder.Create
@@ -160,7 +168,7 @@ script:
       required: true
     - description: Notes to get a secret.
       name: autoComment
-    description: Get secret object by ID secret.
+    description: Get secret object by secret ID.
     name: delinea-secret-get
     outputs:
     - contextPath: Delinea.Secret
@@ -228,7 +236,7 @@ script:
     - description: Return only secrets matching certain password types.
       name: filter_passwordtypelds
     - auto: PREDEFINED
-      description: Specify whether to filter by List, View, Edit, or Owner permission. Default is List. (List = 1, View = 2, Edit = 3, Owner = 4.
+      description: Specify whether to filter by List, View, Edit, or Owner permission. Default is List. (List = 1, View = 2, Edit = 3, Owner = 4).
       name: filter_permissionrequired
       predefined:
       - '1'
@@ -236,7 +244,7 @@ script:
       - '3'
       - '4'
     - auto: PREDEFINED
-      description: Specify whether to search AllSecrets, Recent, or Favorites (All = 1, Recent = 2,Favorites = 3.
+      description: Specify whether to search AllSecrets, Recent, or Favorites (All = 1, Recent = 2, Favorites = 3).
       name: filter_scope
       predefined:
       - '1'
@@ -268,7 +276,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Search secret ID by multiply parameters.
+    description: Search secret by multiply parameters.
     name: delinea-secret-search
     outputs:
     - contextPath: Delinea.Secret.Secret
@@ -364,22 +372,21 @@ script:
       - 'true'
       - 'false'
     - defaultValue: '1'
-      description: ' The id of the distributed engine site that is used by this secret for operations such as password changing.'
+      description: The id of the distributed engine site that is used by this secret for operations such as password changing.
       name: siteid
-      required: true
     - description: |-
         sshKeyArgs options. generateSshKeys (bool) – Whether to generate an SSH private key.
-        generatePassphrase (bool) – Whether to generate an SSH private key passphrase.  Only applicable when the Secret template has a password changer with the Private Key Passphrase field mapped.  If it is not mapped, this setting is ignored.
+        generatePassphrase (bool) – Whether to generate an SSH private key passphrase. Only applicable when the Secret template has a password changer with the Private Key Passphrase field mapped. If it is not mapped, this setting is ignored.
       name: sshkeyargs
     - description: Item Domain for secret. If need to select template.
       name: domain_item
     - description: Item Machine for secret. If need to select template.
       name: machine_item
-    - description: Item Username for secret.If need to select template.
+    - description: Item Username for secret. If need to select template.
       name: username_item
-    - description: Item Password for secret.If need to select template.
+    - description: Item Password for secret. If need to select template.
       name: password_item
-    - description: Item Notes for secret.IF  need to select template.
+    - description: Item Notes for secret. If need to select template.
       name: notes_item
     - auto: PREDEFINED
       description: Whether the secret should be flagged for immediate password change.
@@ -389,7 +396,7 @@ script:
       - 'false'
     - description: The id of the mapping entity that associates this secret to a specific access request workflow.
       name: accessRequestWorkflowMapId
-    description: Create a new Secret.
+    description: Create a new secret.
     name: delinea-secret-create
     outputs:
     - contextPath: Delinea.Secret.Create
@@ -401,14 +408,14 @@ script:
       required: true
     - description: Notes to Delete the secret.
       name: autoComment
-    description: Delete secret.
+    description: Delete secret by id.
     name: delinea-secret-delete
     outputs:
     - contextPath: Delinea.Secret.Delete
       description: Secret object.
       type: String
   - arguments:
-    - description: The user’s name as displayed in the user interface.
+    - description: The user's name as displayed in the user interface.
       name: displayname
       required: true
     - description: Password for new user. The password used to log in.
@@ -437,7 +444,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether Duo two-factor authentication is enabled.
+      description: Whether FIDO2 two-factor authentication is enabled.
       name: fido2twofactor
       predefined:
       - 'true'
@@ -468,10 +475,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Create a new user.
-    name: delinea-user-create
+    description: Create a new user in Secret Server.
+    name: delinea-secret-server-user-create
     outputs:
-    - contextPath: Delinea.User.Create
+    - contextPath: Delinea.Secret.Server.User.Create
       description: User object.
       type: String
     compliantpolicies:
@@ -497,21 +504,21 @@ script:
       name: sortBy_name
     - description: Priority index. Sorts with lower values are executed earlier (integer).
       name: sortBy_priority
-    - description: Maximum number of records to include in results(integer).
+    - description: Maximum number of records to include in results (integer).
       name: take
-    description: Search, filter, sort, and page users.
-    name: delinea-user-search
+    description: User search, filter and sort in Secret Server.
+    name: delinea-secret-server-user-search
     outputs:
-    - contextPath: Delinea.User.Search
+    - contextPath: Delinea.Secret.Server.User.Search
       description: List of User IDs.
       type: String
   - arguments:
     - description: User ID. Must match ID in path.
       name: id
       required: true
-    - description: The d of the date format to use when displaying dates to this user. These options are defined in Admin > Configuration.
+    - description: The id of the date format to use when displaying dates to this user. These options are defined in Admin > Configuration.
       name: dateoptionid
-    - description: The user’s name as displayed in the user interface.
+    - description: The user's name as displayed in the user interface.
       name: displayname
     - auto: PREDEFINED
       description: Whether Duo two-factor authentication is enabled.
@@ -533,7 +540,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A list of group ids for the groups that can manage this user. '
+    - description: A list of group ids for the groups that can manage this user.
       name: groupowners
     - auto: PREDEFINED
       description: Whether this is an application account. Application accounts are used for automation, cannot log in using the UI, and do not consume a user license.
@@ -542,7 +549,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether the user is managed by the groups specified in GroupOwners or is managed by all users with the ‘Administer Users’ role permission.
+      description: Whether the user is managed by the groups specified in GroupOwners or is managed by all users with the 'Administer Users' role permission.
       name: isgroupownerupdate
       predefined:
       - 'true'
@@ -580,27 +587,41 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: etermines the type of Unix authentication to use. Must be Password (0), PublicKey (1), PasswordOrPublicKey (2), or PasswordAndPublicKey (3).
+      description: Determines the type of Unix authentication to use. Must be Password (0), PublicKey (1), PasswordOrPublicKey (2), or PasswordAndPublicKey (3).
       name: unixauthenticationmethodtype
       predefined:
       - '0'
       - '1'
       - '2'
       - '3'
-    description: Update a single user by ID.
-    name: delinea-user-update
+    description: Update a single user by ID in Secret Server.
+    name: delinea-secret-server-user-update
     outputs:
-    - contextPath: Delinea.User.Update
+    - contextPath: Delinea.Secret.Server.User.Update
       description: User object.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
   - arguments:
     - description: User ID.
       name: id
       required: true
-    description: Delete user by ID.
-    name: delinea-user-delete
+    description: Delete Secret Server user by ID.
+    name: delinea-secret-server-user-delete
     outputs:
-    - contextPath: Delinea.User.Delete
+    - contextPath: Delinea.Secret.Server.User.Delete
+      description: User object.
+      type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
+  - arguments: []
+    description: Get Secret Server users list.
+    execution: false
+    name: delinea-secret-server-user-get
+    outputs:
+    - contextPath: Delinea.Secret.Server.User
       description: User object.
       type: String
     compliantpolicies:
@@ -614,13 +635,160 @@ script:
       required: true
     - description: Notes to change the password.
       name: autoComment
-    description: Remote Password Changing.
+    description: Remote password changing.
     name: delinea-secret-rpc-changepassword
     outputs:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  - arguments:
+    - description: Mobile number of the user.
+      name: MobileNumber
+    - description: The UUID of the cloud user to change.
+      name: ID
+    - description: The user is in the Everybody role?
+      name: InEverybodyRole
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The MFA redirected user uuid.
+      name: CmaRedirectedUserUuid
+    - description: The user office number.
+      name: OfficeNumber
+    - description: The user reports to this user UUID.
+      name: ReportsTo
+    - description: The user preferred culture.
+      name: PreferredCulture
+    - description: The user display.
+      name: DisplayName
+    - description: Password for new user. The password used to log in.
+      name: Password
+      required: true
+    - description: The user name.
+      name: Name
+      required: true
+    - description: Account expires date/time.
+      name: AccountExp
+    - description: Does user's password expire?
+      name: PasswordNeverExpire
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The User email.
+      name: Mail
+    - description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
+      name: ServiceUser
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The User description.
+      name: Description
+    - description: The user home number.
+      name: HomeNumber
+    description: Create a new user in Platform.
+    name: delinea-platform-user-create
+    outputs:
+    - contextPath: Delinea.Platform.User.Create
+      description: User object.
+      type: String
+  - arguments:
+    - description: The name or UUID of the user to remove.
+      name: id
+      required: true
+    description: Delete Platform user by ID.
+    name: delinea-platform-user-delete
+    outputs:
+      - contextPath: Delinea.Platform.User.Delete
+        description: User object.
+        type: String
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
+  - arguments:
+      - description: Mobile number of the user.
+        name: MobileNumber
+      - description: The UUID of the cloud user to change.
+        name: ID
+        required: true
+      - description: The user is in the Everybody role?
+        name: InEverybodyRole
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The MFA redirected user uuid.
+        name: CmaRedirectedUserUuid
+      - description: The user office number.
+        name: OfficeNumber
+      - description: The user reports to this user UUID.
+        name: ReportsTo
+      - description: The user preferred culture.
+        name: PreferredCulture
+      - description: The user display .
+        name: DisplayName
+      - description: Password for new user. The password used to log in.
+        name: Password
+      - description: The user name.
+        name: Name
+      - description: Account expires date/time.
+        name: AccountExp
+      - description: Does user's password expire?
+        name: PasswordNeverExpire
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The User email.
+        name: Mail
+      - description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
+        name: ServiceUser
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The User description.
+        name: Description
+      - description: The user home number.
+        name: HomeNumber
+    description: Update a Platform user by ID.
+    name: delinea-platform-user-update
+    outputs:
+      - contextPath: Delinea.Platform.User.Update
+        description: User object.
+        type: String
+  - arguments:
+    - description: Fetches a platform user by uuid or upn (User Principal Name).
+      name: userUuidOrUpn
+      required: true
+    description: Fetch a Platform user by uuid or upn.
+    name: delinea-platform-user-get
+    outputs:
+    - contextPath: Delinea.Platform.User.Get
+      description: User object.
+      type: String
+  - arguments:
+    - description: Display name to filter users.
+      name: filter_displayName
+      required: false
+    - description: Page size. Default 1000.
+      name: pageSize
+      required: false
+    description: Fetch all users from the platform.
+    name: delinea-platform-get-all-users
+    outputs:
+      - contextPath: Delinea.Platform.Users
+        description: User object.
+        type: String
+  - arguments:
+      - description: SearchText is looked for in multiple fields.
+        name: filter.searchText
+        required: true
+      - description: Page size. Default 1000.
+        name: pageSize
+    description: List of platform users matching search text.
+    name: delinea-platform-get-user-search-by-text
+    outputs:
+      - contextPath: Delinea.Platform.UserSearchResults
+        description: User object.
+        type: String
+  dockerimage: demisto/python3:3.12.12.6391686
   runonce: false
   script: '-'
   subtype: python3

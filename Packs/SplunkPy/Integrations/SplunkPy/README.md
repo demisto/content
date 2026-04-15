@@ -1335,3 +1335,12 @@ This command replaces token names (such as $info_min_time$) with their actual fi
 - If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
+
+### Large Search Results
+
+Commands that return large data (such as `splunk-search`) can cause performance issues in playbooks.
+
+**Recommendation**: Limit results to approximately **30,000** events, depending on the data size. You can do this through one of the following:
+
+- Use the `event_limit` argument (where available).
+- Append `| head 30000` directly to your Splunk query.
