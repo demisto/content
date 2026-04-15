@@ -2254,6 +2254,7 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
+        client_id = params.get("creds_client_id", {}).get("password") or params.get("credentials", {}).get("identifier")
         client_secret = params.get("credentials", {}).get("password")
         certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
         private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get(
@@ -2274,7 +2275,7 @@ def main():
         client = AzureSentinelClient(
             azure_cloud=get_azure_cloud(params, "AzureSentinel"),
             tenant_id=tenant_id,
-            client_id=params.get("credentials", {}).get("identifier"),
+            client_id=client_id,
             client_secret=client_secret,
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
