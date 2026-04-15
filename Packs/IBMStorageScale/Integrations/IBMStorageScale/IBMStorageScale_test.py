@@ -854,9 +854,8 @@ class TestListSnapshots:
 
         mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
 
-        with capfd.disabled():
-            with pytest.raises(DemistoException, match="Authorization Error"):
-                await client.list_snapshots()
+        with capfd.disabled(), pytest.raises(DemistoException, match="Authorization Error"):
+            await client.list_snapshots()
 
 
 class TestListSnapshotsMain:
