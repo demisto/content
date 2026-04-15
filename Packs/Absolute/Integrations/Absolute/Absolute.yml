@@ -810,9 +810,9 @@ script:
   - arguments:
     - description: The system-defined unique identifier of the Device Action request.
       name: request_uid
-    - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive).
+    - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive).Example created_from_date_time_utc=2011-12-03T10:15:30.000Z
       name: created_from_date_time_utc
-    - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example createdToDateTimeUtc=2011-12-03T10:15:30.000Z
+    - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example created_to_date_time_utc=2011-12-03T10:15:30.000Z
       name: created_to_date_time_utc
     - auto: PREDEFINED
       description: Filters results to include responses where requestStatus equals the given value.
@@ -882,9 +882,9 @@ script:
     - description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
       name: device_uids
       required: true
-    - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive).
+    - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Example created_from_date_time_utc=2011-12-03T10:15:30.000Z
       name: created_from_date_time_utc
-    - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example createdToDateTimeUtc=2011-12-03T10:15:30.000Z
+    - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example created_to_date_time_utc=2011-12-03T10:15:30.000Z
       name: created_to_date_time_utc
     - auto: PREDEFINED
       description: Filters results to include responses where action_status equals the given value.

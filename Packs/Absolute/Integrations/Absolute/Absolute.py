@@ -239,7 +239,7 @@ class ClientV3(BaseClient):
 
         return data
 
-    def get_all_results(self, url_suffix: str, page_size: int, query_string: str, ok_codes: tuple, limit) -> list:
+    def get_all_results(self, url_suffix: str, page_size: int, query_string: str, ok_codes: tuple, limit) -> dict:
         """Return all the results from the API
 
         Args:
@@ -394,10 +394,10 @@ class ClientV3(BaseClient):
         request_status = args.get("request_status")
 
         if created_from:
-            created_from_str = f'createdFromDateTimeUtc={created_from.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+            created_from_str = f"createdFromDateTimeUtc={created_from}"
             query = self.add_to_query(query, created_from_str)
         if created_to:
-            created_to_str = f'createdToDateTimeUtc={created_to.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]}Z'
+            created_to_str = f"createdToDateTimeUtc={created_to}"
             query = self.add_to_query(query, created_to_str)
         if request_status:
             query = self.add_to_query(query, f"{status}={request_status}")
@@ -1212,7 +1212,17 @@ def get_device_location_command(args, client) -> CommandResults:
         return CommandResults(readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
-def list_wibe_requests_command(args: dict, client: ClientV3):
+def list_wibe_requests_command(args: dict, client: ClientV3) -> CommandResults:
+    """
+    Retrieves wipe requests based on provided arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
     request_uid = args.get("request_uid")
     limit = arg_to_number(args.get("limit"))
     if request_uid:
@@ -1227,22 +1237,6 @@ def list_wibe_requests_command(args: dict, client: ClientV3):
         else:
             hr = parse_wibe_requests(res)
             human_readable = tableToMarkdown("Wipe Requests:", hr, removeNull=True)
-        # wipe_requests = []
-        # next_page = None
-        # while len(wipe_requests) < limit:
-        #     string_query = client.prepare_wipe_requests_query(args, "requestStatus", next_page)
-        #     raw_res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe",
-        #                                           query_string=string_query, limit=limit)
-        #     wipe_requests.extend(raw_res.get("data"))
-        #     next_page = raw_res.get("metadata", {}).get("pagination", {}).get("nextPage")
-        #     if not next_page:
-        #         break
-        # if not wipe_requests:
-        #     human_readable = "No wipe requests found."
-        # else:
-        #     hr = parse_wibe_requests(wipe_requests)
-        #     human_readable = tableToMarkdown(f"Wipe Requests:", hr, removeNull=True)
-
     return CommandResults(
         outputs_prefix="Absolute.WipeRequest",
         outputs=res,
@@ -1252,6 +1246,16 @@ def list_wibe_requests_command(args: dict, client: ClientV3):
 
 
 def cancel_wibe_request_command(args: dict, client: ClientV3):
+    """
+    cancel a wipe request based on provided arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
     request_uid = args.get("request_uid")
     body = {
         "actionUids": argToList(args.get("action_uids")),
@@ -1267,6 +1271,16 @@ def cancel_wibe_request_command(args: dict, client: ClientV3):
 
 
 def create_wibe_request_command(args: dict, client: ClientV3):
+    """
+    Create a Wipe request for the devices based on provided arguments.
+
+     Args:
+         args (Dict[str, Any]): Command arguments.
+         client (ClientV3): Absolute Client.
+
+     Returns:
+         CommandResults: The command results.
+    """
     device_uids = argToList(args.get("device_uids"))
     mac_user_name = args.get("mac_user_name")
     mac_pwd = args.get("mac_pwd")
@@ -1289,6 +1303,16 @@ def create_wibe_request_command(args: dict, client: ClientV3):
 
 
 def list_wibe_actions_command(args: dict, client: ClientV3):
+    """
+    Get the status of actions by devices or by request.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
     request_uid = args.get("request_uid")
     device_uids = argToList(args.get("device_uids"))
     limit = args.get("limit")
