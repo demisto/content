@@ -182,8 +182,16 @@ script:
   commands:
   - name: qradar-reference-data-bulk-load
     description: Bulk load entries into a QRadar reference data map or map of sets.
+    description: Bulk load entries into a QRadar reference data map or map of sets.
     arguments:
       - name: reference_data_type
+        required: true
+        description: The type of reference data set to upload to. Valid values are `maps` or `map_of_sets`, or `tables`.
+        auto: PREDEFINED
+        predefined:
+          - 'maps'
+          - 'map_of_sets'
+          - 'tables'
         required: true
         description: The type of reference data set to upload to. Valid values are `maps` or `map_of_sets`, or `tables`.
         auto: PREDEFINED
@@ -194,11 +202,13 @@ script:
       - name: reference_data_name
         required: true
         description: The name of the reference data set to update.
+        required: true
+        description: The name of the reference data set to update.
       - name: data
         required: true
         description: The reference data payload to upload. This should be the value format expected by QRadar for the chosen reference data type.
   - name: qradar-reference-data-delete
-    description: Purges data from a QRadar reference data object. Optionally deletes the reference data object.
+    description: Delete or purge a QRadar reference data map or map of sets.
     arguments:
       - name: reference_data_type
         required: true
@@ -211,8 +221,8 @@ script:
       - name: reference_data_name
         required: true
         description: The name of the reference data set to delete or purge.
-      - name: reference_data_purge_only
-        defaultValue: 'true'
+      - name: reference_data_purge
+        defaultValue: 'false'
         auto: PREDEFINED
         predefined:
         - 'true'
