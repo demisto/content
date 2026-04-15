@@ -187,8 +187,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
     ],
-    "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
-    "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
+    "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update", "azure-keyvault-vault-update"],
+    "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update", "azure-keyvault-vault-update"],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update", "azure-sqldb-security-alert-policy-update"],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/write": ["azure-sql-db-threat-policy-update", "azure-sqldb-security-alert-policy-update"],
     "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update"],
@@ -3595,8 +3595,19 @@ def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: 
         headerTransform=string_to_table_header,
     )
 
+    if demisto.command() == "azure-key-vault-update":
+        demisto.debug("The old command name is being used, use the old context.")
+        return CommandResults(
+            outputs_prefix="Azure.KeyVault",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+            readable_output=readable_output,
+            ignore_auto_extract=True,
+        )
+
     return CommandResults(
-        outputs_prefix="Azure.KeyVault",
+        outputs_prefix="Azure.KeyVault.Vault",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -4845,6 +4856,7 @@ def main():  # pragma: no cover
             "azure-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
+            "azure-keyvault-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
