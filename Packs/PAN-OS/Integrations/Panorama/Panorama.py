@@ -38,6 +38,7 @@ from panos.objects import (
 from panos.firewall import Firewall
 from panos.device import Vsys
 from panos.network import Zone
+from panos.ha import HighAvailability, HA1, HA2, HA1Backup, HA2Backup
 from urllib.error import HTTPError
 
 import shutil
@@ -10423,6 +10424,149 @@ class HighAvailabilityStateStatus(ResultData):
 
 
 @dataclass
+class HAConfigResult:
+    """
+    :param HostID: The host ID.
+    :param Enabled: Whether HA is enabled on the device.
+    :param GroupID: The Group ID for the HA pair.
+    :param Mode: The HA mode (e.g., Active/Passive).
+    :param PeerIP: The IP address of the HA peer.
+    :param PeerIPBackup: The backup IP address of the HA peer.
+    :param HA1Port: The interface port for the HA1 (Control) link.
+    :param HA1IP: The IP address for the HA1 (Control) link.
+    :param HA1BackupPort: The interface port for the HA1-Backup link.
+    :param HA1BackupIP: The IP address for the HA1-Backup link.
+    :param HA2Port: The interface port for the HA2 (Data) link.
+    :param HA2IP: The IP address for the HA2 (Data) link.
+    :param HA2BackupPort: The interface port for the HA2-Backup link.
+    :param HA2BackupIP: The IP address for the HA2-Backup link.
+    :param LinkMonitoring: A list of Link Monitoring group configurations.
+    """
+
+    HostID: str
+    Enabled: str
+    GroupID: str
+    Mode: str
+    PeerIP: str
+    PeerIPBackup: str
+    HA1Port: str
+    HA1IP: str
+    HA1BackupPort: str
+    HA1BackupIP: str
+    HA2Port: str
+    HA2IP: str
+    HA2BackupPort: str
+    HA2BackupIP: str
+    LinkMonitoring: Any = None
+
+    _output_prefix = OUTPUT_PREFIX + "HAConfig"
+    _title = "PAN-OS HA Configuration"
+    _outputs_key_field = "HostID"
+
+
+@dataclass
+class HASyncResult:
+    """
+    :param HostID: The host ID.
+    :param SyncType: The type of synchronization performed.
+    :param Message: Human-readable status message.
+    """
+
+    HostID: str
+    SyncType: str
+    Message: str
+
+    _output_prefix = OUTPUT_PREFIX + "HASync"
+    _title = "PAN-OS HA Synchronization"
+    _outputs_key_field = "HostID"
+
+
+@dataclass
+class HAConfigureResult:
+    """
+    :param HostID: The host ID.
+    :param Message: Human-readable status message.
+    :param Committed: Whether the configuration was committed.
+    """
+
+    HostID: str
+    Message: str
+    Committed: bool
+
+    _output_prefix = OUTPUT_PREFIX + "HAConfigure"
+    _title = "PAN-OS HA Configure"
+    _outputs_key_field = "HostID"
+
+
+@dataclass
+class HAEnabledStateResult:
+    """
+    :param HostID: The host ID.
+    :param Enabled: Whether HA has been enabled or disabled.
+    :param Message: Human-readable status message.
+    :param Committed: Whether the configuration was committed.
+    """
+
+    HostID: str
+    Enabled: bool
+    Message: str
+    Committed: bool
+
+    _output_prefix = OUTPUT_PREFIX + "HAEnabledState"
+    _title = "PAN-OS HA Enabled State"
+    _outputs_key_field = "HostID"
+
+
+@dataclass
+class HAInterfaceListResult:
+    """
+    :param HostID: The host ID.
+    :param InterfaceCount: Total number of interfaces found.
+    :param Interfaces: List of all available interface names.
+    """
+
+    HostID: str
+    InterfaceCount: int
+    Interfaces: Any
+
+    _output_prefix = OUTPUT_PREFIX + "HAInterfaces"
+    _title = "PAN-OS Available Interfaces"
+    _outputs_key_field = "HostID"
+
+
+@dataclass
+class HAInterfaceValidationResult:
+    """
+    :param HostID: The host ID.
+    :param AllValid: Whether all specified interfaces were found.
+    :param ValidatedInterfaces: List of interfaces that were validated.
+    :param MissingInterfaces: List of interfaces that were not found on the device.
+    """
+
+    HostID: str
+    AllValid: bool
+    ValidatedInterfaces: Any
+    MissingInterfaces: Any
+
+    _output_prefix = OUTPUT_PREFIX + "HAInterfaceValidation"
+    _title = "PAN-OS Interface Validation"
+    _outputs_key_field = "HostID"
+
+
+@dataclass
+class PanoramaHAReconfigureResult(ResultData):
+    """
+    :param message: Human-readable status message.
+    """
+
+    message: str
+
+    _output_prefix = OUTPUT_PREFIX + "PanoramaHAReconfigure"
+    _title = "PAN-OS Panorama HA Reconfigure"
+    _outputs_key_field = "hostid"
+
+
+@dataclass
 class DownloadSoftwareCommandResult:
     summary_data: List[GenericSoftwareStatus]
     result_data: None = None
@@ -12110,6 +12254,400 @@ class FirewallCommand:
         return HighAvailabilityStateStatus(hostid=resolve_host_id(firewall), state=state)
 
     @staticmethod
+    def sync_ha_to_remote(topology: Topology, target: str, sync_type: str) -> HASyncResult:
+        """
+        Synchronizes configuration or state between HA peers.
+        :param topology: `Topology` instance.
+        :param target: The target device serial or hostname.
+        :param sync_type: Either 'config' (running-config) or 'state' (session table).
+        """
+        firewall = topology.get_single_device(target)
+        if sync_type == "config":
+            sync_tag = "running-config"
+            message = "Successfully initiated configuration synchronization."
+        elif sync_type == "state":
+            sync_tag = "state"
+            message = "Successfully initiated state (session) synchronization."
+        else:
+            raise ValueError("Invalid sync_type. Must be 'config' or 'state'.")
+
+        cmd_xml = f"<request><high-availability><sync-to-remote><{sync_tag}/></sync-to-remote></high-availability></request>"
+        run_op_command(firewall, cmd_xml, cmd_xml=False)
+        return HASyncResult(HostID=resolve_host_id(firewall), SyncType=sync_type, Message=message)
+
+    @staticmethod
+    def get_ha_configuration(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> Union[List[HAConfigResult], HAConfigResult]:
+        """
+        Retrieves the detailed HA configuration from a firewall.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command.
+        """
+
+        def _find_text(el, path, default="N/A"):
+            if el is None:
+                return default
+            node = el.find(path)
+            if node is not None and node.text is not None:
+                return node.text
+            return default
+
+        result: List[HAConfigResult] = []
+        for firewall in topology.all(filter_string=device_filter_str, target=target):
+            host_id = resolve_host_id(firewall)
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/high-availability"
+
+            firewall.xapi.get(xpath=xpath)
+            response = firewall.xapi.element_root
+            if response is None:
+                raise DemistoException(f"No configuration found at the specified path on {host_id}.")
+
+            ha_config = response.find(".//result/high-availability")
+            if ha_config is None:
+                raise DemistoException(f"High Availability is not configured on {host_id}.")
+
+            group = ha_config.find("group")
+            interface = ha_config.find("interface")
+
+            mode = "Active/Passive" if (group is not None and group.find("mode/active-passive") is not None) else "Active/Active"
+
+            link_monitoring_data = []
+            if group is not None:
+                link_groups = group.findall("monitoring/link-monitoring/link-group/entry")
+                for lg in link_groups:
+                    group_name = lg.get("name", "Unknown")
+                    enabled = _find_text(lg, "enabled", "yes")
+                    failure_condition = _find_text(lg, "failure-condition", "any")
+                    interfaces = lg.findall("interface/member")
+                    interface_list = [iface.text for iface in interfaces if iface.text]
+                    link_monitoring_data.append(
+                        {
+                            "Name": group_name,
+                            "Enabled": enabled,
+                            "FailureCondition": failure_condition,
+                            "Interfaces": ", ".join(interface_list),
+                        }
+                    )
+
+            result.append(
+                HAConfigResult(
+                    HostID=host_id,
+                    Enabled=_find_text(ha_config, "enabled", "no"),
+                    GroupID=_find_text(group, "group-id"),
+                    Mode=mode,
+                    PeerIP=_find_text(group, "peer-ip"),
+                    PeerIPBackup=_find_text(group, "peer-ip-backup"),
+                    HA1Port=_find_text(interface, "ha1/port"),
+                    HA1IP=_find_text(interface, "ha1/ip-address"),
+                    HA1BackupPort=_find_text(interface, "ha1-backup/port"),
+                    HA1BackupIP=_find_text(interface, "ha1-backup/ip-address"),
+                    HA2Port=_find_text(interface, "ha2/port"),
+                    HA2IP=_find_text(interface, "ha2/ip-address"),
+                    HA2BackupPort=_find_text(interface, "ha2-backup/port"),
+                    HA2BackupIP=_find_text(interface, "ha2-backup/ip-address"),
+                    LinkMonitoring=link_monitoring_data or None,
+                )
+            )
+
+        if len(result) == 1:
+            return result[0]
+        return result
+
+    @staticmethod
+    def get_available_interfaces(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> Union[List[HAInterfaceListResult], HAInterfaceListResult]:
+        """
+        Lists all available network interfaces on the firewall.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command.
+        """
+        # HA-dedicated interfaces available on PAN-OS firewalls
+        ha_interfaces = [
+            "ha1",
+            "ha1-a",
+            "ha1-b",
+            "ha1-backup",
+            "ha2",
+            "ha2-a",
+            "ha2-backup",
+            "hsci",
+            "hsci-a",
+            "hsci-b",
+            "ha3",
+            "ha4",
+            "ha4-backup",
+            "aux-1",
+            "aux-2",
+        ]
+
+        result: List[HAInterfaceListResult] = []
+        for firewall in topology.all(filter_string=device_filter_str, target=target):
+            host_id = resolve_host_id(firewall)
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/network/interface"
+
+            firewall.xapi.get(xpath=xpath)
+            response = firewall.xapi.element_root
+
+            interface_list: list = []
+            if response is not None:
+                interfaces_xml = response.find(".//result/interface")
+                if interfaces_xml is not None:
+                    for eth_entry in interfaces_xml.findall("./ethernet/entry"):
+                        if_name = eth_entry.get("name")
+                        if if_name:
+                            interface_list.append(if_name)
+                    for ae_entry in interfaces_xml.findall("./aggregate-ethernet/entry"):
+                        if_name = ae_entry.get("name")
+                        if if_name:
+                            interface_list.append(if_name)
+                    for lo_entry in interfaces_xml.findall("./loopback/entry"):
+                        if_name = lo_entry.get("name")
+                        if if_name:
+                            interface_list.append(f"loopback.{if_name}")
+                    for tun_entry in interfaces_xml.findall("./tunnel/entry"):
+                        if_name = tun_entry.get("name")
+                        if if_name:
+                            interface_list.append(f"tunnel.{if_name}")
+                    for vlan_entry in interfaces_xml.findall("./vlan/entry"):
+                        if_name = vlan_entry.get("name")
+                        if if_name:
+                            interface_list.append(f"vlan.{if_name}")
+
+            interface_list.extend(ha_interfaces)
+
+            result.append(
+                HAInterfaceListResult(
+                    HostID=host_id,
+                    InterfaceCount=len(interface_list),
+                    Interfaces=sorted(interface_list),
+                )
+            )
+
+        if len(result) == 1:
+            return result[0]
+        return result
+
+    @staticmethod
+    def validate_interfaces(topology: Topology, target: str, interfaces: str) -> HAInterfaceValidationResult:
+        """
+        Validates that specified interfaces exist on the firewall.
+        :param topology: `Topology` instance.
+        :param target: The target device serial or hostname.
+        :param interfaces: Comma-separated list of interface names to validate.
+        """
+        interfaces_to_check = argToList(interfaces)
+        if not interfaces_to_check:
+            raise ValueError("The 'interfaces' argument is required.")
+
+        interface_result = FirewallCommand.get_available_interfaces(topology, target=target)
+        if isinstance(interface_result, list):
+            interface_result = interface_result[0]
+        available = interface_result.Interfaces
+
+        missing = [iface for iface in interfaces_to_check if iface not in available]
+
+        return HAInterfaceValidationResult(
+            HostID=interface_result.HostID,
+            AllValid=len(missing) == 0,
+            ValidatedInterfaces=interfaces_to_check,
+            MissingInterfaces=missing,
+        )
+
+    @staticmethod
+    def configure_ha(topology: Topology, target: str, args: dict) -> HAConfigureResult:
+        """
+        Configures HA setup on a firewall.
+        :param topology: `Topology` instance.
+        :param target: The target device serial or hostname.
+        :param args: Dictionary of HA configuration arguments.
+        """
+        firewall = topology.get_single_device(target)
+        host_id = resolve_host_id(firewall)
+
+        # Validate interfaces if any port arguments are provided
+        interfaces_to_validate = []
+        for key in ["ha1_port", "ha1_backup_port", "ha2_port", "ha2_backup_port"]:
+            if args.get(key):
+                interfaces_to_validate.append(args[key])
+
+        if interfaces_to_validate:
+            interface_result = FirewallCommand.get_available_interfaces(topology, target=target)
+            if isinstance(interface_result, list):
+                interface_result = interface_result[0]
+            available = interface_result.Interfaces
+            missing = [iface for iface in interfaces_to_validate if iface not in available]
+            if missing:
+                raise DemistoException(
+                    f"HA Configuration Failed: Interface(s) not found on {host_id}: {', '.join(missing)}. "
+                    "Use pan-os-platform-ha-list-interfaces to see available interfaces."
+                )
+
+        group_id = arg_to_number(args.get("group_id", "1"))
+        peer_ip = args.get("peer_ip")
+        peer_ip_backup = args.get("peer_ip_backup")
+        passive_link_state = args.get("passive_link_state", "auto")
+        device_priority = arg_to_number(args.get("device_priority", "100"))
+
+        state_sync = argToBoolean(args.get("state_sync", "false"))
+        ha2_keepalive = argToBoolean(args.get("ha2_keepalive", "false"))
+        ha2_keepalive_threshold = arg_to_number(args.get("ha2_keepalive_threshold", "10000"))
+        ha2_keepalive_action = args.get("ha2_keepalive_action", "log-only")
+
+        ha_config = HighAvailability(
+            enabled=True,
+            group_id=group_id,
+            peer_ip=peer_ip,
+            peer_ip_backup=peer_ip_backup,
+            mode="active-passive",
+            passive_link_state=passive_link_state,
+            config_sync=True,
+            state_sync=state_sync,
+            ha2_keepalive=ha2_keepalive,
+            ha2_keepalive_threshold=(ha2_keepalive_threshold if ha2_keepalive else None),
+            ha2_keepalive_action=(ha2_keepalive_action if ha2_keepalive else None),
+        )
+
+        # HA1 Interface
+        if all(args.get(k) for k in ["ha1_port", "ha1_ip_address", "ha1_netmask"]):
+            ha1 = HA1(
+                port=args["ha1_port"],
+                ip_address=args["ha1_ip_address"],
+                netmask=args["ha1_netmask"],
+                gateway=args.get("ha1_gateway"),
+            )
+            ha_config.add(ha1)
+
+        # HA1 Backup Interface
+        if all(args.get(k) for k in ["ha1_backup_port", "ha1_backup_ip_address", "ha1_backup_netmask"]):
+            ha1_backup = HA1Backup(
+                port=args["ha1_backup_port"],
+                ip_address=args["ha1_backup_ip_address"],
+                netmask=args["ha1_backup_netmask"],
+            )
+            ha_config.add(ha1_backup)
+
+        # HA2 Interface
+        if all(args.get(k) for k in ["ha2_port", "ha2_ip_address", "ha2_netmask"]):
+            ha2 = HA2(
+                port=args["ha2_port"],
+                ip_address=args["ha2_ip_address"],
+                netmask=args["ha2_netmask"],
+            )
+            ha_config.add(ha2)
+
+        # HA2 Backup Interface
+        if all(args.get(k) for k in ["ha2_backup_port", "ha2_backup_ip_address", "ha2_backup_netmask"]):
+            ha2_backup = HA2Backup(
+                port=args["ha2_backup_port"],
+                ip_address=args["ha2_backup_ip_address"],
+                netmask=args["ha2_backup_netmask"],
+            )
+            ha_config.add(ha2_backup)
+
+        firewall.add(ha_config)
+
+        # Generate XML and inject election settings
+        xml_str = ha_config.element_str()
+        heartbeat_backup = argToBoolean(args.get("heartbeat_backup", "false"))
+
+        if device_priority is not None or heartbeat_backup:
+            root = ET.fromstring(xml_str)
+            group_el = root.find(".//group")
+            if group_el is not None:
+                election = group_el.find("election-option")
+                if election is None:
+                    election = ET.SubElement(group_el, "election-option")
+
+                if device_priority is not None:
+                    priority_elem = election.find("device-priority")
+                    if priority_elem is None:
+                        priority_elem = ET.SubElement(election, "device-priority")
+                    priority_elem.text = str(device_priority)
+
+                if heartbeat_backup:
+                    hb_elem = election.find("heartbeat-backup")
+                    if hb_elem is None:
+                        hb_elem = ET.SubElement(election, "heartbeat-backup")
+                    hb_elem.text = "yes"
+
+                timers = election.find("timers")
+                if timers is None:
+                    timers = ET.SubElement(election, "timers")
+                    ET.SubElement(timers, "recommended")
+
+                xml_str = ET.tostring(root, encoding="unicode")
+
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/high-availability"
+        firewall.xapi.edit(xpath=xpath, element=xml_str)
+
+        message = "Configuration successfully applied to candidate config."
+        committed = False
+
+        if argToBoolean(args.get("commit", "false")):
+            commit_result = str(firewall.commit(sync=True))
+            message += f"\nCommit successful. Details: {commit_result}"
+            committed = True
+        else:
+            message += "\nA commit is needed to apply these changes."
+
+        return HAConfigureResult(HostID=host_id, Message=message, Committed=committed)
+
+    @staticmethod
+    def set_ha_enabled_state(topology: Topology, target: str, enabled: bool, commit: str = "false") -> HAEnabledStateResult:
+        """
+        Enables or disables HA on a firewall.
+        :param topology: `Topology` instance.
+        :param target: The target device serial or hostname.
+        :param enabled: Whether to enable or disable HA.
+        :param commit: Whether to commit the change.
+        """
+        firewall = topology.get_single_device(target)
+        host_id = resolve_host_id(firewall)
+
+        enabled_str = "yes" if enabled else "no"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/high-availability/enabled"
+        element = f"<enabled>{enabled_str}</enabled>"
+        firewall.xapi.edit(xpath=xpath, element=element)
+
+        status_verb = "Enabled" if enabled else "Disabled"
+        message = f"'{status_verb}' setting successfully applied to candidate config."
+        committed = False
+
+        if argToBoolean(commit):
+            commit_result = str(firewall.commit(sync=True))
+            message += f"\nCommit successful. Details: {commit_result}"
+            committed = True
+        else:
+            message += "\nA commit is needed to apply these changes."
+
+        return HAEnabledStateResult(HostID=host_id, Enabled=enabled, Message=message, Committed=committed)
+
+    @staticmethod
+    def panorama_ha_reconfigure(topology: Topology, target: Optional[str] = None) -> PanoramaHAReconfigureResult:
+        """
+        Issues a revert to running HA state command to Panorama.
+        :param topology: `Topology` instance.
+        :param target: Optional target serial or hostname.
+        """
+        # Use Panorama object from topology
+        for panorama_device in topology.panorama_objects.values():
+            if target and resolve_host_id(panorama_device) != target:
+                continue
+            host_id = resolve_host_id(panorama_device)
+            ha_config_obj = HighAvailability()
+            panorama_device.add(ha_config_obj)
+            ha_config_obj.revert_to_running()
+            return PanoramaHAReconfigureResult(
+                hostid=host_id,
+                message=f"Successfully sent HA reconfiguration command to Panorama at {host_id}.",
+            )
+        raise DemistoException("No Panorama device found in topology.")
+
+    @staticmethod
     def get_routes(
         topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRoutingRouteCommandResult:
@@ -12554,6 +13092,105 @@ def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabi
     :param state: New state.
     """
     return FirewallCommand.change_status(topology, hostid=target, state=state)
+
+
+def ha_sync_config(topology: Topology, target: str) -> HASyncResult:
+    """
+    Forces the active firewall to synchronize its running configuration with the passive peer.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to synchronize config from.
+    """
+    return FirewallCommand.sync_ha_to_remote(topology, target, sync_type="config")
+
+
+def ha_sync_state(topology: Topology, target: str) -> HASyncResult:
+    """
+    Forces the active firewall to synchronize its state (session table) with the passive peer.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to synchronize state from.
+    """
+    return FirewallCommand.sync_ha_to_remote(topology, target, sync_type="state")
+
+
+def get_ha_config(
+    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> Union[List[HAConfigResult], HAConfigResult]:
+    """
+    Retrieves the current High Availability configuration from a firewall.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command.
+    """
+    return FirewallCommand.get_ha_configuration(topology, device_filter_string, target)
+
+
+def ha_configure(topology: Topology, target: str, **kwargs) -> HAConfigureResult:
+    """
+    Enables and configures a detailed High Availability setup on a firewall.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to configure HA on.
+    """
+    return FirewallCommand.configure_ha(topology, target, kwargs)
+
+
+def ha_enable(topology: Topology, target: str, commit: str = "false") -> HAEnabledStateResult:
+    """
+    Enables the HA functionality on a firewall from previous configuration.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to enable HA on.
+    :param commit: Whether to commit the change immediately.
+    """
+    return FirewallCommand.set_ha_enabled_state(topology, target, enabled=True, commit=commit)
+
+
+def ha_disable(topology: Topology, target: str, commit: str = "false") -> HAEnabledStateResult:
+    """
+    Disables the HA functionality on a firewall.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to disable HA on.
+    :param commit: Whether to commit the change immediately.
+    """
+    return FirewallCommand.set_ha_enabled_state(topology, target, enabled=False, commit=commit)
+
+
+def ha_list_interfaces(
+    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> Union[List[HAInterfaceListResult], HAInterfaceListResult]:
+    """
+    Lists all available network interfaces on the firewall.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command.
+    """
+    return FirewallCommand.get_available_interfaces(topology, device_filter_string, target)
+
+
+def ha_validate_interfaces(topology: Topology, target: str, interfaces: str) -> HAInterfaceValidationResult:
+    """
+    Validates that specified interfaces exist on the firewall before HA configuration.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to validate interfaces on.
+    :param interfaces: Comma-separated list of interface names to validate.
+    """
+    return FirewallCommand.validate_interfaces(topology, target, interfaces)
+
+
+def panorama_ha_reconfigure(topology: Topology, target: Optional[str] = None) -> PanoramaHAReconfigureResult:
+    """
+    Issues a revert to running HA state command to a Panorama device.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: Optional ID of Panorama host (serial or hostname).
+    """
+    return FirewallCommand.panorama_ha_reconfigure(topology, target)
 
 
 def get_rule_hitcounts(
@@ -16857,6 +17494,78 @@ def main():  # pragma: no cover
                 dataclasses_to_command_results(
                     update_ha_state(topology, **demisto.args()),
                     empty_result_message="HA State either wasn't change or the device did not respond.",
+                )
+            )
+        elif command == "pan-os-platform-ha-sync-config":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_sync_config(topology, **demisto.args()),
+                    empty_result_message="HA sync config did not return a result.",
+                )
+            )
+        elif command == "pan-os-platform-ha-sync-state":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_sync_state(topology, **demisto.args()),
+                    empty_result_message="HA sync state did not return a result.",
+                )
+            )
+        elif command == "pan-os-platform-get-ha-config":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_ha_config(topology, **demisto.args()),
+                    empty_result_message="No HA configuration found.",
+                )
+            )
+        elif command == "pan-os-platform-ha-configure":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_configure(topology, **demisto.args()),
+                    empty_result_message="HA configuration did not return a result.",
+                )
+            )
+        elif command == "pan-os-platform-ha-enable":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_enable(topology, **demisto.args()),
+                    empty_result_message="HA enable did not return a result.",
+                )
+            )
+        elif command == "pan-os-platform-ha-disable":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_disable(topology, **demisto.args()),
+                    empty_result_message="HA disable did not return a result.",
+                )
+            )
+        elif command == "pan-os-platform-ha-list-interfaces":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_list_interfaces(topology, **demisto.args()),
+                    empty_result_message="No interfaces found.",
+                )
+            )
+        elif command == "pan-os-platform-ha-validate-interfaces":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    ha_validate_interfaces(topology, **demisto.args()),
+                    empty_result_message="Interface validation did not return a result.",
+                )
+            )
+        elif command == "pan-os-panorama-ha-reconfigure":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    panorama_ha_reconfigure(topology, **demisto.args()),
+                    empty_result_message="Panorama HA reconfigure did not return a result.",
                 )
             )
         elif command == "pan-os-hygiene-check-log-forwarding":

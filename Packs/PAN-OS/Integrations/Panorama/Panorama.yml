@@ -8769,6 +8769,292 @@ script:
       description: The new HA state.
       type: String
   - arguments:
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+      required: true
+    description: Forces the active firewall to synchronize its running configuration with the passive peer.
+    name: pan-os-platform-ha-sync-config
+    outputs:
+    - contextPath: PANOS.HASync.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HASync.SyncType
+      description: The type of synchronization performed.
+      type: String
+    - contextPath: PANOS.HASync.Message
+      description: Human-readable status message.
+      type: String
+  - arguments:
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+      required: true
+    description: Forces the active firewall to synchronize its state (session table) with the passive peer.
+    name: pan-os-platform-ha-sync-state
+    outputs:
+    - contextPath: PANOS.HASync.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HASync.SyncType
+      description: The type of synchronization performed.
+      type: String
+    - contextPath: PANOS.HASync.Message
+      description: Human-readable status message.
+      type: String
+  - arguments:
+    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+      name: device_filter_string
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+    description: Retrieves the current High Availability configuration from a firewall.
+    name: pan-os-platform-get-ha-config
+    outputs:
+    - contextPath: PANOS.HAConfig.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HAConfig.Enabled
+      description: Whether HA is enabled on the device.
+      type: String
+    - contextPath: PANOS.HAConfig.GroupID
+      description: The Group ID for the HA pair.
+      type: String
+    - contextPath: PANOS.HAConfig.Mode
+      description: The HA mode (e.g., Active/Passive).
+      type: String
+    - contextPath: PANOS.HAConfig.PeerIP
+      description: The IP address of the HA peer.
+      type: String
+    - contextPath: PANOS.HAConfig.PeerIPBackup
+      description: The backup IP address of the HA peer.
+      type: String
+    - contextPath: PANOS.HAConfig.HA1Port
+      description: The interface port for the HA1 (Control) link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA1IP
+      description: The IP address for the HA1 (Control) link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA1BackupPort
+      description: The interface port for the HA1-Backup link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA1BackupIP
+      description: The IP address for the HA1-Backup link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA2Port
+      description: The interface port for the HA2 (Data) link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA2IP
+      description: The IP address for the HA2 (Data) link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA2BackupPort
+      description: The interface port for the HA2-Backup link.
+      type: String
+    - contextPath: PANOS.HAConfig.HA2BackupIP
+      description: The IP address for the HA2-Backup link.
+      type: String
+    - contextPath: PANOS.HAConfig.LinkMonitoring
+      description: A list of Link Monitoring group configurations (each with Name, Enabled, FailureCondition, Interfaces).
+      type: Unknown
+  - arguments:
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+      required: true
+    - description: The IP address of the peer firewall's primary HA1 control link.
+      name: peer_ip
+      required: true
+    - defaultValue: "1"
+      description: The HA Group ID (1-255).
+      name: group_id
+    - description: The IP address of the peer firewall's backup HA1 control link.
+      name: peer_ip_backup
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: For Active/Passive mode, specifies the link state of the passive device.
+      name: passive_link_state
+      predefined:
+      - auto
+      - shutdown
+    - defaultValue: "100"
+      description: Device priority for HA election (0-255). Higher priority becomes active.
+      name: device_priority
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Enable backup heartbeat monitoring (recommended for production HA).
+      name: heartbeat_backup
+      predefined:
+      - "true"
+      - "false"
+    - description: The primary control link (HA1) interface port (e.g., ha1-a, ethernet1/1).
+      name: ha1_port
+    - description: The IP address for the primary control link (HA1) interface.
+      name: ha1_ip_address
+    - description: The netmask for the primary control link (HA1) interface.
+      name: ha1_netmask
+    - description: The gateway for the primary control link (HA1) interface.
+      name: ha1_gateway
+    - description: The backup control link (HA1-Backup) interface port.
+      name: ha1_backup_port
+    - description: The IP address for the backup control link (HA1-Backup) interface.
+      name: ha1_backup_ip_address
+    - description: The netmask for the backup control link (HA1-Backup) interface.
+      name: ha1_backup_netmask
+    - description: The primary data link (HA2) interface port for session synchronization.
+      name: ha2_port
+    - description: The IP address for the primary data link (HA2) interface.
+      name: ha2_ip_address
+    - description: The netmask for the primary data link (HA2) interface.
+      name: ha2_netmask
+    - description: The backup data link (HA2-Backup) interface port.
+      name: ha2_backup_port
+    - description: The IP address for the backup data link (HA2-Backup) interface.
+      name: ha2_backup_ip_address
+    - description: The netmask for the backup data link (HA2-Backup) interface.
+      name: ha2_backup_netmask
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Enable state (session) synchronization over the HA2 data link.
+      name: state_sync
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Enable HA2 keep-alive monitoring to detect failures on the HA2 data link.
+      name: ha2_keepalive
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: "10000"
+      description: HA2 keep-alive threshold in milliseconds (5000-60000).
+      name: ha2_keepalive_threshold
+    - auto: PREDEFINED
+      defaultValue: log-only
+      description: Action to take when HA2 keep-alive fails.
+      name: ha2_keepalive_action
+      predefined:
+      - log-only
+      - log-and-reboot
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Commit the configuration change immediately.
+      name: commit
+      predefined:
+      - "true"
+      - "false"
+    description: Enables and configures a detailed High Availability setup on a firewall.
+    name: pan-os-platform-ha-configure
+    outputs:
+    - contextPath: PANOS.HAConfigure.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HAConfigure.Message
+      description: Human-readable status message.
+      type: String
+    - contextPath: PANOS.HAConfigure.Committed
+      description: Whether the configuration was committed.
+      type: Boolean
+  - arguments:
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Set to true to automatically commit the configuration changes.
+      name: commit
+      predefined:
+      - "true"
+      - "false"
+    description: Enables the HA functionality on a firewall from previous configuration.
+    name: pan-os-platform-ha-enable
+    outputs:
+    - contextPath: PANOS.HAEnabledState.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HAEnabledState.Enabled
+      description: Whether HA has been enabled or disabled.
+      type: Boolean
+    - contextPath: PANOS.HAEnabledState.Message
+      description: Human-readable status message.
+      type: String
+    - contextPath: PANOS.HAEnabledState.Committed
+      description: Whether the configuration was committed.
+      type: Boolean
+  - arguments:
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Set to true to automatically commit the configuration changes.
+      name: commit
+      predefined:
+      - "true"
+      - "false"
+    description: Disables the HA functionality on a firewall.
+    name: pan-os-platform-ha-disable
+    outputs:
+    - contextPath: PANOS.HAEnabledState.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HAEnabledState.Enabled
+      description: Whether HA has been enabled or disabled.
+      type: Boolean
+    - contextPath: PANOS.HAEnabledState.Message
+      description: Human-readable status message.
+      type: String
+    - contextPath: PANOS.HAEnabledState.Committed
+      description: Whether the configuration was committed.
+      type: Boolean
+  - arguments:
+    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+      name: device_filter_string
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+    description: Lists all available network interfaces on the firewall.
+    name: pan-os-platform-ha-list-interfaces
+    outputs:
+    - contextPath: PANOS.HAInterfaces.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HAInterfaces.InterfaceCount
+      description: Total number of interfaces found.
+      type: Number
+    - contextPath: PANOS.HAInterfaces.Interfaces
+      description: List of all available interface names.
+      type: Unknown
+  - arguments:
+    - description: The serial number, or IP address, of the target firewall.
+      name: target
+      required: true
+    - description: Comma-separated list of interface names to validate (e.g., ha1-a,ha2-a,ethernet1/1).
+      name: interfaces
+      required: true
+    description: Validates that specified interfaces exist on the firewall before HA configuration.
+    name: pan-os-platform-ha-validate-interfaces
+    outputs:
+    - contextPath: PANOS.HAInterfaceValidation.HostID
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.HAInterfaceValidation.AllValid
+      description: Whether all specified interfaces were found.
+      type: Boolean
+    - contextPath: PANOS.HAInterfaceValidation.ValidatedInterfaces
+      description: List of interface names that were validated.
+      type: Unknown
+    - contextPath: PANOS.HAInterfaceValidation.MissingInterfaces
+      description: List of interface names that were not found on the device.
+      type: Unknown
+  - arguments:
+    - description: The serial number, or IP address, of the target Panorama device.
+      name: target
+    description: Issues a revert to running HA state command to a Panorama device.
+    name: pan-os-panorama-ha-reconfigure
+    outputs:
+    - contextPath: PANOS.PanoramaHAReconfigure.hostid
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.PanoramaHAReconfigure.message
+      description: Human-readable status message.
+      type: String
+  - arguments:
     - description: The string by which to filter so that only the given device is checked.
       name: device_filter_string
     description: Checks that at least one log forwarding profile is configured according to best practices.
