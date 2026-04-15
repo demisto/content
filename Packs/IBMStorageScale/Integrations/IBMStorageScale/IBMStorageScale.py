@@ -587,9 +587,13 @@ class Client:
                 except httpx.HTTPStatusError as e:
                     if e.response.status_code in (401, 403):
                         raise DemistoException(
-                            "Authorization Error: Ensure the credentials are correct and have the required permissions."
+                            f"Authorization Error: Ensure the credentials are correct and have the required permissions."
+                            f" Response: {e.response.text}"
                         )
-                    raise DemistoException(f"HTTP Error: Failed to list snapshots. Status code: {e.response.status_code}")
+                    raise DemistoException(
+                        f"HTTP Error: Failed to list snapshots. Status code: {e.response.status_code}."
+                        f" Response: {e.response.text}"
+                    )
                 except httpx.RequestError as e:
                     raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
 
@@ -719,6 +723,7 @@ async def main() -> None:
     """Main function, serves as the orchestra for the integration."""
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
     demisto.debug(f"Command being called is {command}")
 
     # Handle whether integration is in debug mode. If so, set the environment variable
@@ -752,8 +757,8 @@ async def main() -> None:
             max_fetch = arg_to_number(params.get("max_fetch", "10000"))
             await client.fetch_events(max_fetch)
         elif command == "ibm-storage-scale-get-events":
-            limit = arg_to_number(demisto.args().get("limit", 50))
-            should_push_events = argToBoolean(demisto.args().get("should_push_events", False))
+            limit = arg_to_number(args.get("limit", 50))
+            should_push_events = argToBoolean(args.get("should_push_events", False))
             events, _ = await client.get_events(limit=limit)
             if should_push_events:
                 push_events_start_time = time.monotonic()
@@ -792,10 +797,10 @@ async def main() -> None:
             )
             return_results(command_results)
         elif command == "ibm-storage-scale-list-snapshots":
-            args = demisto.args()
             filesystem = args.get("filesystem") or ":all:"
             snapshot_name = args.get("snapshot_name")
-            limit = arg_to_number(args.get("limit", DEFAULT_SNAPSHOT_LIMIT)) or DEFAULT_SNAPSHOT_LIMIT
+            limit_arg = arg_to_number(args.get("limit"))
+            limit = limit_arg if limit_arg is not None else DEFAULT_SNAPSHOT_LIMIT
             all_results_flag = argToBoolean(args.get("all_results", False))
             snapshots = await client.list_snapshots(
                 filesystem=filesystem,

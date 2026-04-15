@@ -171,6 +171,7 @@ class TestMain:
         """
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={})
         return_results_mock = mocker.patch("IBMStorageScale.return_results")
         with capfd.disabled():
             await main()
@@ -190,6 +191,7 @@ class TestMain:
         mocker.patch.object(
             demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}, "max_fetch": "2500"}
         )
+        mocker.patch.object(demisto, "args", return_value={})
         with capfd.disabled():
             await main()
         client_mock.fetch_events.assert_called_once_with(2500)
@@ -225,6 +227,7 @@ class TestMain:
         """
         mocker.patch.object(demisto, "command", return_value="unknown-command")
         mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={})
         return_error_mock = mocker.patch("IBMStorageScale.return_error")
         with capfd.disabled():
             await main()
