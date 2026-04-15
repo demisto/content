@@ -18,6 +18,7 @@ def ip_enrichment_script(
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
     args: dict[str, Any] = {},
+    mark_mismatched_type_as_invalid: bool = False,
 ) -> CommandResults:
     """
     Enrich IP indicators.
@@ -36,7 +37,9 @@ def ip_enrichment_script(
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
     demisto.debug("Extracting indicators")
-    ip_instances, extract_verbose = create_and_extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
+    ip_instances, extract_verbose = create_and_extract_indicators(
+        ip_list, "ip", mark_mismatched_type_as_invalid=mark_mismatched_type_as_invalid
+    )
     valid_inputs = [ip_instance.extracted_value for ip_instance in ip_instances if ip_instance.extracted_value]
     indicator_mapping = {
         "Address": "Address",
@@ -139,11 +142,22 @@ def main():
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
+    mark_mismatched_type_as_invalid = argToBoolean(args.get("mark_mismatched_type_as_invalid", True))
     demisto.debug(f"Data list: {ip_list}")
     demisto.debug(f"Brands: {brands}")
 
     try:
-        return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields, args))
+        return_results(
+            ip_enrichment_script(
+                ip_list,
+                external_enrichment,
+                verbose,
+                brands,
+                additional_fields,
+                args,
+                mark_mismatched_type_as_invalid=mark_mismatched_type_as_invalid,
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !ip-enrichment. Error: {str(ex)}")
 
