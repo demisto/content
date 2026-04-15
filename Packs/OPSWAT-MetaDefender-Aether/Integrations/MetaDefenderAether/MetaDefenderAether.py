@@ -94,7 +94,9 @@ class Client(BaseClient):
 
         return response
 
-    def get_search_query(self, query_string: str, page: int, page_size: int) -> dict[str, Any]:
+    def get_search_query(
+        self, query_string: str, page: int, page_size: int
+    ) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             ok_codes=([200]),
@@ -201,7 +203,7 @@ def build_search_query_result(analyses: list[dict]) -> list[CommandResults]:
             readable_output=tableToMarkdown("Analysis Result:", hr_analysis),
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Analysis",
             outputs_key_field="id",
-            indicator=file_indicator
+            indicator=file_indicator,
         )
         command_results.append(command_result)
 
@@ -236,7 +238,10 @@ def build_reputation_result(api_reponse: dict[str, Any]):
 def is_valid_pass(api_response: dict[str, Any]):
     if "rejected_files" not in api_response:
         return True
-    return all(reject.get("rejected_reason") != "INVALID_PASSWORD" for reject in api_response["rejected_files"])
+    return all(
+        reject.get("rejected_reason") != "INVALID_PASSWORD"
+        for reject in api_response["rejected_files"]
+    )
 
 
 @polling_function(
@@ -347,7 +352,7 @@ def main():
 
     params = demisto.params()
     base_url = params.get("url", "")
-    api_key = params.get('api_key', {}).get('password')
+    api_key = params.get("api_key", {}).get("password")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
