@@ -9895,6 +9895,403 @@ script:
       - contextPath: AWS.S3.BucketsPrefix
         description: If Prefix was sent with the request, it is included in the response.
         type: string
+  - name: aws-ssm-association-version-list
+    description: Retrieves all versions of an association for a specific association ID.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: association_id
+        description: The association ID for which to view all versions.
+        required: true
+      - name: limit
+        description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.
+        required: false
+        defaultValue: '50'
+      - name: next_token
+        description: The token for the next set of items to return. Use AWS.SSM.AssociationVersionNextToken.
+        required: false
+    outputs:
+      - contextPath: AWS.SSM.AssociationVersion.AssociationId
+        description: The ID created by the system when the association was created.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.AssociationVersion
+        description: The association version.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.CreatedDate
+        description: The date the association version was created.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.Name
+        description: The name specified when the association was created.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.AssociationName
+        description: The name specified for the association version when the association version was created.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.DocumentVersion
+        description: The version of an SSM document used when the association version was created.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.Parameters
+        description: Parameters specified when the association version was created.
+        type: Unknown
+      - contextPath: AWS.SSM.AssociationVersion.Targets.Key
+        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.Targets.Values
+        description: User-defined criteria that maps to Key.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.ScheduleExpression
+        description: The cron or rate schedule specified for the association when the association version was created.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.ScheduleOffset
+        description: Number of days to wait after the scheduled day to run an association.
+        type: Number
+      - contextPath: AWS.SSM.AssociationVersion.OutputLocation.S3Location
+        description: The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix.
+        type: Unknown
+      - contextPath: AWS.SSM.AssociationVersion.MaxErrors
+        description: The number of errors allowed before the system stops sending requests to run the association on additional targets.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.MaxConcurrency
+        description: The maximum number of targets allowed to run the association at the same time.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.ComplianceSeverity
+        description: The severity level that is assigned to the association.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.SyncCompliance
+        description: The mode for generating association compliance. AUTO or MANUAL.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.ApplyOnlyAtCronInterval
+        description: When true, the association runs only according to the schedule and not immediately after creation.
+        type: Boolean
+      - contextPath: AWS.SSM.AssociationVersion.CalendarNames
+        description: The names or ARNs of the Change Calendar type documents the associations are gated under.
+        type: String
+      - contextPath: AWS.SSM.AssociationVersion.TargetLocations
+        description: The location object containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, ExecutionRoleName, and TargetLocationAlarmConfiguration.
+        type: Unknown
+      - contextPath: AWS.SSM.AssociationVersion.TargetMaps
+        description: A key-value mapping of document parameters to target resources.
+        type: List
+      - contextPath: AWS.SSM.AssociationVersionNextToken
+        description: The token to use when requesting the next set of items.
+        type: String
+  - name: aws-ssm-association-get
+    description: Describes the association for the specified target or managed node. Must provide either association_id, or both instance_id and document_name.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: association_id
+        description: The association ID for which information is requested.
+        required: false
+      - name: instance_id
+        description: The managed node ID. Required together with document_name if association_id is not provided.
+        required: false
+      - name: document_name
+        description: The name of the SSM document. Required together with instance_id if association_id is not provided.
+        required: false
+      - name: association_version
+        description: Specify the association version to retrieve. To view the latest version, either specify $LATEST or omit this parameter.
+        required: false
+    outputs:
+      - contextPath: AWS.SSM.Association.Name
+        description: The name of the SSM document.
+        type: String
+      - contextPath: AWS.SSM.Association.AssociationId
+        description: The association ID.
+        type: String
+      - contextPath: AWS.SSM.Association.AssociationName
+        description: The association name.
+        type: String
+      - contextPath: AWS.SSM.Association.AssociationVersion
+        description: The association version.
+        type: String
+      - contextPath: AWS.SSM.Association.InstanceId
+        description: The managed node ID.
+        type: String
+      - contextPath: AWS.SSM.Association.DocumentVersion
+        description: The document version.
+        type: String
+      - contextPath: AWS.SSM.Association.AutomationTargetParameterName
+        description: The parameter that defines how the automation will branch out. Required for associations that use an Automation runbook with rate controls.
+        type: String
+      - contextPath: AWS.SSM.Association.Parameters
+        description: A description of the parameters for a document.
+        type: Unknown
+      - contextPath: AWS.SSM.Association.Date
+        description: The date when the association was made.
+        type: String
+      - contextPath: AWS.SSM.Association.LastUpdateAssociationDate
+        description: The date when the association was last updated.
+        type: String
+      - contextPath: AWS.SSM.Association.LastExecutionDate
+        description: The date on which the association was last run.
+        type: String
+      - contextPath: AWS.SSM.Association.LastSuccessfulExecutionDate
+        description: The last date on which the association was successfully run.
+        type: String
+      - contextPath: AWS.SSM.Association.Status
+        description: The status object containing Date, Name, Message, and AdditionalInfo fields.
+        type: Unknown
+      - contextPath: AWS.SSM.Association.Overview.Status
+        description: "The status of the association. Status can be: Pending, Success, or Failed."
+        type: String
+      - contextPath: AWS.SSM.Association.Overview.DetailedStatus
+        description: A detailed status of the association.
+        type: String
+      - contextPath: AWS.SSM.Association.Overview.AssociationStatusAggregatedCount
+        description: Returns the number of targets for the association status.
+        type: Number
+      - contextPath: AWS.SSM.Association.Targets.Key
+        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        type: String
+      - contextPath: AWS.SSM.Association.Targets.Values
+        description: User-defined criteria that maps to Key.
+        type: String
+      - contextPath: AWS.SSM.Association.ScheduleExpression
+        description: A cron expression that specifies a schedule when the association runs.
+        type: String
+      - contextPath: AWS.SSM.Association.ScheduleOffset
+        description: Number of days to wait after the scheduled day to run an association.
+        type: Number
+      - contextPath: AWS.SSM.Association.OutputLocation.S3Location
+        description: The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix.
+        type: Unknown
+      - contextPath: AWS.SSM.Association.MaxErrors
+        description: The number of errors allowed before the system stops sending requests to run the association on additional targets.
+        type: String
+      - contextPath: AWS.SSM.Association.MaxConcurrency
+        description: The maximum number of targets allowed to run the association at the same time.
+        type: String
+      - contextPath: AWS.SSM.Association.ComplianceSeverity
+        description: The severity level that is assigned to the association.
+        type: String
+      - contextPath: AWS.SSM.Association.SyncCompliance
+        description: The mode for generating association compliance. AUTO or MANUAL.
+        type: String
+      - contextPath: AWS.SSM.Association.ApplyOnlyAtCronInterval
+        description: When true, the association runs only according to the schedule and not immediately after creation.
+        type: Boolean
+      - contextPath: AWS.SSM.Association.CalendarNames
+        description: The names or ARNs of the Change Calendar type documents the associations are gated under.
+        type: String
+      - contextPath: AWS.SSM.Association.TargetLocations
+        description: The location object containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, ExecutionRoleName, and TargetLocationAlarmConfiguration.
+        type: Unknown
+      - contextPath: AWS.SSM.Association.TargetMaps
+        description: A key-value mapping of document parameters to target resources.
+        type: List
+      - contextPath: AWS.SSM.Association.AlarmConfiguration
+        description: The alarm configuration object containing IgnorePollAlarmFailure and Alarms fields.
+        type: Unknown
+      - contextPath: AWS.SSM.Association.TriggeredAlarms.Name
+        description: The CloudWatch alarm that was invoked during the association.
+        type: String
+      - contextPath: AWS.SSM.Association.TriggeredAlarms.State
+        description: The state of the CloudWatch alarm.
+        type: String
+  - name: aws-ssm-association-list
+    description: Returns all State Manager associations in the current AWS account and Region. An association is a binding between a document and a set of targets with a schedule.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: name
+        description: Filter associations by SSM document name.
+        required: false
+      - name: association_id
+        description: Filter associations by association ID.
+        required: false
+      - name: association_status_name
+        description: Filter associations by status name.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - Pending
+          - Success
+          - Failed
+      - name: last_executed_before
+        description: Filter associations that were last executed before this date (ISO 8601 format, e.g. 2024-01-01T00:00:00Z).
+        required: false
+      - name: last_executed_after
+        description: Filter associations that were last executed after this date (ISO 8601 format, e.g. 2024-01-01T00:00:00Z).
+        required: false
+      - name: association_name
+        description: Filter associations by association name.
+        required: false
+      - name: resource_group_name
+        description: Filter associations by resource group name.
+        required: false
+      - name: limit
+        description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.
+        required: false
+        defaultValue: '50'
+      - name: next_token
+        description: The token for the next set of items to return. Use AWS.SSM.AssociationNextToken.
+        required: false
+    outputs:
+      - contextPath: AWS.SSM.Association.Name
+        description: The name of the SSM document.
+        type: String
+      - contextPath: AWS.SSM.Association.AssociationId
+        description: The ID created by the system when creating an association.
+        type: String
+      - contextPath: AWS.SSM.Association.AssociationName
+        description: The association name.
+        type: String
+      - contextPath: AWS.SSM.Association.AssociationVersion
+        description: The association version.
+        type: String
+      - contextPath: AWS.SSM.Association.InstanceId
+        description: The managed node ID.
+        type: String
+      - contextPath: AWS.SSM.Association.DocumentVersion
+        description: The version of the document used in the association.
+        type: String
+      - contextPath: AWS.SSM.Association.Targets.Key
+        description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        type: String
+      - contextPath: AWS.SSM.Association.Targets.Values
+        description: User-defined criteria that maps to Key.
+        type: String
+      - contextPath: AWS.SSM.Association.LastExecutionDate
+        description: The date on which the association was last run.
+        type: String
+      - contextPath: AWS.SSM.Association.Overview.Status
+        description: "The status of the association. Status can be: Pending, Success, or Failed."
+        type: String
+      - contextPath: AWS.SSM.Association.Overview.DetailedStatus
+        description: A detailed status of the association.
+        type: String
+      - contextPath: AWS.SSM.Association.Overview.AssociationStatusAggregatedCount
+        description: Returns the number of targets for the association status.
+        type: String
+      - contextPath: AWS.SSM.Association.ScheduleExpression
+        description: A cron expression that specifies a schedule when the association runs.
+        type: String
+      - contextPath: AWS.SSM.Association.ScheduleOffset
+        description: Number of days to wait after the scheduled day to run an association.
+        type: Number
+      - contextPath: AWS.SSM.AssociationNextToken
+        description: The token to use when requesting the next set of items.
+        type: String
   - name: aws-ssm-inventory-list
     description: Queries SSM inventory information for managed nodes. Returns instance information such as platform, agent version, IP address, and status.
     arguments:
@@ -10405,6 +10802,110 @@ script:
         type: String
       - contextPath: AWS.SSM.Tag.TagList.Value
         description: The value of the tag.
+        type: String
+
+  - name: aws-ssm-document-list
+    description: Returns all Systems Manager (SSM) documents in the current AWS account and Region.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: "A semicolon-separated list of filters in the format Key=<key>,Values=<value1>,<value2>. Valid filter keys: Name, Owner, PlatformTypes, DocumentType, TargetType, SchemaVersion, DocumentFormat. For example: Key=Owner,Values=Amazon;Key=DocumentType,Values=Command."
+      - name: limit
+        description: The maximum number of documents to return. Minimum 1, maximum 50. Default is 50.
+      - name: next_token
+        description: The token for the next set of items to return. Received from a previous call.
+    outputs:
+      - contextPath: AWS.SSM.Document.Name
+        description: The name of the SSM document.
+        type: String
+      - contextPath: AWS.SSM.Document.CreatedDate
+        description: The date the SSM document was created.
+        type: String
+      - contextPath: AWS.SSM.Document.DisplayName
+        description: An optional field specifying a user-defined, friendly name for the SSM document.
+        type: String
+      - contextPath: AWS.SSM.Document.Owner
+        description: The AWS user that created the document.
+        type: String
+      - contextPath: AWS.SSM.Document.VersionName
+        description: An optional field specifying the version of the artifact associated with the document.
+        type: String
+      - contextPath: AWS.SSM.Document.PlatformTypes
+        description: The operating system platform.
+        type: String
+      - contextPath: AWS.SSM.Document.DocumentVersion
+        description: The document version.
+        type: String
+      - contextPath: AWS.SSM.Document.DocumentType
+        description: The document type.
+        type: String
+      - contextPath: AWS.SSM.Document.SchemaVersion
+        description: The schema version.
+        type: String
+      - contextPath: AWS.SSM.Document.DocumentFormat
+        description: The document format, either JSON or YAML.
+        type: String
+      - contextPath: AWS.SSM.Document.TargetType
+        description: The target type which defines the kinds of resources the document can run on.
+        type: String
+      - contextPath: AWS.SSM.Document.Tags.Key
+        description: The name of the tag.
+        type: String
+      - contextPath: AWS.SSM.Document.Tags.Value
+        description: The value of the tag.
+        type: String
+      - contextPath: AWS.SSM.Document.Requires
+        description: A list of SSM documents required by a document, containing Name, Version, RequireType, and VersionName fields.
+        type: Unknown
+      - contextPath: AWS.SSM.Document.ReviewStatus
+        description: The current status of a document review.
+        type: String
+      - contextPath: AWS.SSM.Document.Author
+        description: The user in the organization who created the document.
+        type: String
+      - contextPath: AWS.SSM.DocumentNextToken
+        description: The token to use when requesting the next set of items. Empty string if no additional items exist.
         type: String
 
   - name: aws-ssm-tag-remove

@@ -8136,6 +8136,258 @@ class SSM:
             raw_response=response,
         )
 
+    @staticmethod
+    def association_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns all State Manager associations in the current AWS account and Region.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including optional name, association_id,
+                association_status_name, last_executed_before, last_executed_after,
+                association_name, resource_group_name, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM associations with their
+                status, schedule, and target information.
+        """
+        kwargs = remove_empty_elements(
+            {
+                "AssociationFilterList": [
+                    {"key": "Name", "value": args.get("name")},
+                    {"key": "AssociationId", "value": args.get("association_id")},
+                    {"key": "AssociationStatusName", "value": args.get("association_status_name")},
+                    {"key": "LastExecutedBefore", "value": args.get("last_executed_before")},
+                    {"key": "LastExecutedAfter", "value": args.get("last_executed_after")},
+                    {"key": "AssociationName", "value": args.get("association_name")},
+                    {"key": "ResourceGroupName", "value": args.get("resource_group_name")},
+                ],
+            }
+        )
+
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM associations with parameters: {kwargs}")
+
+        response = client.list_associations(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        associations = response.get("Associations", [])
+
+        if not associations:
+            return CommandResults(readable_output="No SSM associations found.")
+
+        outputs = {
+            "AWS.SSM.Association(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
+            "AWS.SSM(true)": {"AssociationNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS SSM Associations",
+                associations,
+                headers=[
+                    "Name",
+                    "AssociationId",
+                    "AssociationName",
+                    "AssociationVersion",
+                    "LastExecutionDate",
+                    "ScheduleExpression",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def association_get_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the association for the specified target or managed node.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments. Must provide either association_id,
+                or both instance_id and document_name.
+
+        Returns:
+            CommandResults: Results containing the association description.
+        """
+        association_id = args.get("association_id")
+        instance_id = args.get("instance_id")
+        document_name = args.get("document_name")
+
+        if not (association_id or (instance_id and document_name)):
+            raise DemistoException(
+                "Must provide either association_id, or both instance_id and document_name."
+            )
+
+        kwargs = {
+            "AssociationId": association_id,
+            "AssociationVersion": args.get("association_version"),
+            "InstanceId": instance_id,
+            "Name": document_name,
+        }
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing SSM association with parameters: {kwargs}")
+
+        response = client.describe_association(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        association = response.get("AssociationDescription", {})
+
+        if not association:
+            return CommandResults(readable_output="No association found.")
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Association",
+            outputs_key_field="AssociationId",
+            outputs=association,
+            readable_output=tableToMarkdown(
+                "AWS SSM Association",
+                association,
+                headers=[
+                    "Name",
+                    "AssociationId",
+                    "AssociationName",
+                    "AssociationVersion",
+                    "DocumentVersion",
+                    "Date",
+                    "LastExecutionDate",
+                    "ScheduleExpression",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def association_versions_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves all versions of an association for a specific association ID.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including association_id (required),
+                and optional limit and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of association versions.
+        """
+        kwargs: Dict[str, Any] = {
+            "AssociationId": args.get("association_id"),
+        }
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM association versions with parameters: {kwargs}")
+
+        response = client.list_association_versions(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        association_versions = response.get("AssociationVersions", [])
+
+        if not association_versions:
+            return CommandResults(readable_output=f"No versions found for association '{args.get('association_id')}'.")
+
+        outputs = {
+            "AWS.SSM.AssociationVersion(val.AssociationId && val.AssociationId == obj.AssociationId && val.AssociationVersion && val.AssociationVersion == obj.AssociationVersion)": association_versions,
+            "AWS.SSM(true)": {"AssociationVersionNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS SSM Association Versions",
+                association_versions,
+                headers=[
+                    "AssociationId",
+                    "AssociationVersion",
+                    "Name",
+                    "AssociationName",
+                    "CreatedDate",
+                    "DocumentVersion",
+                    "ScheduleExpression",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+
+    @staticmethod
+    def document_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns all SSM documents in the current AWS account and Region.
+
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including optional filters, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM documents with pagination token.
+        """
+        filters = args.get("filters")
+        kwargs = remove_empty_elements(
+            {
+                "Filters": [
+                    {"Key": f.split("=")[0].strip(), "Values": [v.strip() for v in f.split("=")[1].split(",")]}
+                    for f in filters.split(";")
+                ]
+                if filters
+                else None,
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM documents with parameters: {kwargs}")
+
+        response = client.list_documents(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        documents = response.get("DocumentIdentifiers", [])
+
+        if not documents:
+            return CommandResults(readable_output="No SSM documents found.")
+
+        outputs = {
+            "AWS.SSM.Document(val.Name && val.Name == obj.Name)": documents,
+            "AWS.SSM(true)": {"DocumentNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Documents",
+                documents,
+                headers=[
+                    "Name",
+                    "Owner",
+                    "DocumentVersion",
+                    "DocumentType",
+                    "PlatformTypes",
+                    "CreatedDate",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -8301,11 +8553,15 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-fleets-describe": EC2.describe_fleets_command,
     "aws-ec2-fleet-instances-describe": EC2.describe_fleet_instances_command,
     "aws-ec2-fleet-modify": EC2.modify_fleet_command,
+    "aws-ssm-association-version-list": SSM.association_versions_list_command,
+    "aws-ssm-association-get": SSM.association_get_command,
+    "aws-ssm-association-list": SSM.association_list_command,
     "aws-ssm-inventory-list": SSM.inventory_list_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
     "aws-ssm-tag-add": SSM.add_tags_to_resource_command,
     "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
+    "aws-ssm-document-list": SSM.document_list_command,
     "aws-ssm-tag-list": SSM.list_tags_for_resource_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
@@ -8321,10 +8577,14 @@ COMMANDS_MAPPING: dict[str, Callable] = {
 }
 
 REQUIRED_ACTIONS: list[str] = [
+    "ssm:ListAssociationVersions",
+    "ssm:DescribeAssociation",
+    "ssm:ListAssociations",
     "ssm:GetInventory",
     "ssm:AddTagsToResource",
     "ssm:RemoveTagsFromResource",
     "ssm:ListTagsForResource",
+    "ssm:ListDocuments",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
