@@ -73,7 +73,7 @@
 					"simple": "mirror_instance"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -169,7 +169,7 @@
 					"simple": "mirror_instance"
 				}, 
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -243,7 +243,7 @@
 					"simple": "mirror_instance"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -339,7 +339,7 @@
 					"simple": "mirror_instance"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -413,7 +413,7 @@
 					"simple": "mirror_instance"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -509,7 +509,7 @@
 					"simple": "mirror_instance"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -583,7 +583,7 @@
 					"simple": "mirror_instance"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		},
@@ -654,7 +654,7 @@
 					"simple": "severity"
 				},
 				"Doppel Screenshot URL": {
-					"simple": "doppelscreenshoturl"
+					"simple": "screenshot_url"
 				}
 			}
 		}
