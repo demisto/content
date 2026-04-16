@@ -43,6 +43,7 @@ comment: This script executes the 'quarantine-file' command on a specified file 
 name: quarantine-file
 supportedModules:
 - agentix
+- cloud
 - cloud_runtime_security
 - edr
 - xsiam
