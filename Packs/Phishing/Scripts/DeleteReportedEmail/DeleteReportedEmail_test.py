@@ -1,4 +1,5 @@
 from copy import deepcopy
+from urllib.parse import quote, unquote
 
 import CommonServerPython
 import DeleteReportedEmail
@@ -209,15 +210,18 @@ class TestSecurityAndCompliance:
 GENERAL_SEARCH_ARGS = {
     "delete-type": "emaildeletetype",
     "email_subject": "reportedemailsubject",
-    "message-id": "reportedemailmessageid",
+    "message-id": "<reportedemail@messageid>",
 }
 
 
 ADDED_SEARCH_ARGS = {
-    "Gmail": {"query": "Rfc822msgid:reportedemailmessageid", "user-id": "reportedemailto"},
+    "Gmail": {"query": 'rfc822msgid:"<reportedemail@messageid>"', "user-id": "reportedemailto"},
     "EWSO365": {"target-mailbox": "reportedemailto"},
     "EWS v2": {"target-mailbox": "reportedemailto"},
-    "MicrosoftGraphMail": {"user_id": "reportedemailto", "odata": "\"$filter=internetMessageId eq 'reportedemailmessageid'\""},
+    "MicrosoftGraphMail": {
+        "user_id": "reportedemailto",
+        "odata": "$filter=internetMessageId eq '%3Creportedemail%40messageid%3E'",
+    },
     "SecurityAndCompliance": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
     "SecurityAndComplianceV2": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
 }
@@ -249,7 +253,7 @@ def test_search_args(mocker, brand):
     INCIDENT_INFO = {
         "CustomFields": {
             "reportedemailorigin": "Attached",
-            "reportedemailmessageid": "reportedemailmessageid",
+            "reportedemailmessageid": "<reportedemail@messageid>",
             "reportedemailto": "reportedemailto",
             "emaildeletetype": "emaildeletetype",
             "reportedemailfrom": "reportedemailfrom",
@@ -310,3 +314,68 @@ def test_schedule_next_command(mocker):
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
     args = {"arg": "arg"}
     assert isinstance(schedule_next_command(args), ScheduledCommand)
+
+
+class TestMessageIdValidation:
+    """Tests for Message-ID format validation in get_search_args."""
+
+    BASE_INCIDENT = {
+        "CustomFields": {
+            "reportedemailorigin": "Attached",
+            "reportedemailmessageid": "",
+            "reportedemailto": "user@example.com",
+            "emaildeletetype": "soft",
+            "reportedemailfrom": "sender@example.com",
+            "reportedemailsubject": "Test Subject",
+        },
+        "sourceBrand": "Gmail",
+    }
+
+    def _make_incident(self, message_id: str) -> dict:
+        incident = deepcopy(self.BASE_INCIDENT)
+        incident["CustomFields"]["reportedemailmessageid"] = message_id
+        return incident
+
+    def test_valid_message_id_accepted(self, mocker):
+        """Test that a valid Message-ID passes format validation."""
+        incident = self._make_incident("<abc@example.com>")
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        result = get_search_args({})
+        assert result["message-id"] == "<abc@example.com>"
+
+    def test_message_id_with_operator_rejected(self, mocker):
+        """Test that a Message-ID with extra operators is rejected by format validation."""
+        incident = self._make_incident("<x@y> OR subject:Invoice")
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        with pytest.raises(DemistoException, match="Refusing suspicious Message-ID"):
+            get_search_args({})
+
+    def test_message_id_without_angle_brackets_rejected(self, mocker):
+        """Test that a Message-ID without angle brackets is rejected by format validation."""
+        incident = self._make_incident("abc@example.com")
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        with pytest.raises(DemistoException, match="Refusing suspicious Message-ID"):
+            get_search_args({})
+
+    def test_gmail_query_uses_quoted_format(self, mocker):
+        """Test that the Gmail query string uses the quoted rfc822msgid format."""
+        message_id = "<test123@example.com>"
+        incident = self._make_incident(message_id)
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        result = get_search_args({})
+        assert result["query"] == f'rfc822msgid:"{message_id}"'
+
+    def test_odata_filter_escapes_single_quotes(self, mocker):
+        """Test that single quotes in Message-ID are escaped in the OData filter."""
+        message_id = "<it's@example.com>"
+        incident = self._make_incident(message_id)
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="MicrosoftGraphMail")
+        result = get_search_args({})
+        odata = result["odata"]
+        escaped_id = quote(unquote(message_id)).replace("'", "''")
+        assert f"'{escaped_id}'" in odata
