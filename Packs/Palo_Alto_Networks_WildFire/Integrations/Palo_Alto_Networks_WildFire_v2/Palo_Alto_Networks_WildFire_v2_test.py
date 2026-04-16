@@ -785,3 +785,39 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     main()
 
     mock_get_license.assert_called()
+
+
+def test_wildfire_upload_file_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory components.
+    When:
+        - Calling wildfire_upload_file.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+    from Palo_Alto_Networks_WildFire_v2 import wildfire_upload_file
+    import os
+
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://test.com")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL_DICT", {"upload_file": "/submit/file"})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.BODY_DICT", {"apikey": "test"})
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd", "id": "entry1"},
+    )
+    mock_copy = mocker.patch("shutil.copy")
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
+    mocker.patch("os.remove")
+    mocker.patch(
+        "Palo_Alto_Networks_WildFire_v2.http_request",
+        return_value={"wildfire": {"upload-file-info": {"sha256": "abc123"}}},
+    )
+
+    wildfire_upload_file("entry1")
+
+    # Verify shutil.copy was called with the sanitized basename only
+    copy_call_args = mock_copy.call_args[0]
+    assert copy_call_args[1] == "passwd"
+    assert os.path.basename(copy_call_args[1]) == copy_call_args[1]
