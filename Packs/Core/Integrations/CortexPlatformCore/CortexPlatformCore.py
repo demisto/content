@@ -3648,7 +3648,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        scripts = scripts_results[0].outputs.get("Scripts", [])  # type: ignore
+        scripts: list = scripts_results[0].outputs or []  # type: ignore
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
