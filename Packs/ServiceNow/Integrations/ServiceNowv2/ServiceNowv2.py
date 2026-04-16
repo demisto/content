@@ -1919,12 +1919,18 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
 
+            human_readable = (
+                f"Type: {note.get('element')}\nCreated By: "
+                f"{note.get('sys_created_by')}\nCreated On: "
+                f"{note.get('sys_created_on')}\n{note.get('value')}"
+            )
             entries.append(
                 {
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
-                    "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    "HumanReadable": human_readable,
+                    "Contents": human_readable,
+                    "created": note.get("sys_created_on", ""),
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
