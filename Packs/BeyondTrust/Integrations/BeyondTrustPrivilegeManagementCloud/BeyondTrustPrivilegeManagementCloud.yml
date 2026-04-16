@@ -7,6 +7,7 @@ sectionorder:
 name: BeyondTrust Privilege Management Cloud
 display: BeyondTrust Privilege Management Cloud
 category: Endpoint
+provider: BeyondTrust
 description: BeyondTrust Privilege Management Cloud (PM Cloud) integration for retrieving audit events and activity logs.
 configuration:
 - display: Server URL
