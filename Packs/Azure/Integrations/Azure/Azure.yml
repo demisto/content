@@ -6493,51 +6493,51 @@ script:
         description: Send the alert to the account administrators.
         hidden: true
     outputs:
-      - contextPath: Azure.SqlDB.ThreatPolicy.kind
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.kind
         description: The type of threat policy.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.location
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.location
         description: The location of the threat policy.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.id
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
         description: The threat policy ID.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.name
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
         description: The threat policy name.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.type
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.type
         description: The threat policy type.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.state
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.state
         description: The threat policy state.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.creationTime
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.creationTime
         description: The threat policy creation time.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.retentionDays
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.retentionDays
         description: The number of days to keep the logs in the threat detection audit logs.
         type: Number
-      - contextPath: Azure.SqlDB.ThreatPolicy.storageAccountAccessKey
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey
         description: The identifier key of the threat detection audit storage account.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.storageEndpoint
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageEndpoint
         description: The threat detection audit storage account.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.emailAccountAdmins
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins
         description: A list of email account administrators the alert is sent to.
         type: Boolean
-      - contextPath: Azure.SqlDB.ThreatPolicy.emailAddresses
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAddresses
         description: A list of email addresses the alert is sent to.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.disabledAlerts
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.disabledAlerts
         description: A list of disabled alerts. If no alerts are disabled, an empty string is returned.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.useServerDefault
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.useServerDefault
         description: Whether to use the default server policy.
-      - contextPath: Azure.SqlDB.ThreatPolicy.databaseName
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.databaseName
         description: The name of the database that the threat policy is related to.
         type: String
-      - contextPath: Azure.SqlDB.ThreatPolicy.serverName
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.serverName
         description: The name of server that the threat policy is related to.
         type: String
 
@@ -6724,73 +6724,73 @@ script:
         description: Configures the web site to accept only https requests.
         hidden: true
     outputs:
-      - contextPath: Azure.App.WebApp.id
+      - contextPath: Azure.AppService.WebApp.id
         description: The fully qualified resource ID for the web app.
         type: String
-      - contextPath: Azure.App.WebApp.name
+      - contextPath: Azure.AppService.WebApp.name
         description: The name of the web app.
         type: String
-      - contextPath: Azure.App.WebApp.type
+      - contextPath: Azure.AppService.WebApp.type
         description: The resource type, e.g., Microsoft.Web/sites.
         type: String
-      - contextPath: Azure.App.WebApp.location
+      - contextPath: Azure.AppService.WebApp.location
         description: The geographic location of the web app.
         type: String
-      - contextPath: Azure.App.WebApp.kind
+      - contextPath: Azure.AppService.WebApp.kind
         description: The type of app, for example app or functionapp.
         type: String
-      - contextPath: Azure.App.WebApp.tags
+      - contextPath: Azure.AppService.WebApp.tags
         description: The resource tags as key-value pairs.
-      - contextPath: Azure.App.WebApp.identity.type
+      - contextPath: Azure.AppService.WebApp.identity.type
         description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
         type: String
-      - contextPath: Azure.App.WebApp.identity.principalId
+      - contextPath: Azure.AppService.WebApp.identity.principalId
         description: The principal ID of the system-assigned identity.
         type: String
-      - contextPath: Azure.App.WebApp.identity.tenantId
+      - contextPath: Azure.AppService.WebApp.identity.tenantId
         description: The tenant ID of the system-assigned identity.
         type: String
-      - contextPath: Azure.App.WebApp.identity.userAssignedIdentities
+      - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
         description: The list of user-assigned identities associated with the web app.
-      - contextPath: Azure.App.WebApp.properties.state
+      - contextPath: Azure.AppService.WebApp.properties.state
         description: The current state of the web app (For example Running or Stopped).
         type: String
-      - contextPath: Azure.App.WebApp.properties.enabled
+      - contextPath: Azure.AppService.WebApp.properties.enabled
         description: Whether the web app is enabled.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.defaultHostName
+      - contextPath: Azure.AppService.WebApp.properties.defaultHostName
         description: The default host name of the web app.
         type: String
-      - contextPath: Azure.App.WebApp.properties.hostNames
+      - contextPath: Azure.AppService.WebApp.properties.hostNames
         description: A list of host names associated with the web app.
-      - contextPath: Azure.App.WebApp.properties.repositorySiteName
+      - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
         description: The name of the repository site.
         type: String
-      - contextPath: Azure.App.WebApp.properties.clientAffinityEnabled
+      - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
         description: Whether client affinity is enabled.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.clientCertEnabled
+      - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
         description: Whether client certificates are enabled.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.clientCertExclusionPaths
+      - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
         description: A list of paths to exclude from client certificate authentication.
         type: String
-      - contextPath: Azure.App.WebApp.properties.hostingEnvironment
+      - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
         description: The App Service Environment to use for the web app.
         type: String
-      - contextPath: Azure.App.WebApp.properties.serverFarmId
+      - contextPath: Azure.AppService.WebApp.properties.serverFarmId
         description: The resource ID of the associated App Service plan.
         type: String
-      - contextPath: Azure.App.WebApp.properties.reserved
+      - contextPath: Azure.AppService.WebApp.properties.reserved
         description: Whether the web app is on a Linux plan.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.isXenon
+      - contextPath: Azure.AppService.WebApp.properties.isXenon
         description: Whether the web app is hosted in Xenon.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.hyperV
+      - contextPath: Azure.AppService.WebApp.properties.hyperV
         description: Whether Hyper-V is enabled for the web app.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.siteConfig
+      - contextPath: Azure.AppService.WebApp.properties.siteConfig
         description: A site config object.
 
   - name: azure-cosmos-db-disable-key-quick-action
@@ -6999,73 +6999,73 @@ script:
         description: Whether to enable client certificate authentication.
         hidden: true
     outputs:
-      - contextPath: Azure.App.WebApp.id
+      - contextPath: Azure.AppService.WebApp.id
         description: The fully qualified resource ID for the web app.
         type: String
-      - contextPath: Azure.App.WebApp.name
+      - contextPath: Azure.AppService.WebApp.name
         description: The name of the web app.
         type: String
-      - contextPath: Azure.App.WebApp.type
+      - contextPath: Azure.AppService.WebApp.type
         description: The resource type, e.g., Microsoft.Web/sites.
         type: String
-      - contextPath: Azure.App.WebApp.location
+      - contextPath: Azure.AppService.WebApp.location
         description: The geographic location of the web app.
         type: String
-      - contextPath: Azure.App.WebApp.kind
+      - contextPath: Azure.AppService.WebApp.kind
         description: The type of app, for example app or functionapp.
         type: String
-      - contextPath: Azure.App.WebApp.tags
+      - contextPath: Azure.AppService.WebApp.tags
         description: The resource tags as key-value pairs.
-      - contextPath: Azure.App.WebApp.identity.type
+      - contextPath: Azure.AppService.WebApp.identity.type
         description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
         type: String
-      - contextPath: Azure.App.WebApp.identity.principalId
+      - contextPath: Azure.AppService.WebApp.identity.principalId
         description: The principal ID of the system-assigned identity.
         type: String
-      - contextPath: Azure.App.WebApp.identity.tenantId
+      - contextPath: Azure.AppService.WebApp.identity.tenantId
         description: The tenant ID of the system-assigned identity.
         type: String
-      - contextPath: Azure.App.WebApp.identity.userAssignedIdentities
+      - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
         description: The list of user-assigned identities associated with the web app.
-      - contextPath: Azure.App.WebApp.properties.state
+      - contextPath: Azure.AppService.WebApp.properties.state
         description: The current state of the web app (For example Running or Stopped).
         type: String
-      - contextPath: Azure.App.WebApp.properties.enabled
+      - contextPath: Azure.AppService.WebApp.properties.enabled
         description: Whether the web app is enabled.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.defaultHostName
+      - contextPath: Azure.AppService.WebApp.properties.defaultHostName
         description: The default host name of the web app.
         type: String
-      - contextPath: Azure.App.WebApp.properties.hostNames
+      - contextPath: Azure.AppService.WebApp.properties.hostNames
         description: A list of host names associated with the web app.
-      - contextPath: Azure.App.WebApp.properties.repositorySiteName
+      - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
         description: The name of the repository site.
         type: String
-      - contextPath: Azure.App.WebApp.properties.clientAffinityEnabled
+      - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
         description: Whether client affinity is enabled.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.clientCertEnabled
+      - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
         description: Whether client certificates are enabled.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.clientCertExclusionPaths
+      - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
         description: A list of paths to exclude from client certificate authentication.
         type: String
-      - contextPath: Azure.App.WebApp.properties.hostingEnvironment
+      - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
         description: The App Service Environment to use for the web app.
         type: String
-      - contextPath: Azure.App.WebApp.properties.serverFarmId
+      - contextPath: Azure.AppService.WebApp.properties.serverFarmId
         description: The resource ID of the associated App Service plan.
         type: String
-      - contextPath: Azure.App.WebApp.properties.reserved
+      - contextPath: Azure.AppService.WebApp.properties.reserved
         description: Whether the web app is on a Linux plan.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.isXenon
+      - contextPath: Azure.AppService.WebApp.properties.isXenon
         description: Whether the web app is hosted in Xenon.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.hyperV
+      - contextPath: Azure.AppService.WebApp.properties.hyperV
         description: Whether Hyper-V is enabled for the web app.
         type: Boolean
-      - contextPath: Azure.App.WebApp.properties.siteConfig
+      - contextPath: Azure.AppService.WebApp.properties.siteConfig
         description: A site config object.
 
   - arguments:
