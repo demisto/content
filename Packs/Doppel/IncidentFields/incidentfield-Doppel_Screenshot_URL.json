@@ -10,7 +10,7 @@
         "Doppel Alert Social_Media"
     ],
     "caseInsensitive": true,
-    "cliName": "screenshot_url",
+    "cliName": "screenshoturl",
     "closeForm": false,
     "content": true,
     "description": "Screenshot URL received from Doppel alert data.",
