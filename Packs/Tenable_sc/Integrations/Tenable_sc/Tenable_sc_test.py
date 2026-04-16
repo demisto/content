@@ -1538,7 +1538,7 @@ def test_fetch_vulnerabilities_analysis_client_method(mocker):
             "type": "vuln",
             "sourceType": "cumulative",
             "view": "all",
-            'wasVuln': 'excludeWas',
+            "wasVuln": "excludeWas",
             "startOffset": 0,
             "endOffset": 500,
             "sortField": "severity",
