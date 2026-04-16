@@ -22,7 +22,7 @@ def client(mocker):
     # Mock the methods that make HTTP requests to prevent actual network calls
     mocker.patch.object(client_instance, "_get_access_token", return_value="mock_access_token")
     mocker.patch.object(client_instance, "_get_tenant_url", return_value="https://mock-tenant.cyberark.cloud")
-    mocker.patch("CyberArkEPMSOCResponse.get_sets", return_value={"Sets": [{"Id": "id1", "Name": "set_name1"}]})
+    mocker.patch("CyberArkEPMSOCResponse.get_sets", return_value=[{"Id": "id1", "Name": "set_name1"}])
 
     return client_instance
 
@@ -164,7 +164,13 @@ def test_change_risk_plan_no_endpoints_found(client, mocker):
         return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
     )
 
-    mocker.patch.object(client, "http_request", return_value={"endpoints": []})
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": []},  # search_endpoints call
+        ],
+    )
 
     args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "nonexistent", "logged_in_user": "tester9"}
 
@@ -234,7 +240,9 @@ def test_search_endpoints_without_logged_in_user(client, mocker):
     mocker.patch.object(
         client,
         "http_request",
-        return_value={"endpoints": [{"id": "endpoint_id1"}]},
+        side_effect=[
+            {"endpoints": [{"id": "endpoint_id1"}]},  # search_endpoints call
+        ],
     )
 
     result = search_endpoints("endpoint1", "", client)
