@@ -33,7 +33,7 @@ def get_now():
 
 def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     """Generate time intervals for fetching events from Proofpoint TAP API.
-    
+
     Creates intervals of up to 59 minutes each, ensuring each interval is at least 30 seconds
     to comply with Proofpoint API requirements.
 
@@ -44,7 +44,7 @@ def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     Args:
         last_fetch (datetime or str): Starting time for fetch
         look_back_minutes (int): Buffer time in minutes to subtract from 'now'. Default is 0.
-        
+
     Returns:
         List[tuple[str, str]]: List of (start_time, end_time) tuples in DATE_FORMAT.
                                Each interval is ≤59 minutes and ≥30 seconds.
