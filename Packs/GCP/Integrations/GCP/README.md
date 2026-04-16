@@ -1484,7 +1484,7 @@ Returns the specified network.
 ### gcp-bq-dataset-policy-remove
 
 ***
-Removes an email from the BigQuery dataset policy. Requires the bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy permissions.
+Removes an email from the BigQuery dataset policy. Requires the bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy permissions. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy.
 
 #### Base Command
 

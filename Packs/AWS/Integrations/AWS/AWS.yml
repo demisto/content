@@ -184,7 +184,7 @@ script:
       - 'false'
 
   - name: aws-s3-bucket-delete
-    description: Delete AWS S3 bucket, the bucket must be empty from files.
+    description: "Delete AWS S3 bucket, the bucket must be empty from files. Required IAM Permission: s3:DeleteBucket."
     arguments:
       - description: The name of S3 bucket.
         name: bucket
@@ -233,7 +233,7 @@ script:
           - us-gov-west-1
 
   - name: aws-s3-bucket-objects-list
-    description: Returns some or all (up to 1,000) of the objects in a bucket.
+    description: "Returns some or all (up to 1,000) of the objects in a bucket. Required IAM Permission: s3:ListBucket."
     arguments:
       - description: The name of S3 bucket.
         name: bucket
@@ -1710,7 +1710,7 @@ script:
       type: String
 
   - name: aws-eks-access-entry-update
-    description: Updates an existing Access Entry for an Amazon EKS cluster.
+    description: "Updates an existing Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:UpdateAccessEntry."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1799,7 +1799,7 @@ script:
       description: The ARN of the access entry.
       type: String
   - name: aws-eks-access-entry-create
-    description: Creates a new Access Entry for an Amazon EKS cluster.
+    description: "Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:CreateAccessEntry."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1900,7 +1900,7 @@ script:
       description: The ARN of the access entry.
       type: String
   - name: aws-eks-clusters-list
-    description: Returns a list of EKS clusters.
+    description: "Returns a list of EKS clusters. Required IAM Permission: eks:ListClusters."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2533,7 +2533,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instances-describe
-    description: Returns information about provisioned RDS instances. Requires the rds:DescribeDBInstances permission.
+    description: "Returns information about provisioned RDS instances. Requires the rds:DescribeDBInstances permission. Required IAM Permission: rds:DescribeDBInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -3275,7 +3275,7 @@ script:
         defaultValue: 'all'
         hidden: true
   - name: aws-redshift-cluster-modify
-    description: Modifies the settings of a cluster. Requires the redshift:ModifyCluster permission.
+    description: "Modifies the settings of a cluster. Requires the redshift:ModifyCluster permission. Required IAM Permission: redshift:ModifyCluster."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -6928,7 +6928,7 @@ script:
       type: boolean
 
   - name: aws-ec2-images-describe
-    description: Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
+    description: "Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you. Required IAM Permission: ec2:DescribeImages."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7133,7 +7133,7 @@ script:
         type: string
 
   - name: aws-ec2-image-create
-    description: Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The instance must be in the running or stopped state.
+    description: "Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The instance must be in the running or stopped state. Required IAM Permission: ec2:CreateImage."
     execution: true
     arguments:
       - name: account_id
@@ -7215,7 +7215,7 @@ script:
         type: string
 
   - name: aws-ec2-image-deregister
-    description: Deregisters the specified Amazon Machine Image (AMI). After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect any instances that you've already launched from the AMI.
+    description: "Deregisters the specified Amazon Machine Image (AMI). After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect any instances that you've already launched from the AMI. Required IAM Permission: ec2:DeregisterImage."
     execution: true
     arguments:
       - name: account_id
@@ -7265,7 +7265,7 @@ script:
         required: true
 
   - name: aws-ec2-image-copy
-    description: Initiates the copy of an AMI from the specified source region to the current region. You can copy an AMI across regions to enable consistent global deployment.
+    description: "Initiates the copy of an AMI from the specified source region to the current region. You can copy an AMI across regions to enable consistent global deployment. Required IAM Permission: ec2:CopyImage."
     execution: true
     arguments:
       - name: account_id
@@ -7353,7 +7353,7 @@ script:
         type: string
 
   - name: aws-ec2-image-available-waiter
-    description: Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached.
+    description: "Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached. Required IAM Permission: ec2:DescribeImages."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7422,7 +7422,7 @@ script:
         defaultValue: "40"
 
   - name: aws-ec2-snapshots-describe
-    description: Describes the EBS snapshots available to you or all snapshots accessible in your environment.
+    description: "Describes the EBS snapshots available to you or all snapshots accessible in your environment. Required IAM Permission: ec2:DescribeSnapshots."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7544,7 +7544,7 @@ script:
       type: string
 
   - name: aws-ec2-snapshot-delete
-    description: Deletes the specified snapshot.
+    description: "Deletes the specified snapshot. Required IAM Permission: ec2:DeleteSnapshot."
     execution: true
     arguments:
     - name: account_id
@@ -7594,7 +7594,7 @@ script:
       required: true
 
   - name: aws-ec2-snapshot-copy
-    description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost.
+    description: "Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost. Required IAM Permission: ec2:CopySnapshot."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7673,7 +7673,7 @@ script:
       type: string
 
   - name: aws-ec2-snapshot-completed-waiter
-    description: A waiter function that waits until the snapshot is complete.
+    description: "A waiter function that waits until the snapshot is complete. Required IAM Permission: ec2:DescribeSnapshots."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -8510,7 +8510,7 @@ script:
       description: The name of the Lambda function, version, or alias.
     - name: qualifier
       description: Specify a version or alias to get details about a published version of the function.
-    description: Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
+    description: "Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned. Required IAM Permission: lambda:GetFunction."
     outputs:
     - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
       description: The name of the function.
@@ -8624,7 +8624,7 @@ script:
     - name: next_token
       description: "Token for pagination. Use the value from AWS.Lambda.FunctionsNextToken to retrieve the next page of results."
       required: false
-    description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information.
+    description: "Returns a list of your Lambda functions. For each function, the response includes the function configuration information. Required IAM Permission: lambda:ListFunctions."
     outputs:
     - contextPath: AWS.Lambda.Functions.FunctionName
       description: The name of the function.
@@ -8762,7 +8762,7 @@ script:
       defaultValue: "50"
     - description: Specify the pagination token that was returned by a previous request to retrieve the next page of results.
       name: next_token
-    description: Returns a list of aliases created for a Lambda function.
+    description: "Returns a list of aliases created for a Lambda function. Required IAM Permission: lambda:ListAliases."
     outputs:
     - contextPath: AWS.Lambda.Aliases.AliasArn
       description: Lambda function ARN that is qualified using the alias name as the suffix.
@@ -8829,7 +8829,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Retrieves details about the account's limits and usage in an AWS Region.
+    description: "Retrieves details about the account's limits and usage in an AWS Region. Required IAM Permission: lambda:GetAccountSettings."
     outputs:
     - contextPath: AWS.Lambda.AccountSettings.AccountLimit.TotalCodeSize
       description: The amount of storage space that you can use for all deployment packages and layer archives.
@@ -8911,7 +8911,7 @@ script:
     - description: The maximum number of versions to return. Note that the maximum limit is 50 items in each response.
       name: limit
       defaultValue: "50"
-    description: Returns a list of versions, with the version-specific configuration of each.
+    description: "Returns a list of versions, with the version-specific configuration of each. Required IAM Permission: lambda:ListVersionsByFunction."
     outputs:
     - contextPath: AWS.Lambda.Functions.FunctionVersionsNextToken
       description: The pagination token that's included if more results are available.
@@ -9053,11 +9053,11 @@ script:
       required: true
     - description: The alias name or version number.
       name: qualifier
-    description: Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address.
+    description: "Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address. Required IAM Permission: lambda:DeleteFunctionUrlConfig."
     execution: true
 
   - name: aws-lambda-function-create
-    description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+    description: "Creates a Lambda function. To create a function, you need a deployment package and an execution role. Required IAM Permission: lambda:CreateFunction."
     execution: true
     arguments:
     - name: account_id
@@ -9218,7 +9218,7 @@ script:
       type: string
 
   - name: aws-lambda-layer-version-list
-    description: Lists the versions of an Lambda layer.
+    description: "Lists the versions of an Lambda layer. Required IAM Permission: lambda:ListLayerVersions."
     arguments:
     - name: account_id
       required: true
@@ -9301,7 +9301,7 @@ script:
       type: array
 
   - name: aws-lambda-function-delete
-    description: Deletes a Lambda function.
+    description: "Deletes a Lambda function. Required IAM Permission: lambda:DeleteFunction."
     arguments:
     - name: account_id
       required: true
@@ -9352,7 +9352,7 @@ script:
       description: Specify a version to delete. You can't delete a version that an alias references.
 
   - name: aws-lambda-layer-version-delete
-    description: Deletes a version of a Lambda layer.
+    description: "Deletes a version of a Lambda layer. Required IAM Permission: lambda:DeleteLayerVersion."
     arguments:
     - name: account_id
       required: true
@@ -9404,7 +9404,7 @@ script:
       required: true
 
   - name: aws-lambda-layer-version-publish
-    description: Creates a Lambda layer from a ZIP archive.
+    description: "Creates a Lambda layer from a ZIP archive. Required IAM Permission: lambda:PublishLayerVersion."
     arguments:
     - name: account_id
       required: true
@@ -9494,7 +9494,7 @@ script:
       type: string
 
   - name: aws-lambda-function-configuration-update
-    description: Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission.
+    description: "Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission. Required IAM Permission: lambda:UpdateFunctionConfiguration."
     arguments:
     - name: account_id
       required: true
@@ -11596,7 +11596,7 @@ script:
       type: string
 
   - name: aws-ec2-addresses-describe
-    description: Describes one or more of your Elastic IP addresses.
+    description: "Describes one or more of your Elastic IP addresses. Required IAM Permission: ec2:DescribeAddresses."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -11699,7 +11699,7 @@ script:
       type: string
 
   - name: aws-ec2-address-allocate
-    description: Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+    description: "Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface. Required IAM Permission: ec2:AllocateAddress."
     execution: true
     arguments:
     - name: account_id
@@ -11786,7 +11786,7 @@ script:
       type: string
 
   - name: aws-ec2-address-associate
-    description: Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+    description: "Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface. Required IAM Permission: ec2:AssociateAddress."
     execution: true
     arguments:
     - name: account_id
@@ -11859,7 +11859,7 @@ script:
       type: string
 
   - name: aws-ec2-address-disassociate
-    description: Disassociates an Elastic IP address from the instance or network interface it's associated with.
+    description: "Disassociates an Elastic IP address from the instance or network interface it's associated with. Required IAM Permission: ec2:DisassociateAddress."
     execution: true
     arguments:
     - name: account_id
@@ -11909,7 +11909,7 @@ script:
       required: false
 
   - name: aws-ec2-address-release
-    description: Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
+    description: "Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you. Required IAM Permission: ec2:ReleaseAddress."
     execution: true
     arguments:
     - name: account_id
@@ -11962,7 +11962,7 @@ script:
       required: false
 
   - name: aws-ec2-instances-monitor
-    description: Enables detailed monitoring on one or more running Amazon EC2 instances.
+    description: "Enables detailed monitoring on one or more running Amazon EC2 instances. Required IAM Permission: ec2:MonitorInstances."
     execution: true
     arguments:
     - name: account_id
@@ -12020,7 +12020,7 @@ script:
       type: String
 
   - name: aws-ec2-instances-unmonitor
-    description: Disables detailed monitoring for one or more running Amazon EC2 instances.
+    description: "Disables detailed monitoring for one or more running Amazon EC2 instances. Required IAM Permission: ec2:UnmonitorInstances."
     execution: true
     arguments:
     - name: account_id
@@ -12078,7 +12078,7 @@ script:
       type: String
 
   - name: aws-ec2-instances-reboot
-    description: Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+    description: "Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances. Required IAM Permission: ec2:RebootInstances."
     execution: true
     arguments:
     - name: account_id
@@ -12129,7 +12129,7 @@ script:
       isArray: true
 
   - name: aws-ec2-instance-running-waiter
-    description: "Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`)."
+    description: "Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`). Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12186,7 +12186,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-status-ok-waiter
-    description: "Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
+    description: "Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstanceStatus."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12250,7 +12250,7 @@ script:
       defaultValue: 'false'
 
   - name: aws-ec2-instance-stopped-waiter
-    description: Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+    description: "Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12307,7 +12307,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-instance-terminated-waiter
-    description: "Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached."
+    description: "Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12364,7 +12364,7 @@ script:
       defaultValue: "40"
 
   - name: aws-ec2-iam-instance-profile-associations-describe
-    description: Describes IAM instance profile associations.
+    description: "Describes IAM instance profile associations. Required IAM Permission: ec2:DescribeIamInstanceProfileAssociations."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12439,7 +12439,7 @@ script:
       type: String
 
   - name: aws-ec2-password-data-get
-    description: Retrieves the encrypted administrator password for a running Windows instance.
+    description: "Retrieves the encrypted administrator password for a running Windows instance. Required IAM Permission: ec2:GetPasswordData."
     execution: true
     arguments:
     - name: account_id
@@ -12502,7 +12502,7 @@ script:
       type: String
 
   - name: aws-ec2-reserved-instances-describe
-    description: Describes one or more of the Reserved Instances that you purchased.
+    description: "Describes one or more of the Reserved Instances that you purchased. Required IAM Permission: ec2:DescribeReservedInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -12629,7 +12629,7 @@ script:
       description: The value of the tag.
       type: String
   - name: aws-ec2-volumes-describe
-    description: Describes the specified EBS volumes or all of your EBS volumes.
+    description: "Describes the specified EBS volumes or all of your EBS volumes. Required IAM Permission: ec2:DescribeVolumes."
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
@@ -12759,7 +12759,7 @@ script:
         type: String
 
   - name: aws-ec2-volume-modify
-    description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+    description: "You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity. Required IAM Permission: ec2:ModifyVolume."
     execution: true
     arguments:
       - name: account_id
@@ -12885,7 +12885,7 @@ script:
         type: date
 
   - name: aws-ec2-volume-create
-    description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+    description: "Creates an EBS volume that can be attached to an instance in the same Availability Zone. Required IAM Permission: ec2:CreateVolume."
     arguments:
       - name: account_id
         description: The AWS account ID. This is used when running commands across multiple accounts.
@@ -13054,7 +13054,7 @@ script:
         type: string
 
   - name: aws-ec2-volume-attach
-    description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+    description: "Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name. Required IAM Permission: ec2:AttachVolume."
     execution: true
     arguments:
       - name: account_id
@@ -13138,7 +13138,7 @@ script:
         type: string
 
   - name: aws-ec2-volume-detach
-    description: Detaches an EBS volume from an instance.
+    description: "Detaches an EBS volume from an instance. Required IAM Permission: ec2:DetachVolume."
     execution: true
     arguments:
       - name: account_id
@@ -13229,7 +13229,7 @@ script:
         type: string
 
   - name: aws-ec2-volume-delete
-    description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+    description: "Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance). Required IAM Permission: ec2:DeleteVolume."
     execution: true
     arguments:
       - name: account_id
@@ -13280,7 +13280,7 @@ script:
     outputs: [ ]
 
   - name: aws-ec2-launch-templates-describe
-    description: Describes one or more launch templates.
+    description: "Describes one or more launch templates. Required IAM Permission: ec2:DescribeLaunchTemplates."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -13371,7 +13371,7 @@ script:
         type: string
 
   - name: aws-ec2-launch-template-create
-    description: Creates a launch template. A launch template contains the parameters to launch an instance.
+    description: "Creates a launch template. A launch template contains the parameters to launch an instance. Required IAM Permission: ec2:CreateLaunchTemplate."
     execution: true
     arguments:
       - name: account_id
@@ -13644,7 +13644,7 @@ script:
         type: string
 
   - name: aws-ec2-launch-template-delete
-    description: Deletes a launch template. Deleting a launch template deletes all of its versions.
+    description: "Deletes a launch template. Deleting a launch template deletes all of its versions. Required IAM Permission: ec2:DeleteLaunchTemplate."
     execution: true
     arguments:
       - name: account_id
@@ -13725,7 +13725,7 @@ script:
         type: string
 
   - name: aws-ec2-fleet-create
-    description: Launches an EC2 Fleet.
+    description: "Launches an EC2 Fleet. Required IAM Permission: ec2:CreateFleet."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -14018,7 +14018,7 @@ script:
       type: string
 
   - name: aws-ec2-fleet-delete
-    description: Deletes the specified EC2 Fleet.
+    description: "Deletes the specified EC2 Fleet. Required IAM Permission: ec2:DeleteFleets."
     execution: true
     arguments:
     - name: account_id
@@ -14092,7 +14092,7 @@ script:
       type: string
 
   - name: aws-ec2-fleets-describe
-    description: Describes one or more of your EC2 Fleets.
+    description: "Describes one or more of your EC2 Fleets. Required IAM Permission: ec2:DescribeFleets."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -14242,7 +14242,7 @@ script:
       type: string
 
   - name: aws-ec2-fleet-instances-describe
-    description: Describes the running instances for the specified EC2 Fleet.
+    description: "Describes the running instances for the specified EC2 Fleet. Required IAM Permission: ec2:DescribeFleetInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -14319,7 +14319,7 @@ script:
       type: string
 
   - name: aws-ec2-fleet-modify
-    description: Modifies the specified EC2 Fleet.
+    description: "Modifies the specified EC2 Fleet. Required IAM Permission: ec2:ModifyFleet."
     execution: true
     arguments:
     - name: account_id
@@ -14491,7 +14491,7 @@ script:
       - units
 
   - name: aws-ec2-key-pairs-describe
-    description: Describes the specified key pairs or all of your key pairs.
+    description: "Describes the specified key pairs or all of your key pairs. Required IAM Permission: ec2:DescribeKeyPairs."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -14577,7 +14577,7 @@ script:
         type: array
 
   - name: aws-ec2-hosts-allocate
-    description: Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate.
+    description: "Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate. Required IAM Permission: ec2:AllocateHosts."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -14676,7 +14676,7 @@ script:
         type: array
 
   - name: aws-ec2-hosts-release
-    description: Releases the specified Dedicated Hosts.
+    description: "Releases the specified Dedicated Hosts. Required IAM Permission: ec2:ReleaseHosts."
     execution: true
     arguments:
       - name: account_id
@@ -14734,7 +14734,7 @@ script:
         type: array
 
   - name: aws-ec2-traffic-mirror-session-create
-    description: Creates a Traffic Mirror session. A Traffic Mirror session actively copies packets from a Traffic Mirror source to a Traffic Mirror target.
+    description: "Creates a Traffic Mirror session. A Traffic Mirror session actively copies packets from a Traffic Mirror source to a Traffic Mirror target. Required IAM Permission: ec2:CreateTrafficMirrorSession."
     execution: true
     arguments:
       - name: account_id
@@ -14839,7 +14839,7 @@ script:
         type: array
 
   - name: aws-ec2-vpc-delete
-    description: Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+    description: "Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it. Required IAM Permission: ec2:DeleteVpc."
     execution: true
     arguments:
     - name: account_id
@@ -14889,7 +14889,7 @@ script:
       required: true
 
   - name: aws-ec2-vpc-endpoint-create
-    description: Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+    description: "Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service. Required IAM Permission: ec2:CreateVpcEndpoint."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -15128,7 +15128,7 @@ script:
       type: array
 
   - name: aws-ec2-internet-gateway-describe
-    description: A description of one or more of your internet gateways.
+    description: "A description of one or more of your internet gateways. Required IAM Permission: ec2:DescribeInternetGateways."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -15209,7 +15209,7 @@ script:
       type: string
 
   - name: aws-ec2-internet-gateway-detach
-    description: Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+    description: "Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC. Required IAM Permission: ec2:DetachInternetGateway."
     execution: true
     arguments:
     - name: account_id
@@ -15262,7 +15262,7 @@ script:
       required: true
 
   - name: aws-ec2-internet-gateway-delete
-    description: Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+    description: "Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it. Required IAM Permission: ec2:DeleteInternetGateway."
     execution: true
     arguments:
     - name: account_id
@@ -15312,7 +15312,7 @@ script:
       required: true
 
   - name: aws-ec2-subnet-delete
-    description: Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+    description: "Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet. Required IAM Permission: ec2:DeleteSubnet."
     execution: true
     arguments:
     - name: account_id
@@ -15362,7 +15362,7 @@ script:
       required: true
 
   - name: aws-ec2-network-acl-entry-create
-    description: Creates an entry (a rule) in a network ACL with the specified rule number.
+    description: "Creates an entry (a rule) in a network ACL with the specified rule number. Required IAM Permission: ec2:CreateNetworkAclEntry."
     arguments:
     - name: account_id
       description: The AWS account ID.
