@@ -2,9 +2,11 @@ filebeat.inputs:
 - type: filestream
   enabled: true
   paths:
-    -  c:\Windows\System32\dns\DNS.log
+  - c:\Windows\System32\dns\DNS.log
   processors:
-    - add_fields:
-        fields: 
-          vendor: "microsoft"
-          product: "dns"
+  - add_fields:
+      fields:
+        vendor: "microsoft"
+        product: "dns"
+supportedModules:
+- xsiam
