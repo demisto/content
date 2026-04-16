@@ -2076,7 +2076,7 @@ def resolve_approval_request(id, resolution, requestor_email=None, res_comments=
     return http_request("POST", "/approvalRequest", data=body_params)
 
 
-def retrieve_user_data():
+def get_user_data():
     """
     Sends request to get user information
     :param user_email: user email address
@@ -2085,16 +2085,13 @@ def retrieve_user_data():
     args = demisto.args()
     user_email = args.get("user_email")
     query = f"name:{user_email}"
-    params = {'q': query}
-    
-    user_data = http_request("GET", f"/user", params=params)
+    params = {"q": query}
+
+    user_data = http_request("GET", "/user", params=params)
 
     human_readable = tableToMarkdown("User Data", user_data, headers=[])
 
-    result = CommandResults(
-        readable_output=human_readable,
-        outputs_prefix="CBP.UserData",
-        outputs=user_data)
+    result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserData", outputs=user_data)
 
     return_results(result)
 
@@ -2107,18 +2104,13 @@ def disable_user_command():
     """
     args = demisto.args()
     user_id = args.get("user_id")
-    payload = {
-        "enabled": False
-    }
-    
+    payload = {"enabled": False}
+
     user_data = http_request("PUT", f"/user/{user_id}", data=json.dumps(payload))
 
     human_readable = tableToMarkdown("User Data", user_data, headers=[])
 
-    result = CommandResults(
-        readable_output=human_readable,
-        outputs_prefix="CBP.UserDisable",
-        outputs=user_data)
+    result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserDisable", outputs=user_data)
 
     return_results(result)
 
@@ -2225,8 +2217,8 @@ def main():
                 resolve_approval_request_command()
             elif command == "cbp-user-disable":
                 disable_user_command()
-            elif command == "cbp-user-data-retrieve":
-                retrieve_user_data()
+            elif command == "cbp-user-data-get":
+                get_user_data()
             else:
                 return_error(f"Command {command} is not supported.")
         # Log exceptions

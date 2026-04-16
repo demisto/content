@@ -845,39 +845,52 @@ Creates or updates a file rule. For more information, see the Carbon Black docum
 | CBP.FileRule.PolicyIDs | String | The policies this rule belongs to. |
 | CBP.FileRule.ReportOnly | String | Is this rule "reporting only" or is it also "enforcing". |
 
-### cbp-disable-user
+### cbp-user-disable
 
 ***
-Sends request to disable user account
+Sends request to disable user account.
 
 #### Base Command
 
-`cbp-disable-user`
+`cbp-user-disable`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | ID of the user to disable. Retrieved from cbp-retrieve-user-data. | Required | 
+| user_id | ID of the user to disable. Retrieved from cbp-user-data-get. | Required |
 
 #### Context Output
 
-There is no context output for this command.
-### cbp-retrieve-user-data
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CBP.UserDisable.Department | String | The department of the user. |
+| CBP.UserDisable.EmailAddress | String | The email of the user. |
+| CBP.UserDisable.Enabled | String | Whether the account is enabled or disabled. |
+| CBP.UserDisable.ID | String | The ID of the user in Carbon Black. |
+| CBP.UserDisable.Name | String | The name of the user account. |
+
+### cbp-user-data-get
 
 ***
-Retrieve all user account data
+Retrieve all user account data.
 
 #### Base Command
 
-`cbp-retrieve-user-data`
+`cbp-user-data-get`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_email | Email address of user account to retrieve data for. | Required | 
+| user_email | Email address of user account to retrieve data for. | Required |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CBP.UserDisable.Department | String | The department of the user. |
+| CBP.UserDisable.EmailAddress | String | The email of the user. |
+| CBP.UserDisable.Enabled | String | Whether the account is enabled or disabled. |
+| CBP.UserDisable.ID | String | The ID of the user in Carbon Black. |
+| CBP.UserDisable.Name | String | The name of the user account. |

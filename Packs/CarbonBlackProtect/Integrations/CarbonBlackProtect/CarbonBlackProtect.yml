@@ -1478,11 +1478,13 @@ script:
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
   - arguments:
-    - description: ID of the user to disable. Retrieved from cbp-user-data-retrieve.
+    - description: ID of the user to disable. Retrieved from cbp-user-data-get.
       name: user_id
       required: true
     description: Sends request to disable user account.
     name: cbp-user-disable
+    compliantpolicies:
+    - User Soft Remediation
     outputs:
     - contextPath: CBP.UserDisable.Department
       description: The department of the user.
@@ -1504,7 +1506,7 @@ script:
       name: user_email
       required: true
     description: Retrieve all user account data.
-    name: cbp-user-data-retrieve
+    name: cbp-user-data-get
     outputs:
     - contextPath: CBP.UserDisable.Department
       description: The department of the user.
