@@ -218,3 +218,133 @@ def test_rewrites_single_img_src_without_account():
     html = '<img src="xsoar/entry/download/12345">'
     result = rewrite_img_src(html)
     assert result == html
+
+
+class TestSetEmailReplyXSSPrevention:
+    """Tests for XSS prevention in set_email_reply header fields."""
+
+    def test_xss_in_email_from(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            "<script>alert(1)</script>",
+            "to@test.com",
+            "cc@test.com",
+            "Subject",
+            "<p>body</p>",
+            "2024-01-01T00:00:00Z",
+            "file.txt",
+        )
+        assert "&lt;script&gt;" in result
+        assert "<script>alert(1)</script>" not in result
+
+    def test_xss_in_email_to(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            "from@test.com",
+            "<img src=x onerror=alert(1)>",
+            "cc@test.com",
+            "Subject",
+            "<p>body</p>",
+            "2024-01-01T00:00:00Z",
+            "file.txt",
+        )
+        assert "&lt;img src=x" in result
+        assert "<img src=x onerror=" not in result
+
+    def test_xss_in_email_cc(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            "from@test.com", "to@test.com", "<iframe src=evil.com>", "Subject", "<p>body</p>", "2024-01-01T00:00:00Z", "file.txt"
+        )
+        assert "&lt;iframe" in result
+
+    def test_xss_in_email_subject(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            "from@test.com",
+            "to@test.com",
+            "cc@test.com",
+            "<img src=x onerror=alert(1)>",
+            "<p>body</p>",
+            "2024-01-01T00:00:00Z",
+            "file.txt",
+        )
+        assert "&lt;img src=x onerror=alert(1)&gt;" in result
+        assert "<img src=x onerror=" not in result
+
+    def test_xss_in_attachment_names(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            "from@test.com",
+            "to@test.com",
+            "cc@test.com",
+            "Subject",
+            "<p>body</p>",
+            "2024-01-01T00:00:00Z",
+            "<script>alert(1)</script>",
+        )
+        assert "&lt;script&gt;" in result
+        assert "<script>alert(" not in result
+
+    def test_none_fields_render_as_empty(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(None, None, None, None, "<p>body</p>", None, None)
+        assert "<b>From:</b> " in result
+        assert "None" not in result
+
+    def test_ampersand_in_subject(self):
+        from DisplayEmailHtmlThread import set_email_reply
+
+        result = set_email_reply(
+            "from@test.com", "to@test.com", "", "Tom & Jerry <together>", "<p>body</p>", "2024-01-01T00:00:00Z", ""
+        )
+        assert "Tom &amp; Jerry &lt;together&gt;" in result
+
+
+class TestSanitizeHtmlBody:
+    """Tests for HTML body sanitization in DisplayEmailHtmlThread."""
+
+    def test_strips_script_tags(self):
+        pytest.importorskip("nh3", reason="nh3 not installed in Docker image")
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        result = sanitize_html_body("<p>Hello</p><script>alert(1)</script><p>World</p>")
+        assert "<script>" not in result
+        assert "Hello" in result
+
+    def test_strips_onerror_attribute(self):
+        pytest.importorskip("nh3", reason="nh3 not installed in Docker image")
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        result = sanitize_html_body('<img src="x" onerror="alert(1)">')
+        assert "onerror" not in result
+
+    def test_preserves_safe_formatting(self):
+        pytest.importorskip("nh3", reason="nh3 not installed in Docker image")
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        safe_html = "<p>Hello <b>World</b></p><table><tr><td>Cell</td></tr></table>"
+        result = sanitize_html_body(safe_html)
+        assert "<p>" in result
+        assert "<b>" in result
+        assert "<table>" in result
+
+    def test_empty_input(self):
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        assert sanitize_html_body("") == ""
+
+    def test_fallback_when_nh3_unavailable(self, mocker):
+        """Validate graceful fallback when nh3 is not available."""
+        from DisplayEmailHtmlThread import sanitize_html_body
+
+        mocker.patch.dict("sys.modules", {"nh3": None})
+        malicious_html = "<script>alert(1)</script>"
+        result = sanitize_html_body(malicious_html)
+        assert result == malicious_html

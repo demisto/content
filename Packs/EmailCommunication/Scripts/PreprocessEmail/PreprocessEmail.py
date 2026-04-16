@@ -51,7 +51,6 @@ ALLOWED_EMAIL_TAGS = {
     "dt",
     "dd",
     "caption",
-    "style",
 }
 
 
