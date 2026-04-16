@@ -180,6 +180,44 @@ configuration:
   required: false
 script:
   commands:
+  - name: qradar-reference-data-bulk-load
+    description: Bulk load entries into a QRadar reference data map or map of sets.
+    arguments:
+      - name: reference_data_type
+        required: true
+        description: The type of reference data set to upload to. Valid values are `maps` or `map_of_sets`, or `tables`.
+        auto: PREDEFINED
+        predefined:
+          - 'maps'
+          - 'map_of_sets'
+          - 'tables'
+      - name: reference_data_name
+        required: true
+        description: The name of the reference data set to update.
+      - name: data
+        required: true
+        description: The reference data payload to upload. This should be the value format expected by QRadar for the chosen reference data type.
+  - name: qradar-reference-data-delete
+    description: Delete or purge a QRadar reference data map or map of sets.
+    arguments:
+      - name: reference_data_type
+        required: true
+        description: The type of reference data set to delete. Valid values are `maps` or `map_of_sets`, `tables`.
+        auto: PREDEFINED
+        predefined:
+          - 'maps'
+          - 'map_of_sets'
+          - 'tables'
+      - name: reference_data_name
+        required: true
+        description: The name of the reference data set to delete or purge.
+      - name: reference_data_purge
+        defaultValue: 'false'
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+        description: If `true`, only the contents of the reference data set are purged and the set remains.
   - name: qradar-offenses-list
     outputs:
     - contextPath: QRadar.Offense.Description

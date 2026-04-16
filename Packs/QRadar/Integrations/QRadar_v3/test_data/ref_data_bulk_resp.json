@@ -1,0 +1,11 @@
+{
+    "time_to_live": "0 years 0mons 128 days 0 hours 0mins 0.0 secs",
+    "timeout_type": "LAST_SEEN",
+    "number_of_elements": 97,
+    "creation_time": 1774449560015,
+    "value_label": "DeviceName",
+    "name": "SampleMap",
+    "namespace":"SHARED",
+    "element_type":"ALNIC",
+    "collection_id": 665
+}
