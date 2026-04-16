@@ -30,6 +30,7 @@ class GCPServices(Enum):
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     SERVICE_USAGE = ("serviceusage", "v1", "serviceusage.googleapis.com")
+    BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -244,6 +245,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-iam-project-policy-binding-remove": (
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
+    ),
+    "gcp-bigquery-query": (
+        GCPServices.BIGQUERY,
+        [
+            "bigquery.jobs.create",
+        ],
     ),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
@@ -2871,6 +2878,280 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
+from datetime import date
+
+
+def _convert_bq_value_to_string(
+    field_value: Any,
+    datetime_format: str = "%m/%d/%Y %H:%M:%S",
+    date_only_format: str = "%m/%d/%Y",
+) -> Any:
+    """
+    Converts BigQuery field values to string representations.
+
+    Args:
+        field_value: The value to convert.
+        datetime_format: Format string for datetime objects.
+        date_only_format: Format string for date-only objects.
+
+    Returns:
+        The converted value as a string, or the original value if no conversion is needed.
+    """
+    if isinstance(field_value, datetime):
+        return field_value.strftime(datetime_format)
+    if isinstance(field_value, date):
+        return field_value.strftime(date_only_format)
+    if isinstance(field_value, bytes):
+        return field_value.decode("utf-8")
+    return field_value
+
+
+def _represents_bool(string_var: str) -> bool:
+    """Check if a string represents a boolean value."""
+    return string_var.lower() in ("false", "true")
+
+
+def _str_to_bool(str_representing_bool: str) -> bool:
+    """Convert a string to a boolean value."""
+    return str_representing_bool.lower() == "true"
+
+
+def _bool_arg_set_to_true(arg: str | None) -> bool:
+    """Check if a boolean argument is set to true."""
+    return bool(arg and _str_to_bool(arg))
+
+
+def _validate_bq_query_args(
+    allow_large_results: str | None,
+    priority: str | None,
+    use_query_cache: str | None,
+    use_legacy_sql: str | None,
+    dry_run: str | None,
+    destination_table: str | None,
+    write_disposition: str | None,
+) -> None:
+    """
+    Validates arguments for BigQuery query job configuration.
+
+    Args:
+        allow_large_results: Whether to allow large results.
+        priority: Query priority (INTERACTIVE or BATCH).
+        use_query_cache: Whether to use query cache.
+        use_legacy_sql: Whether to use legacy SQL.
+        dry_run: Whether this is a dry run.
+        destination_table: Destination table for results.
+        write_disposition: Write disposition for destination table.
+
+    Raises:
+        DemistoException: If any argument validation fails.
+    """
+    if allow_large_results and not _represents_bool(allow_large_results):
+        raise DemistoException("Error: allow_large_results must have a boolean value.")
+    if _bool_arg_set_to_true(allow_large_results) and not destination_table:
+        raise DemistoException("Error: allow_large_results could only be set to True if a destination table is provided as well.")
+    if _bool_arg_set_to_true(allow_large_results) and not _bool_arg_set_to_true(use_legacy_sql):
+        raise DemistoException("Error: allow_large_results could be set to True only if use_legacy_sql is set to True.")
+    if use_query_cache and not _represents_bool(use_query_cache):
+        raise DemistoException("Error: use_query_cache must have a boolean value.")
+    if _bool_arg_set_to_true(use_query_cache) and destination_table:
+        raise DemistoException("Error: use_query_cache cannot be set to True if a destination_table is set")
+    if use_legacy_sql and not _represents_bool(use_legacy_sql):
+        raise DemistoException("Error: use_legacy_sql must have a boolean value.")
+    if dry_run and not _represents_bool(dry_run):
+        raise DemistoException("Error: dry_run must have a boolean value.")
+    if priority and priority not in ("INTERACTIVE", "BATCH"):
+        raise DemistoException("Error: priority must have a value of INTERACTIVE or BATCH.")
+    if write_disposition and write_disposition not in ("WRITE_TRUNCATE", "WRITE_APPEND", "WRITE_EMPTY"):
+        raise DemistoException("Error: write_disposition must have a value of WRITE_TRUNCATE, WRITE_APPEND or WRITE_EMPTY.")
+
+
+def _build_bq_job_config(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Builds a BigQuery job configuration dictionary from command arguments.
+
+    Args:
+        args: Command arguments containing query configuration options.
+
+    Returns:
+        A dictionary representing the BigQuery job configuration.
+    """
+    allow_large_results = args.get("allow_large_results")
+    default_dataset = args.get("default_dataset")
+    destination_table = args.get("destination_table")
+    kms_key_name = args.get("kms_key_name")
+    dry_run = args.get("dry_run")
+    priority = args.get("priority")
+    use_query_cache = args.get("use_query_cache")
+    use_legacy_sql = args.get("use_legacy_sql")
+    write_disposition = args.get("write_disposition")
+
+    _validate_bq_query_args(
+        allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run, destination_table, write_disposition
+    )
+
+    config: dict[str, Any] = {}
+    if allow_large_results:
+        config["allowLargeResults"] = _str_to_bool(allow_large_results)
+    if default_dataset:
+        # Expected format: "project_id.dataset_id"
+        parts = default_dataset.split(".")
+        if len(parts) == 2:
+            config["defaultDataset"] = {"projectId": parts[0], "datasetId": parts[1]}
+        else:
+            config["defaultDataset"] = {"datasetId": default_dataset}
+    if destination_table:
+        # Expected format: "project_id.dataset_id.table_id"
+        parts = destination_table.split(".")
+        if len(parts) == 3:
+            config["destinationTable"] = {"projectId": parts[0], "datasetId": parts[1], "tableId": parts[2]}
+    if kms_key_name:
+        config["destinationEncryptionConfiguration"] = {"kmsKeyName": kms_key_name}
+    if dry_run is not None:
+        config["dryRun"] = _str_to_bool(dry_run)
+    if use_legacy_sql:
+        config["useLegacySql"] = _str_to_bool(use_legacy_sql)
+    else:
+        config["useLegacySql"] = False
+    if use_query_cache:
+        config["useQueryCache"] = _str_to_bool(use_query_cache)
+    if priority:
+        config["priority"] = priority
+    if write_disposition:
+        config["writeDisposition"] = write_disposition
+
+    return config
+
+
+def bigquery_query(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Performs a query on Google BigQuery.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including:
+            - query (str): The SQL query string.
+            - project_id (str): GCP project ID.
+            - location (str): Geographic location for the job.
+            - job_id (str): Optional job ID.
+            - dry_run (str): Whether to perform a dry run.
+            - allow_large_results (str): Allow large result sets.
+            - default_dataset (str): Default dataset for unqualified table names.
+            - destination_table (str): Destination table for results.
+            - kms_key_name (str): KMS key for encryption.
+            - priority (str): Query priority (INTERACTIVE or BATCH).
+            - use_query_cache (str): Whether to use query cache.
+            - use_legacy_sql (str): Whether to use legacy SQL.
+            - write_disposition (str): Write disposition for destination table.
+            - context_key_format (str): Format for context keys (underscore or CamelCase).
+            - datetime_format (str): Format for datetime values.
+            - date_only_format (str): Format for date-only values.
+
+    Returns:
+        CommandResults: Query results with human-readable output and context data.
+    """
+    query_string = args.get("query", "")
+    project_id = args.get("project_id", "")
+    location = args.get("location")
+    job_id = args.get("job_id")
+    dry_run = args.get("dry_run")
+
+    job_config = _build_bq_job_config(args)
+
+    bigquery_client = GCPServices.BIGQUERY.build(creds)
+
+    # Build the query job body
+    job_body: dict[str, Any] = {
+        "configuration": {
+            "query": {
+                "query": query_string,
+                **job_config,
+            }
+        }
+    }
+
+    if job_id:
+        job_body["jobReference"] = {"projectId": project_id, "jobId": job_id}
+
+    demisto.debug(f"BigQuery query job body: {job_body}")
+
+    # Insert the query job
+    insert_params: dict[str, Any] = {"projectId": project_id, "body": job_body}
+    if location:
+        insert_params["location"] = location
+
+    job_response = bigquery_client.jobs().insert(**insert_params).execute()  # pylint: disable=E1101
+
+    # Handle dry run
+    if dry_run and _str_to_bool(dry_run):
+        total_bytes = job_response.get("statistics", {}).get("totalBytesProcessed", "0")
+        human_readable = f"### Dry run results: \n This query will process {total_bytes} bytes"
+        return CommandResults(readable_output=human_readable)
+
+    # Wait for the job to complete by polling getQueryResults
+    job_ref = job_response.get("jobReference", {})
+    result_project = job_ref.get("projectId", project_id)
+    result_job_id = job_ref.get("jobId", "")
+
+    get_results_params: dict[str, Any] = {"projectId": result_project, "jobId": result_job_id}
+    if location:
+        get_results_params["location"] = location
+
+    query_response = bigquery_client.jobs().getQueryResults(**get_results_params).execute()  # pylint: disable=E1101
+
+    # Handle pagination - collect all rows
+    all_rows: list[dict[str, Any]] = []
+    fields = query_response.get("schema", {}).get("fields", [])
+    field_names = [f.get("name", "") for f in fields]
+
+    while True:
+        rows = query_response.get("rows", [])
+        for row in rows:
+            row_values = row.get("f", [])
+            row_dict = {}
+            for i, val in enumerate(row_values):
+                if i < len(field_names):
+                    row_dict[field_names[i]] = val.get("v")
+            all_rows.append(row_dict)
+
+        page_token = query_response.get("pageToken")
+        if not page_token:
+            break
+
+        get_results_params["pageToken"] = page_token
+        query_response = bigquery_client.jobs().getQueryResults(**get_results_params).execute()  # pylint: disable=E1101
+
+    # Format the results
+    context_key_format = args.get("context_key_format", "CamelCase")
+    datetime_format = args.get("datetime_format", "%m/%d/%Y %H:%M:%S")
+    date_only_format = args.get("date_only_format", "%m/%d/%Y")
+    demisto.debug(f"{context_key_format=}, {datetime_format=}, {date_only_format=}")
+
+    rows_contexts: list[dict[str, Any]] = []
+    for row in all_rows:
+        if context_key_format == "underscore":
+            row_context = {k: _convert_bq_value_to_string(v, datetime_format, date_only_format) for k, v in row.items()}
+        else:
+            row_context = {
+                underscoreToCamelCase(k): _convert_bq_value_to_string(v, datetime_format, date_only_format)
+                for k, v in row.items()
+            }
+        rows_contexts.append(row_context)
+
+    human_readable = "No results found."
+    outputs: dict[str, Any] = {}
+    if rows_contexts:
+        outputs = {"Query": query_string, "Row": rows_contexts}
+        human_readable = tableToMarkdown("BigQuery Query Results", rows_contexts, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="GCP.BigQuery",
+        outputs_key_field="Query",
+        outputs=outputs,
+        raw_response=rows_contexts,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -2923,6 +3204,8 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            # BigQuery commands
+            "gcp-bigquery-query": bigquery_query,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy

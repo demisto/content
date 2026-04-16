@@ -5458,3 +5458,344 @@ class TestGCPComputeNetworksList:
 
         assert "limit=100" in result.readable_output
         assert "custom-token" in result.readable_output
+
+
+class TestBigQueryQuery:
+    """Tests for the gcp-bigquery-query command."""
+
+    def test_bigquery_query_basic(self, mocker):
+        """
+        Given: Valid credentials and a simple query
+        When: bigquery_query is called
+        Then: The function returns results with correct context and human-readable output
+        """
+        from GCP import bigquery_query, GCPServices
+
+        mock_creds = mocker.Mock()
+        mock_bigquery = mocker.Mock()
+        mock_jobs = mocker.Mock()
+        mock_insert = mocker.Mock()
+        mock_get_results = mocker.Mock()
+
+        # Mock job insert response
+        mock_insert.execute.return_value = {
+            "jobReference": {"projectId": "test-project", "jobId": "job-123"},
+            "status": {"state": "DONE"},
+        }
+
+        # Mock getQueryResults response
+        mock_get_results.execute.return_value = {
+            "schema": {
+                "fields": [
+                    {"name": "name", "type": "STRING"},
+                    {"name": "age", "type": "INTEGER"},
+                ]
+            },
+            "rows": [
+                {"f": [{"v": "Alice"}, {"v": "30"}]},
+                {"f": [{"v": "Bob"}, {"v": "25"}]},
+            ],
+            "jobComplete": True,
+        }
+
+        mock_jobs.insert.return_value = mock_insert
+        mock_jobs.getQueryResults.return_value = mock_get_results
+        mock_bigquery.jobs.return_value = mock_jobs
+        mocker.patch.object(GCPServices.BIGQUERY, "build", return_value=mock_bigquery)
+
+        args = {
+            "query": "SELECT name, age FROM users",
+            "project_id": "test-project",
+        }
+
+        result = bigquery_query(mock_creds, args)
+
+        assert "BigQuery Query Results" in result.readable_output
+        assert result.outputs["Query"] == "SELECT name, age FROM users"
+        assert len(result.outputs["Row"]) == 2
+        assert result.outputs["Row"][0]["Name"] == "Alice"
+        assert result.outputs["Row"][1]["Name"] == "Bob"
+
+    def test_bigquery_query_dry_run(self, mocker):
+        """
+        Given: Valid credentials and a query with dry_run=True
+        When: bigquery_query is called
+        Then: The function returns dry run statistics without executing the query
+        """
+        from GCP import bigquery_query, GCPServices
+
+        mock_creds = mocker.Mock()
+        mock_bigquery = mocker.Mock()
+        mock_jobs = mocker.Mock()
+        mock_insert = mocker.Mock()
+
+        # Mock dry run response
+        mock_insert.execute.return_value = {
+            "jobReference": {"projectId": "test-project", "jobId": "job-dry-123"},
+            "statistics": {"totalBytesProcessed": "1048576"},
+            "status": {"state": "DONE"},
+        }
+
+        mock_jobs.insert.return_value = mock_insert
+        mock_bigquery.jobs.return_value = mock_jobs
+        mocker.patch.object(GCPServices.BIGQUERY, "build", return_value=mock_bigquery)
+
+        args = {
+            "query": "SELECT * FROM large_table",
+            "project_id": "test-project",
+            "dry_run": "True",
+        }
+
+        result = bigquery_query(mock_creds, args)
+
+        assert "Dry run results" in result.readable_output
+        assert "1048576 bytes" in result.readable_output
+
+    def test_bigquery_query_no_results(self, mocker):
+        """
+        Given: Valid credentials and a query that returns no results
+        When: bigquery_query is called
+        Then: The function returns "No results found" message
+        """
+        from GCP import bigquery_query, GCPServices
+
+        mock_creds = mocker.Mock()
+        mock_bigquery = mocker.Mock()
+        mock_jobs = mocker.Mock()
+        mock_insert = mocker.Mock()
+        mock_get_results = mocker.Mock()
+
+        mock_insert.execute.return_value = {
+            "jobReference": {"projectId": "test-project", "jobId": "job-456"},
+            "status": {"state": "DONE"},
+        }
+
+        mock_get_results.execute.return_value = {
+            "schema": {"fields": [{"name": "id", "type": "INTEGER"}]},
+            "rows": [],
+            "jobComplete": True,
+        }
+
+        mock_jobs.insert.return_value = mock_insert
+        mock_jobs.getQueryResults.return_value = mock_get_results
+        mock_bigquery.jobs.return_value = mock_jobs
+        mocker.patch.object(GCPServices.BIGQUERY, "build", return_value=mock_bigquery)
+
+        args = {
+            "query": "SELECT id FROM empty_table WHERE 1=0",
+            "project_id": "test-project",
+        }
+
+        result = bigquery_query(mock_creds, args)
+
+        assert "No results found" in result.readable_output
+
+    def test_bigquery_query_underscore_format(self, mocker):
+        """
+        Given: Valid credentials and context_key_format set to "underscore"
+        When: bigquery_query is called
+        Then: The context keys are in underscore format
+        """
+        from GCP import bigquery_query, GCPServices
+
+        mock_creds = mocker.Mock()
+        mock_bigquery = mocker.Mock()
+        mock_jobs = mocker.Mock()
+        mock_insert = mocker.Mock()
+        mock_get_results = mocker.Mock()
+
+        mock_insert.execute.return_value = {
+            "jobReference": {"projectId": "test-project", "jobId": "job-789"},
+            "status": {"state": "DONE"},
+        }
+
+        mock_get_results.execute.return_value = {
+            "schema": {
+                "fields": [
+                    {"name": "user_name", "type": "STRING"},
+                    {"name": "created_at", "type": "STRING"},
+                ]
+            },
+            "rows": [
+                {"f": [{"v": "Alice"}, {"v": "2023-01-01"}]},
+            ],
+            "jobComplete": True,
+        }
+
+        mock_jobs.insert.return_value = mock_insert
+        mock_jobs.getQueryResults.return_value = mock_get_results
+        mock_bigquery.jobs.return_value = mock_jobs
+        mocker.patch.object(GCPServices.BIGQUERY, "build", return_value=mock_bigquery)
+
+        args = {
+            "query": "SELECT user_name, created_at FROM users",
+            "project_id": "test-project",
+            "context_key_format": "underscore",
+        }
+
+        result = bigquery_query(mock_creds, args)
+
+        assert "user_name" in result.outputs["Row"][0]
+        assert "created_at" in result.outputs["Row"][0]
+
+    def test_bigquery_query_with_location_and_job_id(self, mocker):
+        """
+        Given: Valid credentials with location and job_id specified
+        When: bigquery_query is called
+        Then: The location and job_id are passed to the API correctly
+        """
+        from GCP import bigquery_query, GCPServices
+
+        mock_creds = mocker.Mock()
+        mock_bigquery = mocker.Mock()
+        mock_jobs = mocker.Mock()
+        mock_insert = mocker.Mock()
+        mock_get_results = mocker.Mock()
+
+        mock_insert.execute.return_value = {
+            "jobReference": {"projectId": "test-project", "jobId": "custom-job-id"},
+            "status": {"state": "DONE"},
+        }
+
+        mock_get_results.execute.return_value = {
+            "schema": {"fields": [{"name": "result", "type": "STRING"}]},
+            "rows": [{"f": [{"v": "ok"}]}],
+            "jobComplete": True,
+        }
+
+        mock_jobs.insert.return_value = mock_insert
+        mock_jobs.getQueryResults.return_value = mock_get_results
+        mock_bigquery.jobs.return_value = mock_jobs
+        mocker.patch.object(GCPServices.BIGQUERY, "build", return_value=mock_bigquery)
+
+        args = {
+            "query": "SELECT 1 as result",
+            "project_id": "test-project",
+            "location": "us-east1",
+            "job_id": "custom-job-id",
+        }
+
+        result = bigquery_query(mock_creds, args)
+
+        # Verify insert was called with location
+        call_kwargs = mock_jobs.insert.call_args
+        assert call_kwargs[1]["location"] == "us-east1"
+        # Verify job body contains jobReference with job_id
+        assert call_kwargs[1]["body"]["jobReference"]["jobId"] == "custom-job-id"
+        assert result.outputs["Row"][0]["Result"] == "ok"
+
+
+class TestBigQueryValidation:
+    """Tests for BigQuery query argument validation."""
+
+    def test_validate_bq_query_args_invalid_priority(self):
+        """
+        Given: An invalid priority value
+        When: _validate_bq_query_args is called
+        Then: A DemistoException is raised
+        """
+        from GCP import _validate_bq_query_args
+
+        with pytest.raises(Exception, match="priority must have a value of INTERACTIVE or BATCH"):
+            _validate_bq_query_args(
+                allow_large_results=None,
+                priority="INVALID",
+                use_query_cache=None,
+                use_legacy_sql=None,
+                dry_run=None,
+                destination_table=None,
+                write_disposition=None,
+            )
+
+    def test_validate_bq_query_args_invalid_write_disposition(self):
+        """
+        Given: An invalid write_disposition value
+        When: _validate_bq_query_args is called
+        Then: A DemistoException is raised
+        """
+        from GCP import _validate_bq_query_args
+
+        with pytest.raises(Exception, match="write_disposition must have a value"):
+            _validate_bq_query_args(
+                allow_large_results=None,
+                priority=None,
+                use_query_cache=None,
+                use_legacy_sql=None,
+                dry_run=None,
+                destination_table=None,
+                write_disposition="INVALID",
+            )
+
+    def test_validate_bq_query_args_allow_large_results_without_destination(self):
+        """
+        Given: allow_large_results=True without a destination table
+        When: _validate_bq_query_args is called
+        Then: A DemistoException is raised
+        """
+        from GCP import _validate_bq_query_args
+
+        with pytest.raises(Exception, match="allow_large_results could only be set to True"):
+            _validate_bq_query_args(
+                allow_large_results="True",
+                priority=None,
+                use_query_cache=None,
+                use_legacy_sql="True",
+                dry_run=None,
+                destination_table=None,
+                write_disposition=None,
+            )
+
+    def test_build_bq_job_config_basic(self):
+        """
+        Given: Basic query arguments
+        When: _build_bq_job_config is called
+        Then: A valid job config dictionary is returned
+        """
+        from GCP import _build_bq_job_config
+
+        args = {"priority": "INTERACTIVE"}
+        config = _build_bq_job_config(args)
+
+        assert config["priority"] == "INTERACTIVE"
+        assert config["useLegacySql"] is False
+
+    def test_build_bq_job_config_with_destination(self):
+        """
+        Given: Arguments with a destination table
+        When: _build_bq_job_config is called
+        Then: The destination table is correctly parsed
+        """
+        from GCP import _build_bq_job_config
+
+        args = {"destination_table": "my-project.my_dataset.my_table"}
+        config = _build_bq_job_config(args)
+
+        assert config["destinationTable"]["projectId"] == "my-project"
+        assert config["destinationTable"]["datasetId"] == "my_dataset"
+        assert config["destinationTable"]["tableId"] == "my_table"
+
+    def test_convert_bq_value_to_string(self):
+        """
+        Given: Various types of values
+        When: _convert_bq_value_to_string is called
+        Then: Values are correctly converted to strings
+        """
+        import datetime
+        from GCP import _convert_bq_value_to_string
+
+        # Test string passthrough
+        assert _convert_bq_value_to_string("test") == "test"
+
+        # Test None passthrough
+        assert _convert_bq_value_to_string(None) is None
+
+        # Test bytes conversion
+        assert _convert_bq_value_to_string(b"hello") == "hello"
+
+        # Test datetime conversion
+        dt = datetime.datetime(2023, 1, 30, 12, 0, 0)
+        assert _convert_bq_value_to_string(dt) == "01/30/2023 12:00:00"
+
+        # Test date conversion
+        d = datetime.date(2023, 1, 15)
+        assert _convert_bq_value_to_string(d) == "01/15/2023"

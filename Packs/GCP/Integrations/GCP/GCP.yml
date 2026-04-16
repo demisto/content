@@ -1902,6 +1902,83 @@ script:
       required: true
     outputs: []
 
+  - name: gcp-bigquery-query
+    description: Performs a query on Google BigQuery.
+    arguments:
+    - name: query
+      required: true
+      description: A query string (in BigQuery query syntax). For more information about the standard syntax, see the BigQuery documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
+    - name: project_id
+      required: true
+      description: GCP project ID to execute the query in.
+    - name: location
+      description: The geographic location where the job should run. Required for locations other than US and EU.
+    - name: allow_large_results
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Allow query results tables larger than 128 MB compressed (legacy SQL only).
+    - name: default_dataset
+      description: A string of the fully-qualified dataset ID in standard SQL format. The value must include a project ID and dataset ID, separated by periods.
+    - name: destination_table
+      description: The table to which the results are written. Format is "project_id.dataset_id.table_id".
+    - name: kms_key_name
+      description: Custom encryption configuration for the destination table.
+    - name: dry_run
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If "True", BigQuery doesn't run the job. Instead, if the query is valid, BigQuery returns statistics about the job, such as how many bytes would be processed. If the query is invalid, an error is returned. The default value is "False".
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - BATCH
+      - INTERACTIVE
+      description: Priority of the query ("INTERACTIVE" or "BATCH"). A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH will start as soon as idle resources are available, and changed to INTERACTIVE priority if it wasn't started within 24 hours. The default value is "INTERACTIVE".
+    - name: use_query_cache
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to look for the query results in the cache.
+    - name: use_legacy_sql
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to use legacy SQL syntax.
+    - name: job_id
+      description: The ID of the job. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024 characters.
+    - name: write_disposition
+      auto: PREDEFINED
+      predefined:
+      - WRITE_EMPTY
+      - WRITE_TRUNCATE
+      - WRITE_APPEND
+      description: Specifies the action that occurs if the destination table already exists.
+    - name: context_key_format
+      auto: PREDEFINED
+      predefined:
+        - underscore
+        - CamelCase
+      description: Choose whether the key in the context will be in an underscore or a CamelCase format.
+      defaultValue: 'CamelCase'
+    - name: datetime_format
+      description: The requested date and time format for datetime objects returned from the query.
+      defaultValue: "%m/%d/%Y %H:%M:%S"
+    - name: date_only_format
+      description: The requested format for date objects returned from the query, including only the date without time.
+      defaultValue: "%m/%d/%Y"
+    outputs:
+    - contextPath: GCP.BigQuery.Query
+      description: The query performed.
+      type: String
+    - contextPath: GCP.BigQuery.Row
+      description: The table rows the given query returned.
+      type: Unknown
+
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create
 #    description: Creates an IAM deny policy that explicitly blocks specified principals from performing specified permissions on a GCP project.
