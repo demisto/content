@@ -124,9 +124,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     cache_refresh_rate_param = str(params.get("cache_refresh_rate") or "300")
 
     # Ensure cache_refresh_rate is at least as large as timeout
-    if timeout_param.isdigit() and cache_refresh_rate_param.isdigit():
-        if int(cache_refresh_rate_param) < int(timeout_param):
-            cache_refresh_rate_param = timeout_param
+    timeout_seconds = parse_nginx_time_to_seconds(timeout_param)
+    cache_refresh_seconds = parse_nginx_time_to_seconds(cache_refresh_rate_param)
+
+    if cache_refresh_seconds < timeout_seconds:
+        cache_refresh_rate_param = timeout_param
 
     timeout = f"{timeout_param}s" if timeout_param.isdigit() else timeout_param
     cache_refresh_rate = f"{cache_refresh_rate_param}s" if cache_refresh_rate_param.isdigit() else cache_refresh_rate_param
@@ -313,6 +315,39 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     except (TypeError, ValueError):
         raise DemistoException(err_msg)
     return res
+
+
+def parse_nginx_time_to_seconds(time_str: str) -> int:
+    """
+    Parses an NGINX time string (e.g., '3600', '1h', '30m', '60s') into seconds.
+    If no unit is provided, seconds are assumed.
+    """
+    if not time_str:
+        return 0
+    if time_str.isdigit():
+        return int(time_str)
+
+    units = {
+        's': 1,
+        'm': 60,
+        'h': 3600,
+        'd': 86400,
+        'w': 604800,
+        'M': 2592000,  # 30 days
+        'y': 31536000,
+    }
+
+    unit = time_str[-1]
+    value_str = time_str[:-1]
+
+    if unit in units and value_str.isdigit():
+        return int(value_str) * units[unit]
+
+    # If it doesn't match expected format, try to return as int or 0
+    try:
+        return int(time_str)
+    except ValueError:
+        return 0
 
 
 def get_params_port(params: dict = None) -> int:
