@@ -1,10 +1,10 @@
 {
     "name": "ReversingLabs Ransomware and Related Tools Feed (Deprecated)",
-    "description": "Deprecated. Use TAXII 2 Feed to connect to the ReversingLabs Ransomware and Related Tools TAXII Feed.",
+    "description": "Deprecated. Use TAXII 2 Feed instead.",
     "support": "partner",
     "hidden": true,
     "deprecated": true,
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "ReversingLabs",
     "url": "https://www.reversinglabs.com",
     "email": "support@reversinglabs.com",
