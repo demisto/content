@@ -645,7 +645,9 @@ def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
                 {
                     "Type": 1,
                     "Category": None,
+                    "HumanReadable": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
                     "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                    "created": "2022-11-21 20:45:37",
                     "ContentsFormat": None,
                     "Tags": ["CommentFromServiceNow"],
                     "Note": True,
