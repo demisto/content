@@ -21,7 +21,6 @@ Next-generation unified Zero-Day detection solution, combining the proven capabi
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-
 ### metadefender-aether-scan-url
 
 ***
@@ -53,27 +52,27 @@ Notice: Submitting indicators using this command might make the indicator data p
 | --- | --- | --- |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
-| File.Name | String | The full file name. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| MetaDefender.Aether.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| MetaDefender.Aether.Analysis.allTags | Unknown | All tags. | 
-| MetaDefender.Aether.Analysis.overallState | String | Overall state of the scan. | 
-| MetaDefender.Aether.Analysis.taskReference.name | String | Name of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.state | String | State of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.opcount | Number | Counter. | 
-| MetaDefender.Aether.Analysis.taskReference.processTime | Number | processTime. | 
-| MetaDefender.Aether.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| MetaDefender.Aether.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| MetaDefender.Aether.Analysis.resources | Unknown | Resources. | 
-| MetaDefender.Aether.Analysis.file.name | String | The name of the file. | 
-| MetaDefender.Aether.Analysis.file.hash | String | The SHA256 of the file. | 
-| MetaDefender.Aether.Analysis.file.type| String | The type of the submission. | 
+| File.Name | String | The full file name. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| MetaDefender.Aether.Analysis.finalVerdict.verdict | String | The final verdict. |
+| MetaDefender.Aether.Analysis.allTags | Unknown | All tags. |
+| MetaDefender.Aether.Analysis.overallState | String | Overall state of the scan. |
+| MetaDefender.Aether.Analysis.taskReference.name | String | Name of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.ID | String | ID of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.state | String | State of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.opcount | Number | Counter. |
+| MetaDefender.Aether.Analysis.taskReference.processTime | Number | processTime. |
+| MetaDefender.Aether.Analysis.subtaskReferences | Unknown | Status of scan subtasks. |
+| MetaDefender.Aether.Analysis.allSignalGroups | Unknown | All signal groups. |
+| MetaDefender.Aether.Analysis.resources | Unknown | Resources. |
+| MetaDefender.Aether.Analysis.file.name | String | The name of the file. |
+| MetaDefender.Aether.Analysis.file.hash | String | The SHA256 of the file. |
+| MetaDefender.Aether.Analysis.file.type| String | The type of the submission. |
 
 #### Command example
 
@@ -231,7 +230,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### Scan Result (digest):
+>### Scan Result (digest)
 
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
@@ -264,27 +263,27 @@ Scan File with MetaDefender Aether
 | --- | --- | --- |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
-| File.Name | String | The full file name. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| MetaDefender.Aether.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| MetaDefender.Aether.Analysis.allTags | Unknown | All tags. | 
-| MetaDefender.Aether.Analysis.overallState | String | Overall state of the scan. | 
-| MetaDefender.Aether.Analysis.taskReference.name | String | Name of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.state | String | State of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| MetaDefender.Aether.Analysis.taskReference.opcount | Number | Counter. | 
-| MetaDefender.Aether.Analysis.taskReference.processTime | Number | processTime. | 
-| MetaDefender.Aether.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| MetaDefender.Aether.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| MetaDefender.Aether.Analysis.resources | Unknown | Resources. | 
-| MetaDefender.Aether.Analysis.file.name | String | The name of the file. | 
-| MetaDefender.Aether.Analysis.file.hash | String | The SHA256 of the file. | 
-| MetaDefender.Aether.Analysis.file.type| String | The type of the submission. | 
+| File.Name | String | The full file name. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| MetaDefender.Aether.Analysis.finalVerdict.verdict | String | The final verdict. |
+| MetaDefender.Aether.Analysis.allTags | Unknown | All tags. |
+| MetaDefender.Aether.Analysis.overallState | String | Overall state of the scan. |
+| MetaDefender.Aether.Analysis.taskReference.name | String | Name of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.ID | String | ID of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.state | String | State of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.opcount | Number | Counter. |
+| MetaDefender.Aether.Analysis.taskReference.processTime | Number | processTime. |
+| MetaDefender.Aether.Analysis.subtaskReferences | Unknown | Status of scan subtasks. |
+| MetaDefender.Aether.Analysis.allSignalGroups | Unknown | All signal groups. |
+| MetaDefender.Aether.Analysis.resources | Unknown | Resources. |
+| MetaDefender.Aether.Analysis.file.name | String | The name of the file. |
+| MetaDefender.Aether.Analysis.file.hash | String | The SHA256 of the file. |
+| MetaDefender.Aether.Analysis.file.type| String | The type of the submission. |
 
 #### Command example
 
@@ -433,7 +432,7 @@ Scan File with MetaDefender Aether
 
 #### Human Readable Output
 
->### Scan Result (digest):
+>### Scan Result (digest)
 
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
@@ -457,20 +456,19 @@ Search for reports. Finds reports and uploaded files by various tokens.
 | page | Page number, starting from 1 | Optional |
 | page_size | The page size. Can be 5, 10 or 20 | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MetaDefender.Aether.Analysis.id | String | The analysis id. | 
-| MetaDefender.Aether.Analysis.file.name | String | The name of the file. | 
-| MetaDefender.Aether.Analysis.file.sha256 | String | The SHA256 of the file. | 
-| MetaDefender.Aether.Analysis.verdict | String | The final verdict. | 
-| MetaDefender.Aether.Analysis.state | String | Overall state of the scan. | 
-| MetaDefender.Aether.Analysis.date | Date | The scan date. | 
+| MetaDefender.Aether.Analysis.id | String | The analysis id. |
+| MetaDefender.Aether.Analysis.file.name | String | The name of the file. |
+| MetaDefender.Aether.Analysis.file.sha256 | String | The SHA256 of the file. |
+| MetaDefender.Aether.Analysis.verdict | String | The final verdict. |
+| MetaDefender.Aether.Analysis.state | String | Overall state of the scan. |
+| MetaDefender.Aether.Analysis.date | Date | The scan date. |
 | MetaDefender.Aether.Analysis.file.mime_type | String | The file MimeType. |
 | MetaDefender.Aether.Analysis.file.short_type | String | The type of the submission. |
-| MetaDefender.Aether.Analysis.tags | Unknown | All tags. | 
+| MetaDefender.Aether.Analysis.tags | Unknown | All tags. |
 
 #### Command example
 
@@ -523,7 +521,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
 
 #### Human Readable Output
 
->### Analysis Result:
+>### Analysis Result
 
 >| Id | SampleName | SHA256 | Verdict | State | Date |
 >|---|---|---|---|---|---|
