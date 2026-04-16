@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import html as html_module
 
 # List of empty values that we want to filter out.
 EMPTY_VALUES = [
@@ -29,11 +30,10 @@ def extract_keys_with_values(obj, parent_key=""):
     return items
 
 
-def escape_pipe(value):
-    """
-    Escapes pipe characters in the value by replacing them with an HTML entity.
-    """
-    return value.replace("|", "&#124;")
+def escape_for_html_table(value):
+    """Escape value for safe insertion into HTML table cells."""
+    escaped = html_module.escape(str(value))
+    return escaped.replace("|", "&#124;")
 
 
 def format_data_to_rows(items):
@@ -45,7 +45,7 @@ def format_data_to_rows(items):
         if isinstance(value, list):
             # If the value is a list, join the items with a separator and escape the result
             value = "|".join(map(str, value))
-        rows.append(f"{escape_pipe(key)}|{escape_pipe(str(value))}")
+        rows.append(f"{escape_for_html_table(key)}|{escape_for_html_table(str(value))}")
     return rows
 
 
