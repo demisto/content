@@ -14,9 +14,7 @@ def util_load_json(path: str) -> Any:
 
 @pytest.fixture()
 def client():
-    return MD_Aether.Client(
-        base_url="https://test.com", api_key="mockkey", proxy=False, verify=False
-    )
+    return MD_Aether.Client(base_url="https://test.com", api_key="mockkey", proxy=False, verify=False)
 
 
 APIKEY_VALIDATION_SUCCESS = {
@@ -36,9 +34,7 @@ def test_test_module_positive(mocker, client, result, expected):
 APIKEY_VALIDATION_FAILURE = {"detail": "Could not validate credentials"}
 
 
-@pytest.mark.parametrize(
-    "result, expected", [(APIKEY_VALIDATION_FAILURE, DemistoException)]
-)
+@pytest.mark.parametrize("result, expected", [(APIKEY_VALIDATION_FAILURE, DemistoException)])
 def test_test_module_negative(mocker, client, result, expected):
     mocker.patch.object(client, "test_module", return_value=result)
     with pytest.raises(Exception) as e:
@@ -51,11 +47,8 @@ def test_search_query_command_hash_badfile(mocker, client):
 
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = MD_Aether.search_query_command(client, {})
-    assert (
-        response.outputs[0]["file"]["sha256"]
-        == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    )
-    assert response.outputs[0]["verdict"] == "malicious"
+    assert response[0].outputs["file"]["sha256"] == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+    assert response[0].outputs["verdict"] == "malicious"
 
 
 def test_search_query_command_hash_cleanfile(mocker, client):
@@ -64,11 +57,8 @@ def test_search_query_command_hash_cleanfile(mocker, client):
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = MD_Aether.search_query_command(client, {})
 
-    assert (
-        response.outputs[0]["file"]["sha256"]
-        == "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325"
-    )
-    assert response.outputs[0]["verdict"] == "no_threat"
+    assert response[0].outputs["file"]["sha256"] == "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325"
+    assert response[0].outputs["verdict"] == "no_threat"
 
 
 def test_search_query_command_url(mocker, client):
@@ -77,18 +67,12 @@ def test_search_query_command_url(mocker, client):
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = MD_Aether.search_query_command(client, {})
 
-    assert len(response.outputs) == 10
+    assert len(response) == 10
 
-    assert (
-        response.outputs[0]["file"]["sha256"]
-        == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
-    )
-    assert response.outputs[0]["verdict"] == "no_threat"
-    assert (
-        response.outputs[1]["file"]["sha256"]
-        == "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b"
-    )
-    assert response.outputs[4]["verdict"] == "suspicious"
+    assert response[0].outputs["file"]["sha256"] == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
+    assert response[0].outputs["verdict"] == "no_threat"
+    assert response[1].outputs["file"]["sha256"] == "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b"
+    assert response[4].outputs["verdict"] == "suspicious"
 
 
 @pytest.mark.parametrize(
@@ -114,9 +98,7 @@ def test_scan_command_url_polling_waiting(requests_mock, mocker, client):
     from CommonServerPython import ScheduledCommand
 
     mocker.patch.object(client, "_http_request", return_value={"flow_id": "1234"})
-    mocker.patch.object(
-        ScheduledCommand, "raise_error_if_not_supported", return_value=None
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
     mocker.patch("builtins.open", create=True)
 
     args = {
@@ -137,9 +119,7 @@ def test_scan_command_url_polling(mocker, client):
     args = {"url": "https://github.com/"}
     raw_response = util_load_json("test_data/scan_command_url_response.json")
     mocker.patch.object(client, "_http_request", return_value={"flow_id": "1234"})
-    mocker.patch.object(
-        ScheduledCommand, "raise_error_if_not_supported", return_value=None
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
     response = MD_Aether.scan_command(client, args)
     assert response.readable_output == 'Waiting for submission "1234" to finish...'
@@ -153,26 +133,17 @@ def test_scan_command_url_polling(mocker, client):
     mocker.patch.object(client, "get_scan_result", return_value=raw_response)
     response = MD_Aether.scan_command(client, polling_args)
 
-    assert (
-        response[0].indicator.dbot_score.indicator
-        == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
-    )
+    assert response[0].indicator.dbot_score.indicator == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
     assert response[0].indicator.dbot_score.score == 1
     assert response[0].indicator.dbot_score.integration_name == "MetaDefender Aether"
     assert response[0].indicator.name == "https://github.com/"
-    assert (
-        response[0].indicator.sha256
-        == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
-    )
+    assert response[0].indicator.sha256 == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
     assert response[0].outputs["finalVerdict"]["threatLevel"] == 0.25
     assert len(response[0].outputs["allTags"]) == 4
     assert response[0].outputs["overallState"] == "success_partial"
     assert response[0].outputs["taskReference"]["name"] == "transform-file"
     assert response[0].outputs["file"]["name"] == "https://github.com/"
-    assert (
-        response[0].outputs["file"]["hash"]
-        == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
-    )
+    assert response[0].outputs["file"]["hash"] == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
     assert response[0].outputs["file"]["type"] == "other"
 
 
@@ -182,9 +153,7 @@ def test_scan_command_file_polling(mocker, client):
     args = {"entry_id": "test_entry_id"}
     raw_response = util_load_json("test_data/scan_command_zip_response.json")
     mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
-    mocker.patch.object(
-        ScheduledCommand, "raise_error_if_not_supported", return_value=None
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
     response = MD_Aether.scan_command(client, args)
     assert response.readable_output == 'Waiting for submission "1234" to finish...'
@@ -200,70 +169,43 @@ def test_scan_command_file_polling(mocker, client):
 
     assert len(response) == 3
 
-    assert (
-        response[0].indicator.dbot_score.indicator
-        == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    )
+    assert response[0].indicator.dbot_score.indicator == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
     assert response[0].indicator.dbot_score.score == 3
     assert response[0].indicator.dbot_score.integration_name == "MetaDefender Aether"
     assert response[0].indicator.name == "bad_file.exe"
-    assert (
-        response[0].indicator.sha256
-        == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    )
+    assert response[0].indicator.sha256 == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
     assert response[0].outputs["finalVerdict"]["threatLevel"] == 1
     assert len(response[0].outputs["allTags"]) == 9
     assert response[0].outputs["overallState"] == "success_partial"
     assert response[0].outputs["taskReference"]["name"] == "transform-file"
     assert response[0].outputs["file"]["name"] == "bad_file.exe"
-    assert (
-        response[0].outputs["file"]["hash"]
-        == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    )
+    assert response[0].outputs["file"]["hash"] == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
     assert response[0].outputs["file"]["type"] == "pe"
 
-    assert (
-        response[1].indicator.dbot_score.indicator
-        == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
-    )
+    assert response[1].indicator.dbot_score.indicator == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
     assert response[1].indicator.dbot_score.score == 1
     assert response[1].indicator.dbot_score.integration_name == "MetaDefender Aether"
     assert response[1].indicator.name == "munkaltatoi.docx"
-    assert (
-        response[1].indicator.sha256
-        == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
-    )
+    assert response[1].indicator.sha256 == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
     assert response[1].outputs["finalVerdict"]["threatLevel"] == 0.25
     assert len(response[1].outputs["allTags"]) == 3
     assert response[1].outputs["overallState"] == "success"
     assert response[1].outputs["taskReference"]["name"] == "transform-file"
     assert response[1].outputs["file"]["name"] == "munkaltatoi.docx"
-    assert (
-        response[1].outputs["file"]["hash"]
-        == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
-    )
+    assert response[1].outputs["file"]["hash"] == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
     assert response[1].outputs["file"]["type"] == "ms-office"
 
-    assert (
-        response[2].indicator.dbot_score.indicator
-        == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
-    )
+    assert response[2].indicator.dbot_score.indicator == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     assert response[2].indicator.dbot_score.score == 1
     assert response[2].indicator.dbot_score.integration_name == "MetaDefender Aether"
     assert response[2].indicator.name == "poorguy.png"
-    assert (
-        response[2].indicator.sha256
-        == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
-    )
+    assert response[2].indicator.sha256 == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     assert response[2].outputs["finalVerdict"]["threatLevel"] == 0.25
     assert len(response[2].outputs["allTags"]) == 2
     assert response[2].outputs["overallState"] == "success"
     assert response[2].outputs["taskReference"]["name"] == "transform-file"
     assert response[2].outputs["file"]["name"] == "poorguy.png"
-    assert (
-        response[2].outputs["file"]["hash"]
-        == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
-    )
+    assert response[2].outputs["file"]["hash"] == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     assert response[2].outputs["file"]["type"] == "other"
 
 
@@ -273,9 +215,7 @@ def test_scan_command_file_invalid_password(mocker, client):
     args = {"entry_id": "test_entry_id"}
     raw_response = util_load_json("test_data/scan_command_zip_invalid_pass.json")
     mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
-    mocker.patch.object(
-        ScheduledCommand, "raise_error_if_not_supported", return_value=None
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
     response = MD_Aether.scan_command(client, args)
     assert response.readable_output == 'Waiting for submission "1234" to finish...'
