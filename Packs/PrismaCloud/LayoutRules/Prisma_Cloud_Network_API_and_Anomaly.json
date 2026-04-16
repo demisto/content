@@ -14,19 +14,23 @@
               "SEARCH_VALUE": "network"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "api"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "api"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "anomaly"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "anomaly"
             }
           ]
         }
       ]
     }
   },
-  "fromVersion": "6.10.0"
+  "fromVersion": "6.10.0",
+  "supportedModules": [
+    "agentix",
+    "xsiam"
+  ]
 }
