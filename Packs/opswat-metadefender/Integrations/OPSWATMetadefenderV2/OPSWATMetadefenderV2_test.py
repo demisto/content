@@ -405,11 +405,13 @@ def test_scan_file_uses_basename(mocker):
     Then:
         - Verify that only the basename of the file name is used.
     """
-    import os
+    from pathlib import Path
+
     import demistomock as demisto
 
     mocker.patch.object(
-        demisto, "getFilePath",
+        demisto,
+        "getFilePath",
         return_value={"path": "README.md", "name": "/tmp/evil/../../../etc/passwd"},
     )
     mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
@@ -422,11 +424,11 @@ def test_scan_file_uses_basename(mocker):
 
     from OPSWATMetadefenderV2 import scan_file
 
-    result, file_name = scan_file("entry1")
+    _, file_name = scan_file("entry1")
 
     # Verify the file name returned is the basename only
     assert file_name == "passwd"
-    assert os.path.basename(file_name) == file_name
+    assert Path(file_name).name == file_name
     # Verify shutil.copy was called with the sanitized basename
     copy_call_args = mock_copy.call_args[0]
     assert copy_call_args[1] == "passwd"

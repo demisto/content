@@ -109,14 +109,14 @@ class SNSCertificateManager:
         # Verify the signature
         decoded_signature = base64.b64decode(sns_payload["Signature"])
 
-        # Fix 5D: Cache the certificate object, not the validation decision.
+        # Cache the certificate object, not the validation decision.
         # Always verify the signature even on cache hit.
         if self.cached_cert_url == sns_payload["SigningCertURL"] and self.cached_cert:
             demisto.debug(f'Using cached certificate for SigningCertURL: {sns_payload["SigningCertURL"]}')
             certificate = self.cached_cert
         else:
             try:
-                # Fix 5A: Validate SigningCertURL before fetching
+                # Validate SigningCertURL before fetching
                 _validate_sns_url(sns_payload["SigningCertURL"], "SigningCertURL")
 
                 demisto.debug(f'sns_payload["SigningCertURL"] = {sns_payload["SigningCertURL"]}')
@@ -138,7 +138,7 @@ class SNSCertificateManager:
                 self.cached_cert = None
                 return False
 
-            # Fix 5C: Validate certificate subject CN contains amazonaws.com
+            # Validate certificate subject CN contains amazonaws.com
             subject_cn = ""
             try:
                 subject = certificate.get_subject()
@@ -206,7 +206,7 @@ def is_valid_integration_credentials(credentials, request_headers, token):
 
 def handle_subscription_confirmation(subscribe_url) -> requests.Response:  # pragma: no cover
     demisto.debug("SubscriptionConfirmation request")
-    # Fix 5B: Validate SubscribeURL before following it
+    # Validate SubscribeURL before following it
     _validate_sns_url(subscribe_url, "SubscribeURL")
     response: requests.models.Response = client.get(full_url=subscribe_url, resp_type="response")
     response.raise_for_status()

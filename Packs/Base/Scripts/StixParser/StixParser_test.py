@@ -99,7 +99,6 @@ def test_build_observables_uses_safe_xml_parser_settings(mocker):
         - Verify that safe XML parser settings are used:
           resolve_entities=False, load_dtd=False, no_network=True.
     """
-    from unittest.mock import call
 
     mock_iterparse = mocker.patch("StixParser.etree.iterparse", return_value=iter([]))
 
