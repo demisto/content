@@ -802,7 +802,7 @@ name = "demisto-py"
 version = "3.2.22"
 description = "\"A Python library for the Demisto API\""
 optional = false
-python-versions = ">=3.11,<=3.14"
+python-versions = ">=3.11,<3.15"
 files = []
 develop = false
 
@@ -818,14 +818,14 @@ urllib3 = ">2.6.0"
 type = "git"
 url = "https://github.com/demisto/demisto-py.git"
 reference = "sk_demisto_py_new_python"
-resolved_reference = "0cfdc19163287d69b1fdcd85095cb8f67ea61dc6"
+resolved_reference = "8af84302e08ad16fe427e88d5490933b463615bf"
 
 [[package]]
 name = "demisto-sdk"
 version = "1.38.23"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = ">=3.11,<=3.14"
+python-versions = ">=3.11,<3.15"
 files = []
 develop = false
 
@@ -905,7 +905,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "sk_demisto_sdk_new_python"
-resolved_reference = "5d3d94f02a26e7be8b0db075d3c4f1cc982ea964"
+resolved_reference = "9d8ed2d8364ab5d18d0822aa61bdcb175a677609"
 
 [[package]]
 name = "dictdiffer"
@@ -4756,5 +4756,5 @@ reference = "pypi-public"
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.11,<=3.14"
-content-hash = "f0380a323a85e4b90addd36eef8c3a390773887cd87c786fdc9dc22c8297a497"
+python-versions = ">=3.11,<3.15"
+content-hash = "8cd4f26f253435662f644cfbaf6cbc63cbc1f98997ca61c5279c83d702eecc7c"
