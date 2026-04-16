@@ -63,6 +63,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 - Falcon Container Image - Read
+- Recon - Read and Write
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -5236,6 +5237,7 @@ Create an ODS scan and wait for the results.
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 | cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 | cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| polling | Whether to poll for scan results. Default is True. | Optional |
 
 #### Context Output
 

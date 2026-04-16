@@ -89,3 +89,5 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

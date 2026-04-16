@@ -2,10 +2,10 @@
     "name": "PicusNGAutomation",
     "description": "Run commands on Picus NG and automate security validation with playbooks.",
     "support": "partner",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "Picus Security",
     "url": "http://support.picussecurity.com",
-    "email": "blueteam@picussecurity.com",
+    "email": "support@picussecurity.com",
     "categories": [
         "Network Security"
     ],
@@ -21,10 +21,6 @@
     ],
     "githubUser": [],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]
