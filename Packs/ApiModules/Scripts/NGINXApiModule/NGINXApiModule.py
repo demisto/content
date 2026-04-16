@@ -53,11 +53,34 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
+# Cache lock (prevent thundering herd)
+proxy_cache_lock on;
+proxy_cache_lock_timeout $cache_lock_timeout;
+proxy_cache_lock_age $cache_lock_age;
 
-    proxy_cache_lock on;
-    proxy_cache_lock_timeout $timeout;
-    proxy_cache_lock_age $timeout;
-    proxy_cache_valid 200 302 $cache_refresh_rate;
+# Cache validity by status
+proxy_cache_valid 200 301 302 $cache_refresh_rate;
+
+# Optional: cache other responses briefly (helps absorb spikes)
+proxy_cache_valid 404 $cache_404_ttl;
+proxy_cache_valid any $cache_default_ttl;
+
+# Revalidation (use conditional requests when expired)
+proxy_cache_revalidate on;
+
+# Serve stale content in failure/update scenarios
+proxy_cache_use_stale
+    updating
+    error
+    timeout
+    invalid_header
+    http_500
+    http_502
+    http_503
+    http_504;
+
+# Background refresh of expired cache
+proxy_cache_background_update on;
 
     # Static test file
     location = /nginx-test {
