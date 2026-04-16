@@ -1502,7 +1502,7 @@ def test_aws_error_handler_handle_response_error_with_request_id(mocker):
             "Type": 4,
             "ContentsFormat": "text",
             "Contents": "AWS API Error occurred while executing:"
-            " test-command with arguments: {'arg1': 'value1'}\nRequest Id: RequestId\nHTTP Status Code: 400",
+            " test-command with arguments: ['arg1']\nRequest Id: RequestId\nHTTP Status Code: 400",
             "EntryContext": None,
         }
     )
@@ -1529,7 +1529,7 @@ def test_aws_error_handler_handle_response_error_missing_metadata(mocker):
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing: test-command with arguments: {}"
+            "Contents": "AWS API Error occurred while executing: test-command with arguments: []"
             "\nRequest Id: N/A\nHTTP Status Code: N/A",
             "EntryContext": None,
         }
@@ -1642,7 +1642,7 @@ def test_aws_error_handler_handle_client_error_general_error(mocker):
             "Type": 4,
             "ContentsFormat": "text",
             "Contents": "AWS API Error occurred while executing:"
-            " test-command with arguments: {'param': 'value'}\n"
+            " test-command with arguments: ['param']\n"
             "Error Code: InvalidParameterValue\nError Message: "
             "The parameter value is invalid\nHTTP Status Code: 400\n"
             "Request ID: RequestId",
@@ -1743,7 +1743,7 @@ def test_aws_error_handler_handle_general_error_missing_metadata(mocker):
             "Type": 4,
             "ContentsFormat": "text",
             "Contents": "AWS API Error occurred while executing:"
-            " test-command with arguments: {}\n"
+            " test-command with arguments: []\n"
             "Error Code: TestError\n"
             "Error Message: Test message\nHTTP Status Code: N/A\nRequest ID: N/A",
             "EntryContext": None,
@@ -6420,7 +6420,7 @@ def test_ec2_create_security_group_command_unexpected_response(mocker):
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:  with arguments: {}\nRequest Id: N/A\nHTTP Status Code: 400",
+            "Contents": "AWS API Error occurred while executing:  with arguments: []\nRequest Id: N/A\nHTTP Status Code: 400",
             "EntryContext": None,
         }
     )
@@ -6446,7 +6446,7 @@ def test_ec2_create_security_group_command_missing_group_id(mocker):
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:  with arguments: {}\nRequest Id: N/A\nHTTP Status Code: 206",
+            "Contents": "AWS API Error occurred while executing:  with arguments: []\nRequest Id: N/A\nHTTP Status Code: 206",
             "EntryContext": None,
         }
     )
@@ -6839,7 +6839,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:  with arguments: {}\nRequest Id: N/A\nHTTP Status Code: 400",
+            "Contents": "AWS API Error occurred while executing:  with arguments: []\nRequest Id: N/A\nHTTP Status Code: 400",
             "EntryContext": None,
         }
     )
@@ -14403,6 +14403,484 @@ def test_create_traffic_mirror_session_command_failure(mocker):
     EC2.create_traffic_mirror_session_command(mock_client, args)
 
     mock_error_handler.assert_called_once()
+
+
+def test_parse_key_1_value_to_dict_empty_string():
+    """
+    Given:
+        - An empty string.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert an empty dictionary is returned.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    assert parse_key_1_value_to_dict("") == {}
+
+
+def test_parse_key_1_value_to_dict_single_valid():
+    """
+    Given:
+        - A string with a single valid key-value pair.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert the correct dictionary is returned.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    assert parse_key_1_value_to_dict("key=my_key,value=my_value") == {"my_key": "my_value"}
+
+
+def test_parse_key_1_value_to_dict_multiple_valid():
+    """
+    Given:
+        - A string with multiple valid key-value pairs.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert the correct dictionary is returned.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    assert parse_key_1_value_to_dict("key=key1,value=v1;key=key2,value=v2") == {"key1": "v1", "key2": "v2"}
+
+
+def test_parse_key_1_value_to_dict_invalid_string():
+    """
+    Given:
+        - A string that is not a valid key-value pair.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert a ValueError is raised.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    with pytest.raises(ValueError):
+        parse_key_1_value_to_dict("invalid_string")
+
+
+def test_parse_key_1_value_to_dict_partially_valid():
+    """
+    Given:
+        - A string with a mix of valid and invalid key-value pairs.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert a ValueError is raised.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    with pytest.raises(ValueError):
+        parse_key_1_value_to_dict("key=key1,value=value1;invalid_string")
+
+
+def test_parse_key_1_value_to_dict_key_with_numbers():
+    """
+    Given:
+        - A string with a key containing numbers and underscores.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert the correct dictionary is returned.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    assert parse_key_1_value_to_dict("key=my_key_1,value=somevalue") == {"my_key_1": "somevalue"}
+
+
+def test_parse_key_1_value_to_dict_value_with_special_chars():
+    """
+    Given:
+        - A string with a value containing special characters.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert the correct dictionary is returned.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    assert parse_key_1_value_to_dict("key=a_key,value=@value-1,.*:/") == {"a_key": "@value-1,.*:/"}
+
+
+def test_parse_key_1_value_to_dict_invalid_key_start():
+    """
+    Given:
+        - A string with a key starting with a number.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert a ValueError is raised.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    with pytest.raises(ValueError):
+        parse_key_1_value_to_dict("key=1key,value=value")
+
+
+def test_parse_key_1_value_to_dict_missing_key_prefix():
+    """
+    Given:
+        - A string missing the 'key=' prefix.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert a ValueError is raised.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    with pytest.raises(ValueError):
+        parse_key_1_value_to_dict("my_key,value=my_value")
+
+
+def test_parse_key_1_value_to_dict_missing_value_prefix():
+    """
+    Given:
+        - A string missing the 'value=' prefix.
+    When:
+        - Calling parse_key_1_value_to_dict.
+    Then:
+        - Assert a ValueError is raised.
+    """
+    from AWS import parse_key_1_value_to_dict
+
+    with pytest.raises(ValueError):
+        parse_key_1_value_to_dict("key=my_key,my_value")
+
+
+def test_build_kwargs_lambda_function_config_update():
+    """
+    Given:
+        - A dictionary of arguments for the aws-lambda-update-function-configuration command.
+    When:
+        - Calling build_kwargs_lambda_function_config_update.
+    Then:
+        - Assert the correct kwargs dictionary is returned.
+    """
+    from AWS import build_kwargs_lambda_function_config_update
+
+    args = {
+        "function_name": "my-function",
+        "role": "my-role-arn",
+        "handler": "my_handler",
+        "description": "My function.",
+        "timeout": "60",
+        "memory_size": "256",
+        "subnet_ids": "subnet-123,subnet-456",
+        "security_group_ids": "sg-123,sg-456",
+        "ipv6_allowed_for_dualstack": "true",
+        "environment": "key=var1,value=val1;key=var2,value=val2",
+        "runtime": "python3.9",
+        "target_arn": "my-dlq-arn",
+        "kms_key_arn": "my-kms-arn",
+        "tracing_config_mode": "Active",
+        "revision_id": "1",
+        "layers": "layer1-arn,layer2-arn",
+        "image_config_entry_point": "/entry.sh",
+        "image_config_command": "/app/run",
+        "image_config_working_directory": "/app",
+        "ephemeral_storage_size": "1024",
+        "snap_start_apply_on": "PublishedVersions",
+        "log_format": "JSON",
+        "application_log_level": "INFO",
+        "system_log_level": "DEBUG",
+        "log_group": "/aws/lambda/my-function",
+        "file_system_configs": "key=arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0,"
+        "value=/mnt/efs",
+    }
+
+    expected_kwargs = {
+        "FunctionName": "my-function",
+        "Role": "my-role-arn",
+        "Handler": "my_handler",
+        "Description": "My function.",
+        "Timeout": 60,
+        "MemorySize": 256,
+        "VpcConfig": {
+            "SubnetIds": ["subnet-123", "subnet-456"],
+            "SecurityGroupIds": ["sg-123", "sg-456"],
+            "Ipv6AllowedForDualStack": True,
+        },
+        "Environment": {"Variables": {"var1": "val1", "var2": "val2"}},
+        "Runtime": "python3.9",
+        "DeadLetterConfig": {"TargetArn": "my-dlq-arn"},
+        "KMSKeyArn": "my-kms-arn",
+        "TracingConfig": {"Mode": "Active"},
+        "RevisionId": "1",
+        "Layers": ["layer1-arn", "layer2-arn"],
+        "ImageConfig": {"EntryPoint": ["/entry.sh"], "Command": ["/app/run"], "WorkingDirectory": "/app"},
+        "EphemeralStorage": {"Size": 1024},
+        "SnapStart": {"ApplyOn": "PublishedVersions"},
+        "LoggingConfig": {
+            "LogFormat": "JSON",
+            "ApplicationLogLevel": "INFO",
+            "SystemLogLevel": "DEBUG",
+            "LogGroup": "/aws/lambda/my-function",
+        },
+        "CapacityProviderConfig": {
+            "LambdaManagedInstancesCapacityProviderConfig": {
+                "CapacityProviderArn": None,
+                "PerExecutionEnvironmentMaxConcurrency": None,
+                "ExecutionEnvironmentMemoryGiBPerVCpu": None,
+            }
+        },
+        "DurableConfig": {"RetentionPeriodInDays": None, "ExecutionTimeout": None},
+        "FileSystemConfigs": [
+            {
+                "Arn": "arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0",
+                "LocalMountPath": "/mnt/efs",
+            }
+        ],
+    }
+
+    kwargs = build_kwargs_lambda_function_config_update(args)
+    assert kwargs == expected_kwargs
+
+
+def test_rds_describe_db_instances_command_success(mocker):
+    """
+    Given:
+        - A mocked boto3 RDS client.
+        - Arguments for the describe_db_instances_command.
+    When:
+        - Calling describe_db_instances_command.
+    Then:
+        - Assert the correct CommandResults is returned.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    response = {
+        "DBInstances": [
+            {
+                "DBInstanceIdentifier": "test-instance",
+                "DBInstanceClass": "db.t2.micro",
+                "Engine": "mysql",
+                "DBInstanceStatus": "available",
+            }
+        ],
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.describe_db_instances.return_value = response
+
+    args = {"db_instance_identifier": "test-instance"}
+    result = RDS.describe_db_instances_command(mock_client, args)
+
+    assert (
+        result.readable_output
+        == "### AWS RDS DB Instances\n|DB Instance Identifier|DB Instance Class|Engine|DB Instance Status|\n|---|---|---|---|\n|"
+        " test-instance | db.t2.micro | mysql | available |\n"
+    )
+    assert (
+        result.outputs["AWS.RDS.DBInstances(val.DBInstanceIdentifier && val.DBInstanceIdentifier == obj.DBInstanceIdentifier)"][
+            0
+        ]["DBInstanceIdentifier"]
+        == "test-instance"
+    )
+    calling_args = mock_client.describe_db_instances.call_args[1]
+    assert calling_args["DBInstanceIdentifier"] == "test-instance"
+
+
+def test_rds_describe_db_instances_command_no_instances(mocker):
+    """
+    Given:
+        - A mocked boto3 RDS client that returns an empty list of instances.
+    When:
+        - Calling describe_db_instances_command.
+    Then:
+        - Assert the command returns a "No DB instances found." message.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    response = {"DBInstances": [], "ResponseMetadata": {"HTTPStatusCode": 200}}
+    mock_client.describe_db_instances.return_value = response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
+
+    result = RDS.describe_db_instances_command(mock_client, {})
+    assert result.readable_output == "No DB instances found."
+
+
+def test_rds_describe_db_instances_command_pagination(mocker):
+    """
+    Given:
+        - A mocked boto3 RDS client that returns a paginated response.
+    When:
+        - Calling describe_db_instances_command.
+    Then:
+        - Assert the response contains the next token.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    response = {
+        "DBInstances": [{"DBInstanceIdentifier": "test-instance-1"}],
+        "Marker": "next-page-token",
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.describe_db_instances.return_value = response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
+
+    result = RDS.describe_db_instances_command(mock_client, {"limit": "20", "next_token": "test-token"})
+    assert result.outputs["AWS.RDS(true)"]["DBInstancesNextToken"] == "next-page-token"
+    calling_args = mock_client.describe_db_instances.call_args[1]
+    assert calling_args["MaxRecords"] == 20
+    assert calling_args["Marker"] == "test-token"
+
+
+def test_redshift_modify_cluster_command_success(mocker):
+    """
+    Given:
+        - A mocked boto3 Redshift client.
+        - Arguments for the modify_cluster_command.
+    When:
+        - Calling modify_cluster_command.
+    Then:
+        - Assert the correct CommandResults is returned.
+    """
+    from AWS import Redshift
+
+    mock_client = mocker.Mock()
+    response = {
+        "Cluster": {
+            "ClusterIdentifier": "test-cluster",
+            "NodeType": "dc2.large",
+            "ClusterStatus": "available",
+            "PubliclyAccessible": True,
+            "Encrypted": False,
+            "NumberOfNodes": 1,
+        },
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.modify_cluster.return_value = response
+
+    args = {"cluster_identifier": "test-cluster", "node_type": "dc2.large"}
+    result = Redshift.modify_cluster_command(mock_client, args)
+
+    assert "Successfully modified Redshift cluster: test-cluster" in result.readable_output
+    assert result.outputs["ClusterIdentifier"] == "test-cluster"
+    calling_args = mock_client.modify_cluster.call_args[1]
+    assert calling_args["ClusterIdentifier"] == "test-cluster"
+    assert calling_args["NodeType"] == "dc2.large"
+
+
+def test_redshift_modify_cluster_command_failure(mocker):
+    """
+    Given:
+        - A mocked boto3 Redshift client that returns an error.
+    When:
+        - Calling modify_cluster_command.
+    Then:
+        - Assert that the AWSErrorHandler is called.
+    """
+    from AWS import Redshift, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    response = {
+        "ResponseMetadata": {"HTTPStatusCode": 400},
+        "Error": {"Code": "InvalidParameterValue", "Message": "Invalid parameter"},
+    }
+    mock_client.modify_cluster.return_value = response
+    mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
+
+    args = {"cluster_identifier": "test-cluster", "node_type": "dc2.large", "account_id": "11111111"}
+    Redshift.modify_cluster_command(mock_client, args)
+    AWSErrorHandler.handle_response_error.assert_called_once_with(response, "11111111")
+
+
+def test_redshift_modify_cluster_command_remove_master_password(mocker):
+    """
+    Given:
+        - A mocked boto3 Redshift client.
+        - Arguments for the modify_cluster_command.
+        - Response containing PendingModifiedValues with MasterUserPassword.
+    When:
+        - Calling modify_cluster_command.
+    Then:
+        - Assert the MasterUserPassword is removed from PendingModifiedValues.
+    """
+    from AWS import Redshift
+
+    mock_client = mocker.Mock()
+    response = {
+        "Cluster": {
+            "ClusterIdentifier": "test-cluster",
+            "PendingModifiedValues": {"MasterUserPassword": "****", "NodeType": "dc2.large"},
+        },
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.modify_cluster.return_value = response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
+
+    args = {"cluster_identifier": "test-cluster", "node_type": "dc2.large"}
+    result = Redshift.modify_cluster_command(mock_client, args)
+
+    assert "MasterUserPassword" not in result.outputs.get("PendingModifiedValues", {})
+    assert result.outputs.get("PendingModifiedValues", {}).get("NodeType") == "dc2.large"
+
+
+def test_update_function_configuration_command(mocker):
+    """
+    Given:
+        - A mock Boto3 client for AWS Lambda.
+        - Arguments containing function name, description, timeout, and memory size.
+    When:
+        - Calling update_function_configuration_command.
+    Then:
+        - Ensure the command returns the expected outputs.
+        - Ensure the Boto3 client is called with the correct parameters.
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    response = {
+        "FunctionName": "test-function",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789012:function:test-function",
+        "Description": "Test description",
+        "LastModified": "2023-10-27T10:00:00.000+0000",
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_client.update_function_configuration.return_value = response
+
+    args = {"function_name": "test-function", "description": "Test description", "timeout": "60", "memory_size": "256"}
+
+    result = Lambda.update_function_configuration_command(mock_client, args)
+
+    assert result.outputs.get("FunctionName") == "test-function"
+    assert result.outputs.get("Description") == "Test description"
+    assert "ResponseMetadata" not in result.outputs
+    mock_client.update_function_configuration.assert_called_once_with(
+        FunctionName="test-function", Description="Test description", Timeout=60, MemorySize=256
+    )
+
+
+def test_update_function_configuration_command_error(mocker):
+    """
+    Given:
+        - A mock Boto3 client for AWS Lambda that returns an error response.
+        - Arguments containing function name and description.
+    When:
+        - Calling update_function_configuration_command.
+    Then:
+        - Ensure the command raises an exception with the expected error message.
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    response = {"ResponseMetadata": {"HTTPStatusCode": 400}, "Error": {"Message": "Bad Request"}}
+    mock_client.update_function_configuration.return_value = response
+
+    args = {"function_name": "test-function", "description": "Test description"}
+
+    mocker.patch("AWS.AWSErrorHandler.handle_response_error", side_effect=Exception("Bad Request"))
+
+    import pytest
+
+    with pytest.raises(Exception, match="Bad Request"):
+        Lambda.update_function_configuration_command(mock_client, args)
 
 
 def test_eks_create_access_entry_command_success(mocker):

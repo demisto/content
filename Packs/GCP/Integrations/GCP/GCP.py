@@ -30,6 +30,7 @@ class GCPServices(Enum):
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     SERVICE_USAGE = ("serviceusage", "v1", "serviceusage.googleapis.com")
+    BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -240,6 +241,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+    ),
+    "gcp-bq-dataset-patch": (
+        GCPServices.BIGQUERY,
+        ["bigquery.datasets.update", "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.datasets.setIamPolicy"],
     ),
     "gcp-iam-project-policy-binding-remove": (
         GCPServices.RESOURCE_MANAGER,
@@ -2242,6 +2247,65 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     )
 
 
+def bq_dataset_policy_remove_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes an email from the dataset access list.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id' and 'dataset_id'.
+
+    Returns:
+        CommandResults: Result of the dataset patch operation.
+    """
+    project_id = args.get("project_id")
+    dataset_id = args.get("dataset_id")
+    # user_email = args.get("user_email", "")
+    # group_email = args.get("group_email", "")
+    email = args.get("email", "")
+    body: dict[str, Any] = {}
+
+    bigquery = GCPServices.BIGQUERY.build(creds)
+
+    # First, get the current dataset to retrieve the access list
+    current_dataset = bigquery.datasets().get(projectId=project_id, datasetId=dataset_id).execute()
+    demisto.debug(f"[GCP] {current_dataset=}")
+    current_dataset_access = current_dataset.get("access", [])
+
+    # Filter out access entries matching the email
+    # Access entries can have both 'userByEmail', and 'groupByEmail'
+    new_access = [
+        entry for entry in current_dataset_access if entry.get("userByEmail") != email and entry.get("groupByEmail") != email
+    ]
+
+    if len(new_access) == len(current_dataset_access):
+        demisto.debug(f"[GCP] Email {email} not found in access list for dataset {dataset_id}")
+        return CommandResults(
+            readable_output=f"The provided email {email} wasn't found in access list of the dataset {dataset_id}."
+        )
+    else:
+        body["access"] = new_access
+        demisto.debug(f"[GCP] Removed an email from access list for dataset {dataset_id}, {new_access=}")
+
+    demisto.debug(f"BigQuery dataset policy update body for {dataset_id} in project {project_id}: {body}")
+    response = bigquery.datasets().patch(projectId=project_id, datasetId=dataset_id, body=body).execute()
+
+    hr = tableToMarkdown(
+        f"BigQuery Dataset {dataset_id} Updated Successfully",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        headers=["id", "datasetReference", "friendlyName", "description", "location", "lastModifiedTime"],
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BigQuery.Datasets",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
     Find which commands require a specific API or permission.
@@ -2923,6 +2987,8 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            # BigQuery commands
+            "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy

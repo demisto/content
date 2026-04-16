@@ -5458,3 +5458,119 @@ class TestGCPComputeNetworksList:
 
         assert "limit=100" in result.readable_output
         assert "custom-token" in result.readable_output
+
+
+def test_bq_dataset_policy_remove_command_remove_user(mocker):
+    """
+    Given:
+        - Valid arguments to remove an existing user.
+    When:
+        - Calling bq_dataset_policy_remove_command.
+    Then:
+        - Ensure the patch API is called with the correct body excluding the removed user.
+    """
+    from GCP import bq_dataset_policy_remove_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "email": "test@test.com"}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {
+        "access": [{"role": "READER", "userByEmail": "test@test.com"}, {"role": "WRITER", "userByEmail": "other@test.com"}]
+    }
+    mock_datasets.get.return_value = mock_get
+
+    mock_patch = MagicMock()
+    mock_patch.execute.return_value = {
+        "id": "test_dataset",
+        "datasetReference": {},
+        "access": [{"role": "WRITER", "userByEmail": "other@test.com"}],
+    }
+    mock_datasets.patch.return_value = mock_patch
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+
+    bq_dataset_policy_remove_command(creds, args)
+
+    mock_datasets.patch.assert_called_once_with(
+        projectId="test_project", datasetId="test_dataset", body={"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
+    )
+
+
+def test_bq_dataset_policy_remove_command_remove_group(mocker):
+    """
+    Given:
+        - Valid arguments to remove an existing group.
+    When:
+        - Calling bq_dataset_policy_remove_command.
+    Then:
+        - Ensure the patch API is called with the correct body excluding the removed group.
+    """
+    from GCP import bq_dataset_policy_remove_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "email": "test@test.com"}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {
+        "access": [{"role": "READER", "groupByEmail": "test@test.com"}, {"role": "WRITER", "userByEmail": "other@test.com"}]
+    }
+    mock_datasets.get.return_value = mock_get
+
+    mock_patch = MagicMock()
+    mock_patch.execute.return_value = {
+        "id": "test_dataset",
+        "datasetReference": {},
+        "access": [{"role": "WRITER", "userByEmail": "other@test.com"}],
+    }
+    mock_datasets.patch.return_value = mock_patch
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+
+    bq_dataset_policy_remove_command(creds, args)
+
+    mock_datasets.patch.assert_called_once_with(
+        projectId="test_project", datasetId="test_dataset", body={"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
+    )
+
+
+def test_bq_dataset_policy_remove_command_remove_user_not_found(mocker):
+    """
+    Given:
+        - Arguments to remove a user that does not exist in the access list.
+    When:
+        - Calling bq_dataset_policy_remove_command.
+    Then:
+        - Ensure the patch API is not called and a 'No changes' message is returned.
+    """
+    from GCP import bq_dataset_policy_remove_command
+
+    creds = MagicMock()
+    email = "test@test.com"
+    dataset_id = "test_dataset"
+    args = {"project_id": "test_project", "dataset_id": dataset_id, "email": email}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
+    mock_datasets.get.return_value = mock_get
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+    mock_debug = mocker.patch("demistomock.debug")
+
+    result = bq_dataset_policy_remove_command(creds, args)
+
+    assert result.readable_output == f"The provided email {email} wasn't found in access list of the dataset {dataset_id}."
+    mock_datasets.patch.assert_not_called()
+    mock_debug.assert_called_with(f"[GCP] Email {email} not found in access list for dataset {dataset_id}")
