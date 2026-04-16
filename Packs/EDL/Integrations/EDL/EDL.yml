@@ -71,6 +71,38 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: The timeout for the cache lock.
+  defaultvalue: 5s
+  display: Cache Lock Timeout
+  name: cache_lock_timeout
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: The age for the cache lock.
+  defaultvalue: 5s
+  display: Cache Lock Age
+  name: cache_lock_age
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: The TTL for 404 responses in the cache.
+  defaultvalue: 1m
+  display: Cache 404 TTL
+  name: cache_404_ttl
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: The default TTL for responses in the cache.
+  defaultvalue: 1m
+  display: Cache Default TTL
+  name: cache_default_ttl
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
 - additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
   display: Username
   name: credentials

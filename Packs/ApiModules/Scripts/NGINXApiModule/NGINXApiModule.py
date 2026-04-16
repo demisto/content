@@ -53,7 +53,6 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
-# Cache lock (prevent thundering herd)
 proxy_cache_lock on;
 proxy_cache_lock_timeout $cache_lock_timeout;
 proxy_cache_lock_age $cache_lock_age;
@@ -131,6 +130,12 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
 
     timeout = f"{timeout_param}s" if timeout_param.isdigit() else timeout_param
     cache_refresh_rate = f"{cache_refresh_rate_param}s" if cache_refresh_rate_param.isdigit() else cache_refresh_rate_param
+
+    cache_lock_timeout = params.get("cache_lock_timeout") or "5s"
+    cache_lock_age = params.get("cache_lock_age") or "5s"
+    cache_404_ttl = params.get("cache_404_ttl") or "1m"
+    cache_default_ttl = params.get("cache_default_ttl") or "1m"
+
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
     serverport = port + 1
     extra_cache_keys = []
@@ -165,6 +170,10 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         proxy_set_range_header=proxy_set_range_header,
         timeout=timeout,
         cache_refresh_rate=cache_refresh_rate,
+        cache_lock_timeout=cache_lock_timeout,
+        cache_lock_age=cache_lock_age,
+        cache_404_ttl=cache_404_ttl,
+        cache_default_ttl=cache_default_ttl,
         extra_headers=extra_headers,
     )
     with open(file_path, mode="w+") as f:
