@@ -19,6 +19,12 @@ commonfields:
   id: isolate-endpoint
   version: -1
 name: isolate-endpoint
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- edr
+- xsiam
 outputs:
 - contextPath: IsolateEndpoint.Endpoint
   description: The endpoint's hostname.

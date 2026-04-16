@@ -41,6 +41,11 @@ args:
   deprecated: true
 comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. Currently supported brands are "Cortex XDR - IR", "Cortex Core - IR", and "Microsoft Defender Advanced Threat Protection".
 name: quarantine-file
+supportedModules:
+- agentix
+- cloud_runtime_security
+- edr
+- xsiam
 outputs:
 - contextPath: QuarantineFile.FilePath
   description: The path of the quarantined file.
