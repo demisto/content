@@ -140,85 +140,6 @@ def test_alert_to_issue():
     assert result["timestamp"] == "2023-01-01"
 
 
-def test_core_get_issues_command(mocker: MockerFixture):
-    """
-    GIVEN:
-        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data.
-    WHEN:
-        The core-get-issues command is executed through the main function.
-    THEN:
-        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
-        outputs are transformed back from alert to issue format, and results are returned.
-    """
-    from CortexPlatformCore import main
-    from CommonServerPython import CommandResults
-
-    # Mock demisto functions
-    mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(demisto, "args", return_value={"issue_id": "12345", "issue_status": "open", "issue_priority": "high"})
-    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
-
-    # Create mock CommandResults with alert data that should be converted to issue data
-    mock_command_results = CommandResults(
-        outputs_prefix="Core.Alert",
-        outputs=[
-            {
-                "alert_id": "12345",
-                "alert_status": "open",
-                "alert_priority": "high",
-                "alert_description": "Test alert",
-                "user_name": "john",
-            }
-        ],
-        readable_output="Test alert output",
-        raw_response={"alert_id": "12345"},
-    )
-
-    # Mock get_alerts_by_filter_command to return our mock CommandResults
-    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
-    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
-    # Execute the main function
-    main()
-
-    # Verify that get_alerts_by_filter_command was called with transformed arguments
-    mock_get_alerts.assert_called_once()
-    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
-
-    # Verify the arguments were transformed from issue to alert format
-    assert "alert_id" in called_args
-    assert "alert_status" in called_args
-    assert "alert_priority" in called_args
-    assert called_args["alert_id"] == "12345"
-    assert called_args["alert_status"] == "open"
-    assert called_args["alert_priority"] == "high"
-
-    # Verify issue keys are not present in the transformed args
-    assert "issue_id" not in called_args
-    assert "issue_status" not in called_args
-    assert "issue_priority" not in called_args
-
-    # Get the CommandResults object that was passed to return_results
-    returned_command_results = mock_return_results.call_args[0][0]
-
-    # Verify the outputs were transformed back from alert to issue format
-    assert "issue_id" in returned_command_results.outputs[0]
-    assert "issue_status" in returned_command_results.outputs[0]
-    assert "issue_priority" in returned_command_results.outputs[0]
-    assert "issue_description" in returned_command_results.outputs[0]
-    assert returned_command_results.outputs[0]["issue_id"] == "12345"
-    assert returned_command_results.outputs[0]["issue_status"] == "open"
-    assert returned_command_results.outputs[0]["issue_priority"] == "high"
-    assert returned_command_results.outputs[0]["issue_description"] == "Test alert"
-
-    # Verify alert keys are not present in the final outputs
-    assert "alert_id" not in returned_command_results.outputs[0]
-    assert "alert_priority" not in returned_command_results.outputs[0]
-    assert "alert_description" not in returned_command_results.outputs[0]
-
-    # Verify non-alert/issue keys are preserved
-    assert returned_command_results.outputs[0]["user_name"] == "john"
-
-
 def test_filter_context_fields():
     from CortexPlatformCore import filter_context_fields
 
@@ -260,125 +181,166 @@ def test_filter_context_fields():
     assert expected_result == filtered_data
 
 
-def test_core_get_issues_command_with_output_keys(mocker: MockerFixture):
+def test_get_issues_command_with_empty_response_outputs(mocker):
     """
-    GIVEN:
-        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data
-        and output_keys argument is provided to filter specific fields.
-    WHEN:
-        The core-get-issues command is executed with output_keys parameter.
-    THEN:
-        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
-        outputs are transformed back from alert to issue format, filtered by output_keys, and results are returned.
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with None outputs
+    Then: get_issues_command should return a result with None outputs
     """
-    from CortexPlatformCore import main
-    from CommonServerPython import CommandResults
+    from CortexPlatformCore import get_issues_command
 
-    # Mock demisto functions with output_keys parameter
-    mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "issue_id": "12345",
-            "issue_status": "open",
-            "issue_priority": "high",
-            "output_keys": "issue_id,issue_status,issue_description",
-        },
-    )
-    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+    mock_response = [
+        CommandResults(outputs=None, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
-    # Create mock CommandResults with alert data that should be converted to issue data
-    mock_command_results = CommandResults(
-        outputs_prefix="Core.Issue",
-        outputs=[
-            {
-                "alert_id": "12345",
-                "alert_status": "open",
-                "alert_priority": "high",
-                "alert_description": "Test alert",
-                "alert_severity": "critical",
-                "alert_timestamp": "2023-10-01T10:00:00Z",
-                "user_name": "john",
-                "internal_field": "should_be_filtered_out",
-            },
-            {
-                "alert_id": "67890",
-                "alert_status": "closed",
-                "alert_priority": "medium",
-                "alert_description": "Another test alert",
-                "alert_severity": "low",
-                "alert_timestamp": "2023-10-01T11:00:00Z",
-                "user_name": "jane",
-                "internal_field": "should_be_filtered_out",
-            },
-        ],
-        readable_output="Test alert output",
-        raw_response={"alert_id": "12345"},
-    )
+    result = get_issues_command(client, args)
 
-    # Mock get_alerts_by_filter_command to return our mock CommandResults
-    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
-    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
+    assert result[0].outputs is None
 
-    # Execute the main function
-    main()
 
-    # Verify that get_alerts_by_filter_command was called with transformed arguments
-    mock_get_alerts.assert_called_once()
-    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
+def test_get_issues_command_with_single_alert_output(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with a single alert output
+    Then: get_issues_command should return a result with the corresponding issue output
+    """
+    from CortexPlatformCore import get_issues_command
 
-    # Verify the arguments were transformed from issue to alert format and output_keys was removed
-    assert "alert_id" in called_args
-    assert "alert_status" in called_args
-    assert "alert_priority" in called_args
-    assert "output_keys" not in called_args  # Should be removed from args passed to get_alerts_by_filter_command
-    assert called_args["alert_id"] == "12345"
-    assert called_args["alert_status"] == "open"
-    assert called_args["alert_priority"] == "high"
+    client = mocker.Mock()
+    args = {"issue_id": "456"}
+    alert_output = {"alert_id": "alert_123", "status": "open"}
+    issue_output = {"issue_id": "issue_456", "status": "open"}
+    mock_response = [
+        CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
 
-    # Get the CommandResults object that was passed to return_results
-    returned_command_results = mock_return_results.call_args[0][0]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+    mocker.patch("CortexPlatformCore.alert_to_issue", return_value=issue_output)
 
-    # Verify the outputs were transformed back from alert to issue format
-    assert len(returned_command_results.outputs) == 2
+    result = get_issues_command(client, args)
 
-    # Check first alert/issue
-    first_issue = returned_command_results.outputs[0]
-    assert "issue_id" in first_issue
-    assert "issue_status" in first_issue
-    assert "issue_description" in first_issue
-    assert first_issue["issue_id"] == "12345"
-    assert first_issue["issue_status"] == "open"
-    assert first_issue["issue_description"] == "Test alert"
+    assert result[0].outputs == [issue_output]
 
-    # Verify that only the specified output_keys are present (after transformation to issue format)
-    expected_keys = {"issue_id", "issue_status", "issue_description"}
-    assert set(first_issue.keys()) == expected_keys
 
-    # Verify fields that should be filtered out are not present
-    assert "issue_priority" not in first_issue
-    assert "issue_severity" not in first_issue
-    assert "issue_timestamp" not in first_issue
-    assert "user_name" not in first_issue
-    assert "internal_field" not in first_issue
+def test_get_issues_command_with_output_keys_empty_list_does_not_filter(mocker):
+    from CortexPlatformCore import get_issues_command
 
-    # Check second alert/issue
-    second_issue = returned_command_results.outputs[1]
-    assert "issue_id" in second_issue
-    assert "issue_status" in second_issue
-    assert "issue_description" in second_issue
-    assert second_issue["issue_id"] == "67890"
-    assert second_issue["issue_status"] == "closed"
-    assert second_issue["issue_description"] == "Another test alert"
+    client = mocker.Mock()
+    args = {"issue_id": "789", "output_keys": []}
 
-    # Verify that only the specified output_keys are present
-    assert set(second_issue.keys()) == expected_keys
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "a1"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
-    # Verify alert keys are not present in the final outputs
-    assert "alert_id" not in first_issue
-    assert "alert_status" not in first_issue
-    assert "alert_description" not in first_issue
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue", return_value={"issue_id": "i1"})
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result[0].outputs == [{"issue_id": "i1"}]
+    alert_to_issue_mock.assert_called_once()
+    filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_multiple_alert_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with multiple alert outputs
+    Then: get_issues_command should return a result with corresponding issue outputs
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"status": "open"}
+
+    # Create multiple alert outputs
+    alert_outputs = [
+        {"alert_id": "alert_123", "status": "open", "severity": "high"},
+        {"alert_id": "alert_456", "status": "open", "severity": "low"},
+        {"alert_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    # Corresponding issue outputs
+    issue_outputs = [
+        {"issue_id": "alert_123", "status": "open", "severity": "high"},
+        {"issue_id": "alert_456", "status": "open", "severity": "low"},
+        {"issue_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    mock_response = [
+        CommandResults(outputs=alert_outputs, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 3, "returned_count": 3}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
+    # Mock the get_issues_by_filter_command to return multiple outputs
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+
+    result = get_issues_command(client, args)
+
+    # Assert that the result contains all the expected issue outputs
+    assert len(result[0].outputs) == 3
+    assert result[0].outputs == issue_outputs
+
+
+def test_get_issues_command_with_empty_list_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with empty outputs list
+    Then: get_issues_command should return a result with empty outputs and not call alert_to_issue or filter_context_fields
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+
+    mock_response = [
+        CommandResults(outputs=[], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue")
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result[0].outputs == []
+    alert_to_issue_mock.assert_not_called()
+    filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_partial_output_keys(mocker):
+    """
+    Given: A client and args with some missing output keys
+    When: get_issues_command is called
+    Then: Returns partial outputs for available keys
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123", "output_keys": ["status", "non_existent_key"]}
+
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+    assert result[0].outputs == [{"status": "open"}]
 
 
 def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
@@ -3975,6 +3937,7 @@ def test_add_cases_extra_data_empty_list(mocker):
 @pytest.mark.parametrize(
     "custom_fields_json,expected",
     [
+        # --- Legacy list-of-objects format ---
         (
             '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
             {"field1": "value1", "field2": "value2", "field3": "value3"},
@@ -3988,16 +3951,38 @@ def test_add_cases_extra_data_empty_list(mocker):
         ('[{"---": "value1", "@#$": "value2"}]', {}),
         ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
         ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+        # multiSelect field in legacy format: list value preserved as-is
+        ('[{"multifield": ["opt1", "opt2"]}]', {"multifield": ["opt1", "opt2"]}),
+        # mixed legacy: string field and multiSelect list field
+        (
+            '[{"textfield": "hello"}, {"multifield": ["opt1", "opt2"]}]',
+            {"textfield": "hello", "multifield": ["opt1", "opt2"]},
+        ),
+        # --- New preferred dict format ---
+        # Simple dict with string values
+        ('{"field1": "value1", "field2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with multiSelect list value
+        ('{"textfield": "hello", "multifield": ["opt1", "opt2"]}', {"textfield": "hello", "multifield": ["opt1", "opt2"]}),
+        # Dict with special chars in keys (sanitized)
+        ('{"field-1": "value1", "field_2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with numeric value (not stringified)
+        ('{"numfield": 42}', {"numfield": 42}),
+        # Dict with boolean value (not stringified)
+        ('{"boolfield": true}', {"boolfield": True}),
+        # Empty dict
+        ("{}", {}),
     ],
 )
 def test_parse_custom_fields(custom_fields_json, expected):
     """
     Given:
-        A JSON string containing custom fields and expected parsed result.
+        A JSON string containing custom fields in either dict or list-of-objects format.
     When:
         The parse_custom_fields function is called with the JSON string.
     Then:
-        The function should return a dictionary with normalized field names matching the expected result.
+        The function should return a dictionary with sanitized alphanumeric keys.
+        Values are passed as-is (no stringification): lists, booleans, and numbers are preserved.
+        Both the new dict format and the legacy list-of-objects format are supported.
     """
     from CortexPlatformCore import parse_custom_fields
 
@@ -5439,7 +5424,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
         assert len(call_args[0][1]) == 2  # readable_recommendations
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5478,6 +5470,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
             "severity",
             "description",
             "remediation",
+            "network_reachability",
             "existing_code_block",
             "suggested_code_block",
             "playbook_suggestions",
@@ -5538,7 +5531,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         # Should only have base headers
         call_args = mock_table_to_markdown.call_args
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5621,7 +5621,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         # Should include headers for the types that exist
         call_args = mock_table_to_markdown.call_args
         headers = call_args[1]["headers"]
-        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation", "network_reachability"]
 
         assert all(h in headers for h in base_headers)
         assert "existing_code_block" in headers
@@ -6613,28 +6613,27 @@ def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "First script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": False,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    },
-                    {
-                        "script_uid": "uid2",
-                        "description": "Second script",
-                        "name": "test_script",
-                        "windows_supported": False,
-                        "linux_supported": True,
-                        "macos_supported": False,
-                        "script_inputs": [],
-                    },
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "First script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": False,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                },
+                {
+                    "script_uid": "uid2",
+                    "description": "Second script",
+                    "name": "test_script",
+                    "windows_supported": False,
+                    "linux_supported": True,
+                    "macos_supported": False,
+                    "script_inputs": [],
+                },
+            ],
         ),
         CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
     ]
@@ -6669,8 +6668,8 @@ def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
 
     mock_scripts_result = Mock()
     mock_scripts_result = [
-        CommandResults(outputs={"Scripts": []}),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs_prefix="Core.Scripts", outputs=[]),
+        CommandResults(outputs={"filtered_count": "0", "returned_count": "0"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6696,21 +6695,20 @@ def test_run_script_agentix_command_script_requires_parameters_but_none_provided
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6762,21 +6760,20 @@ def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -6813,21 +6810,20 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -8775,8 +8771,18 @@ def test_validate_custom_fields_success(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
-                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {
+                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
+                {
+                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
             ]
         }
     }
@@ -8805,11 +8811,17 @@ def test_validate_custom_fields_system_field(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "System Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": True,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
                 {
                     "CUSTOM_FIELD_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8845,6 +8857,7 @@ def test_validate_custom_fields_non_existent_field(mocker):
                     "CUSTOM_FIELD_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8858,6 +8871,164 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a string value instead of a list.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a list value.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": "single_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "multi_field" not in valid_fields
+    assert "multiSelect" in error_messages
+    assert "list" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted as valid and no error messages are returned.
+        validate_custom_fields does not enforce type — the list is passed through as-is.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"multi_field": ["value1", "value2"]}
+    assert not error_messages
+
+
+def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
+    """
+    GIVEN:
+        A shortText custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a single value.
+        (shortText is an enum field that does not accept arrays, per be3 validation logic.)
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"single_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "single_field" not in valid_fields
+    assert "does not accept a list value" in error_messages
+
+
+@pytest.mark.parametrize(
+    "field_type",
+    [
+        "shortText",
+        "longText",
+        "number",
+        "boolean",
+        "date",
+        "markdown",
+        "html",
+        "url",
+        "user",
+        "role",
+        "grid",
+        "tagsSelect",
+        "json",
+    ],
+)
+def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field_type):
+    """
+    GIVEN:
+        A non-enum custom field (e.g. shortText, boolean, date, etc.) provided with a string value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted — non-enum types have no list restriction at the content layer
+        (the backend handles further type validation).
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "My Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": field_type,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"my_field": "some_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "my_field" in valid_fields
+    assert not error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#
