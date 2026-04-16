@@ -12227,7 +12227,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': fetch_limit,
+            'limit': new_limit if look_back > 0 else fetch_limit,
         }
     else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
