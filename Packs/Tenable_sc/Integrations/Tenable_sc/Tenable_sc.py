@@ -858,6 +858,7 @@ class Client(BaseClient):
             "type": "vuln",
             "sourceType": "cumulative",
             "view": "all",
+            "wasVuln": "excludeWas",
             "startOffset": start_offset,
             "endOffset": end_offset,
             "sortField": "severity",
