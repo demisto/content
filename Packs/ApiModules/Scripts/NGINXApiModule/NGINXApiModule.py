@@ -121,12 +121,13 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     template_str = params.get("nginx_server_conf") or NGINX_SERVER_CONF
     certificate: str = params.get("certificate", "")
     private_key: str = params.get("key", "")
-    timeout_param = str(params.get("timeout")) or "3600"
-    cache_refresh_rate_param = str(params.get("cache_refresh_rate")) or "300"
+    timeout_param = str(params.get("timeout") or "3600")
+    cache_refresh_rate_param = str(params.get("cache_refresh_rate") or "300")
 
     # Ensure cache_refresh_rate is at least as large as timeout
-    if timeout_param.isdigit() and cache_refresh_rate_param.isdigit() and int(cache_refresh_rate_param) < int(timeout_param):
-        cache_refresh_rate_param = timeout_param
+    if timeout_param.isdigit() and cache_refresh_rate_param.isdigit():
+        if int(cache_refresh_rate_param) < int(timeout_param):
+            cache_refresh_rate_param = timeout_param
 
     timeout = f"{timeout_param}s" if timeout_param.isdigit() else timeout_param
     cache_refresh_rate = f"{cache_refresh_rate_param}s" if cache_refresh_rate_param.isdigit() else cache_refresh_rate_param
