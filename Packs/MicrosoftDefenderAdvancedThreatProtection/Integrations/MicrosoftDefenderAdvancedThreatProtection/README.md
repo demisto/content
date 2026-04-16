@@ -5281,8 +5281,7 @@ Gets a result file for a specified action.
 >
 ### microsoft-atp-advanced-hunting-lateral-movement-evidence
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
 
@@ -5438,8 +5437,7 @@ Detects evidence of attempted lateral movement. When you select a “query_purpo
 
 ### microsoft-atp-advanced-hunting-persistence-evidence
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
 
@@ -5669,8 +5667,7 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 
 ### microsoft-atp-advanced-hunting-process-details
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Detects process details. When you select a “query_purpose” argument, a designated query template is used.
 
@@ -5773,8 +5770,7 @@ Detects process details. When you select a “query_purpose” argument, a desig
 
 ### microsoft-atp-advanced-hunting-network-connections
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
 
@@ -5852,8 +5848,7 @@ Detects network connections. When you select a “query_purpose” argument, a d
 
 ### microsoft-atp-advanced-hunting-cover-up
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Detects cover up actions. When you select a “query_purpose” argument, a designated query template is used.
 
@@ -6128,8 +6123,7 @@ Detects cover up actions. When you select a “query_purpose” argument, a desi
 
 ### microsoft-atp-advanced-hunting-file-origin
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 How did the file get on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
 
@@ -6162,8 +6156,7 @@ How did the file get on the machine. Possible details are "dropped_file" - Was t
 
 ### microsoft-atp-advanced-hunting-privilege-escalation
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Is there evidence for privilege escalation.
 
@@ -6192,8 +6185,7 @@ Is there evidence for privilege escalation.
 
 ### microsoft-atp-advanced-hunting-tampering
 
-NOTE: This endpoint will be deprecated by Microsoft on January 31, 2026. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command.
-
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
 ---
 Detect if there was any evidence of MSDE agent/sensor manipulation.
 
