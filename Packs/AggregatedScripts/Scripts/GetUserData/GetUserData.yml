@@ -90,7 +90,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8160132
 fromversion: 6.10.0
 tests:
 - GetUserData - Test
