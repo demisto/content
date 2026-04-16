@@ -27,6 +27,11 @@ configuration:
   name: insecure
   type: 8
   required: false
+- defaultval: '60'
+  display: Request timeout (in seconds)
+  name: request_timeout
+  required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   type: 8
