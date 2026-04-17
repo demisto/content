@@ -1833,6 +1833,639 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
+  - arguments:
+    - description: Object name. Must be unique in the domain.
+      name: name
+      required: true
+    - description: Collection of Network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - description: Color of the object. Should be one of existing colors.
+      name: color
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Adds a new service group object.
+    name: checkpoint-service-group-add
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: Member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: Member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: Member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: Group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: Group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: Tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: Tag UID.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects."
+      name: show_as_ranges
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Shows an existing service group object using object name or uid.
+    name: checkpoint-service-group-get
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: Member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: Member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: Member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: Group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: Group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: Tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: Tag UID.
+      type: String
+  - arguments:
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer.
+      name: filter
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - auto: PREDEFINED
+      description: Sorts the results by search criteria. Automatically sorts the results by Name.
+      name: order
+      predefined:
+      - ASC
+      - DESC
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects."
+      name: show_as_ranges
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Indicates whether to dereference "members" field by details level for every object in reply.
+      name: dereference_group_members
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Indicates whether to calculate and show "groups" field for every object in reply.
+      name: show_membership
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Indicates which domains to process the commands on. Valid values are CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.
+      isArray: true
+      name: domains_to_process
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Gets a list of all service group objects.
+    name: checkpoint-service-group-list
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: Collection of Network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - description: New name of the object.
+      name: new_name
+    - description: Color of the object. Should be one of existing colors.
+      name: color
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: modify
+      description: The action that should be taken towards the members, groups, and tags values.
+      name: action
+      predefined:
+      - add
+      - remove
+      - modify
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Updates the specified service group object.
+    name: checkpoint-service-group-update
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: Member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: Member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: Member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: Group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: Group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: Tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: Tag UID.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name of the service group to clone.
+      name: identifier
+      required: true
+    - description: Collection of Network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - description: New name of the cloned object.
+      name: new_name
+    - description: Color of the object. Should be one of existing colors.
+      name: color
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: modify
+      description: The action that should be taken towards the members, groups, and tags values.
+      name: action
+      predefined:
+      - add
+      - remove
+      - modify
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Clones an existing service group object.
+    name: checkpoint-service-group-clone
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: Member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: Member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: Member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: Group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: Group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: Tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: Tag UID.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Deletes the specified service group object.
+    name: checkpoint-service-group-delete
+    outputs: []
+  - arguments:
+    - description: Layer that the rule belongs to identified by the name or UID.
+      name: layer
+      required: true
+    - auto: PREDEFINED
+      description: Position in the rulebase. Add rule relatively to another rule or section.
+      name: position
+      predefined:
+      - top
+      - above
+      - below
+      - bottom
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Object name. Must be unique in the domain.
+      name: name
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Adds a new access section.
+    name: checkpoint-access-section-add
+    outputs:
+    - contextPath: CheckPoint.AccessSection.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.AccessSection.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Layer that the rule belongs to identified by the name or UID.
+      name: layer
+      required: true
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Shows an existing access section using object name or uid.
+    name: checkpoint-access-section-get
+    outputs:
+    - contextPath: CheckPoint.AccessSection.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.AccessSection.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: Layer that the rule belongs to identified by the name or UID.
+      name: layer
+      required: true
+    - description: New name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Updates the specified access section.
+    name: checkpoint-access-section-update
+    outputs:
+    - contextPath: CheckPoint.AccessSection.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.AccessSection.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: Layer that the rule belongs to identified by the name or UID.
+      name: layer
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Deletes the specified access section.
+    name: checkpoint-access-section-delete
+    outputs: []
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
