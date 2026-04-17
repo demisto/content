@@ -1,0 +1,345 @@
+commonfields:
+  id: UptycsEventCollector
+  version: -1
+name: UptycsEventCollector
+display: Uptycs Event Collector (Beta)
+beta: true
+category: Analytics & SIEM
+provider: Uptycs
+description: Uptycs is a cloud-native security analytics platform that provides visibility, threat detection, and compliance across endpoints and cloud workloads.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: 'The Uptycs API base URL. Format: https://<domain>.uptycs.io.'
+- name: api_key
+  display: API Key
+  required: true
+  type: 14
+  section: Connect
+  additionalinfo: The API Key from the Uptycs API Client Management page. Used for JWT authentication.
+- name: credentials
+  display: API Secret
+  displaypassword: API Secret
+  required: true
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: The API Secret from the Uptycs API Client Management page. Used for JWT signing.
+- name: customer_id
+  display: Customer ID
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Uptycs Customer ID (UUID). Found in the API key JSON file or the Uptycs console URL.
+- name: role_id
+  display: Role ID
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: Optional Role ID to include in the JWT token for role-based access control.
+- name: security_zone_id
+  display: Security Zone ID
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: Optional Security Zone ID to include in the JWT token for zone-scoped access.
+- name: max_fetch
+  display: Maximum number of alerts per fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: "10000"
+  additionalinfo: Maximum number of alerts to fetch per cycle (default is 10000).
+script:
+  commands:
+  - name: uptycs-get-events
+    description: |-
+      Gets alerts from Uptycs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    deprecated: false
+    arguments:
+    - name: start_time
+      description: >-
+        The start time to fetch alerts.
+        Supports relative time (e.g., "3 days ago", "2 hours ago", "now")
+        or absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: end_time
+      description: >-
+        The end time to fetch alerts.
+        Supports relative time (e.g., "1 hour ago", "now")
+        or absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: limit
+      description: Maximum number of alerts to retrieve.
+      defaultValue: '10000'
+    - name: should_push_events
+      description: Set to true to push events to XSIAM. Use with caution to avoid duplicates.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Uptycs.Alert.id
+      description: Unique identifier of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.agentType
+      description: Type of agent associated with the alert (e.g., asset).
+      type: String
+    - contextPath: Uptycs.Alert.alertId
+      description: Alert identifier.
+      type: String
+    - contextPath: Uptycs.Alert.alertRuleId
+      description: Identifier of the alert rule that triggered this alert.
+      type: String
+    - contextPath: Uptycs.Alert.alertRuleName
+      description: Name of the alert rule that triggered this alert.
+      type: String
+    - contextPath: Uptycs.Alert.alertStatusReasonId
+      description: Identifier for the alert status reason.
+      type: String
+    - contextPath: Uptycs.Alert.alertTags
+      description: Tags associated with the alert (e.g., MITRE ATT&CK techniques).
+      type: Unknown
+    - contextPath: Uptycs.Alert.alertTime
+      description: 'Timestamp when the alert was triggered. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.alertTimeSuppresionDuration
+      description: Duration of alert time suppression.
+      type: String
+    - contextPath: Uptycs.Alert.alertTimeSuppresionStart
+      description: Start time of alert time suppression.
+      type: String
+    - contextPath: Uptycs.Alert.assetCityId
+      description: City identifier of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetCores
+      description: Number of CPU cores on the asset.
+      type: Number
+    - contextPath: Uptycs.Alert.assetCpuBrand
+      description: CPU brand of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetDescription
+      description: Description of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetDisabled
+      description: Whether the asset is disabled.
+      type: Boolean
+    - contextPath: Uptycs.Alert.assetGateway
+      description: Gateway IP address of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetHardwareModel
+      description: Hardware model of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetHardwareSerial
+      description: Hardware serial number of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetHardwareVendor
+      description: Hardware vendor of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetHostName
+      description: Hostname of the asset associated with the alert.
+      type: String
+    - contextPath: Uptycs.Alert.assetId
+      description: Unique identifier of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetLastActivityAt
+      description: 'Timestamp of the asset''s last activity. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.assetLastEnrolledAt
+      description: 'Timestamp when the asset was last enrolled. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.assetLatitude
+      description: Latitude of the asset's location.
+      type: Number
+    - contextPath: Uptycs.Alert.assetLive
+      description: Whether the asset is currently live.
+      type: Boolean
+    - contextPath: Uptycs.Alert.assetLocation
+      description: Geographic location of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetLogicalCores
+      description: Number of logical CPU cores on the asset.
+      type: Number
+    - contextPath: Uptycs.Alert.assetLongitude
+      description: Longitude of the asset's location.
+      type: Number
+    - contextPath: Uptycs.Alert.assetManualSlackAssignment
+      description: Whether the asset has manual Slack assignment.
+      type: Boolean
+    - contextPath: Uptycs.Alert.assetMemoryMb
+      description: Memory in MB of the asset.
+      type: Number
+    - contextPath: Uptycs.Alert.assetObjectGroupId
+      description: Object group identifier of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetOs
+      description: Operating system of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetOsFlavor
+      description: OS flavor of the asset (e.g., debian).
+      type: String
+    - contextPath: Uptycs.Alert.assetOsKey
+      description: OS key identifier of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetOsVersion
+      description: OS version of the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetOsqueryVersion
+      description: Osquery version installed on the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetSlackUserId
+      description: Slack user ID associated with the asset.
+      type: String
+    - contextPath: Uptycs.Alert.assetStatus
+      description: Status of the asset (e.g., active).
+      type: String
+    - contextPath: Uptycs.Alert.assignedTo
+      description: User the alert is assigned to.
+      type: String
+    - contextPath: Uptycs.Alert.attackType
+      description: Type of attack associated with the alert.
+      type: String
+    - contextPath: Uptycs.Alert.cloudRegionCode
+      description: Cloud region code of the resource.
+      type: String
+    - contextPath: Uptycs.Alert.cloudResourceId
+      description: Cloud resource identifier.
+      type: String
+    - contextPath: Uptycs.Alert.cloudTenantId
+      description: Cloud tenant identifier.
+      type: String
+    - contextPath: Uptycs.Alert.cloudType
+      description: Cloud provider type.
+      type: String
+    - contextPath: Uptycs.Alert.code
+      description: Alert code identifier.
+      type: String
+    - contextPath: Uptycs.Alert.createdAt
+      description: 'Timestamp when the alert was created. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.custom
+      description: Whether this is a custom alert rule.
+      type: Boolean
+    - contextPath: Uptycs.Alert.customerId
+      description: Customer identifier.
+      type: String
+    - contextPath: Uptycs.Alert.description
+      description: Description of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.displayName
+      description: Display name of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.eventId
+      description: Event identifier associated with the alert.
+      type: String
+    - contextPath: Uptycs.Alert.exceptionMetadata
+      description: Exception metadata containing detailed event information.
+      type: Unknown
+    - contextPath: Uptycs.Alert.groupId
+      description: Group identifier.
+      type: String
+    - contextPath: Uptycs.Alert.groupName
+      description: Group name.
+      type: String
+    - contextPath: Uptycs.Alert.grouping
+      description: Alert grouping category (e.g., ATTACK).
+      type: String
+    - contextPath: Uptycs.Alert.groupingL2
+      description: Second-level grouping (e.g., MITRE tactic).
+      type: String
+    - contextPath: Uptycs.Alert.groupingL3
+      description: Third-level grouping (e.g., MITRE technique).
+      type: String
+    - contextPath: Uptycs.Alert.groupingL4
+      description: Fourth-level grouping.
+      type: String
+    - contextPath: Uptycs.Alert.hashKey
+      description: Hash key of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.isContainer
+      description: Whether the alert is related to a container.
+      type: Boolean
+    - contextPath: Uptycs.Alert.isTask
+      description: Whether the alert is a task.
+      type: Boolean
+    - contextPath: Uptycs.Alert.key
+      description: Key field of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.lastActiveAt
+      description: 'Timestamp when the alert was last active. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.lastOccurredAt
+      description: 'Timestamp when the alert last occurred. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.metadata
+      description: Alert metadata containing detailed event information.
+      type: Unknown
+    - contextPath: Uptycs.Alert.noisy
+      description: Whether the alert is marked as noisy.
+      type: Boolean
+    - contextPath: Uptycs.Alert.note
+      description: Note attached to the alert.
+      type: String
+    - contextPath: Uptycs.Alert.noteCreatedAt
+      description: 'Timestamp when the note was created. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.noteCreatedBy
+      description: User who created the note.
+      type: String
+    - contextPath: Uptycs.Alert.noteId
+      description: Identifier of the note.
+      type: String
+    - contextPath: Uptycs.Alert.remediationActions
+      description: Remediation actions for the alert.
+      type: String
+    - contextPath: Uptycs.Alert.resolutionDays
+      description: Number of days to resolve the alert.
+      type: Number
+    - contextPath: Uptycs.Alert.resolvedAt
+      description: 'Timestamp when the alert was resolved. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.rowCount
+      description: Number of rows associated with the alert.
+      type: Number
+    - contextPath: Uptycs.Alert.ruleId
+      description: Rule identifier that triggered the alert.
+      type: String
+    - contextPath: Uptycs.Alert.severity
+      description: Severity level of the alert (e.g., low, medium, high, critical).
+      type: String
+    - contextPath: Uptycs.Alert.status
+      description: Current status of the alert (e.g., open, closed).
+      type: String
+    - contextPath: Uptycs.Alert.updatedAt
+      description: 'Timestamp when the alert was last updated. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: Uptycs.Alert.updatedBy
+      description: User who last updated the alert.
+      type: String
+    - contextPath: Uptycs.Alert.value
+      description: Value associated with the alert key.
+      type: String
+    - contextPath: Uptycs.Alert.source
+      description: Source of the alert (e.g., host).
+      type: String
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.8198656
+fromversion: 8.11.0
+marketplaces:
+- marketplacev2
+- platform
+supportlevelheader: xsoar
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)

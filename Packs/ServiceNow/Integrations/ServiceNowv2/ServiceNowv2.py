@@ -11,7 +11,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -677,7 +677,8 @@ class Client(BaseClient):
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(
-                credentials=oauth_params.get("credentials", {}),
+                username=username,
+                password=password,
                 use_oauth=self.use_oauth,
                 client_id=oauth_params.get("client_id", ""),
                 client_secret=oauth_params.get("client_secret", ""),
@@ -734,6 +735,10 @@ class Client(BaseClient):
 
         # The attachments table does not support v2 api version
         if get_attachments:
+            url = url.replace("/v2", "/v1")
+
+        # The Service Catalog order_now endpoint does not support v2 api version
+        if sc_api and path.endswith("/order_now"):
             url = url.replace("/v2", "/v1")
 
         return url
@@ -1217,18 +1222,23 @@ class Client(BaseClient):
         """
         return self.send_request(f"servicecatalog/items/{id_}", "GET", sc_api=True)
 
-    def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
+    def create_item_order(self, id_: str, quantity: str, variables: dict = {}, no_validation: bool = False) -> dict:
         """Create item order in the service catalog by sending a POST request to the Service Catalog API.
 
         Args:
         id_: item id
         quantity: order quantity
         variables: order variables
+        no_validation: if True, sets sysparm_no_validation=true to bypass ServiceNow form validation.
+            Useful when catalog items have required attachments or custom validation that cannot be
+            satisfied at order-creation time. The attachment can be uploaded separately afterwards.
 
         Returns:
             Response from API.
         """
-        body = {"sysparm_quantity": quantity, "variables": variables}
+        body: dict = {"sysparm_quantity": quantity, "variables": variables}
+        if no_validation:
+            body["sysparm_no_validation"] = "true"
         return self.send_request(f"servicecatalog/items/{id_}/order_now", "POST", body=body, sc_api=True)
 
     def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
@@ -1909,12 +1919,18 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
 
+            human_readable = (
+                f"Type: {note.get('element')}\nCreated By: "
+                f"{note.get('sys_created_by')}\nCreated On: "
+                f"{note.get('sys_created_on')}\n{note.get('value')}"
+            )
             entries.append(
                 {
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
-                    "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    "HumanReadable": human_readable,
+                    "Contents": human_readable,
+                    "created": note.get("sys_created_on", ""),
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -2466,8 +2482,9 @@ def create_order_item_command(client: Client, args: dict) -> tuple[Any, dict[Any
     id_ = str(args.get("id", ""))
     quantity = str(args.get("quantity", "1"))
     variables = split_fields(str(args.get("variables", "")))
+    no_validation = argToBoolean(args.get("no_validation", False))
 
-    result = client.create_item_order(id_, quantity, variables)
+    result = client.create_item_order(id_, quantity, variables, no_validation)
     if not result or "result" not in result:
         return "Order item was not created.", {}, {}, True
     order_item = result.get("result", {})
@@ -2748,12 +2765,6 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     """
     Test the instance configurations when using basic authorization.
     """
-    # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth and not client.use_jwt:
-        raise Exception(
-            "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login "
-            "command followed by the !servicenow-oauth-test command to test the instance."
-        )
 
     if client._version == "v2" and client.get_attachments:
         raise DemistoException("Retrieving incident attachments is not supported when using the V2 API.")
@@ -3494,7 +3505,9 @@ def get_modified_remote_data_command(
 ) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
-    assert parsed_date is not None, f"could not parse {remote_args.last_update}"
+    if parsed_date is None:
+        demisto.debug(f"Could not parse lastUpdate='{remote_args.last_update}', falling back to epoch (1970-01-01 00:00:00)")
+        parsed_date = datetime(1970, 1, 1, tzinfo=UTC)
     last_update = parsed_date.strftime(DATE_FORMAT)
 
     demisto.debug(f"Running get-modified-remote-data command. Last update is: {last_update}")
@@ -3776,13 +3789,16 @@ def main():
     elif use_jwt:
         use_oauth = True
     jwt_params: dict = {}
+    basic_auth_creds = params.get("basic_credentials", {})
+    username = basic_auth_creds.get("identifier", "")
+    password = basic_auth_creds.get("password", "")
+
+    oauth_creds = params.get("credentials", {})
+
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        username = ""
-        password = ""
-        client_id = params.get("credentials", {}).get("identifier")
-        client_secret = params.get("credentials", {}).get("password")
+        client_id = oauth_creds.get("identifier", "")
+        client_secret = oauth_creds.get("password", "")
         oauth_params = {
-            "credentials": {"identifier": username, "password": password},
             "client_id": client_id,
             "client_secret": client_secret,
             "url": params.get("url"),
@@ -3803,8 +3819,11 @@ def main():
             }
 
     else:  # use basic authentication
-        username = params.get("credentials", {}).get("identifier")
-        password = params.get("credentials", {}).get("password")
+        # if are none - fallback to legacy which populates the oauth credentials
+        if not username or not password:
+            demisto.debug("Using legacy parameters for username and password")
+            username = oauth_creds.get("identifier", "")
+            password = oauth_creds.get("password", "")
 
     version = params.get("api_version")
 

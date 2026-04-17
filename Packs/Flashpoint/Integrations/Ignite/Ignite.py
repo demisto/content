@@ -1,13 +1,12 @@
 """Ignite Main File."""
 
-from copy import deepcopy
 import ipaddress
-
-import requests
-import urllib3
 import re
+from copy import deepcopy
 
 import demistomock as demisto
+import requests
+import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -25,6 +24,7 @@ DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
+DEFAULT_REPUTATION_CONTEXT_LIMIT = 50  # Default max entries for both relationships and enrichments per reputation result
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
 MAX_PRODUCT = 10000
@@ -233,7 +233,15 @@ class Client(BaseClient):
     Client to use in integration with powerful http_request.
     """
 
-    def __init__(self, url, headers, verify, proxy, create_relationships):
+    def __init__(
+        self,
+        url,
+        headers,
+        verify,
+        proxy,
+        create_relationships,
+        reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT,
+    ):
         """Initialize class object.
 
         :type url: ``str``
@@ -250,6 +258,10 @@ class Client(BaseClient):
 
         :type create_relationships: ``bool``
         :param create_relationships: True if integration will create relationships.
+
+        :type reputation_enrichments_limit: ``int``
+        :param reputation_enrichments_limit: Maximum number of enrichment entries stored per reputation
+            command result. Lower values improve performance; higher values preserve more details.
         """
         self.url = url
 
@@ -262,6 +274,7 @@ class Client(BaseClient):
         self.verify = verify
         self.proxy = proxy
         self.create_relationships = create_relationships
+        self.reputation_enrichments_limit = reputation_enrichments_limit
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
@@ -323,15 +336,17 @@ class Client(BaseClient):
 
         return resp_json
 
-    def get_indicator(self, indicator_value: str, indicator_type: str):
+    def get_indicator(self, indicator_value: str, indicator_type: str, exact_match: bool = False):
         """
         Get an indicator by its type and value.
 
         :param indicator_type: The indicator type.
         :param indicator_value: The indicator value.
+        :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
 
         :return: The indicator response.
         """
+        indicator_value = f'"{indicator_value}"' if exact_match else indicator_value
         params = {"ioc_types": indicator_type, "ioc_value": indicator_value, "embed": "all"}
 
         return self.http_request("GET", URL_SUFFIX["LIST_INDICATORS"], params=params)
@@ -1225,11 +1240,18 @@ def create_relationships_list_v2(client, related_iocs, indicator_value, indicato
 
 
 def create_relationships_list_for_community_search(client, indicators, ip):
-    relationships = []
+    relationships: list = []
+    limit = client.reputation_enrichments_limit
     if client.create_relationships:
         ip_address_data = indicators.get("enrichments", {}).get("ip_address", [])
         for ip_address in ip_address_data:
             if is_ip_valid(ip_address, True):
+                if len(relationships) >= limit:
+                    demisto.debug(
+                        f"Reached the maximum limit of relationships: {limit} "
+                        "for community search. truncating the rest of the relationships."
+                    )
+                    break
                 relationships.append(
                     EntityRelationship(
                         name="indicator-of",
@@ -1246,6 +1268,12 @@ def create_relationships_list_for_community_search(client, indicators, ip):
         indicator_data += indicators.get("enrichments", {}).get("cve_ids", [])
 
         for indicator in indicator_data:
+            if len(relationships) >= limit:
+                demisto.debug(
+                    f"Reached the maximum limit of relationships: {limit} "
+                    "for community search. truncating the rest of the relationships."
+                )
+                break
             relationships.append(
                 EntityRelationship(
                     name="indicator-of",
@@ -1696,7 +1724,7 @@ def filename_lookup_command(client: Client, filename: str) -> CommandResults:
     )
 
 
-def ip_lookup_command(client: Client, ip: str) -> CommandResults:
+def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular ip-address.
 
@@ -1705,6 +1733,7 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
 
     : param client: object of client class
     : param ip: ip-address
+    : param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     : return: command output
     """
     if not is_ip_valid(ip, True):
@@ -1714,9 +1743,9 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
         return CommandResults(readable_output=f"Skipping internal IP: {ip}")
 
     if is_ipv6_valid(ip):
-        response = client.get_indicator(ip, "ipv6")
+        response = client.get_indicator(ip, "ipv6", exact_match)
     else:
-        response = client.get_indicator(ip, "ipv4")
+        response = client.get_indicator(ip, "ipv4", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -1870,10 +1899,21 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
             )
             human_readable += f"\nIgnite link to community search: [{community_search_link}]({community_search_link})\n"
 
+            limited_indicators = []
+            for indicator in indicators:
+                for enr_key, enr_val in indicator.get("enrichments", {}).items():
+                    if isinstance(enr_val, list) and len(enr_val) > client.reputation_enrichments_limit:
+                        demisto.debug(
+                            f"Community search for IP {ip}: enrichments[{enr_key}] truncated to "
+                            f"{client.reputation_enrichments_limit} entries for indicator "
+                            f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
+                        )
+                        indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
+                limited_indicators.append(indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
                 outputs_key_field="id",
-                outputs=remove_empty_elements(indicators),
+                outputs=remove_empty_elements(limited_indicators),
                 readable_output=human_readable,
                 indicator=ip_ioc,
                 raw_response=community_response,
@@ -2116,16 +2156,16 @@ def indicator_get_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def url_lookup_command(client: Client, url: str) -> CommandResults:
+def url_lookup_command(client: Client, url: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular url.
 
     :param client: object of client class
     :param url: url as indicator
-
+    :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     :return: command output
     """
-    response = client.get_indicator(url, "url")
+    response = client.get_indicator(url, "url", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2236,16 +2276,17 @@ def url_lookup_command(client: Client, url: str) -> CommandResults:
     return command_results
 
 
-def domain_lookup_command(client: Client, domain: str) -> CommandResults:
+def domain_lookup_command(client: Client, domain: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular domain.
 
     :param client: object of client class
     :param domain: domain
+    :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     :return: command output
     """
 
-    response = client.get_indicator(domain, "domain")
+    response = client.get_indicator(domain, "domain", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2350,16 +2391,17 @@ def domain_lookup_command(client: Client, domain: str) -> CommandResults:
     return CommandResults(indicator=domain_ioc, readable_output=human_readable, raw_response=response)
 
 
-def file_lookup_command(client: Client, file: str) -> CommandResults:
+def file_lookup_command(client: Client, file: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular file hash.
 
     :param client: object of client class
     :param file: file as indicator
+    :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     :return: command output
     """
 
-    response = client.get_indicator(file, "file")
+    response = client.get_indicator(file, "file", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2909,6 +2951,11 @@ def main():
 
     create_relationships = argToBoolean(params.get("create_relationships", True))
 
+    reputation_enrichments_limit = (
+        arg_to_number(params.get("reputation_enrichments_limit", DEFAULT_REPUTATION_CONTEXT_LIMIT))
+        or DEFAULT_REPUTATION_CONTEXT_LIMIT
+    )
+
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = argToBoolean(params.get("proxy", False))
@@ -2927,7 +2974,7 @@ def main():
             "X-FP-IntegrationVersion": INTEGRATION_VERSION,
         }
         validate_params(command, params)
-        client = Client(url, headers, verify, proxy, create_relationships)
+        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit)
 
         COMMAND_TO_FUNCTION: dict = {
             "flashpoint-ignite-intelligence-report-search": get_reports_command,
@@ -2977,11 +3024,15 @@ def main():
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             indicator_list = argToList(args.get(command))
             indicator_list = [indicator.strip() for indicator in indicator_list if indicator.strip()]
+            exact_match = argToBoolean(args.get("exact_match", False))
             results = []
             if not indicator_list:
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             for indicator in indicator_list:
-                results.append(REPUTATION_COMMAND_TO_FUNCTION[command](client, indicator))
+                arguments = (client, indicator)
+                if exact_match:
+                    arguments += (exact_match,)  # type: ignore
+                results.append(REPUTATION_COMMAND_TO_FUNCTION[command](*arguments))
             return_results(results)
 
         elif COMMAND_TO_FUNCTION.get(command):

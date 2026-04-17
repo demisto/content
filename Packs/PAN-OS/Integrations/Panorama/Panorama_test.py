@@ -7252,29 +7252,86 @@ def test_find_largest_id_per_device(mocker):
 def test_filter_fetched_entries(mocker):
     """
     Given:
-    - list of dictionares repesenting raw entries, some contain seqno and some don't,  some contain device_name and some don't.
-    - dictionary with the largest id per device.
-    When:
-    - filter_fetched_entries is called.
-    Then:
-    - return a dictionary the entries that there id is larger then the id in the id_dict,
-        without the entries that do not have seqno.
-    """
-    from Panorama import filter_fetched_entries
+    - list of dictionaries representing raw entries with seqno, device_name, and time_generated fields
+    - dictionary with the largest id per device (id_dict)
+    - dictionary with last fetch times per log type (last_fetch_dict)
 
+    When:
+    - filter_fetched_entries is called with the new timestamp-based filtering logic
+
+    Then:
+    - return a dictionary with entries filtered based on:
+      1. Logs with time_generated > last_fetch_time are always kept (no seqno comparison)
+      2. Logs with time_generated == last_fetch_time are kept only if seqno > last_id
+      3. Logs missing required fields (seqno, device_name, time_generated) are skipped
+      4. Correlation logs are filtered by @logid instead of seqno
+    """
+    from Panorama import LastFetchTimes, LastIDs, filter_fetched_entries
+
+    # Test case 1: Regular log types with timestamp-based filtering
     raw_entries = {
         "log_type1": [
-            {"device_name": "dummy_device1"},
-            {"device_name": "dummy_device1", "seqno": "000000002"},
-            {"device_name": "dummy_device2", "seqno": "000000001"},
+            # Missing time_generated - should be skipped
+            {"device_name": "dummy_device1", "seqno": "000000001"},
+            # time_generated > last_fetch_time - should be kept regardless of seqno
+            {"device_name": "dummy_device1", "seqno": "000000002", "time_generated": "2022-01-01 14:00:00"},
+            # time_generated == last_fetch_time, seqno > last_id - should be kept
+            {"device_name": "dummy_device2", "seqno": "000000002", "time_generated": "2022-01-01 13:00:00"},
+            # time_generated == last_fetch_time, seqno <= last_id - should be filtered out
+            {"device_name": "dummy_device2", "seqno": "000000001", "time_generated": "2022-01-01 13:00:00"},
         ],
-        "log_type2": [{"device_name": "dummy_device3", "seqno": "000000004"}, {"seqno": "000000007"}],
+        "log_type2": [
+            # New log type with no previous fetch - should be kept
+            {"device_name": "dummy_device3", "seqno": "000000004", "time_generated": "2022-01-01 12:00:00"},
+            # Missing device_name - should be skipped
+            {"seqno": "000000007", "time_generated": "2022-01-01 12:00:00"},
+        ],
     }
-    id_dict = {"log_type1": {"dummy_device1": "000000003", "dummy_device2": "000000000"}}
-    res = filter_fetched_entries(raw_entries, id_dict)
+
+    id_dict = LastIDs(
+        log_type1={"dummy_device1": "000000003", "dummy_device2": "000000001"}  # type: ignore[typeddict-item]
+    )
+
+    last_fetch_dict = LastFetchTimes(
+        log_type1="2022-01-01 13:00:00"  # type: ignore[typeddict-item]
+    )
+
+    res = filter_fetched_entries(raw_entries, id_dict, last_fetch_dict)
+
+    # Expected: only entries that pass the new filtering logic
     assert res == {
-        "log_type1": [{"device_name": "dummy_device2", "seqno": "000000001"}],
-        "log_type2": [{"device_name": "dummy_device3", "seqno": "000000004"}],
+        "log_type1": [
+            # Entry with time_generated > last_fetch_time (14:00 > 13:00)
+            {"device_name": "dummy_device1", "seqno": "000000002", "time_generated": "2022-01-01 14:00:00"},
+            # Entry with time_generated == last_fetch_time and seqno (2) > last_id (1)
+            {"device_name": "dummy_device2", "seqno": "000000002", "time_generated": "2022-01-01 13:00:00"},
+        ],
+        "log_type2": [
+            # New log type - all valid entries are kept
+            {"device_name": "dummy_device3", "seqno": "000000004", "time_generated": "2022-01-01 12:00:00"}
+        ],
+    }
+
+    # Test case 2: Correlation log type (uses @logid instead of seqno)
+    corr_entries = {
+        "Correlation": [
+            {"@logid": "1", "match_time": "2022-01-01 12:00:00"},
+            {"@logid": "2", "match_time": "2022-01-01 13:00:00"},
+            {"@logid": "3", "match_time": "2022-01-01 14:00:00"},
+        ]
+    }
+
+    corr_id_dict = LastIDs(Correlation=1)  # type: ignore[typeddict-item]
+    corr_last_fetch_dict = LastFetchTimes()
+
+    corr_res = filter_fetched_entries(corr_entries, corr_id_dict, corr_last_fetch_dict)
+
+    # Expected: only entries with @logid > 1
+    assert corr_res == {
+        "Correlation": [
+            {"@logid": "2", "match_time": "2022-01-01 13:00:00"},
+            {"@logid": "3", "match_time": "2022-01-01 14:00:00"},
+        ]
     }
 
 
@@ -9240,77 +9297,45 @@ class TestDynamicUpdateCommands:
 
 
 @pytest.mark.parametrize(
-    ("vsys", "rules", "no_new_hits_since", "expected_cmd", "expected_datetime"),
+    ("vsys", "rules", "rulebase", "expected_cmd"),
     [
         (
             "vsys1",
             "Rule1",
-            "",
-            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            "qos",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="qos"><rules>'
             b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
             b"</rule-hit-count></show>",
-            None,
         ),
         (
-            "all",
-            "Rule1",
-            "",
-            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
-            b"</list></rules></entry></rule-base></all></vsys></rule-hit-count></show>",
-            None,
-        ),
-        (
-            "all",
-            "all",
-            "",
-            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><all /></rules></entry>'
-            b"</rule-base></all></vsys></rule-hit-count></show>",
-            None,
-        ),
-        (
-            "all",
-            "Rule1, Rule2, Rule3",
-            "",
-            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
-            b"<member>Rule2</member><member>Rule3</member></list></rules></entry></rule-base></all></vsys>"
-            b"</rule-hit-count></show>",
-            None,
-        ),
-        (
-            "vsys1",
-            "Rule1",
-            "2025/06/01 00:00:00",
-            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
-            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
-            b"</rule-hit-count></show>",
-            datetime.strptime("2025/06/01 00:00:00", "%Y/%m/%d %H:%M:%S"),
+            "vsys3",
+            "Rule1,Rule2,Rule3",
+            "security",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys3"><rule-base><entry name="security"><rules><list>'
+            b"<member>Rule1</member><member>Rule2</member><member>Rule3</member>"
+            b"</list></rules></entry></rule-base></entry></vsys-name></vsys></rule-hit-count></show>",
         ),
     ],
 )
-def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expected_datetime, mock_topology, mocker):
-    """Test the get_rule_hitcounts function with various parameter combinations.  Verify that it properly
-        constructs the API call to retrieve the specified rule hitcount data.
+def test_build_rule_hit_count_xml(vsys, rules, rulebase, expected_cmd):
+    """Test the build_rule_hit_count_xml return value.
 
     Args:
         vsys: Virtual system name or "all" for all virtual systems
         rules: Rule names (single rule, multiple comma-separated rules, or "all")
-        no_new_hits_since: Date string for filtering rules with no new hits since this time
+        rulebase: The firewall rulebase to check
         expected_cmd: Expected XML command that should be generated
-        expected_datetime: Expected parsed datetime object from no_new_hits_since
         mock_topology: Mocked topology fixture
         mocker: Pytest mocker fixture
+
     """
-    from Panorama import get_rule_hitcounts
+    from Panorama import FirewallCommand
+    import xml.etree.ElementTree as ET
 
-    mock_get_hitcounts = mocker.patch("Panorama.FirewallCommand.get_hitcounts", return_value=True)
+    xml_root = FirewallCommand.build_rule_hit_count_xml(vsys, rulebase, rules)
+    cmd = ET.tostring(xml_root, encoding="unicode").encode()
 
-    get_rule_hitcounts(mock_topology, "", "1.2.3.4", "security", vsys, rules, "false", no_new_hits_since)
-
-    cmd_result = mock_get_hitcounts.call_args[0][1]
-    no_new_hits_since_dt = mock_get_hitcounts.call_args[0][3]
-
-    assert cmd_result == expected_cmd
-    assert no_new_hits_since_dt == expected_datetime
+    assert cmd == expected_cmd
 
 
 @freeze_time("2025-06-26 13:00:00 UTC")
@@ -9345,14 +9370,289 @@ def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_
     pushed_policy_data = "test_data/get_rule_hitcounts_pushed_policy.xml"
     mocker.patch(
         "Panorama.run_op_command",
-        side_effect=[
-            load_xml_root_from_test_file(rule_hitcounts_data),
-            load_xml_root_from_test_file(pushed_policy_data),
-        ],
+        side_effect=[load_xml_root_from_test_file(pushed_policy_data), load_xml_root_from_test_file(rule_hitcounts_data)],
     )
 
     mocker.patch("Panorama.demisto.callingContext", return_value={"context": {"IntegrationInstance": "Panorama_test_instance"}})
 
-    result = FirewallCommand.get_hitcounts(mock_topology, "", rulebase_type, no_new_hits_since_dt, None, None, unused_only)
+    result = FirewallCommand.get_hitcounts(
+        topology=mock_topology,
+        rulebase_type=rulebase_type,
+        vsys_arg="vsys1",
+        rules_arg="all",
+        no_new_hits_since=no_new_hits_since_dt,
+        device_filter_string=None,
+        target=None,
+        unused_only=unused_only,
+    )
     assert result is not None
     assert len(result) == length_expected
+
+
+@pytest.mark.parametrize(
+    "unused_only, no_new_hits_since, expected_count",
+    [
+        # Case 1: unused_only=False, no filter -> all rules returned
+        ("false", None, 4),
+        # Case 2: unused_only=True -> only rules with hit_count=0
+        ("true", None, 2),
+        # Case 3: unused_only=False, no_new_hits_since recent -> only rules older than filter
+        ("false", dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 4),
+        # Case 4: unused_only=True, no_new_hits_since recent -> only old unused rules
+        ("true", dateparser.parse("12 hours ago", settings={"TIMEZONE": "UTC"}), 2),
+    ],
+)
+def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_count, mocker):
+    """Test get_hitcounts with different unused_only and no_new_hits_since values."""
+
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand
+
+    # ----------------------------
+    # Mock topology and firewall
+    # ----------------------------
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    vsys_list = ["vsys1", "vsys2"]
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=vsys_list)
+
+    # ----------------------------
+    # Fake run_op_command returns 2 rules per VSYS
+    # ----------------------------
+    def fake_run_op(firewall, cmd, cmd_xml=False):
+        xml_root = ET.Element("show")
+        rhc = ET.SubElement(xml_root, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name="vsys_placeholder")
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        # Helper to add rule entry with all required fields
+        def add_rule(name, hit_count, last_hit_timestamp):
+            rule = ET.SubElement(rules_elem, "entry", name=name)
+            ET.SubElement(rule, "hit_count").text = str(hit_count)
+            ET.SubElement(rule, "last_hit_timestamp").text = last_hit_timestamp
+            # Add required extra fields for ShowRuleHitCountResult
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        # Rule1: hit_count=0, old timestamp (1970)
+        add_rule("Rule1", 0, "0")
+
+        # Rule2: hit_count=5, recent timestamp '2025-03-20T14:52:04Z'
+        add_rule("Rule2", 5, "1742482324")
+
+        return xml_root
+
+    mocker.patch("Panorama.run_op_command", side_effect=fake_run_op)
+
+    # Patch demisto
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    # Patch build_rule_hit_count_xml to use original
+    original_build_xml = FirewallCommand.build_rule_hit_count_xml
+    mocker.patch.object(
+        FirewallCommand,
+        "build_rule_hit_count_xml",
+        side_effect=lambda vsys_name, rb, rules: original_build_xml(vsys_name, rb, rules),
+    )
+
+    # ----------------------------
+    # Call function
+    # ----------------------------
+    results = FirewallCommand.get_hitcounts(
+        mock_topology,
+        "security",
+        "all",
+        "Rule1,Rule2",
+        no_new_hits_since=no_new_hits_since,
+        device_filter_string=None,
+        target=None,
+        unused_only=unused_only,
+    )
+
+    # ----------------------------
+    # Assert total rules returned
+    # ----------------------------
+    assert len(results) == expected_count
+
+    # Optional: check that returned rules match filters
+    for r in results:
+        if unused_only == "true":
+            assert r.hit_count == 0
+        if no_new_hits_since is not None:
+            last_hit_dt = datetime.strptime(r.last_hit_timestamp, "%Y-%m-%dT%H:%M:%SZ")
+            assert last_hit_dt <= no_new_hits_since
+
+
+def test_get_hitcounts_vsys_specific_enrichment(mocker):
+    """
+    Test that get_hitcounts performs per-vsys enrichment and uses the updated XPath logic.
+
+    Given:
+        - A topology with one firewall and two vsys (vsys1, vsys2).
+        - Each vsys has different Panorama-pushed rules (vsys1 has "PanoramaRule_v1", vsys2 has "PanoramaRule_v2").
+        - Each vsys also has a local rule that is NOT in the pushed policy data.
+
+    When:
+        - Calling get_hitcounts with vsys_arg="all".
+
+    Then:
+        - get_pushed_shared_policy_rules is called once per vsys (2 times total), each with the correct vsys_name.
+        - The pushed-shared-policy command includes the vsys name in the XML.
+        - Rules from vsys1 are enriched only with vsys1's pushed policy data (and vice versa).
+        - The new XPath './/panorama/{position}/...' correctly finds rules in the XML response.
+        - Local rules (not in pushed policy) have is_from_panorama=False.
+    """
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand
+
+    # Mock topology and firewall
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+    mock_firewall.serial = "111111111111111"
+    mock_firewall.hostname = None
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=["vsys1", "vsys2"])
+
+    # Build per-vsys pushed policy XML responses (new format with .//panorama/ XPath)
+    def build_pushed_policy_xml(vsys_name: str) -> ET.Element:
+        root = ET.Element("response", status="success")
+        result_elem = ET.SubElement(root, "result")
+        policy = ET.SubElement(result_elem, "policy")
+        panorama_elem = ET.SubElement(policy, "panorama")
+
+        # Pre-rulebase with a vsys-specific rule
+        pre_rb = ET.SubElement(panorama_elem, "pre-rulebase")
+        security = ET.SubElement(pre_rb, "security")
+        rules = ET.SubElement(security, "rules")
+        rule_name = f"PanoramaRule_{vsys_name.replace('vsys', 'v')}"
+        dg_name = f"DG-{vsys_name}"
+        entry = ET.SubElement(rules, "entry", name=rule_name, loc=dg_name)
+        # Add a child element so the entry is not considered "empty" by ElementTree
+        # (bool(element) returns False for elements with no children, causing dataclass_from_element to return None)
+        ET.SubElement(entry, "action", loc=dg_name).text = "allow"
+
+        return root
+
+    pushed_policy_vsys1 = build_pushed_policy_xml("vsys1")
+    pushed_policy_vsys2 = build_pushed_policy_xml("vsys2")
+
+    # Build a hitcount response XML containing both a Panorama rule and a local rule
+    def build_hitcount_xml(vsys_name: str) -> ET.Element:
+        root = ET.Element("response", status="success")
+        result_elem = ET.SubElement(root, "result")
+        rhc = ET.SubElement(result_elem, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name=vsys_name)
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        panorama_rule_name = f"PanoramaRule_{vsys_name.replace('vsys', 'v')}"
+        local_rule_name = f"LocalRule_{vsys_name}"
+
+        for rule_name in [panorama_rule_name, local_rule_name]:
+            rule = ET.SubElement(rules_elem, "entry", name=rule_name)
+            ET.SubElement(rule, "hit_count").text = "10"
+            ET.SubElement(rule, "last_hit_timestamp").text = "1742482324"
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        return root
+
+    hitcount_vsys1 = build_hitcount_xml("vsys1")
+    hitcount_vsys2 = build_hitcount_xml("vsys2")
+    """
+    Mock run_op_command to return vsys-specific responses
+    The new code calls run_op_command in this order per vsys:
+        1. pushed-shared-policy (enrichment)
+        2. hitcount query
+    So we need to mock 4 responses for 2 vsys: pushed1, hitcount1, pushed2, hitcount2
+    """
+    run_op_responses = [pushed_policy_vsys1, hitcount_vsys1, pushed_policy_vsys2, hitcount_vsys2]
+    run_op_mock = mocker.patch("Panorama.run_op_command", side_effect=run_op_responses)
+
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    results = FirewallCommand.get_hitcounts(
+        topology=mock_topology,
+        rulebase_type="security",
+        vsys_arg="all",
+        rules_arg="all",
+        no_new_hits_since=None,
+        device_filter_string=None,
+        target=None,
+        unused_only="false",
+    )
+
+    # Total of 4 rules returned (2 per vsys)
+    assert len(results) == 4
+
+    # run_op_command called 4 times total (pushed + hitcount per vsys)
+    assert run_op_mock.call_count == 4
+
+    # Verify the pushed-shared-policy commands include vsys name
+    # Call 0: pushed policy for vsys1
+    pushed_call_1_cmd = run_op_mock.call_args_list[0]
+    assert "vsys1" in pushed_call_1_cmd.kwargs.get("cmd", pushed_call_1_cmd[1].get("cmd", ""))
+    # Call 2: pushed policy for vsys2
+    pushed_call_2_cmd = run_op_mock.call_args_list[2]
+    assert "vsys2" in pushed_call_2_cmd.kwargs.get("cmd", pushed_call_2_cmd[1].get("cmd", ""))
+
+    # Verify per-vsys enrichment: Panorama rules are correctly enriched
+    vsys1_results = [r for r in results if r.vsys == "vsys1"]
+    vsys2_results = [r for r in results if r.vsys == "vsys2"]
+
+    assert len(vsys1_results) == 2
+    assert len(vsys2_results) == 2
+
+    # vsys1's Panorama rule should be enriched with vsys1's DG
+    vsys1_panorama_rule = next(r for r in vsys1_results if r.name == "PanoramaRule_v1")
+    assert vsys1_panorama_rule.is_from_panorama is True
+    assert vsys1_panorama_rule.from_dg_name == "DG-vsys1"
+    assert vsys1_panorama_rule.position == "pre_rulebase"
+
+    # vsys1's local rule should NOT be enriched
+    vsys1_local_rule = next(r for r in vsys1_results if r.name == "LocalRule_vsys1")
+    assert vsys1_local_rule.is_from_panorama is False
+    assert vsys1_local_rule.from_dg_name == ""
+
+    # vsys2's Panorama rule should be enriched with vsys2's DG (not vsys1's)
+    vsys2_panorama_rule = next(r for r in vsys2_results if r.name == "PanoramaRule_v2")
+    assert vsys2_panorama_rule.is_from_panorama is True
+    assert vsys2_panorama_rule.from_dg_name == "DG-vsys2"
+    assert vsys2_panorama_rule.position == "pre_rulebase"
+
+    # vsys2's local rule should NOT be enriched
+    vsys2_local_rule = next(r for r in vsys2_results if r.name == "LocalRule_vsys2")
+    assert vsys2_local_rule.is_from_panorama is False
+    assert vsys2_local_rule.from_dg_name == ""
+
+    # Verify no cross-vsys enrichment leakage
+    # PanoramaRule_v1 should NOT appear in vsys2 results
+    vsys2_rule_names = {r.name for r in vsys2_results}
+    assert "PanoramaRule_v1" not in vsys2_rule_names
+    # PanoramaRule_v2 should NOT appear in vsys1 results
+    vsys1_rule_names = {r.name for r in vsys1_results}
+    assert "PanoramaRule_v2" not in vsys1_rule_names

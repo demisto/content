@@ -29,6 +29,9 @@ from Ignite import (
     ALERT_STATUS_VALUES,
     ALERT_ORIGIN_VALUES,
     OUTPUT_KEY_FIELD,
+    DEFAULT_REPUTATION_CONTEXT_LIMIT,
+    create_relationships_list_for_community_search,
+    ip_lookup_command,
 )
 
 """ CONSTANTS """
@@ -1212,7 +1215,8 @@ def test_filename_empty_response(mock_return, requests_mock, mocker):
 
 
 @patch("demistomock.results")
-def test_domain_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of domain look up command through main function
     when it returns reputation about given domain indicator.
@@ -1234,12 +1238,17 @@ def test_domain_lookup_command_success(mock_return, requests_mock, mocker):
 
     requests_mock.get(url, json=domain_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"domain": "dummy_domain.com"}
+    domain_value = "dummy_domain.com"
+    args = {"domain": domain_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="domain")
     mocker.patch.object(demisto, "args", return_value=args)
 
     main()
+
+    last_request = requests_mock.last_request
+    domain_value = f'"{domain_value}"' if exact_match else domain_value
+    assert last_request.qs["ioc_value"] == [domain_value]
 
     assert hr_output_for_domain_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert domain_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
@@ -1306,7 +1315,8 @@ def test_domain_lookup_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_ip_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_ip_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of ip look up command through main function
     when it returns reputation about given ip indicator.
@@ -1327,12 +1337,17 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker):
     url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
     requests_mock.get(url, json=ip_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"ip": "0.0.0.1"}
+    ip_value = "0.0.0.1"
+    args = {"ip": ip_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="ip")
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch("Ignite.is_ip_address_internal", return_value=False)
     main()
+
+    last_request = requests_mock.last_request
+    ip_value = f'"{ip_value}"' if exact_match else ip_value
+    assert last_request.qs["ioc_value"] == [ip_value]
 
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert ip_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
@@ -1761,7 +1776,8 @@ def test_indicator_get_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_url_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_url_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of url lookup command through main function
     when it returns reputation about given url.
@@ -1781,12 +1797,18 @@ def test_url_lookup_command_success(mock_return, requests_mock, mocker):
 
     requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=url_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"url": "http://dummy.com"}
+    url_value = "http://dummy.com"
+    args = {"url": url_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="url")
     mocker.patch.object(demisto, "args", return_value=args)
 
     main()
+
+    last_request = requests_mock.last_request
+    url_value = f'"{url_value}"' if exact_match else url_value
+    assert last_request.qs["ioc_value"] == [url_value]
+
     assert url_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert url_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert url_reputation == mock_return.call_args.args[0].get("Contents")
@@ -1850,7 +1872,8 @@ def test_url_lookup_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_file_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_file_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of file command through main function
     when it returns reputation about given file.
@@ -1871,12 +1894,18 @@ def test_file_lookup_command_success(mock_return, requests_mock, mocker):
     url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
     requests_mock.get(url, json=file_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"file": "00000000000000000000000000000001"}
+    file_value = "00000000000000000000000000000001"
+    args = {"file": file_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="file")
     mocker.patch.object(demisto, "args", return_value=args)
 
     main()
+
+    last_request = requests_mock.last_request
+    file_value = f'"{file_value}"' if exact_match else file_value
+    assert last_request.qs["ioc_value"] == [file_value]
+
     assert file_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert file_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert file_reputation == mock_return.call_args.args[0].get("Contents")
@@ -2370,3 +2399,147 @@ def test_fetch_incidents_when_invalid_password_complexity_filter_params_passed(m
         fetch_incidents(client=mock_client, last_run={}, params=params)
 
     assert str(error.value) == MESSAGES["INVALID_PASSWORD_LENGTH"]
+
+
+def test_community_search_relationships_truncated_when_over_limit(mock_client):
+    """
+    Test that relationships are capped at DEFAULT_REPUTATION_CONTEXT_LIMIT.
+
+    Given:
+        - A community search indicator with url_domains list longer than the limit.
+    When:
+        - Calling `create_relationships_list_for_community_search`.
+    Then:
+        - Relationships are capped at DEFAULT_REPUTATION_CONTEXT_LIMIT.
+    """
+    oversized_domains = [f"domain{i}.com" for i in range(DEFAULT_REPUTATION_CONTEXT_LIMIT + 10)]
+    indicator = {"enrichments": {"url_domains": oversized_domains}}
+    relationships = create_relationships_list_for_community_search(mock_client, indicator, "1.2.3.4")
+    assert len(relationships) == DEFAULT_REPUTATION_CONTEXT_LIMIT
+
+
+def test_community_search_relationships_not_truncated_when_within_limit(mock_client):
+    """
+    Test that enrichment lists within the limit produce all relationships.
+
+    Given:
+        - A community search indicator with url_domains list shorter than the limit.
+    When:
+        - Calling `create_relationships_list_for_community_search`.
+    Then:
+        - All entries produce relationships.
+    """
+    indicator = {"enrichments": {"url_domains": ["example.com", "test.com"]}}
+    relationships = create_relationships_list_for_community_search(mock_client, indicator, "9.9.9.9")
+    assert len(relationships) == 2
+
+
+def test_ip_lookup_enrichments_truncated_to_param_limit(requests_mock, mocker):
+    """
+    Test that community-search enrichment lists are truncated to the configured
+    `reputation_enrichments_limit` parameter value, not the hardcoded constant.
+
+    Given:
+        - A client with reputation_enrichments_limit set to 3.
+        - A community search response containing an enrichment list with 10 entries.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - The outputs stored in context contain at most 3 enrichment entries per list.
+    """
+    custom_limit = 3
+    client = Client(MOCK_URL, {}, False, None, False, reputation_enrichments_limit=custom_limit)
+
+    empty_ioc_response = {"items": []}
+    oversized_enrichments = [f"domain{i}.com" for i in range(10)]
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "enrichments": {
+                    "url_domains": oversized_enrichments,
+                },
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_domains = outputs[0].get("enrichments", {}).get("url_domains", [])
+    assert len(stored_domains) == custom_limit
+
+
+def test_ip_lookup_enrichments_not_truncated_when_within_param_limit(requests_mock, mocker):
+    """
+    Test that enrichment lists within the configured limit are stored in full.
+
+    Given:
+        - A client with reputation_enrichments_limit set to 10.
+        - A community search response containing an enrichment list with 3 entries.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - All 3 enrichment entries are preserved in the outputs.
+    """
+    custom_limit = 10
+    client = Client(MOCK_URL, {}, False, None, False, reputation_enrichments_limit=custom_limit)
+
+    empty_ioc_response = {"items": []}
+    small_enrichments = ["a.com", "b.com", "c.com"]
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "enrichments": {
+                    "url_domains": small_enrichments,
+                },
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_domains = outputs[0].get("enrichments", {}).get("url_domains", [])
+    assert len(stored_domains) == len(small_enrichments)
+
+
+def test_client_default_reputation_enrichments_limit():
+    """
+    Test that Client uses DEFAULT_REPUTATION_CONTEXT_LIMIT as the default when
+    reputation_enrichments_limit is not provided.
+
+    Given:
+        - A Client instantiated without the reputation_enrichments_limit argument.
+    When:
+        - Accessing client.reputation_enrichments_limit.
+    Then:
+        - The value equals DEFAULT_REPUTATION_CONTEXT_LIMIT.
+    """
+    client = Client(MOCK_URL, {}, False, None, False)
+    assert client.reputation_enrichments_limit == DEFAULT_REPUTATION_CONTEXT_LIMIT

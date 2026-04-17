@@ -7,7 +7,6 @@ Prints a value to the specified alert's war-room. The alert must be in status "U
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags |  |
 | Cortex XSOAR Version | 8.7.0 |
 
 ## Inputs
@@ -18,22 +17,9 @@ Prints a value to the specified alert's war-room. The alert must be in status "U
 | --- | --- |
 | value | The value to print to the war-room of specified alert. |
 | alert_id | The alert ID to print to. |
+| mark_as_note | Whether to mark the printed war-room entry as a note. |
 
 ## Outputs
 
 ---
 There are no outputs for this script.
-
-## Script Example
-
-```!PrintToAlert alert_id=5 value="Hello from the other side"```
-
-## Context Example
-
-```json
-{}
-```
-
-## Human Readable Output
-
->Successfully printed to alert 5.
