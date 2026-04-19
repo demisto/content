@@ -787,10 +787,18 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     mock_get_license.assert_called()
 
 
-def test_wildfire_upload_file_uses_basename(mocker):
+@pytest.mark.parametrize(
+    "input_name, expected_basename",
+    [
+        ("/tmp/evil/../../../etc/passwd", "passwd"),
+        ("report.pdf", "report.pdf"),
+    ],
+)
+def test_wildfire_upload_file_uses_basename(mocker, input_name, expected_basename):
     """
     Given:
-        - A file entry with a name containing directory components.
+        - A file entry with a name that may contain directory components or path-traversal sequences,
+          or a standard filename with no directory components.
     When:
         - Calling wildfire_upload_file.
     Then:
@@ -805,7 +813,7 @@ def test_wildfire_upload_file_uses_basename(mocker):
     mocker.patch.object(
         demisto,
         "getFilePath",
-        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd", "id": "entry1"},
+        return_value={"path": "/tmp/testfile", "name": input_name, "id": "entry1"},
     )
     mock_copy = mocker.patch("shutil.copy")
     mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
@@ -819,5 +827,5 @@ def test_wildfire_upload_file_uses_basename(mocker):
 
     # Verify shutil.copy was called with the sanitized basename only
     copy_call_args = mock_copy.call_args[0]
-    assert copy_call_args[1] == "passwd"
+    assert copy_call_args[1] == expected_basename
     assert os.path.basename(copy_call_args[1]) == copy_call_args[1]
