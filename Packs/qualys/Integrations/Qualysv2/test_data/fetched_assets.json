@@ -14,6 +14,7 @@
         "LAST_VM_SCANNED_DATE": "2023-05-16T15:26:01Z",
         "LAST_VM_SCANNED_DURATION": "2130",
         "LAST_PC_SCANNED_DATE": "2022-12-06T12:03:46Z",
+        "LAST_VM_AUTH_SCANNED_DATE": null,
         "DETECTION": {
             "QID": "QIDa",
             "TYPE": "Confirmed",
@@ -49,6 +50,7 @@
         "LAST_SCAN_DATETIME": "2023-03-21T03:43:11Z",
         "LAST_VM_SCANNED_DATE": "2023-03-21T03:42:05Z",
         "LAST_VM_SCANNED_DURATION": "404",
+        "LAST_VM_AUTH_SCANNED_DATE": null,
         "DETECTION": {
             "QID": "QIDb",
             "TYPE": "Confirmed",
