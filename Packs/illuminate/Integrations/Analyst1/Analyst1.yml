@@ -8,12 +8,25 @@ provider: Analyst1
 sectionorder:
 - Connect
 - Collect
-description: This integration utilizes Analyst1's system to enrich XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+description: This integration utilizes Analyst1's system to enrich XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence
+  and hit counts, and more.
 configuration:
-- display: Analyst1 API Credentials (username/password)
+- display: Authentication Method
+  name: auth_method
+  type: 15
+  required: true
+  defaultvalue: Basic Authentication
+  options:
+  - Basic Authentication
+  - OAuth2 Client Credentials
+  additionalinfo: 'Select how to authenticate with the Analyst1 API. Basic Authentication uses username/password. OAuth2 uses client_id/client_secret from an API Key.'
+  section: Connect
+- display: Client ID/Username
+  displaypassword: Client Secret/Password
   name: credentials
   type: 9
   required: true
+  additionalinfo: 'For Basic Auth: enter username and password. For OAuth2: enter client_id and client_secret.'
   section: Connect
 - display: Domain of Analyst1 server to use
   name: server
@@ -58,21 +71,21 @@ configuration:
   - Malicious
   type: 15
   required: false
-  additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Lowest".'
+  additionalinfo: XSOAR Verdict to set when Analyst1 Risk Score is "Lowest".
   section: Collect
-- defaultvalue: 'Unknown'
+- defaultvalue: Unknown
   name: riskScoreLow
   display: 'Risk Score Mapping: Low'
   type: 15
   required: false
-  additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Low".'
+  additionalinfo: XSOAR Verdict to set when Analyst1 Risk Score is "Low".
   options:
   - Unknown
   - Benign
   - Suspicious
   - Malicious
   section: Collect
-- additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Moderate".'
+- additionalinfo: XSOAR Verdict to set when Analyst1 Risk Score is "Moderate".
   defaultvalue: Suspicious
   display: 'Risk Score Mapping: Moderate'
   name: riskScoreModerate
@@ -84,7 +97,7 @@ configuration:
   type: 15
   required: false
   section: Collect
-- additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "High".'
+- additionalinfo: XSOAR Verdict to set when Analyst1 Risk Score is "High".
   defaultvalue: Suspicious
   display: 'Risk Score Mapping: High'
   name: riskScoreHigh
@@ -96,7 +109,7 @@ configuration:
   type: 15
   required: false
   section: Collect
-- additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Critical".'
+- additionalinfo: XSOAR Verdict to set when Analyst1 Risk Score is "Critical".
   defaultvalue: Malicious
   display: 'Risk Score Mapping: Critical'
   name: riskScoreCritical
@@ -108,7 +121,7 @@ configuration:
   type: 15
   required: false
   section: Collect
-- additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Unknown" or not present.'
+- additionalinfo: XSOAR Verdict to set when Analyst1 Risk Score is "Unknown" or not present.
   defaultvalue: Unknown
   display: 'Risk Score Mapping: Unknown'
   name: riskScoreUnknown
@@ -125,7 +138,8 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: 'Enable to automatically tag indicators with Analyst1 entity type classifications (e.g., "Analyst1: Indicator", "Analyst1: Asset", "Analyst1: In Private Range"). Tags help identify how Analyst1 classifies each indicator.'
+  additionalinfo: 'Enable to automatically tag indicators with Analyst1 entity type classifications (e.g., "Analyst1: Indicator", "Analyst1: Asset", "Analyst1: In Private Range"). Tags help identify how
+    Analyst1 classifies each indicator.'
   section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
@@ -722,10 +736,10 @@ script:
     - name: timeout
       default: true
       description: Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required.
-      defaultValue: "200"
+      defaultValue: '200'
     outputs:
     - contextPath: Analyst1.SensorTaskings
-      description: 'Root JSON for processing all taskings data. .'
+      description: Root JSON for processing all taskings data.
     - contextPath: Analyst1.SensorTaskings.id
       description: Sensor ID for this Taskings response.
     - contextPath: Analyst1.SensorTaskings.version
@@ -734,24 +748,27 @@ script:
       description: Current array of Indicators tasked.
     - contextPath: Analyst1.SensorTaskings.Rules
       description: Current array of Signatures tasked.
-    description: 'Queries the Analyst1 REST API for the current sensor taskings given a valid Sensor ID. This can be used to start subscription to an Sensor ID. The result gives the version (which can later be used to invoke ''diff'') and all current taskings. Note: This operation may trigger XSOAR to "oversize" the task built on this automation. If so, you may need to turn off quiet mode explicitly. The analyst1-get-sensor-config can alternatively be used to get a simple text file of current indicators or signatures.'
+    description: 'Queries the Analyst1 REST API for the current sensor taskings given a valid Sensor ID. This can be used to start subscription to an Sensor ID. The result gives the version (which can later
+      be used to invoke ''diff'') and all current taskings. Note: This operation may trigger XSOAR to "oversize" the task built on this automation. If so, you may need to turn off quiet mode explicitly.
+      The analyst1-get-sensor-config can alternatively be used to get a simple text file of current indicators or signatures.'
   - name: analyst1-get-sensors
     arguments:
     - name: page
       description: page of Sensors to iterate.
-      defaultValue: "1"
+      defaultValue: '1'
       type: unknown
     - name: pageSize
       default: true
       description: size of each page of Sensors to iterate. Maximum 50.
-      defaultValue: "50"
+      defaultValue: '50'
     description: Queries the Analyst1 REST API to retrieve a list of registered sensors.
   - name: analyst1-batch-check
     arguments:
     - name: values
       required: true
       isArray: true
-      description: Comma delimited set of possible Indicator or other Observable values. Submit as a basic string input with commas separating each value. For more complex or higher volume batches, use analyst1-batch-check-post.
+      description: Comma delimited set of possible Indicator or other Observable values. Submit as a basic string input with commas separating each value. For more complex or higher volume batches, use
+        analyst1-batch-check-post.
     outputs:
     - contextPath: Analyst1.BatchResults.ID
       description: Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records.
@@ -771,8 +788,9 @@ script:
     - contextPath: Analyst1.SensorTaskings.ConfigFile.warRoomEntry.FileID
       description: FileID from invoking fileResult() in the Common Server Functions. An alternative to the returned config_text in case file processing is preferred.
     - contextPath: Analyst1.SensorTaskings.ConfigFile.warRoomEntry.File
-      description: 'File Name as saved on the War Room file with fileResult() .'
-    description: Queries the Analyst1 REST API for the current sensor config given a valid Sensor ID. This config file is meant to be directly provided to a device (IDS, IPS, Firewall, SNORT...) for configuration replacements.
+      description: File Name as saved on the War Room file with fileResult().
+    description: Queries the Analyst1 REST API for the current sensor config given a valid Sensor ID. This config file is meant to be directly provided to a device (IDS, IPS, Firewall, SNORT...) for configuration
+      replacements.
   - name: analyst1-get-sensor-diff
     arguments:
     - name: sensor_id
@@ -784,7 +802,7 @@ script:
     - name: timeout
       default: true
       description: Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required.
-      defaultValue: "200"
+      defaultValue: '200'
     outputs:
     - contextPath: Analyst1.SensorTaskings.ID
       description: Sensor ID.
@@ -800,7 +818,8 @@ script:
       description: Array of Rules added between version and latestVersion.
     - contextPath: Analyst1.SensorTaskings.RulesRemoved
       description: Array of Rules removed between version and latestVersion.
-    description: Gets the 'difference' from the last known Analyst1 Sensor version against the current. Returns all differences on the Sensor since the 'version' provided and includes the current version in the reply. Current version should be preserved to be used on next scheduled invocation.
+    description: Gets the 'difference' from the last known Analyst1 Sensor version against the current. Returns all differences on the Sensor since the 'version' provided and includes the current version
+      in the reply. Current version should be preserved to be used on next scheduled invocation.
   - name: analyst1-indicator-by-id
     arguments:
     - name: indicator_id
@@ -809,7 +828,8 @@ script:
     outputs:
     - contextPath: Analyst1.Indicator
       description: Full Analyst1 native JSON for the Indicator. Will include all attributes, associated sources, enrichment results, and all settings as seen in the Analyst1 UI.
-    description: Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicator ID. Use this when full Indicator context is required for additional processing. This always includes all sources, enrichments, and every piece of information available in the Analyst1 platform, including integrated system's original enrichment JSON or results.
+    description: Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicator ID. Use this when full Indicator context is required for additional processing. This always includes all
+      sources, enrichments, and every piece of information available in the Analyst1 platform, including integrated system's original enrichment JSON or results.
   - name: analyst1-batch-check-post
     arguments:
     - name: values
@@ -823,16 +843,18 @@ script:
       description: Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records.
     - contextPath: Analyst1.matchedValue
       description: The matched terms from Indicators, Assets, Ignore List, or System CIDR entries.
-    description: Similar to analyst1-batch-check, however the inputs can be more complex. The 'values' input accepts comma or newline delimited text. This allows for more complex Indicators or larger Indicator sets to be searched. The 'values_array' allows for preformed array inputs or array-like inputs to be submitted. Output is the same.
+    description: Similar to analyst1-batch-check, however the inputs can be more complex. The 'values' input accepts comma or newline delimited text. This allows for more complex Indicators or larger Indicator
+      sets to be searched. The 'values_array' allows for preformed array inputs or array-like inputs to be submitted. Output is the same.
   - name: analyst1-evidence-submit
     arguments:
     - name: sourceId
       required: true
       description: Analyst1 ID# of the Source to associate the Evidence. It is a best practice to create a 'Reference' source in Analyst1 to which XSOAR may submit.
     - name: fileContent
-      description: Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileConent or fileEntryId must be included.
+      description: Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileContent or fileEntryId must
+        be included.
     - name: tlp
-      description: 'Traffic Light Protocol (TLP) value for the Evidence. If the Evidence is TLP marked that will override this input as the a1bot finds the TLP markings. .'
+      description: Traffic Light Protocol (TLP) value for the Evidence. If the Evidence is TLP marked that will override this input as the a1bot finds the TLP markings.
       defaultValue: GREEN
     - name: fileClassification
       default: true
@@ -840,15 +862,18 @@ script:
       defaultValue: U
     - name: fileName
       required: true
-      description: Name of the 'file' as it was received as an attachment/download, or as it should be represented in Analyst1. Will become the default 'title' of the created Evidence record. File extension will be used in MIME type discovery which does influence extraction by a1bot.
+      description: Name of the 'file' as it was received as an attachment/download, or as it should be represented in Analyst1. Will become the default 'title' of the created Evidence record. File extension
+        will be used in MIME type discovery which does influence extraction by a1bot.
     - name: fileEntryId
-      description: Entry ID in XSOAR context. How the File was acquired matters. For instance, if using the http command, setting saveAsFile=yes is very important or the original, real format will be lost in a {"Body":"encoded file"} wrapping. One of fileConent or fileEntryIdmust be included.
+      description: Entry ID in XSOAR context. How the File was acquired matters. For instance, if using the http command, setting saveAsFile=yes is very important or the original, real format will be lost
+        in a {"Body":"encoded file"} wrapping. One of fileContent or fileEntryId must be included.
     outputs:
     - contextPath: Analyst1.EvidenceSubmit.uuid
       description: The unique GUID tracking this specific Evidence's submission. Can be used to monitor to finish extraction. If empty, check 'message'.
     - contextPath: Analyst1.EvidenceSubmit.message
       description: An explanation of the error which occurred that prevented acceptance of the Evidence submission.
-    description: Submits an 'Evidence' to Analyst1. Submission can be any text or attachment (PDF, JSON,DOCX...). The a1Bot will extract all relevant context. The 'Evidence' can from an external source (email attachment, secure download) or constructed text/JSON within XSOAR to communicate intelligence results back to Analyst1.
+    description: Submits an 'Evidence' to Analyst1. Submission can be any text or attachment (PDF, JSON,DOCX...). The a1Bot will extract all relevant context. The 'Evidence' can from an external source
+      (email attachment, secure download) or constructed text/JSON within XSOAR to communicate intelligence results back to Analyst1.
   - name: analyst1-evidence-status
     arguments:
     - name: uuid
@@ -858,21 +883,149 @@ script:
     - contextPath: Analyst1.EvidenceStatus.id
       description: Evidence ID created by the submission. If 'blank' and message is 'blank', indicates the upload is still procesing.
     - contextPath: Analyst1.EvidenceStatus.message
-      description: 'If populated, will communicate errors which occurred with the status check or the upload processing. .'
+      description: If populated, will communicate errors which occurred with the status check or the upload processing.
     - contextPath: Analyst1.EvidenceStatus.processingComplete
-      description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress.
+      description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false,
+        indicating the upload is still in progress.
     description: Check on the status of the analyst1-evidence-submit action by using its output UUID.
-  dockerimage: demisto/python3:3.12.11.4819260
+  - name: analyst1-evidence-search
+    description: Search for evidence in Analyst1 using filters and search terms.
+    arguments:
+    - name: search_term
+      description: Free text search term (e.g., "black basta", "malware campaign").
+      required: false
+    - name: page
+      description: Results page number (1-indexed).
+      required: false
+      defaultValue: '1'
+    - name: page_size
+      description: Number of results per page (1-100).
+      required: false
+      defaultValue: '50'
+    - name: evidence_type
+      description: Filter by evidence type.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - pcap
+      - image
+      - pdf
+      - txt
+      - web
+      - incident_04
+      - stix
+      - caseType
+      - spreadsheet
+      - doc
+      - ppt
+      - xml
+      - other
+    - name: tlp
+      description: Filter by TLP color.
+      required: false
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - UNDETERMINED
+      - CLEAR
+      - GREEN
+      - AMBER
+      - AMBER+STRICT
+      - RED
+    - name: actor_id
+      description: Filter by actor ID.
+      required: false
+    - name: source_id
+      description: Filter by source ID.
+      required: false
+      isArray: true
+    - name: analyzed_state
+      description: Filter by analyzed state.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - r
+      - b
+      - g
+    - name: analyzed_date_from
+      description: Filter by analyzed date from (ISO-8601 format, e.g., 2024-01-01).
+      required: false
+    - name: analyzed_date_to
+      description: Filter by analyzed date to (ISO-8601 format, e.g., 2024-12-31).
+      required: false
+    - name: sort_by
+      description: Field to sort results by.
+      required: false
+      defaultValue: id
+      auto: PREDEFINED
+      predefined:
+      - id
+      - analyzed
+      - indicatorsStatus
+      - title
+      - tlp
+      - type
+      - exploitStage
+      - attackPattern
+      - activityDate
+      - reportedDate
+      - assignedTo
+    - name: desc_sort
+      description: Sort results in descending order.
+      required: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Analyst1.Evidence.id
+      description: Evidence unique ID.
+      type: Number
+    - contextPath: Analyst1.Evidence.title
+      description: Evidence title.
+      type: String
+    - contextPath: Analyst1.Evidence.type
+      description: Evidence type (e.g., pdf, pcap, web).
+      type: String
+    - contextPath: Analyst1.Evidence.tlp
+      description: Traffic Light Protocol (TLP) designation.
+      type: String
+    - contextPath: Analyst1.Evidence.analyzed
+      description: Whether the evidence has been analyzed.
+      type: Boolean
+    - contextPath: Analyst1.Evidence.indicatorsStatus
+      description: Status of indicators extracted from evidence.
+      type: String
+    - contextPath: Analyst1.Evidence.activityDate
+      description: Activity date associated with evidence.
+      type: Date
+    - contextPath: Analyst1.Evidence.reportedDate
+      description: Date evidence was reported.
+      type: Date
+    - contextPath: Analyst1.Evidence.assignedTo
+      description: User assigned to the evidence.
+      type: String
+  - name: analyst1-evidence-file-fetch
+    description: Download an evidence file from Analyst1 by its ID.
+    arguments:
+    - name: evidence_id
+      description: The Evidence ID to download.
+      required: true
+    outputs:
+    - contextPath: File.Name
+      description: The name of the downloaded file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.EntryID
+      description: The XSOAR entry ID of the downloaded file.
+      type: String
+  dockerimage: demisto/python3:3.12.13.7444307
   subtype: python3
   runonce: false
 fromversion: 5.0.0
 tests:
 - Analyst1 Integration Demonstration - Test
 - Analyst1 Integration Test
-detaileddescription: |-
-  ### Partner Contributed Integration
-  #### Integration Author: Analyst1
-  Support and maintenance for this integration are provided by the author. Please use the following contact details:
-  - **Email**: [support@analystplatform.com](mailto:support@analystplatform.com)
-  ***
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/analyst1)
