@@ -2027,7 +2027,7 @@ script:
       - uid
       - standard
       - full
-    - description: Indicates which domains to process the commands on. Valid values are CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.
+    - description: Indicates which domains to process the commands on. It cannot be used with details_level set to 'full', must be run from the System Domain only and with ignore_warnings set to true. Valid values are CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.
       isArray: true
       name: domains_to_process
     - defaultValue: None

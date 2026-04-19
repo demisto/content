@@ -2627,6 +2627,13 @@ def checkpoint_service_group_list_command(client: Client, **kwargs) -> CommandRe
     details_level = kwargs.get("details_level")
     domains_to_process = argToList(kwargs.get("domains_to_process")) or None
 
+    # domains_to_process cannot be used with details-level full, and must be used with ignore-warnings true.
+    if domains_to_process is not None:
+        if details_level == "full":
+            raise DemistoException(
+                "The 'domains_to_process' argument cannot be used with details_level set to 'full'."
+            )
+
     # Build order object: API expects [{"ASC": "name"}] or [{"DESC": "name"}]
     order = None
     if order_arg:
