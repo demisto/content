@@ -38,7 +38,7 @@ class Client(BaseClient):
         self._conn_client_secret = conn_client_secret
         self._conn_username = conn_username
         self._conn_password = conn_password
-        ## Rule of thumb for mass migration
+        self.token = None
         if not should_use_ucp_auth():
             self.token = self.get_access_token_()
         self.demisto_params = demisto_params
@@ -340,21 +340,28 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    demisto.debug("[Salesforce_IAM.py] Integration start")
 
     # get the service API url
     base_url = params.get("url")
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != "/":
         base_url += "/"
-
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
-    client_id = params.get("credentials_consumer", {}).get("identifier") or params.get("consumer_key")
-    client_secret = params.get("credentials_consumer", {}).get("password") or params.get("consumer_secret")
-    if not (client_id and client_secret) and not should_use_ucp_auth():
-        demisto.debug("Consumer Key and Consumer Secret are not provided.")
-        return_error("Consumer Key and Consumer Secret must be provided.")
+        
+    username = ""
+    password = ""
+    client_id = ""
+    client_secret = ""
+    if not should_use_ucp_auth():
+        demisto.debug("Using basic auth")
+        username = params.get("credentials").get("identifier")
+        password = params.get("credentials").get("password")
+        client_id = params.get("credentials_consumer", {}).get("identifier") or params.get("consumer_key")
+        client_secret = params.get("credentials_consumer", {}).get("password") or params.get("consumer_secret")
+        if not (client_id and client_secret):
+            return_error("Consumer Key and Consumer Secret must be provided.")
+    else:
+        demisto.debug("[UCP][Salesforce_IAM.py] Using UCP auth")
+            
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

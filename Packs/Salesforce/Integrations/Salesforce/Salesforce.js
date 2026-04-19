@@ -60,11 +60,16 @@ function sendRequestInSession(method, uri, body) {
     if (response.StatusCode === 401) {
         // ── UCP: invalidate cache and get fresh credentials, fall back to legacy ──
         if (shouldUseUcpAuth()) {
+            logDebug('[UCP][Salesforce.js] Received 401 — invalidating cached credentials and retrying');
             invalidateUcpCredentialsCache(getUcpMethodUniqueId());
             var ucpCreds = getUcpCredentials();
-            if (ucpCreds) {
-                SESSION_DATA.access_token = ucpCreds.access_token;
+            if (!ucpCreds || !ucpCreds.access_token) {
+                logError('[UCP][Salesforce.js] Failed to refresh access token after 401');
+                throw '[UCP] Failed to refresh the Salesforce access token after an authentication error. '
+                    + 'Please verify the authentication profile is correctly configured.';
             }
+            logDebug('[UCP][Salesforce.js] Successfully refreshed access token after 401');
+            SESSION_DATA.access_token = ucpCreds.access_token;
         } else {
             SESSION_DATA = getNewToken();
         }
@@ -837,11 +842,17 @@ function fetchIncident() {
     return incidents;
 }
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
+
 if (shouldUseUcpAuth()) {
-    logDebug("[UCP][Salesforce.js] Using UCP-managed token")
-    var ucp_credentials = getUcpCredentials();
+    logDebug("[UCP][Salesforce.js] Using UCP-managed token");
+    var ucpCredentials = getUcpCredentials();
+    if (!ucpCredentials || !ucpCredentials.access_token) {
+        logError('[UCP][Salesforce.js] Failed to obtain access token from UCP credentials');
+        throw '[UCP] Failed to obtain a Salesforce access token. '
+            + 'Please verify the authentication profile is correctly configured and the credentials are valid.';
+    }
     SESSION_DATA = {
-        access_token: ucp_credentials.access_token,
+        access_token: ucpCredentials.access_token,
         instance_url: params.InstanceURL
     };
 } else {
