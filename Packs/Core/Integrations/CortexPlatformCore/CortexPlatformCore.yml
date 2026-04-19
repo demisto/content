@@ -1860,6 +1860,9 @@ script:
         - contextPath: Core.IssueRecommendations.suggested_code_block
           description: Code block fix suggestion.
           type: String
+        - contextPath: Core.IssueRecommendations.network_reachability
+          description: The Network reachability information for the issue.
+          type: Json
     - arguments:
       - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
         name: issue_ids

@@ -1317,6 +1317,7 @@ def create_issue_recommendations_readable_output(issue_ids: list[str], all_recom
         "severity",
         "description",
         "remediation",
+        "network_reachability",
     ]
 
     # Flags to track what headers we need to append
@@ -1425,6 +1426,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
             "severity": issue.get("severity"),
             "description": issue.get("alert_description"),
             "remediation": issue.get("remediation"),
+            "network_reachability": issue.get("extended_fields", {}).get("network_reachability") or {},
         }
 
         # --- Playbook and Quick Action Suggestions ---
