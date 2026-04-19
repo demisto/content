@@ -2826,6 +2826,52 @@ def test_build_incidents_null_description_gets_empty_string():
     assert result[DemistoParams.DETAILS] == ""
 
 
+# ===== GAP #11: get_filtered_detections null description fallback flow =====
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_detections")
+@patch(
+    "Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters",
+    return_value=(True, None, {"severity": ["HIGH"]}),
+)
+def test_get_filtered_detections_null_description_gets_fallback(mock_validate, mock_query):
+    """Test that get_filtered_detections populates fallback description for detections with null description"""
+    detection_no_desc = {
+        "id": "det-no-desc-001",
+        "severity": "HIGH",
+        "ruleMatch": {"rule": {"name": "lateral movement detected"}},
+        "createdAt": "2022-01-02T15:46:34Z",
+    }
+    mock_query.return_value = [detection_no_desc]
+
+    result = get_filtered_detections(severity="HIGH", add_detection_url=False)
+
+    assert len(result) == 1
+    expected = "HIGH severity detection triggered by rule 'lateral movement detected' (ID: det-no-desc-001)"
+    assert result[0]["description"] == expected
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_detections")
+@patch(
+    "Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters",
+    return_value=(True, None, {"severity": ["CRITICAL"]}),
+)
+def test_get_filtered_detections_existing_description_unchanged(mock_validate, mock_query):
+    """Test that get_filtered_detections does NOT overwrite an existing description"""
+    detection_with_desc = {
+        "id": "det-with-desc-001",
+        "severity": "CRITICAL",
+        "description": "Original description from API",
+        "ruleMatch": {"rule": {"name": "some rule"}},
+        "createdAt": "2022-01-02T15:46:34Z",
+    }
+    mock_query.return_value = [detection_with_desc]
+
+    result = get_filtered_detections(severity="CRITICAL", add_detection_url=False)
+
+    assert result[0]["description"] == "Original description from API"
+
+
 @pytest.mark.parametrize(
     "threat_notes,delete_success_count,should_succeed",
     [
