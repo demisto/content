@@ -262,7 +262,8 @@ class Client(BaseClient):
         """
         try:
             raw_response = self._http_request(
-                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT,
+                retries=1, status_list_to_retry={500, 502}
             )
         except Exception as e:
             # Use repr() for JSON errors to avoid parsing issues, str() for others
@@ -313,6 +314,16 @@ class Client(BaseClient):
                 raw_response = self._http_request(
                     url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                 )
+            elif isinstance(e, json.JSONDecodeError):
+                # Armis occasionally returns malformed JSON - retry once
+                demisto.debug(f"JSONDecodeError on fetch, retrying once: {repr(e)}")
+                try:
+                    raw_response = self._http_request(
+                        url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                    )
+                except Exception as retry_e:
+                    demisto.debug(f"Retry after JSONDecodeError also failed: {repr(retry_e) if isinstance(retry_e, json.JSONDecodeError) else str(retry_e)}")
+                    raise retry_e
             else:
                 demisto.debug(f"Error occurred while fetching events: {e}")
                 raise e
@@ -654,14 +665,19 @@ def fetch_by_event_type(
     )
     new_events: list[dict] = []
     demisto.debug(f"fetched {len(response)} {event_type.type} from API")
+    demisto.debug(f"[checkpoint 1] starting dedup for {event_type.type}")
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
         )
+        demisto.debug(f"[checkpoint 2] dedup complete for {event_type.type}: {len(new_events)} new events")
         events.setdefault(event_type.dataset_name, []).extend(new_events)
         demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
-        demisto.debug(f"last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}")
+        last_event_str = str(new_events[-1])[:500] if new_events else "{}"
+        demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
+        demisto.debug(f"[checkpoint 3] logged last event for {event_type.type}")
 
+    demisto.debug(f"[checkpoint 4] updating next_run for {event_type.type}")
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
         #  can empty the list.
@@ -670,6 +686,7 @@ def fetch_by_event_type(
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
     demisto.debug(f"updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}")
+    demisto.debug(f"[checkpoint 5] fetch_by_event_type complete for {event_type.type}")
 
 
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
@@ -731,9 +748,11 @@ def fetch_event_type_worker(
     try:
         fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
 
+        safe_debug(f"[{thread_id}] [checkpoint 6] fetch_by_event_type returned, updating context state")
         # Update context for this event type atomically
         context_manager.update_event_type_state(next_run)
 
+        safe_debug(f"[{thread_id}] [checkpoint 7] context state updated")
         event_count = len(events.get(event_type.dataset_name, []))
         safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
 
