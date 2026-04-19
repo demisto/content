@@ -349,7 +349,7 @@ class TestSanitizeHtml:
             import re
 
             # Remove script tags and their content (not in allowed tags)
-            result = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            result = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script\s*>", "", html, flags=re.DOTALL | re.IGNORECASE)
             return result
 
         mock_bleach.clean = mock_clean
@@ -444,21 +444,34 @@ class TestSanitizeHtml:
         assert "div" in call_kwargs[1].get("tags", set())
         assert "table" in call_kwargs[1].get("tags", set())
 
-    def test_fallback_passes_through_when_bleach_unavailable(self):
+    def test_fallback_strips_dangerous_tags_when_bleach_unavailable(self, mocker):
         """
         Given
-        - An HTML body and bleach is not installed
+        - An HTML body with dangerous tags and bleach is not installed
         When
         - _sanitize_html is called
         Then
-        - The HTML is returned as-is since full escaping would break rendering
+        - Dangerous tags (script, iframe, etc.) are stripped via regex fallback
         """
-        from DisplayHTMLWithImages import _sanitize_html
+        import DisplayHTMLWithImages
 
-        html_input = '<script>alert("test")</script>'
-        result = _sanitize_html(html_input)
-        # Without bleach, HTML passes through unchanged to avoid breaking rendering
-        assert result == html_input
+        # Force bleach to be unavailable by making import raise ImportError
+        original_import = __builtins__.__import__ if hasattr(__builtins__, '__import__') else __import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "bleach":
+                raise ImportError("mocked: bleach not available")
+            return original_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+
+        html_input = '<p>Hello</p><script>alert("test")</script><p>World</p>'
+        result = DisplayHTMLWithImages._sanitize_html(html_input)
+        # Without bleach, the fallback regex strips script tags
+        assert "<script>" not in result
+        assert "alert" not in result
+        assert "Hello" in result
+        assert "World" in result
 
 
 class TestCreateHtmlWithImagesInputSanitization:

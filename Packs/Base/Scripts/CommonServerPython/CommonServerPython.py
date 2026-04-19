@@ -2405,9 +2405,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
         # in case of a single key, create a column table where each element is in a different row.
         headers = list(t.keys())
-        # if the value of the single key is a list, unpack it for creating a column table.
-        if isinstance(list(t.values())[0], list):
-            t = list(t.values())[0]
+        # if the value of the single key is a non-empty list, unpack it for creating a column table.
+        single_value = list(t.values())[0]
+        if isinstance(single_value, list) and len(single_value) > 0:
+            t = single_value
 
     if not isinstance(t, list):
         t = [t]
@@ -2596,7 +2597,7 @@ def fileResult(filename, data, file_type=None):
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
 
-    # Sanitize filename to prevent path traversal – os.path.basename strips all directory components,
+    # Sanitize filename to prevent path traversal - os.path.basename strips all directory components,
     # which is safer than the previous single-pass replace("../", "") that could be bypassed.
     if isinstance(filename, str):
         replaced_filename = os.path.basename(filename)
@@ -2744,6 +2745,8 @@ def getFilePathSafe(entry_id):
         dict with 'id', 'path', and 'name' keys, where 'name' is basenamed.
     """
     result = demisto.getFilePath(entry_id)
+    if not result:
+        return result
     if "name" in result:
         result["name"] = os.path.basename(result["name"])
     return result

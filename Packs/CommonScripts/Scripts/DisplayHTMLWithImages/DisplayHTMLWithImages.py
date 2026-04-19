@@ -49,7 +49,6 @@ ALLOWED_EMAIL_TAGS = {
     "caption",
     "col",
     "colgroup",
-    "style",
 }
 
 
@@ -141,11 +140,11 @@ def get_entry_id_list_by_parsed_email_attachments(attachments, files):
 
 
 def _sanitize_html(html_body: str) -> str:
-    """Sanitize HTML body using an allowlist of safe tags to prevent XSS.
+    """Sanitize HTML body using an allowlist of safe tags.
 
     When bleach is available, strips disallowed tags while preserving safe ones.
-    When bleach is not available, returns the HTML as-is since the content is
-    rendered in an HTML context and full escaping would break legitimate formatting.
+    When bleach is not available, uses a basic tag-stripping fallback to remove
+    potentially dangerous tags while preserving content.
     """
     try:
         import bleach  # type: ignore[import-untyped]
@@ -167,13 +166,20 @@ def _sanitize_html(html_body: str) -> str:
             },
         )
     except ImportError:
-        demisto.debug("bleach is not available; HTML sanitization skipped")
+        demisto.debug("bleach is not available; using basic tag-stripping fallback")
+        # Remove script/iframe/object/embed tags and their content as a basic fallback
+        html_body = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*iframe[^>]*>.*?<\s*/\s*iframe\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*object[^>]*>.*?<\s*/\s*object\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*embed[^>]*>.*?<\s*/\s*embed\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        # Also remove self-closing variants
+        html_body = re.sub(r"<\s*(?:script|iframe|object|embed)[^>]*/\s*>", "", html_body, flags=re.IGNORECASE)
     return html_body
 
 
 def main():
     incident = demisto.incident()
-    html_body = demisto.get(incident, "CustomFields.emailhtml") or demisto.get(incident, "CustomFields.emailbody")
+    html_body = (demisto.get(incident, "CustomFields.emailhtml") or demisto.get(incident, "CustomFields.emailbody") or "")
 
     if 'src="cid' in html_body:
         context = demisto.context()
