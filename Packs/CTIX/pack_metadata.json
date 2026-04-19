@@ -1,8 +1,8 @@
 {
-    "name": "CTIX",
-    "description": "Cyware Threat Intelligence eXchange",
+    "name": "Cyware Intel Exchange",
+    "description": "Cyware Intel Exchange enables security teams to ingest, enrich, analyze, and share threat intelligence in real time.",
     "support": "partner",
-    "currentVersion": "2.3.1",
+    "currentVersion": "2.4.0",
     "author": "Cyware Labs",
     "url": "https://cyware.com/",
     "email": "integrations@cyware.com",
@@ -15,6 +15,8 @@
     ],
     "useCases": [],
     "keywords": [],
+    "itemPrefix": ["ctix"],
+    "githubUser": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

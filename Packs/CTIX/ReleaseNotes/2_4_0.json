@@ -1,0 +1,5 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul>\n+<li>Outputs in playbooks have been changed to return the raw response for the following commands: <code>ctix-get-saved-searches</code>, <code>ctix-get-server-collections</code>, <code>ctix-get-actions</code>, <code>ctix-search-for-tag</code>, <code>ctix-get-indicator-relations</code>, <code>ctix-get-indicator-observations</code>, <code>ctix-get-conversion-feed-source</code>, <code>ctix-get-all-notes</code>, <code>ctix-saved-result-set</code>, <code>ctix-get-tags</code>, and <code>ctix-get-whitelist-iocs</code>. Playbooks that depend on the previous outputs may need to be updated to use the raw response fields.</li>\n+<li>The above commands have been renamed to include the <code>ctix-</code> prefix. For example, the <code>saved_result_set</code> command is now <code>ctix-saved-result-set</code>. Update any Playbooks, Scripts, or Automations that call the old command names.</li>\n+</ul>Make sure to check and update any Playbooks/Scripts/Automations that use the affected commands or rely on the previous output formats."
+    
+}
