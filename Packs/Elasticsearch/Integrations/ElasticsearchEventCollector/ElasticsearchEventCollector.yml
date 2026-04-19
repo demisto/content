@@ -187,10 +187,4 @@ fromversion: 8.4.0
 tests:
 - No tests (auto formatted)
 supportedModules:
-- cloud_runtime_security
 - xsiam
-- edr
-- cloud
-- asm
-- cloud_posture
-- exposure_management
