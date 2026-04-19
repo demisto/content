@@ -4,3 +4,5 @@ id: docusign_docusign_ModelingRule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

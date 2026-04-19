@@ -5,5 +5,5 @@ rules: ''
 schema: ''
 tags: ''
 supportedModules:
-- agentix
+- xsiam
 - xsiam

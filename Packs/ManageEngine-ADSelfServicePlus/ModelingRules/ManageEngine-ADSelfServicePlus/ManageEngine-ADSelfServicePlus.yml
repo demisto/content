@@ -4,3 +4,5 @@ name: ManageEngine ADSelfService Plus Modeling Rule
 rules: ''
 schema: ''
 tags: ManageEngine
+supportedModules:
+- xsiam

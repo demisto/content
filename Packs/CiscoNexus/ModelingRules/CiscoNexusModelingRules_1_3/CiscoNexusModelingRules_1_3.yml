@@ -4,3 +4,5 @@ name: Cisco Nexus
 rules: ''
 schema: ''
 tags: Cisco Nexus
+supportedModules:
+- xsiam

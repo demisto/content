@@ -5,3 +5,5 @@ name: Salesforce Modeling Rule
 rules: ''
 schema: ''
 tags: salesforce
+supportedModules:
+- xsiam

@@ -5,5 +5,4 @@ rules: ''
 schema: ''
 tags: Orca
 supportedModules:
-- agentix
 - xsiam

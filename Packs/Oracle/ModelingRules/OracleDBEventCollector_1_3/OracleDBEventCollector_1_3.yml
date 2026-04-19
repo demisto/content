@@ -3,3 +3,5 @@ id: OracleDBEventCollector
 name: OracleDBEventCollector
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

@@ -4,3 +4,5 @@ name: F5LTM Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

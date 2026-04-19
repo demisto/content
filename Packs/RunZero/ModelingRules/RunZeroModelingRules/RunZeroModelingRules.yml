@@ -4,3 +4,5 @@ name: RunZero RunZero Modeling Rule
 rules: ''
 schema: ''
 tags: RunZero
+supportedModules:
+- xsiam

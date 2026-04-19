@@ -4,3 +4,5 @@ name: Fortinet FortiGate Modeling Rule
 rules: ''
 schema: ''
 tags: FortinetFortiGate
+supportedModules:
+- xsiam

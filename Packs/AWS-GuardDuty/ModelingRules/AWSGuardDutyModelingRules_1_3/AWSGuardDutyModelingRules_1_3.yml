@@ -4,3 +4,5 @@ name: AWSGuardDuty Modeling Rule
 rules: ''
 schema: ''
 tags: AWSGuardDuty
+supportedModules:
+- xsiam

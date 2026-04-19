@@ -4,3 +4,5 @@ name: Mimecast Modeling Rule
 rules: ''
 schema: ''
 tags: mimecast
+supportedModules:
+- xsiam
