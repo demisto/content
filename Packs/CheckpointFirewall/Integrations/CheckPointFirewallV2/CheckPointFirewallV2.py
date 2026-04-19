@@ -2470,7 +2470,7 @@ def build_printable_result(headers: list, result: dict) -> dict:
                 {
                     "domain-name": domain_data.get("name"),
                     "domain-uid": domain_data.get("uid"),
-                    "domain-type": domain_data.get("type"),
+                    "domain-type": domain_data.get("type") or domain_data.get("domain-type"),
                 }
             )
 
@@ -2655,15 +2655,16 @@ def checkpoint_service_group_list_command(client: Client, **kwargs) -> CommandRe
     readable_output = ""
 
     objects = result.get("objects")
+    headers = ["name", "uid", "type"]
     if objects:
         for element in objects:
             current_printable_result = {}
-            for endpoint in DEFAULT_LIST_FIELD:
+            for endpoint in headers:
                 current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
-            "CheckPoint data for all service groups:", printable_result, DEFAULT_LIST_FIELD, removeNull=True
+            "CheckPoint data for all service groups:", printable_result, headers, removeNull=True
         )
     else:
         readable_output = "No service group objects were found."
