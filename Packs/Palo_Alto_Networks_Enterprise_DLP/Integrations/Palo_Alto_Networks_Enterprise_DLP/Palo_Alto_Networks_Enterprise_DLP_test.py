@@ -1,12 +1,14 @@
 import json
+from datetime import UTC
 
 import demistomock as demisto
 import pytest
+from freezegun import freeze_time
 from Palo_Alto_Networks_Enterprise_DLP import (
-    PAN_AUTH_URL,
+    DEFAULT_BASE_URL as DLP_URL,
+    DEFAULT_AUTH_URL as AUTH_URL,
     Client,
     exemption_eligible_command,
-    fetch_incidents,
     fetch_notifications,
     main,
     parse_dlp_report,
@@ -15,9 +17,12 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     update_incident_command,
     create_incident,
     arg_to_datetime,
+    compute_next_run,
+    get_start_end_time_intervals,
+    START_TIMESTAMP_KEY,
+    LAST_IDS_KEY,
 )
 
-DLP_URL = "https://api.dlp.paloaltonetworks.com/v1"
 
 REPORT_DATA = {
     "txn_id": "2573778324",
@@ -134,8 +139,8 @@ def test_update_incident(requests_mock, mocker):
         "dlp_channel": "ngfw",
     }
 
-    requests_mock.post(f"{DLP_URL}/public/incident-feedback/{incident_id}?feedback_type=CONFIRMED_SENSITIVE&region=us")
-    client = Client(DLP_URL, CREDENTIALS, False, None)
+    requests_mock.post(f"{DLP_URL}public/incident-feedback/{incident_id}?feedback_type=CONFIRMED_SENSITIVE&region=us")
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     mocker.patch.object(demisto, "results")
 
     results = update_incident_command(client, args).to_context()
@@ -159,8 +164,8 @@ def test_update_incident_with_error_details(requests_mock, mocker):
         "error_details": "Something went wrong",
     }
 
-    requests_mock.post(f"{DLP_URL}/public/incident-feedback/{incident_id}?feedback_type=SEND_NOTIFICATION_FAILURE&region=us")
-    client = Client(DLP_URL, CREDENTIALS, False, None)
+    requests_mock.post(f"{DLP_URL}public/incident-feedback/{incident_id}?feedback_type=SEND_NOTIFICATION_FAILURE&region=us")
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     mocker.patch.object(demisto, "results")
 
     results = update_incident_command(client, args).to_context()
@@ -175,7 +180,7 @@ def test_update_incident_with_error_details(requests_mock, mocker):
 
 def test_get_dlp_report(requests_mock, mocker):
     report_id = 12345
-    requests_mock.get(f"{DLP_URL}/public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
     mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
     args = {"report_id": report_id, "fetch_snippets": "true"}
     params = {"credentials": CREDENTIALS}
@@ -195,21 +200,11 @@ def test_parse_dlp_report(mocker):
 
 
 def test_get_dlp_incidents(requests_mock):
-    requests_mock.get(f"{DLP_URL}/public/incident-notifications?regions=us", json={"us": []})
-    client = Client(DLP_URL, CREDENTIALS, False, None)
+    requests_mock.get(f"{DLP_URL}public/incident-notifications?regions=us", json={"us": []})
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     result, status_code = client.get_dlp_incidents(regions="us")
     assert result == {"us": []}
     assert status_code == 200
-
-
-def test_fetch_notifications(requests_mock, mocker):
-    requests_mock.get(f"{DLP_URL}/public/incident-notifications?regions=us", json={"us": []})
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"access_token": "abc"})
-    incident_mock = mocker.patch.object(demisto, "createIncidents")
-
-    client = Client(DLP_URL, CREDENTIALS, False, None)
-    fetch_notifications(client, "us")
-    assert incident_mock.call_args[0][0] == []
 
 
 @pytest.mark.parametrize(
@@ -220,9 +215,9 @@ def test_refresh_token(requests_mock, mocker, error_code):
     with pytest.raises(Exception):
         report_id = 12345
         headers1 = {"Authorization": "Bearer 123", "Content-Type": "application/json"}
-        requests_mock.get(f"{DLP_URL}/public/report/{report_id}?fetchSnippets=true", headers=headers1, status_code=error_code)
+        requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", headers=headers1, status_code=error_code)
 
-        requests_mock.post(f"{DLP_URL}/public/oauth/refreshToken", json={"access_token": "abc"})
+        requests_mock.post(f"{DLP_URL}public/oauth/refreshToken", json={"access_token": "abc"})
         credentials = (
             {
                 "credential": "",
@@ -245,7 +240,7 @@ def test_refresh_token(requests_mock, mocker, error_code):
                 "passwordChanged": False,
             },
         )
-        client = Client(DLP_URL, credentials, False, None)
+        client = Client(DLP_URL, AUTH_URL, credentials, False, False)
 
         client.get_dlp_report(report_id, True)
 
@@ -253,8 +248,8 @@ def test_refresh_token(requests_mock, mocker, error_code):
 
 
 def test_refresh_token_with_access_token(requests_mock, mocker):
-    requests_mock.post(f"{DLP_URL}/public/oauth/refreshToken", json={"access_token": "abc"})
-    client = Client(DLP_URL, CREDENTIALS, False, None)
+    requests_mock.post(f"{DLP_URL}public/oauth/refreshToken", json={"access_token": "abc"})
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     client._refresh_token()
     assert client.access_token == "abc"
 
@@ -279,8 +274,8 @@ def test_refresh_token_with_client_credentials(requests_mock):
         "password": "test-pass",
         "passwordChanged": False,
     }
-    requests_mock.post(PAN_AUTH_URL, json={"access_token": "abc"})
-    client = Client(DLP_URL, credentials, False, None)
+    requests_mock.post(AUTH_URL, json={"access_token": "abc"})
+    client = Client(DLP_URL, AUTH_URL, credentials, False, False)
     assert client.access_token == "abc"
 
 
@@ -308,27 +303,17 @@ def test_handle_4xx_errors(requests_mock, mocker, error_code):
         "password": "test-pass",
         "passwordChanged": False,
     }
-    requests_mock.post(PAN_AUTH_URL, json={"access_token": "abc"})
-    client = Client(DLP_URL, credentials, False, None)
+    requests_mock.post(AUTH_URL, json={"access_token": "abc"})
+    client = Client(DLP_URL, AUTH_URL, credentials, False, False)
     response_mock = mocker.MagicMock()
     response_mock.status_code = error_code  # mocker.PropertyMock(return_value=error_code)
     client._handle_4xx_errors(response_mock)
     assert client.access_token == "abc"
 
-    client = Client(DLP_URL, CREDENTIALS, False, None)
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, False, False)
     tokens_mocker = mocker.patch.object(client, "_refresh_token")
     client._handle_4xx_errors(response_mock)
     tokens_mocker.assert_called_with()
-
-
-def test_fetch_incidents(requests_mock, mocker):
-    requests_mock.get(
-        f"{DLP_URL}/public/incident-notifications?regions=us",
-        json={"us": [{"incident": INCIDENT_JSON, "previous_notifications": []}]},
-    )
-    client = Client(DLP_URL, CREDENTIALS, False, None)
-    incidents = fetch_incidents(client=client, regions="us")
-    assert len(incidents) == 1
 
 
 def test_exemption_eligible(mocker):
@@ -362,8 +347,8 @@ def test_parse_incident_details():
 
 
 def test_query_sleep_time(requests_mock):
-    requests_mock.get(f"{DLP_URL}/public/seconds-between-incident-notifications-pull", json=10)
-    client = Client(DLP_URL, CREDENTIALS, False, None)
+    requests_mock.get(f"{DLP_URL}public/seconds-between-incident-notifications-pull", json=10)
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     time = client.query_for_sleep_time()
     assert time == 10
 
@@ -409,11 +394,144 @@ def test_create_incident(incident_type_input, expected_type):
     else:
         result = create_incident(notification, region=region, incident_type=incident_type_input)
 
-    # Assert
-    assert result == {
-        "name": f"Palo Alto Networks DLP Incident {INCIDENT_JSON['incidentId']}",
-        "type": expected_type,
-        "occurred": occurred_time,
-        "rawJSON": json.dumps(raw_data),
-        "details": json.dumps(raw_data),
+    # Assert - check standard fields
+    assert result["name"] == f"Palo Alto Networks DLP Incident {INCIDENT_JSON['incidentId']}"
+    assert result["type"] == expected_type
+    assert result["occurred"] == occurred_time
+    assert result["rawJSON"] == json.dumps(raw_data)
+    assert result["details"] == json.dumps(raw_data)
+
+
+@pytest.mark.parametrize(
+    "incident_ids_timestamps, last_run, expected_timestamp, expected_ids",
+    [
+        pytest.param(
+            {"id1": 1000, "id2": 2000, "id3": 2000, "id4": 1500},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: ["old_id"]},
+            2000,
+            {"id2", "id3"},
+            id="multiple_incidents_different_timestamps",
+        ),
+        pytest.param(
+            {},
+            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1"]},
+            1234567890,
+            {"id1"},
+            id="empty_incidents_returns_previous",
+        ),
+        pytest.param(
+            {"id1": 1000},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            1000,
+            {"id1"},
+            id="single_incident",
+        ),
+    ],
+)
+def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp, expected_ids):
+    """
+    Given:
+        - A dictionary of incident IDs mapped to their committed timestamps.
+    When:
+        - Calling compute_next_run.
+    Then:
+        - Ensure it returns the correct timestamp and IDs.
+    """
+    result = compute_next_run(incident_ids_timestamps, last_run)
+
+    assert result[START_TIMESTAMP_KEY] == expected_timestamp
+    assert set(result[LAST_IDS_KEY]) == expected_ids
+
+
+@pytest.mark.parametrize(
+    "start, end, delta, expected_intervals",
+    [
+        pytest.param(
+            0,
+            900,
+            300,
+            [(0, 300), (300, 600), (600, 900)],
+            id="even_intervals",
+        ),
+        pytest.param(
+            0,
+            1000,
+            300,
+            [(0, 300), (300, 600), (600, 900), (900, 1000)],
+            id="uneven_intervals_capped_at_end",
+        ),
+        pytest.param(
+            0,
+            100,
+            300,
+            [(0, 100)],
+            id="single_interval_delta_exceeds_range",
+        ),
+        pytest.param(
+            100,
+            100,
+            300,
+            [],
+            id="empty_range",
+        ),
+    ],
+)
+def test_get_start_end_time_intervals(start, end, delta, expected_intervals):
+    """
+    Given:
+        - Start and end timestamps with a delta.
+    When:
+        - Calling get_start_end_time_intervals.
+    Then:
+        - Ensure it returns the correct time intervals.
+    """
+    result = get_start_end_time_intervals(start, end, delta)
+
+    assert result == expected_intervals
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_basic(requests_mock, mocker):
+    """
+    Given:
+        - A client and basic parameters with frozen time.
+    When:
+        - Calling fetch_notifications with no previous last_run.
+    Then:
+        - Ensure incidents are created and last_run is updated.
+    """
+    import re
+    from datetime import datetime
+    from Palo_Alto_Networks_Enterprise_DLP import LOCAL_LAST_RUN
+
+    LOCAL_LAST_RUN.clear()
+
+    # Mock API response
+    mock_notification = {
+        "incident": {
+            "incidentId": "test-id-1",
+            "committedAt": "2022-Apr-01 20:21:50 UTC",
+            "createdAt": "2022-Apr-01 20:21:50 UTC",
+            "incidentDetails": INCIDENT_JSON["incidentDetails"],
+            "tenantId": "1128505801991063552",
+            "reportId": "2573778324",
+        },
+        "previous_notifications": [],
     }
+
+    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={"us": [mock_notification]})
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "createIncidents")
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    # Use timestamp very close to frozen time (just 2 minutes before to minimize intervals)
+    first_fetch_timestamp = int(datetime(2022, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())
+
+    next_run, incidents = fetch_notifications(client, "us", first_fetch_timestamp)
+
+    assert len(incidents) == 1
+    assert "test-id-1" in incidents[0]["name"]
+
+    assert next_run == {"start_timestamp": 1648844510, "last_ids": ["test-id-1"]}
