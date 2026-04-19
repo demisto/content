@@ -47,7 +47,7 @@ type: python
 compliantpolicies:
   - EndPoint Isolation
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8294662
 fromversion: 6.10.0
 tests:
 - IsolateEndpoint - Testplaybook
