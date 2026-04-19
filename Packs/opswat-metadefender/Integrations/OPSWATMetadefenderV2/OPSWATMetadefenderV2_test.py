@@ -394,3 +394,41 @@ def test_http_req_unsupported_method(mocker):
 
     # Verify the function returns an empty string
     assert result == ""
+
+
+def test_scan_file_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components.
+    When:
+        - Calling scan_file.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+    from pathlib import Path
+
+    import demistomock as demisto
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "README.md", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
+    mock_copy = mocker.patch("shutil.copy")
+    mocker.patch("os.remove")
+    mocker.patch(
+        "OPSWATMetadefenderV2.http_req",
+        return_value={"data_id": "test123"},
+    )
+
+    from OPSWATMetadefenderV2 import scan_file
+
+    _, file_name = scan_file("entry1")
+
+    # Verify the file name returned is the basename only
+    assert file_name == "passwd"
+    assert Path(file_name).name == file_name
+    # Verify shutil.copy was called with the sanitized basename
+    copy_call_args = mock_copy.call_args[0]
+    assert copy_call_args[1] == "passwd"
