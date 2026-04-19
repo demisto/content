@@ -1581,6 +1581,9 @@ def search(
     Note:
         - When only_return_account_names is True and no messages are found, returns (False, query, None).
         - The function constructs a Gmail search query from the individual filter parameters.
+        - Security: The ``query`` parameter is passed directly to the Gmail API search.
+          Callers must validate or sanitize any external/untrusted input before including it
+          in the query string to avoid unintended search results.
     """
     query_values = {
         "subject": subject,
