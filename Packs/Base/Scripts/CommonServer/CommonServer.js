@@ -2136,9 +2136,11 @@ var _ucpCredentialsCache = {};
  * Looks for expires_at (ISO-8601 string) at the top level, then inside
  * the type-specific sub-dict (e.g. creds.oauth2.expires_at).
  *
+ * If there was an error parsing the timestamp, will return 5 minutes expiry from now as fallback.
+ * 
  * @private
  * @param {Object} creds - Raw credentials from getUCPCredentials().
- * @return {Number|null} Unix epoch in seconds, or null for static credentials.
+ * @return {Number|null} Unix epoch in seconds, or null for static credentials. 5 minutes if error parsing
  */
 function _extractUcpExpiry(creds) {
     var credType = creds.type || '';
@@ -2155,6 +2157,7 @@ function _extractUcpExpiry(creds) {
         }
         return dt.getTime() / 1000;
     } catch (e) {
+        logDebug('[UCP][CommonServer.js] Error parsing UCP expiry timestamp. using 5 minutes as fallback: ' + e);
         return (Date.now() / 1000) + 300;
     }
 }
@@ -2171,18 +2174,10 @@ function invalidateUcpCredentialsCache(methodUniqueId) {
 }
 
 /**
- * Clear all entries from the UCP credentials cache.
- */
-function clearUcpCredentialsCache() {
-    _ucpCredentialsCache = {};
-}
-
-
-/**
  * Check whether this integration instance is running in UCP (ConnectUs) mode.
  * UCP mode is active when unifiedConnectorMetadata() returns a non-empty
  * connector descriptor.
- *
+ * @private Use shouldUseUcpAuth() instead.
  * @return {Boolean} true if UCP metadata is present, false otherwise
  */
 function isUcpEnabled() {
@@ -2269,7 +2264,7 @@ function _findUcpProfileBySubCapability(profiles, subCapability) {
         }
     }
     if (matches.length > 1) {
-        logInfo('[UCP][CommonServer.js] Multiple profiles match sub_capability=' + subCapability
+        logDebug('[UCP][CommonServer.js] Multiple profiles match sub_capability=' + subCapability
             + ': [' + matches.join(', ') + ']. Using first match: ' + matches[0]);
     }
     return matches.length > 0 ? matches[0] : null;
@@ -2293,7 +2288,7 @@ function _findUcpProfileByCapability(profiles, capability) {
         }
     }
     if (matches.length > 1) {
-        logInfo('[UCP][CommonServer.js] Multiple profiles match capability=' + capability
+        logDebug('[UCP][CommonServer.js] Multiple profiles match capability=' + capability
             + ': [' + matches.join(', ') + ']. Using first match: ' + matches[0]);
     }
     return matches.length > 0 ? matches[0] : null;
@@ -2314,23 +2309,19 @@ function _findUcpProfileByCapability(profiles, capability) {
  */
 function getUcpMethodUniqueId(capability, subCapability) {
     var profiles = _getUcpProfiles();
-    capability = capability || resolveUcpCapability();
 
     // Priority 1: match by sub_capability
     if (subCapability) {
         var bySubCap = _findUcpProfileBySubCapability(profiles, subCapability);
         if (bySubCap) {
-            logDebug('[UCP][CommonServer.js] getUcpMethodUniqueId: matched by sub_capability='
-                + subCapability + ' → ' + bySubCap);
             return bySubCap;
         }
     }
 
+    capability = capability || resolveUcpCapability();
     // Priority 2: match by capability
     var byCap = _findUcpProfileByCapability(profiles, capability);
     if (byCap) {
-        logDebug('[UCP][CommonServer.js] getUcpMethodUniqueId: matched by capability='
-            + capability + ' → ' + byCap);
         return byCap;
     }
 
@@ -2409,23 +2400,19 @@ function _flattenUcpCredentials(creds) {
  * Uses capability resolution to find the right profile, fetches credentials
  * from the BE, and returns a flattened credentials object.
  *
- * @param {Object} [options] - Optional settings.
- * @param {String} [options.capability] - Override capability.
- * @param {String} [options.subCapability] - Override sub-capability.
- *   Pass false to force a fresh fetch (e.g. after a 401 retry).
+ * @param {String} [capability] - Override capability.
+ * @param {String} [subCapability] - Override sub-capability.
  * @return {Object|null} Flattened credentials object or null if not in UCP mode.
  *   For oauth2: {type: 'oauth2', access_token: '...', token_type: 'Bearer', expires_at: '...'}
  *   For api_key: {type: 'api_key', key: '...'}
  *   For plain:   {type: 'plain', username: '...', password: '...'}
  */
-function getUcpCredentials(options) {
-    options = options || {};
-
+function getUcpCredentials(capability, subCapability) {
     if (!isUcpEnabled()) {
         return null;
     }
 
-    var methodId = getUcpMethodUniqueId(options.capability, options.subCapability);
+    var methodId = getUcpMethodUniqueId(capability, subCapability);
 
     // ── Check client-side TTL cache ──
     var cached = _ucpCredentialsCache[methodId];
@@ -2434,19 +2421,12 @@ function getUcpCredentials(options) {
         var expiry = cached.expiry;
         if (expiry === null) {
             // Static credentials — never expire
-            logDebug('[UCP][CommonServer.js] getUcpCredentials: returning cached static credentials for ' + methodId);
             return cached.result;
         }
         if (now < (expiry - _UCP_REFRESH_THRESHOLD_SECONDS)) {
-            logDebug('[UCP][CommonServer.js] getUcpCredentials: returning cached credentials for ' + methodId
-                + ' (expires in ' + Math.round(expiry - now) + 's)');
             return cached.result;
         }
-        // Stale — fall through to re-fetch
-        logDebug('[UCP][CommonServer.js] getUcpCredentials: cached credentials stale for ' + methodId + ', re-fetching...');
-    } else {
-        logDebug('[UCP][CommonServer.js] getUcpCredentials: cache miss for methodUniqueId=' + methodId);
-    }
+    } 
 
     try {
         logDebug('[UCP][CommonServer.js] getUcpCredentials: fetching fresh credentials for method_unique_id=' + methodId);
@@ -2462,19 +2442,6 @@ function getUcpCredentials(options) {
         var expiry = _extractUcpExpiry(creds);
         _ucpCredentialsCache[methodId] = {result: flatCreds, expiry: expiry};
 
-        // Log credential metadata without exposing secrets
-        var tokenPreview = '';
-        if (flatCreds.access_token) {
-            tokenPreview = flatCreds.access_token.substring(0, 4) + '...';
-        } else if (flatCreds.key) {
-            tokenPreview = flatCreds.key.substring(0, 4) + '...';
-        } else if (flatCreds.username) {
-            tokenPreview = 'username=' + flatCreds.username;
-        }
-        logDebug('[UCP][CommonServer.js] getUcpCredentials: SUCCESS. type=' + flatCreds.type
-            + ', preview=' + tokenPreview
-            + ', expires_at=' + (flatCreds.expires_at || 'static')
-            + ', cached_expiry=' + (expiry !== null ? expiry : 'never'));
         return flatCreds;
     } catch (e) {
         logError('[UCP][CommonServer.js] getUcpCredentials: FAILED for method_unique_id=' + methodId + ': ' + e);
