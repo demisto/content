@@ -250,6 +250,51 @@ def security_and_compliance_delete_mail(
     return "Success", None
 
 
+def extract_message_id(search_result: list, search_function: str) -> str | None:
+    """Extract the RFC Message-ID from a search result based on the integration's response structure.
+
+    Args:
+        search_result: The list returned by ``execute_command`` for the search.
+        search_function: The command name used for the search (e.g. ``"gmail-search"``).
+
+    Returns:
+        The RFC Message-ID string if available, or ``None`` when the
+        result is empty, malformed, or the header is not present.
+    """
+    if not search_result or not isinstance(search_result, list):
+        return None
+
+    first_result = search_result[0]
+    if not isinstance(first_result, dict):
+        return None
+
+    match search_function:
+        case "gmail-search":
+            # Gmail stores the RFC Message-ID in payload.headers.
+            headers = first_result.get("payload", {}).get("headers", [])
+            for header in headers:
+                if header.get("name", "").lower() == "message-id":
+                    return header.get("value")
+            return None
+
+        case "ews-search-mailbox":
+            # EWS (O365 / v2) stores the RFC Message-ID under "messageId".
+            return first_result.get("messageId") or None
+
+        case "msgraph-mail-list-emails":
+            # MSGraph wraps results in a "value" array; RFC Message-ID is "internetMessageId".
+            value_list = first_result.get("value")
+            if not isinstance(value_list, list) or not value_list:
+                return None
+            entry = value_list[0]
+            if not isinstance(entry, dict):
+                return None
+            return entry.get("internetMessageId") or None
+
+        case _:
+            return None
+
+
 def delete_email(
     search_args: dict,
     search_function: str,
@@ -280,19 +325,9 @@ def delete_email(
 
         # verify the returned message matches the expected one
         expected_mid = search_args.get("message-id") or ""
-        if isinstance(search_result, list) and search_result:
-            first_result = search_result[0]
-            # MSGraph returns results under "value"; Gmail/EWS return directly
-            if isinstance(first_result, dict):
-                results_to_check = first_result.get("value", [first_result])
-                if isinstance(results_to_check, dict):
-                    results_to_check = [results_to_check]
-                for res in results_to_check:
-                    returned_msg_id = res.get("internetMessageId") or res.get("rfc822msgid", "")
-                    if returned_msg_id and returned_msg_id.strip("<>") != expected_mid.strip("<>"):
-                        raise DemistoException(
-                            f"Search returned message {returned_msg_id} but expected {expected_mid}; refusing delete"
-                        )
+        returned_mid = extract_message_id(search_result, search_function)
+        if returned_mid and returned_mid.strip("<>") != expected_mid.strip("<>"):
+            raise DemistoException(f"Search returned message {returned_mid} but expected {expected_mid}; refusing delete")
 
         delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
