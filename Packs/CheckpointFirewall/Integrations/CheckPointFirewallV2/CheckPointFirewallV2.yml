@@ -1840,8 +1840,47 @@ script:
     - description: Collection of Network objects identified by the name or UID.
       isArray: true
       name: members
-    - description: Color of the object. Should be one of existing colors.
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object. Should be one of existing colors.
       name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
@@ -1925,7 +1964,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects."
+      description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects. Objects that are not represented using port numbers are presented as objects. The 'members' parameter is omitted from the response and instead the 'ranges' parameter is displayed."
       name: show_as_ranges
       predefined:
       - 'true'
@@ -1984,7 +2023,7 @@ script:
       description: Tag UID.
       type: String
   - arguments:
-    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer.
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
       name: filter
     - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
@@ -2000,7 +2039,7 @@ script:
       - DESC
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects."
+      description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects. Objects that are not represented using port numbers are presented as objects. The 'members' parameter is omitted from the response and instead the 'ranges' parameter is displayed."
       name: show_as_ranges
       predefined:
       - 'true'
@@ -2063,8 +2102,47 @@ script:
       name: members
     - description: New name of the object.
       name: new_name
-    - description: Color of the object. Should be one of existing colors.
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object. Should be one of existing colors.
       name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
@@ -2157,10 +2235,49 @@ script:
     - description: Collection of Network objects identified by the name or UID.
       isArray: true
       name: members
-    - description: New name of the cloned object.
+    - description: New name of the object.
       name: new_name
-    - description: Color of the object. Should be one of existing colors.
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object. Should be one of existing colors.
       name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
@@ -2285,7 +2402,7 @@ script:
       name: layer
       required: true
     - auto: PREDEFINED
-      description: Position in the rulebase. Add rule relatively to another rule or section.
+      description: Add rule relatively to another rule or section.
       name: position
       predefined:
       - top
