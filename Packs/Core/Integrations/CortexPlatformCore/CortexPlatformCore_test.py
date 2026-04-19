@@ -3682,7 +3682,7 @@ def test_normalize_and_filter_appsec_issue():
             "xdm.repository.name": "my-app",
             "xdm.repository.organization": "my-org",
             "xdm.vulnerability.cvss_score": 9.5,
-            "xdm.vulnerability.fix_versions": ["2.9.10.8"],
+            "xdm.vulnerability.fix_versions": ["1.2.3.4"],
         },
         "cas_issues_extended_fields": {
             "package_version": "2.4.0",
@@ -3704,7 +3704,7 @@ def test_normalize_and_filter_appsec_issue():
     assert normalized_issue["is_fixable"] is True
     assert normalized_issue["sla_status"] == "On Track"
     assert normalized_issue["package_version"] == "2.4.0"
-    assert normalized_issue["fix_versions"] == ["2.9.10.8"]
+    assert normalized_issue["fix_versions"] == ["1.2.3.4"]
     assert normalized_issue["repository_is_public"] is True
     assert "extra_field" not in normalized_issue
 
