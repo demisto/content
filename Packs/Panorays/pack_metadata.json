@@ -10,16 +10,14 @@
         "Security Information Event Management"
     ],
     "tags": [
-        "TPRM",
-        "Vendor Risk Management",
-        "Supply Chain Security",
-        "SaaS Security",
-        "Risk Assessment",
-        "External Security Posture"
+        "Security",
+        "Compliance",
+        "Security Analytics",
+        "Vulnerability Management"
     ],
     "useCases": [
-        "Third Party Risk Management", 
-        "Supply Chain Attack Prevention"
+        "Vulnerability Management:", 
+        "Compliance"
     ],
     "keywords": [
         "Panorays",
