@@ -5424,7 +5424,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
         assert len(call_args[0][1]) == 2  # readable_recommendations
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5463,6 +5470,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
             "severity",
             "description",
             "remediation",
+            "network_reachability",
             "existing_code_block",
             "suggested_code_block",
             "playbook_suggestions",
@@ -5523,7 +5531,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         # Should only have base headers
         call_args = mock_table_to_markdown.call_args
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5606,7 +5621,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         # Should include headers for the types that exist
         call_args = mock_table_to_markdown.call_args
         headers = call_args[1]["headers"]
-        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation", "network_reachability"]
 
         assert all(h in headers for h in base_headers)
         assert "existing_code_block" in headers

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Migrated from fetching DLP incidents via long-running execution to periodic fetching based on the *Incidents Fetch Interval*. Ensure the *Fetch Incidents* checkbox is checked."
+}
