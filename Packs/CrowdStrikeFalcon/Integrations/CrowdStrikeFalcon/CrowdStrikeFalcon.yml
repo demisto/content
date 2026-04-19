@@ -192,9 +192,6 @@ configuration:
   - xsoar
   supportedModules:
   - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - display: Incident type
   name: incidentType
   type: 13
