@@ -384,7 +384,7 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
     initializer = Initializer(
         staged=False, committed_only=False, file_path=str(path_to_validate), execution_mode=ExecutionMode.SPECIFIC_FILES
     )
-    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False)
+    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False, ignore=["BA106"])
     demisto.debug(f"run_validate validate_manager initialized. Running validations: {validate_manager.validators=}")
     err_file = io.StringIO()
     with redirect_stderr(err_file):
