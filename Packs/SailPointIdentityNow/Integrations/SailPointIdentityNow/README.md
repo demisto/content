@@ -12,7 +12,8 @@ This integration was integrated and tested with SailPoint IdentityNow.
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | incidentType | Incident type | False |
-| request_timeout | Request timeout (in seconds) | False |
+| max_fetch | Maximum number of incidents per fetch | False |
+| first_fetch | First fetch time | False |
 
 ## Important Note
 
