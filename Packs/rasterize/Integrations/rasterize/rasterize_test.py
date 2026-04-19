@@ -1549,3 +1549,385 @@ def test_rasterize_extract_command_string_error(mocker):
     assert len(results) == 1
     assert results[0].entry_type == EntryType.ERROR
     assert "Error rasterizing" in results[0].readable_output
+
+
+# region memory helper tests
+
+
+class TestGetContainerWorkingSetBytes:
+    """Tests for get_container_working_set_bytes()"""
+
+    def test_returns_working_set_when_files_exist(self, tmp_path):
+        """
+        Given: cgroup v2 memory.current = 500 MiB, inactive_file = 100 MiB
+        When: get_container_working_set_bytes is called
+        Then: returns 400 MiB (500 - 100)
+        """
+        from rasterize import get_container_working_set_bytes
+
+        mem_current_file = tmp_path / "memory.current"
+        mem_current_file.write_text(str(500 * 1024 * 1024))
+
+        mem_stat_file = tmp_path / "memory.stat"
+        mem_stat_file.write_text(f"anon 1234\ninactive_file {100 * 1024 * 1024}\nactive_file 5678\n")
+
+        from unittest import mock
+
+        with mock.patch(
+            "builtins.open",
+            side_effect=lambda path, *a, **kw: open(
+                str(mem_current_file) if "memory.current" in path else str(mem_stat_file), *a, **kw
+            ),
+        ):
+            result = get_container_working_set_bytes()
+
+        assert result == 400 * 1024 * 1024
+
+    def test_returns_zero_when_file_not_found(self, mocker):
+        """
+        Given: cgroup v2 files do not exist
+        When: get_container_working_set_bytes is called
+        Then: returns 0
+        """
+        from rasterize import get_container_working_set_bytes
+
+        mocker.patch("builtins.open", side_effect=FileNotFoundError("no cgroup"))
+        result = get_container_working_set_bytes()
+        assert result == 0
+
+    def test_returns_zero_on_permission_error(self, mocker):
+        """
+        Given: cgroup v2 files exist but are not readable
+        When: get_container_working_set_bytes is called
+        Then: returns 0
+        """
+        from rasterize import get_container_working_set_bytes
+
+        mocker.patch("builtins.open", side_effect=PermissionError("denied"))
+        result = get_container_working_set_bytes()
+        assert result == 0
+
+    def test_clamps_to_zero_when_inactive_file_exceeds_current(self, mocker):
+        """
+        Given: inactive_file > memory.current (edge case)
+        When: get_container_working_set_bytes is called
+        Then: returns 0 (clamped, never negative)
+        """
+        from rasterize import get_container_working_set_bytes
+        from unittest import mock
+
+        mem_current = 50 * 1024 * 1024
+        inactive_file = 100 * 1024 * 1024
+
+        open_mock = mock.mock_open(read_data=str(mem_current))
+        stat_content = f"inactive_file {inactive_file}\n"
+
+        call_count = {"n": 0}
+
+        def side_effect(path, *args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                return mock.mock_open(read_data=str(mem_current))()
+            return mock.mock_open(read_data=stat_content)()
+
+        mocker.patch("builtins.open", side_effect=side_effect)
+        result = get_container_working_set_bytes()
+        assert result == 0
+
+
+class TestGetContainerAvailableMemoryBytes:
+    """Tests for get_container_available_memory_bytes()"""
+
+    def test_returns_minus_one_when_no_limit(self, mocker):
+        """
+        Given: memory.max contains "max" (no hard limit)
+        When: get_container_available_memory_bytes is called
+        Then: returns -1
+        """
+        from rasterize import get_container_available_memory_bytes
+
+        mocker.patch("builtins.open", mock_open_for_max("max"))
+        result = get_container_available_memory_bytes()
+        assert result == -1
+
+    def test_returns_available_bytes_when_limit_set(self, mocker):
+        """
+        Given: memory.max = 1 GiB, working_set = 200 MiB
+        When: get_container_available_memory_bytes is called
+        Then: returns 824 MiB
+        """
+        from rasterize import get_container_available_memory_bytes
+
+        mem_max = 1024 * 1024 * 1024  # 1 GiB
+        working_set = 200 * 1024 * 1024  # 200 MiB
+
+        mocker.patch("builtins.open", mock_open_for_max(str(mem_max)))
+        mocker.patch("rasterize.get_container_working_set_bytes", return_value=working_set)
+
+        result = get_container_available_memory_bytes()
+        assert result == mem_max - working_set
+
+    def test_returns_zero_when_file_not_found(self, mocker):
+        """
+        Given: cgroup v2 files do not exist
+        When: get_container_available_memory_bytes is called
+        Then: returns 0
+        """
+        from rasterize import get_container_available_memory_bytes
+
+        mocker.patch("builtins.open", side_effect=FileNotFoundError("no cgroup"))
+        result = get_container_available_memory_bytes()
+        assert result == 0
+
+    def test_clamps_to_zero_when_working_set_exceeds_max(self, mocker):
+        """
+        Given: working_set > memory.max (transient edge case)
+        When: get_container_available_memory_bytes is called
+        Then: returns 0 (clamped, never negative)
+        """
+        from rasterize import get_container_available_memory_bytes
+
+        mem_max = 100 * 1024 * 1024
+        working_set = 150 * 1024 * 1024
+
+        mocker.patch("builtins.open", mock_open_for_max(str(mem_max)))
+        mocker.patch("rasterize.get_container_working_set_bytes", return_value=working_set)
+
+        result = get_container_available_memory_bytes()
+        assert result == 0
+
+
+class TestComputeMemoryBasedLimits:
+    """Tests for compute_memory_based_limits()"""
+
+    def test_returns_defaults_when_unlimited(self):
+        """
+        Given: No cgroup memory limit (available_bytes == -1)
+        When: compute_memory_based_limits is called
+        Then: returns the operator-configured defaults unchanged
+        """
+        from rasterize import compute_memory_based_limits
+
+        chromes, tabs, rasterizations = compute_memory_based_limits(
+            available_bytes=-1,
+            per_instance_bytes=1024 * 1024 * 1024,
+            default_chromes=64,
+            default_tabs=10,
+            default_rasterizations=500,
+        )
+        assert chromes == 64
+        assert tabs == 10
+        assert rasterizations == 500
+
+    def test_scales_down_when_memory_is_constrained(self):
+        """
+        Given: 2 GiB available, 1 GiB per instance, defaults of 64/10/500
+        When: compute_memory_based_limits is called
+        Then: limits are capped at 2 (safe_count) and rasterizations scaled proportionally
+        """
+        from rasterize import compute_memory_based_limits
+
+        available = 2 * 1024 * 1024 * 1024  # 2 GiB
+        per_instance = 1024 * 1024 * 1024  # 1 GiB
+
+        chromes, tabs, rasterizations = compute_memory_based_limits(
+            available_bytes=available,
+            per_instance_bytes=per_instance,
+            default_chromes=64,
+            default_tabs=10,
+            default_rasterizations=500,
+        )
+        assert chromes == 2
+        assert tabs == 2
+        # ratio = 2/64 ≈ 0.03125 → rasterizations = max(1, int(500 * 0.03125)) = max(1, 15) = 15
+        assert rasterizations == 15
+
+    def test_never_returns_zero(self):
+        """
+        Given: Very little memory available (less than one instance budget)
+        When: compute_memory_based_limits is called
+        Then: all values are at least 1 so the integration can still attempt one operation
+        """
+        from rasterize import compute_memory_based_limits
+
+        chromes, tabs, rasterizations = compute_memory_based_limits(
+            available_bytes=1,  # 1 byte — effectively nothing
+            per_instance_bytes=1024 * 1024 * 1024,
+            default_chromes=64,
+            default_tabs=10,
+            default_rasterizations=500,
+        )
+        assert chromes >= 1
+        assert tabs >= 1
+        assert rasterizations >= 1
+
+    def test_does_not_exceed_configured_defaults(self):
+        """
+        Given: Enormous amount of available memory
+        When: compute_memory_based_limits is called
+        Then: values are capped at the operator-configured defaults
+        """
+        from rasterize import compute_memory_based_limits
+
+        chromes, tabs, rasterizations = compute_memory_based_limits(
+            available_bytes=1024 * 1024 * 1024 * 1024,  # 1 TiB
+            per_instance_bytes=1024 * 1024 * 1024,  # 1 GiB
+            default_chromes=64,
+            default_tabs=10,
+            default_rasterizations=500,
+        )
+        assert chromes == 64
+        assert tabs == 10
+        assert rasterizations == 500
+
+    def test_zero_available_bytes_returns_minimum(self):
+        """
+        Given: 0 bytes available (cgroup files unreadable)
+        When: compute_memory_based_limits is called
+        Then: all values are 1 (minimum safe floor)
+        """
+        from rasterize import compute_memory_based_limits
+
+        chromes, tabs, rasterizations = compute_memory_based_limits(
+            available_bytes=0,
+            per_instance_bytes=1024 * 1024 * 1024,
+            default_chromes=64,
+            default_tabs=10,
+            default_rasterizations=500,
+        )
+        assert chromes == 1
+        assert tabs == 1
+        assert rasterizations >= 1
+
+
+class TestWaitWithMemoryWatchdog:
+    """Tests for wait_with_memory_watchdog()"""
+
+    def test_returns_true_when_event_set_normally(self):
+        """
+        Given: tab_ready_event is set immediately (page loaded fast)
+        When: wait_with_memory_watchdog is called
+        Then: returns True (normal completion)
+        """
+        from rasterize import wait_with_memory_watchdog
+        from threading import Event
+
+        event = Event()
+        event.set()  # Already done
+
+        result = wait_with_memory_watchdog(
+            tab_ready_event=event,
+            navigation_timeout=30,
+            tolerance_bytes=200 * 1024 * 1024,
+        )
+        assert result is True
+
+    def test_returns_false_and_sets_event_on_memory_pressure(self, mocker):
+        """
+        Given: Available memory drops below tolerance while waiting
+        When: wait_with_memory_watchdog is called
+        Then: returns False, and tab_ready_event is set so the caller can capture a screenshot
+        """
+        from rasterize import wait_with_memory_watchdog
+        from threading import Event
+
+        event = Event()
+        tolerance = 200 * 1024 * 1024  # 200 MiB
+
+        # Simulate memory below tolerance
+        mocker.patch("rasterize.get_container_available_memory_bytes", return_value=tolerance - 1)
+
+        result = wait_with_memory_watchdog(
+            tab_ready_event=event,
+            navigation_timeout=30,
+            tolerance_bytes=tolerance,
+            poll_interval=0.01,  # Fast poll for test speed
+        )
+
+        assert result is False
+        assert event.is_set()  # Event must be set so caller can proceed to screenshot
+
+    def test_returns_true_when_memory_is_unlimited(self, mocker):
+        """
+        Given: No cgroup memory limit (available == -1)
+        When: wait_with_memory_watchdog is called and event is set after a short delay
+        Then: returns True (memory pressure check skipped, normal completion)
+        """
+        from rasterize import wait_with_memory_watchdog
+        from threading import Event, Timer
+
+        event = Event()
+        mocker.patch("rasterize.get_container_available_memory_bytes", return_value=-1)
+
+        # Set the event after 50 ms to simulate page load completing
+        Timer(0.05, event.set).start()
+
+        result = wait_with_memory_watchdog(
+            tab_ready_event=event,
+            navigation_timeout=5,
+            tolerance_bytes=200 * 1024 * 1024,
+            poll_interval=0.02,
+        )
+
+        assert result is True
+
+    def test_returns_true_when_memory_above_tolerance(self, mocker):
+        """
+        Given: Available memory is above the tolerance threshold
+        When: wait_with_memory_watchdog is called and event is set after a short delay
+        Then: returns True (no memory pressure, normal completion)
+        """
+        from rasterize import wait_with_memory_watchdog
+        from threading import Event, Timer
+
+        event = Event()
+        tolerance = 200 * 1024 * 1024
+        mocker.patch("rasterize.get_container_available_memory_bytes", return_value=tolerance + 1024 * 1024)
+
+        Timer(0.05, event.set).start()
+
+        result = wait_with_memory_watchdog(
+            tab_ready_event=event,
+            navigation_timeout=5,
+            tolerance_bytes=tolerance,
+            poll_interval=0.02,
+        )
+
+        assert result is True
+        assert event.is_set()
+
+    def test_returns_true_on_timeout_when_no_memory_pressure(self, mocker):
+        """
+        Given: Page never finishes loading and memory stays above tolerance
+        When: wait_with_memory_watchdog is called with a very short timeout
+        Then: returns True (timeout path, caller handles the warning)
+        """
+        from rasterize import wait_with_memory_watchdog
+        from threading import Event
+
+        event = Event()  # Never set
+        mocker.patch("rasterize.get_container_available_memory_bytes", return_value=500 * 1024 * 1024)
+
+        result = wait_with_memory_watchdog(
+            tab_ready_event=event,
+            navigation_timeout=1,  # 1 second timeout
+            tolerance_bytes=200 * 1024 * 1024,
+            poll_interval=0.1,
+        )
+
+        assert result is True  # Timeout path returns True; caller issues the warning
+
+
+# endregion
+
+
+# ---------------------------------------------------------------------------
+# Helpers used by the memory tests above
+# ---------------------------------------------------------------------------
+
+
+def mock_open_for_max(content: str):
+    """Return a side_effect callable that makes open() return *content* as file data."""
+    from unittest.mock import mock_open
+
+    return mock_open(read_data=content)

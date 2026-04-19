@@ -53,6 +53,19 @@ CHROME_OPTIONS = [
     "--ignore-certificate-errors",
     "--disable-dev-shm-usage",
     f'--user-agent="{USER_AGENT}"',
+    "--enable-low-end-device-mode",  # Forces Chrome to clear memory cache of inactive tabs more frequently
+    "--renderer-process-limit=3",  # Limit renderer processes to reduce overhead
+    "--disable-background-networking",  # Prevent background processes
+    "--disable-default-apps",  # Disables installation of default apps
+    "--disable-component-extensions-with-background-pages",  # Disable background extensions
+    "--disable-component-update",  # Disable component updates
+    "--disable-breakpad",  # Disable crash reporting to save memory
+    "--disable-domain-reliability",  # Disables Domain Reliability Monitoring
+    "--disable-gaia-services",  # Disables GAIA services such as enrollment and OAuth session restore
+    "--no-first-run",  # Skip first run tasks
+    "--mute-audio",  # Disable audio processing
+    "--disable-notifications",  # Disables the Web Notification and the Push APIs
+    "--disable-speech-api",  # Disables the Web Speech API
 ]
 
 WITH_ERRORS = demisto.params().get("with_error", True)
@@ -100,8 +113,47 @@ except Exception as e:
     demisto.info(f"Exception trying to parse MAX_CHROME_TABS_COUNT, {e}")
     MAX_CHROME_TABS_COUNT = 10
 
+# Minimum available memory (in bytes) required to start a new Chrome instance or open a new tab.
+# Defaults to 1024 MiB (1 GiB) because heavy websites can consume 600-700 MB per tab.
+# Can be overridden via the MIN_MEMORY_FOR_CHROME_MB environment variable.
+try:
+    _env_min_mem_mb = os.getenv("MIN_MEMORY_FOR_CHROME_MB", "1024")
+    MIN_MEMORY_FOR_CHROME_BYTES = int(_env_min_mem_mb) * 1024 * 1024
+except Exception as e:
+    demisto.info(f"Exception trying to parse MIN_MEMORY_FOR_CHROME_MB, {e}")
+    MIN_MEMORY_FOR_CHROME_BYTES = 1024 * 1024 * 1024
+
+# Memory pressure tolerance (in bytes): if available memory drops below this value while a page
+# is loading, the watchdog will abort the wait and take a screenshot of whatever has rendered so
+# far, preventing an OOM kill.  Defaults to 200 MiB.
+# Can be overridden via the MEMORY_PRESSURE_TOLERANCE_MB environment variable.
+try:
+    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "200")
+    MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
+except Exception as e:
+    demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
+    MEMORY_PRESSURE_TOLERANCE_BYTES = 200 * 1024 * 1024
+
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
+
+# In-memory log buffer — collects memory-related diagnostic lines throughout the run so they
+# can be returned as a downloadable file even when debug mode is disabled.
+_memory_log_lines: list[str] = []
+_memory_log_lock = threading.Lock()
+
+
+def _mem_log(level: str, message: str) -> None:
+    """Append a timestamped line to the in-memory memory log buffer and forward to demisto."""
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # pylint: disable=E9003
+    line = f"[{ts}] [{level}] {message}"
+    with _memory_log_lock:
+        _memory_log_lines.append(line)
+    if level == "INFO":
+        demisto.info(message)
+    else:
+        demisto.debug(message)
+
 
 # Consts for custom width and height
 MAX_FULLSCREEN_WIDTH = 8000
@@ -123,6 +175,194 @@ class RasterizeType(Enum):
 
 
 # endregion
+
+# region memory helpers
+
+
+def get_container_working_set_bytes() -> int:
+    """
+    Calculates the container's memory working set in bytes.
+    Matches the Kubernetes/cAdvisor formula: working_set = memory.current - inactive_file.
+
+    Returns:
+        int: Working set memory in bytes, or 0 if the cgroup v2 files cannot be read.
+    """
+    try:
+        with open("/sys/fs/cgroup/memory.current") as f:
+            mem_current = int(f.read().strip())
+
+        inactive_file = 0
+        with open("/sys/fs/cgroup/memory.stat") as f:
+            for line in f:
+                if line.startswith("inactive_file "):
+                    inactive_file = int(line.split()[1])
+                    break
+
+        return max(0, mem_current - inactive_file)
+
+    except (FileNotFoundError, ValueError, PermissionError) as e:
+        _mem_log("DEBUG", f"get_container_working_set_bytes: Could not read cgroup v2 memory stats: {e}")
+        return 0
+
+
+def get_container_available_memory_bytes() -> int:
+    """
+    Returns the available memory in bytes (memory.max - working_set).
+
+    Returns:
+        int: Available memory in bytes.
+             Returns -1 when no hard memory limit is set on the cgroup ("max").
+             Returns 0 when the cgroup v2 files cannot be read.
+    """
+    try:
+        with open("/sys/fs/cgroup/memory.max") as f:
+            max_val = f.read().strip()
+
+        if max_val == "max":
+            # No hard limit is set on this cgroup
+            return -1
+
+        mem_max = int(max_val)
+        working_set = get_container_working_set_bytes()
+        available = max(0, mem_max - working_set)
+        _mem_log(
+            "DEBUG",
+            f"get_container_available_memory_bytes: mem_max={mem_max / (1024 * 1024):.1f} MiB, "
+            f"working_set={working_set / (1024 * 1024):.1f} MiB, "
+            f"available={available / (1024 * 1024):.1f} MiB",
+        )
+        return available
+
+    except (FileNotFoundError, ValueError, PermissionError) as e:
+        _mem_log("DEBUG", f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
+        return 0
+
+
+def compute_memory_based_limits(
+    available_bytes: int,
+    per_instance_bytes: int,
+    default_chromes: int,
+    default_tabs: int,
+    default_rasterizations: int,
+) -> tuple[int, int, int]:
+    """
+    Derives safe values for MAX_CHROMES_COUNT, MAX_CHROME_TABS_COUNT, and
+    MAX_RASTERIZATIONS_COUNT from the available container memory.
+
+    Args:
+        available_bytes: Available container memory in bytes (-1 means unlimited).
+        per_instance_bytes: Memory budget per Chrome instance/tab in bytes.
+        default_chromes: Configured MAX_CHROMES_COUNT (used when memory is unlimited).
+        default_tabs: Configured MAX_CHROME_TABS_COUNT (used when memory is unlimited).
+        default_rasterizations: Configured MAX_RASTERIZATIONS_COUNT (used when memory is unlimited).
+
+    Returns:
+        tuple[int, int, int]: (max_chromes, max_tabs, max_rasterizations)
+            Each value is at least 1 so the integration can always attempt one operation.
+    """
+    if available_bytes == -1:
+        # No cgroup limit — keep the operator-configured defaults unchanged.
+        _mem_log(
+            "DEBUG",
+            "compute_memory_based_limits: no cgroup memory limit, keeping defaults "
+            f"({default_chromes=}, {default_tabs=}, {default_rasterizations=})",
+        )
+        return default_chromes, default_tabs, default_rasterizations
+
+    # How many Chrome instances can fit in the available memory?
+    safe_count = max(1, available_bytes // per_instance_bytes)
+
+    # Cap at the operator-configured maximums — never exceed them.
+    max_chromes = min(safe_count, default_chromes)
+    max_tabs = min(safe_count, default_tabs)
+    # Scale rasterizations proportionally: keep the same ratio as the original defaults.
+    ratio = safe_count / max(default_chromes, 1)
+    max_rasterizations = max(1, int(default_rasterizations * ratio))
+
+    _mem_log(
+        "DEBUG",
+        f"compute_memory_based_limits: {available_bytes / (1024 * 1024):.1f} MiB available, "
+        f"{per_instance_bytes / (1024 * 1024):.1f} MiB per instance → "
+        f"{safe_count=}, {max_chromes=}, {max_tabs=}, {max_rasterizations=}",
+    )
+    return max_chromes, max_tabs, max_rasterizations
+
+
+def wait_with_memory_watchdog(
+    tab_ready_event: Event,
+    navigation_timeout: int,
+    tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
+    poll_interval: float = 1.0,
+    tab_id: str = "",
+    path: str = "",
+) -> bool:
+    """
+    Waits for *tab_ready_event* to be set, but aborts the wait early if available container
+    memory drops below *tolerance_bytes*.
+
+    When memory pressure is detected the event is set immediately so that the caller can
+    capture a screenshot of whatever has rendered so far, rather than waiting for the full
+    page load and risking an OOM kill.
+
+    Args:
+        tab_ready_event: The threading.Event that signals page load completion.
+        navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
+        tolerance_bytes: Available-memory floor in bytes. Default: MEMORY_PRESSURE_TOLERANCE_BYTES.
+        poll_interval: How often (seconds) to sample memory while waiting. Default: 1 s.
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+
+    Returns:
+        bool: True if the event was set normally (page finished loading or timed out),
+              False if the wait was aborted due to memory pressure.
+    """
+    deadline = time.monotonic() + navigation_timeout  # pylint: disable=E9003
+
+    while True:
+        # Check if the page has finished loading.
+        if tab_ready_event.wait(timeout=poll_interval):
+            _mem_log("DEBUG", f"wait_with_memory_watchdog: tab_ready_event set normally, {tab_id=}, {path=}")
+            return True
+
+        # Check for timeout.
+        if time.monotonic() >= deadline:  # pylint: disable=E9003
+            _mem_log(
+                "DEBUG",
+                f"wait_with_memory_watchdog: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
+            )
+            return True  # Caller handles the timeout warning as before.
+
+        # Sample available memory.
+        available = get_container_available_memory_bytes()
+        if available == -1:
+            # No cgroup limit — memory pressure check is not applicable.
+            continue
+
+        if available <= tolerance_bytes:
+            _mem_log(
+                "INFO",
+                f"wait_with_memory_watchdog: memory pressure detected — "
+                f"{available / (1024 * 1024):.1f} MiB available ≤ "
+                f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
+                f"Aborting page-load wait and capturing partial screenshot. {tab_id=}, {path=}",
+            )
+            # Signal the event so the caller proceeds to capture immediately.
+            tab_ready_event.set()
+            return False  # False signals that we aborted due to memory pressure.
+
+
+# endregion
+
+# Apply memory-based limits at module load time so that MAX_CHROMES_COUNT,
+# MAX_CHROME_TABS_COUNT, and MAX_RASTERIZATIONS_COUNT reflect the actual
+# container memory budget for this execution.
+MAX_CHROMES_COUNT, MAX_CHROME_TABS_COUNT, MAX_RASTERIZATIONS_COUNT = compute_memory_based_limits(
+    available_bytes=get_container_available_memory_bytes(),
+    per_instance_bytes=MIN_MEMORY_FOR_CHROME_BYTES,
+    default_chromes=MAX_CHROMES_COUNT,
+    default_tabs=MAX_CHROME_TABS_COUNT,
+    default_rasterizations=MAX_RASTERIZATIONS_COUNT,
+)
 
 # region utility classes
 
@@ -1051,7 +1291,19 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
 
         demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
 
-        if not tab_ready_event.wait(navigation_timeout):
+        page_loaded_normally = wait_with_memory_watchdog(
+            tab_ready_event=tab_ready_event,
+            navigation_timeout=navigation_timeout,
+            tab_id=tab.id,
+            path=path,
+        )
+
+        if not page_loaded_normally:
+            return_warning(
+                f"Warning: Rasterize aborted page-load wait due to memory pressure. "
+                f"A partial screenshot will be captured. {path=}"
+            )
+        elif not tab_ready_event.is_set():
             return_warning(
                 f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
                 f" some content might be missing .\n{path=}"
@@ -2011,11 +2263,52 @@ def get_width_height(args: dict[str, str]) -> tuple[int, int]:
     return width, height
 
 
+def _flush_memory_log() -> None:  # pragma: no cover
+    """
+    Writes the accumulated in-memory memory log to a downloadable file entry.
+
+    The file is named ``rasterize_memory_log.txt`` and is returned as an info-file
+    attachment so it appears in the War Room without cluttering the entry list.
+    Only called when there is at least one log line to write.
+    """
+    with _memory_log_lock:
+        lines = list(_memory_log_lines)
+
+    if not lines:
+        demisto.debug("_flush_memory_log: no memory log lines to flush")
+        return
+
+    content = "\n".join(lines) + "\n"
+    try:
+        result = fileResult(
+            filename="rasterize_memory_log.txt",
+            data=content.encode("utf-8"),
+            file_type=entryTypes["entryInfoFile"],
+        )
+        demisto.results(result)
+        demisto.debug(f"_flush_memory_log: flushed {len(lines)} lines to rasterize_memory_log.txt")
+    except Exception as e:
+        demisto.info(f"_flush_memory_log: failed to write memory log file: {e}")
+
+
 def main():  # pragma: no cover
     command = demisto.command()
 
     demisto.debug(f"Command being called is {command}")
     demisto.debug(f"Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}")
+
+    available_mem = get_container_available_memory_bytes()
+    working_set = get_container_working_set_bytes()
+    if available_mem == -1:
+        _mem_log("DEBUG", "Memory: no cgroup limit set (unlimited)")
+    else:
+        _mem_log(
+            "DEBUG",
+            f"Memory: working_set={working_set / (1024 * 1024):.1f} MiB, "
+            f"available={available_mem / (1024 * 1024):.1f} MiB, "
+            f"threshold={MIN_MEMORY_FOR_CHROME_BYTES / (1024 * 1024):.1f} MiB, "
+            f"tolerance={MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
+        )
 
     threading.excepthook = excepthook_recv_loop
 
@@ -2048,6 +2341,7 @@ def main():  # pragma: no cover
         return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
+        _flush_memory_log()
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
