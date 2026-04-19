@@ -274,7 +274,7 @@ def delete_email(
             raise MissingEmailException
 
         # verify the returned message matches the expected one
-        expected_mid = search_args.get("message-id", "")
+        expected_mid = search_args.get("message-id") or ""
         if isinstance(search_result, list) and search_result:
             first_result = search_result[0]
             # MSGraph returns results under "value"; Gmail/EWS return directly
@@ -309,7 +309,7 @@ def get_search_args(args: dict):
     """
     incident_info = demisto.incident()
     custom_fields = incident_info.get("CustomFields", {})
-    message_id = custom_fields.get("reportedemailmessageid", "")
+    message_id = custom_fields.get("reportedemailmessageid") or ""
     # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
     if message_id and not re.fullmatch(r"<[^\s<>]+@[^\s<>]+>", message_id):
         raise DemistoException(f"Refusing suspicious Message-ID: {message_id!r}")
