@@ -620,8 +620,8 @@ def test_html_unescape_populated_in_context(mocker):
     When:
         - Running the ParseEmailFilesV2 script
     Then:
-        - The Email context contains an 'HTMLText' key
-        - The 'HTMLText' value has HTML entities decoded (e.g. '&amp;' → '&')
+        - The Email context contains an 'HTMLUnescape' key
+        - The 'HTMLUnescape' value has HTML entities decoded (e.g. '&amp;' → '&')
         - The original 'HTML' key is unchanged
     """
     mocker.patch.object(
@@ -651,10 +651,10 @@ def test_html_unescape_populated_in_context(mocker):
     assert len(results) == 1
     email_context = results[0]["EntryContext"]["Email"]
 
-    # HTMLText must be present and have entities decoded
-    assert "HTMLText" in email_context
-    html_text = email_context["HTMLText"]
-    assert "&amp;" not in html_text, "HTML entities were not decoded in HTMLText"
+    # HTMLUnescape must be present and have entities decoded
+    assert "HTMLUnescape" in email_context
+    html_text = email_context["HTMLUnescape"]
+    assert "&amp;" not in html_text, "HTML entities were not decoded in HTMLUnescape"
     assert "https://example.com/page?foo=bar&baz=1" in html_text
 
     # Original HTML key must still be present (unchanged)

@@ -231,7 +231,7 @@ def main():
                 email["HTML"] = email.get("HTML").decode("utf-8")
 
             if html_body := email.get("HTML"):
-                email["HTMLText"] = html_unescape(html_body)
+                email["HTMLUnescape"] = html_unescape(html_body)
 
             results.append(
                 CommandResults(
