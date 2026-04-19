@@ -351,7 +351,7 @@ def get_search_args(args: dict):
         "EWS v2": {"target-mailbox": user_id},
         "MicrosoftGraphMail": {
             "user_id": user_id,
-            "odata": "$filter=internetMessageId eq '{}'".format(quote(unquote(message_id)).replace("'", "''")),
+            "odata": "$filter=internetMessageId eq '{}'".format(quote(unquote(message_id).replace("'", "''"), safe="")),
         },
         "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
         "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},

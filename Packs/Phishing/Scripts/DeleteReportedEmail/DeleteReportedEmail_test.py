@@ -1,5 +1,4 @@
 from copy import deepcopy
-from urllib.parse import quote, unquote
 
 import CommonServerPython
 import DeleteReportedEmail
@@ -377,5 +376,5 @@ class TestMessageIdValidation:
         mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="MicrosoftGraphMail")
         result = get_search_args({})
         odata = result["odata"]
-        escaped_id = quote(unquote(message_id)).replace("'", "''")
+        escaped_id = "%3Cit%27%27s%40example.com%3E"
         assert f"'{escaped_id}'" in odata
