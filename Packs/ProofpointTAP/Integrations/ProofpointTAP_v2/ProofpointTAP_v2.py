@@ -20,6 +20,7 @@ DELIVERED_MESSAGES = "Delivered Messages"
 DEFAULT_LIMIT = 50
 DEFAULT_LOOK_BACK_MINUTES = 0
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MAX_SEEN_IDS = 50_000
 
 
 def get_now():
@@ -31,51 +32,77 @@ def get_now():
     return datetime.utcnow()
 
 
+def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str, str]:
+    """Remove event IDs outside the lookback window. Apply hard cap if needed.
+
+    Args:
+        seen_ids: Mapping of event_id → event_time_str for deduplication.
+        look_back_minutes: The lookback window in minutes.
+
+    Returns:
+        Pruned dict with only IDs within the lookback window + 30min margin.
+    """
+    if not seen_ids or look_back_minutes <= 0:
+        return seen_ids
+
+    cutoff = (get_now() - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
+    pruned = {event_id: event_time for event_id, event_time in seen_ids.items() if event_time >= cutoff}
+
+    if len(pruned) > MAX_SEEN_IDS:
+        demisto.info(f"seen_ids exceeded {MAX_SEEN_IDS}, pruning oldest 25%")
+        sorted_ids = sorted(pruned.items(), key=lambda x: x[1])
+        pruned = dict(sorted_ids[len(sorted_ids) // 4:])
+
+    demisto.debug(f"Pruned seen_ids: {len(seen_ids)} → {len(pruned)}")
+    return pruned
+
+
 def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     """Generate time intervals for fetching events from Proofpoint TAP API.
 
-    Creates intervals of up to 59 minutes each, ensuring each interval is at least 30 seconds
-    to comply with Proofpoint API requirements.
-
-    Applies a buffer to account for Proofpoint's API indexing delay (30-60 seconds).
-    This prevents querying for events that haven't been indexed yet, which would
-    cause them to be permanently missed in subsequent fetches.
+    When look_back_minutes > 0, the query window starts at (last_fetch - look_back_minutes)
+    to catch late-indexed events. Deduplication (handled by caller) prevents duplicates
+    from the overlapping region.
 
     Args:
-        last_fetch (datetime or str): Starting time for fetch
-        look_back_minutes (int): Buffer time in minutes to subtract from 'now'. Default is 0.
+        last_fetch (datetime or str): Starting time for fetch (will be shifted back by look_back_minutes)
+        look_back_minutes (int): Buffer time in minutes to re-scan for late-indexed events. Default is 0.
 
     Returns:
         List[tuple[str, str]]: List of (start_time, end_time) tuples in DATE_FORMAT.
                                Each interval is ≤59 minutes and ≥30 seconds.
                                Returns empty list if no valid intervals can be created.
     """
-    # Apply indexing delay buffer: subtract buffer from 'now' to avoid querying
-    # for events that haven't been indexed yet by Proofpoint's API
-    now = get_now() - timedelta(minutes=look_back_minutes)
+    now = get_now()  # Real time — no longer subtracting look_back_minutes
     time_format = DATE_FORMAT
 
-    # Convert last_fetch to datetime if it's a string
     if isinstance(last_fetch, str):
         last_fetch = datetime.strptime(last_fetch, time_format)
 
-    # Guard against invalid intervals if polled too frequently
-    # If last_fetch is >= now (with buffer), return empty list to skip this fetch cycle
-    if last_fetch >= now:
-        demisto.debug(f"Skipping fetch. {last_fetch=} >= now with {look_back_minutes=}.")
+    # Shift start backward to catch late-indexed events
+    effective_start = last_fetch - timedelta(minutes=look_back_minutes) if look_back_minutes > 0 else last_fetch
+
+    # Clamp to 7-day API limit
+    seven_days_ago = now - timedelta(days=7) + timedelta(minutes=1)
+    if effective_start < seven_days_ago:
+        effective_start = seven_days_ago
+        demisto.debug(f"Clamped effective_start to 7-day limit: {effective_start}")
+
+    # Guard against invalid intervals
+    if effective_start >= now:
+        demisto.debug(f"Skipping fetch. {effective_start=} >= {now=}")
         return []
 
     intervals = []
-    current_start = last_fetch
+    current_start = effective_start
 
-    # Create 59-minute intervals until we're within 59 minutes of 'now'
+    # Create 59-minute intervals
     while now - current_start > timedelta(minutes=59):
         current_end = current_start + timedelta(minutes=59)
         intervals.append((current_start.strftime(time_format), current_end.strftime(time_format)))
         current_start = current_end
 
-    # Add final interval from current_start to now, but only if it's at least 30 seconds
-    # Proofpoint API requires minimum 30-second intervals
+    # Add final interval (minimum 30 seconds)
     seconds_remaining = (now - current_start).total_seconds()
     if seconds_remaining >= 30:
         intervals.append((current_start.strftime(time_format), now.strftime(time_format)))
@@ -83,6 +110,9 @@ def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     else:
         demisto.debug(f"Skipping final interval: only {seconds_remaining:.0f} seconds remaining (< 30s minimum)")
 
+    demisto.debug(
+        f"Generated {len(intervals)} intervals from {effective_start.strftime(time_format)} to {now.strftime(time_format)}"
+    )
     return intervals
 
 
@@ -537,6 +567,44 @@ def get_events_command(client, args):
     )
 
 
+def _build_incident(raw_event: dict, event_type: str, occurred: str, raw_json_encoding: str | None = None) -> dict:
+    """Build an incident dict from a raw event.
+
+    Args:
+        raw_event: The raw event data from Proofpoint API.
+        event_type: Human-readable event type (e.g., "messages delivered").
+        occurred: The event timestamp string.
+        raw_json_encoding: Optional encoding for the raw JSON.
+
+    Returns:
+        dict: Incident dict with name, rawJSON, and occurred fields.
+    """
+    raw_event["type"] = event_type
+    event_id = raw_event.get("id") or raw_event.get("GUID", "")
+
+    if raw_json_encoding:
+        raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+    else:
+        raw_json = json.dumps(raw_event)
+
+    type_label = event_type.replace("_", " ").title()
+    return {
+        "name": f"Proofpoint - {type_label} - {event_id}",
+        "rawJSON": raw_json,
+        "occurred": occurred,
+    }
+
+
+# Event type configuration: (response_key, event_type_label, dedup_field, time_field_or_None)
+# When time_field is None, use max(threatTime, clickTime)
+EVENT_TYPE_CONFIGS = [
+    ("messagesDelivered", "messages delivered", "GUID", "messageTime"),
+    ("messagesBlocked", "messages blocked", "GUID", "messageTime"),
+    ("clicksPermitted", "clicks permitted", "id", None),
+    ("clicksBlocked", "clicks blocked", "id", None),
+]
+
+
 def validate_first_fetch_time(first_fetch_time: str):
     """
     validate that the start time is less than 7 days ago
@@ -570,107 +638,97 @@ def fetch_incidents(
 ) -> tuple[dict, list, list]:
     incidents = []
     end_query_time = ""
-    # check if there're incidents saved in context
+
+    # Check if there are incidents saved in context (overflow from previous fetch)
     if integration_context:
         remained_incidents = integration_context.get("incidents")
-        demisto.debug(f"remained_incidents: {len(remained_incidents)}")
-        # return incidents if exists in context.
+        demisto.debug(f"remained_incidents: {len(remained_incidents) if remained_incidents else 0}")
         if remained_incidents:
             return last_run, remained_incidents[:limit], remained_incidents[limit:]
+
+    # Load dedup state
+    seen_ids: dict[str, str] = last_run.get("seen_ids", {})
+    demisto.debug(f"Loaded {len(seen_ids)} seen_ids from last_run")
+
     # Get the last fetch time, if exists
     start_query_time = last_run.get("last_fetch")
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+
     fetch_intervals = get_fetch_times(start_query_time, look_back_minutes)
 
-    # If fetch_intervals is empty (polled too frequently), skip this fetch cycle
-    # Keep last_run unchanged so the next cycle can try again
+    # If no valid intervals, skip this fetch cycle
     if not fetch_intervals:
         demisto.debug("No fetch intervals generated - skipping this fetch cycle")
         return last_run, [], []
 
-    for start_query_time, end_query_time in fetch_intervals:
-        demisto.debug(f"{start_query_time=}  {end_query_time=}")
+    dedup_count = 0
+
+    for interval_start, interval_end in fetch_intervals:
+        demisto.debug(f"Fetching interval: {interval_start} → {interval_end}")
         raw_events = client.get_events(
-            interval=start_query_time + "/" + end_query_time,
+            interval=interval_start + "/" + interval_end,
             event_type_filter=event_type_filter,
             threat_status=threat_status,
             threat_type=threat_type,
         )
 
-        message_delivered = raw_events.get("messagesDelivered", [])
-        demisto.debug(f"Fetched {len(message_delivered)} messagesDelivered events")
-        for raw_event in message_delivered:
-            raw_event["type"] = "messages delivered"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Message Delivered - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": raw_event["messageTime"],
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+        for response_key, event_type_label, dedup_field, time_field in EVENT_TYPE_CONFIGS:
+            events = raw_events.get(response_key, [])
+            if events:
+                demisto.debug(f"Fetched {len(events)} {response_key} events")
 
-        message_blocked = raw_events.get("messagesBlocked", [])
-        demisto.debug(f"Fetched {len(message_blocked)} messagesBlocked events")
-        for raw_event in message_blocked:
-            raw_event["type"] = "messages blocked"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Message Blocked - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": raw_event["messageTime"],
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+            for raw_event in events:
+                # Get the dedup key
+                dedup_key = raw_event.get(dedup_field, "")
 
-        clicks_permitted = raw_events.get("clicksPermitted", [])
-        demisto.debug(f"Fetched {len(clicks_permitted)} clicks_permitted events")
-        for raw_event in clicks_permitted:
-            raw_event["type"] = "clicks permitted"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Click Permitted - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": max(raw_event["threatTime"], raw_event["clickTime"]),
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+                # Skip if already seen (dedup)
+                if dedup_key and dedup_key in seen_ids:
+                    dedup_count += 1
+                    continue
 
-        clicks_blocked = raw_events.get("clicksBlocked", [])
-        demisto.debug(f"Fetched {len(clicks_blocked)} clicks_blocked events")
-        for raw_event in clicks_blocked:
-            raw_event["type"] = "clicks blocked"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Click Blocked - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": max(raw_event["threatTime"], raw_event["clickTime"]),
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+                # Determine occurred time
+                if time_field:
+                    occurred = raw_event[time_field]
+                else:
+                    occurred = max(raw_event["threatTime"], raw_event["clickTime"])
 
-    # Cut the milliseconds from last fetch if exists
-    end_query_time = end_query_time[:-5] + "Z" if end_query_time[-5] == "." else end_query_time
-    next_run = {"last_fetch": end_query_time}
-    demisto.debug(f"{last_run}=")
+                # Build incident
+                incident = _build_incident(raw_event, event_type_label, occurred, raw_json_encoding)
+                incidents.append(incident)
+
+                # Track this event for dedup
+                if dedup_key:
+                    seen_ids[dedup_key] = occurred
+
+    if dedup_count > 0:
+        demisto.debug(f"Deduplicated {dedup_count} events")
+
+    # Prune old IDs outside the lookback window
+    if look_back_minutes > 0:
+        seen_ids = prune_seen_ids(seen_ids, look_back_minutes)
+
+    # Advance last_fetch to end of last interval (real now, not shifted)
+    end_query_time = fetch_intervals[-1][1]
+    # Clean up milliseconds if present
+    if len(end_query_time) > 5 and end_query_time[-5] == ".":
+        end_query_time = end_query_time[:-5] + "Z"
+
+    next_run = {
+        "last_fetch": end_query_time,
+        "seen_ids": seen_ids,
+    }
+
+    demisto.debug(
+        f"Fetch summary: {len(fetch_intervals)} intervals, "
+        f"{len(incidents)} total incidents, "
+        f"returning {min(len(incidents), limit)}, "
+        f"remaining {max(0, len(incidents) - limit)}, "
+        f"seen_ids={len(seen_ids)}, "
+        f"next last_fetch={end_query_time}"
+    )
+
     return next_run, incidents[:limit], incidents[limit:]
 
 
