@@ -9,6 +9,7 @@ from __future__ import print_function
 import base64
 import binascii
 import gc
+import html as _html_module
 import json
 import logging
 import os
@@ -44,7 +45,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 48, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -2404,10 +2405,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
         # in case of a single key, create a column table where each element is in a different row.
         headers = list(t.keys())
-        # if the value of the single key is a non-empty list, unpack it for creating a column table.
-        single_value = list(t.values())[0]
-        if isinstance(single_value, list) and single_value:
-            t = single_value
+        # if the value of the single key is a list, unpack it for creating a column table.
+        if isinstance(list(t.values())[0], list):
+            t = list(t.values())[0]
 
     if not isinstance(t, list):
         t = [t]
@@ -2596,17 +2596,17 @@ def fileResult(filename, data, file_type=None):
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
 
-    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
-    # xsoar returns empty files to war-rooms
+    # Sanitize filename to prevent path traversal – os.path.basename strips all directory components,
+    # which is safer than the previous single-pass replace("../", "") that could be bypassed.
     if isinstance(filename, str):
-        replaced_filename = filename.replace("../", "")
+        replaced_filename = os.path.basename(filename)
         if filename != replaced_filename:
-            filename = replaced_filename
             demisto.debug(
-                "replaced {filename} with new file name {replaced_file_name}".format(
-                    filename=filename, replaced_file_name=replaced_filename
+                "fileResult: sanitized filename {original} to {safe}".format(
+                    original=filename, safe=replaced_filename
                 )
             )
+            filename = replaced_filename
 
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
@@ -2707,6 +2707,46 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
     return st
+
+
+def sanitize_html_output(value, allow_tags=None):
+    # type: (str, Optional[Set[str]]) -> str
+    """Escape HTML for safe rendering in ContentsFormat:'html' outputs.
+
+    Args:
+        value: Raw string that may contain attacker-controlled content.
+        allow_tags: Optional set of allowed HTML tag names (e.g. {'b','i','a','br','p','table','tr','td','th'}).
+                    If None, escapes everything.
+
+    Returns:
+        HTML-safe string.
+    """
+    if allow_tags is None:
+        return _html_module.escape(str(value))
+    # For allowlist mode, use bleach if available, else strip all
+    try:
+        import bleach
+        return bleach.clean(str(value), tags=allow_tags, strip=True)
+    except ImportError:
+        return _html_module.escape(str(value))
+
+
+def getFilePathSafe(entry_id):
+    # type: (str) -> dict
+    """Wrapper around demisto.getFilePath() that basenames the 'name' field.
+
+    Prevents path traversal when callers use the returned name as a filesystem destination.
+
+    Args:
+        entry_id: The entry ID of the file.
+
+    Returns:
+        dict with 'id', 'path', and 'name' keys, where 'name' is basenamed.
+    """
+    result = demisto.getFilePath(entry_id)
+    if "name" in result:
+        result["name"] = os.path.basename(result["name"])
+    return result
 
 
 def raiseTable(root, key):
@@ -12227,7 +12267,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': new_limit if look_back > 0 else fetch_limit,
+            'limit': fetch_limit,
         }
     else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
