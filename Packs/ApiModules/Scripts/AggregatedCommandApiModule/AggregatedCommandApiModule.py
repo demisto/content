@@ -5,6 +5,7 @@ from enum import Enum
 from functools import cached_property
 from typing import Any
 from datetime import datetime, timedelta
+import time
 
 from CommonServerPython import *
 import demistomock as demisto
@@ -343,6 +344,8 @@ class BatchExecutor:
         for results_list, command in zip(results, commands_list):
             demisto.debug(f"Processing results for command {command.name} with {len(results_list)} results")
             processed_command_results = []
+            brands_seen: list[str] = []
+            error_brands: list[str] = []
             for i, result in enumerate(results_list):
                 if is_debug_entry(result):
                     demisto.debug(f"Result #{i+1} is debug")
@@ -354,6 +357,7 @@ class BatchExecutor:
                     demisto.debug(f"Result #{i+1} is error")
                     error_message = f"Error in {command.name}. " + get_error(result)
                     demisto.debug(f"Command {command.name} with args: {command.args} failed with error {error_message}")
+                    error_brands.append(brand)
                     if verbose:
                         hr_output = (
                             f"#### Error for name={command.name} args={command.args} current brand={brand}\n{error_message}"
@@ -361,13 +365,21 @@ class BatchExecutor:
                     if human_readable := result.get("HumanReadable"):
                         hr_output += f"\n\n{human_readable}"
 
-                elif verbose:
-                    if human_readable := result.get("HumanReadable"):
-                        hr_output = (
-                            f"#### Result for name={command.name} args={command.args} current brand={brand}\n{human_readable}"
-                        )
+                else:
+                    brands_seen.append(brand)
+                    if verbose:
+                        if human_readable := result.get("HumanReadable"):
+                            hr_output = (
+                                f"#### Result for name={command.name} args={command.args} current brand={brand}\n{human_readable}"
+                            )
                 demisto.debug(f"Result #{i+1} processed")
                 processed_command_results.append((result, hr_output, error_message))
+            demisto.debug(
+                f"[BRAND_VISIBILITY] command={command.name} "
+                f"success_brands={brands_seen} "
+                f"error_brands={error_brands} "
+                f"total_results={len(processed_command_results)}"
+            )
             final_results.append(processed_command_results)
         return final_results
 
@@ -389,9 +401,15 @@ class BatchExecutor:
         """
         brands_to_run = brands_to_run or []
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
-        demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; using-brands={brands_to_run or 'all'}")
+        cmd_names = [c.name for c in commands]
+        demisto.debug(f"Executing batch: {len(commands_to_execute)} commands={cmd_names}; using-brands={brands_to_run or 'all'}")
+        t0 = time.monotonic()
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
-        demisto.debug("Batch returned [" + ", ".join(str(len(r)) for r in results) + "] results before processing")
+        elapsed = time.monotonic() - t0
+        demisto.debug(
+            f"[TIMING] executeCommandBatch commands={cmd_names} elapsed_s={elapsed:.3f}; "
+            f"returned [{', '.join(str(len(r)) for r in results)}] results"
+        )
         return self.process_results(results, commands, verbose)
 
     def execute_list_of_batches(
@@ -431,7 +449,11 @@ class BatchExecutor:
                 out.append([])  # keep alignment; process_results will just see nothing
                 continue
             demisto.debug(f"Executing batch #{i+1} with {len(batch)} commands")
-            out.append(self.execute_batch(batch, brands_to_run or [], verbose))
+            t0 = time.monotonic()
+            result = self.execute_batch(batch, brands_to_run or [], verbose)
+            elapsed = time.monotonic() - t0
+            demisto.debug(f"[TIMING] batch #{i+1} total elapsed_s={elapsed:.3f}")
+            out.append(result)
         return out
 
 
@@ -870,9 +892,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Main execution loop for the reputation aggregation.
         """
         demisto.debug("Aggregated reputation run: start")
+        run_start = time.monotonic()
         batch_results: list[list[list[tuple[ContextResult, str, str]]]] = []
         context_result: ContextResult = {}
         batch_verbose_outputs: list[str] = []
+        timing: dict[str, float] = {}
 
         demisto.debug("Step 1: Executing batch commands.")
         commands_to_execute = self.prepare_commands_batches(self.external_enrichment)
@@ -881,7 +905,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 f"Executing {sum(len(b) for b in commands_to_execute)} commands in " f"{len(commands_to_execute)} batch(es)"
             )
             batch_executor = BatchExecutor()
+            t0 = time.monotonic()
             batch_results = batch_executor.execute_list_of_batches(commands_to_execute, self.brand_manager.to_run, self.verbose)
+            timing["batches_total_s"] = time.monotonic() - t0
             if batch_results:
                 context_result, batch_verbose_outputs, entry_results = self.process_batch_results(
                     batch_results, commands_to_execute
@@ -892,14 +918,29 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 demisto.debug("No batch results.")
 
         demisto.debug("Step 2: Finding indicators.")
+        t0 = time.monotonic()
         self.get_indicators_from_tim()
+        timing["tim_total_s"] = time.monotonic() - t0
         self.update_indicator_instances_status()
 
         demisto.debug("Step 3: Building final context.")
+        t0 = time.monotonic()
         context_builder = ContextBuilder(self.indicator_schema, self.final_context_path)
         context_builder.add_other_commands_results(context_result)
         context_builder.add_indicator_instances(self.indicator_instances)
         final_context = context_builder.build()
+        timing["context_build_s"] = time.monotonic() - t0
+
+        timing["total_s"] = time.monotonic() - run_start
+        indicator_count = len(self.valid_inputs)
+        demisto.debug(
+            f"[ENRICHMENT_TIMING] type={self.indicator_schema.type} "
+            f"total_s={timing['total_s']:.3f} "
+            f"batches_total_s={timing.get('batches_total_s', 0):.3f} "
+            f"tim_total_s={timing.get('tim_total_s', 0):.3f} "
+            f"context_build_s={timing.get('context_build_s', 0):.3f} "
+            f"indicator_count={indicator_count}"
+        )
 
         demisto.debug("Step 4: Summarizing command results.")
         return self.summarize_command_results(final_context)
@@ -1022,9 +1063,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         query = f"type:{self.indicator_schema.type} and ({indicator_values})"
         try:
             demisto.debug(f"Executing TIM search with query: {query}")
+            t0 = time.monotonic()
             searcher = IndicatorsSearcher(query=query)
             iocs = flatten_list([res.get("iocs", []) for res in searcher])
-            demisto.debug(f"TIM search returned {len(iocs)} raw IOCs.")
+            elapsed = time.monotonic() - t0
+            demisto.debug(f"[TIMING] TIM search elapsed_s={elapsed:.3f} returned {len(iocs)} raw IOCs.")
 
             if not iocs:
                 return []
@@ -1044,6 +1087,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             iocs (list[dict[str, Any]]): The IOC objects from the TIM search.
         """
         demisto.debug(f"Processing {len(iocs)} IOCs from TIM.")
+        t0 = time.monotonic()
 
         for i, ioc in enumerate(iocs):
             demisto.debug(f"Processing #{i+1} TIM result")
@@ -1053,6 +1097,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
             indicator_instance.indicator_score = indicator_score
             demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
             indicator_instance.hr_message = message
+
+        elapsed = time.monotonic() - t0
+        demisto.debug(f"[TIMING] TIM result processing elapsed_s={elapsed:.3f} for {len(iocs)} IOCs.")
 
     def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], float | None, str, str]:
         """
@@ -1520,6 +1567,7 @@ def create_and_extract_indicators(
     valid_set: set[str] = set()
     invalid_set: set[str] = set()
     expected_type_lower = indicator_type.lower()
+    extract_total_start = time.monotonic()
 
     for raw in data:
         if raw in valid_set or raw in invalid_set:
@@ -1534,11 +1582,23 @@ def create_and_extract_indicators(
         indicators_instances.extend(instances_for_raw)
         full_hr.append(hr)
 
-    if not valid_set:
-        raise ValueError("No valid indicators found in the input data.")
-
+    extract_total_elapsed = time.monotonic() - extract_total_start
     demisto.debug(f"Valid Inputs: {valid_set}")
     demisto.debug(f"Invalid Inputs: {invalid_set}")
+    demisto.debug(
+        f"[TIMING] extractIndicators loop total elapsed_s={extract_total_elapsed:.3f} "
+        f"for {len(data)} inputs ({len(valid_set)} valid, {len(invalid_set)} invalid)"
+    )
+
+    if not valid_set:
+        demisto.debug(
+            f"[NO_VALID_INDICATORS] indicator_type='{indicator_type}' "
+            f"input_count={len(data)} inputs={data} "
+            f"invalid_set={invalid_set} "
+            f"mark_mismatched_type_as_invalid={mark_mismatched_type_as_invalid} "
+            f"— all inputs were rejected by extractIndicators or did not match the expected type"
+        )
+        raise ValueError("No valid indicators found in the input data.")
 
     return indicators_instances, "".join(full_hr)
 
@@ -1582,7 +1642,18 @@ def _process_single_input(
     if (not expected_indicators and raw not in invalid_set) or (
         mark_mismatched_type_as_invalid and has_other_types and raw not in invalid_set
     ):
-        demisto.debug("Invalid input")
+        other_types = {k: v for k, v in extracted_ctx.items() if k.lower() != expected_type_lower}
+        if not expected_indicators:
+            demisto.debug(
+                f"[INVALID_INPUT] '{raw}' rejected: extractIndicators returned no '{expected_type_lower}' indicators. "
+                f"Other types present: {other_types}"
+            )
+        else:
+            demisto.debug(
+                f"[INVALID_INPUT] '{raw}' rejected: mark_mismatched_type_as_invalid=True and "
+                f"other indicator types were also extracted alongside '{expected_type_lower}'. "
+                f"Other types present: {other_types}"
+            )
         instances.append(
             IndicatorInstance(
                 raw_input=raw,
@@ -1620,8 +1691,11 @@ def _execute_extraction(raw: str) -> tuple[dict, str, str | None]:
     hr: str = f"\n\n### Result for name=extractIndicators args='text': {raw}\n\n"
 
     try:
+        t0 = time.monotonic()
         results = execute_command("extractIndicators", {"text": raw}, extract_contents=False)
+        elapsed = time.monotonic() - t0
         extracted_ctx = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
+        demisto.debug(f"[TIMING] extractIndicators for '{raw}' elapsed_s={elapsed:.3f}")
         demisto.debug(f"extractIndicators context for '{raw}': {extracted_ctx}")
         hr += tableToMarkdown(name="Extracted Indicators", t=extracted_ctx)
         return extracted_ctx, hr, None

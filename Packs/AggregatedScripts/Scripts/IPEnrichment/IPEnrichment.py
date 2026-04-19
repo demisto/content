@@ -35,7 +35,7 @@ def ip_enrichment_script(
           - DBotScore: [...]
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
-    demisto.debug("Extracting indicators")
+    demisto.debug(f"Extracting indicators from ip_list (count={len(ip_list)}): {ip_list}")
     ip_instances, extract_verbose = create_and_extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
     valid_inputs = [ip_instance.extracted_value for ip_instance in ip_instances if ip_instance.extracted_value]
     indicator_mapping = {
@@ -70,6 +70,13 @@ def ip_enrichment_script(
     private_ip_addresses = [
         private_ip_address for private_ip_address in valid_inputs if is_ip_address_internal(private_ip_address)
     ]
+    demisto.debug(
+        f"[IP_ROUTING] valid_inputs={len(valid_inputs)} "
+        f"private={len(private_ip_addresses)} public={len(valid_inputs) - len(private_ip_addresses)} "
+        f"external_enrichment={external_enrichment} "
+        f"private_ips={private_ip_addresses} "
+        f"public_ips={[ip for ip in valid_inputs if ip not in private_ip_addresses]}"
+    )
     command_batch2: list[Command] = []
     demisto.debug("Command Batch 2: Internal commands")
     if private_ip_addresses:
