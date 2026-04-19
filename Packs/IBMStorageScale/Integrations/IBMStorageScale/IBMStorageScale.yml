@@ -54,13 +54,11 @@ configuration:
   required: false
   section: Connect
 fromversion: 6.8.0
-marketplaces:
-- marketplacev2
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:0.116.1.4266494
+  dockerimage: demisto/fastapi:0.125.0.7704170
   isfetchevents: true
   commands:
   - name: ibm-storage-scale-get-events

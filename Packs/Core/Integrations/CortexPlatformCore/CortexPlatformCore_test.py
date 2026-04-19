@@ -5424,7 +5424,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
         assert len(call_args[0][1]) == 2  # readable_recommendations
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5463,6 +5470,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
             "severity",
             "description",
             "remediation",
+            "network_reachability",
             "existing_code_block",
             "suggested_code_block",
             "playbook_suggestions",
@@ -5523,7 +5531,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         # Should only have base headers
         call_args = mock_table_to_markdown.call_args
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5606,7 +5621,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         # Should include headers for the types that exist
         call_args = mock_table_to_markdown.call_args
         headers = call_args[1]["headers"]
-        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation", "network_reachability"]
 
         assert all(h in headers for h in base_headers)
         assert "existing_code_block" in headers
@@ -6598,28 +6613,27 @@ def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "First script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": False,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    },
-                    {
-                        "script_uid": "uid2",
-                        "description": "Second script",
-                        "name": "test_script",
-                        "windows_supported": False,
-                        "linux_supported": True,
-                        "macos_supported": False,
-                        "script_inputs": [],
-                    },
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "First script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": False,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                },
+                {
+                    "script_uid": "uid2",
+                    "description": "Second script",
+                    "name": "test_script",
+                    "windows_supported": False,
+                    "linux_supported": True,
+                    "macos_supported": False,
+                    "script_inputs": [],
+                },
+            ],
         ),
         CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
     ]
@@ -6654,8 +6668,8 @@ def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
 
     mock_scripts_result = Mock()
     mock_scripts_result = [
-        CommandResults(outputs={"Scripts": []}),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs_prefix="Core.Scripts", outputs=[]),
+        CommandResults(outputs={"filtered_count": "0", "returned_count": "0"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6681,21 +6695,20 @@ def test_run_script_agentix_command_script_requires_parameters_but_none_provided
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6747,21 +6760,20 @@ def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -6798,21 +6810,20 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
