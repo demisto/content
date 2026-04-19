@@ -273,6 +273,11 @@ def delete_email(
         if not search_result or isinstance(search_result, str):
             raise MissingEmailException
 
+        if isinstance(search_result, list) and len(search_result) > 1:
+            raise DemistoException(
+                f"Search returned {len(search_result)} results; expected exactly 1. Refusing delete to avoid ambiguity."
+            )
+
         # verify the returned message matches the expected one
         expected_mid = search_args.get("message-id") or ""
         if isinstance(search_result, list) and search_result:
