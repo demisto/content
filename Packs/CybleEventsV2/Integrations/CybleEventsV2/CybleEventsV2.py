@@ -383,9 +383,7 @@ class Client(BaseClient):
                 demisto.debug(f"Received services: {json.dumps(parsed['data'], indent=2)}")
                 return parsed["data"]
 
-            if attempt < len(backoffs):
-                time.sleep(backoffs[attempt])
-                continue
+            # Valid HTTP + JSON but unexpected shape: do not retry (not a transient error).
             raise Exception("Failed to get services: Wrong Format for services response")
 
         return []  # pragma: no cover

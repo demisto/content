@@ -17,6 +17,7 @@ from CybleEventsV2 import (
     set_request,
     DEFAULT_TAKE_LIMIT,
     ensure_aware,
+    FETCH_INCIDENT_RETRY_BACKOFF_SECONDS,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
 from CybleEventsV2 import check_response
@@ -1772,11 +1773,13 @@ class TestClientMethods(unittest.TestCase):
 
         with (
             patch.object(self.client, "make_request", side_effect=[bad_json, good_json]),
-            patch("CybleEventsV2.time.sleep"),
+            patch("CybleEventsV2.time.sleep") as mock_sleep,
         ):
             result = self.client.get_data(self.test_service, input_params)
 
         assert result == {"parsed": True}
+        mock_sleep.assert_called_once()
+        assert mock_sleep.call_args[0][0] == FETCH_INCIDENT_RETRY_BACKOFF_SECONDS[0]
 
     @patch("CybleEventsV2.demisto")
     def test_get_all_services_retries_on_request_error_then_success(self, mock_demisto):
@@ -1790,6 +1793,36 @@ class TestClientMethods(unittest.TestCase):
             result = self.client.get_all_services(self.test_api_key, self.test_url)
         assert result == ["a"]
         mock_sleep.assert_called()
+
+    @patch("CybleEventsV2.demisto")
+    def test_get_all_services_exhausts_retries_raises(self, mock_demisto):
+        """After 1 initial try + len(backoffs) retries, the last request error is raised."""
+        attempts = len(FETCH_INCIDENT_RETRY_BACKOFF_SECONDS) + 1
+        with (
+            patch.object(self.client, "make_request", side_effect=[ConnectionError("reset")] * attempts),
+            patch("CybleEventsV2.time.sleep") as mock_sleep,
+            pytest.raises(Exception, match="Failed to get services: reset"),
+        ):
+            self.client.get_all_services(self.test_api_key, self.test_url)
+
+        assert mock_sleep.call_count == len(FETCH_INCIDENT_RETRY_BACKOFF_SECONDS)
+
+    @patch("CybleEventsV2.demisto")
+    def test_get_all_services_wrong_format_raises_without_backoff(self, mock_demisto):
+        """Wrong response shape after 200 + valid JSON must not use retry backoff."""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"wrong_key": []}
+
+        with (
+            patch.object(self.client, "make_request", return_value=mock_response) as mock_make,
+            patch("CybleEventsV2.time.sleep") as mock_sleep,
+            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"),
+        ):
+            self.client.get_all_services(self.test_api_key, self.test_url)
+
+        mock_make.assert_called_once()
+        mock_sleep.assert_not_called()
 
     def test_insert_data_in_cortex_successful_processing(self):
         test_input_params = {"limit": "10", "hce": False}
