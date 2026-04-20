@@ -381,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: ca9ca5b5-fd9f-4d74-8c04-c879657ca7b2
+    taskid: 46aade93-43e9-433b-b4a8-e27343a29ebf
     type: regular
     task:
-      id: ca9ca5b5-fd9f-4d74-8c04-c879657ca7b2
+      id: 46aade93-43e9-433b-b4a8-e27343a29ebf
       version: -1
       name: Add SG Info to Remediation Action Details
       description: Set a value in context under the key you entered.
@@ -402,16 +402,14 @@ tasks:
         simple: remediation_action
       value:
         complex:
-          root: AWSPublicExposure.SGReplacements
-          accessor: ReplacementSet
+          root: AWSPublicExposure
+          accessor: SGReplacements
           transformers:
-          - operator: JsonToTable
+          - operator: DT
             args:
-              headers: {}
-              is_auto_json_transform: {}
-              json_transform_properties: {}
-              title: {}
-              url_keys: {}
+              dt:
+                value:
+                  simple: ".=(val.ReplacementSet.map(s => '  - Original SG: ' + s['old-sg'] + ' -> New SG: ' + s['new-sg']).join('\\n'))"
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
