@@ -66,7 +66,10 @@ def scan_file(file_entry_id, scan_rule=None):
     try:
         res = http_req(method="POST", url_suffix="file", file_name=file_name, scan_rule=scan_rule)
     finally:
-        os.remove(file_name)
+        try:
+            os.remove(file_name)
+        except OSError:
+            demisto.debug(f"Could not remove temporary file: {file_name}")
     return res, file_name
 
 

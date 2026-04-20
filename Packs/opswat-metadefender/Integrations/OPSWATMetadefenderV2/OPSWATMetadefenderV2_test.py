@@ -396,10 +396,20 @@ def test_http_req_unsupported_method(mocker):
     assert result == ""
 
 
-def test_scan_file_uses_basename(mocker):
+@pytest.mark.parametrize(
+    "input_name, expected_basename",
+    [
+        ("/tmp/evil/../../../etc/passwd", "passwd"),
+        ("simple_file.txt", "simple_file.txt"),
+        ("/absolute/path/to/report.pdf", "report.pdf"),
+        ("../relative/path/data.csv", "data.csv"),
+        ("no_extension", "no_extension"),
+    ],
+)
+def test_scan_file_uses_basename(mocker, input_name, expected_basename):
     """
     Given:
-        - A file entry with a name containing directory path components.
+        - A file entry with various name formats including directory path components.
     When:
         - Calling scan_file.
     Then:
@@ -412,7 +422,7 @@ def test_scan_file_uses_basename(mocker):
     mocker.patch.object(
         demisto,
         "getFilePath",
-        return_value={"path": "README.md", "name": "/tmp/evil/../../../etc/passwd"},
+        return_value={"path": "README.md", "name": input_name},
     )
     mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
     mock_copy = mocker.patch("shutil.copy")
@@ -427,8 +437,44 @@ def test_scan_file_uses_basename(mocker):
     _, file_name = scan_file("entry1")
 
     # Verify the file name returned is the basename only
-    assert file_name == "passwd"
+    assert file_name == expected_basename
     assert Path(file_name).name == file_name
     # Verify shutil.copy was called with the sanitized basename
     copy_call_args = mock_copy.call_args[0]
-    assert copy_call_args[1] == "passwd"
+    assert copy_call_args[1] == expected_basename
+
+
+def test_scan_file_cleanup_handles_os_error(mocker):
+    """
+    Given:
+        - A file entry where os.remove raises an OSError during cleanup.
+    When:
+        - Calling scan_file.
+    Then:
+        - Verify that the OSError is suppressed and the result is returned.
+    """
+    import demistomock as demisto
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "README.md", "name": "test_file.txt"},
+    )
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
+    mocker.patch("shutil.copy")
+    mocker.patch("os.remove", side_effect=OSError("File not found"))
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mocker.patch(
+        "OPSWATMetadefenderV2.http_req",
+        return_value={"data_id": "test123"},
+    )
+
+    from OPSWATMetadefenderV2 import scan_file
+
+    result, file_name = scan_file("entry1")
+
+    # Verify the function completed successfully despite the OSError
+    assert result == {"data_id": "test123"}
+    assert file_name == "test_file.txt"
+    # Verify debug was called with the cleanup failure message
+    mock_debug.assert_called_once_with("Could not remove temporary file: test_file.txt")
