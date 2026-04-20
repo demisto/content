@@ -1,3 +1,4 @@
+import pytest
 import demistomock as demisto
 from IAMApiModule import *
 from Salesforce_IAM import Client, IAMUserProfile, create_user_command, get_user_command, update_user_command
@@ -278,7 +279,8 @@ def test_main_extracts_credentials_when_ucp_disabled(mocker):
 
 
 def test_main_errors_on_missing_consumer_keys_when_ucp_disabled(mocker):
-    """When UCP is disabled and consumer key/secret are missing, main() should call return_error."""
+    """When UCP is disabled and consumer key/secret are missing, main() should call return_error.
+    In production, return_error calls sys.exit(0), so we simulate that with SystemExit side_effect."""
     from Salesforce_IAM import main
 
     mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=False)
@@ -291,9 +293,10 @@ def test_main_errors_on_missing_consumer_keys_when_ucp_disabled(mocker):
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'args', return_value={})
 
-    mock_return_error = mocker.patch('Salesforce_IAM.return_error')
+    mock_return_error = mocker.patch('Salesforce_IAM.return_error', side_effect=SystemExit(0))
 
-    main()
+    with pytest.raises(SystemExit):
+        main()
 
     mock_return_error.assert_called_once_with("Consumer Key and Consumer Secret must be provided.")
 
