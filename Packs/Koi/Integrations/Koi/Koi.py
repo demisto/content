@@ -543,33 +543,18 @@ class Client(ContentClient):
         demisto.debug(f"[API] Blocklist response received: {len(items)} items")
         return response
 
-    def remove_allowlist_item(
+    def remove_allowlist_items(
         self,
-        item_id: str,
-        marketplace: str,
-        created_by: str | None = None,
-        notes: str | None = None,
+        items: list[dict[str, Any]],
     ) -> None:
-        """Remove an item from the global allowlist.
+        """Remove one or more items from the global allowlist.
 
         Args:
-            item_id: The unique identifier of the item to remove.
-            marketplace: The source marketplace corresponding to the item_id.
-            created_by: Optional email of the user associated with the removal.
-            notes: Optional additional context or notes regarding the removal.
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
         """
-        body: dict[str, Any] = {
-            "item_id": item_id,
-            "marketplace": marketplace,
-        }
-        if created_by:
-            body["created_by"] = created_by
-        if notes:
-            body["notes"] = notes
+        body: dict[str, Any] = {"items": items}
 
-        demisto.debug(
-            f"[API] Removing allowlist item: {item_id} (marketplace={marketplace}, " f"created_by={created_by}, notes={notes})"
-        )
+        demisto.debug(f"[API] Removing {len(items)} allowlist item(s): {items}")
 
         self._http_request(
             method="DELETE",
@@ -579,10 +564,7 @@ class Client(ContentClient):
             ok_codes=(204,),
         )
 
-        demisto.debug(
-            f"[API] Successfully removed allowlist item: {item_id} (marketplace={marketplace}, "
-            f"created_by={created_by}, notes={notes})"
-        )
+        demisto.debug(f"[API] Successfully removed {len(items)} allowlist item(s)")
 
     def add_allowlist_items(
         self,
@@ -1178,37 +1160,34 @@ def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Remove an item from the global allowlist.
+    """Remove one or more items from the global allowlist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
 
     Args:
         client: The KOI client.
-        args: Command arguments (item_id, marketplace, created_by, notes).
+        args: Command arguments.
 
     Returns:
         CommandResults with a success message.
     """
     demisto.debug("[Command] koi-allowlist-item-remove triggered")
 
-    item_id: str = args["item_id"]
-    marketplace: str = args["marketplace"]
-    created_by: str | None = args.get("created_by")
-    notes: str | None = args.get("notes")
+    items = resolve_items_from_args(args)
+    client.remove_allowlist_items(items)
 
-    if marketplace not in VALID_MARKETPLACES:
-        raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} allowlist item(s) removed successfully")
 
-    client.remove_allowlist_item(
-        item_id=item_id,
-        marketplace=marketplace,
-        created_by=created_by,
-        notes=notes,
-    )
+    if item_count == 1:
+        readable = f"Allowlist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was removed successfully."
+    else:
+        readable = f"{item_count} allowlist items were removed successfully."
 
-    demisto.debug(f"[Command Result] Allowlist item '{item_id}' removed successfully")
-
-    return CommandResults(
-        readable_output=f"Allowlist item '{item_id}' (marketplace: {marketplace}) was removed successfully.",
-    )
+    return CommandResults(readable_output=readable)
 
 
 def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
