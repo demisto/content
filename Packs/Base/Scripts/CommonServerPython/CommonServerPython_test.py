@@ -11282,6 +11282,7 @@ def ucp_reset_injected_flag():
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpDetection:
     """Tests for is_ucp_enabled() and should_use_ucp_auth().
 
@@ -11335,6 +11336,7 @@ class TestUcpDetection:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpCapabilityResolution:
     """Tests for resolve_ucp_capability() and BaseClient._resolve_ucp_capability().
 
@@ -11414,6 +11416,7 @@ class TestUcpCapabilityResolution:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpProfileResolution:
     """Tests for _get_ucp_profiles(), _find_ucp_profile_by_sub_capability(),
     _find_ucp_profile_by_capability(), and get_ucp_method_unique_id().
@@ -11551,6 +11554,7 @@ class TestUcpProfileResolution:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpCredentialCaching:
     """Tests for _extract_ucp_expiry(), get_ucp_credentials(), and
     invalidate_ucp_credentials().
@@ -11562,12 +11566,14 @@ class TestUcpCredentialCaching:
 
     # ── _extract_ucp_expiry tests ──
 
+    @pytest.mark.skipif(not IS_PY3, reason='datetime.fromisoformat requires Python 3')
     def test_extract_expiry_from_nested_field(self, ucp_creds_oauth2):
         """Should extract expires_at from inside the type-specific sub-dict."""
         expiry = CommonServerPython._extract_ucp_expiry(ucp_creds_oauth2)
         assert expiry is not None
         assert expiry > time.time()  # 2099 is in the future
 
+    @pytest.mark.skipif(not IS_PY3, reason='datetime.fromisoformat requires Python 3')
     def test_extract_expiry_from_top_level(self):
         """Should prefer top-level expires_at over nested one."""
         creds = {
@@ -11594,6 +11600,7 @@ class TestUcpCredentialCaching:
         expiry = CommonServerPython._extract_ucp_expiry(creds)
         assert expiry is None
 
+    @pytest.mark.skipif(not IS_PY3, reason='datetime.fromisoformat requires Python 3')
     def test_extract_expiry_handles_z_suffix(self):
         """Should handle ISO-8601 with Z suffix (UTC)."""
         creds = {
@@ -11631,6 +11638,7 @@ class TestUcpCredentialCaching:
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
         mocker.patch.object(demisto, 'command', return_value='test-module')
 
         result = CommonServerPython.get_ucp_credentials('abc123')
@@ -11654,6 +11662,7 @@ class TestUcpCredentialCaching:
     def test_get_credentials_cache_stale_refetches(self, mocker, ucp_creds_oauth2, ucp_clean_cache):
         """When cache entry is within threshold of expiry, should re-fetch."""
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
         fresh_creds = dict(ucp_creds_oauth2)
         fresh_creds['oauth2'] = dict(ucp_creds_oauth2['oauth2'])
         fresh_creds['oauth2']['access_token'] = 'fresh-token'
@@ -11688,6 +11697,7 @@ class TestUcpCredentialCaching:
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
         mocker.patch.object(demisto, 'command', return_value='test-module')
 
         result = CommonServerPython.get_ucp_credentials(method_unique_id=None)
@@ -11729,6 +11739,7 @@ class TestUcpCredentialCaching:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpRequestContext:
     """Tests for BaseClient.UcpRequestContext dataclass.
 
@@ -11802,6 +11813,7 @@ class TestUcpRequestContext:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpCredentialApplication:
     """Tests for BaseClient._apply_ucp_oauth2(), _apply_ucp_api_key(),
     _apply_ucp_plain(), and _apply_ucp_credentials().
@@ -12011,6 +12023,7 @@ class TestUcpCredentialApplication:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpInjectionFlow:
     """Tests for BaseClient._inject_ucp_credentials() end-to-end.
 
@@ -12025,6 +12038,7 @@ class TestUcpInjectionFlow:
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
 
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         ctx = CommonServerPython.UcpRequestContext(
@@ -12049,6 +12063,7 @@ class TestUcpInjectionFlow:
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_api_key)
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
 
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         ctx = CommonServerPython.UcpRequestContext(
@@ -12071,6 +12086,7 @@ class TestUcpInjectionFlow:
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_plain)
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
 
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         ctx = CommonServerPython.UcpRequestContext(
@@ -12087,6 +12103,7 @@ class TestUcpInjectionFlow:
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
 
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         ctx = CommonServerPython.UcpRequestContext(
@@ -12102,6 +12119,7 @@ class TestUcpInjectionFlow:
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'error')
 
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         ctx = CommonServerPython.UcpRequestContext(
@@ -12117,6 +12135,7 @@ class TestUcpInjectionFlow:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpHttpRequestIntegration:
     """Tests for UCP integration points in BaseClient._http_request().
 
@@ -12131,6 +12150,7 @@ class TestUcpHttpRequestIntegration:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', json={'result': 'ok'}, status_code=200)
@@ -12148,6 +12168,7 @@ class TestUcpHttpRequestIntegration:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', text='Unauthorized', status_code=401)
@@ -12167,6 +12188,7 @@ class TestUcpHttpRequestIntegration:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', json={'result': 'ok'}, status_code=200)
@@ -12183,6 +12205,7 @@ class TestUcpHttpRequestIntegration:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', text='Server Error', status_code=500)
@@ -12208,6 +12231,7 @@ class TestUcpHttpRequestIntegration:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', json={'result': 'ok'}, status_code=200)
@@ -12229,6 +12253,7 @@ class TestUcpHttpRequestIntegration:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', json={'ok': True}, status_code=200)
@@ -12525,6 +12550,7 @@ class TestUcpHttpRequestIntegration:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpNonUcpRegression:
     """Tests ensuring UCP does NOT affect non-UCP integrations.
 
@@ -12635,6 +12661,7 @@ class TestUcpNonUcpRegression:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpOverridePatterns:
     """Tests that integrations can override UCP behavior by subclassing BaseClient.
 
@@ -12828,6 +12855,7 @@ class TestUcpOverridePatterns:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpNonBaseClientUsage:
     """Tests that module-level UCP functions work without BaseClient.
 
@@ -12917,6 +12945,7 @@ class TestUcpNonBaseClientUsage:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpSubclassOverride:
     """Tests for integrations that subclass BaseClient and override _http_request.
 
@@ -12932,6 +12961,7 @@ class TestUcpSubclassOverride:
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'debug')
         mocker.patch.object(demisto, 'info')
+        mocker.patch.object(demisto, 'error')
 
     def test_subclass_overriding_http_request_still_gets_ucp(
         self, mocker, ucp_metadata_single, ucp_creds_oauth2, ucp_clean_cache
@@ -12944,7 +12974,7 @@ class TestUcpSubclassOverride:
                 if 'headers' not in kwargs or kwargs['headers'] is None:
                     kwargs['headers'] = {}
                 kwargs['headers']['X-Custom-Sub'] = 'sub-value'
-                return super()._http_request(method, url_suffix=url_suffix, **kwargs)
+                return super(SubClient, self)._http_request(method, url_suffix=url_suffix, **kwargs)
 
         self._setup_ucp_mocks(mocker, ucp_metadata_single, ucp_creds_oauth2)
 
@@ -13016,7 +13046,7 @@ class TestUcpSubclassOverride:
 
         class CustomSessionClient(CommonServerPython.BaseClient):
             def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
+                super(CustomSessionClient, self).__init__(*args, **kwargs)
                 # Replace session with a custom one
                 self._session = requests.Session()
                 self._session.headers.update({'X-Session-Custom': 'session-value'})
@@ -13038,6 +13068,7 @@ class TestUcpSubclassOverride:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpException:
     """Tests for the UcpException class.
 
@@ -13113,6 +13144,7 @@ class TestUcpException:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpEdgeCases:
     """Tests for edge cases and boundary conditions in UCP functions.
 
