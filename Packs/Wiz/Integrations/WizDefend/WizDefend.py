@@ -1635,7 +1635,7 @@ def translate_severity(detection):
 
 
 def build_fallback_description(detection):
-    rule_name = detection.get(WizApiVariables.RULE_MATCH, {}).get(
+    rule_name = (detection.get(WizApiVariables.RULE_MATCH) or {}).get(
         WizApiVariables.RULE, {}
     ).get(WizApiVariables.NAME)
     severity = detection.get(WizApiVariables.SEVERITY, "Unknown")
@@ -1651,7 +1651,7 @@ def build_incidents(detection):
     if detection is None:
         return {}
 
-    rule_name = detection.get(WizApiVariables.RULE_MATCH, {}).get(WizApiVariables.RULE, {}).get(WizApiVariables.NAME)
+    rule_name = (detection.get(WizApiVariables.RULE_MATCH) or {}).get(WizApiVariables.RULE, {}).get(WizApiVariables.NAME)
 
     incident_name = f"{rule_name or 'Unknown Rule'} - {detection.get(WizApiVariables.ID, '')}"
 
@@ -3718,7 +3718,7 @@ def clear_threat_comments():
     demisto.debug(f"clear_threat_note called with issue_id: {issue_id}")
 
     threat = get_filtered_threats(issue_id=issue_id)
-    threat_notes = threat[0].get(WizApiResponse.NOTES, [])
+    threat_notes = threat[0].get(WizApiResponse.NOTES) or []
 
     for note in threat_notes:
         variables = {"input": {"id": note["id"]}}

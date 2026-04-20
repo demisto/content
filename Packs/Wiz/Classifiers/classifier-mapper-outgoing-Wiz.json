@@ -13,6 +13,10 @@
                 "dueAt": {
                     "complex": null,
                     "simple": "wizissueduedate"
+                },
+                "resolutionReason": {
+                    "complex": null,
+                    "simple": "resolutionReason"
                 }
             }
         }
