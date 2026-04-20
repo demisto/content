@@ -13289,6 +13289,7 @@ class TestUcpEdgeCases:
         # Falls through to capability match, which returns '' from the profile
         assert method_id == ''
 
+    @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_credentials_with_expired_token(self, mocker, ucp_clean_cache):
         """Credentials with expires_at in the past should trigger cache miss and re-fetch."""
         expired_creds = {

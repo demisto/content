@@ -9920,7 +9920,7 @@ if 'requests' in sys.modules:
             # type: (UcpRequestContext) -> str
             """Resolve UCP credentials and apply them to *ctx* in place.
 
-            Resolves capability → profile → credentials, then dispatches to
+            Resolves capability -> profile -> credentials, then dispatches to
             the appropriate ``_apply_ucp_*`` method to mutate *ctx*.
 
             :type ctx: ``UcpRequestContext``
