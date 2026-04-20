@@ -89,21 +89,21 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: Mobile Detections filter query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: IOM filter query
   name: iom_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
   hidden:
   - marketplacev2
   - platform
@@ -123,49 +123,56 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: OFP Detections filter query
   name: ofp_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: Third Party Detection fetch query
   name: third_party_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM Detection fetch query
   name: ngsiem_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM automated leads fetch query
   name: automated_leads_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM cases fetch query
   name: ngsiem_cases_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM incidents fetch query
   name: ngsiem_incidents_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
+- display: Recon filter query
+  name: recon_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -185,9 +192,6 @@ configuration:
   - xsoar
   supportedModules:
   - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - display: Incident type
   name: incidentType
   type: 13
@@ -268,6 +272,7 @@ configuration:
   - NGSIEM Automated Lead
   - NGSIEM Case
   - NGSIEM Incident (XDR Alert)
+  - Recon notifications
   hidden:
   - marketplacev2
   - platform
