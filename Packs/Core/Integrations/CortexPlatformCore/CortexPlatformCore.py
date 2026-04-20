@@ -2794,33 +2794,37 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
-    # Backlog
-    if backlog := args.get("conditions_backlog_status"):
-        builder.add_field("Backlog Status", FilterType.EQ, backlog)
-
     # Packages
-    for field in ["package_name", "package_version", "package_operational_risk"]:
+    package_field_map = {
+        "package_name": ("PackageName", FilterType.EQ),
+        "package_version": ("PackageVersion", FilterType.EQ),
+        "package_operational_risk": ("Package Operational Risk", FilterType.EQ),
+    }
+    for field, (api_field_name, op) in package_field_map.items():
         if val := args.get(f"conditions_{field}"):
-            op = FilterType.CONTAINS if field == "package_name" else FilterType.EQ
-            builder.add_field(field.replace("_", " ").title(), op, val)
+            builder.add_field(api_field_name, op, val)
 
     # AppSec Rules
     if rule_names := argToList(args.get("conditions_appsec_rule_names")):
         rule_ids = get_appsec_rule_ids_from_names(client, rule_names)
         builder.add_field("AppSec Rule", FilterType.EQ, rule_ids)
 
+    # HasAFix
+    if has_a_fix := arg_to_bool_or_none(args.get("conditions_has_a_fix")):
+        builder.add_field("HasAFix", FilterType.EQ, has_a_fix)
+
+    # Backlog
+    if backlog := args.get("conditions_backlog_status"):
+        builder.add_field("Backlog Status", FilterType.EQ, backlog)
+
+    # IsKev
+    if is_kev := arg_to_bool_or_none(args.get("conditions_is_kev")):
+        builder.add_field("IsKev", FilterType.EQ, is_kev)
+
     # CVSS / EPSS
     for f, n in [("cvss", "CVSS"), ("epss", "EPSS")]:
         if val := arg_to_number(args.get(f"conditions_{f}")):
             builder.add_field(n, FilterType.GTE, val)
-
-    # Boolean Conditions
-    for key, label in {
-        "has_a_fix": "HasAFix",
-        "is_kev": "IsKev",
-    }.items():
-        if val := arg_to_bool_or_none(args.get(f"conditions_{key}")):
-            builder.add_field(label, FilterType.EQ, val)
 
     # Secret Validity, License Type
     for key, label in {
@@ -2898,15 +2902,16 @@ def create_policy_build_scope(args: dict) -> dict:
 
     # Category
     if categories := argToList(args.get("scope_category", [])):
-        builder.add_field("category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
+        resolved_categories = [POLICY_CATEGORY_MAPPING.get(c.title(), POLICY_CATEGORY_MAPPING.get(c, c)) for c in categories]
+        builder.add_field("category", FilterType.EQ, resolved_categories)
 
     # Business application names — always use ARRAY_CONTAINS since the field is an array type.
     if business_app_names := argToList(args.get("scope_business_application_names")):
         builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS, business_app_names)
 
     # Application business criticality
-    if app_criticality := args.get("scope_application_business_criticality"):
-        builder.add_field("application_business_criticality", FilterType.CONTAINS, app_criticality)
+    if app_criticality := argToList(args.get("scope_application_business_criticality")):
+        builder.add_field("application_business_criticality", FilterType.EQ, app_criticality)
 
     # Repository name
     if repo_name := args.get("scope_repository_name"):
