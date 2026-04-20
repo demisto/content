@@ -342,6 +342,44 @@ script:
     - name: items_list_raw_json_entry_id
       description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
+  - name: koi-blocklist-item-add
+    description: Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+    arguments:
+    - name: item_id
+      description: The ID of the item to add to the blocklist. Required when not using items_list_raw_json_entry_id.
+    - name: marketplace
+      description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: created_by
+      description: Email of the user who created this entry.
+    - name: notes
+      description: Additional notes or justification for blocking the item.
+    - name: items_list_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+    outputs: []
   runonce: false
   script: '-'
   type: python

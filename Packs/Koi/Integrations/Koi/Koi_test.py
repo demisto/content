@@ -31,6 +31,8 @@ from Koi import (
     koi_allowlist_item_add_command,
     koi_blocklist_get_command,
     koi_blocklist_item_remove_command,
+    koi_blocklist_item_add_command,
+    resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
@@ -1380,6 +1382,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_blocklist_remove_result")
 
+    def test_main_routes_blocklist_item_add(self, mocker):
+        """Test main routes koi-blocklist-item-add command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-blocklist-item-add")
+        mocker.patch.object(demisto, "args", return_value={"item_id": "mal-001", "marketplace": "vscode"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_blocklist_add = mocker.MagicMock(return_value="mock_blocklist_add_result")
+        COMMAND_MAP["koi-blocklist-item-add"] = mock_blocklist_add
+
+        main()
+
+        mock_return.assert_called_once_with("mock_blocklist_add_result")
+
 
 # endregion
 
@@ -1761,8 +1786,8 @@ class TestClientRemoveAllowlistItem:
 class TestKoiAllowlistItemAddCommand:
     """Tests for the koi-allowlist-item-add command."""
 
-    def test_allowlist_item_add_single_item_success(self, mock_client, mocker):
-        """Test koi-allowlist-item-add successfully adds a single item via item_id/marketplace."""
+    def test_allowlist_item_add_single_item(self, mock_client, mocker):
+        """Test koi-allowlist-item-add successfully adds a single item."""
         mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         args = {"item_id": "ext-123", "marketplace": "vscode"}
@@ -1770,66 +1795,8 @@ class TestKoiAllowlistItemAddCommand:
 
         assert "was added successfully" in result.readable_output
         assert "ext-123" in result.readable_output
-        assert "vscode" in result.readable_output
         assert result.outputs is None
         mock_client.add_allowlist_items.assert_called_once_with([{"item_id": "ext-123", "marketplace": "vscode"}])
-
-    def test_allowlist_item_add_single_item_with_optional_params(self, mock_client, mocker):
-        """Test koi-allowlist-item-add with created_by and notes."""
-        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
-
-        args = {
-            "item_id": "ext-456",
-            "marketplace": "chrome_web_store",
-            "created_by": "admin@example.com",
-            "notes": "Approved for development purposes",
-        }
-        result = koi_allowlist_item_add_command(mock_client, args)
-
-        assert "was added successfully" in result.readable_output
-        assert "ext-456" in result.readable_output
-        assert "chrome_web_store" in result.readable_output
-        mock_client.add_allowlist_items.assert_called_once_with(
-            [
-                {
-                    "item_id": "ext-456",
-                    "marketplace": "chrome_web_store",
-                    "created_by": "admin@example.com",
-                    "notes": "Approved for development purposes",
-                }
-            ]
-        )
-
-    def test_allowlist_item_add_invalid_marketplace(self, mock_client, mocker):
-        """Test koi-allowlist-item-add raises error for invalid marketplace."""
-        args = {"item_id": "ext-123", "marketplace": "invalid_marketplace"}
-
-        with pytest.raises(DemistoException, match="Invalid marketplace"):
-            koi_allowlist_item_add_command(mock_client, args)
-
-    @pytest.mark.parametrize("marketplace", VALID_MARKETPLACES)
-    def test_allowlist_item_add_all_valid_marketplaces(self, mock_client, mocker, marketplace):
-        """Test koi-allowlist-item-add accepts all valid marketplace values."""
-        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
-
-        args = {"item_id": "test-item", "marketplace": marketplace}
-        result = koi_allowlist_item_add_command(mock_client, args)
-
-        assert "was added successfully" in result.readable_output
-
-    @pytest.mark.parametrize(
-        "args",
-        [
-            {},
-            {"item_id": "ext-123"},
-            {"marketplace": "vscode"},
-        ],
-        ids=["no_args", "missing_marketplace", "missing_item_id"],
-    )
-    def test_allowlist_item_add_missing_required_args(self, mock_client, args):
-        """Test koi-allowlist-item-add raises error when item_id/marketplace pair is incomplete."""
-        with pytest.raises(DemistoException, match="Either 'item_id' and 'marketplace' must be provided"):
-            koi_allowlist_item_add_command(mock_client, args)
 
     def test_allowlist_item_add_from_file(self, mock_client, mocker, tmp_path):
         """Test koi-allowlist-item-add from a JSON file entry ID."""
@@ -1866,27 +1833,6 @@ class TestKoiAllowlistItemAddCommand:
         assert "ext-1" in result.readable_output
         assert "vscode" in result.readable_output
         assert "was added successfully" in result.readable_output
-
-    def test_allowlist_item_add_file_takes_priority_over_single_item(self, mock_client, mocker, tmp_path):
-        """Test that when both entry_id and item_id/marketplace are provided, entry_id takes priority."""
-        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
-
-        items_data = [{"item_id": "file-item", "marketplace": "npm"}]
-        json_file = tmp_path / "items.json"
-        json_file.write_text(json.dumps(items_data))
-
-        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
-
-        args = {
-            "items_list_raw_json_entry_id": "entry-abc-123",
-            "item_id": "arg-item",
-            "marketplace": "vscode",
-        }
-        result = koi_allowlist_item_add_command(mock_client, args)
-
-        # File entry ID should take priority
-        mock_client.add_allowlist_items.assert_called_once_with(items_data)
-        assert "file-item" in result.readable_output
 
 
 class TestParseItemsFromEntryId:
@@ -2087,75 +2033,17 @@ class TestClientGetBlocklist:
 class TestKoiBlocklistItemRemoveCommand:
     """Tests for the koi-blocklist-item-remove command."""
 
-    @pytest.mark.parametrize(
-        "args, expected_items, readable_check",
-        [
-            (
-                {"item_id": "mal-001", "marketplace": "vscode"},
-                [{"item_id": "mal-001", "marketplace": "vscode"}],
-                "mal-001",
-            ),
-            (
-                {
-                    "item_id": "mal-002",
-                    "marketplace": "chrome_web_store",
-                    "created_by": "security@example.com",
-                    "notes": "Confirmed false positive",
-                },
-                [
-                    {
-                        "item_id": "mal-002",
-                        "marketplace": "chrome_web_store",
-                        "created_by": "security@example.com",
-                        "notes": "Confirmed false positive",
-                    }
-                ],
-                "mal-002",
-            ),
-        ],
-        ids=["required_only", "with_optional_params"],
-    )
-    def test_blocklist_item_remove_single_item(self, mock_client, mocker, args, expected_items, readable_check):
-        """Test koi-blocklist-item-remove with single item (required only and with optional params)."""
+    def test_blocklist_item_remove_single_item(self, mock_client, mocker):
+        """Test koi-blocklist-item-remove successfully removes a single item."""
         mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
 
+        args = {"item_id": "mal-001", "marketplace": "vscode"}
         result = koi_blocklist_item_remove_command(mock_client, args)
 
         assert "was removed successfully" in result.readable_output
-        assert readable_check in result.readable_output
+        assert "mal-001" in result.readable_output
         assert result.outputs is None
-        mock_client.remove_blocklist_items.assert_called_once_with(expected_items)
-
-    def test_blocklist_item_remove_invalid_marketplace(self, mock_client, mocker):
-        """Test koi-blocklist-item-remove raises error for invalid marketplace."""
-        args = {"item_id": "mal-001", "marketplace": "invalid_marketplace"}
-
-        with pytest.raises(DemistoException, match="Invalid marketplace"):
-            koi_blocklist_item_remove_command(mock_client, args)
-
-    @pytest.mark.parametrize("marketplace", VALID_MARKETPLACES)
-    def test_blocklist_item_remove_all_valid_marketplaces(self, mock_client, mocker, marketplace):
-        """Test koi-blocklist-item-remove accepts all valid marketplace values."""
-        mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
-
-        args = {"item_id": "test-item", "marketplace": marketplace}
-        result = koi_blocklist_item_remove_command(mock_client, args)
-
-        assert "was removed successfully" in result.readable_output
-
-    @pytest.mark.parametrize(
-        "args",
-        [
-            {},
-            {"item_id": "mal-001"},
-            {"marketplace": "vscode"},
-        ],
-        ids=["no_args", "missing_marketplace", "missing_item_id"],
-    )
-    def test_blocklist_item_remove_missing_required_args(self, mock_client, args):
-        """Test koi-blocklist-item-remove raises error when item_id/marketplace pair is incomplete."""
-        with pytest.raises(DemistoException, match="Either 'item_id' and 'marketplace' must be provided"):
-            koi_blocklist_item_remove_command(mock_client, args)
+        mock_client.remove_blocklist_items.assert_called_once_with([{"item_id": "mal-001", "marketplace": "vscode"}])
 
     @pytest.mark.parametrize(
         "items_data, expected_readable",
@@ -2188,26 +2076,6 @@ class TestKoiBlocklistItemRemoveCommand:
 
         assert expected_readable in result.readable_output
         mock_client.remove_blocklist_items.assert_called_once_with(items_data)
-
-    def test_blocklist_item_remove_file_takes_priority_over_single_item(self, mock_client, mocker, tmp_path):
-        """Test that when both entry_id and item_id/marketplace are provided, entry_id takes priority."""
-        mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
-
-        items_data = [{"item_id": "file-item", "marketplace": "npm"}]
-        json_file = tmp_path / "items.json"
-        json_file.write_text(json.dumps(items_data))
-
-        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
-
-        args = {
-            "items_list_raw_json_entry_id": "entry-abc-123",
-            "item_id": "arg-item",
-            "marketplace": "vscode",
-        }
-        result = koi_blocklist_item_remove_command(mock_client, args)
-
-        mock_client.remove_blocklist_items.assert_called_once_with(items_data)
-        assert "file-item" in result.readable_output
 
 
 class TestClientRemoveBlocklistItems:
@@ -2249,6 +2117,181 @@ class TestClientRemoveBlocklistItems:
 
         with pytest.raises(DemistoException, match="Error in API call"):
             mock_client.remove_blocklist_items([{"item_id": "bad-item", "marketplace": "vscode"}])
+
+
+# endregion
+
+# region koi-blocklist-item-add tests
+
+
+class TestKoiBlocklistItemAddCommand:
+    """Tests for the koi-blocklist-item-add command."""
+
+    def test_blocklist_item_add_single_item(self, mock_client, mocker):
+        """Test koi-blocklist-item-add successfully adds a single item."""
+        mocker.patch.object(mock_client, "add_blocklist_items", return_value=None)
+
+        args = {"item_id": "mal-001", "marketplace": "vscode"}
+        result = koi_blocklist_item_add_command(mock_client, args)
+
+        assert "was added successfully" in result.readable_output
+        assert "mal-001" in result.readable_output
+        assert result.outputs is None
+        mock_client.add_blocklist_items.assert_called_once_with([{"item_id": "mal-001", "marketplace": "vscode"}])
+
+    @pytest.mark.parametrize(
+        "items_data, expected_readable",
+        [
+            (
+                [
+                    {"item_id": "mal-1", "marketplace": "vscode"},
+                    {"item_id": "mal-2", "marketplace": "npm", "created_by": "user@example.com"},
+                ],
+                "2 blocklist items were added successfully",
+            ),
+            (
+                [{"item_id": "mal-1", "marketplace": "vscode"}],
+                "mal-1",
+            ),
+        ],
+        ids=["multiple_items", "single_item"],
+    )
+    def test_blocklist_item_add_from_file(self, mock_client, mocker, tmp_path, items_data, expected_readable):
+        """Test koi-blocklist-item-add from a JSON file entry ID."""
+        mocker.patch.object(mock_client, "add_blocklist_items", return_value=None)
+
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {"items_list_raw_json_entry_id": "entry-abc-123"}
+        result = koi_blocklist_item_add_command(mock_client, args)
+
+        assert expected_readable in result.readable_output
+        mock_client.add_blocklist_items.assert_called_once_with(items_data)
+
+
+class TestClientAddBlocklistItems:
+    """Tests for the Client.add_blocklist_items method."""
+
+    @pytest.mark.parametrize(
+        "items",
+        [
+            [{"item_id": "mal-001", "marketplace": "vscode"}],
+            [
+                {"item_id": "mal-001", "marketplace": "vscode"},
+                {"item_id": "mal-002", "marketplace": "npm"},
+            ],
+        ],
+        ids=["single_item", "multiple_items"],
+    )
+    def test_add_blocklist_items_request(self, mock_client, mocker, items):
+        """Test add_blocklist_items sends correct POST request."""
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 204
+        mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+
+        mock_client.add_blocklist_items(items)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "POST"
+        assert call_kwargs["url_suffix"] == API_BLOCKLIST
+        assert call_kwargs["json_data"] == {"items": items}
+        assert call_kwargs["resp_type"] == "response"
+        assert call_kwargs["ok_codes"] == (204,)
+
+    def test_add_blocklist_items_api_error(self, mock_client, mocker):
+        """Test that add_blocklist_items propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [400] - Bad Request"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.add_blocklist_items([{"item_id": "bad-item", "marketplace": "vscode"}])
+
+
+# endregion
+
+# region resolve_items_from_args tests
+
+
+class TestResolveItemsFromArgs:
+    """Tests for the resolve_items_from_args helper function."""
+
+    def test_single_item_required_only(self):
+        """Test resolving a single item with required fields only."""
+        args = {"item_id": "ext-123", "marketplace": "vscode"}
+        result = resolve_items_from_args(args)
+
+        assert result == [{"item_id": "ext-123", "marketplace": "vscode"}]
+
+    def test_single_item_with_optional_params(self):
+        """Test resolving a single item with optional created_by and notes."""
+        args = {
+            "item_id": "ext-123",
+            "marketplace": "vscode",
+            "created_by": "admin@example.com",
+            "notes": "Test note",
+        }
+        result = resolve_items_from_args(args)
+
+        assert result == [
+            {
+                "item_id": "ext-123",
+                "marketplace": "vscode",
+                "created_by": "admin@example.com",
+                "notes": "Test note",
+            }
+        ]
+
+    def test_invalid_marketplace(self):
+        """Test that invalid marketplace raises DemistoException."""
+        args = {"item_id": "ext-123", "marketplace": "invalid_store"}
+
+        with pytest.raises(DemistoException, match="Invalid marketplace"):
+            resolve_items_from_args(args)
+
+    @pytest.mark.parametrize("marketplace", VALID_MARKETPLACES)
+    def test_all_valid_marketplaces(self, marketplace):
+        """Test that all valid marketplace values are accepted."""
+        args = {"item_id": "test-item", "marketplace": marketplace}
+        result = resolve_items_from_args(args)
+
+        assert result == [{"item_id": "test-item", "marketplace": marketplace}]
+
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {},
+            {"item_id": "ext-123"},
+            {"marketplace": "vscode"},
+        ],
+        ids=["no_args", "missing_marketplace", "missing_item_id"],
+    )
+    def test_missing_required_args(self, args):
+        """Test that missing item_id/marketplace pair raises DemistoException."""
+        with pytest.raises(DemistoException, match="Either 'item_id' and 'marketplace' must be provided"):
+            resolve_items_from_args(args)
+
+    def test_file_entry_id_takes_priority(self, mocker, tmp_path):
+        """Test that file entry ID takes priority over single item args."""
+        items_data = [{"item_id": "file-item", "marketplace": "npm"}]
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {
+            "items_list_raw_json_entry_id": "entry-abc-123",
+            "item_id": "arg-item",
+            "marketplace": "vscode",
+        }
+        result = resolve_items_from_args(args)
+
+        assert result == items_data
 
 
 # endregion

@@ -334,6 +334,53 @@ def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
     return data
 
 
+def resolve_items_from_args(args: dict[str, Any]) -> list[dict[str, Any]]:
+    """Resolve list items from command arguments.
+
+    Supports two input modes:
+    - Bulk from file: 'items_list_raw_json_entry_id' with a War Room entry ID.
+    - Single item: 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+
+    File entry ID takes priority when both modes are provided.
+
+    Args:
+        args: Command arguments dictionary.
+
+    Returns:
+        List of item dictionaries.
+
+    Raises:
+        DemistoException: If neither mode provides valid input, or marketplace is invalid.
+    """
+    entry_id: str | None = args.get("items_list_raw_json_entry_id")
+    item_id: str | None = args.get("item_id")
+    marketplace: str | None = args.get("marketplace")
+
+    if entry_id:
+        return parse_list_items_from_entry_id(entry_id)
+
+    if item_id and marketplace:
+        if marketplace not in VALID_MARKETPLACES:
+            raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+
+        item: dict[str, Any] = {
+            "item_id": item_id,
+            "marketplace": marketplace,
+        }
+        created_by: str | None = args.get("created_by")
+        notes: str | None = args.get("notes")
+        if created_by:
+            item["created_by"] = created_by
+        if notes:
+            item["notes"] = notes
+
+        return [item]
+
+    raise DemistoException(
+        "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
+    )
+
+
 # endregion
 
 # region Client
@@ -582,6 +629,29 @@ class Client(ContentClient):
         )
 
         demisto.debug(f"[API] Successfully removed {len(items)} blocklist item(s)")
+
+    def add_blocklist_items(
+        self,
+        items: list[dict[str, Any]],
+    ) -> None:
+        """Add one or more items to the global blocklist.
+
+        Args:
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
+        """
+        body: dict[str, Any] = {"items": items}
+
+        demisto.debug(f"[API] Adding {len(items)} blocklist item(s): {items}")
+
+        self._http_request(
+            method="POST",
+            url_suffix=API_BLOCKLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(f"[API] Successfully added {len(items)} blocklist item(s)")
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -1158,35 +1228,7 @@ def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> Comm
     """
     demisto.debug("[Command] koi-allowlist-item-add triggered")
 
-    entry_id: str | None = args.get("items_list_raw_json_entry_id")
-    item_id: str | None = args.get("item_id")
-    marketplace: str | None = args.get("marketplace")
-
-    if entry_id:
-        # Bulk mode: read items from uploaded JSON file
-        items = parse_list_items_from_entry_id(entry_id)
-    elif item_id and marketplace:
-        # Single item mode
-        if marketplace not in VALID_MARKETPLACES:
-            raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
-
-        item: dict[str, Any] = {
-            "item_id": item_id,
-            "marketplace": marketplace,
-        }
-        created_by: str | None = args.get("created_by")
-        notes: str | None = args.get("notes")
-        if created_by:
-            item["created_by"] = created_by
-        if notes:
-            item["notes"] = notes
-
-        items = [item]
-    else:
-        raise DemistoException(
-            "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
-        )
-
+    items = resolve_items_from_args(args)
     client.add_allowlist_items(items)
 
     item_count = len(items)
@@ -1260,35 +1302,7 @@ def koi_blocklist_item_remove_command(client: Client, args: dict[str, Any]) -> C
     """
     demisto.debug("[Command] koi-blocklist-item-remove triggered")
 
-    entry_id: str | None = args.get("items_list_raw_json_entry_id")
-    item_id: str | None = args.get("item_id")
-    marketplace: str | None = args.get("marketplace")
-
-    if entry_id:
-        # Bulk mode: read items from uploaded JSON file
-        items = parse_list_items_from_entry_id(entry_id)
-    elif item_id and marketplace:
-        # Single item mode
-        if marketplace not in VALID_MARKETPLACES:
-            raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
-
-        item: dict[str, Any] = {
-            "item_id": item_id,
-            "marketplace": marketplace,
-        }
-        created_by: str | None = args.get("created_by")
-        notes: str | None = args.get("notes")
-        if created_by:
-            item["created_by"] = created_by
-        if notes:
-            item["notes"] = notes
-
-        items = [item]
-    else:
-        raise DemistoException(
-            "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
-        )
-
+    items = resolve_items_from_args(args)
     client.remove_blocklist_items(items)
 
     item_count = len(items)
@@ -1298,6 +1312,37 @@ def koi_blocklist_item_remove_command(client: Client, args: dict[str, Any]) -> C
         readable = f"Blocklist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was removed successfully."
     else:
         readable = f"{item_count} blocklist items were removed successfully."
+
+    return CommandResults(readable_output=readable)
+
+
+def koi_blocklist_item_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Add one or more items to the global blocklist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-blocklist-item-add triggered")
+
+    items = resolve_items_from_args(args)
+    client.add_blocklist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} blocklist item(s) added successfully")
+
+    if item_count == 1:
+        readable = f"Blocklist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was added successfully."
+    else:
+        readable = f"{item_count} blocklist items were added successfully."
 
     return CommandResults(readable_output=readable)
 
@@ -1319,6 +1364,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-allowlist-item-add": koi_allowlist_item_add_command,
     "koi-blocklist-get": koi_blocklist_get_command,
     "koi-blocklist-item-remove": koi_blocklist_item_remove_command,
+    "koi-blocklist-item-add": koi_blocklist_item_add_command,
 }
 
 
