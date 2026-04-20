@@ -189,8 +189,14 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update", "azure-keyvault-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update", "azure-keyvault-vault-update"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update", "azure-sqldb-security-alert-policy-update"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": ["azure-sql-db-threat-policy-update", "azure-sqldb-security-alert-policy-update"],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
+        "azure-sql-db-threat-policy-update",
+        "azure-sqldb-security-alert-policy-update",
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
+        "azure-sql-db-threat-policy-update",
+        "azure-sqldb-security-alert-policy-update",
+    ],
     "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update"],
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],

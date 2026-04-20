@@ -481,7 +481,7 @@ def test_webapp_update_command(mocker, client, mock_params):
     result = webapp_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebApp"
+    assert result.outputs_prefix == "Azure.AppService.WebApp"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["identity"]["type"] == "SystemAssigned"
@@ -580,7 +580,7 @@ def test_update_key_vault_command(mocker, client, mock_params):
     result = update_key_vault_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.KeyVault"
+    assert result.outputs_prefix == "Azure.KeyVault.Vault"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-keyvault"
     assert result.outputs["properties"]["enableSoftDelete"] is True
@@ -618,7 +618,7 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     result = sql_db_threat_policy_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.SqlDBThreatPolicy"
+    assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
     assert result.outputs["properties"]["emailAccountAdmins"] is True
@@ -691,7 +691,7 @@ def test_cosmosdb_update_command(mocker, client, mock_params):
     result = cosmosdb_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.CosmosDB"
+    assert result.outputs_prefix == "Azure.CosmosDB.DBAccounts"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-cosmos"
     assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
