@@ -3467,8 +3467,17 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Identity", "Https Only", "Client Cert Enabled"],
         removeNull=True,
     )
+
+    if demisto.command() == "azure-webapp-update":
+        return CommandResults(
+            outputs_prefix="Azure.WebApp",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=md,
+            raw_response=outputs,
+        )
     return CommandResults(
-        outputs_prefix="Azure.WebApp",
+        outputs_prefix="Azure.AppService.WebApp",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -4854,6 +4863,7 @@ def main():  # pragma: no cover
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
+            "azure-appservice-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-keyvault-vault-update": update_key_vault_command,
