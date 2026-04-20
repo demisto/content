@@ -33,7 +33,11 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
                     "BaseWidget", "UTC", "WarningsHandler", "__line__", "_find_relevant_module", "register_module_line",
                     "fix_traceback_line_numbers",
-                    "UcpException", "UcpRequestContext"]
+                    "UcpException", "UcpRequestContext",
+                    "_extract_ucp_expiry", "_get_ucp_profiles",
+                    "_find_ucp_profile_by_sub_capability", "_find_ucp_profile_by_capability",
+                    "is_ucp_enabled", "should_use_ucp_auth", "resolve_ucp_capability",
+                    "get_ucp_method_unique_id", "get_ucp_credentials", "invalidate_ucp_credentials"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
