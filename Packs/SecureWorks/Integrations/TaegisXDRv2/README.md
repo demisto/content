@@ -668,6 +668,72 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
+### taegis-fetch-events
+
+#### Base Command
+
+`!taegis-fetch-events`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A list of event IDs or comma-separated event IDs to return | False |
+| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head 50` | False |
+| limit | Maximum number of events to return. Injected into the CQL query via `head N` [Default: 50] | False |
+| offset | The number of events to skip before returning results [Default: 0] | False |
+| next | Pagination cursor token returned from a previous `taegis-fetch-events` call. Use this to retrieve the next page of results | False |
+| fields | The fields to return from the query | False |
+| tenant_id | The tenant to run against if an MSP. If no tenant provided, the tenant of the generated credentials is used | False |
+
+#### CQL Query Time Field Reference
+
+| Scenario | Use This Field | Why? |
+| --- | --- | --- |
+| Incident Reconstruction | event_time | You need to see the exact sequence of the attacker's steps. |
+| Real-time Monitoring | EARLIEST=-1m | You want to see everything that hits the platform in the last 60 seconds. |
+| Compliance/Audit | ingest_time | You need to prove when Secureworks actually received the record. |
+| Offline Host Sync | ingest_time | You want to find data from a laptop that was just turned back on after a weekend. |
+
+#### Command Examples
+
+```
+!taegis-fetch-events
+!taegis-fetch-events cql_query="FROM process EARLIEST=-1d | head 10"
+!taegis-fetch-events cql_query="FROM dnsquery WHERE query_name MATCHES ('*.xyz', '*.top') EARLIEST=-24h" limit=100
+!taegis-fetch-events ids="event-12345-67890,event-12345-67891"
+!taegis-fetch-events next="eyJvZmZzZXQiOiAxMH0="
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Events": {
+            "query": "FROM process EARLIEST=-1d | head 10",
+            "next": "eyJvZmZzZXQiOiAxMH0=",
+            "events": [
+                {
+                    "id": "event-12345-67890",
+                    "metadata": {
+                        "event_type": "process",
+                        "event_time": "2024-05-20T14:30:05.123Z",
+                        "tenant_id": "999-000-111",
+                        "sensor_id": "win-endpoint-01"
+                    },
+                    "parent_process_id": "456",
+                    "image_path": "C:\\Windows\\System32\\cmd.exe",
+                    "commandline": "cmd.exe /c \"whoami\"",
+                    "username": "admin_user",
+                    "next": "eyJvZmZzZXQiOiAxMH0="
+                }
+            ]
+        }
+    }
+}
+```
+
 ### taegis-update-alert-status
 
 #### Base Command
