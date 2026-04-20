@@ -1212,6 +1212,11 @@ class TestValidateGmailMessageId:
         with pytest.raises(ValueError, match="'message-id' argument is required"):
             validate_gmail_message_id(None)
 
+    def test_whitespace_only_message_id(self):
+        """Test that a whitespace-only message ID raises ValueError."""
+        with pytest.raises(ValueError, match="'message-id' argument is required"):
+            validate_gmail_message_id("   ")
+
     def test_rfc822_message_id_with_angle_brackets(self):
         """Test that an RFC 822 Message-ID with angle brackets is rejected."""
         with pytest.raises(ValueError, match="Invalid Gmail message ID"):

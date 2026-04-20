@@ -42,7 +42,7 @@ from googleapiclient.errors import HttpError
 def validate_gmail_message_id(message_id: str | None) -> str:
     """Validate that the message-id is a valid Gmail internal ID.
 
-    Gmail internal message IDs are hexadecimal strings (e.g., '18a1b2c3d4e5f6g7').
+    Gmail internal message IDs are alphanumeric strings (e.g., '18a1b2c3d4e5f6g7').
     They should NOT be RFC 822 Message-ID headers (e.g., '<local-part@domain>'),
     which contain angle brackets, '@', or spaces.
 
@@ -55,10 +55,9 @@ def validate_gmail_message_id(message_id: str | None) -> str:
     Raises:
         ValueError: If the message ID is missing or appears to be an RFC 822 Message-ID.
     """
+    message_id = (message_id or "").strip()
     if not message_id:
         raise ValueError("'message-id' argument is required.")
-
-    message_id = message_id.strip()
 
     if re.search(r"[<>@\s]", message_id):  # pylint: disable=E1101
         raise ValueError(
