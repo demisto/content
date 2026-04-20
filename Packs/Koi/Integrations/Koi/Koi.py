@@ -1,3 +1,4 @@
+import json
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -280,6 +281,58 @@ def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[
     return new_events
 
 
+def parse_allowlist_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
+    """Read and parse a JSON file from a War Room entry ID containing allowlist items.
+
+    The JSON file must contain a list of item objects, each with at least 'item_id' and 'marketplace'.
+
+    Args:
+        entry_id: The War Room entry ID of the uploaded JSON file.
+
+    Returns:
+        List of item dictionaries parsed from the JSON file.
+
+    Raises:
+        DemistoException: If the file cannot be read, parsed, or has invalid structure.
+    """
+    try:
+        filepath_result = demisto.getFilePath(entry_id)
+    except Exception as e:
+        raise DemistoException(f"Could not find file for entry ID '{entry_id}': {e}")
+
+    if not filepath_result or "path" not in filepath_result:
+        raise DemistoException(f"Entry ID '{entry_id}' is not a valid file entry.")
+
+    file_path = filepath_result["path"]
+    demisto.debug(f"[File Parse] Reading items from file: {file_path}")
+
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Failed to parse JSON file from entry ID '{entry_id}': {e}")
+    except OSError as e:
+        raise DemistoException(f"Failed to read file from entry ID '{entry_id}': {e}")
+
+    if not isinstance(data, list):
+        raise DemistoException(
+            f"Invalid JSON structure in entry ID '{entry_id}': expected a list of items, got {type(data).__name__}."
+        )
+
+    for i, item in enumerate(data):
+        if not isinstance(item, dict):
+            raise DemistoException(f"Invalid item at index {i}: expected a dictionary, got {type(item).__name__}.")
+        if "item_id" not in item or "marketplace" not in item:
+            raise DemistoException(f"Invalid item at index {i}: each item must contain 'item_id' and 'marketplace'.")
+        if item["marketplace"] not in VALID_MARKETPLACES:
+            raise DemistoException(
+                f"Invalid marketplace '{item['marketplace']}' at index {i}. Valid values: {VALID_MARKETPLACES}"
+            )
+
+    demisto.debug(f"[File Parse] Parsed {len(data)} items from entry ID '{entry_id}'")
+    return data
+
+
 # endregion
 
 # region Client
@@ -466,35 +519,18 @@ class Client(ContentClient):
             f"created_by={created_by}, notes={notes})"
         )
 
-    def add_allowlist_item(
+    def add_allowlist_items(
         self,
-        item_id: str,
-        marketplace: str,
-        created_by: str | None = None,
-        notes: str | None = None,
+        items: list[dict[str, Any]],
     ) -> None:
-        """Add an item to the global allowlist.
+        """Add one or more items to the global allowlist.
 
         Args:
-            item_id: The unique identifier of the item to add.
-            marketplace: The source marketplace of the item.
-            created_by: Optional email of the user who created this entry.
-            notes: Optional additional notes about the entry.
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
         """
-        item: dict[str, Any] = {
-            "item_id": item_id,
-            "marketplace": marketplace,
-        }
-        if created_by:
-            item["created_by"] = created_by
-        if notes:
-            item["notes"] = notes
+        body: dict[str, Any] = {"items": items}
 
-        body: dict[str, Any] = {"items": [item]}
-
-        demisto.debug(
-            f"[API] Adding allowlist item: {item_id} (marketplace={marketplace}, " f"created_by={created_by}, notes={notes})"
-        )
+        demisto.debug(f"[API] Adding {len(items)} allowlist item(s): {items}")
 
         self._http_request(
             method="POST",
@@ -504,10 +540,7 @@ class Client(ContentClient):
             ok_codes=(204,),
         )
 
-        demisto.debug(
-            f"[API] Successfully added allowlist item: {item_id} (marketplace={marketplace}, "
-            f"created_by={created_by}, notes={notes})"
-        )
+        demisto.debug(f"[API] Successfully added {len(items)} allowlist item(s)")
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -1068,37 +1101,62 @@ def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> C
 
 
 def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Add an item to the global allowlist.
+    """Add one or more items to the global allowlist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
 
     Args:
         client: The KOI client.
-        args: Command arguments (item_id, marketplace, created_by, notes).
+        args: Command arguments.
 
     Returns:
         CommandResults with a success message.
     """
     demisto.debug("[Command] koi-allowlist-item-add triggered")
 
-    item_id: str = args["item_id"]
-    marketplace: str = args["marketplace"]
-    created_by: str | None = args.get("created_by")
-    notes: str | None = args.get("notes")
+    entry_id: str | None = args.get("items_list_raw_json_entry_id")
+    item_id: str | None = args.get("item_id")
+    marketplace: str | None = args.get("marketplace")
 
-    if marketplace not in VALID_MARKETPLACES:
-        raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+    if entry_id:
+        # Bulk mode: read items from uploaded JSON file
+        items = parse_allowlist_items_from_entry_id(entry_id)
+    elif item_id and marketplace:
+        # Single item mode
+        if marketplace not in VALID_MARKETPLACES:
+            raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
 
-    client.add_allowlist_item(
-        item_id=item_id,
-        marketplace=marketplace,
-        created_by=created_by,
-        notes=notes,
-    )
+        item: dict[str, Any] = {
+            "item_id": item_id,
+            "marketplace": marketplace,
+        }
+        created_by: str | None = args.get("created_by")
+        notes: str | None = args.get("notes")
+        if created_by:
+            item["created_by"] = created_by
+        if notes:
+            item["notes"] = notes
 
-    demisto.debug(f"[Command Result] Allowlist item '{item_id}' added successfully")
+        items = [item]
+    else:
+        raise DemistoException(
+            "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
+        )
 
-    return CommandResults(
-        readable_output=f"Allowlist item '{item_id}' (marketplace: {marketplace}) was added successfully.",
-    )
+    client.add_allowlist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} allowlist item(s) added successfully")
+
+    if item_count == 1:
+        readable = f"Allowlist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was added successfully."
+    else:
+        readable = f"{item_count} allowlist items were added successfully."
+
+    return CommandResults(readable_output=readable)
 
 
 # endregion

@@ -28,6 +28,7 @@ from Koi import (
     koi_allowlist_get_command,
     koi_allowlist_item_remove_command,
     koi_allowlist_item_add_command,
+    parse_allowlist_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
     main,
@@ -1705,9 +1706,9 @@ class TestClientRemoveAllowlistItem:
 class TestKoiAllowlistItemAddCommand:
     """Tests for the koi-allowlist-item-add command."""
 
-    def test_allowlist_item_add_success(self, mock_client, mocker):
-        """Test koi-allowlist-item-add successfully adds an item."""
-        mocker.patch.object(mock_client, "add_allowlist_item", return_value=None)
+    def test_allowlist_item_add_single_item_success(self, mock_client, mocker):
+        """Test koi-allowlist-item-add successfully adds a single item via item_id/marketplace."""
+        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         args = {"item_id": "ext-123", "marketplace": "vscode"}
         result = koi_allowlist_item_add_command(mock_client, args)
@@ -1716,16 +1717,11 @@ class TestKoiAllowlistItemAddCommand:
         assert "ext-123" in result.readable_output
         assert "vscode" in result.readable_output
         assert result.outputs is None
-        mock_client.add_allowlist_item.assert_called_once_with(
-            item_id="ext-123",
-            marketplace="vscode",
-            created_by=None,
-            notes=None,
-        )
+        mock_client.add_allowlist_items.assert_called_once_with([{"item_id": "ext-123", "marketplace": "vscode"}])
 
-    def test_allowlist_item_add_with_optional_params(self, mock_client, mocker):
+    def test_allowlist_item_add_single_item_with_optional_params(self, mock_client, mocker):
         """Test koi-allowlist-item-add with created_by and notes."""
-        mocker.patch.object(mock_client, "add_allowlist_item", return_value=None)
+        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         args = {
             "item_id": "ext-456",
@@ -1738,11 +1734,15 @@ class TestKoiAllowlistItemAddCommand:
         assert "was added successfully" in result.readable_output
         assert "ext-456" in result.readable_output
         assert "chrome_web_store" in result.readable_output
-        mock_client.add_allowlist_item.assert_called_once_with(
-            item_id="ext-456",
-            marketplace="chrome_web_store",
-            created_by="admin@example.com",
-            notes="Approved for development purposes",
+        mock_client.add_allowlist_items.assert_called_once_with(
+            [
+                {
+                    "item_id": "ext-456",
+                    "marketplace": "chrome_web_store",
+                    "created_by": "admin@example.com",
+                    "notes": "Approved for development purposes",
+                }
+            ]
         )
 
     def test_allowlist_item_add_invalid_marketplace(self, mock_client, mocker):
@@ -1755,56 +1755,182 @@ class TestKoiAllowlistItemAddCommand:
     @pytest.mark.parametrize("marketplace", VALID_MARKETPLACES)
     def test_allowlist_item_add_all_valid_marketplaces(self, mock_client, mocker, marketplace):
         """Test koi-allowlist-item-add accepts all valid marketplace values."""
-        mocker.patch.object(mock_client, "add_allowlist_item", return_value=None)
+        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         args = {"item_id": "test-item", "marketplace": marketplace}
         result = koi_allowlist_item_add_command(mock_client, args)
 
         assert "was added successfully" in result.readable_output
 
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {},
+            {"item_id": "ext-123"},
+            {"marketplace": "vscode"},
+        ],
+        ids=["no_args", "missing_marketplace", "missing_item_id"],
+    )
+    def test_allowlist_item_add_missing_required_args(self, mock_client, args):
+        """Test koi-allowlist-item-add raises error when item_id/marketplace pair is incomplete."""
+        with pytest.raises(DemistoException, match="Either 'item_id' and 'marketplace' must be provided"):
+            koi_allowlist_item_add_command(mock_client, args)
 
-class TestClientAddAllowlistItem:
-    """Tests for the Client.add_allowlist_item method."""
+    def test_allowlist_item_add_from_file(self, mock_client, mocker, tmp_path):
+        """Test koi-allowlist-item-add from a JSON file entry ID."""
+        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
-    def test_add_allowlist_item_required_params(self, mock_client, mocker):
-        """Test that add_allowlist_item sends correct POST request with required params."""
+        items_data = [
+            {"item_id": "ext-1", "marketplace": "vscode"},
+            {"item_id": "ext-2", "marketplace": "npm", "created_by": "user@example.com"},
+        ]
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {"items_list_raw_json_entry_id": "entry-abc-123"}
+        result = koi_allowlist_item_add_command(mock_client, args)
+
+        assert "2 allowlist items were added successfully" in result.readable_output
+        mock_client.add_allowlist_items.assert_called_once_with(items_data)
+
+    def test_allowlist_item_add_from_file_single_item(self, mock_client, mocker, tmp_path):
+        """Test koi-allowlist-item-add from a JSON file with a single item uses singular message."""
+        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
+
+        items_data = [{"item_id": "ext-1", "marketplace": "vscode"}]
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {"items_list_raw_json_entry_id": "entry-abc-123"}
+        result = koi_allowlist_item_add_command(mock_client, args)
+
+        assert "ext-1" in result.readable_output
+        assert "vscode" in result.readable_output
+        assert "was added successfully" in result.readable_output
+
+    def test_allowlist_item_add_file_takes_priority_over_single_item(self, mock_client, mocker, tmp_path):
+        """Test that when both entry_id and item_id/marketplace are provided, entry_id takes priority."""
+        mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
+
+        items_data = [{"item_id": "file-item", "marketplace": "npm"}]
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {
+            "items_list_raw_json_entry_id": "entry-abc-123",
+            "item_id": "arg-item",
+            "marketplace": "vscode",
+        }
+        result = koi_allowlist_item_add_command(mock_client, args)
+
+        # File entry ID should take priority
+        mock_client.add_allowlist_items.assert_called_once_with(items_data)
+        assert "file-item" in result.readable_output
+
+
+class TestParseItemsFromEntryId:
+    """Tests for the parse_allowlist_items_from_entry_id helper function."""
+
+    def test_parse_valid_items(self, mocker, tmp_path):
+        """Test parsing a valid JSON file with multiple items."""
+        items_data = [
+            {"item_id": "ext-1", "marketplace": "vscode"},
+            {"item_id": "ext-2", "marketplace": "npm", "notes": "test"},
+        ]
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        result = parse_allowlist_items_from_entry_id("entry-123")
+        assert result == items_data
+
+    @pytest.mark.parametrize(
+        "file_content, error_match",
+        [
+            ("not valid json {{{", "Failed to parse JSON"),
+            (json.dumps({"item_id": "ext-1", "marketplace": "vscode"}), "expected a list of items"),
+            (json.dumps([{"item_id": "ext-1"}]), "must contain 'item_id' and 'marketplace'"),
+            (json.dumps([{"item_id": "ext-1", "marketplace": "invalid_store"}]), "Invalid marketplace"),
+            (json.dumps(["not-a-dict"]), "expected a dictionary"),
+        ],
+        ids=[
+            "invalid_json",
+            "not_a_list",
+            "missing_required_fields",
+            "invalid_marketplace",
+            "item_not_a_dict",
+        ],
+    )
+    def test_parse_invalid_file_content(self, mocker, tmp_path, file_content, error_match):
+        """Test that invalid file content raises DemistoException with the expected message."""
+        json_file = tmp_path / "items.json"
+        json_file.write_text(file_content)
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        with pytest.raises(DemistoException, match=error_match):
+            parse_allowlist_items_from_entry_id("entry-123")
+
+    @pytest.mark.parametrize(
+        "mock_kwargs, error_match",
+        [
+            ({"side_effect": Exception("Entry not found")}, "Could not find file"),
+            ({"return_value": {}}, "not a valid file entry"),
+        ],
+        ids=["entry_not_found", "entry_not_a_file"],
+    )
+    def test_parse_entry_resolution_errors(self, mocker, mock_kwargs, error_match):
+        """Test that entry resolution errors raise DemistoException."""
+        mocker.patch.object(demisto, "getFilePath", **mock_kwargs)
+
+        with pytest.raises(DemistoException, match=error_match):
+            parse_allowlist_items_from_entry_id("entry-123")
+
+
+class TestClientAddAllowlistItems:
+    """Tests for the Client.add_allowlist_items method."""
+
+    def test_add_allowlist_items_single_item(self, mock_client, mocker):
+        """Test that add_allowlist_items sends correct POST request with a single item."""
         mock_response = mocker.MagicMock()
         mock_response.status_code = 204
         mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
 
-        mock_client.add_allowlist_item(item_id="ext-123", marketplace="vscode")
+        items = [{"item_id": "ext-123", "marketplace": "vscode"}]
+        mock_client.add_allowlist_items(items)
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "POST"
         assert call_kwargs["url_suffix"] == API_ALLOWLIST
-        assert call_kwargs["json_data"] == {"items": [{"item_id": "ext-123", "marketplace": "vscode"}]}
+        assert call_kwargs["json_data"] == {"items": items}
         assert call_kwargs["resp_type"] == "response"
         assert call_kwargs["ok_codes"] == (204,)
 
-    def test_add_allowlist_item_all_params(self, mock_client, mocker):
-        """Test that add_allowlist_item sends all params when provided."""
+    def test_add_allowlist_items_multiple_items(self, mock_client, mocker):
+        """Test that add_allowlist_items sends multiple items in the body."""
         mock_response = mocker.MagicMock()
         mock_response.status_code = 204
         mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
 
-        mock_client.add_allowlist_item(
-            item_id="ext-456",
-            marketplace="chrome_web_store",
-            created_by="admin@example.com",
-            notes="Approved for development purposes",
-        )
+        items = [
+            {"item_id": "ext-1", "marketplace": "vscode"},
+            {"item_id": "ext-2", "marketplace": "npm", "created_by": "admin@example.com"},
+            {"item_id": "ext-3", "marketplace": "chrome_web_store", "notes": "Approved"},
+        ]
+        mock_client.add_allowlist_items(items)
 
         call_kwargs = mock_client._http_request.call_args[1]
-        expected_item = {
-            "item_id": "ext-456",
-            "marketplace": "chrome_web_store",
-            "created_by": "admin@example.com",
-            "notes": "Approved for development purposes",
-        }
-        assert call_kwargs["json_data"] == {"items": [expected_item]}
+        assert call_kwargs["json_data"] == {"items": items}
 
-    def test_add_allowlist_item_api_error(self, mock_client, mocker):
-        """Test that add_allowlist_item propagates API errors."""
+    def test_add_allowlist_items_api_error(self, mock_client, mocker):
+        """Test that add_allowlist_items propagates API errors."""
         mocker.patch.object(
             mock_client,
             "_http_request",
@@ -1812,7 +1938,7 @@ class TestClientAddAllowlistItem:
         )
 
         with pytest.raises(DemistoException, match="Error in API call"):
-            mock_client.add_allowlist_item(item_id="bad-item", marketplace="vscode")
+            mock_client.add_allowlist_items([{"item_id": "bad-item", "marketplace": "vscode"}])
 
 
 # endregion

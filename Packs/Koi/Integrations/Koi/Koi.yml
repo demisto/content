@@ -235,14 +235,12 @@ script:
       description: Additional context or notes regarding the removal of this item.
     outputs: []
   - name: koi-allowlist-item-add
-    description: Adds an item to the global allowlist.
+    description: Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
     arguments:
     - name: item_id
-      description: The ID of the item to add to the allowlist.
-      required: true
+      description: The ID of the item to add to the allowlist. Required when not using items_list_raw_json_entry_id.
     - name: marketplace
-      description: The source marketplace of the item.
-      required: true
+      description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
       auto: PREDEFINED
       predefined:
       - chocolatey
@@ -271,6 +269,8 @@ script:
       description: Email of the user who created this entry.
     - name: notes
       description: Additional notes about the entry.
+    - name: items_list_raw_json_entry_id
+      description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
   runonce: false
   script: '-'
