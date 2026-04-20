@@ -41,22 +41,22 @@ configuration:
   required: false
   section: Connect
   type: 8
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  required: true
+  required: false
+  section: Collect
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this verdict
-  display: Indicator Verdict
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  display: Indicator Reputation
   name: feedReputation
   options:
-  - Unknown
   - None
-  - Benign
   - Good
   - Suspicious
-  - Malicious
   - Bad
   required: false
+  section: Collect
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
@@ -70,9 +70,9 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: true
+  section: Collect
   type: 15
-- defaultvalue: indicatorType
-  display: "Feed Expiration Policy"
+- display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -80,31 +80,42 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
   type: 17
+- display: ''
+  name: feedExpirationInterval
+  required: false
+  section: Collect
+  type: 1
 - defaultvalue: "240"
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
+  section: Collect
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
+  section: Collect
   type: 8
-- additionalinfo: The tag applied to the indicator when being forwarded into the TIM
+- additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
+  section: Collect
   type: 0
 - additionalinfo: The API route of the requested information in ServiceNow
   display: Query URL
   name: query_url
   required: true
+  section: Collect
   type: 0
 - additionalinfo: The field needed from the ServiceNow response which contains the indicator value
   display: Indicator Field
   name: indicator_field
   required: true
+  section: Collect
   type: 0
 description: This is a feed integration for extracting indicators from ServiceNow
 display: ServiceNow Generic Feed
@@ -117,7 +128,7 @@ script:
         name: limit
       description: Retrieve indicators from ServiceNow.
       name: snow-get-indicators
-  dockerimage: demisto/auth-utils:1.0.0.5427065
+  dockerimage: demisto/auth-utils:1.0.0.8240011
   feed: true
   isFetchSamples: true
   runonce: false
@@ -129,5 +140,4 @@ sectionorder:
 - Collect
 tests:
 - No test - no instance
-fromversion: 1.0.0
-supportlevelheader: community
+fromversion: 5.5.0
