@@ -272,6 +272,37 @@ script:
     - name: items_list_raw_json_entry_id
       description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
+  - name: koi-blocklist-get
+    description: Retrieves all items in the blocklist.
+    arguments: []
+    outputs:
+    - contextPath: Koi.Blocklist.item_id
+      description: The unique identifier of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.item_name
+      description: The name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.item_display_name
+      description: The display name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.marketplace
+      description: The marketplace of the blocklist item (e.g., vscode).
+      type: String
+    - contextPath: Koi.Blocklist.publisher_name
+      description: The publisher name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.package_name
+      description: The package name of the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.notes
+      description: Notes associated with the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.created_by
+      description: The user who created the blocklist item.
+      type: String
+    - contextPath: Koi.Blocklist.created_at
+      description: The creation time of the blocklist item in ISO 8601 format.
+      type: Date
   runonce: false
   script: '-'
   type: python

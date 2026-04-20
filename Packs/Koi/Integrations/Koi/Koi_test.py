@@ -12,6 +12,7 @@ from Koi import (
     LogType,
     API_POLICIES,
     API_ALLOWLIST,
+    API_BLOCKLIST,
     VALID_AUDIT_TYPES,
     VALID_MARKETPLACES,
     COMMAND_MAP,
@@ -28,6 +29,7 @@ from Koi import (
     koi_allowlist_get_command,
     koi_allowlist_item_remove_command,
     koi_allowlist_item_add_command,
+    koi_blocklist_get_command,
     parse_allowlist_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
@@ -78,6 +80,12 @@ def policies_response() -> dict:
 def allowlist_response() -> dict:
     """Fixture for a mock allowlist API response."""
     return load_test_data("allowlist_response.json")
+
+
+@pytest.fixture
+def blocklist_response() -> dict:
+    """Fixture for a mock blocklist API response."""
+    return load_test_data("blocklist_response.json")
 
 
 @pytest.fixture
@@ -1325,6 +1333,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_allowlist_add_result")
 
+    def test_main_routes_blocklist_get(self, mocker):
+        """Test main routes koi-blocklist-get command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-blocklist-get")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_blocklist_get = mocker.MagicMock(return_value="mock_blocklist_result")
+        COMMAND_MAP["koi-blocklist-get"] = mock_blocklist_get
+
+        main()
+
+        mock_return.assert_called_once_with("mock_blocklist_result")
+
 
 # endregion
 
@@ -1939,6 +1970,89 @@ class TestClientAddAllowlistItems:
 
         with pytest.raises(DemistoException, match="Error in API call"):
             mock_client.add_allowlist_items([{"item_id": "bad-item", "marketplace": "vscode"}])
+
+
+# endregion
+
+# region koi-blocklist-get tests
+
+
+class TestKoiBlocklistGetCommand:
+    """Tests for the koi-blocklist-get command."""
+
+    def test_blocklist_get_returns_items(self, mock_client, blocklist_response, mocker):
+        """Test koi-blocklist-get returns all blocklist items."""
+        mocker.patch.object(mock_client, "get_blocklist", return_value=blocklist_response)
+
+        args: dict[str, str] = {}
+        result = koi_blocklist_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Blocklist"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["item_id"] == "mal-001"
+        assert result.outputs[0]["item_name"] == "Bad Extension"
+        assert result.outputs[1]["item_id"] == "mal-002"
+
+    def test_blocklist_get_empty_response(self, mock_client, mocker):
+        """Test koi-blocklist-get when no items are returned."""
+        mocker.patch.object(mock_client, "get_blocklist", return_value={"items": []})
+
+        args: dict[str, str] = {}
+        result = koi_blocklist_get_command(mock_client, args)
+
+        assert result.outputs == []
+        assert "Blocklist" in result.readable_output
+
+    def test_blocklist_get_outputs_and_readable(self, mock_client, blocklist_response, mocker):
+        """Test that all expected fields are present in outputs and readable output contains data."""
+        mocker.patch.object(mock_client, "get_blocklist", return_value=blocklist_response)
+
+        args: dict[str, str] = {}
+        result = koi_blocklist_get_command(mock_client, args)
+
+        # Verify readable output contains key data
+        assert "Bad Extension" in result.readable_output
+        assert "security@example.com" in result.readable_output
+        assert "chrome_web_store" in result.readable_output
+
+        # Verify all fields in outputs
+        item = result.outputs[0]
+        assert item["item_id"] == "mal-001"
+        assert item["item_name"] == "Bad Extension"
+        assert item["item_display_name"] == "Malicious Extension"
+        assert item["marketplace"] == "chrome_web_store"
+        assert item["publisher_name"] == "Suspicious Publisher"
+        assert item["package_name"] == "bad-package"
+        assert item["notes"] == "Known malware distribution"
+        assert item["created_by"] == "security@example.com"
+        assert item["created_at"] == "2025-05-01T09:15:00.000Z"
+
+
+class TestClientGetBlocklist:
+    """Tests for the Client.get_blocklist method."""
+
+    def test_get_blocklist_params(self, mock_client, blocklist_response, mocker):
+        """Test that get_blocklist calls the correct endpoint with no params."""
+        mocker.patch.object(mock_client, "_http_request", return_value=blocklist_response)
+
+        result = mock_client.get_blocklist()
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["url_suffix"] == API_BLOCKLIST
+        assert "params" not in call_kwargs
+        assert result == blocklist_response
+
+    def test_get_blocklist_empty(self, mock_client, mocker):
+        """Test get_blocklist with empty response."""
+        empty_response = {"items": []}
+        mocker.patch.object(mock_client, "_http_request", return_value=empty_response)
+
+        result = mock_client.get_blocklist()
+
+        assert result == empty_response
+        assert result["items"] == []
 
 
 # endregion

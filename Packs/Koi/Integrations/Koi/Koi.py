@@ -32,6 +32,7 @@ API_ALERTS = f"{API_BASE}/alerts"
 API_AUDIT_LOGS = f"{API_BASE}/audit-logs"
 API_POLICIES = f"{API_BASE}/policies"
 API_ALLOWLIST = f"{API_BASE}/policies/allowlist"
+API_BLOCKLIST = f"{API_BASE}/policies/blocklist"
 
 
 class Config:
@@ -476,6 +477,23 @@ class Client(ContentClient):
 
         items = response.get("items", [])
         demisto.debug(f"[API] Allowlist response received: {len(items)} items")
+        return response
+
+    def get_blocklist(self) -> dict[str, Any]:
+        """Fetch all items in the blocklist from the Koi API.
+
+        Returns:
+            The full API response dictionary containing 'items' list.
+        """
+        demisto.debug("[API] Fetching blocklist")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=API_BLOCKLIST,
+        )
+
+        items = response.get("items", [])
+        demisto.debug(f"[API] Blocklist response received: {len(items)} items")
         return response
 
     def remove_allowlist_item(
@@ -1159,6 +1177,49 @@ def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> Comm
     return CommandResults(readable_output=readable)
 
 
+def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Retrieve all items in the blocklist.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (unused, no inputs for this command).
+
+    Returns:
+        CommandResults with the blocklist items.
+    """
+    demisto.debug("[Command] koi-blocklist-get triggered")
+
+    response = client.get_blocklist()
+    items = response.get("items", [])
+
+    demisto.debug(f"[Command Result] Retrieved {len(items)} blocklist items")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Blocklist",
+        items,
+        headers=[
+            "item_id",
+            "item_name",
+            "item_display_name",
+            "marketplace",
+            "publisher_name",
+            "package_name",
+            "notes",
+            "created_by",
+            "created_at",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Blocklist",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
 # endregion
 
 # region Main router
@@ -1174,6 +1235,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-allowlist-get": koi_allowlist_get_command,
     "koi-allowlist-item-remove": koi_allowlist_item_remove_command,
     "koi-allowlist-item-add": koi_allowlist_item_add_command,
+    "koi-blocklist-get": koi_blocklist_get_command,
 }
 
 
