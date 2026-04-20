@@ -1,0 +1,107 @@
+{
+  "next": null,
+  "previous": null,
+  "total": 2,
+  "results": [
+    {
+      "analyst_score": null,
+      "analyst_tlp": null,
+      "confidence_score": 80,
+      "country": null,
+      "created": 1674080000,
+      "ctix_created": 1674080001,
+      "ctix_modified": 1674080002,
+      "custom_attributes": [],
+      "description": "Malicious IP observed in multiple threat feeds",
+      "enrichment_data": [],
+      "first_seen": 1674080000,
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "ioc_type": "ipv4-addr",
+      "is_deprecated": false,
+      "is_false_positive": false,
+      "is_reviewed": false,
+      "is_whitelisted": false,
+      "last_seen": 1674080100,
+      "manual_review": false,
+      "modified": 1674080001,
+      "name": "1.1.1.1",
+      "object_type": "indicator",
+      "published_collections": [],
+      "relations": {},
+      "sources": [
+        {
+          "id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
+          "name": "ThreatFeed",
+          "source_type": "RSS_FEED"
+        }
+      ],
+      "sub_type": "value",
+      "tags": [
+        {
+          "colour_code": "#FF5330",
+          "id": "9635c41b-80fb-4a98-a1f3-e5796c72bb29",
+          "name": "malicious"
+        }
+      ],
+      "tlp": "AMBER",
+      "valid_from": 1674080000,
+      "valid_until": null
+    },
+    {
+      "analyst_score": null,
+      "analyst_tlp": null,
+      "confidence_score": 30,
+      "country": "US",
+      "created": 1674080100,
+      "ctix_created": 1674080101,
+      "ctix_modified": 1674080102,
+      "custom_attributes": [
+        {
+          "custom_attribute_name": "criticality",
+          "custom_attribute_value": "2",
+          "custom_attribute_value_integer": 2,
+          "custom_attribute_value_float": null
+        }
+      ],
+      "description": null,
+      "enrichment_data": [],
+      "first_seen": 1674080100,
+      "id": "8a5f8c2d-1234-4abc-def0-1a2b3c4d5e6f",
+      "ioc_type": "domain-name",
+      "is_deprecated": false,
+      "is_false_positive": false,
+      "is_reviewed": true,
+      "is_whitelisted": true,
+      "last_seen": 1674080200,
+      "manual_review": false,
+      "modified": 1674080102,
+      "name": "www.facebook.com",
+      "object_type": "indicator",
+      "published_collections": [
+        {
+          "id": "coll-001",
+          "name": "PublicCollection"
+        }
+      ],
+      "relations": {},
+      "sources": [
+        {
+          "id": "source-001",
+          "name": "PublicFeed",
+          "source_type": "MISCELLANEOUS"
+        }
+      ],
+      "sub_type": "value",
+      "tags": [
+        {
+          "colour_code": "#27865F",
+          "id": "tag-abc-001",
+          "name": "trusted"
+        }
+      ],
+      "tlp": "WHITE",
+      "valid_from": 1674080100,
+      "valid_until": null
+    }
+  ]
+}

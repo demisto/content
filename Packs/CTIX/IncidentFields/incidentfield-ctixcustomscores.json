@@ -1,0 +1,30 @@
+{
+    "id": "incident_ctixcustomscores",
+    "version": -1,
+    "name": "CTIX Custom Scores",
+    "ownerOnly": false,
+    "description": "JSON-encoded custom score data from Cyware Intel Exchange (CTIX) for the incident.",
+    "cliName": "ctixcustomscores",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CTIX Intel"
+    ],
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
