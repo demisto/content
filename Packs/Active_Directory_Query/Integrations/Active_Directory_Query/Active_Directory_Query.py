@@ -134,8 +134,8 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
         tls = get_tls_object(unsecure, ssl_version)
         if port:
-            return Server(host, port=port, use_ssl=unsecure, tls=tls)
-        return Server(host, use_ssl=unsecure, tls=tls)
+            return Server(host, port=port, use_ssl=True, tls=tls)
+        return Server(host, use_ssl=True, tls=tls)
 
     if secure_connection == SSL:  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
