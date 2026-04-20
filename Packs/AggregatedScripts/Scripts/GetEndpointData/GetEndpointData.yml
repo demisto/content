@@ -72,5 +72,3 @@ dockerimage: demisto/python3:3.12.12.6391686
 fromversion: 6.10.0
 tests:
 - GetEndpointData-Test
-supportedModules:
-- agentix
