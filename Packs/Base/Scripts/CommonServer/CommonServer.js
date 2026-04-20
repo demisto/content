@@ -2168,6 +2168,7 @@ function _extractUcpExpiry(creds) {
  * Used before retrying after a 401 to force a fresh fetch.
  *
  * @param {String} methodUniqueId - The method_unique_id to invalidate.
+ * @return {void}
  */
 function invalidateUcpCredentialsCache(methodUniqueId) {
     delete _ucpCredentialsCache[methodUniqueId];
