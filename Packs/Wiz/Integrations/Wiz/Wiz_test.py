@@ -2289,3 +2289,109 @@ def test_reject_or_resolve_issue_truncates_long_comment(mock_check_api):
     sent_note = mock_check_api.call_args[0][1]["patch"]["note"]
     assert len(sent_note) <= MAX_NOTE_LENGTH
     assert sent_note.endswith("... [truncated]")
+
+
+# ===== _build_new_note_entries tests =====
+
+
+LAST_UPDATE = "2025-01-01T00:00:00Z"
+_NOTE = lambda text, time, author: {
+    "text": text, "createdAt": time, "updatedAt": time,
+    "user": {"name": author}, "serviceAccount": None,
+}
+
+
+@pytest.mark.parametrize(
+    "issue,last_update,expected_count,expected_content",
+    [
+        pytest.param({"notes": None}, LAST_UPDATE, 0, None, id="notes_null"),
+        pytest.param({"notes": []}, LAST_UPDATE, 0, None, id="notes_empty"),
+        pytest.param({}, LAST_UPDATE, 0, None, id="notes_key_missing"),
+        pytest.param({"notes": [_NOTE("x", "2025-06-01T10:00:00Z", "A")]}, None, 0, None, id="no_last_update"),
+        pytest.param(
+            {"notes": [
+                _NOTE("old", "2024-01-01T00:00:00Z", "Alice"),
+                _NOTE("new", "2025-06-01T10:00:00Z", "Bob"),
+            ]},
+            LAST_UPDATE, 1, "Bob",
+            id="filters_old_keeps_new",
+        ),
+    ],
+)
+def test_build_new_note_entries(issue, last_update, expected_count, expected_content):
+    from Wiz import _build_new_note_entries
+
+    result = _build_new_note_entries(issue, last_update)
+    assert len(result) == expected_count
+    if expected_content:
+        assert expected_content in result[0]["Contents"]
+
+
+# ===== _attach_mirror_metadata tests =====
+
+
+def test_attach_mirror_metadata_incoming(mock_mirror_params):
+    from Wiz import _attach_mirror_metadata
+
+    issue = {"id": "test-issue-id"}
+    _attach_mirror_metadata(issue)
+
+    assert issue[WizMirrorField.DIRECTION] == "In"
+    assert issue[WizMirrorField.INSTANCE] == "Wiz_instance_1"
+    assert issue[WizMirrorField.ID] == "test-issue-id"
+    assert issue[WizMirrorField.TAGS] == ["comments"]
+
+
+def test_attach_mirror_metadata_no_direction():
+    from Wiz import _attach_mirror_metadata
+
+    with patch.object(demisto, "params", return_value={}):
+        issue = {"id": "test-issue-id"}
+        _attach_mirror_metadata(issue)
+
+    assert WizMirrorField.DIRECTION not in issue
+
+
+# ===== Null-safety for notes in mirroring and commands =====
+
+
+@patch("Wiz.get_issue")
+def test_get_remote_data_command_notes_none(mock_get_issue, mock_mirror_params):
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [
+        {"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN", "notes": None}
+    ]
+
+    result = get_remote_data_command(
+        {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
+    )
+
+    assert result.mirrored_object["id"] == "11111111-1111-1111-1111-111111111111"
+    assert result.entries == []
+
+
+@patch("Wiz._get_issue")
+def test_clear_issue_note_notes_none(mock_get_issue):
+    from Wiz import clear_issue_note
+
+    mock_get_issue.return_value = {"data": {"issues": {"nodes": [{"notes": None}]}}}
+    result = clear_issue_note("12345678-1111-2222-3333-444444444444")
+    assert result is None  # no notes to delete, returns None
+
+
+def test_outgoing_mapper_includes_resolution_reason():
+    """Verify the outgoing mapper JSON maps resolutionReason so close reason propagates to Wiz"""
+    import json
+    import os
+
+    mapper_path = os.path.join(
+        os.path.dirname(__file__), "..", "..", "Classifiers", "classifier-mapper-outgoing-Wiz.json"
+    )
+    with open(mapper_path) as f:
+        mapper = json.load(f)
+
+    fields = mapper["mapping"]["Wiz Issue"]["internalMapping"]
+    assert "resolutionReason" in fields, "outgoing mapper must map resolutionReason"
+    assert "status" in fields
+    assert "dueAt" in fields

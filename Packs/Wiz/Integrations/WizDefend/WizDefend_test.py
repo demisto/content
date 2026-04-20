@@ -5308,3 +5308,41 @@ def test_get_single_detection_all_cases(
             # If we expect success but shouldn't call return_results,
             # it means we need to handle this case differently
             pass
+
+
+# ===== ruleMatch null safety tests =====
+
+
+@pytest.mark.parametrize(
+    "rule_match,expected_has_rule",
+    [
+        pytest.param(None, False, id="ruleMatch_null"),
+        pytest.param({}, False, id="ruleMatch_empty"),
+        pytest.param({"rule": None}, False, id="rule_null"),
+        pytest.param({"rule": {"name": "test"}}, True, id="rule_present"),
+    ],
+)
+def test_build_fallback_description_rulematch_null_safety(rule_match, expected_has_rule):
+    detection = {"id": "det-1", "severity": "HIGH"}
+    if rule_match is not None:
+        detection["ruleMatch"] = rule_match
+    else:
+        detection["ruleMatch"] = None
+
+    result = build_fallback_description(detection)
+    assert "HIGH severity detection" in result
+    if expected_has_rule:
+        assert "triggered by rule" in result
+    else:
+        assert "triggered by rule" not in result
+
+
+def test_build_incidents_rulematch_null():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "HIGH",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "ruleMatch": None,
+    }
+    result = build_incidents(detection)
+    assert "Unknown Rule" in result[DemistoParams.NAME]

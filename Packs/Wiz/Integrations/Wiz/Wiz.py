@@ -2470,10 +2470,11 @@ def clear_issue_note(issue_id):
 
     issue_object = _get_issue(issue_id)
 
-    issue_notes = issue_object["data"]["issues"]["nodes"][0]["notes"]
+    issue_notes = issue_object["data"]["issues"]["nodes"][0].get("notes") or []
     demisto.info(f"The issue notes are: {issue_notes}")
 
     query = DELETE_NOTE_QUERY
+    response = None
     for note in issue_notes:
         variables = {"input": {"id": note["id"]}}
 
@@ -2720,7 +2721,7 @@ def _build_new_note_entries(issue, last_update):
     if not last_update:
         return entries
 
-    for note in issue.get("notes", []):
+    for note in issue.get("notes") or []:
         if XSOAR_MIRROR_MARKER in note.get("text", ""):
             continue
         note_time = note.get("updatedAt") or note.get("createdAt", "")
