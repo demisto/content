@@ -4394,22 +4394,19 @@ def test_update_remote_system_with_entries_uses_basename(mocker):
     mocker.patch.object(demisto, "debug")
 
     mock_client = MagicMock()
-    mock_client.upload_file.return_value = {
-        "result": {
-            "file_name": "passwd",
-            "download_link": "https://test.com/download",
-            "sys_id": "abc123",
-        }
-    }
 
     entries = [{"id": "entry_id", "type": 3, "tags": []}]
     params = {
         "file_tag_from_service_now": "FileFromServiceNow",
         "file_tag": "file",
     }
-    update_remote_system_with_entries(mock_client, entries, params, "ticket_id", "incident", {})
+    update_remote_system_with_entries(mock_client, entries, params, "ticket_id", "incident")
 
     call_args = mock_client.upload_file.call_args[0]
-    full_file_name_used = call_args[2]
-    assert os.path.basename(full_file_name_used) == full_file_name_used
+    # The filename is basename (no path traversal) + "_mirrored_from_xsoar" suffix
+    file_name_used = call_args[2]
+    assert "passwd" in file_name_used
+    assert "/" not in file_name_used
+    assert ".." not in file_name_used
+    assert os.path.basename(file_name_used) == file_name_used
 
