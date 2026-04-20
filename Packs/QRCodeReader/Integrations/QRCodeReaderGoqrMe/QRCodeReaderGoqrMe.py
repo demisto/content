@@ -21,11 +21,11 @@ def read_qr_code(verify=True):
     file_name = os.path.basename(demisto.getFilePath(entry_id)["name"])
 
     try:
-        shutil.copy(file_path, file_name)
-    except Exception:
-        raise Exception("Failed to prepare file for upload.")
+        try:
+            shutil.copy(file_path, file_name)
+        except Exception:
+            raise Exception("Failed to prepare file for upload.")
 
-    try:
         multipart_file = {"file": open(file_name, "rb")}
         data = {"outputformat": "json"}
         res = requests.post(URL + "/v1/read-qr-code/", data=data, files=multipart_file, verify=verify)
@@ -35,7 +35,11 @@ def read_qr_code(verify=True):
             return_error(str(res.text))
 
     finally:
-        os.remove(file_name)
+        if os.path.exists(file_name):
+            demisto.debug(f"Removing temporary file: {file_name}")
+            os.remove(file_name)
+        else:
+            demisto.debug(f"Temporary file not found, skipping removal: {file_name}")
 
 
 def test_qr_api(verify=True):
