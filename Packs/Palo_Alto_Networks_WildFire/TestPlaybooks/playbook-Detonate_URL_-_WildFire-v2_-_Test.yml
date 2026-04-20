@@ -1,24 +1,25 @@
 id: Detonate URL - WildFire-v2 - Test
 version: -1
 name: Detonate URL - WildFire-v2 - Test
+fromversion: 5.0.0
 description: |-
   test pb of:
-  Detonate URL - WildFire-v2
+  Detonate URL - WildFire v2.2
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
+    taskid: 928bddf2-67de-41b6-8d4d-19d9a610e3dd
     type: start
     task:
-      id: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
+      id: 928bddf2-67de-41b6-8d4d-19d9a610e3dd
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -30,14 +31,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
+    taskid: 67bc43e8-4ea8-4607-8004-a98114f0eb8f
     type: regular
     task:
-      id: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
+      id: 67bc43e8-4ea8-4607-8004-a98114f0eb8f
       version: -1
-      name: set remote file url
+      name: set remote file url and URLs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -45,58 +50,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       append: {}
       key:
         simple: URL.Data
+      stringify: {}
       value:
-        simple: http://www.software995.net/bin/pdf995s.exe
+        simple: http://www.pdf995.com/samples/pdf.pdf
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 7f491fe6-aa7f-450c-8bda-797c9b140a20
-    type: playbook
-    task:
-      id: 7f491fe6-aa7f-450c-8bda-797c9b140a20
-      version: -1
-      name: Detonate URL - WildFire-v2
-      description: |-
-        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-        The detonation supports the following file types -
-        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
-      playbookName: Detonate URL - WildFire-v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Interval:
-        simple: "1"
-      ReportFileType: {}
-      Timeout:
-        simple: "15"
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
@@ -107,83 +69,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 38798132-af2b-43ff-89f3-235c1ba139d3
-    type: regular
-    task:
-      id: 38798132-af2b-43ff-89f3-235c1ba139d3
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: be794cad-cb1f-4558-86df-1be6ba5f1941
-    type: regular
-    task:
-      id: be794cad-cb1f-4558-86df-1be6ba5f1941
-      version: -1
-      name: wildfire-report
-      description: Retrieves results for a file hash using WildFire.
-      script: WildFire-v2|||wildfire-report
-      type: regular
-      iscommand: true
-      brand: WildFire-v2
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      format:
-        simple: pdf
-      hash: {}
-      md5: {}
-      sha256:
-        simple: 253d142703041dd25197550a0fc11d6ac03befc1e64a1320009f1edf400c39aa
-      verbose: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+    taskid: 9e02dc83-f218-4063-8a29-7a5058a64d3d
     type: condition
     task:
-      id: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+      id: 9e02dc83-f218-4063-8a29-7a5058a64d3d
       version: -1
-      name: Check status Notfound
+      name: Check that the amount of reports == amount of inputs
       type: condition
       iscommand: false
       brand: ""
@@ -196,32 +93,51 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isEqualNumber
           left:
             value:
               complex:
-                root: WildFire
-                accessor: Report.Status
+                root: WildFire.Report.Status
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: WildFire.Report.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Success
+                transformers:
+                - operator: count
             iscontext: true
           right:
             value:
-              simple: NotFound
+              complex:
+                root: URL
+                accessor: Data
+                transformers:
+                - operator: count
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+    taskid: 5ec054b7-bf04-4a2a-8a2c-7ce327318cf5
     type: title
     task:
-      id: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+      id: 5ec054b7-bf04-4a2a-8a2c-7ce327318cf5
       version: -1
       name: Done
       type: title
@@ -231,19 +147,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1085
+          "x": 480,
+          "y": 910
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
+    taskid: 3a09a2e0-6167-4109-89da-59a9f57a8071
     type: regular
     task:
-      id: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
+      id: 3a09a2e0-6167-4109-89da-59a9f57a8071
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -253,24 +173,96 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Status for the benign URL is not "NotFound"
+        simple: Missing WF Report for URLs/Remote Files.
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
+    type: playbook
+    task:
+      id: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
+      version: -1
+      name: Detonate URL - WildFire v2.2
+      playbookName: Detonate URL - WildFire v2.2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4039ef04-960e-4817-8c81-f6438098c800
+    type: regular
+    task:
+      id: 4039ef04-960e-4817-8c81-f6438098c800
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 940,
         "width": 810,
         "x": 50,
         "y": 50
@@ -279,4 +271,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0

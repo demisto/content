@@ -20,7 +20,7 @@ jobs:
           python-version: '3.10'
 
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v9
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
 
       - name: Install python dependencies
         run: |

@@ -505,7 +505,7 @@ script:
             - Vulnerability Policy
             - AI Security Posture
         - auto: PREDEFINED
-          description: Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
+          description: This argument is deprecated. Use *start_time* instead. Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
           name: time_frame
           predefined:
             - 60 minutes
@@ -517,6 +517,7 @@ script:
             - 14 days
             - 30 days
             - custom
+          deprecated: true
         - description: The name assigned to the user_id during agent runtime. Accepts a comma-separated list.
           isArray: true
           name: user_name
@@ -618,15 +619,21 @@ script:
           predefined:
             - DESC
             - ASC
-        - defaultValue: "0"
-          description: The first page number to retrieve issues from.
+        - description: This argument is deprecated. Use *page* instead. The first page number to retrieve issues from.
           name: offset
-        - defaultValue: "50"
-          description: The last page number to retrieve issues from.
+          deprecated: true
+        - description: This argument is deprecated. Use *page_size* instead. The last page number to retrieve issues from.
           name: limit
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+          deprecated: true
+        - defaultValue: "0"
+          description: The page number for the issues to return for pagination. 
+          name: page
+        - defaultValue: "50"
+          description: The number of issues to return per page.
+          name: page_size
+        - description: Supports epoch timestamp, simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: start_time
-        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: end_time
         - auto: PREDEFINED
           description: Whether the issue is starred.
@@ -640,7 +647,8 @@ script:
         - description: The category of the issue. Accepts a comma-separated list.
           isArray: true
           name: issue_category
-        - description: The domain of the issue. Accepts a comma-separated list.
+        - auto: PREDEFINED
+          description: The domain of the issue. Accepts a comma-separated list.
           isArray: true
           name: issue_domain
           predefined:
@@ -678,7 +686,7 @@ script:
           isArray: true
           name: asset_ids
         - description: |
-            The assignee of the issue. Accepts a comma-separated list.
+            The assignee of the issue. Accepts a comma-separated list of either assignee emails or names, not both.
             Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
           isArray: true
           name: assignee
@@ -691,26 +699,50 @@ script:
         - contextPath: Core.Issue.internal_id
           description: The unique ID of the issue.
           type: String
+        - contextPath: Core.Issue.Identity_type
+          description: The identity type of the account.
+          type: String
         - contextPath: Core.Issue.source_insert_ts
           description: The detection timestamp.
           type: Number
         - contextPath: Core.Issue.issue_name
           description: The name of the issue.
           type: String
-        - contextPath: Core.Issue.severity
-          description: The severity of the issue.
-          type: String
         - contextPath: Core.Issue.issue_category
           description: The category of the issue.
           type: String
-        - contextPath: Core.Issue.issue_action_status
-          description: The issue action status.
-          type: String
-        - contextPath: Core.Issue.issue_action_status_readable
-          description: The issue action status in readable format.
-          type: String
         - contextPath: Core.Issue.issue_description
           description: The issue description.
+          type: String
+        - contextPath: Core.Issue.agent_id
+          description: The agent (endpoint) ID associated with the issue.
+          type: List
+        - contextPath: Core.Issue.asset_ids
+          description: The asset IDs related to the issue.
+          type: List
+        - contextPath: Core.Issue.severity
+          description: The severity of the issue.
+          type: String
+        - contextPath: Core.Issue.issue_domain
+          description: The domain of the issue.
+          type: String
+        - contextPath: Core.Issue.case_ids
+          description: The case IDs associated with the issue.
+          type: List
+        - contextPath: Core.Issue.issue_source
+          description: The source of the issue.
+          type: String
+        - contextPath: Core.Issue.starred
+          description: Whether the issue is starred.
+          type: Boolean
+        - contextPath: Core.Issue.status.progress
+          description: The progress status of the issue.
+          type: String
+        - contextPath: Core.Issue.assigned_to_pretty
+          description: The pretty name of the user assigned to the issue.
+          type: String
+        - contextPath: Core.Issue.assigned_to
+          description: The user assigned to the issue.
           type: String
         - contextPath: Core.Issue.agent_ip_addresses
           description: The host IP address.
@@ -724,9 +756,33 @@ script:
         - contextPath: Core.Issue.mitre_technique_id_and_name
           description: The MITRE attack technique.
           type: String
-        - contextPath: Core.Issue.starred
-          description: Whether the issue is starred.
-          type: Boolean
+        - contextPath: Core.Issue.issue_action_status 
+          description: The issue action status.
+          type: String
+        - contextPath: Core.Issue.issue_action_status_readable
+          description: The issue action status in readable format.
+          type: String
+        - contextPath: Core.Issue.action_file_macro_sha256
+          description: File Macro SHA256 hash of the action file macro.
+          type: String
+        - contextPath: Core.Issue.action_process_image_sha256
+          description: Action process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.causality_actor_process_image_sha256
+          description: Causality actor process image SHA256 hash.
+          type: String
+        - contextPath: Core.Issue.os_actor_process_image_sha256
+          description: OS Parent SHA256 hash of the OS actor process image.
+          type: String
+        - contextPath: Core.Issue.actor_process_image_sha256
+          description: Actor process image SHA256 hash.
+          type: String
+        - contextPath: Core.IssueMetadata.returned_count
+          description: The actual number of issues that match all filter criteria and returned in this specific response.
+          type: Number
+        - contextPath: Core.IssueMetadata.filtered_count
+          description: The total number of issues in the system that match all filter criteria.
+          type: Number
     - arguments:
         - description: Asset unique identifier.
           name: asset_id
@@ -1804,6 +1860,9 @@ script:
         - contextPath: Core.IssueRecommendations.suggested_code_block
           description: Code block fix suggestion.
           type: String
+        - contextPath: Core.IssueRecommendations.network_reachability
+          description: The Network reachability information for the issue.
+          type: Json
     - arguments:
       - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
         name: issue_ids
@@ -2210,6 +2269,9 @@ script:
         - contextPath: Core.Case.resolve_comment
           description: Comments added when resolving the case. May be null.
           type: String
+        - contextPath: Core.Case.resolve_reason
+          description: The reason for resolving the case (e.g. known_issue, duplicate, false_positive, other, true_positive, security_testing). May be null.
+          type: String
         - contextPath: Core.Case.resolved_timestamp
           description: Timestamp when the case was resolved.
           type: Number
@@ -2287,9 +2349,10 @@ script:
           type: Date
         - contextPath: Core.CasesMetadata.returned_count
           description: The actual number of cases that match all filter criteria and returned in this specific response.
-          type: String
+          type: Number
         - contextPath: Core.CasesMetadata.filtered_count
           description: The total number of cases in the system that match all filter criteria.
+          type: Number
     - name: core-get-appsec-issues
       description: "Retrieves application security issues based on specified filters."
       arguments:
@@ -2563,7 +2626,10 @@ script:
             - "false"
         - name: custom_fields
           description: |
-            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            A JSON encoded string representing custom field name-value pairs to update.
+            Preferred format: a JSON object where each key is a field name and each value is the field value (e.g., `{"field1": "value1", "multiselect_field": ["a", "b"]}`).
+            Legacy format also supported: a list of single-key objects (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`).
+            For multiSelect fields, the value must be a JSON array (e.g., `["option1", "option2"]`).
           type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
@@ -4269,7 +4335,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.6387824
+  dockerimage: demisto/google-cloud-storage:1.0.0.7837600
 tests:
   - No tests
 fromversion: 6.2.0

@@ -1,7 +1,10 @@
 import json
 from typing import Any
 
+import pytest
+
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import DemistoException, EntryFormat, EntryType
 from CopyNotesToIncident import copy_notes_to_target_incident
 
 MOCK_TARGET_INCIDENT_ID = "99"
@@ -36,7 +39,7 @@ def test_copy_no_note_entries(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -71,7 +74,7 @@ def test_copy_all_note_entries(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -119,7 +122,7 @@ def test_copy_tagged_note_entries(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -155,7 +158,7 @@ def test_copy_note_entries_disable_auto_extract(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -166,3 +169,41 @@ def test_copy_note_entries_disable_auto_extract(mocker):
     entries = mocked_ec.call_args_list[1][0][1]["entries"]
     for entry in entries:
         assert entry.get("IgnoreAutoExtract")
+
+
+def test_copy_notes_add_entries_error(mocker):
+    """
+    Given:
+        - an existing nonempty set of source notes
+        - arguments (target incident id, tags (empty list))
+    When
+        - copying note entries from current incident to target
+        - the addEntries command returns an error entry from the backend
+    Then
+        - a DemistoException is raised with the error message
+        - no success message is returned
+    """
+    mock_source_entries = load_test_data("test_data/entries.json")
+
+    mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and "Note" in e and e["Note"] is True]
+
+    error_message = "Failed to add entries to incident 99"
+
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if name == "getEntries":
+            return mock_target_entries
+        elif name == "addEntries":
+            return [
+                {
+                    "Type": EntryType.ERROR,
+                    "ContentsFormat": EntryFormat.TEXT,
+                    "Contents": error_message,
+                }
+            ]
+
+        raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+
+    with pytest.raises(DemistoException, match=error_message):
+        copy_notes_to_target_incident({"target_incident": MOCK_TARGET_INCIDENT_ID, "tags": []})

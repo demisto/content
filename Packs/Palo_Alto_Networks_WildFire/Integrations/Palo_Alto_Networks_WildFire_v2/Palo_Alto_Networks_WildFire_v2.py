@@ -1331,8 +1331,7 @@ def wildfire_get_url_report(url: str) -> tuple:
 
     finally:
         command_results = CommandResults(
-            outputs_prefix="WildFire.Report",
-            outputs_key_field="url",
+            outputs_prefix=WILDFIRE_REPORT_DT_FILE,
             outputs=report,
             readable_output=human_readable,
             raw_response=report,
@@ -1523,15 +1522,20 @@ def assert_upload_argument(args: dict):
         raise ValueError("Please specify the item you wish to upload using the 'upload' argument.")
 
 
-def get_agent(api_key_source: str, platform: str, token: str) -> str:
+def get_agent(api_key_source: str, token: str) -> str:
     # Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
     # within XSOAR (both on-prem and cloud).
-    if len(token) == 32:
-        return ""
+    # Explicit source selection always takes priority.
     if api_key_source in ["pcc", "prismaaccessapi", "xsoartim", "xdr"]:
         return api_key_source
-    if (platform == "x2" or is_demisto_version_ge("8")) and not api_key_source:
+    # Auto-detect on XSIAM / XSOAR 8+ platforms — XDR license tokens may be 32 chars
+    # but still require agent=xdr.
+    if (is_xsiam() or is_demisto_version_ge("8")) and not api_key_source:
         return "xdr"
+    # NGFW / WF portal keys are 32 chars and need no agent header.
+    # This check is intentionally after platform detection to avoid masking XDR license tokens.
+    if len(token) == 32:
+        return ""
     # we have an 'other' api key that requires no additional api key headers for agent
     return ""
 
@@ -1555,7 +1559,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-    platform = get_demisto_version().get("platform")  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
     demisto.info(f"command is {command}")
 
     try:
@@ -1590,7 +1593,7 @@ def main():  # pragma: no cover
                 sys.exit()
 
         # update the default headers with the correct agent version based on the selection in the instance config.
-        agent_value = get_agent(params.get("credentials_source"), platform, token)
+        agent_value = get_agent(params.get("credentials_source"), token)
 
         # if the apikey is longer than 32 characters agent is not set, and we're not in XSIAM or XSOAR SaaS, send exception
         # otherwise API calls will fail.

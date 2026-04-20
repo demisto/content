@@ -212,10 +212,24 @@
                         "filters": [],
                         "root": "Assignee",
                         "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
                     }
                 },
                 "BmcITSM Customer": {
@@ -223,10 +237,24 @@
                         "filters": [],
                         "root": "Customer",
                         "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
                     }
                 },
                 "BmcITSM Requester": {
@@ -234,10 +262,24 @@
                         "filters": [],
                         "root": "Requester",
                         "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
                     }
                 },
                 "Description": {

@@ -3,7 +3,6 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-import dateparser
 import copy
 
 
@@ -71,6 +70,7 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
+    "core-get-issues",
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
@@ -198,10 +198,12 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "other": "STATUS_070_RESOLVED_OTHER",
         "true_positive": "STATUS_090_TRUE_POSITIVE",
         "security_testing": "STATUS_100_SECURITY_TESTING",
-        "other": "STATUS_070_RESOLVED_OTHER",
     }
+
+    STATUS_RESOLVED_REASON_OUTPUT = {v: k for k, v in STATUS_RESOLVED_REASON.items()}
 
     FIELDS = {
         "case_id_list": "CASE_ID",
@@ -608,15 +610,11 @@ def preprocess_get_case_extra_data_outputs(outputs: list | dict):
     return process(outputs)
 
 
-def filter_context_fields(output_keys: list, context: list):
+def filter_context_fields(output_keys: list, context: list) -> list:
     """
-    Filters only specific keys from the context dictionary based on provided output_keys.
+    Filters only specific keys from the context dictionary where values are not None.
     """
-    filtered_context = []
-    for alert in context:
-        filtered_context.append({key: alert.get(key) for key in output_keys})
-
-    return filtered_context
+    return [{k: v for k in output_keys if (v := alert.get(k)) is not None} for alert in context]
 
 
 class Client(CoreClient):
@@ -1308,6 +1306,7 @@ def create_issue_recommendations_readable_output(issue_ids: list[str], all_recom
         "severity",
         "description",
         "remediation",
+        "network_reachability",
     ]
 
     # Flags to track what headers we need to append
@@ -1416,6 +1415,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
             "severity": issue.get("severity"),
             "description": issue.get("alert_description"),
             "remediation": issue.get("remediation"),
+            "network_reachability": issue.get("extended_fields", {}).get("network_reachability") or {},
         }
 
         # --- Playbook and Quick Action Suggestions ---
@@ -1759,10 +1759,14 @@ def map_case_format(case_list):
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
             "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON_OUTPUT.get(
+                case_data.get("RESOLVE_REASON"), case_data.get("RESOLVE_REASON")
+            ),
             "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
-            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
-            "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
+            "original_tags": [tag.get("tag_name") for tag in (case_data.get("ORIGINAL_TAGS") or [])],
+            "tags": [tag.get("tag_name") for tag in (case_data.get("CURRENT_TAGS") or [])],
             "issue_count": case_data.get("ACC_ALERT_COUNT"),
             "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
             "high_severity_issue_count": case_data.get("HIGH_SEVERITY_ALERTS"),
@@ -1775,11 +1779,10 @@ def map_case_format(case_list):
             "wildfire_hits": case_data.get("WF_HITS"),
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
-            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
             "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
-            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "custom_fields": {k.removeprefix("CUSTOM_").lower(): v for k, v in case_data.items() if k.startswith("CUSTOM_")},
             "hosts": case_data.get("HOSTS") or [],
             "users": case_data.get("USERS") or [],
             "host_count": len(case_data.get("HOSTS", []) or []),
@@ -2809,23 +2812,37 @@ def parse_custom_fields(custom_fields: str) -> dict:
     """
     Parse and sanitize custom fields from JSON string input.
 
+    Accepts two formats:
+    - Dict: ``{"field1": "value1", "field2": ["a", "b"]}``
+    - List of single-key objects (legacy): ``[{"field1": "value1"}, {"field2": ["a", "b"]}]``
+
     Args:
-        custom_fields: JSON string containing array of custom field objects
+        custom_fields: JSON string in either dict or list-of-objects format.
 
     Returns:
-        dict: Dictionary with sanitized alphanumeric keys and string values,
-              duplicate keys are ignored (first occurrence wins)
+        dict: Dictionary with sanitized alphanumeric keys and native values.
+              Values are passed as-is (no stringification) so that multiselect
+              list values, booleans, and numbers reach the API in the correct type.
+              Duplicate keys are ignored (first occurrence wins).
     """
-    custom_fields = safe_load_json(custom_fields)
+    parsed = safe_load_json(custom_fields)
 
-    parsed_fields = {}
+    parsed_fields: dict = {}
 
-    for custom_field in custom_fields:
-        for key, value in custom_field.items():
-            # Sanitize key: remove non-alphanumeric characters
-            sanitized_key = "".join(char for char in key if char.isalnum())
-            if sanitized_key and sanitized_key not in parsed_fields:
-                parsed_fields[sanitized_key] = str(value)
+    if isinstance(parsed, dict):
+        # New preferred format: {"field1": "value1", "field2": ["a", "b"]}
+        raw_items = list(parsed.items())
+    elif isinstance(parsed, list):
+        # Legacy format: [{"field1": "value1"}, {"field2": ["a", "b"]}]
+        raw_items = [(k, v) for obj in parsed if isinstance(obj, dict) for k, v in obj.items()]
+    else:
+        return {}
+
+    for key, value in raw_items:
+        # Sanitize key: remove non-alphanumeric characters
+        sanitized_key = "".join(char for char in key if char.isalnum())
+        if sanitized_key and sanitized_key not in parsed_fields:
+            parsed_fields[sanitized_key] = value
 
     return parsed_fields
 
@@ -3462,7 +3479,10 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+            "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+        }
         for f in fields_data
         if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
@@ -3479,7 +3499,19 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                 f" be set with custom_fields argument."
             )
         elif field_name in custom_fields:
-            valid_fields[field_name] = field_value
+            field_type = custom_fields[field_name]["field_type"]
+            if field_type == "multiSelect" and not isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
+                    f" Received: {field_value!r}"
+                )
+            elif field_type == "shortText" and isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type shortText and does not accept a list value."
+                    f" Provide a single value instead."
+                )
+            else:
+                valid_fields[field_name] = field_value
         else:
             error_messages.append(f"Field '{field_name}' does not exist.")
 
@@ -3618,7 +3650,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        scripts = scripts_results[0].outputs.get("Scripts", [])  # type: ignore
+        scripts: list = scripts_results[0].outputs or []  # type: ignore
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
@@ -3814,6 +3846,18 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
+
+def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
+    response: list[CommandResults] = get_issues_by_filter_command(client, args)
+    output_keys = argToList(args.pop("output_keys", []))
+    if isinstance(response[0].outputs, list) and response[0].outputs:
+        response[0].outputs = [alert_to_issue(output) for output in response[0].outputs]
+
+        if output_keys:
+            response[0].outputs = filter_context_fields(output_keys, response[0].outputs)
+
+    return response
 
 
 def parse_frequency(day: str | None, time: str | None) -> str:
@@ -6051,31 +6095,7 @@ def main():  # pragma: no cover
             return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
-            # replace all dict keys that contain issue with alert
-            args = issue_to_alert(args)
-            # Extract output_keys before calling get_alerts_by_filter_command
-            output_keys = argToList(args.pop("output_keys", []))
-            assignees = argToList(args.get("assignee", "").lower())
-            if "assigned" in assignees or "unassigned" in assignees:
-                if len(assignees) > 1:
-                    raise DemistoException(
-                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
-                    )
-
-                # Swap assignee arg with the requested special operation
-                assignee_filter_option = args.pop("assignee", "")
-                args[assignee_filter_option] = True
-
-            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
-            # Convert alert keys to issue keys
-            if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
-
-            # Apply output_keys filtering if specified
-            if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
-
-            return_results(issues_command_results)
+            return_results(get_issues_command(client, args))
 
         elif command == "core-get-cases":
             return_results(get_cases_command(client, args))

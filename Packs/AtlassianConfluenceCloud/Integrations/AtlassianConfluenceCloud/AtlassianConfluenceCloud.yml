@@ -2194,3 +2194,5 @@ triggers:
   - name: cloud_id
     action:
       required: true
+supportedModules:
+- xsiam

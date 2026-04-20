@@ -1102,7 +1102,7 @@ def test_format_command_output():
     mapper = SERVICE_REQUEST_CONTEXT_MAPPER
     arranger = arrange_ticket_context_data
     mock_records = load_mock_response("service_request_records.json")
-    formatted_outputs = format_command_output(mock_records, mapper, arranger)
+    formatted_outputs = format_command_output(mock_records, mapper, "service_request", arranger)
     first_record = formatted_outputs[0]
     assert first_record["RequestID"] == "000000000000402"
     assert first_record["DisplayID"] == "REQ000000000401"

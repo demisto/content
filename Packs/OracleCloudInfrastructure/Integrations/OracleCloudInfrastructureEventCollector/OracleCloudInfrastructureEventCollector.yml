@@ -48,15 +48,32 @@ configuration:
   type: 0
   section: Connect
 - display: First fetch time
+  additionalinfo: This parameter is relevant for 'Audit' events only.
   defaultvalue: 3 days
   name: first_fetch
   type: 0
   section: Collect
   required: false
-- display: Number of events to fetch per fetch.
+- display: Maximum number of events to fetch per type.
   name: max_fetch
   type: 0
-  defaultvalue: 100
+  defaultvalue: 1000
+  section: Collect
+  required: false
+- display: Event types to fetch
+  name: event_types_to_fetch
+  additionalinfo: The type of the events to fetch. Default value is 'Audit'.
+  type: 16
+  options:
+  - Audit
+  - Search Logs
+  defaultvalue: Audit
+  section: Collect
+  required: true
+- display: Search log query
+  additionalinfo: Query corresponding to the search operation.
+  name: search_log_query
+  type: 0
   section: Collect
   required: false
 - display: Trust any certificate (not secure)
@@ -85,7 +102,7 @@ script:
       required: true
     description: Manual command to fetch and display events.
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.3561939
+  dockerimage: demisto/oci:1.0.0.7762963
   isfetchevents: true
   script: '-'
   subtype: python3
@@ -96,3 +113,5 @@ marketplaces:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam
