@@ -2153,6 +2153,7 @@ function _extractUcpExpiry(creds) {
         var dt = new Date(expiresAtStr);
         if (isNaN(dt.getTime())) {
             // Unparseable — fall back to 5 minutes from now
+            logDebug('[UCP][CommonServer.js] Unparseable UCP expiry timestamp: ' + expiresAtStr + '. Using 5 minutes as fallback.');
             return (Date.now() / 1000) + 300;
         }
         return dt.getTime() / 1000;
@@ -2389,6 +2390,7 @@ function _flattenUcpCredentials(creds) {
         };
         return result;
     }
+    logError('[UCP][CommonServer.js] _flattenUcpCredentials: unknown credential type: ' + credType);
 
     return creds;
 }
