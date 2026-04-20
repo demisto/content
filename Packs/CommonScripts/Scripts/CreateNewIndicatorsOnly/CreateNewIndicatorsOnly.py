@@ -152,22 +152,35 @@ def add_new_indicator(
 
 
 def add_new_indicators(
-    indicator_values: list[Any] | None, create_new_indicator_args: dict[str, Any], associate_to_incident: bool = False
+    indicator_values: list[Any] | None,
+    create_new_indicator_args: dict[str, Any],
+    associate_to_incident: bool = False,
+    use_batch: bool = True,
 ) -> list[dict[str, Any]]:
     """
     Create indicators in TIM for all values in ``indicator_values``.
 
-    **Performance optimisation (CRTX-231934)**: Instead of calling
-    ``findIndicators`` once per value (N serial round-trips), we issue a single
-    batched OR-query to discover which values already exist, then only call
-    ``createNewIndicator`` for the genuinely new ones.
-
-    For N=100 indicators this reduces ~200 serial server calls to
-    ~2 calls (1 batch find + 1 batch create for new ones).
+    Args:
+        indicator_values: Raw indicator values to create.
+        create_new_indicator_args: Arguments forwarded to ``createNewIndicator``.
+        associate_to_incident: Whether to associate each indicator to the current incident.
+        use_batch: If True (default), use a single batched OR-query to find existing indicators
+            (CRTX-231934 optimisation — ~50x faster for large batches).
+            If False, fall back to the original per-indicator serial ``findIndicators`` calls
+            (pre-optimisation baseline, useful for side-by-side performance comparison).
     """
     if not indicator_values:
         return []
 
+    if not use_batch:
+        # --- Legacy path: one findIndicators call per indicator (pre-CRTX-231934 behaviour) ---
+        demisto.debug(f"[LEGACY] use_batch=False — running serial findIndicators loop for {len(indicator_values)} indicators")
+        return [
+            add_new_indicator(indicator_value, create_new_indicator_args, associate_to_incident)
+            for indicator_value in indicator_values
+        ]
+
+    # --- Optimised path: single batched findIndicators OR-query ---
     # Normalise all values up-front so we can deduplicate and build the batch query.
     normalised: list[str] = []
     results: list[dict[str, Any]] = []
@@ -260,8 +273,12 @@ def main():
         create_new_indicator_args = dict(args)
         create_new_indicator_args.pop("indicator_values", None)
         create_new_indicator_args.pop("verbose", None)
+        create_new_indicator_args.pop("use_batch", None)
         associate_to_incident = argToBoolean(create_new_indicator_args.pop("associate_to_current", "false"))
-        ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident)
+        # use_batch=true (default): batched findIndicators OR-query (CRTX-231934 optimisation).
+        # use_batch=false: legacy serial findIndicators per indicator (pre-optimisation baseline).
+        use_batch = argToBoolean(args.get("use_batch", "true"))
+        ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident, use_batch=use_batch)
 
         outputs = [
             assign_params(

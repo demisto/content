@@ -37,10 +37,10 @@ args:
 - name: additional_fields
   description: |
     When set to true, the output includes an `AdditionalFields` object
-    for each of the indicator result.  
+    for each of the indicator result.
     `AdditionalFields` contains all fields returned by TIM or the integrations
-    that are not part of the standard output keys: `Address`, `DetectionEngines`, 
-    `PositiveDetections`, `Score`, and `Brand`.  
+    that are not part of the standard output keys: `Address`, `DetectionEngines`,
+    `PositiveDetections`, `Score`, and `Brand`.
     When set to false, only the standard keys are returned.
   auto: PREDEFINED
   predefined:
@@ -48,6 +48,21 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
+- name: use_batch
+  description: |
+    Controls whether the CRTX-231934 batch optimisations are active.
+    - 'true' (default): Use a single batched `extractIndicators` call and a batched `findIndicators`
+      OR-query in `CreateNewIndicatorsOnly`. Dramatically faster for large indicator lists
+      (100 IPs: ~135s → ~32s in benchmarks).
+    - 'false': Use the legacy serial path — one `extractIndicators` call per indicator and one
+      `findIndicators` call per indicator. Use this to compare performance against the baseline.
+    A timing summary table is always shown at the top of the result regardless of this setting.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  defaultValue: 'true'
 comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IP and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
 commonfields:
   id: ip-enrichment
