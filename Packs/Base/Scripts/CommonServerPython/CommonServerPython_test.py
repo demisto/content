@@ -11198,3 +11198,526 @@ class TestTimeSensitive:
 
         with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* exceeded"):
             client._http_request('get', 'test')
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# UCP (Unified Connector Platform) Tests
+# ═══════════════════════════════════════════════════════════════════════════════
+# Tests are organized hierarchically by category.
+# Each class covers a specific UCP subsystem.
+# Run all UCP tests: pytest -k "Ucp"
+
+UCP_TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data')
+
+
+def load_ucp_test_data(filename, key=None):
+    """Load a UCP test data JSON file from test_data/.
+
+    Args:
+        filename: JSON filename in test_data/.
+        key: Optional top-level key to extract from the loaded JSON.
+
+    Returns:
+        The full JSON dict, or the value at ``key`` if provided.
+    """
+    filepath = os.path.join(UCP_TEST_DATA_DIR, filename)
+    with open(filepath) as f:
+        data = json.load(f)
+    if key is not None:
+        return data[key]
+    return data
+
+
+# ── UCP Fixtures ──
+
+@pytest.fixture()
+def ucp_metadata_single():
+    """Single-profile UCP metadata."""
+    return load_ucp_test_data('ucp_metadata.json', key='single_profile')
+
+
+@pytest.fixture()
+def ucp_metadata_multi():
+    """Multi-profile UCP metadata."""
+    return load_ucp_test_data('ucp_metadata.json', key='multi_profile')
+
+
+@pytest.fixture()
+def ucp_creds_oauth2():
+    """OAuth2 UCP credentials."""
+    return load_ucp_test_data('ucp_credentials.json', key='oauth2')
+
+
+@pytest.fixture()
+def ucp_creds_api_key():
+    """API key UCP credentials."""
+    return load_ucp_test_data('ucp_credentials.json', key='api_key')
+
+
+@pytest.fixture()
+def ucp_creds_plain():
+    """Plain (basic auth) UCP credentials."""
+    return load_ucp_test_data('ucp_credentials.json', key='plain')
+
+
+@pytest.fixture()
+def ucp_clean_cache():
+    """Clean the UCP credentials cache before and after each test."""
+    CommonServerPython._ucp_creds_cache.clear()
+    yield
+    CommonServerPython._ucp_creds_cache.clear()
+
+
+@pytest.fixture()
+def ucp_reset_injected_flag():
+    """Reset _UCP_AUTH_PARAMS_INJECTED to False after each test."""
+    original = CommonServerPython._UCP_AUTH_PARAMS_INJECTED
+    yield
+    CommonServerPython._UCP_AUTH_PARAMS_INJECTED = original
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Category 1: UCP Detection
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TestUcpDetection:
+    """Tests for is_ucp_enabled() and should_use_ucp_auth().
+
+    These are the gateway functions — every UCP code path starts with one of
+    these checks. Getting them wrong means UCP either activates when it
+    shouldn't (breaking non-UCP integrations) or fails to activate when it
+    should.
+    """
+
+    def test_is_ucp_enabled_returns_true_when_metadata_present(self, mocker, ucp_metadata_single):
+        """When BE provides connector metadata, UCP should be detected as enabled."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
+        assert CommonServerPython.is_ucp_enabled() is True
+
+    def test_is_ucp_enabled_returns_false_when_metadata_empty_dict(self, mocker):
+        """Empty dict from BE means legacy mode — UCP should NOT be enabled."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={})
+        assert CommonServerPython.is_ucp_enabled() is False
+
+    def test_is_ucp_enabled_returns_false_when_metadata_none(self, mocker):
+        """None from BE means legacy mode — UCP should NOT be enabled."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=None)
+        assert CommonServerPython.is_ucp_enabled() is False
+
+    def test_is_ucp_enabled_returns_false_when_method_raises(self, mocker):
+        """If demisto.unifiedConnectorMetadata raises (old server), document the behavior."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
+        with pytest.raises(AttributeError):
+            CommonServerPython.is_ucp_enabled()
+
+    def test_should_use_ucp_auth_true_when_ucp_enabled(self, mocker, ucp_metadata_single):
+        """When UCP is enabled and params not injected, should_use_ucp_auth returns True."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_should_use_ucp_auth_false_when_ucp_disabled(self, mocker):
+        """When UCP is disabled, should_use_ucp_auth returns False regardless of flag."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={})
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_when_params_injected(self, mocker, ucp_metadata_single, ucp_reset_injected_flag):
+        """When _UCP_AUTH_PARAMS_INJECTED is True, should_use_ucp_auth returns False
+        even though UCP is enabled. This prevents double-injection."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Category 2: Capability Resolution
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TestUcpCapabilityResolution:
+    """Tests for resolve_ucp_capability() and BaseClient._resolve_ucp_capability().
+
+    Capability resolution determines which connection profile to use.
+    Wrong resolution = wrong credentials = auth failure.
+    """
+
+    def test_resolve_fetch_incidents_maps_to_collection(self):
+        """fetch-incidents should map to 'collection-and-ingestion'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
+        assert result == 'collection-and-ingestion'
+
+    def test_resolve_fetch_assets_maps_to_collection(self):
+        """fetch-assets should map to 'collection-and-ingestion'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-assets')
+        assert result == 'collection-and-ingestion'
+
+    def test_resolve_unknown_command_maps_to_default(self):
+        """Unknown commands should fall back to the default capability."""
+        result = CommonServerPython.resolve_ucp_capability(command='my-custom-command')
+        assert result == 'automation-and-remediation'
+
+    def test_resolve_none_command_uses_demisto_command(self, mocker):
+        """When command=None, should use demisto.command() to get the current command."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        result = CommonServerPython.resolve_ucp_capability(command=None)
+        assert result == 'collection-and-ingestion'
+
+    def test_resolve_none_command_unknown_demisto_command(self, mocker):
+        """When command=None and demisto.command() returns an unknown command, should use default."""
+        mocker.patch.object(demisto, 'command', return_value='some-random-command')
+        result = CommonServerPython.resolve_ucp_capability(command=None)
+        assert result == 'automation-and-remediation'
+
+    def test_resolve_empty_string_command_maps_to_default(self):
+        """Empty string command should fall back to default."""
+        result = CommonServerPython.resolve_ucp_capability(command='')
+        assert result == 'automation-and-remediation'
+
+    def test_resolve_test_module_maps_to_default(self):
+        """test-module is not in the mapping, should use default."""
+        result = CommonServerPython.resolve_ucp_capability(command='test-module')
+        assert result == 'automation-and-remediation'
+
+    def test_baseclient_resolve_ucp_capability_default(self, mocker):
+        """BaseClient._resolve_ucp_capability() should return (capability, None) by default."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        client = CommonServerPython.BaseClient(base_url='https://example.com')
+        capability, sub_capability = client._resolve_ucp_capability()
+        assert capability == 'collection-and-ingestion'
+        assert sub_capability is None
+
+    def test_baseclient_resolve_ucp_capability_override(self, mocker):
+        """Subclass can override _resolve_ucp_capability to provide sub_capability."""
+        class CustomClient(CommonServerPython.BaseClient):
+            def _resolve_ucp_capability(self):
+                return CommonServerPython.resolve_ucp_capability(), 'my-sub-capability'
+
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        client = CustomClient(base_url='https://example.com')
+        capability, sub_capability = client._resolve_ucp_capability()
+        assert capability == 'automation-and-remediation'
+        assert sub_capability == 'my-sub-capability'
+
+    def test_capability_constants_have_expected_values(self):
+        """Verify the capability constants have the expected values.
+        This is a safety net — if someone changes these constants, tests should catch it."""
+        assert CommonServerPython._UCP_DEFAULT_CAPABILITY == 'automation-and-remediation'
+        assert CommonServerPython._UCP_COMMAND_CAPABILITIES == {
+            'fetch-incidents': 'collection-and-ingestion',
+            'fetch-assets': 'collection-and-ingestion',
+        }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Category 3: Profile Resolution
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TestUcpProfileResolution:
+    """Tests for _get_ucp_profiles(), _find_ucp_profile_by_sub_capability(),
+    _find_ucp_profile_by_capability(), and get_ucp_method_unique_id().
+
+    Profile resolution determines which connection profile (and thus which
+    credentials) to use for a given command. The 3-tier priority is:
+    sub_capability → capability → first profile fallback.
+    """
+
+    def test_get_ucp_profiles_returns_profiles(self, mocker, ucp_metadata_single):
+        """Valid metadata with profiles should return the profiles list."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
+        profiles = CommonServerPython._get_ucp_profiles()
+        assert len(profiles) == 1
+        assert profiles[0]['method_unique_id'] == 'abc123'
+
+    def test_get_ucp_profiles_raises_on_empty_metadata(self, mocker):
+        """Empty metadata should raise UcpException."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={})
+        mocker.patch.object(demisto, 'error')
+        with pytest.raises(CommonServerPython.UcpException):
+            CommonServerPython._get_ucp_profiles()
+
+    def test_get_ucp_profiles_raises_on_empty_profiles_list(self, mocker):
+        """Metadata with empty connectionProfiles list should raise UcpException."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={'connectionProfiles': []})
+        mocker.patch.object(demisto, 'error')
+        with pytest.raises(CommonServerPython.UcpException):
+            CommonServerPython._get_ucp_profiles()
+
+    def test_find_by_sub_capability_match(self, ucp_metadata_single):
+        """Should find profile when sub_capability matches."""
+        profiles = ucp_metadata_single['connectionProfiles']
+        result = CommonServerPython._find_ucp_profile_by_sub_capability(profiles, 'salesforce-iam')
+        assert result == 'abc123'
+
+    def test_find_by_sub_capability_no_match(self, ucp_metadata_single):
+        """Should return None when no profile matches the sub_capability."""
+        profiles = ucp_metadata_single['connectionProfiles']
+        result = CommonServerPython._find_ucp_profile_by_sub_capability(profiles, 'nonexistent-sub')
+        assert result is None
+
+    def test_find_by_sub_capability_multiple_matches_uses_first(self, mocker):
+        """When multiple profiles match, should use the first and log a warning."""
+        profiles = [
+            {'capability': 'cap1', 'method_unique_id': 'first', 'sub_capabilities': ['shared-sub']},
+            {'capability': 'cap2', 'method_unique_id': 'second', 'sub_capabilities': ['shared-sub']},
+        ]
+        mocker.patch.object(demisto, 'info')
+        result = CommonServerPython._find_ucp_profile_by_sub_capability(profiles, 'shared-sub')
+        assert result == 'first'
+        demisto.info.assert_called_once()
+
+    def test_find_by_capability_match(self, ucp_metadata_multi):
+        """Should find profile when capability matches."""
+        profiles = ucp_metadata_multi['connectionProfiles']
+        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'collection-and-ingestion')
+        assert result == 'method-collect-ingest'
+
+    def test_find_by_capability_no_match(self, ucp_metadata_single):
+        """Should return None when no profile matches the capability."""
+        profiles = ucp_metadata_single['connectionProfiles']
+        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'nonexistent-capability')
+        assert result is None
+
+    def test_find_by_capability_multiple_matches_uses_first(self, mocker):
+        """When multiple profiles match capability, should use the first and log."""
+        profiles = [
+            {'capability': 'same-cap', 'method_unique_id': 'first'},
+            {'capability': 'same-cap', 'method_unique_id': 'second'},
+        ]
+        mocker.patch.object(demisto, 'debug')
+        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'same-cap')
+        assert result == 'first'
+        demisto.debug.assert_called_once()
+
+    def test_get_method_unique_id_sub_capability_priority(self, mocker, ucp_metadata_multi):
+        """sub_capability match should take priority over capability match."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
+        result = CommonServerPython.get_ucp_method_unique_id(
+            capability='collection-and-ingestion',
+            sub_capability='salesforce-iam'
+        )
+        # salesforce-iam is in the first profile (method-auto-remed), not the collection one
+        assert result == 'method-auto-remed'
+
+    def test_get_method_unique_id_capability_match(self, mocker, ucp_metadata_multi):
+        """When no sub_capability match, should fall back to capability match."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        result = CommonServerPython.get_ucp_method_unique_id(
+            capability='collection-and-ingestion',
+            sub_capability=None
+        )
+        assert result == 'method-collect-ingest'
+
+    def test_get_method_unique_id_fallback_to_first(self, mocker):
+        """When neither sub_capability nor capability match, should use first profile."""
+        metadata = {
+            'connectionProfiles': [
+                {'capability': 'some-other-cap', 'method_unique_id': 'fallback-id', 'sub_capabilities': []},
+            ]
+        }
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=metadata)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        result = CommonServerPython.get_ucp_method_unique_id(
+            capability='nonexistent',
+            sub_capability='also-nonexistent'
+        )
+        assert result == 'fallback-id'
+
+    def test_get_method_unique_id_auto_resolves_capability(self, mocker, ucp_metadata_multi):
+        """When capability=None, should auto-resolve via resolve_ucp_capability()."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        # capability=None should resolve to 'collection-and-ingestion' for fetch-incidents
+        result = CommonServerPython.get_ucp_method_unique_id(capability=None, sub_capability=None)
+        assert result == 'method-collect-ingest'
+
+    def test_get_method_unique_id_fallback_empty_method_id(self, mocker):
+        """When first profile has no method_unique_id key, should return empty string."""
+        metadata = {
+            'connectionProfiles': [
+                {'capability': 'other-cap', 'sub_capabilities': []},
+            ]
+        }
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=metadata)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        result = CommonServerPython.get_ucp_method_unique_id(capability='nonexistent')
+        assert result == ''
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Category 4: Credential Caching
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TestUcpCredentialCaching:
+    """Tests for _extract_ucp_expiry(), get_ucp_credentials(), and
+    invalidate_ucp_credentials().
+
+    The caching layer prevents excessive BE calls. Getting it wrong means
+    either stale credentials (cache too long) or excessive BE load (cache
+    too short / no cache).
+    """
+
+    # ── _extract_ucp_expiry tests ──
+
+    def test_extract_expiry_from_nested_field(self, ucp_creds_oauth2):
+        """Should extract expires_at from inside the type-specific sub-dict."""
+        expiry = CommonServerPython._extract_ucp_expiry(ucp_creds_oauth2)
+        assert expiry is not None
+        assert expiry > time.time()  # 2099 is in the future
+
+    def test_extract_expiry_from_top_level(self):
+        """Should prefer top-level expires_at over nested one."""
+        creds = {
+            'type': 'oauth2',
+            'expires_at': '2099-06-15T12:00:00+00:00',
+            'oauth2': {
+                'access_token': 'tok',
+                'expires_at': '2050-01-01T00:00:00+00:00'
+            }
+        }
+        expiry = CommonServerPython._extract_ucp_expiry(creds)
+        assert expiry is not None
+        # Should use the top-level one (2099), not the nested one (2050)
+        from datetime import datetime as dt
+        expected = dt.fromisoformat('2099-06-15T12:00:00+00:00').timestamp()
+        assert abs(expiry - expected) < 1
+
+    def test_extract_expiry_none_when_no_expires_at(self):
+        """Should return None when no expires_at field exists anywhere."""
+        creds = {
+            'type': 'api_key',
+            'api_key': {'key': 'test-key'}
+        }
+        expiry = CommonServerPython._extract_ucp_expiry(creds)
+        assert expiry is None
+
+    def test_extract_expiry_handles_z_suffix(self):
+        """Should handle ISO-8601 with Z suffix (UTC)."""
+        creds = {
+            'type': 'oauth2',
+            'oauth2': {
+                'access_token': 'tok',
+                'expires_at': '2099-12-31T23:59:59Z'
+            }
+        }
+        expiry = CommonServerPython._extract_ucp_expiry(creds)
+        assert expiry is not None
+        assert expiry > time.time()
+
+    def test_extract_expiry_fallback_on_invalid_format(self, mocker):
+        """Should fall back to time.time() + 300 on unparseable expires_at."""
+        mocker.patch.object(demisto, 'error')
+        creds = {
+            'type': 'oauth2',
+            'oauth2': {
+                'access_token': 'tok',
+                'expires_at': 'not-a-date'
+            }
+        }
+        now = time.time()
+        expiry = CommonServerPython._extract_ucp_expiry(creds)
+        assert expiry is not None
+        # Should be approximately now + 300 (5 minutes)
+        assert abs(expiry - (now + 300)) < 5
+        demisto.error.assert_called_once()
+
+    # ── get_ucp_credentials tests ──
+
+    def test_get_credentials_cache_miss(self, mocker, ucp_metadata_single, ucp_creds_oauth2, ucp_clean_cache):
+        """On cache miss, should call demisto.getUCPCredentials and cache the result."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
+        mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+
+        result = CommonServerPython.get_ucp_credentials('abc123')
+        assert result == ucp_creds_oauth2
+        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False)
+
+    def test_get_credentials_cache_hit(self, mocker, ucp_creds_oauth2, ucp_clean_cache):
+        """On cache hit (not expired), should NOT call demisto.getUCPCredentials."""
+        mocker.patch.object(demisto, 'debug')
+        # Pre-populate cache with far-future expiry
+        CommonServerPython._ucp_creds_cache['abc123'] = {
+            'result': ucp_creds_oauth2,
+            'expiry': time.time() + 3600  # 1 hour from now
+        }
+        mocker.patch.object(demisto, 'getUCPCredentials')
+
+        result = CommonServerPython.get_ucp_credentials('abc123')
+        assert result == ucp_creds_oauth2
+        demisto.getUCPCredentials.assert_not_called()
+
+    def test_get_credentials_cache_stale_refetches(self, mocker, ucp_creds_oauth2, ucp_clean_cache):
+        """When cache entry is within threshold of expiry, should re-fetch."""
+        mocker.patch.object(demisto, 'debug')
+        fresh_creds = dict(ucp_creds_oauth2)
+        fresh_creds['oauth2'] = dict(ucp_creds_oauth2['oauth2'])
+        fresh_creds['oauth2']['access_token'] = 'fresh-token'
+
+        # Pre-populate cache with expiry within threshold (< 30 seconds from now)
+        CommonServerPython._ucp_creds_cache['abc123'] = {
+            'result': ucp_creds_oauth2,
+            'expiry': time.time() + 10  # Only 10 seconds left, threshold is 30
+        }
+        mocker.patch.object(demisto, 'getUCPCredentials', return_value=fresh_creds)
+
+        result = CommonServerPython.get_ucp_credentials('abc123')
+        assert result['oauth2']['access_token'] == 'fresh-token'
+        demisto.getUCPCredentials.assert_called_once()
+
+    def test_get_credentials_no_expiry_cached_forever(self, mocker, ucp_creds_api_key, ucp_clean_cache):
+        """Credentials without expires_at should be cached indefinitely."""
+        mocker.patch.object(demisto, 'debug')
+        # Pre-populate cache with None expiry
+        CommonServerPython._ucp_creds_cache['key123'] = {
+            'result': ucp_creds_api_key,
+            'expiry': None
+        }
+        mocker.patch.object(demisto, 'getUCPCredentials')
+
+        result = CommonServerPython.get_ucp_credentials('key123')
+        assert result == ucp_creds_api_key
+        demisto.getUCPCredentials.assert_not_called()
+
+    def test_get_credentials_auto_resolves_method_id(self, mocker, ucp_metadata_single, ucp_creds_oauth2, ucp_clean_cache):
+        """When method_unique_id=None, should auto-resolve via get_ucp_method_unique_id()."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
+        mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+
+        result = CommonServerPython.get_ucp_credentials(method_unique_id=None)
+        assert result == ucp_creds_oauth2
+        # Should have resolved to 'abc123' from the single profile
+        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False)
+
+    # ── invalidate_ucp_credentials tests ──
+
+    def test_invalidate_removes_cache_entry(self, mocker, ucp_creds_oauth2, ucp_clean_cache):
+        """invalidate_ucp_credentials should remove the entry from cache."""
+        mocker.patch.object(demisto, 'debug')
+        CommonServerPython._ucp_creds_cache['abc123'] = {
+            'result': ucp_creds_oauth2,
+            'expiry': time.time() + 3600
+        }
+        CommonServerPython.invalidate_ucp_credentials('abc123')
+        assert 'abc123' not in CommonServerPython._ucp_creds_cache
+
+    def test_invalidate_nonexistent_key_no_error(self, mocker, ucp_clean_cache):
+        """Invalidating a key that doesn't exist should not raise."""
+        mocker.patch.object(demisto, 'debug')
+        CommonServerPython.invalidate_ucp_credentials('nonexistent-key')
+        # Should not raise
+
+    def test_invalidate_only_removes_specified_key(self, mocker, ucp_creds_oauth2, ucp_creds_api_key, ucp_clean_cache):
+        """Invalidating one key should not affect other cached entries."""
+        mocker.patch.object(demisto, 'debug')
+        CommonServerPython._ucp_creds_cache['key1'] = {'result': ucp_creds_oauth2, 'expiry': None}
+        CommonServerPython._ucp_creds_cache['key2'] = {'result': ucp_creds_api_key, 'expiry': None}
+
+        CommonServerPython.invalidate_ucp_credentials('key1')
+        assert 'key1' not in CommonServerPython._ucp_creds_cache
+        assert 'key2' in CommonServerPython._ucp_creds_cache
