@@ -909,7 +909,7 @@ def test_test_credentials_command(mocker):
         def unbind(self):
             pass
 
-    def mock_create_connection(server, server_ip, username, password, ntlm_connection, auto_bind):
+    def mock_create_connection(server, server_ip, username, password, ntlm_connection, auto_bind, ntlm_domain):
         return MockConnection()
 
     with (
