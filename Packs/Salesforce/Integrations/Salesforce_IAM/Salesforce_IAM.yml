@@ -28,6 +28,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Consumer Key
   name: credentials_consumer
   type: 9
