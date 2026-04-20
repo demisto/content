@@ -770,13 +770,13 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: O
         return ""
 
 
-def add_argument(arg: Optional[str], field_name: str, member: bool) -> str:
+def add_argument(arg: Optional[str], field_name: str, member: bool, escape: bool = True) -> str:
     if arg:
-        escaped = _xml_escape(arg)
+        value = _xml_escape(arg) if escape else arg
         if member:
-            return "<" + field_name + "><member>" + escaped + "</member></" + field_name + ">"
+            return "<" + field_name + "><member>" + value + "</member></" + field_name + ">"
         else:
-            return "<" + field_name + ">" + escaped + "</" + field_name + ">"
+            return "<" + field_name + ">" + value + "</" + field_name + ">"
     else:
         return ""
 
@@ -3116,10 +3116,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
 
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
-    # escape URLs with HTML escaping
-    sites = [html.escape(site) for site in merged_items]
-
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_, sites, description)
+    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_, merged_items, description)
     return_results(
         {
             "Type": entryTypes["note"],
@@ -3156,10 +3153,7 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
 
-    # escape URLs with HTML escaping
-    sites = [html.escape(site) for site in subtracted_items]
-
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_, sites, description)
+    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_, subtracted_items, description)
     return_results(
         {
             "Type": entryTypes["note"],
@@ -15391,9 +15385,9 @@ def build_master_key_create_or_update_cmd(args: dict, action: Literal["create", 
 
     # Whether to encrypt the master key using a Hardware Security Module (HSM) encryption key; currently a static value by demand
     xml_args.append(add_argument_yes_no(arg="no", field_name="on-hsm"))
-    master_key_element = add_argument(arg="".join(xml_args), field_name="master-key", member=False)
+    master_key_element = add_argument(arg="".join(xml_args), field_name="master-key", member=False, escape=False)
 
-    return add_argument(arg=master_key_element, field_name="request", member=False)
+    return add_argument(arg=master_key_element, field_name="request", member=False, escape=False)
 
 
 def create_or_update_master_key(args: dict, action: Literal["create", "update"]) -> CommandResults:
@@ -15453,8 +15447,8 @@ def pan_os_get_master_key_details_command() -> CommandResults:
     Returns:
         CommandResults: Contains context output, readable output, and raw response.
     """
-    system_element = add_argument(arg="<masterkey-properties/>", field_name="system", member=False)
-    show_master_key_cmd = add_argument(arg=system_element, field_name="show", member=False)
+    system_element = add_argument(arg="<masterkey-properties/>", field_name="system", member=False, escape=False)
+    show_master_key_cmd = add_argument(arg=system_element, field_name="show", member=False, escape=False)
 
     raw_response: dict = http_request(URL, "GET", params={"type": "op", "key": API_KEY, "cmd": show_master_key_cmd})
     response_result = raw_response["response"]["result"]

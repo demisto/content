@@ -9656,3 +9656,158 @@ def test_get_hitcounts_vsys_specific_enrichment(mocker):
     # PanoramaRule_v2 should NOT appear in vsys1 results
     vsys1_rule_names = {r.name for r in vsys1_results}
     assert "PanoramaRule_v2" not in vsys1_rule_names
+
+
+def test_panorama_upload_content_update_file_command_uses_basename(mocker):
+    """
+    Given: A file entry whose name contains directory components (e.g. 'subdir/firmware.bin').
+    When: panorama_upload_content_update_file_command is called.
+    Then: Only the basename is used for the local copy destination and os.remove is called for cleanup.
+    """
+    import Panorama
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/fake_path/firmware.bin", "name": "subdir/firmware.bin"},
+    )
+    copy_mock = mocker.patch("shutil.copy")
+    mock_file = mocker.mock_open(read_data=b"fake content")
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch(
+        "Panorama.http_request",
+        return_value={"response": {"@status": "success", "msg": "upload succeeded"}},
+    )
+    remove_mock = mocker.patch("os.remove")
+    mocker.patch("os.path.isfile", return_value=True)
+    mocker.patch.object(Panorama, "API_KEY", "test_key")
+    mocker.patch.object(Panorama, "URL", "https://test.example.com")
+
+    Panorama.panorama_upload_content_update_file_command(
+        {"category": "content", "entryID": "entry123"}
+    )
+
+    # Assert shutil.copy was called with basename only (not the full subdir/firmware.bin)
+    assert copy_mock.call_args[0][1] == "firmware.bin"
+    # Assert os.remove was called
+    remove_mock.assert_called_once_with("firmware.bin")
+
+
+def test_xml_escape_special_characters():
+    """
+    Given: A string containing XML special characters (< > & " ').
+    When: _xml_escape is called.
+    Then: All special characters are properly escaped.
+    """
+    from Panorama import _xml_escape
+
+    assert "&lt;" in _xml_escape("<tag>")
+    assert "&gt;" in _xml_escape("<tag>")
+    assert "&amp;" in _xml_escape("a&b")
+    assert "&quot;" in _xml_escape('"val"')
+    assert "&#x27;" in _xml_escape("it's")
+
+
+def test_xml_escape_preserves_safe_strings():
+    """
+    Given: A string with no special characters.
+    When: _xml_escape is called.
+    Then: The string is returned unchanged.
+    """
+    from Panorama import _xml_escape
+
+    assert _xml_escape("safe-value-123") == "safe-value-123"
+    assert _xml_escape("hello world") == "hello world"
+
+
+def test_add_argument_list_escapes_special_characters():
+    """
+    Given: A list of values containing XML special characters.
+    When: add_argument_list is called.
+    Then: The output XML has special characters escaped in member elements.
+    """
+    from Panorama import add_argument_list
+
+    result = add_argument_list(["value<1>", "normal"], "member", None)
+    assert "&lt;1&gt;" in result
+    assert "<member>normal</member>" in result
+
+
+def test_add_argument_escapes_special_characters():
+    """
+    Given: An argument value containing XML special characters.
+    When: add_argument is called.
+    Then: The output XML has special characters escaped.
+    """
+    from Panorama import add_argument
+
+    result = add_argument("val<ue", "field", False)
+    assert "&lt;" in result
+    assert "val<ue" not in result
+
+
+def test_add_argument_preserves_safe_values():
+    """
+    Given: An argument value with no special characters.
+    When: add_argument is called.
+    Then: The value is preserved unchanged in the output.
+    """
+    from Panorama import add_argument
+
+    result = add_argument("safe-value-123", "name", False)
+    assert "safe-value-123" in result
+    assert "<name>safe-value-123</name>" == result
+
+
+def test_prepare_pan_os_objects_body_request_escapes_entry_names():
+    """
+    Given: Entry names containing XML special characters.
+    When: prepare_pan_os_objects_body_request is called with is_entry=True.
+    Then: Entry name attributes have special characters escaped.
+    """
+    from Panorama import prepare_pan_os_objects_body_request
+
+    result = prepare_pan_os_objects_body_request(
+        "address", ["test&name"], is_list=True, is_entry=True
+    )
+    xml_str = result["address"]
+    assert "&amp;" in xml_str
+    assert "test&name" not in xml_str
+
+
+def test_get_predefined_certificates_parses_xml_response(mocker):
+    """
+    Given: A valid XML response from the PAN-OS API.
+    When: get_predefined_certificates is called.
+    Then: The XML is parsed successfully and certificates are returned.
+    """
+    import Panorama
+
+    xml_response = """<?xml version="1.0"?>
+    <response status="success">
+        <result>
+            <certificate>
+                <entry name="cert1">
+                    <subject>CN=test</subject>
+                </entry>
+                <entry name="cert2">
+                    <subject>CN=test2</subject>
+                </entry>
+            </certificate>
+        </result>
+    </response>"""
+
+    mock_response = mocker.MagicMock()
+    mock_response.status_code = 200
+    mock_response.text = xml_response
+
+    mocker.patch("requests.get", return_value=mock_response)
+    mocker.patch.object(Panorama, "API_KEY", "test_key")
+    mocker.patch.object(Panorama, "URL", "https://test.example.com")
+    mocker.patch.object(Panorama, "USE_SSL", True)
+
+    certs = Panorama.get_predefined_certificates()
+
+    assert len(certs) == 2
+    assert certs[0].get("name") == "cert1"
+    assert certs[1].get("name") == "cert2"
