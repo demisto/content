@@ -12,6 +12,7 @@ import argparse
 import io
 import json
 import os
+import re
 import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -19,16 +20,9 @@ from pathlib import Path
 
 import requests
 
-ID_SET_URL = "https://storage.googleapis.com/marketplace-dist/content/id_set.json"
 INDEX_ZIP_URL = "https://marketplace-dist.storage.googleapis.com/content/packs/index.zip"
 BUCKET_PACKS_URL = "https://marketplace-dist.storage.googleapis.com/content/packs"
 MAX_WORKERS = 10
-
-
-def load_bucket_id_set(verify_ssl: bool) -> dict:
-    """Loads the bucket id_set.json (used only for docker image resolution)."""
-    r = requests.request(method="GET", url=ID_SET_URL, verify=verify_ssl)
-    return r.json()
 
 
 def load_index_packs(verify_ssl: bool) -> dict:
@@ -64,15 +58,6 @@ def load_index_packs(verify_ssl: bool) -> dict:
     return packs
 
 
-def create_content_item_id_set(id_set_list: list) -> dict:
-    """Given an id_set.json content item list, creates a dictionary representation"""
-    res = {}
-    for item in id_set_list:
-        for key, val in item.items():
-            res[key] = val
-    return res
-
-
 def zip_folder(source_path: str, output_path: str) -> None:
     """Zips the folder and its containing files"""
     with ZipFile(output_path + ".zip", "w", ZIP_DEFLATED) as source_zip:
@@ -82,39 +67,41 @@ def zip_folder(source_path: str, output_path: str) -> None:
                 source_zip.write(filename=full_file_path, arcname=f)
 
 
-def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
-    """Given a pack name returns its docker images with its latest tag.
+def extract_docker_images_from_pack_zips(packs_dir: str) -> set:
+    """Extract docker image references from downloaded pack zip files.
 
-    Uses id_set.json because index.zip metadata does not contain docker image references.
+    Scans YAML files inside each pack zip for 'dockerimage' or 'dockerimage45' fields.
+    This eliminates the need for id_set.json for docker image resolution.
+
+    Args:
+        packs_dir: Directory containing downloaded pack zip files.
+
+    Returns:
+        set: Unique docker image references (e.g. 'demisto/python3:3.10.13.12345').
     """
-    print("Starting to collect docker images")  # noqa: T201
-    integration_names_id_set = create_content_item_id_set(id_set_json["integrations"])
-    script_names_id_set = create_content_item_id_set(id_set_json["scripts"])
-    docker_images = set()
-    for pack_d_name, pack_id in pack_names.items():
-        if pack_id not in id_set_json.get("Packs", {}):
-            print(f"\tPack {pack_d_name} was not found in id_set.json.")  # noqa: T201
-            continue
-        content_items = id_set_json["Packs"][pack_id].get("ContentItems", {})
-        if not content_items:
-            print(f"\tPack {pack_d_name} has no ContentItems - skipping pack.")  # noqa: T201
-        integrations = content_items.get("integrations", [])
-        scripts = content_items.get("scripts", [])
-        if integrations:
-            print(f"\t{pack_d_name} docker images found for integrations:")  # noqa: T201
-            for integration in integrations:
-                if integration in integration_names_id_set and "docker_image" in integration_names_id_set[integration]:
-                    docker_image = integration_names_id_set[integration]["docker_image"]
-                    print(f"\t\t{docker_image} - used by {integration}")  # noqa: T201
-                    docker_images.add(docker_image)
-        if scripts:
-            print(f"\t{pack_d_name} docker images found for scripts:")  # noqa: T201
-            for script in scripts:
-                if script in script_names_id_set and "docker_image" in script_names_id_set[script]:
-                    docker_image = script_names_id_set[script]["docker_image"]
-                    print(f"\t\t{docker_image} - used by {script}")  # noqa: T201
-                    docker_images.add(docker_image)
+    print("Extracting docker images from downloaded packs")  # noqa: T201
+    docker_images: set = set()
+    docker_image_pattern = re.compile(r"^\s*dockerimage\d*:\s*['\"]?(.+?)['\"]?\s*$", re.MULTILINE)
 
+    for zip_file in Path(packs_dir).glob("*.zip"):
+        try:
+            with ZipFile(zip_file, "r") as z:
+                for name in z.namelist():
+                    if name.endswith((".yml", ".yaml")):
+                        try:
+                            content = z.read(name).decode("utf-8", errors="ignore")
+                            matches = docker_image_pattern.findall(content)
+                            for match in matches:
+                                match = match.strip()
+                                if match and ":" in match and "/" in match:
+                                    docker_images.add(match)
+                                    print(f"\t{match} - found in {zip_file.name}/{name}")  # noqa: T201
+                        except Exception:
+                            continue
+        except Exception as e:
+            print(f"\tError reading {zip_file.name}: {e}")  # noqa: T201
+
+    print(f"Found {len(docker_images)} unique docker images")  # noqa: T201
     return docker_images
 
 
@@ -335,9 +322,20 @@ def main():
         print("Skipping packs.zip creation")  # noqa: T201
 
     if pack_names and not options.skip_docker:
-        # Load id_set.json only when docker images are needed (it contains docker_image references)
-        id_set_json = load_bucket_id_set(verify_ssl)
-        docker_images = get_docker_images_with_tag(pack_names, id_set_json)
+        # Extract docker images from the downloaded pack zips
+        packs_zip_path = os.path.join(output_path, "packs.zip")
+        if os.path.exists(packs_zip_path):
+            # Extract packs.zip to a temp dir to scan for docker images
+            packs_temp_dir = tempfile.TemporaryDirectory()
+            try:
+                with ZipFile(packs_zip_path, "r") as z:
+                    z.extractall(packs_temp_dir.name)
+                docker_images = extract_docker_images_from_pack_zips(packs_temp_dir.name)
+            finally:
+                packs_temp_dir.cleanup()
+        else:
+            print("Warning: packs.zip not found, cannot extract docker images. Run without -sp first.")  # noqa: T201
+            docker_images = set()
         if docker_images:
             download_and_save_docker_images(docker_images, os.path.join(output_path, "docker"))
         else:
