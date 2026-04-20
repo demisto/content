@@ -103,18 +103,15 @@ def get_tls_object(unsecure, ssl_version, custom_ca_certificate):
         tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, ciphers=CIPHERS_STRING, version=get_ssl_version(ssl_version))
 
     else:  # Trust any certificate is unchecked
-        ca_file = None
-
-        if custom_ca_certificate and custom_ca_certificate.get("certificate"):
-            cert_data = custom_ca_certificate.get("certificate")
-
-            temp_file = tempfile.NamedTemporaryFile(delete=False)
-            temp_file.write(cert_data.encode())
-            temp_file.close()
-
-            ca_file = temp_file.name
+        if custom_ca_certificate:
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                if isinstance(custom_ca_certificate, bytes):
+                    temp_file.write(custom_ca_certificate)
+                else:
+                    temp_file.write(custom_ca_certificate.encode())
+                ca_file = temp_file.name
         else:
-            ca_file = os.environ.get("SSL_CERT_FILE")
+            ca_file = os.environ.get("SSL_CERT_FILE")  # type: ignore[assignment]
         # Trust any certificate = False means that the LDAP server's certificate must be valid -
         # i.e if the server's certificate is not valid the connection will fail.
         tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=ca_file, version=get_ssl_version(ssl_version))
@@ -1746,7 +1743,7 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
+def test_credentials_command(server_ip, server, ntlm_connection, auto_bind, ntlm_domain):
     args = demisto.args()
     username = args.get("username")
     try:
@@ -1757,6 +1754,7 @@ def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
             password=args.get("password"),
             ntlm_connection=argToBoolean(ntlm_connection),
             auto_bind=auto_bind,
+            ntlm_domain=ntlm_domain,
         )
         connection.unbind()
     except LDAPBindError:
@@ -1769,7 +1767,15 @@ def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
     )
 
 
-def create_connection(server: Server, server_ip: str, username: str, password: str, ntlm_connection: bool, auto_bind: str | bool, ntlm_domain: str | None):
+def create_connection(
+    server: Server,
+    server_ip: str,
+    username: str,
+    password: str,
+    ntlm_connection: bool,
+    auto_bind: str | bool,
+    ntlm_domain: str | None,
+):
     if "\\" in username:
         domain_name = username
     else:
@@ -1863,7 +1869,7 @@ def main():
                 password=password,
                 ntlm_connection=ntlm_auth,
                 auto_bind=auto_bind,
-                ntlm_domain=ntlm_domain
+                ntlm_domain=ntlm_domain,
             )
         except Exception as e:
             err_msg = str(e)
@@ -1970,7 +1976,11 @@ def main():
             delete_group()
 
         elif command == "ad-test-credentials":
-            return return_results(test_credentials_command(server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind))
+            return return_results(
+                test_credentials_command(
+                    server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind, ntlm_domain=ntlm_domain
+                )
+            )
 
         # IAM commands
         elif command == "iam-get-user":
