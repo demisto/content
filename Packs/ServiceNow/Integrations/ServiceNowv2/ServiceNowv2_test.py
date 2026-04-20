@@ -69,6 +69,7 @@ from ServiceNowv2 import (
     split_notes,
     update_record_command,
     update_remote_system_command,
+    update_remote_system_with_entries,
     update_ticket_command,
     upload_file_command,
 )
