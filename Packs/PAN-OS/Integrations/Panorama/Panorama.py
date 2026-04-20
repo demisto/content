@@ -53,6 +53,10 @@ else:
     TypedDict = type("TypedDict", (), {"__new__": lambda cls, **kw: kw})
     NotRequired = Optional
 
+def _xml_escape(value: str) -> str:
+    return html.escape(str(value), quote=True)
+
+
 """ GLOBALS """
 URL = ""
 API_KEY = None
@@ -719,9 +723,9 @@ def build_body_request_to_edit_pan_os_object(
 
 def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
     if is_entry:
-        return {key: "".join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
+        return {key: "".join([f'<entry name="{_xml_escape(entry)}"/>' for entry in argToList(value)])}
     if is_empty_tag:
-        return {key: f"<{value}/>"}
+        return {key: f"<{_xml_escape(value)}/>"}
     return {key: {"member": argToList(value)}} if is_list else {key: value}
 
 
@@ -749,7 +753,7 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: O
             arg = [arg]
 
         for item in arg:
-            member_stringify_list += f"<member>{item}</member>"
+            member_stringify_list += f"<member>{_xml_escape(item)}</member>"
         if field_name == "member":
             return member_stringify_list
         elif member:
@@ -768,20 +772,22 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: O
 
 def add_argument(arg: Optional[str], field_name: str, member: bool) -> str:
     if arg:
+        escaped = _xml_escape(arg)
         if member:
-            return "<" + field_name + "><member>" + arg + "</member></" + field_name + ">"
+            return "<" + field_name + "><member>" + escaped + "</member></" + field_name + ">"
         else:
-            return "<" + field_name + ">" + arg + "</" + field_name + ">"
+            return "<" + field_name + ">" + escaped + "</" + field_name + ">"
     else:
         return ""
 
 
 def add_argument_open(arg: Optional[str], field_name: str, member: bool) -> str:
     if arg:
+        escaped = _xml_escape(arg)
         if member:
-            return "<" + field_name + "><member>" + arg + "</member></" + field_name + ">"
+            return "<" + field_name + "><member>" + escaped + "</member></" + field_name + ">"
         else:
-            return "<" + field_name + ">" + arg + "</" + field_name + ">"
+            return "<" + field_name + ">" + escaped + "</" + field_name + ">"
     else:
         if member:
             return "<" + field_name + "><member>any</member></" + field_name + ">"
@@ -803,7 +809,7 @@ def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = Fals
 
 def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
-        return "<" + field_name + ">" + "<devices>" + '<entry name="' + arg + '"/>' + "</devices>" + "</" + field_name + ">"
+        return "<" + field_name + ">" + "<devices>" + '<entry name="' + _xml_escape(arg) + '"/>' + "</devices>" + "</" + field_name + ">"
     else:
         return ""
 
@@ -811,7 +817,7 @@ def add_argument_target(arg: Optional[str], field_name: str) -> str:
 def add_argument_profile_setting(arg: Optional[str], field_name: str) -> str:
     if not arg:
         return ""
-    member_stringify_list = "<member>" + arg + "</member>"
+    member_stringify_list = "<member>" + _xml_escape(arg) + "</member>"
     return "<" + field_name + ">" + "<group>" + member_stringify_list + "</group>" + "</" + field_name + ">"
 
 
@@ -1170,12 +1176,12 @@ def panorama_commit(args):
     partial_command: str = ""
     is_partial = False
     if device_group := args.get("device-group"):
-        command += f'<device-group><entry name="{device_group}"/></device-group>'
+        command += f'<device-group><entry name="{_xml_escape(device_group)}"/></device-group>'
 
     admin_name = args.get("admin_name")
     if admin_name:
         is_partial = True
-        partial_command += f"<admin><member>{admin_name}</member></admin>"
+        partial_command += f"<admin><member>{_xml_escape(admin_name)}</member></admin>"
 
     force_commit = argToBoolean(args.get("force_commit")) if args.get("force_commit") else None
     if force_commit:
@@ -1275,7 +1281,7 @@ def panorama_commit_command(args: dict):
 
 @logger
 def panorama_commit_status(args: dict):
-    params = {"type": "op", "cmd": f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>', "key": API_KEY}
+    params = {"type": "op", "cmd": f'<show><jobs><id>{_xml_escape(args.get("job_id", ""))}</id></jobs></show>', "key": API_KEY}
 
     if target := args.get("target"):
         params["target"] = target
@@ -1331,12 +1337,12 @@ def panorama_commit_status_command(args: dict):
 @logger
 def panorama_push_to_device_group(args: dict):
     command: str = ""
-    command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+    command += f'<device-group><entry name="{_xml_escape(DEVICE_GROUP)}"/></device-group>'
 
     serial_number = args.get("serial_number")
     if serial_number:
         command = (
-            f'<device-group><entry name="{DEVICE_GROUP}"><devices><entry name="{serial_number}"/>'
+            f'<device-group><entry name="{_xml_escape(DEVICE_GROUP)}"><devices><entry name="{_xml_escape(serial_number)}"/>'
             f"</devices></entry></device-group>"
         )
 
@@ -1365,10 +1371,10 @@ def panorama_push_to_template(args: dict):
     Push a single template.
     """
     command: str = ""
-    command += f"<name>{TEMPLATE}</name>"
+    command += f"<name>{_xml_escape(TEMPLATE)}</name>"
 
     if serial_number := args.get("serial_number"):
-        command = f"<name>{TEMPLATE}</name><device><member>{serial_number}</member></device>"
+        command = f"<name>{_xml_escape(TEMPLATE)}</name><device><member>{_xml_escape(serial_number)}</member></device>"
 
     if argToBoolean(args.get("validate-only", "false")):
         command += "<validate-only>yes</validate-only>"
@@ -1394,15 +1400,15 @@ def panorama_push_to_template_stack(args: dict):
     """
     template_stack = args.get("template-stack")
     command: str = ""
-    command += f"<name>{template_stack}</name>"
+    command += f"<name>{_xml_escape(template_stack)}</name>"
 
     if serial_number := args.get("serial_number"):
-        command = f"<name>{template_stack}</name><device><member>{serial_number}</member></device>"
+        command = f"<name>{_xml_escape(template_stack)}</name><device><member>{_xml_escape(serial_number)}</member></device>"
 
     if argToBoolean(args.get("validate-only", "false")):
         command += "<validate-only>yes</validate-only>"
     if description := args.get("description"):
-        command += f"<description>{description}</description>"
+        command += f"<description>{_xml_escape(description)}</description>"
 
     params = {
         "type": "commit",
@@ -4944,13 +4950,17 @@ def panorama_refresh_edl_command(args: dict):
 @logger
 def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int):
     entry: str = ""
+    escaped_tag = _xml_escape(tag)
+    escaped_persistent = _xml_escape(persistent)
     for ip in ips:
+        escaped_ip = _xml_escape(ip)
         if timeout:
             entry += (
-                f'<entry ip="{ip}" persistent="{persistent}"><tag><member timeout="{timeout}">{tag}' f"</member></tag></entry>"
+                f'<entry ip="{escaped_ip}" persistent="{escaped_persistent}"><tag><member timeout="{timeout}">{escaped_tag}'
+                f"</member></tag></entry>"
             )
         else:
-            entry += f'<entry ip="{ip}" persistent="{persistent}"><tag><member>{tag}</member></tag></entry>'
+            entry += f'<entry ip="{escaped_ip}" persistent="{escaped_persistent}"><tag><member>{escaped_tag}</member></tag></entry>'
 
     params = {
         "type": "user-id",
@@ -5016,8 +5026,9 @@ def panorama_register_ip_tag_command(args: dict):
 @logger
 def panorama_unregister_ip_tag(tag: str, ips: list):
     entry = ""
+    escaped_tag = _xml_escape(tag)
     for ip in ips:
-        entry += '<entry ip="' + ip + '"><tag><member>' + tag + "</member></tag></entry>"
+        entry += '<entry ip="' + _xml_escape(ip) + '"><tag><member>' + escaped_tag + "</member></tag></entry>"
 
     params = {
         "type": "user-id",
@@ -5064,11 +5075,13 @@ def panorama_unregister_ip_tag_command(args: dict):
 @logger
 def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
     entry: str = ""
+    escaped_tag = _xml_escape(tag)
     for user in users:
+        escaped_user = _xml_escape(user)
         if timeout:
-            entry += f'<entry user="{user}"><tag><member timeout="{timeout}">{tag}</member></tag></entry>'
+            entry += f'<entry user="{escaped_user}"><tag><member timeout="{timeout}">{escaped_tag}</member></tag></entry>'
         else:
-            entry += f'<entry user="{user}"><tag><member>{tag}</member></tag></entry>'
+            entry += f'<entry user="{escaped_user}"><tag><member>{escaped_tag}</member></tag></entry>'
 
     params = {
         "type": "user-id",
@@ -5127,8 +5140,9 @@ def panorama_register_user_tag_command(args: dict):
 @logger
 def panorama_unregister_user_tag(tag: str, users: list):
     entry = ""
+    escaped_tag = _xml_escape(tag)
     for user in users:
-        entry += f'<entry user="{user}"><tag><member>{tag}</member></tag></entry>'
+        entry += f'<entry user="{_xml_escape(user)}"><tag><member>{escaped_tag}</member></tag></entry>'
 
     params = {
         "type": "user-id",
@@ -9093,23 +9107,26 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
 def panorama_upload_content_update_file_command(args: dict):
     category = args.get("category")
     entry_id = args.get("entryID")
-    file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info["path"]
+    file_name = os.path.basename(file_info["name"])
     shutil.copy(file_path, file_name)
-    with open(file_name, "rb") as file:
-        params = {"type": "import", "category": category, "key": API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
-        human_readble = tableToMarkdown("Results", t=response.get("response"))
-        content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
-        results = CommandResults(
-            raw_response=response,
-            readable_output=human_readble,
-            outputs_prefix="Panorama.Content.Upload",
-            outputs_key_field="Status",
-            outputs=content_upload_info,
-        )
-
-    shutil.rmtree(file_name, ignore_errors=True)
+    try:
+        with open(file_name, "rb") as file:
+            params = {"type": "import", "category": category, "key": API_KEY}
+            response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
+            human_readble = tableToMarkdown("Results", t=response.get("response"))
+            content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
+            results = CommandResults(
+                raw_response=response,
+                readable_output=human_readble,
+                outputs_prefix="Panorama.Content.Upload",
+                outputs_key_field="Status",
+                outputs=content_upload_info,
+            )
+    finally:
+        if os.path.isfile(file_name):
+            os.remove(file_name)
     return results
 
 
@@ -15667,7 +15684,11 @@ def get_predefined_certificates() -> List:
     response_predefined = requests.get(URL, params=params, verify=USE_SSL)
 
     if response_predefined and response_predefined.status_code == 200:
-        root = ET.fromstring(response_predefined.text)
+        try:
+            import defusedxml.ElementTree as defused_ET
+            root = defused_ET.fromstring(response_predefined.text)
+        except ImportError:
+            root = ET.fromstring(response_predefined.text)
         certificate = root.find(".//certificate")
         predefined_certs = certificate.findall(".//entry") if certificate is not None else []
         demisto.debug(f"Found {len(predefined_certs)} predefined certificates")
