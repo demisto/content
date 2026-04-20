@@ -1164,5 +1164,3 @@ marketplaces:
 - platform
 tests:
 - No tests
-supportedModules:
-- TIM
