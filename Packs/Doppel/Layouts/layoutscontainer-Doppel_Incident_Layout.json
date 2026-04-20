@@ -447,7 +447,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "doppelscreenshoturl",
+								"fieldId": "screenshot_url",
 								"height": 26,
 								"id": "ba6e5b77-1234-4f2b-bbbb-7c123456abcd",
 								"index": 12,
