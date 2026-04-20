@@ -1,0 +1,36 @@
+{
+    "name": "ServiceNowGenericFeed",
+    "description": "This pack contains an integration that can be used to pull indicators from ServiceNow CMDB and put them inside the XSIAM TIM with the option to provide tagging.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "North Dakota Information Technology",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Generic Feed",
+        "TIM"
+    ],
+    "useCases": [],
+    "keywords": [
+        "ServiceNow"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "created": "2026-04-01T11:49:45Z",
+    "devEmail": [
+        "anmishra@nd.gov"
+    ],
+    "githubUser": [
+        "4nshumaan"
+    ],
+     "supportedModules": [
+
+        "xsiam"
+    ]
+}
