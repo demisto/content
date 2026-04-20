@@ -85,14 +85,4 @@ marketplaces:
 tests:
 - No tests
 supportedModules:
-- cloud_posture
-- cloud
-- cloud_runtime_security
-- edr
-- cloud_appsec
-- asm
 - xsiam
-- exposure_management
-- agentix_xsiam
-- tim
-- email_security
