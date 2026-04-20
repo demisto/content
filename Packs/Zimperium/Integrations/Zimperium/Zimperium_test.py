@@ -200,19 +200,20 @@ def test_fetch_incidents_last_event_ids(mocker):
 def test_app_upload_for_analysis_uses_basename(mocker):
     """
     Given:
-        - A file entry with a name containing directory path components.
+        - A file entry with a name containing directory components.
     When:
         - Calling app_upload_for_analysis_request.
     Then:
-        - Verify that only the basename of the file name is used.
+        - Verify that only the basename of the file name is used for the copy destination.
+        - Verify that getFilePath is called only once.
     """
     import os
     import demistomock as demisto
 
-    mocker.patch.object(
+    mock_get_file_path = mocker.patch.object(
         demisto,
         "getFilePath",
-        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+        return_value={"path": "/tmp/testfile", "name": "subdir/testapp.apk"},
     )
     mock_copy = mocker.patch("shutil.copy")
     mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
@@ -227,7 +228,41 @@ def test_app_upload_for_analysis_uses_basename(mocker):
 
     client.app_upload_for_analysis_request("entry1")
 
-    # Verify shutil.copy was called with the sanitized basename only
+    # Verify getFilePath is called only once
+    assert mock_get_file_path.call_count == 1
+    # Verify shutil.copy was called with the basename only
     copy_call_args = mock_copy.call_args[0]
-    assert copy_call_args[1] == "passwd"
+    assert copy_call_args[1] == "testapp.apk"
     assert os.path.basename(copy_call_args[1]) == copy_call_args[1]
+
+
+def test_app_upload_cleanup_does_not_raise(mocker):
+    """
+    Given:
+        - A file entry where cleanup may fail.
+    When:
+        - Calling app_upload_for_analysis_request and os.remove raises an OSError.
+    Then:
+        - Verify that the function completes without raising an exception from cleanup.
+    """
+    import demistomock as demisto
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "testapp.apk"},
+    )
+    mocker.patch("shutil.copy")
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
+    mocker.patch("os.remove", side_effect=OSError("file not found"))
+
+    client = Client(
+        base_url="https://test.com",
+        api_key="test_key",
+        verify=False,
+    )
+    mocker.patch.object(client, "_http_request", return_value={"md5": "abc123"})
+
+    # Should not raise despite os.remove failing
+    result = client.app_upload_for_analysis_request("entry1")
+    assert result == {"md5": "abc123"}
