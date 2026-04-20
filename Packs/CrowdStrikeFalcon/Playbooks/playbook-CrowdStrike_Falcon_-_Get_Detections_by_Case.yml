@@ -325,7 +325,7 @@ outputs:
   description: 'Indicates whether detections were found. '
   type: string
 tests:
-- Test - CrowdStrike Falcon
+- CrowdStrike_Falcon_-_Get_Detections_by_Case
 fromversion: 6.10.0
 marketplaces:
 - xsoar
