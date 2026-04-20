@@ -463,14 +463,7 @@ tasks:
       devicestatus:
         simple: ${Endpoint.[0].Status}
       isolated:
-        complex:
-          root: ${Endpoint.[0].IsIsolated}
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: ${Endpoint.[0].IsIsolated}
-                iscontext: true
+        simple: ${Endpoint.[0].IsIsolated}
     continueonerror: true
     separatecontext: false
     view: |-
