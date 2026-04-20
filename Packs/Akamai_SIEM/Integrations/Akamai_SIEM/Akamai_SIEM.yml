@@ -282,3 +282,5 @@ script:
 tests:
 - Akamai_WAF_SIEM-Test
 fromversion: 5.0.0
+supportedModules:
+- xsiam
