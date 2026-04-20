@@ -255,3 +255,5 @@ marketplaces:
 tests:
 - CybelAngel Test Playbook
 supportlevelheader: xsoar
+supportedModules:
+- xsiam

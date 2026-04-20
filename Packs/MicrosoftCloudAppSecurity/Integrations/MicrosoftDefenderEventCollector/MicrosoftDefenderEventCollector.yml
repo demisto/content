@@ -127,3 +127,5 @@ marketplaces:
 - platform
 tests:
 - No Tests
+supportedModules:
+- xsiam
