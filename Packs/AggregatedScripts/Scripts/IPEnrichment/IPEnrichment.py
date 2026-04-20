@@ -14,7 +14,7 @@ ENDPOINT_PATH = (
 # Sub-timing keys that are breakdowns of the pipeline batch; shown as indented detail rows,
 # NOT added to the total (they are already included in the pipeline elapsed time).
 _SUB_TIMING_KEYS = {
-    "CreateNewIndicatorsOnly (batch_find_existing_indicators + createNewIndicator)",
+    "CreateNewIndicatorsOnly (findIndicators + createNewIndicator)",
     "enrichIndicators + internal commands",
 }
 
@@ -214,7 +214,7 @@ def ip_enrichment_script(
             0.0,
         )
         if create_new_elapsed:
-            timings["CreateNewIndicatorsOnly (batch_find_existing_indicators + createNewIndicator)"] = create_new_elapsed
+            timings["CreateNewIndicatorsOnly (findIndicators + createNewIndicator)"] = create_new_elapsed
         if enrich_elapsed:
             timings["enrichIndicators + internal commands"] = enrich_elapsed
 
