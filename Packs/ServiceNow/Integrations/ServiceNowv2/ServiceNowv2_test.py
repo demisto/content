@@ -4337,3 +4337,41 @@ class TestCreateItemOrderFixes:
         call_kwargs = mock_send.call_args
         body = call_kwargs[1].get("body") or call_kwargs[0][2]
         assert body.get("sysparm_no_validation") == "true"
+
+
+def test_upload_file_command_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components and no explicit file_name arg.
+    When:
+        - Calling upload_file_command.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+    import os
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+
+    mock_client = MagicMock()
+    mock_client.get_table_name.return_value = "incident"
+    mock_client.upload_file.return_value = {
+        "result": {
+            "file_name": "passwd",
+            "download_link": "https://test.com/download",
+            "sys_id": "abc123",
+        }
+    }
+
+    # No file_name arg provided, so it should use basename from getFilePath
+    args = {"id": "sys_id", "file_id": "entry_id", "ticket_type": "incident"}
+    upload_file_command(mock_client, args)
+
+    # Verify upload_file was called with the sanitized basename
+    call_args = mock_client.upload_file.call_args[0]
+    file_name_used = call_args[2]
+    assert file_name_used == "passwd"
+    assert os.path.basename(file_name_used) == file_name_used
