@@ -117,7 +117,7 @@ configuration:
   required: true
   section: Collect
   type: 0
-description: This is a feed integration for extracting indicators from ServiceNow
+description: This is a feed integration for extracting indicators from ServiceNow.
 display: ServiceNow Generic Feed
 name: FeedServiceNow
 script:
