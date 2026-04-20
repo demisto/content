@@ -16,6 +16,7 @@ from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
 from ServiceNowv2 import (
+import os
     DATE_FORMAT,
     DATE_FORMAT_OPTIONS,
     MAX_RETRY,
@@ -4348,8 +4349,6 @@ def test_upload_file_command_uses_basename(mocker):
     Then:
         - Verify that only the basename of the file name is used.
     """
-    import os
-
     mocker.patch.object(
         demisto,
         "getFilePath",
@@ -4375,3 +4374,40 @@ def test_upload_file_command_uses_basename(mocker):
     file_name_used = call_args[2]
     assert file_name_used == "passwd"
     assert os.path.basename(file_name_used) == file_name_used
+
+def test_update_remote_system_with_entries_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components.
+    When:
+        - Calling update_remote_system_with_entries.
+    Then:
+        - Verify that only the basename of the file name is used when uploading.
+    """
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+    mocker.patch.object(demisto, "debug")
+
+    mock_client = MagicMock()
+    mock_client.upload_file.return_value = {
+        "result": {
+            "file_name": "passwd",
+            "download_link": "https://test.com/download",
+            "sys_id": "abc123",
+        }
+    }
+
+    entries = [{"id": "entry_id", "type": 3, "tags": []}]
+    params = {
+        "file_tag_from_service_now": "FileFromServiceNow",
+        "file_tag": "file",
+    }
+    update_remote_system_with_entries(mock_client, entries, params, "ticket_id", "incident", {})
+
+    call_args = mock_client.upload_file.call_args[0]
+    full_file_name_used = call_args[2]
+    assert os.path.basename(full_file_name_used) == full_file_name_used
+
