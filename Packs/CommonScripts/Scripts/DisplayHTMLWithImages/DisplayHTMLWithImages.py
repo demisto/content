@@ -168,10 +168,11 @@ def _sanitize_html(html_body: str) -> str:
     except ImportError:
         demisto.debug("bleach is not available; using basic tag-stripping fallback")
         # Remove script/iframe/object/embed tags and their content as a basic fallback
-        html_body = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
-        html_body = re.sub(r"<\s*iframe[^>]*>.*?<\s*/\s*iframe\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
-        html_body = re.sub(r"<\s*object[^>]*>.*?<\s*/\s*object\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
-        html_body = re.sub(r"<\s*embed[^>]*>.*?<\s*/\s*embed\s*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        # Use [^>]*> for end tags to handle whitespace/attributes like </script > or </script\t\nbar>
+        html_body = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*iframe[^>]*>.*?<\s*/\s*iframe[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*object[^>]*>.*?<\s*/\s*object[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
+        html_body = re.sub(r"<\s*embed[^>]*>.*?<\s*/\s*embed[^>]*>", "", html_body, flags=re.DOTALL | re.IGNORECASE)
         # Also remove self-closing variants
         html_body = re.sub(r"<\s*(?:script|iframe|object|embed)[^>]*/\s*>", "", html_body, flags=re.IGNORECASE)
     return html_body

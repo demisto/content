@@ -349,7 +349,7 @@ class TestSanitizeHtml:
             import re
 
             # Remove script tags and their content (not in allowed tags)
-            result = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script\s*>", "", html, flags=re.DOTALL | re.IGNORECASE)
+            result = re.sub(r"<\s*script[^>]*>.*?<\s*/\s*script[^>]*>", "", html, flags=re.DOTALL | re.IGNORECASE)
             return result
 
         mock_bleach.clean = mock_clean
@@ -453,17 +453,12 @@ class TestSanitizeHtml:
         Then
         - Dangerous tags (script, iframe, etc.) are stripped via regex fallback
         """
+        import sys
         import DisplayHTMLWithImages
 
-        # Force bleach to be unavailable by making import raise ImportError
-        original_import = __builtins__.__import__ if hasattr(__builtins__, '__import__') else __import__
-
-        def mock_import(name, *args, **kwargs):
-            if name == "bleach":
-                raise ImportError("mocked: bleach not available")
-            return original_import(name, *args, **kwargs)
-
-        mocker.patch("builtins.__import__", side_effect=mock_import)
+        # Force bleach to be unavailable by setting it to None in sys.modules
+        # This makes 'import bleach' raise ImportError deterministically
+        mocker.patch.dict(sys.modules, {"bleach": None})
 
         html_input = '<p>Hello</p><script>alert("test")</script><p>World</p>'
         result = DisplayHTMLWithImages._sanitize_html(html_input)

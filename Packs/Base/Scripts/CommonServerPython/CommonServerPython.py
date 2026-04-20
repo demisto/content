@@ -9,7 +9,6 @@ from __future__ import print_function
 import base64
 import binascii
 import gc
-import html as _html_module
 import json
 import logging
 import os
@@ -45,7 +44,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 48, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -2407,7 +2406,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = list(t.keys())
         # if the value of the single key is a non-empty list, unpack it for creating a column table.
         single_value = list(t.values())[0]
-        if isinstance(single_value, list) and len(single_value) > 0:
+        if isinstance(single_value, list) and single_value:
             t = single_value
 
     if not isinstance(t, list):
@@ -2722,14 +2721,15 @@ def sanitize_html_output(value, allow_tags=None):
     Returns:
         HTML-safe string.
     """
+    import html as _html_mod
     if allow_tags is None:
-        return _html_module.escape(str(value))
+        return _html_mod.escape(str(value))
     # For allowlist mode, use bleach if available, else strip all
     try:
         import bleach
         return bleach.clean(str(value), tags=allow_tags, strip=True)
     except ImportError:
-        return _html_module.escape(str(value))
+        return _html_mod.escape(str(value))
 
 
 def getFilePathSafe(entry_id):
