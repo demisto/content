@@ -30,10 +30,10 @@
 - SSDeep = "ssdeep"
 - URL = "URL"
 
-### Configure ServiceNow Genric Feed Indicator on XSIAM Tenant
+### Configure ServiceNow Generic Feed Indicator on XSIAM Tenant
 
 1. Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
-2. Search for ServiceNowGenericFeed
+2. Search for ServiceNow Generic Feed
 3. Click **Add instance**.
 4. Insert the ServiceNow URL.
 5. Insert your credentials (user name and password).

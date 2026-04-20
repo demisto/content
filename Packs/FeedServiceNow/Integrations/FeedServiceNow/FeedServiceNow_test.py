@@ -1,6 +1,5 @@
 import pytest
-from ServiceNowGenericFeed import Client
-from ServiceNowGenericFeed import list_records_from_url, create_indicator_object, add_indicators_to_tim
+from FeedServiceNow import Client, list_records_from_url, create_indicator_object, add_indicators_to_tim
 
 CREATE_INDICATOR_PACK = [
     (

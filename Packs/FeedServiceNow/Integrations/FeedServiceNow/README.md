@@ -1,7 +1,6 @@
-This is a feed integration for extracting indicators from ServiceNow
-This integration was integrated and tested with version xx of ServiceNowGenericFeed.
+This is a feed integration for extracting indicators from ServiceNow.
 
-## Configure ServiceNowGenericFeed in Cortex
+## Configure ServiceNow Generic Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -30,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### snow-get-indicators
 
 ***
-retrieve indicators from ServiceNow
+Retrieve indicators from ServiceNow.
 
 #### Base Command
 

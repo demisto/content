@@ -1,6 +1,6 @@
 {
-    "name": "ServiceNowGenericFeed",
-    "description": "This pack contains an integration that can be used to pull indicators from ServiceNow CMDB and put them inside the XSIAM TIM with the option to provide tagging.",
+    "name": "ServiceNow Generic Feed",
+    "description": "This pack contains an integration that can be used to pull indicators from ServiceNow CMDB and put them inside the TIM with the option to provide tagging.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "North Dakota Information Technology",
@@ -28,9 +28,5 @@
     ],
     "githubUser": [
         "4nshumaan"
-    ],
-     "supportedModules": [
-
-        "xsiam"
     ]
 }
