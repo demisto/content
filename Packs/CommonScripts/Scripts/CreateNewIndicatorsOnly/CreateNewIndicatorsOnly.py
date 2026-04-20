@@ -325,12 +325,12 @@ def main():
         count_existing = sum(1 for ent in ents if ent.get(KEY_CREATION_STATUS) == STATUS_EXISTING)
         if use_batch:
             timing_detail = (
-                f"findIndicators (batch OR-query): {elapsed_find:.2f}s | "
+                f"batch_find_existing_indicators: {elapsed_find:.2f}s | "
                 f"createNewIndicator ({count_new} new): {elapsed_create:.2f}s | "
                 f"Total: {elapsed_total:.2f}s"
             )
         else:
-            timing_detail = f"serial (legacy) findIndicators+create: {elapsed_find:.2f}s total"
+            timing_detail = f"serial findIndicators per-indicator: {elapsed_find:.2f}s total (no batch)"
         readable_output = (
             f"{count_new} new indicators added, {count_existing} already existed. "
             f"Total: {len(ents)} | {timing_detail}"
