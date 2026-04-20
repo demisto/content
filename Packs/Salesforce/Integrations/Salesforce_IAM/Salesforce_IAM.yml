@@ -90,7 +90,6 @@ configuration:
   required: true
   type: 0
 description: Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
-display:platform: Salesforce IAM
 display: Salesforce IAM
 name: Salesforce IAM
 script:
