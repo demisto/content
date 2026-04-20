@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 import demistomock as demisto
 import pytest
 import requests
+import os
 
 import ServiceNowv2
 
@@ -16,7 +17,6 @@ from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
 from ServiceNowv2 import (
-import os
     DATE_FORMAT,
     DATE_FORMAT_OPTIONS,
     MAX_RETRY,
@@ -4349,6 +4349,7 @@ def test_upload_file_command_uses_basename(mocker):
     Then:
         - Verify that only the basename of the file name is used.
     """
+
     mocker.patch.object(
         demisto,
         "getFilePath",
