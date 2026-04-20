@@ -14,7 +14,7 @@ ENDPOINT_PATH = (
 # Sub-timing keys that are breakdowns of the pipeline batch; shown as indented detail rows,
 # NOT added to the total (they are already included in the pipeline elapsed time).
 _SUB_TIMING_KEYS = {
-    "CreateNewIndicatorsOnly (findIndicators + createNewIndicator)",
+    "CreateNewIndicatorsOnly (batch_find_existing_indicators + createNewIndicator)",
     "enrichIndicators + internal commands",
 }
 
@@ -201,19 +201,22 @@ def ip_enrichment_script(
 
     # Pull per-batch timings exposed by ReputationAggregatedCommand.batch_timings.
     # batch 0 = CreateNewIndicatorsOnly; batch 1 = enrichIndicators + internal commands.
-    create_new_elapsed = ip_enrichment.batch_timings.get("CreateNewIndicatorsOnly", 0.0)
-    enrich_elapsed = ip_enrichment.batch_timings.get(
-        # batch 1 key is the first command in command_batch2; fall back to enrichIndicators
-        next(
-            (cmd.name for cmd in command_batch2),
-            "enrichIndicators",
-        ),
-        0.0,
-    )
-    if create_new_elapsed:
-        timings["CreateNewIndicatorsOnly (findIndicators + createNewIndicator)"] = create_new_elapsed
-    if enrich_elapsed:
-        timings["enrichIndicators + internal commands"] = enrich_elapsed
+    # Only show sub-timing breakdown when use_batch=True (optimised path); in legacy mode
+    # the labels are not meaningful (no batch_find_existing_indicators call).
+    if use_batch:
+        create_new_elapsed = ip_enrichment.batch_timings.get("CreateNewIndicatorsOnly", 0.0)
+        enrich_elapsed = ip_enrichment.batch_timings.get(
+            # batch 1 key is the first command in command_batch2; fall back to enrichIndicators
+            next(
+                (cmd.name for cmd in command_batch2),
+                "enrichIndicators",
+            ),
+            0.0,
+        )
+        if create_new_elapsed:
+            timings["CreateNewIndicatorsOnly (batch_find_existing_indicators + createNewIndicator)"] = create_new_elapsed
+        if enrich_elapsed:
+            timings["enrichIndicators + internal commands"] = enrich_elapsed
 
     # --- Prepend timing HR table to the result ---
     timing_hr = _build_timing_hr(timings, use_batch)

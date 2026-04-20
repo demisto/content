@@ -151,12 +151,28 @@ def add_new_indicator(
     return indicator
 
 
+class AddNewIndicatorsResult:
+    """Return value of add_new_indicators — bundles indicators with per-phase timing."""
+
+    def __init__(
+        self,
+        indicators: list[dict[str, Any]],
+        elapsed_find_s: float = 0.0,
+        elapsed_create_s: float = 0.0,
+    ) -> None:
+        self.indicators = indicators
+        # Time spent in batch_find_existing_indicators (OR-query phase).
+        self.elapsed_find_s = elapsed_find_s
+        # Time spent in createNewIndicator calls (creation phase).
+        self.elapsed_create_s = elapsed_create_s
+
+
 def add_new_indicators(
     indicator_values: list[Any] | None,
     create_new_indicator_args: dict[str, Any],
     associate_to_incident: bool = False,
     use_batch: bool = True,
-) -> list[dict[str, Any]]:
+) -> AddNewIndicatorsResult:
     """
     Create indicators in TIM for all values in ``indicator_values``.
 
@@ -168,17 +184,24 @@ def add_new_indicators(
             (CRTX-231934 optimisation — ~50x faster for large batches).
             If False, fall back to the original per-indicator serial ``findIndicators`` calls
             (pre-optimisation baseline, useful for side-by-side performance comparison).
+
+    Returns:
+        AddNewIndicatorsResult with .indicators list and per-phase timing (.elapsed_find_s, .elapsed_create_s).
     """
     if not indicator_values:
-        return []
+        return AddNewIndicatorsResult([])
 
     if not use_batch:
         # --- Legacy path: one findIndicators call per indicator (pre-CRTX-231934 behaviour) ---
         demisto.debug(f"[LEGACY] use_batch=False — running serial findIndicators loop for {len(indicator_values)} indicators")
-        return [
+        t0 = time.monotonic()
+        indicators = [
             add_new_indicator(indicator_value, create_new_indicator_args, associate_to_incident)
             for indicator_value in indicator_values
         ]
+        elapsed = time.monotonic() - t0
+        # In legacy mode the find+create are interleaved per-indicator; report total as find time.
+        return AddNewIndicatorsResult(indicators, elapsed_find_s=elapsed)
 
     # --- Optimised path: single batched findIndicators OR-query ---
     # Normalise all values up-front so we can deduplicate and build the batch query.
@@ -199,17 +222,19 @@ def add_new_indicators(
             )
 
     if not normalised:
-        return results
-
-    t_total = time.monotonic()
+        return AddNewIndicatorsResult(results)
 
     # --- Step 1: Batch-find which indicators already exist in TIM ---
+    t_find = time.monotonic()
     existing_by_lower = batch_find_existing_indicators(normalised)
+    elapsed_find = time.monotonic() - t_find
     demisto.debug(
-        f"[BATCH_CREATE] {len(existing_by_lower)}/{len(normalised)} indicators already exist in TIM"
+        f"[BATCH_CREATE] {len(existing_by_lower)}/{len(normalised)} indicators already exist in TIM "
+        f"(findIndicators elapsed_s={elapsed_find:.3f})"
     )
 
     # --- Step 2: For each value, either reuse the existing record or create a new one ---
+    t_create_total = time.monotonic()
     for value in normalised:
         value_lower = value.lower()
 
@@ -252,13 +277,13 @@ def add_new_indicators(
 
         results.append(indicator)
 
-    elapsed_total = time.monotonic() - t_total
+    elapsed_create_total = time.monotonic() - t_create_total
     demisto.debug(
-        f"[TIMING] add_new_indicators total elapsed_s={elapsed_total:.3f} "
+        f"[TIMING] add_new_indicators total: find={elapsed_find:.3f}s create={elapsed_create_total:.3f}s "
         f"for {len(normalised)} indicators "
         f"({len(existing_by_lower)} existing, {len(normalised) - len(existing_by_lower)} new)"
     )
-    return results
+    return AddNewIndicatorsResult(results, elapsed_find_s=elapsed_find, elapsed_create_s=elapsed_create_total)
 
 
 def main():
@@ -279,9 +304,11 @@ def main():
         # use_batch=false: legacy serial findIndicators per indicator (pre-optimisation baseline).
         use_batch = argToBoolean(args.get("use_batch", "true"))
 
-        t_main = time.monotonic()
-        ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident, use_batch=use_batch)
-        elapsed_main = time.monotonic() - t_main
+        result = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident, use_batch=use_batch)
+        ents = result.indicators
+        elapsed_find = result.elapsed_find_s
+        elapsed_create = result.elapsed_create_s
+        elapsed_total = elapsed_find + elapsed_create
 
         outputs = [
             assign_params(
@@ -296,10 +323,17 @@ def main():
 
         count_new = sum(1 for ent in ents if ent.get(KEY_CREATION_STATUS) == STATUS_NEW)
         count_existing = sum(1 for ent in ents if ent.get(KEY_CREATION_STATUS) == STATUS_EXISTING)
-        mode_label = "batched OR-query" if use_batch else "serial (legacy)"
+        if use_batch:
+            timing_detail = (
+                f"findIndicators (batch OR-query): {elapsed_find:.2f}s | "
+                f"createNewIndicator ({count_new} new): {elapsed_create:.2f}s | "
+                f"Total: {elapsed_total:.2f}s"
+            )
+        else:
+            timing_detail = f"serial (legacy) findIndicators+create: {elapsed_find:.2f}s total"
         readable_output = (
             f"{count_new} new indicators added, {count_existing} already existed. "
-            f"Total: {len(ents)} | Mode: {mode_label} | Time: {elapsed_main:.2f}s"
+            f"Total: {len(ents)} | {timing_detail}"
         )
         if argToBoolean(args.get("verbose", "false")):
             readable_output += "\n" + tblToMd(
