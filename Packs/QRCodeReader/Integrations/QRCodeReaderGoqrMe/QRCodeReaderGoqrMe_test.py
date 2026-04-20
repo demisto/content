@@ -1,15 +1,17 @@
+import os
+
 import demistomock as demisto
 import pytest
 
 
-def test_read_qr_code_file_name_used_directly(mocker):
+def test_read_qr_code_uses_basename(mocker):
     """
     Given:
-        - A file entry with a name returned by getFilePath.
+        - A file entry with a name containing directory path components.
     When:
         - Calling read_qr_code.
     Then:
-        - Verify that the file name is used directly without modification.
+        - Verify that only the basename of the file name is used.
     """
     mocker.patch.object(
         demisto,
@@ -19,11 +21,11 @@ def test_read_qr_code_file_name_used_directly(mocker):
     mocker.patch.object(
         demisto,
         "getFilePath",
-        return_value={"path": "/tmp/testfile", "name": "testfile.png"},
+        return_value={"path": "/tmp/testfile", "name": "/tmp/some/path/testfile.png"},
     )
     mock_copy = mocker.patch("shutil.copy")
     mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
-    mock_rmtree = mocker.patch("shutil.rmtree")
+    mock_remove = mocker.patch("os.remove")
 
     mock_response = mocker.MagicMock()
     mock_response.status_code = 200
@@ -33,22 +35,23 @@ def test_read_qr_code_file_name_used_directly(mocker):
 
     read_qr_code(verify=True)
 
-    # Verify shutil.copy was called with the file name from getFilePath
+    # Verify shutil.copy was called with the basename only
     copy_call_args = mock_copy.call_args[0]
     assert copy_call_args[1] == "testfile.png"
+    assert os.path.basename(copy_call_args[1]) == copy_call_args[1]
 
-    # Verify cleanup uses shutil.rmtree
-    mock_rmtree.assert_called_once_with("testfile.png", ignore_errors=True)
+    # Verify cleanup uses os.remove (not rmtree)
+    mock_remove.assert_called_once_with("testfile.png")
 
 
-def test_read_qr_code_cleanup_on_success(mocker):
+def test_read_qr_code_traversal_path_sanitized(mocker):
     """
     Given:
-        - A valid file entry and a successful API response.
+        - A file entry with a name that contains traversal-style path components.
     When:
         - Calling read_qr_code.
     Then:
-        - Verify that cleanup is performed after a successful request.
+        - Verify that only the final filename component is used, not the full path.
     """
     mocker.patch.object(
         demisto,
@@ -58,11 +61,48 @@ def test_read_qr_code_cleanup_on_success(mocker):
     mocker.patch.object(
         demisto,
         "getFilePath",
+        return_value={"path": "/tmp/testfile2", "name": "/tmp/evil/../../etc/passwd"},
+    )
+    mock_copy = mocker.patch("shutil.copy")
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
+    mocker.patch("os.remove")
+
+    mock_response = mocker.MagicMock()
+    mock_response.status_code = 200
+    mocker.patch("requests.post", return_value=mock_response)
+
+    from QRCodeReaderGoqrMe import read_qr_code
+
+    read_qr_code(verify=True)
+
+    # Verify only the basename "passwd" is used, not the full traversal path
+    copy_call_args = mock_copy.call_args[0]
+    assert copy_call_args[1] == "passwd"
+    assert "/" not in copy_call_args[1]
+
+
+def test_read_qr_code_cleanup_on_success(mocker):
+    """
+    Given:
+        - A valid file entry and a successful API response.
+    When:
+        - Calling read_qr_code.
+    Then:
+        - Verify that os.remove is called for cleanup after a successful request.
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"entry_id": "entry3"},
+    )
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
         return_value={"path": "/tmp/qrfile", "name": "qrfile.jpg"},
     )
     mocker.patch("shutil.copy")
     mocker.patch("builtins.open", mocker.mock_open(read_data=b"imagedata"))
-    mock_rmtree = mocker.patch("shutil.rmtree")
+    mock_remove = mocker.patch("os.remove")
 
     mock_response = mocker.MagicMock()
     mock_response.status_code = 200
@@ -73,7 +113,7 @@ def test_read_qr_code_cleanup_on_success(mocker):
     result = read_qr_code(verify=False)
 
     assert result is not None
-    mock_rmtree.assert_called_once_with("qrfile.jpg", ignore_errors=True)
+    mock_remove.assert_called_once_with("qrfile.jpg")
 
 
 def test_read_qr_code_cleanup_on_error(mocker):
@@ -83,12 +123,12 @@ def test_read_qr_code_cleanup_on_error(mocker):
     When:
         - Calling read_qr_code.
     Then:
-        - Verify that cleanup is still performed even when the request fails.
+        - Verify that os.remove is still called even when the request fails.
     """
     mocker.patch.object(
         demisto,
         "args",
-        return_value={"entry_id": "entry3"},
+        return_value={"entry_id": "entry4"},
     )
     mocker.patch.object(
         demisto,
@@ -97,7 +137,7 @@ def test_read_qr_code_cleanup_on_error(mocker):
     )
     mocker.patch("shutil.copy")
     mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
-    mock_rmtree = mocker.patch("shutil.rmtree")
+    mock_remove = mocker.patch("os.remove")
 
     mock_response = mocker.MagicMock()
     mock_response.status_code = 400
@@ -110,7 +150,7 @@ def test_read_qr_code_cleanup_on_error(mocker):
     read_qr_code(verify=True)
 
     # Cleanup must always run via finally block
-    mock_rmtree.assert_called_once_with("badfile.png", ignore_errors=True)
+    mock_remove.assert_called_once_with("badfile.png")
 
 
 def test_read_qr_code_copy_failure_raises(mocker):
@@ -125,7 +165,7 @@ def test_read_qr_code_copy_failure_raises(mocker):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={"entry_id": "entry4"},
+        return_value={"entry_id": "entry5"},
     )
     mocker.patch.object(
         demisto,
