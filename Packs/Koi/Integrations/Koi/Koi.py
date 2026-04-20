@@ -282,8 +282,8 @@ def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[
     return new_events
 
 
-def parse_allowlist_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
-    """Read and parse a JSON file from a War Room entry ID containing allowlist items.
+def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
+    """Read and parse a JSON file from a War Room entry ID containing list items.
 
     The JSON file must contain a list of item objects, each with at least 'item_id' and 'marketplace'.
 
@@ -559,6 +559,29 @@ class Client(ContentClient):
         )
 
         demisto.debug(f"[API] Successfully added {len(items)} allowlist item(s)")
+
+    def remove_blocklist_items(
+        self,
+        items: list[dict[str, Any]],
+    ) -> None:
+        """Remove one or more items from the global blocklist.
+
+        Args:
+            items: List of item dictionaries, each containing at least 'item_id' and 'marketplace'.
+        """
+        body: dict[str, Any] = {"items": items}
+
+        demisto.debug(f"[API] Removing {len(items)} blocklist item(s): {items}")
+
+        self._http_request(
+            method="DELETE",
+            url_suffix=API_BLOCKLIST,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+        demisto.debug(f"[API] Successfully removed {len(items)} blocklist item(s)")
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -1141,7 +1164,7 @@ def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> Comm
 
     if entry_id:
         # Bulk mode: read items from uploaded JSON file
-        items = parse_allowlist_items_from_entry_id(entry_id)
+        items = parse_list_items_from_entry_id(entry_id)
     elif item_id and marketplace:
         # Single item mode
         if marketplace not in VALID_MARKETPLACES:
@@ -1220,6 +1243,65 @@ def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
+def koi_blocklist_item_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Remove one or more items from the global blocklist.
+
+    Supports two input modes:
+    - Single item: provide 'item_id' and 'marketplace' (with optional 'created_by' and 'notes').
+    - Bulk from file: provide 'items_list_raw_json_entry_id' with a War Room entry ID of a JSON file
+      containing a list of item objects.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    demisto.debug("[Command] koi-blocklist-item-remove triggered")
+
+    entry_id: str | None = args.get("items_list_raw_json_entry_id")
+    item_id: str | None = args.get("item_id")
+    marketplace: str | None = args.get("marketplace")
+
+    if entry_id:
+        # Bulk mode: read items from uploaded JSON file
+        items = parse_list_items_from_entry_id(entry_id)
+    elif item_id and marketplace:
+        # Single item mode
+        if marketplace not in VALID_MARKETPLACES:
+            raise DemistoException(f"Invalid marketplace '{marketplace}'. Valid values: {VALID_MARKETPLACES}")
+
+        item: dict[str, Any] = {
+            "item_id": item_id,
+            "marketplace": marketplace,
+        }
+        created_by: str | None = args.get("created_by")
+        notes: str | None = args.get("notes")
+        if created_by:
+            item["created_by"] = created_by
+        if notes:
+            item["notes"] = notes
+
+        items = [item]
+    else:
+        raise DemistoException(
+            "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
+        )
+
+    client.remove_blocklist_items(items)
+
+    item_count = len(items)
+    demisto.debug(f"[Command Result] {item_count} blocklist item(s) removed successfully")
+
+    if item_count == 1:
+        readable = f"Blocklist item '{items[0]['item_id']}' (marketplace: {items[0]['marketplace']}) was removed successfully."
+    else:
+        readable = f"{item_count} blocklist items were removed successfully."
+
+    return CommandResults(readable_output=readable)
+
+
 # endregion
 
 # region Main router
@@ -1236,6 +1318,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-allowlist-item-remove": koi_allowlist_item_remove_command,
     "koi-allowlist-item-add": koi_allowlist_item_add_command,
     "koi-blocklist-get": koi_blocklist_get_command,
+    "koi-blocklist-item-remove": koi_blocklist_item_remove_command,
 }
 
 

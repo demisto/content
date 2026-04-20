@@ -30,7 +30,8 @@ from Koi import (
     koi_allowlist_item_remove_command,
     koi_allowlist_item_add_command,
     koi_blocklist_get_command,
-    parse_allowlist_items_from_entry_id,
+    koi_blocklist_item_remove_command,
+    parse_list_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
     main,
@@ -1356,6 +1357,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_blocklist_result")
 
+    def test_main_routes_blocklist_item_remove(self, mocker):
+        """Test main routes koi-blocklist-item-remove command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-blocklist-item-remove")
+        mocker.patch.object(demisto, "args", return_value={"item_id": "mal-001", "marketplace": "vscode"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_blocklist_remove = mocker.MagicMock(return_value="mock_blocklist_remove_result")
+        COMMAND_MAP["koi-blocklist-item-remove"] = mock_blocklist_remove
+
+        main()
+
+        mock_return.assert_called_once_with("mock_blocklist_remove_result")
+
 
 # endregion
 
@@ -1866,7 +1890,7 @@ class TestKoiAllowlistItemAddCommand:
 
 
 class TestParseItemsFromEntryId:
-    """Tests for the parse_allowlist_items_from_entry_id helper function."""
+    """Tests for the parse_list_items_from_entry_id helper function."""
 
     def test_parse_valid_items(self, mocker, tmp_path):
         """Test parsing a valid JSON file with multiple items."""
@@ -1879,7 +1903,7 @@ class TestParseItemsFromEntryId:
 
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
-        result = parse_allowlist_items_from_entry_id("entry-123")
+        result = parse_list_items_from_entry_id("entry-123")
         assert result == items_data
 
     @pytest.mark.parametrize(
@@ -1907,7 +1931,7 @@ class TestParseItemsFromEntryId:
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
         with pytest.raises(DemistoException, match=error_match):
-            parse_allowlist_items_from_entry_id("entry-123")
+            parse_list_items_from_entry_id("entry-123")
 
     @pytest.mark.parametrize(
         "mock_kwargs, error_match",
@@ -1922,7 +1946,7 @@ class TestParseItemsFromEntryId:
         mocker.patch.object(demisto, "getFilePath", **mock_kwargs)
 
         with pytest.raises(DemistoException, match=error_match):
-            parse_allowlist_items_from_entry_id("entry-123")
+            parse_list_items_from_entry_id("entry-123")
 
 
 class TestClientAddAllowlistItems:
@@ -2053,6 +2077,178 @@ class TestClientGetBlocklist:
 
         assert result == empty_response
         assert result["items"] == []
+
+
+# endregion
+
+# region koi-blocklist-item-remove tests
+
+
+class TestKoiBlocklistItemRemoveCommand:
+    """Tests for the koi-blocklist-item-remove command."""
+
+    @pytest.mark.parametrize(
+        "args, expected_items, readable_check",
+        [
+            (
+                {"item_id": "mal-001", "marketplace": "vscode"},
+                [{"item_id": "mal-001", "marketplace": "vscode"}],
+                "mal-001",
+            ),
+            (
+                {
+                    "item_id": "mal-002",
+                    "marketplace": "chrome_web_store",
+                    "created_by": "security@example.com",
+                    "notes": "Confirmed false positive",
+                },
+                [
+                    {
+                        "item_id": "mal-002",
+                        "marketplace": "chrome_web_store",
+                        "created_by": "security@example.com",
+                        "notes": "Confirmed false positive",
+                    }
+                ],
+                "mal-002",
+            ),
+        ],
+        ids=["required_only", "with_optional_params"],
+    )
+    def test_blocklist_item_remove_single_item(self, mock_client, mocker, args, expected_items, readable_check):
+        """Test koi-blocklist-item-remove with single item (required only and with optional params)."""
+        mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
+
+        result = koi_blocklist_item_remove_command(mock_client, args)
+
+        assert "was removed successfully" in result.readable_output
+        assert readable_check in result.readable_output
+        assert result.outputs is None
+        mock_client.remove_blocklist_items.assert_called_once_with(expected_items)
+
+    def test_blocklist_item_remove_invalid_marketplace(self, mock_client, mocker):
+        """Test koi-blocklist-item-remove raises error for invalid marketplace."""
+        args = {"item_id": "mal-001", "marketplace": "invalid_marketplace"}
+
+        with pytest.raises(DemistoException, match="Invalid marketplace"):
+            koi_blocklist_item_remove_command(mock_client, args)
+
+    @pytest.mark.parametrize("marketplace", VALID_MARKETPLACES)
+    def test_blocklist_item_remove_all_valid_marketplaces(self, mock_client, mocker, marketplace):
+        """Test koi-blocklist-item-remove accepts all valid marketplace values."""
+        mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
+
+        args = {"item_id": "test-item", "marketplace": marketplace}
+        result = koi_blocklist_item_remove_command(mock_client, args)
+
+        assert "was removed successfully" in result.readable_output
+
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {},
+            {"item_id": "mal-001"},
+            {"marketplace": "vscode"},
+        ],
+        ids=["no_args", "missing_marketplace", "missing_item_id"],
+    )
+    def test_blocklist_item_remove_missing_required_args(self, mock_client, args):
+        """Test koi-blocklist-item-remove raises error when item_id/marketplace pair is incomplete."""
+        with pytest.raises(DemistoException, match="Either 'item_id' and 'marketplace' must be provided"):
+            koi_blocklist_item_remove_command(mock_client, args)
+
+    @pytest.mark.parametrize(
+        "items_data, expected_readable",
+        [
+            (
+                [
+                    {"item_id": "mal-1", "marketplace": "vscode"},
+                    {"item_id": "mal-2", "marketplace": "npm", "created_by": "user@example.com"},
+                ],
+                "2 blocklist items were removed successfully",
+            ),
+            (
+                [{"item_id": "mal-1", "marketplace": "vscode"}],
+                "mal-1",
+            ),
+        ],
+        ids=["multiple_items", "single_item"],
+    )
+    def test_blocklist_item_remove_from_file(self, mock_client, mocker, tmp_path, items_data, expected_readable):
+        """Test koi-blocklist-item-remove from a JSON file entry ID."""
+        mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
+
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {"items_list_raw_json_entry_id": "entry-abc-123"}
+        result = koi_blocklist_item_remove_command(mock_client, args)
+
+        assert expected_readable in result.readable_output
+        mock_client.remove_blocklist_items.assert_called_once_with(items_data)
+
+    def test_blocklist_item_remove_file_takes_priority_over_single_item(self, mock_client, mocker, tmp_path):
+        """Test that when both entry_id and item_id/marketplace are provided, entry_id takes priority."""
+        mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
+
+        items_data = [{"item_id": "file-item", "marketplace": "npm"}]
+        json_file = tmp_path / "items.json"
+        json_file.write_text(json.dumps(items_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
+
+        args = {
+            "items_list_raw_json_entry_id": "entry-abc-123",
+            "item_id": "arg-item",
+            "marketplace": "vscode",
+        }
+        result = koi_blocklist_item_remove_command(mock_client, args)
+
+        mock_client.remove_blocklist_items.assert_called_once_with(items_data)
+        assert "file-item" in result.readable_output
+
+
+class TestClientRemoveBlocklistItems:
+    """Tests for the Client.remove_blocklist_items method."""
+
+    @pytest.mark.parametrize(
+        "items",
+        [
+            [{"item_id": "mal-001", "marketplace": "vscode"}],
+            [
+                {"item_id": "mal-001", "marketplace": "vscode"},
+                {"item_id": "mal-002", "marketplace": "npm"},
+            ],
+        ],
+        ids=["single_item", "multiple_items"],
+    )
+    def test_remove_blocklist_items_request(self, mock_client, mocker, items):
+        """Test remove_blocklist_items sends correct DELETE request."""
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 204
+        mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+
+        mock_client.remove_blocklist_items(items)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "DELETE"
+        assert call_kwargs["url_suffix"] == API_BLOCKLIST
+        assert call_kwargs["json_data"] == {"items": items}
+        assert call_kwargs["resp_type"] == "response"
+        assert call_kwargs["ok_codes"] == (204,)
+
+    def test_remove_blocklist_items_api_error(self, mock_client, mocker):
+        """Test that remove_blocklist_items propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [400] - Bad Request"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.remove_blocklist_items([{"item_id": "bad-item", "marketplace": "vscode"}])
 
 
 # endregion
