@@ -322,9 +322,5 @@
     "fromVersion": "6.8.0",
     "marketplaces": [
         "xsoar"
-    ],
-    "supportedModules": [
-        "agentix",
-        "xsiam"
     ]
 }
