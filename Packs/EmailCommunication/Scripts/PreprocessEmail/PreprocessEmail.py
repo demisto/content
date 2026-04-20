@@ -64,7 +64,7 @@ def sanitize_html_body(html_body: str) -> str:
     try:
         import nh3
 
-        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS)
+        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS)  # pylint: disable=no-member
     except ImportError:
         demisto.debug("nh3 is not available; HTML sanitization skipped")
         return html_body
