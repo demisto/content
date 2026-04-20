@@ -1,5 +1,6 @@
 import contextlib
 import io
+import os
 import shutil
 import tarfile
 from collections.abc import Callable
@@ -393,7 +394,7 @@ def wildfire_upload_file(upload):
     body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)["path"]
-    file_name = demisto.getFilePath(upload)["name"]
+    file_name = os.path.basename(demisto.getFilePath(upload)["name"])
 
     try:
         shutil.copy(file_path, file_name)
@@ -405,7 +406,8 @@ def wildfire_upload_file(upload):
         with open(file_name, "rb") as file:
             result = http_request(upload_file_uri, "POST", body=body, files={"file": file})
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(file_name)
 
     upload_file_data = result["wildfire"]["upload-file-info"]
 
