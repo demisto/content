@@ -9664,41 +9664,34 @@ if 'requests' in sys.modules:
                 kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
-    from dataclasses import dataclass
-    from typing import Any
-
-    @dataclass
-    class UcpRequestContext:
+    class UcpRequestContext(object):
         """Mutable container for request components that the credential injection methods can modify.
-    
+
         :type headers: ``dict``
         :param headers: The request headers. Example: {'Accept': 'application/json'}
-        
+
         :type params: ``dict``
         :param params: The request URL query parameters. Example: {'limit': 50, 'sort': 'desc'}
-        
+
         :type auth: ``tuple``
         :param auth: The basic authentication tuple. Example: ('admin_user', 'super_secret_password')
-        
+
         :type data: ``dict`` or ``str`` or ``bytes``
         :param data: The body data for the request. Example: 'key=value&other=123'
-        
+
         :type json_data: ``dict``
         :param json_data: The JSON payload for the request. Example: {'username': 'test_user', 'active': True}
         """
         __slots__ = ('headers', 'params', 'auth', 'data', 'json_data')
-        
-        headers: dict
-        params: dict
-        auth: Any
-        data: Any
-        json_data: Any
 
-        def __post_init__(self):
+        def __init__(self, headers, params, auth, data, json_data):
             # Automatically guarantee these are safe dictionary copies, even if None is passed
-            self.headers = dict(self.headers or {})
-            self.params = dict(self.params or {})
-            
+            self.headers = dict(headers or {})
+            self.params = dict(params or {})
+            self.auth = auth
+            self.data = data
+            self.json_data = json_data
+
         def __iter__(self):
             """Allows the object to be unpacked directly into variables."""
             yield self.headers
@@ -9803,13 +9796,14 @@ if 'requests' in sys.modules:
             """
             return (401,)
         
-        def _apply_ucp_credentials(self, credentials: dict, ctx: UcpRequestContext) -> None:
+        def _apply_ucp_credentials(self, credentials, ctx):
+            # type: (dict, UcpRequestContext) -> None
             """Overridable Method: Apply UCP credentials to the request context.
 
             Dispatches to per-type methods that are individually overridable:
-            - _apply_ucp_oauth2()  — for OAuth2 tokens
-            - _apply_ucp_api_key() — for API keys
-            - _apply_ucp_plain()   — for username/password (basic auth)
+            - _apply_ucp_oauth2()  -- for OAuth2 tokens
+            - _apply_ucp_api_key() -- for API keys
+            - _apply_ucp_plain()   -- for username/password (basic auth)
 
             Override the specific per-type method if the vendor API uses a
             non-standard mechanism (custom header, query param, request body).
@@ -9839,7 +9833,8 @@ if 'requests' in sys.modules:
                              'Supported types: oauth2, api_key, plain.'.format(cred_type))
                 raise UcpException()
 
-        def _apply_ucp_oauth2(self, credentials: dict, ctx: 'UcpRequestContext') -> None:
+        def _apply_ucp_oauth2(self, credentials, ctx):
+            # type: (dict, UcpRequestContext) -> None
             """Apply OAuth2 credentials. Override in subclasses for custom OAuth2
             token placement (e.g., custom header name or query parameter).
 
@@ -9857,7 +9852,8 @@ if 'requests' in sys.modules:
                 raise UcpException()
             ctx.headers['Authorization'] = '{} {}'.format(token_type, access_token)
 
-        def _apply_ucp_api_key(self, credentials: dict, ctx: 'UcpRequestContext') -> None:
+        def _apply_ucp_api_key(self, credentials, ctx):
+            # type: (dict, UcpRequestContext) -> None
             """Apply API key credentials. Override for custom API key placement.
 
             Default: sets Authorization header to 'Bearer {key}'.
@@ -9882,7 +9878,8 @@ if 'requests' in sys.modules:
                 raise UcpException()
             ctx.headers['Authorization'] = 'Bearer {}'.format(key)
 
-        def _apply_ucp_plain(self, credentials: dict, ctx: 'UcpRequestContext') -> None:
+        def _apply_ucp_plain(self, credentials, ctx):
+            # type: (dict, UcpRequestContext) -> None
             """Apply plain credentials (basic auth). Override for custom placement.
 
             Default: sets ctx.auth tuple for requests basic auth.
@@ -10183,7 +10180,7 @@ if 'requests' in sys.modules:
                         raise_on_status,
                     )
 
-                # ── UCP: Inject credentials into request ──
+                # -- UCP: Inject credentials into request --
                 current_method_unique_id = None
                 if should_use_ucp_auth():
                     demisto.debug("[UCP][CommonServerPython.py] _http_request: injecting UCP credentials")
@@ -10211,7 +10208,7 @@ if 'requests' in sys.modules:
                     **kwargs
                 )
                 
-                # ── UCP: Invalidate credentials if we get an auth error ──
+                # -- UCP: Invalidate credentials if we get an auth error --
                 if should_use_ucp_auth() and res.status_code in self._get_ucp_auth_error_codes():
                     invalidate_ucp_credentials(current_method_unique_id)
 
@@ -13616,9 +13613,10 @@ _UCP_COMMAND_CAPABILITIES = {
 }
 
 
-# ── UCP helper: extract expiry from credentials response ──
+# -- UCP helper: extract expiry from credentials response --
 
-def _extract_ucp_expiry(creds: dict) -> Optional[float]:
+def _extract_ucp_expiry(creds):
+    # type: (dict) -> Optional[float]
     """Extract expiry as a Unix epoch float from a UCP credential dict.
 
     Looks up ``expires_at`` (ISO-8601) at the top level first, then inside
@@ -13646,12 +13644,12 @@ def _extract_ucp_expiry(creds: dict) -> Optional[float]:
         return dt.timestamp()
     except (ValueError, AttributeError):
         demisto.error("[UCP][CommonServerPython.py] _extract_ucp_expiry: Failed to parse UCP credentials expiry time. Defaulting to 5 minutes from now.")
-        # Unparseable — fall back to 5 minutes from now.
+        # Unparseable -- fall back to 5 minutes from now.
         # If this happens, it means there is an error in the response of demisto.getCredentials(). Reach out to XSOAR Backend
         return time.time() + 300
 
 
-# ── Public UCP functions ──
+# -- Public UCP functions --
 
 def is_ucp_enabled():
     # type: () -> bool
@@ -13703,7 +13701,7 @@ def resolve_ucp_capability(command=None):
     return _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
 
 
-# ── Profile matching building blocks ──
+# -- Profile matching building blocks --
 
 def _get_ucp_profiles():
     # type: () -> list
@@ -13746,7 +13744,7 @@ def _find_ucp_profile_by_sub_capability(profiles, sub_capability):
         return None
     if len(matches) > 1:
         demisto.info(
-            f"[UCP][CommonServerPython.py] _find_ucp_profile_by_sub_capability: Multiple profiles ({len(matches)}) match sub_capability='{sub_capability}'. Using first."
+            "[UCP][CommonServerPython.py] _find_ucp_profile_by_sub_capability: Multiple profiles ({}) match sub_capability='{}'. Using first.".format(len(matches), sub_capability)
         )
     return matches[0].get('method_unique_id')
 
@@ -13821,10 +13819,11 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
     return profiles[0].get('method_unique_id', '')
 
 
-# ── Credential fetching with in-process TTL cache ──
+# -- Credential fetching with in-process TTL cache --
 
 
-def get_ucp_credentials(method_unique_id = None) -> dict:
+def get_ucp_credentials(method_unique_id=None):
+    # type: (Optional[str]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
     Results are cached keyed by ``method_unique_id``.  The TTL is derived from
@@ -13863,16 +13862,17 @@ def get_ucp_credentials(method_unique_id = None) -> dict:
         expiry = entry.get('expiry')
         if expiry is None or now < (expiry - _UCP_REFRESH_THRESHOLD_SECONDS):
             return entry.get('result')
-        # Stale — fall through to re-fetch
+        # Stale -- fall through to re-fetch
 
     creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
-    demisto.debug(f"[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={method_unique_id}")
+    demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
     _ucp_creds_cache[method_unique_id] = {'result': creds, 'expiry': expiry}
     return creds
 
-def invalidate_ucp_credentials(method_unique_id: str) -> None:
+def invalidate_ucp_credentials(method_unique_id):
+    # type: (str) -> None
     """Remove a specific entry from the UCP credentials cache.
 
     Public helper that any integration (or ``BaseClient``) can call when an
@@ -13885,7 +13885,7 @@ def invalidate_ucp_credentials(method_unique_id: str) -> None:
         ``method_unique_id`` used when the credentials were originally fetched.
     """
     _ucp_creds_cache.pop(method_unique_id, None)
-    demisto.debug(f"[UCP][CommonServerPython.py] Invalidated cached credentials for method_unique_id={method_unique_id}")
+    demisto.debug("[UCP][CommonServerPython.py] Invalidated cached credentials for method_unique_id={}".format(method_unique_id))
 
 
 ###########################################
