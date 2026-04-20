@@ -9,23 +9,36 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(
-        self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=(), headers: dict = None, token: str = None
+        self,
+        base_url: str,
+        verify: bool = True,
+        proxy: bool = False,
+        ok_codes=(),
+        headers: dict = None,
+        token: str = None,
+        agent: str = "",
     ):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
-        self.agent = self.get_agent()  # Agent is different based on the platform running the integration (XSOAR/XSIAM)
+        self.agent = self.get_agent(agent)
         add_sensitive_log_strs(token)
 
     @staticmethod
-    def get_agent():
+    def get_agent(agent: str = "") -> str:
         """
-        Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
+        Determine the agent header value for WildFire API requests.
+        If an override is provided (and is not 'auto'), use it directly.
+        When set to 'auto' (default) or empty, auto-detect based on the platform (XSOAR/XSIAM).
+
+        Auto API expects the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
         within XSOAR (both on-prem and cloud).
         """
-        platform = get_demisto_version().get("platform")  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
-        return "xdr" if platform == "x2" else "xsoartim"
+        if agent and agent != "auto":
+            return agent
+        return "xdr" if is_xsiam() else "xsoartim"
 
     def get_file_report(self, file_hash: str):
+        demisto.info(f"Requesting WildFire report for hash {file_hash}, format 'pdf', with agent={self.agent}")
         return self._http_request(
             "POST",
             url_suffix="/get/report",
@@ -126,6 +139,7 @@ def main():  # pragma: no coverage
             sys.exit()
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    agent = params.get("agent", "")
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
@@ -138,6 +152,7 @@ def main():  # pragma: no coverage
             headers=headers,
             verify=verify_certificate,
             proxy=proxy,
+            agent=agent,
         )
 
         if command == "test-module":
