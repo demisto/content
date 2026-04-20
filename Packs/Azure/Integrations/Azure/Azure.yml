@@ -6689,7 +6689,7 @@ script:
 
   - name: azure-webapp-set-webapp-to-https-only-quick-action
     description: Enforces HTTPS-only traffic for the App Service.
-    prettyname: Set App Service to HTTPS only
+    prettyname: Set Webapp to HTTPS only
     hidden: true
     quickaction: true
     arguments:
