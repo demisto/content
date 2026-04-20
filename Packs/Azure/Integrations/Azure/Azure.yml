@@ -2551,6 +2551,157 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+  - arguments:
+    - description: Cosmos DB database account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Whether to disable write operations on metadata resources via account keys.
+      name: disable_key_based_metadata_write_access
+      predefined:
+        - 'true'
+        - 'false'
+      type: bool
+    - description: Subscription ID.
+      name: subscription_id
+      required: true
+    - description: The name of the resource group.
+      required: true
+      name: resource_group_name
+    description: Updates the properties of an existing Azure Cosmos DB database account.
+    name: aazure-cosmosdb-db-account-update
+    outputs:
+      - contextPath: Azure.CosmosDB.DBAccounts.id
+        description: The unique resource identifier of the ARM resource.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.name
+        description: The name of the ARM resource.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.location
+        description: The location of the resource group to which the resource belongs.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.kind
+        description: The database account type.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.identity.type
+        description: The type of identity used for the resource.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities
+        description: The list of user identities associated with the resource.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration.schemaType
+        description: The analytical storage schema types.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.apiProperties
+        description: API specific properties.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.backupPolicy
+        description: The policy for taking backups on an account.
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.capabilities
+        description: List of Cosmos DB capabilities for the account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.capacity
+        description: Properties related to capacity enforcement on an account.
+        type: Integer
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.connectorOffer
+        description: The Cassandra connector offer type for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.consistencyPolicy
+        description: The consistency policy for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.cors
+        description: The CORS policy for the Cosmos DB database account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.createMode
+        description: The mode of account creation.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.customerManagedKeyStatus
+        description: Status of the Customer Managed Key feature on the account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.databaseAccountOfferType
+        description: The offer type for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.defaultIdentity
+        description: The default identity for accessing key vault used in features like customer managed keys.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.disableKeyBasedMetadataWriteAccess
+        description: Whether write operations on metadata resources via account keys is disabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.disableLocalAuth
+        description: Whether local authentication is disabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.documentEndpoint
+        description: The connection endpoint for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableAnalyticalStorage
+        description: Whether storage analytics are enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableAutomaticFailover
+        description: Enables automatic failover of the write region.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableBurstCapacity
+        description: Whether Burst Capacity is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableCassandraConnector
+        description: Enables the Cassandra connector on the Cosmos DB account.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableFreeTier
+        description: Whether Free Tier is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableMultipleWriteLocations
+        description: Enables the account to write in multiple locations.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enablePartitionMerge
+        description: Whether Partition Merge is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enablePerRegionPerPartitionAutoscale
+        description: Whether PerRegionPerPartitionAutoscale is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.failoverPolicies
+        description: An array that contains the regions ordered by their failover priorities.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.instanceId
+        description: A unique identifier assigned to the database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.ipRules
+        description: List of IP rules.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled
+        description: Whether the Virtual Network ACL rules are enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.keyVaultKeyUri
+        description: The URI of the key vault.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.keysMetadata
+        description: Metadata related to each access key for the given Cosmos DB database account.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.locations
+        description: An array that contains all of the locations enabled for the Cosmos DB account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion
+        description: The minimum allowed TLS version.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypass
+        description: Which services are allowed to bypass firewall checks.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds
+        description: List of resource IDs that are allowed to bypass firewall checks.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections
+        description: List of private endpoint connections.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.provisioningState
+        description: The status of the Cosmos DB account at the time the operation was called.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.readLocations
+        description: An array that contains the read locations enabled for the Cosmos DB account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules
+        description: List of Virtual Network ACL rules.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.writeLocations
+        description: An array that contains the write locations enabled for the Cosmos DB account.
+        type: List
   - name: azure-nsg-security-groups-list
     description: List all network security groups.
     outputs:

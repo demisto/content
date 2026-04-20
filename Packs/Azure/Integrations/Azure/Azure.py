@@ -3739,9 +3739,17 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
         subscription_id, resource_group_name, account_name, disable_key_based_metadata_write_access
     )
 
+    if demisto.command() == "azure-cosmos-db-update":
+        return CommandResults(
+            readable_output=f"Updated Cosmos DB {account_name}.",
+            outputs_prefix="Azure.CosmosDB",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        )
     return CommandResults(
         readable_output=f"Updated Cosmos DB {account_name}.",
-        outputs_prefix="Azure.CosmosDB",
+        outputs_prefix="Azure.CosmosDB.DBAccounts",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -4871,6 +4879,7 @@ def main():  # pragma: no cover
             "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
+            "azure-cosmosdb-db-account-update": cosmosdb_update_command,
             "azure-nsg-security-groups-list": nsg_security_groups_list_command,
             "azure-nsg-security-rule-get": nsg_security_rule_get_command,
             "azure-nsg-security-rules-list": nsg_security_rules_list_command,
