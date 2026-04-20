@@ -1781,7 +1781,6 @@ def create_connection(
     else:
         domain = ntlm_domain if ntlm_domain else server_ip
         domain_name = f"{domain}\\{username}"
-    # domain_name = ntlm_domain + "\\" + username if ntlm_domain else (server_ip + "\\" + username)
     # open socket and bind to server
     return (
         Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind)
