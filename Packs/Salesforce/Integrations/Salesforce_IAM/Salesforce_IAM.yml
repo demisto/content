@@ -1,5 +1,8 @@
 category: Identity and Access Management
 provider: Salesforce
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Salesforce IAM
   version: -1
