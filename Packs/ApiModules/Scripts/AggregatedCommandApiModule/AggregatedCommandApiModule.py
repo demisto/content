@@ -322,6 +322,10 @@ class BatchExecutor:
     Executes commands in batch/batches and performs minimal, uniform result processing.
     """
 
+    def __init__(self) -> None:
+        # Populated by execute_list_of_batches: maps batch index → elapsed seconds.
+        self.batch_elapsed: dict[int, float] = {}
+
     def process_results(
         self,
         results: list[list[ContextResult]],
@@ -447,11 +451,13 @@ class BatchExecutor:
             if not batch:
                 demisto.debug(f"Skipping empty batch #{i+1} (no commands).")
                 out.append([])  # keep alignment; process_results will just see nothing
+                self.batch_elapsed[i] = 0.0
                 continue
             demisto.debug(f"Executing batch #{i+1} with {len(batch)} commands")
             t0 = time.monotonic()
             result = self.execute_batch(batch, brands_to_run or [], verbose)
             elapsed = time.monotonic() - t0
+            self.batch_elapsed[i] = elapsed
             demisto.debug(f"[TIMING] batch #{i+1} total elapsed_s={elapsed:.3f}")
             out.append(result)
         return out
@@ -870,6 +876,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.internal_enrichment_brands = internal_enrichment_brands or []
         self.entry_results: list[EntryResult] = []
         self.verbose_outputs = verbose_outputs or []
+        # Per-batch elapsed times populated during run(); keyed by the first command name in each batch.
+        self.batch_timings: dict[str, float] = {}
         # If no brands and external_enrichment is false, will insert internal enrichment if available
         # Addes internal command brands as well to make sure they also will run
         if not brands and not external_enrichment:
@@ -908,6 +916,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
             t0 = time.monotonic()
             batch_results = batch_executor.execute_list_of_batches(commands_to_execute, self.brand_manager.to_run, self.verbose)
             timing["batches_total_s"] = time.monotonic() - t0
+            # Record per-batch elapsed times (keyed by first command name in each batch).
+            # batch_executor stores per-batch timings after execute_list_of_batches.
+            for i, batch in enumerate(commands_to_execute):
+                key = batch[0].name if batch else f"batch_{i}"
+                self.batch_timings[key] = batch_executor.batch_elapsed.get(i, 0.0)
             if batch_results:
                 context_result, batch_verbose_outputs, entry_results = self.process_batch_results(
                     batch_results, commands_to_execute

@@ -278,7 +278,10 @@ def main():
         # use_batch=true (default): batched findIndicators OR-query (CRTX-231934 optimisation).
         # use_batch=false: legacy serial findIndicators per indicator (pre-optimisation baseline).
         use_batch = argToBoolean(args.get("use_batch", "true"))
+
+        t_main = time.monotonic()
         ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident, use_batch=use_batch)
+        elapsed_main = time.monotonic() - t_main
 
         outputs = [
             assign_params(
@@ -292,7 +295,12 @@ def main():
         ]
 
         count_new = sum(1 for ent in ents if ent.get(KEY_CREATION_STATUS) == STATUS_NEW)
-        readable_output = f"{count_new} new indicators have been added."
+        count_existing = sum(1 for ent in ents if ent.get(KEY_CREATION_STATUS) == STATUS_EXISTING)
+        mode_label = "batched OR-query" if use_batch else "serial (legacy)"
+        readable_output = (
+            f"{count_new} new indicators added, {count_existing} already existed. "
+            f"Total: {len(ents)} | Mode: {mode_label} | Time: {elapsed_main:.2f}s"
+        )
         if argToBoolean(args.get("verbose", "false")):
             readable_output += "\n" + tblToMd(
                 "New Indicator Created", outputs, ["ID", "Score", "CreationStatus", "Type", "Value"]
