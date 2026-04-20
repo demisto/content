@@ -9683,9 +9683,7 @@ def test_panorama_upload_content_update_file_command_uses_basename(mocker):
     mocker.patch.object(Panorama, "API_KEY", "test_key")
     mocker.patch.object(Panorama, "URL", "https://test.example.com")
 
-    Panorama.panorama_upload_content_update_file_command(
-        {"category": "content", "entryID": "entry123"}
-    )
+    Panorama.panorama_upload_content_update_file_command({"category": "content", "entryID": "entry123"})
 
     # Assert shutil.copy was called with basename only (not the full subdir/firmware.bin)
     assert copy_mock.call_args[0][1] == "firmware.bin"
@@ -9756,7 +9754,7 @@ def test_add_argument_preserves_safe_values():
 
     result = add_argument("safe-value-123", "name", False)
     assert "safe-value-123" in result
-    assert "<name>safe-value-123</name>" == result
+    assert result == "<name>safe-value-123</name>"
 
 
 def test_prepare_pan_os_objects_body_request_escapes_entry_names():
@@ -9767,9 +9765,7 @@ def test_prepare_pan_os_objects_body_request_escapes_entry_names():
     """
     from Panorama import prepare_pan_os_objects_body_request
 
-    result = prepare_pan_os_objects_body_request(
-        "address", ["test&name"], is_list=True, is_entry=True
-    )
+    result = prepare_pan_os_objects_body_request("address", ["test&name"], is_list=True, is_entry=True)
     xml_str = result["address"]
     assert "&amp;" in xml_str
     assert "test&name" not in xml_str

@@ -53,8 +53,9 @@ else:
     TypedDict = type("TypedDict", (), {"__new__": lambda cls, **kw: kw})
     NotRequired = Optional
 
-def _xml_escape(value: str) -> str:
-    return html.escape(str(value), quote=True)
+
+def _xml_escape(value: Optional[str]) -> str:
+    return html.escape(str(value or ""), quote=True)
 
 
 """ GLOBALS """
@@ -809,7 +810,19 @@ def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = Fals
 
 def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
-        return "<" + field_name + ">" + "<devices>" + '<entry name="' + _xml_escape(arg) + '"/>' + "</devices>" + "</" + field_name + ">"
+        return (
+            "<"
+            + field_name
+            + ">"
+            + "<devices>"
+            + '<entry name="'
+            + _xml_escape(arg)
+            + '"/>'
+            + "</devices>"
+            + "</"
+            + field_name
+            + ">"
+        )
     else:
         return ""
 
@@ -3116,7 +3129,9 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
 
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_, merged_items, description)
+    result, custom_url_category_output = panorama_edit_custom_url_category(
+        custom_url_category_name, type_, merged_items, description
+    )
     return_results(
         {
             "Type": entryTypes["note"],
@@ -3153,7 +3168,9 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
 
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_, subtracted_items, description)
+    result, custom_url_category_output = panorama_edit_custom_url_category(
+        custom_url_category_name, type_, subtracted_items, description
+    )
     return_results(
         {
             "Type": entryTypes["note"],
@@ -4954,7 +4971,9 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
                 f"</member></tag></entry>"
             )
         else:
-            entry += f'<entry ip="{escaped_ip}" persistent="{escaped_persistent}"><tag><member>{escaped_tag}</member></tag></entry>'
+            entry += (
+                f'<entry ip="{escaped_ip}" persistent="{escaped_persistent}"><tag><member>{escaped_tag}</member></tag></entry>'
+            )
 
     params = {
         "type": "user-id",
@@ -15680,6 +15699,7 @@ def get_predefined_certificates() -> List:
     if response_predefined and response_predefined.status_code == 200:
         try:
             import defusedxml.ElementTree as defused_ET
+
             root = defused_ET.fromstring(response_predefined.text)
         except ImportError:
             root = ET.fromstring(response_predefined.text)
