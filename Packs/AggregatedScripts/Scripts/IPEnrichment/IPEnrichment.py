@@ -15,6 +15,8 @@ ENDPOINT_PATH = (
 # NOT added to the total (they are already included in the pipeline elapsed time).
 _SUB_TIMING_KEYS = {
     "CreateNewIndicatorsOnly (findIndicators + createNewIndicator)",
+    "  └ findIndicators",
+    "  └ createNewIndicator",
     "enrichIndicators + internal commands",
 }
 
@@ -215,6 +217,15 @@ def ip_enrichment_script(
         )
         if create_new_elapsed:
             timings["CreateNewIndicatorsOnly (findIndicators + createNewIndicator)"] = create_new_elapsed
+            # Try to get granular findIndicators / createNewIndicator breakdown from context.
+            cni_timing = (
+                ip_enrichment.command_raw_contexts
+                .get("CreateNewIndicatorsOnly", {})
+                .get("CreateNewIndicatorsOnly.Timing", {})
+            )
+            if cni_timing:
+                timings["  └ findIndicators"] = cni_timing.get("elapsed_find_s", 0.0)
+                timings["  └ createNewIndicator"] = cni_timing.get("elapsed_create_s", 0.0)
         if enrich_elapsed:
             timings["enrichIndicators + internal commands"] = enrich_elapsed
 

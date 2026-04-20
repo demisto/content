@@ -340,15 +340,24 @@ def main():
                 "New Indicator Created", outputs, ["ID", "Score", "CreationStatus", "Type", "Value"]
             )
 
-        return_results(
-            CommandResults(
-                outputs_prefix="CreateNewIndicatorsOnly",
-                outputs_key_field=["Value", "Type"],
-                outputs=outputs,
-                raw_response=ents,
-                readable_output=readable_output,
-            )
-        )
+        # Build context with both indicator list and per-phase timing so IPEnrichment
+        # can read elapsed_find_s / elapsed_create_s from the batch EntryContext.
+        ctx: dict[str, Any] = {
+            "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": outputs,
+            "CreateNewIndicatorsOnly.Timing": {
+                "elapsed_find_s": round(elapsed_find, 3),
+                "elapsed_create_s": round(elapsed_create, 3),
+                "elapsed_total_s": round(elapsed_total, 3),
+                "use_batch": use_batch,
+            },
+        }
+        demisto.results({
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": ents,
+            "EntryContext": ctx,
+            "HumanReadable": readable_output,
+        })
     except Exception as e:
         return_error(f"Failed to execute CreateNewIndicatorsOnly.\nError:\n{e!s}")
 

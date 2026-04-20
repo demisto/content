@@ -878,6 +878,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.verbose_outputs = verbose_outputs or []
         # Per-batch elapsed times populated during run(); keyed by the first command name in each batch.
         self.batch_timings: dict[str, float] = {}
+        # Raw EntryContext per command name — populated during process_batch_results for BUILTIN commands.
+        # Allows callers to read sub-keys (e.g. CreateNewIndicatorsOnly.Timing) that are not mapped.
+        self.command_raw_contexts: dict[str, dict] = {}
         # If no brands and external_enrichment is false, will insert internal enrichment if available
         # Addes internal command brands as well to make sure they also will run
         if not brands and not external_enrichment:
@@ -1254,6 +1257,13 @@ class ReputationAggregatedCommand(AggregatedCommand):
                     deep_merge_in_place(context_result, mapped_ctx)
                     if verbose:
                         verbose_outputs.append(verbose)
+
+                    # Store raw EntryContext for BUILTIN commands so callers can read
+                    # sub-keys that are not covered by context_output_mapping (e.g. Timing).
+                    if command.command_type == CommandType.BUILTIN and i == 0:
+                        raw_ctx = result_tuple[0].get("EntryContext", {}) if isinstance(result_tuple[0], dict) else {}
+                        if raw_ctx:
+                            self.command_raw_contexts[command.name] = raw_ctx
 
                 demisto.debug(f"Command {command} processed.")
 
