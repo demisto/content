@@ -4377,6 +4377,7 @@ def test_upload_file_command_uses_basename(mocker):
     assert file_name_used == "passwd"
     assert os.path.basename(file_name_used) == file_name_used
 
+
 def test_update_remote_system_with_entries_uses_basename(mocker):
     """
     Given:
@@ -4409,4 +4410,3 @@ def test_update_remote_system_with_entries_uses_basename(mocker):
     assert "/" not in file_name_used
     assert ".." not in file_name_used
     assert os.path.basename(file_name_used) == file_name_used
-
