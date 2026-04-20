@@ -12218,7 +12218,7 @@ class TestUcpHttpRequestIntegration:
         import base64
         auth_header = m.last_request.headers.get('Authorization', '')
         expected_b64 = base64.b64encode(b'admin:s3cret').decode()
-        assert auth_header == f'Basic {expected_b64}'
+        assert auth_header == 'Basic {}'.format(expected_b64)
 
     # ── Spy-based guard condition tests ──────────────────────────────────────
 
@@ -12355,7 +12355,7 @@ class TestUcpHttpRequestIntegration:
 
         def custom_handler(res):
             handler_called['value'] = True
-            raise CommonServerPython.DemistoException(f"Custom error: {res.status_code}")
+            raise CommonServerPython.DemistoException("Custom error: {}".format(res.status_code))
 
         with requests_mock.Mocker() as m:
             m.get('https://example.com/api/test', text='Bad Request', status_code=400)
@@ -12585,7 +12585,7 @@ class TestUcpNonUcpRegression:
         import base64
         auth_header = m.last_request.headers.get('Authorization', '')
         expected_b64 = base64.b64encode(b'user:pass').decode()
-        assert auth_header == f'Basic {expected_b64}'
+        assert auth_header == 'Basic {}'.format(expected_b64)
 
     def test_401_without_ucp_does_not_call_invalidate(self, mocker):
         """401 response without UCP should not trigger any UCP cache invalidation."""

@@ -181,8 +181,8 @@ def test_update_user_command__command_is_disabled(mocker):
 def test_client_init_skips_token_when_ucp_enabled(mocker):
     """When UCP auth is enabled, Client.__init__ should NOT call get_access_token_
     and self.token should remain None."""
-    mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=True)
-    spy = mocker.patch.object(Client, 'get_access_token_', return_value='fake_token')
+    mocker.patch("Salesforce_IAM.should_use_ucp_auth", return_value=True)
+    spy = mocker.patch.object(Client, "get_access_token_", return_value="fake_token")
 
     client = Client(
         demisto_params={},
@@ -203,8 +203,8 @@ def test_client_init_skips_token_when_ucp_enabled(mocker):
 def test_client_init_gets_token_when_ucp_disabled(mocker):
     """When UCP auth is disabled (default), Client.__init__ should call get_access_token_
     and self.token should have the returned value."""
-    mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=False)
-    mocker.patch.object(Client, 'get_access_token_', return_value='my_token')
+    mocker.patch("Salesforce_IAM.should_use_ucp_auth", return_value=False)
+    mocker.patch.object(Client, "get_access_token_", return_value="my_token")
 
     client = Client(
         demisto_params={},
@@ -219,7 +219,7 @@ def test_client_init_gets_token_when_ucp_disabled(mocker):
     )
 
     Client.get_access_token_.assert_called_once()
-    assert client.token == 'my_token'
+    assert client.token == "my_token"
 
 
 def test_main_skips_credential_extraction_when_ucp_enabled(mocker):
@@ -227,55 +227,62 @@ def test_main_skips_credential_extraction_when_ucp_enabled(mocker):
     and pass empty strings to Client constructor."""
     from Salesforce_IAM import main
 
-    mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=True)
-    mocker.patch.object(demisto, 'params', return_value={
-        'url': 'https://test.salesforce.com/',
-        'insecure': False,
-        'proxy': False,
-    })
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch("Salesforce_IAM.should_use_ucp_auth", return_value=True)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://test.salesforce.com/",
+            "insecure": False,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
 
-    mock_client_constructor = mocker.patch('Salesforce_IAM.Client')
-    mock_client_instance = mock_client_constructor.return_value
-    mocker.patch('Salesforce_IAM.test_module', return_value='ok')
-    mocker.patch('Salesforce_IAM.return_results')
+    mock_client_constructor = mocker.patch("Salesforce_IAM.Client")
+    mocker.patch("Salesforce_IAM.test_module", return_value="ok")
+    mocker.patch("Salesforce_IAM.return_results")
 
     main()
 
     call_kwargs = mock_client_constructor.call_args
-    assert call_kwargs[1]['conn_client_id'] == ''
-    assert call_kwargs[1]['conn_client_secret'] == ''
-    assert call_kwargs[1]['conn_username'] == ''
-    assert call_kwargs[1]['conn_password'] == ''
+    assert call_kwargs[1]["conn_client_id"] == ""
+    assert call_kwargs[1]["conn_client_secret"] == ""
+    assert call_kwargs[1]["conn_username"] == ""
+    assert call_kwargs[1]["conn_password"] == ""
 
 
 def test_main_extracts_credentials_when_ucp_disabled(mocker):
     """When UCP is disabled, main() should extract credentials from params."""
     from Salesforce_IAM import main
 
-    mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=False)
-    mocker.patch.object(demisto, 'params', return_value={
-        'url': 'https://test.salesforce.com/',
-        'credentials': {'identifier': 'myuser', 'password': 'mypass'},
-        'credentials_consumer': {'identifier': 'my_client_id', 'password': 'my_client_secret'},
-        'insecure': False,
-        'proxy': False,
-    })
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch("Salesforce_IAM.should_use_ucp_auth", return_value=False)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://test.salesforce.com/",
+            "credentials": {"identifier": "myuser", "password": "mypass"},
+            "credentials_consumer": {"identifier": "my_client_id", "password": "my_client_secret"},
+            "insecure": False,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
 
-    mock_client_constructor = mocker.patch('Salesforce_IAM.Client')
-    mocker.patch('Salesforce_IAM.test_module', return_value='ok')
-    mocker.patch('Salesforce_IAM.return_results')
+    mock_client_constructor = mocker.patch("Salesforce_IAM.Client")
+    mocker.patch("Salesforce_IAM.test_module", return_value="ok")
+    mocker.patch("Salesforce_IAM.return_results")
 
     main()
 
     call_kwargs = mock_client_constructor.call_args
-    assert call_kwargs[1]['conn_client_id'] == 'my_client_id'
-    assert call_kwargs[1]['conn_client_secret'] == 'my_client_secret'
-    assert call_kwargs[1]['conn_username'] == 'myuser'
-    assert call_kwargs[1]['conn_password'] == 'mypass'
+    assert call_kwargs[1]["conn_client_id"] == "my_client_id"
+    assert call_kwargs[1]["conn_client_secret"] == "my_client_secret"
+    assert call_kwargs[1]["conn_username"] == "myuser"
+    assert call_kwargs[1]["conn_password"] == "mypass"
 
 
 def test_main_errors_on_missing_consumer_keys_when_ucp_disabled(mocker):
@@ -283,17 +290,21 @@ def test_main_errors_on_missing_consumer_keys_when_ucp_disabled(mocker):
     In production, return_error calls sys.exit(0), so we simulate that with SystemExit side_effect."""
     from Salesforce_IAM import main
 
-    mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=False)
-    mocker.patch.object(demisto, 'params', return_value={
-        'url': 'https://test.salesforce.com/',
-        'credentials': {'identifier': 'myuser', 'password': 'mypass'},
-        'insecure': False,
-        'proxy': False,
-    })
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch("Salesforce_IAM.should_use_ucp_auth", return_value=False)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://test.salesforce.com/",
+            "credentials": {"identifier": "myuser", "password": "mypass"},
+            "insecure": False,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
 
-    mock_return_error = mocker.patch('Salesforce_IAM.return_error', side_effect=SystemExit(0))
+    mock_return_error = mocker.patch("Salesforce_IAM.return_error", side_effect=SystemExit(0))
 
     with pytest.raises(SystemExit):
         main()
@@ -304,7 +315,7 @@ def test_main_errors_on_missing_consumer_keys_when_ucp_disabled(mocker):
 def test_existing_commands_work_with_ucp_enabled(mocker):
     """When UCP is enabled, commands like get_user_command should still work.
     The client.token will be None but _http_request handles UCP auth injection."""
-    mocker.patch('Salesforce_IAM.should_use_ucp_auth', return_value=True)
+    mocker.patch("Salesforce_IAM.should_use_ucp_auth", return_value=True)
 
     client = Client(
         demisto_params={},

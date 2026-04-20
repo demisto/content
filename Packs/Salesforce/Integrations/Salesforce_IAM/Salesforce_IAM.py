@@ -346,7 +346,7 @@ def main():
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != "/":
         base_url += "/"
-        
+
     username = ""
     password = ""
     client_id = ""
@@ -361,7 +361,7 @@ def main():
             return_error("Consumer Key and Consumer Secret must be provided.")
     else:
         demisto.debug("[UCP][Salesforce_IAM.py] Using UCP auth")
-            
+
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -418,6 +418,6 @@ def main():
 
 
 from IAMApiModule import *  # noqa: E402
-        
+
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
