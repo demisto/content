@@ -108,6 +108,23 @@ def main():  # pragma: no cover
                 additional_fields=additional_fields,
             )
         )
+    except ValueError as ve:
+        # Graceful response for validation failures (e.g. no valid CVE IDs, unsupported types).
+        # Return HTTP 200 with structured error context instead of HTTP 500 so callers (e.g. AgentiX)
+        # can distinguish a validation failure from a real server error and avoid futile retries.
+        # (CRTX-231934)
+        reason = str(ve)
+        demisto.debug(f"!cve-enrichment validation failure (no valid indicators): {reason}")
+        return_results(
+            CommandResults(
+                readable_output=f"No valid CVE indicators found. {reason}",
+                outputs={
+                    "CVEEnrichment(val.Value && val.Value == obj.Value)": [
+                        {"Value": cve, "Status": "Error", "Message": reason} for cve in cve_list
+                    ]
+                },
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !cve-enrichment. Error: {str(ex)}")
 

@@ -207,6 +207,152 @@ def test_create_and_extract_indicators_raises_on_empty_result(mocker):
         create_and_extract_indicators(["https://a.com"], "url")
 
 
+# =============================================================================
+# New tests for CRTX-231934 batch extractIndicators optimisation
+# =============================================================================
+
+
+def test_batch_extract_single_call_for_multiple_inputs(mocker):
+    """
+    Given:
+        - 3 IP inputs.
+        - extractIndicators returns all 3 as IP type in one combined response.
+    When:
+        - create_and_extract_indicators is called.
+    Then:
+        - execute_command is called exactly ONCE (batched), not 3 times.
+        - All 3 IPs are returned as valid IndicatorInstances.
+    """
+    exec_calls = []
+
+    def _exec(cmd, args, **kwargs):
+        exec_calls.append((cmd, args))
+        return [{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]}}}]
+
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=_exec)
+
+    instances, _ = create_and_extract_indicators(["1.1.1.1", "2.2.2.2", "3.3.3.3"], "ip")
+
+    # Only 1 server call, not 3.
+    assert len(exec_calls) == 1
+    assert exec_calls[0][0] == "extractIndicators"
+    # All 3 IPs should be valid.
+    valid_values = {inst.extracted_value for inst in instances if inst.extracted_value}
+    assert valid_values == {"1.1.1.1", "2.2.2.2", "3.3.3.3"}
+
+
+def test_batch_extract_deduplicates_inputs(mocker):
+    """
+    Given:
+        - Input list contains duplicate IPs.
+    When:
+        - create_and_extract_indicators is called.
+    Then:
+        - execute_command is called once with deduplicated text.
+        - Only unique IPs are returned as IndicatorInstances.
+    """
+    exec_calls = []
+
+    def _exec(cmd, args, **kwargs):
+        exec_calls.append(args.get("text", ""))
+        return [{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "2.2.2.2"]}}}]
+
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=_exec)
+
+    instances, _ = create_and_extract_indicators(["1.1.1.1", "2.2.2.2", "1.1.1.1"], "ip")
+
+    assert len(exec_calls) == 1
+    # Deduplicated: only 2 unique IPs.
+    valid_values = {inst.extracted_value for inst in instances if inst.extracted_value}
+    assert valid_values == {"1.1.1.1", "2.2.2.2"}
+
+
+def test_batch_extract_marks_invalid_when_not_expected_type(mocker):
+    """
+    Given:
+        - Input "example.com" is sent to IP enrichment.
+        - extractIndicators returns it as Domain, not IP.
+    When:
+        - create_and_extract_indicators is called with indicator_type='ip'.
+    Then:
+        - The input is marked as invalid (no extracted_value).
+        - ValueError is raised because no valid IPs were found.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"Domain": ["example.com"]}}}],
+    )
+
+    with pytest.raises(ValueError, match="No valid indicators found in the input data."):
+        create_and_extract_indicators(["example.com"], "ip")
+
+
+def test_batch_extract_fallback_on_server_error(mocker):
+    """
+    Given:
+        - The batched extractIndicators call raises an exception.
+    When:
+        - create_and_extract_indicators is called.
+    Then:
+        - Falls back to per-input serial extraction.
+        - The input is still processed correctly.
+    """
+    call_count = [0]
+
+    def _exec(cmd, args, **kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            # First call (batched) fails.
+            raise Exception("Server error on batch call")
+        # Subsequent calls (per-input fallback) succeed.
+        return [{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}]
+
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=_exec)
+
+    instances, _ = create_and_extract_indicators(["1.1.1.1"], "ip")
+
+    # Fallback should have been triggered; total calls = 1 (batch fail) + 1 (fallback).
+    assert call_count[0] == 2
+    valid_values = {inst.extracted_value for inst in instances if inst.extracted_value}
+    assert valid_values == {"1.1.1.1"}
+
+
+def test_batch_extract_chunking_for_large_input(mocker):
+    """
+    Given:
+        - More inputs than _EXTRACT_BATCH_SIZE.
+    When:
+        - create_and_extract_indicators is called.
+    Then:
+        - execute_command is called multiple times (once per chunk).
+    """
+    import AggregatedCommandApiModule
+
+    original_size = AggregatedCommandApiModule._EXTRACT_BATCH_SIZE
+    AggregatedCommandApiModule._EXTRACT_BATCH_SIZE = 2  # Force chunking
+
+    exec_calls = []
+
+    def _exec(cmd, args, **kwargs):
+        exec_calls.append(args.get("text", ""))
+        # Return all IPs from the text as valid.
+        ips = [line.strip() for line in args.get("text", "").split("\n") if line.strip()]
+        return [{"EntryContext": {"ExtractedIndicators": {"IP": ips}}}]
+
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=_exec)
+
+    try:
+        inputs = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]  # 3 inputs, batch_size=2 → 2 chunks
+        instances, _ = create_and_extract_indicators(inputs, "ip")
+    finally:
+        AggregatedCommandApiModule._EXTRACT_BATCH_SIZE = original_size
+
+    # 2 chunks → 2 execute_command calls.
+    assert len(exec_calls) == 2
+    valid_values = {inst.extracted_value for inst in instances if inst.extracted_value}
+    assert valid_values == {"1.1.1.1", "2.2.2.2", "3.3.3.3"}
+
+
 def test_mismatched_types_allowed_when_flag_false(mocker):
     """
     Given:

@@ -129,6 +129,23 @@ def main():  # pragma: no cover
                 additional_fields=additional_fields,
             )
         )
+    except ValueError as ve:
+        # Graceful response for validation failures (e.g. no valid domains, unsupported types).
+        # Return HTTP 200 with structured error context instead of HTTP 500 so callers (e.g. AgentiX)
+        # can distinguish a validation failure from a real server error and avoid futile retries.
+        # (CRTX-231934)
+        reason = str(ve)
+        demisto.debug(f"!domain-enrichment validation failure (no valid indicators): {reason}")
+        return_results(
+            CommandResults(
+                readable_output=f"No valid domain indicators found. {reason}",
+                outputs={
+                    "DomainEnrichment(val.Value && val.Value == obj.Value)": [
+                        {"Value": domain, "Status": "Error", "Message": reason} for domain in domain_list
+                    ]
+                },
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !domain-enrichment. Error: {str(ex)}")
 

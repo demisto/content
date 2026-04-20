@@ -1549,6 +1549,13 @@ def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     return ""
 
 
+# Maximum number of inputs to send in a single batched extractIndicators call.
+# The server's regex engine processes the joined text linearly; very large batches
+# can cause the server to time out or truncate results. 200 is a safe upper bound
+# based on observed QA behaviour (100 IPs ≈ 0.5s per call).
+_EXTRACT_BATCH_SIZE = 200
+
+
 def create_and_extract_indicators(
     data: list[str],
     indicator_type: str,
@@ -1557,7 +1564,18 @@ def create_and_extract_indicators(
     """
     Extract indicators from the provided input list for a specific indicator type,
     using the `extractIndicators` command.
-    Create IndicatorInstance foreach of the inputs and if is the right type will update the extracted field.
+
+    **Performance optimisation (CRTX-231934)**: Instead of calling `extractIndicators`
+    once per input (N serial server round-trips), all inputs are joined into a single
+    text blob and sent in one call.  The server returns a combined
+    ``ExtractedIndicators`` dict; we then map each extracted value back to the
+    original raw input that produced it.
+
+    For very large batches the inputs are chunked into groups of
+    ``_EXTRACT_BATCH_SIZE`` to avoid server-side timeouts.
+
+    Create IndicatorInstance for each of the inputs; if the input matches the
+    expected type the ``extracted_value`` field is populated.
     """
     if not data:
         raise ValueError("No data provided to enrich")
@@ -1569,25 +1587,33 @@ def create_and_extract_indicators(
     expected_type_lower = indicator_type.lower()
     extract_total_start = time.monotonic()
 
+    # Deduplicate while preserving order so we don't send the same value twice.
+    seen: set[str] = set()
+    unique_data: list[str] = []
     for raw in data:
-        if raw in valid_set or raw in invalid_set:
-            continue
-        instances_for_raw, hr = _process_single_input(
-            raw=raw,
+        if raw not in seen:
+            seen.add(raw)
+            unique_data.append(raw)
+
+    # Process in chunks to avoid server-side limits on very large batches.
+    for chunk_start in range(0, len(unique_data), _EXTRACT_BATCH_SIZE):
+        chunk = unique_data[chunk_start : chunk_start + _EXTRACT_BATCH_SIZE]
+        instances_for_chunk, hr = _process_batch_input(
+            batch=chunk,
             expected_type_lower=expected_type_lower,
             mark_mismatched_type_as_invalid=mark_mismatched_type_as_invalid,
             valid_set=valid_set,
             invalid_set=invalid_set,
         )
-        indicators_instances.extend(instances_for_raw)
+        indicators_instances.extend(instances_for_chunk)
         full_hr.append(hr)
 
     extract_total_elapsed = time.monotonic() - extract_total_start
     demisto.debug(f"Valid Inputs: {valid_set}")
     demisto.debug(f"Invalid Inputs: {invalid_set}")
     demisto.debug(
-        f"[TIMING] extractIndicators loop total elapsed_s={extract_total_elapsed:.3f} "
-        f"for {len(data)} inputs ({len(valid_set)} valid, {len(invalid_set)} invalid)"
+        f"[TIMING] extractIndicators batched total elapsed_s={extract_total_elapsed:.3f} "
+        f"for {len(data)} inputs ({len(unique_data)} unique, {len(valid_set)} valid, {len(invalid_set)} invalid)"
     )
 
     if not valid_set:
@@ -1601,6 +1627,151 @@ def create_and_extract_indicators(
         raise ValueError("No valid indicators found in the input data.")
 
     return indicators_instances, "".join(full_hr)
+
+
+def _process_batch_input(
+    batch: list[str],
+    expected_type_lower: str,
+    mark_mismatched_type_as_invalid: bool,
+    valid_set: set[str],
+    invalid_set: set[str],
+) -> tuple[list[IndicatorInstance], str]:
+    """
+    Send all inputs in ``batch`` to ``extractIndicators`` in a **single** server call,
+    then classify each raw input as valid/invalid based on the combined result.
+
+    The server joins the text and runs its regex engine once, returning a dict like::
+
+        {"IP": ["1.1.1.1", "8.8.8.8"], "Domain": ["example.com"]}
+
+    We build a reverse-lookup from extracted value → original raw input so that
+    each ``IndicatorInstance`` retains the correct ``raw_input``.
+
+    Falls back to per-input serial extraction if the batched call fails (e.g. the
+    server rejects the combined text), preserving the original behaviour.
+    """
+    if not batch:
+        return [], ""
+
+    demisto.debug(f"[BATCH_EXTRACT] Sending {len(batch)} inputs in one extractIndicators call")
+
+    # --- Single batched call ---
+    joined_text = "\n".join(batch)
+    t0 = time.monotonic()
+    try:
+        results = execute_command("extractIndicators", {"text": joined_text}, extract_contents=False)
+        elapsed = time.monotonic() - t0
+        combined_ctx: dict[str, list[str]] = (
+            results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
+        )
+        demisto.debug(
+            f"[TIMING] extractIndicators batched ({len(batch)} inputs) elapsed_s={elapsed:.3f} "
+            f"types_found={list(combined_ctx.keys())}"
+        )
+    except Exception as ex:
+        elapsed = time.monotonic() - t0
+        demisto.debug(
+            f"[BATCH_EXTRACT] Batched call failed after {elapsed:.3f}s: {ex}. "
+            f"Falling back to per-input serial extraction."
+        )
+        # Fallback: process each input individually (original behaviour).
+        instances: list[IndicatorInstance] = []
+        hr_parts: list[str] = []
+        for raw in batch:
+            inst, hr = _process_single_input(
+                raw=raw,
+                expected_type_lower=expected_type_lower,
+                mark_mismatched_type_as_invalid=mark_mismatched_type_as_invalid,
+                valid_set=valid_set,
+                invalid_set=invalid_set,
+            )
+            instances.extend(inst)
+            hr_parts.append(hr)
+        return instances, "".join(hr_parts)
+
+    # --- Map extracted values back to their original raw inputs ---
+    # Build a case-insensitive lookup: extracted_value_lower → raw_input
+    # Each raw input is its own "canonical" value; the server may normalise
+    # (e.g. strip whitespace) but for IPs/hashes the value is unchanged.
+    raw_lower_to_raw: dict[str, str] = {r.lower(): r for r in batch}
+
+    # Collect all extracted values grouped by type (lowercased for lookup).
+    all_extracted_by_type: dict[str, list[str]] = {}
+    for type_key, values in combined_ctx.items():
+        all_extracted_by_type[type_key.lower()] = [v for v in (values if isinstance(values, list) else [values]) if v]
+
+    expected_extracted: list[str] = all_extracted_by_type.get(expected_type_lower, [])
+    other_type_extracted: set[str] = {
+        v.lower()
+        for t, vals in all_extracted_by_type.items()
+        if t != expected_type_lower
+        for v in vals
+    }
+
+    # Build a set of expected values (lowercased) for fast membership test.
+    expected_lower_set: set[str] = {v.lower() for v in expected_extracted}
+
+    instances = []
+    hr_parts = [
+        f"\n\n### Batched extractIndicators result for {len(batch)} inputs\n\n"
+        + tableToMarkdown(name="Extracted Indicators", t=combined_ctx)
+    ]
+
+    for raw in batch:
+        raw_lower = raw.lower()
+
+        if raw_lower in valid_set or raw_lower in invalid_set:
+            # Already processed (shouldn't happen after dedup, but be safe).
+            continue
+
+        is_expected = raw_lower in expected_lower_set
+        is_other_type = raw_lower in other_type_extracted
+
+        if not is_expected:
+            # The server did not extract this raw value as the expected type.
+            demisto.debug(
+                f"[INVALID_INPUT] '{raw}' rejected: extractIndicators returned no '{expected_type_lower}' "
+                f"indicator for this value. Other types present: {list(all_extracted_by_type.keys())}"
+            )
+            instances.append(
+                IndicatorInstance(
+                    raw_input=raw,
+                    hr_message="Invalid",
+                    final_status=Status.FAILURE,
+                )
+            )
+            invalid_set.add(raw_lower)
+            continue
+
+        if mark_mismatched_type_as_invalid and is_other_type:
+            demisto.debug(
+                f"[INVALID_INPUT] '{raw}' rejected: mark_mismatched_type_as_invalid=True and "
+                f"other indicator types were also extracted alongside '{expected_type_lower}'."
+            )
+            instances.append(
+                IndicatorInstance(
+                    raw_input=raw,
+                    hr_message="Invalid",
+                    final_status=Status.FAILURE,
+                )
+            )
+            invalid_set.add(raw_lower)
+            continue
+
+        # Valid — find the canonical extracted value (server may have normalised it).
+        # For most indicator types the extracted value equals the raw input.
+        canonical = next((v for v in expected_extracted if v.lower() == raw_lower), raw)
+        if canonical not in valid_set:
+            instances.append(
+                IndicatorInstance(
+                    raw_input=raw,
+                    extracted_value=canonical,
+                )
+            )
+            valid_set.add(canonical)
+        demisto.debug(f"[BATCH_EXTRACT] '{raw}' → valid as '{canonical}'")
+
+    return instances, "".join(hr_parts)
 
 
 def _process_single_input(
