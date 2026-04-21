@@ -1,5 +1,6 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
+from ContentClientApiModule import *
 
 """ IMPORTS """
 from typing import Any
@@ -11,6 +12,7 @@ urllib3.disable_warnings()
 """GLOBALS/PARAMS """
 INTEGRATION_NAME = "MetaDefender Aether Integration"
 INTEGRATION_CONTEXT_NAME = "MetaDefender.Aether"
+TIMEOUT = 600
 
 
 class Client(ContentClient):
@@ -27,7 +29,7 @@ class Client(ContentClient):
         """
         request_result = self._http_request(
             method="GET",
-            ok_codes=([200]),
+            ok_codes=(200,),
             url_suffix="/users/me",
         )
         return request_result
@@ -47,7 +49,7 @@ class Client(ContentClient):
         if url := args.get("url"):
             data["url"] = url
 
-            return self._http_request(method="POST", url_suffix="/scan/url", ok_codes=([200]), data=data)
+            return self._http_request(method="POST", url_suffix="/scan/url", ok_codes=(200,), data=data)
 
         elif entry_id := args.get("entry_id"):
             try:
@@ -60,7 +62,7 @@ class Client(ContentClient):
                 return self._http_request(
                     method="POST",
                     url_suffix="/scan/file",
-                    ok_codes=([200]),
+                    ok_codes=(200,),
                     data=data,
                     files={"file": (file_entry["name"], file)},
                 )
@@ -84,7 +86,7 @@ class Client(ContentClient):
 
         response = self._http_request(
             method="GET",
-            ok_codes=([200]),
+            ok_codes=(200,),
             url_suffix=url_suffix,
         )
 
@@ -93,7 +95,7 @@ class Client(ContentClient):
     def get_search_query(self, query_string: str, page: int, page_size: int) -> dict[str, Any]:
         return self._http_request(
             method="GET",
-            ok_codes=([200]),
+            ok_codes=(200,),
             params={"query": query_string, "page_size": page_size, "page": page},
             url_suffix="/reports/search",
         )
@@ -234,7 +236,7 @@ def is_valid_pass(api_response: dict[str, Any]):
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 600)),
+    timeout=TIMEOUT,
     interval=5,
     poll_message="Polling result",
     requires_polling_arg=False,
@@ -281,6 +283,8 @@ def test_module_command(client: Client, *_) -> str:
 
 
 def scan_command(client: Client, args: dict[str, Any]):
+    global TIMEOUT
+    TIMEOUT = arg_to_number(args.get("timeout")) or TIMEOUT
     return polling_submit_command(args=args, client=client)
 
 
@@ -316,7 +320,7 @@ def search_query_command(client: Client, args: dict[str, Any]):
             response = client.get_search_query(query_string, page, page_size)
             actual_items = response.get("items", [])
             items += actual_items
-            
+
             # Stop if no items returned or we've reached the limit
             if not actual_items or len(items) >= limit:
                 continue_query = False
