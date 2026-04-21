@@ -13667,7 +13667,8 @@ def is_ucp_enabled():
         if connector_info:
             return True
         return False
-    except Exception:
+    except AttributeError:
+        demisto.debug("demisto.unifiedConnectorMetadata() is not available in this version of the server.")
         return False
 
 def should_use_ucp_auth():

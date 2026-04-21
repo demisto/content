@@ -11310,8 +11310,7 @@ class TestUcpDetection:
     def test_is_ucp_enabled_returns_false_when_method_raises(self, mocker):
         """If demisto.unifiedConnectorMetadata raises (old server), document the behavior."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
-        with pytest.raises(AttributeError):
-            CommonServerPython.is_ucp_enabled()
+        assert CommonServerPython.is_ucp_enabled() is False
 
     def test_should_use_ucp_auth_true_when_ucp_enabled(self, mocker, ucp_metadata_single):
         """When UCP is enabled and params not injected, should_use_ucp_auth returns True."""
