@@ -8,11 +8,10 @@ Next-generation unified Zero-Day detection solution, combining the proven capabi
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. <https://www.filescan.io/api>) | True |
+    | Server URL (e.g. https://www.filescan.io/api) | True |
     | API Key | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
-    | Verbose | False |
 
 4. Click **Test** to validate the URLs, the API Key and connection.
 
@@ -61,7 +60,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | MetaDefender.Aether.Analysis.allTags | Unknown | All tags. |
 | MetaDefender.Aether.Analysis.overallState | String | Overall state of the scan. |
 | MetaDefender.Aether.Analysis.taskReference.name | String | Name of the main scan task. |
-| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional information about the main scan task. |
 | MetaDefender.Aether.Analysis.taskReference.ID | String | ID of the main scan task. |
 | MetaDefender.Aether.Analysis.taskReference.state | String | State of the main scan task. |
 | MetaDefender.Aether.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. |
@@ -81,7 +80,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Context Example
 
 ```json
-{
 {
     "DBotScore":
     [
@@ -234,7 +232,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
->| 1111111111111111111111111111111111111111111111111111111111111111 | <https://www.test.com> | other | BENIGN | osint, url-render, domain-resolve | html, png |
+>| 1111111111111111111111111111111111111111111111111111111111111111 | https://www.test.com | other | BENIGN | osint, url-render, domain-resolve | html, png |
 
 ### metadefender-aether-scan-file
 
@@ -249,7 +247,7 @@ Scan File with MetaDefender Aether
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | he War Room entry ID of the file to submit | Required |
+| entry_id | The War Room entry ID of the file to submit | Required |
 | timeout | The timeout for the polling in seconds | Optional |
 | hide_polling_output | Hide polling output | Optional |
 | description | Uploaded file/url description | Optional |
@@ -272,7 +270,7 @@ Scan File with MetaDefender Aether
 | MetaDefender.Aether.Analysis.allTags | Unknown | All tags. |
 | MetaDefender.Aether.Analysis.overallState | String | Overall state of the scan. |
 | MetaDefender.Aether.Analysis.taskReference.name | String | Name of the main scan task. |
-| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. |
+| MetaDefender.Aether.Analysis.taskReference.additionalInfo | Unknown | Additional information about the main scan task. |
 | MetaDefender.Aether.Analysis.taskReference.ID | String | ID of the main scan task. |
 | MetaDefender.Aether.Analysis.taskReference.state | String | State of the main scan task. |
 | MetaDefender.Aether.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. |
@@ -292,7 +290,6 @@ Scan File with MetaDefender Aether
 #### Context Example
 
 ```json
-{
 {
     "DBotScore":
     [
@@ -490,7 +487,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
                         "name": "bad_file.exe",
                         "mime_type": "application/x-msdownload",
                         "short_type": "peexe",
-                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
                     },
                     "state": "success",
                     "verdict": "malicious",

@@ -2,7 +2,7 @@ MetaDefender Aether (previously known as MetaDefender Sandbox) is a next-generat
 
 ## What does this pack do?
 
-This pack includes the MetaDefender Aether basic integration that do the following:
+This pack includes the MetaDefender Aether basic integration that does the following:
 
 ### MetaDefender Aether integration
 
