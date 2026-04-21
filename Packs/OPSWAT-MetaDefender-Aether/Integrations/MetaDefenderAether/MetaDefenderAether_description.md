@@ -1,3 +1,7 @@
+## MetaDefender Aether
+
+A file scanning and malware detection integration that leverages OPSWAT's MetaDefender Aether service to analyze files and URLs for threats. Use this integration to scan indicators, detect malicious content, and enrich security investigations with multi-engine threat intelligence.
+
 ## Prerequisites
 
 For the integration you need your MetaDefender Aether API key.
