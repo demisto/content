@@ -29,7 +29,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/fastapi:0.125.0.8198656
   runonce: false
   commands:
   - name: metadefender-aether-scan-url
