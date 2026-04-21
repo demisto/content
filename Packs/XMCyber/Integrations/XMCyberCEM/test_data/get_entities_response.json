@@ -1,0 +1,32 @@
+[
+    {
+        "entity": {
+            "hostname": "test",
+            "asset": {
+                "product_object_id": "0000000000000000001",
+                "hostname": "test",
+                "attribute": {
+                    "labels": [
+                        {
+                            "key": "XM Cyber - Labels",
+                            "value": "SSH server, Public IP, CrowdStrike Falcon"
+                        },
+                        {
+                            "key": "XM Cyber - Entity Type",
+                            "value": "agent"
+                        }
+                    ]
+                }
+            },
+            "platform": "Linux",
+            "platform_version": "Linux rhel 9.2 Server"
+        },
+        "metadata": {
+            "collected_timestamp": "2025-12-09T00:00:00.421Z",
+            "entity_type": "ASSET",
+            "vendor_name": "XM Cyber",
+            "product_name": "XM Cyber CTEM",
+            "source_type": "GLOBAL_CONTEXT"
+        }
+    }
+]

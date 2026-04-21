@@ -385,3 +385,226 @@ def test_abusech_hunting_http_request_missing_url(mocker):
 
     with pytest.raises(Exception, match="Hunting API URL was not provided"):
         abusech_hunting_http_request({}, {})
+
+
+def _mock_abuseipdb_globals(mocker):
+    """Patch module-level globals that are evaluated at import time."""
+    import AbuseDB
+
+    mocker.patch.object(AbuseDB, "MAX_AGE", "30")
+    mocker.patch.object(AbuseDB, "VERBOSE", False)
+    mocker.patch.object(AbuseDB, "THRESHOLD", "80")
+    mocker.patch.object(AbuseDB, "DISABLE_PRIVATE_IP_LOOKUP", False)
+    mocker.patch.object(AbuseDB, "API_KEY", "test-api-key")
+    mocker.patch.object(AbuseDB, "HEADERS", {"Key": "test-api-key", "Accept": "application/json"})
+    mocker.patch.object(AbuseDB, "INSECURE", False)
+    mocker.patch.object(AbuseDB, "PROXY", False)
+    mocker.patch.object(AbuseDB, "ABUSECH_API_KEY", "test-hunting-key")
+    mocker.patch.object(AbuseDB, "ABUSECH_URL", "https://test-url")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"apikey": "test", "threshold": "80", "disregard_quota": "false"},
+    )
+    mocker.patch.object(demisto, "results")
+
+
+def _mock_http_request(mocker):
+    """Mock requests.Session.request to return a valid AbuseIPDB API response."""
+    from requests import Session
+
+    api_response = {
+        "data": {
+            "ipAddress": "1.1.1.1",
+            "abuseConfidencePercentage": 0,
+            "abuseConfidenceScore": 0,
+            "countryCode": "US",
+            "countryName": "United States",
+            "usageType": "dummy",
+            "isp": "dummy",
+            "domain": "dummy.com",
+            "totalReports": 0,
+            "numDistinctUsers": 0,
+            "lastReportedAt": None,
+            "reports": [],
+            "hostnames": [],
+            "ipVersion": 4,
+            "isPublic": True,
+            "isTor": False,
+            "isWhitelisted": False,
+            "reportedAddress": [
+                {
+                    "ipAddress": "192.168.1.1",
+                    "abuseConfidenceScore": 0,
+                    "countryCode": "US",
+                    "countryName": "United States",
+                    "totalReports": 0,
+                    "numReports": 0,
+                    "lastReportedAt": None,
+                }
+            ],
+        }
+    }
+
+    def json_func():
+        return api_response
+
+    mocker.patch.object(
+        Session,
+        "request",
+        return_value=DotDict({"status_code": 200, "json": json_func}),
+    )
+
+
+def _mock_abusech_http_request(mocker):
+    """Mock abusech_hunting_http_request to return a valid FPL response."""
+    import AbuseDB
+
+    mock_fplist_response = {
+        "1001": {
+            "time_stamp": "2024-01-01 12:00:00 UTC",
+            "platform": "TestPlatform",
+            "entry_type": "ip",
+            "entry_value": "8.8.8.8",
+            "removed_by": "user1",
+            "removal_notes": "test note",
+        }
+    }
+
+    class MockFPResponse:
+        status_code = 200
+
+        def json(self):
+            return mock_fplist_response
+
+    mocker.patch.object(AbuseDB, "abusech_hunting_http_request", return_value=MockFPResponse())
+
+
+@pytest.mark.parametrize(
+    "command_name, func_name, required_args, extra_args",
+    [
+        pytest.param(
+            "ip",
+            "check_ip_command",
+            {"ip": "1.1.1.1"},
+            {"nonexistent_param": "value"},
+            id="ip-required-args-only",
+        ),
+        pytest.param(
+            "abuseipdb-check-cidr-block",
+            "check_block_command",
+            {"network": "192.168.1.0/24", "limit": "40"},
+            {"nonexistent_param": "value"},
+            id="check-cidr-block-required-args-only",
+        ),
+    ],
+)
+class TestReliabilityCommandsWithHttpRequest:
+    """Tests for commands that take ``reliability`` as a positional arg and use the AbuseIPDB HTTP API."""
+
+    def test_required_args_only(self, mocker, command_name, func_name, required_args, extra_args):
+        """Test that the command works with only required arguments."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+        _mock_http_request(mocker)
+
+        func = getattr(AbuseDB, func_name)
+        func(DBotScoreReliability.B, **required_args)
+
+    def test_required_args_with_extra(self, mocker, command_name, func_name, required_args, extra_args):
+        """Test that the command tolerates extra kwargs from ``**demisto.args()``."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+        _mock_http_request(mocker)
+
+        func = getattr(AbuseDB, func_name)
+        args = {**required_args, **extra_args}
+        func(DBotScoreReliability.B, **args)
+
+
+@pytest.mark.parametrize(
+    "command_name, func_name, required_args, extra_args",
+    [
+        pytest.param(
+            "abuseipdb-report-ip",
+            "report_ip_command",
+            {"ip": "1.2.3.4", "categories": "Hacking"},
+            {"nonexistent_param": "value"},
+            id="report-ip-required-args-only",
+        ),
+        pytest.param(
+            "abuseipdb-get-blacklist",
+            "get_blacklist_command",
+            {"limit": "100", "days": "30", "confidence": "80", "saveToContext": "true"},
+            {"nonexistent_param": "value"},
+            id="get-blacklist-required-args-only",
+        ),
+    ],
+)
+class TestCommandsWithHttpRequest:
+    """Tests for commands that do NOT take ``reliability`` and use the AbuseIPDB HTTP API."""
+
+    def test_required_args_only(self, mocker, command_name, func_name, required_args, extra_args):
+        """Test that the command works with only required arguments."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+        _mock_http_request(mocker)
+
+        func = getattr(AbuseDB, func_name)
+        func(**required_args)
+
+    def test_required_args_with_extra(self, mocker, command_name, func_name, required_args, extra_args):
+        """Test that the command tolerates extra kwargs from ``**demisto.args()``."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+        _mock_http_request(mocker)
+
+        func = getattr(AbuseDB, func_name)
+        args = {**required_args, **extra_args}
+        func(**args)
+
+
+class TestGetCategoriesCommandArgumentHandling:
+    """Tests for ``get_categories_command`` which takes no arguments and needs no HTTP mock."""
+
+    def test_required_args_only(self, mocker):
+        """Test that get_categories_command works when called with no arguments."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+
+        AbuseDB.get_categories_command()
+
+    def test_required_args_with_extra(self, mocker):
+        """Test that get_categories_command tolerates extra kwargs from ``**demisto.args()``."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+
+        AbuseDB.get_categories_command(**{"nonexistent_param": "value"})
+
+
+class TestGetFplistCommandArgumentHandling:
+    """Tests for ``get_fplist_command`` which uses the Abuse.ch Hunting API."""
+
+    def test_required_args_only(self, mocker):
+        """Test that get_fplist_command works with only required arguments."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+        _mock_abusech_http_request(mocker)
+
+        AbuseDB.get_fplist_command(format="json", limit=1, all_results=False)
+
+    def test_required_args_with_extra(self, mocker):
+        """Test that get_fplist_command tolerates extra kwargs from ``**demisto.args()``."""
+        import AbuseDB
+
+        _mock_abuseipdb_globals(mocker)
+        _mock_abusech_http_request(mocker)
+
+        AbuseDB.get_fplist_command(format="json", limit=1, all_results=False, nonexistent_param="value")  # type: ignore[call-arg]
