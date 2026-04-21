@@ -3128,6 +3128,10 @@ script:
     - name: user_id
       required: false
       description: The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used.
+    - name: fields
+      required: false
+      description: 'A comma-separated list of fields to include in the response. Default is "*" which returns all fields. Example: "id, name, mimeType, parents".'
+      defaultValue: "*"
     outputs:
     - contextPath: GoogleDrive.File.id
       description: The file ID.
@@ -3157,6 +3161,10 @@ script:
       description: The ID of the parent folder. If not specified, the file will be created in the user's root folder.
     - name: description
       description: A short description of the file or folder.
+    - name: fields
+      required: false
+      description: 'A comma-separated list of fields to include in the response. Default is "*" which returns all fields. Example: "id, name, mimeType, parents".'
+      defaultValue: "*"
     outputs:
     - contextPath: GoogleDrive.File.id
       description: The ID of the created file or folder.

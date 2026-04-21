@@ -1962,7 +1962,7 @@ def file_move_command(client: "GSuiteClient", args: dict[str, str]) -> CommandRe
     params = {
         "addParents": add_parent_id,
         "removeParents": remove_parent_id,
-        "fields": "*",
+        "fields": args.get("fields", "*"),
         "supportsAllDrives": True,
     }
     response = client.http_request(url_suffix=url_suffix, method="PATCH", params=params)
@@ -2005,7 +2005,7 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
 
     url_suffix = URL_SUFFIX["FILE_CREATE"]
     params = {
-        "fields": "*",
+        "fields": args.get("fields", "*"),
         "supportsAllDrives": True,
     }
     body: dict[str, Any] = {
