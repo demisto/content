@@ -1,8 +1,8 @@
+name: MetaDefender Aether
+display: MetaDefender Aether
 commonfields:
   id: MetaDefender Aether
   version: -1
-name: MetaDefender Aether
-display: MetaDefender Aether
 category: Forensics & Malware Analysis
 description: Next-generation unified Zero-Day detection solution, combining Threat Reputation, Dynamic Analysis, Threat Scoring, and Threat Hunting into a single adaptive detection pipeline (previously known as MetaDefender Sandbox).
 configuration:
@@ -37,7 +37,7 @@ script:
     polling: true
     arguments:
     - name: flow_id
-      description: The flow ID what needs to poll.
+      description: The flow ID to poll.
       deprecated: true
     - name: url
       description: The URL to submit.
@@ -96,7 +96,7 @@ script:
       description: Name of the main scan task.
       type: String
     - contextPath: MetaDefender.Aether.Analysis.taskReference.additionalInfo
-      description: Additional informations about the main scan task.
+      description: Additional information about the main scan task.
       type: Unknown
     - contextPath: MetaDefender.Aether.Analysis.taskReference.ID
       description: ID of the main scan task.
@@ -137,7 +137,7 @@ script:
     polling: true
     arguments:
     - name: flow_id
-      description: The flow ID what needs to poll.
+      description: The flow ID to poll.
       deprecated: true
     - name: entry_id
       description: The War Room entry ID of the file to submit.
@@ -195,7 +195,7 @@ script:
       description: Name of the main scan task.
       type: String
     - contextPath: MetaDefender.Aether.Analysis.taskReference.additionalInfo
-      description: Additional informations about the main scan task.
+      description: Additional information about the main scan task.
       type: Unknown
     - contextPath: MetaDefender.Aether.Analysis.taskReference.ID
       description: ID of the main scan task.
