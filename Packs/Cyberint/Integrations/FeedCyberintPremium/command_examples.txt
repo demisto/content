@@ -1,0 +1,2 @@
+!cyberint-premium-get-indicators limit=10 offset=0
+!cyberint-premium-get-indicators-count indicator_type=ipv4 severity_min=3
