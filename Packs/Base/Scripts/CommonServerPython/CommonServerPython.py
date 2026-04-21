@@ -13662,11 +13662,13 @@ def is_ucp_enabled():
     :return: ``True`` if UCP metadata is present, ``False`` otherwise.
     :rtype: ``bool``
     """
-    connector_info = demisto.unifiedConnectorMetadata()
-    if connector_info:
-        return True
-    return False
-
+    try:
+        connector_info = demisto.unifiedConnectorMetadata()
+        if connector_info:
+            return True
+        return False
+    except Exception:
+        return False
 
 def should_use_ucp_auth():
     # type: () -> bool

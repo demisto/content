@@ -2411,7 +2411,7 @@ function _flattenUcpCredentials(creds) {
  *   For plain:   {type: 'plain', username: '...', password: '...'}
  */
 function getUcpCredentials(capability, subCapability) {
-    if (!isUcpEnabled()) {
+    if (!shouldUseUcpAuth()) {
         return null;
     }
 
