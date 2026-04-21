@@ -5045,7 +5045,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
         if parsed_args.incident_changed:
             is_uam = bool(
                 delta.get("sentineloneuamalertstatus")
-                or delta.get("sentineloneuamalertanalystverdict")
+                or delta.get("sentineloneuamalertanalystverdictmapped")
                 or (parsed_args.data or {}).get("sentineloneuamalertid")
             )
             demisto.debug(f"update_remote_system_command: is_uam={is_uam} for remote_id={remote_incident_id}")
@@ -5058,7 +5058,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
                     f"(remote_id was [{remote_incident_id}])"
                 )
                 sentinelone_uam_status = delta.get("sentineloneuamalertstatus", None)
-                sentinelone_uam_analyst_verdict = delta.get("sentineloneuamalertanalystverdict", None)
+                sentinelone_uam_analyst_verdict = delta.get("sentineloneuamalertanalystverdictmapped", None)
                 closing_notes = delta.get("closeNotes", "")
                 update_remote_incident(
                     client,

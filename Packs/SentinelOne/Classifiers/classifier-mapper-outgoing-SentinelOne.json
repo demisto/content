@@ -15,7 +15,7 @@
 				"sentineloneuamalertstatus": {
 					"simple": "uamStatus"
 				},
-				"sentineloneuamalertanalystverdict": {
+				"sentineloneuamalertanalystverdictmapped": {
 					"simple": "uamAnalystVerdict"
 				}
             }

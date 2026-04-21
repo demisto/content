@@ -449,10 +449,10 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "sentineloneuamalertanalystverdict",
+								"fieldId": "sentineloneuamalertanalystverdictmapped",
 								"height": 22,
-								"id": "f852db21-9c9d-11ed-8844-a17be4688e73",
-								"index": 4,
+								"id": "f952db21-9c9d-11ed-8844-a17be4688e74",
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -1722,10 +1722,10 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "sentineloneuamalertanalystverdict",
+								"fieldId": "sentineloneuamalertanalystverdictmapped",
 								"height": 22,
-								"id": "e0fe7a70-dff9-11f0-b711-ef6183340a2c",
-								"index": 4,
+								"id": "f1fe7a70-dff9-11f0-b711-ef6183340a2d",
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -2443,7 +2443,7 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_sentineloneuamalertanalystverdict",
+						"fieldId": "incident_sentineloneuamalertanalystverdictmapped",
 						"isVisible": true
 					},
 					{
