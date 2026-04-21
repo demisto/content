@@ -3126,8 +3126,8 @@ script:
       required: true
       description: The ID of the current parent folder to remove the file from.
     - name: user_id
-      required: true
-      description: The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation).
+      required: false
+      description: The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used.
     outputs:
     - contextPath: GoogleDrive.File.id
       description: The file ID.
