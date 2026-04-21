@@ -3151,8 +3151,8 @@ script:
       description: 'The MIME type of the file. Use "application/vnd.google-apps.folder" to create a folder. Default is "application/vnd.google-apps.folder".'
       defaultValue: application/vnd.google-apps.folder
     - name: user_id
-      required: true
-      description: The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation).
+      required: false
+      description: The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used.
     - name: parent_id
       description: The ID of the parent folder. If not specified, the file will be created in the user's root folder.
     - name: description
