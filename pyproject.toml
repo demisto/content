@@ -355,7 +355,6 @@ select = [
     "UP035", # deprecated-import
     "UP036", # outdated-version-block
     "UP037", # quoted-annotation
-    "UP038", # non-pep604-isinstance
 
     "W291", # trailing-whitespace
 
