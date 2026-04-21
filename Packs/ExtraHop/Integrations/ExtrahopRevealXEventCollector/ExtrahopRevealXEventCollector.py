@@ -94,10 +94,10 @@ class Client(BaseClient):
         }
         req_body = {
             "grant_type": "client_credentials",
-            "client_id": client_id,
-            "client_secret": client_secret,
         }
-        response = self._http_request(method="POST", url_suffix="/oauth2/token", data=req_body, headers=req_headers)
+        response = self._http_request(
+            method="POST", url_suffix="/oauth2/token", data=req_body, headers=req_headers, auth=(client_id, client_secret)
+        )
         token = response.get("access_token")
         expires_in = response.get("expires_in")
 
