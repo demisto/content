@@ -13,7 +13,7 @@ INTEGRATION_NAME = "MetaDefender Aether Integration"
 INTEGRATION_CONTEXT_NAME = "MetaDefender.Aether"
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_key = api_key
@@ -53,6 +53,7 @@ class Client(BaseClient):
             try:
                 file_entry = demisto.getFilePath(entry_id)
             except Exception as e:
+                demisto.debug(f"Failed to find file entry with id: {entry_id}. Traceback: {traceback.format_exc()}")
                 raise DemistoException(f'Failed to find file entry with id:"{entry_id}". got error: {e}')
 
             with open(file_entry["path"], "rb") as file:
@@ -61,7 +62,7 @@ class Client(BaseClient):
                     url_suffix="/scan/file",
                     ok_codes=([200]),
                     data=data,
-                    files={"file": file},
+                    files={"file": (file_entry["name"], file)},
                 )
         else:
             raise DemistoException("No file or URL was provided.")
@@ -169,11 +170,12 @@ def build_search_query_result(analyses: list[dict]) -> list[CommandResults]:
 
         score = Common.DBotScore.NONE
         verdict = analysis.get("verdict", "UNKNOWN")
-        if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
+        verdict_upper = verdict.upper()
+        if verdict_upper in ("BENIGN", "INFORMATIONAL", "TRUSTED", "NO_THREAT_DETECTED", "NO_THREAT"):
             score = Common.DBotScore.GOOD
-        elif verdict.upper() == "MALICIOUS" or verdict.upper() == "LIKELY_MALICIOUS":
+        elif verdict_upper in ("MALICIOUS", "LIKELY_MALICIOUS", "HIGH_RISK", "CONFIRMED_THREAT"):
             score = Common.DBotScore.BAD
-        elif verdict.upper() == "SUSPICIOUS":
+        elif verdict_upper in ("SUSPICIOUS", "LOW_RISK"):
             score = Common.DBotScore.SUSPICIOUS
 
         dbot_score = Common.DBotScore(
@@ -217,7 +219,7 @@ def sample_submission(client: Client, args: dict[str, Any]) -> PollResult:
 
 
 def build_reputation_result(api_reponse: dict[str, Any]):
-    reports = api_reponse.get("reports", [])
+    reports = api_reponse.get("reports", {})
     command_res_ls = []
     for report in reports.values():
         command_res_ls.append(build_one_reputation_result(report))
@@ -233,7 +235,7 @@ def is_valid_pass(api_response: dict[str, Any]):
 @polling_function(
     name=demisto.command(),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
-    interval=1,
+    interval=5,
     poll_message="Polling result",
     requires_polling_arg=False,
 )
@@ -287,7 +289,7 @@ def search_query_command(client: Client, args: dict[str, Any]):
         if page_size and page_size not in [5, 10, 20]:
             raise DemistoException("Page size value must be 5, 10 or 20")
         if page and page <= 0:
-            raise DemistoException("Page must be an integer and grater than 0")
+            raise DemistoException("Page must be an integer and greater than 0")
         if limit and (limit <= 0 or limit > 50):
             raise DemistoException("Limit must be an integer and between 1 and 50")
 
@@ -313,14 +315,13 @@ def search_query_command(client: Client, args: dict[str, Any]):
         while continue_query:
             response = client.get_search_query(query_string, page, page_size)
             actual_items = response.get("items", [])
-            total_available_items = response.get("count")
-            if total_available_items is None:
-                total_available_items = len(items) + len(actual_items)
-            # queried all or reached the limit
-            if total_available_items == len(items) or len(items) >= limit:
-                continue_query = False
             items += actual_items
-            page += 1
+            
+            # Stop if no items returned or we've reached the limit
+            if not actual_items or len(items) >= limit:
+                continue_query = False
+            else:
+                page += 1
         items = items[0:limit]
 
     if items:
@@ -357,7 +358,7 @@ def main():
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
     except Exception as e:
-        err_msg = f"Exception in {INTEGRATION_NAME} : Failed to execute {command} command: [{e!r}]"
+        err_msg = f"Exception in {INTEGRATION_NAME} : Failed to execute {command} command: [{e!r}]\n{traceback.format_exc()}"
         return_error(err_msg, error=e)
 
 
