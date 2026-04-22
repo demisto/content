@@ -26,7 +26,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| screenshot_url | The URL of the screenshot from Doppel alert | ${incident.screenshot_url} | Optional |
+| screenshot_url | The URL of the screenshot from Doppel alert | ${incident.doppelscreenshoturl} | Optional |
 
 ## Playbook Outputs
 
