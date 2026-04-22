@@ -195,7 +195,7 @@ view: |-
 inputs:
 - key: screenshot_url
   value:
-    simple: ${incident.screenshot_url}
+    simple: ${incident.doppelscreenshoturl}
   required: false
   description: ""
   playbookInputQuery: null
