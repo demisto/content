@@ -1,5 +1,5 @@
 from typing import Any
-from CommonServerPython import DemistoException
+from CommonServerPython import CommandResults, DemistoException
 import json
 import pytest
 import importlib
@@ -311,3 +311,243 @@ def test_build_one_reputation_result(report, DBotScore):
     reputation_result = MD_Aether.build_one_reputation_result(report)
     score = reputation_result.indicator.dbot_score.score
     assert score == DBotScore
+
+
+def test_post_sample_url(mocker, client):
+    """Test post_sample submits a URL and returns the API response."""
+    mocker.patch.object(client, "_http_request", return_value={"flow_id": "url-1234"})
+    result = client.post_sample({"url": "https://example.com", "description": "test", "tags": "t1"})
+    assert result == {"flow_id": "url-1234"}
+    client._http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/scan/url",
+        ok_codes=(200,),
+        data={"url": "https://example.com", "description": "test", "tags": "t1"},
+    )
+
+
+def test_post_sample_no_url_no_entry_raises(client):
+    """Test post_sample raises when neither url nor entry_id is provided."""
+    with pytest.raises(DemistoException, match="No file or URL was provided."):
+        client.post_sample({})
+
+
+def test_post_sample_file(mocker, client):
+    """Test post_sample submits a file via entry_id."""
+    import demistomock as demisto
+
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "/tmp/test.txt", "name": "test.txt"})
+    mock_open = mocker.mock_open(read_data=b"file-content")
+    mocker.patch("builtins.open", mock_open)
+    mocker.patch.object(client, "_http_request", return_value={"flow_id": "file-5678"})
+
+    result = client.post_sample({"entry_id": "entry123", "password": "secret", "is_private": True})
+    assert result == {"flow_id": "file-5678"}
+
+
+def test_post_sample_file_not_found(mocker, client):
+    """Test post_sample raises when entry_id file is not found."""
+    import demistomock as demisto
+
+    mocker.patch.object(demisto, "getFilePath", side_effect=Exception("File not found"))
+    with pytest.raises(DemistoException, match="Failed to find file entry"):
+        client.post_sample({"entry_id": "bad-entry"})
+
+
+def test_search_query_command_empty_results(mocker, client):
+    """Test search_query_command returns 'No Results' when no items are found."""
+    mocker.patch.object(client, "get_search_query", return_value={"items": []})
+    response = MD_Aether.search_query_command(client, {"query": "nonexistent"})
+    assert response.readable_output == "No Results were found."
+
+
+def test_search_query_command_with_page_and_page_size(mocker, client):
+    """Test search_query_command with explicit page and page_size."""
+    raw_response = util_load_json("test_data/query_hash_badfile.json")
+    mocker.patch.object(client, "get_search_query", return_value=raw_response)
+
+    response = MD_Aether.search_query_command(client, {"query": "test", "page": "1", "page_size": "10"})
+    assert len(response) == 2
+    client.get_search_query.assert_called_once_with("test", 1, 10)
+
+
+def test_search_query_command_with_page_only(mocker, client):
+    """Test search_query_command defaults page_size to 10 when only page is given."""
+    raw_response = util_load_json("test_data/query_hash_cleanfile.json")
+    mocker.patch.object(client, "get_search_query", return_value=raw_response)
+
+    response = MD_Aether.search_query_command(client, {"query": "test", "page": "2"})
+    assert len(response) == 1
+    client.get_search_query.assert_called_once_with("test", 2, 10)
+
+
+def test_search_query_command_with_page_size_only(mocker, client):
+    """Test search_query_command defaults page to 1 when only page_size is given."""
+    raw_response = util_load_json("test_data/query_hash_cleanfile.json")
+    mocker.patch.object(client, "get_search_query", return_value=raw_response)
+
+    response = MD_Aether.search_query_command(client, {"query": "test", "page_size": "5"})
+    assert len(response) == 1
+    client.get_search_query.assert_called_once_with("test", 1, 5)
+
+
+def test_search_query_command_auto_pagination(mocker, client):
+    """Test search_query_command paginates automatically and respects limit."""
+
+    def _make_item(i: int) -> dict:
+        sha = f"{i:064x}"
+        return {"id": f"item-{i}", "file": {"name": f"file{i}.txt", "sha256": sha}, "verdict": "no_threat"}
+
+    page1 = {"items": [_make_item(i) for i in range(5)]}
+    page2 = {"items": [_make_item(i) for i in range(5, 8)]}
+
+    mocker.patch.object(client, "get_search_query", side_effect=[page1, page2])
+    response = MD_Aether.search_query_command(client, {"query": "test", "limit": "8"})
+    assert len(response) == 8
+    assert client.get_search_query.call_count == 2
+
+
+def test_scan_command_timeout_argument(mocker, client):
+    """Test scan_command respects a custom timeout argument."""
+    from CommonServerPython import ScheduledCommand
+
+    mocker.patch.object(client, "_http_request", return_value={"flow_id": "t-1234"})
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+    MD_Aether.scan_command(client, {"url": "https://example.com", "timeout": "120"})
+    assert MD_Aether.TIMEOUT == 120
+
+    # Reset global
+    MD_Aether.TIMEOUT = 600
+
+
+def test_scan_command_timeout_none_keeps_default(mocker, client):
+    """Test scan_command keeps default timeout when not provided."""
+    from CommonServerPython import ScheduledCommand
+
+    MD_Aether.TIMEOUT = 600
+    mocker.patch.object(client, "_http_request", return_value={"flow_id": "t-5678"})
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+    MD_Aether.scan_command(client, {"url": "https://example.com"})
+    assert MD_Aether.TIMEOUT == 600
+
+
+def test_polling_still_in_progress(mocker, client):
+    """Test polling returns a scheduled result when scan is not finished."""
+    from CommonServerPython import ScheduledCommand
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    in_progress_response = {
+        "flow_id": "prog-1234",
+        "allFinished": False,
+        "reports": {},
+    }
+    mocker.patch.object(client, "get_scan_result", return_value=in_progress_response)
+
+    response = MD_Aether.scan_command(client, {"flow_id": "prog-1234", "continue_to_poll": True})
+    # The @polling_function decorator returns the partial_result (or default poll_message)
+    # as a CommandResults, not a PollResult, when continue_to_poll=True.
+    assert isinstance(response, CommandResults)
+    assert response.readable_output is not None
+
+
+def test_build_reputation_result_multiple_reports():
+    """Test build_reputation_result handles multiple reports."""
+    api_response = {
+        "reports": {
+            "report-1": {
+                "finalVerdict": {"verdict": "NO_THREAT", "threatLevel": 0.25},
+                "file": {"name": "file1.txt", "hash": "hash1", "type": "text"},
+                "allTags": [],
+                "subtaskReferences": [],
+            },
+            "report-2": {
+                "finalVerdict": {"verdict": "CONFIRMED_THREAT", "threatLevel": 1.0},
+                "file": {"name": "file2.exe", "hash": "hash2", "type": "pe"},
+                "allTags": [],
+                "subtaskReferences": [],
+            },
+        }
+    }
+    results = MD_Aether.build_reputation_result(api_response)
+    assert len(results) == 2
+    scores = {r.indicator.dbot_score.score for r in results}
+    assert 1 in scores  # GOOD
+    assert 3 in scores  # BAD
+
+
+def test_build_search_query_result_empty():
+    """Test build_search_query_result returns empty list for empty input."""
+    results = MD_Aether.build_search_query_result([])
+    assert results == []
+
+
+def test_sample_submission(mocker, client):
+    """Test sample_submission returns a PollResult with correct flow_id."""
+    from CommonServerPython import ScheduledCommand
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    mocker.patch.object(client, "_http_request", return_value={"flow_id": "sub-9999"})
+
+    result = MD_Aether.sample_submission(client, {"url": "https://example.com"})
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run["flow_id"] == "sub-9999"
+    assert 'Waiting for submission "sub-9999"' in result.partial_result.readable_output
+
+
+def test_is_valid_pass_no_rejected_key():
+    """Test is_valid_pass returns True when rejected_files key is absent."""
+    assert MD_Aether.is_valid_pass({"flow_id": "123", "reports": {}}) is True
+
+
+def test_is_valid_pass_invalid():
+    """Test is_valid_pass returns False for INVALID_PASSWORD."""
+    response = {"rejected_files": [{"rejected_reason": "INVALID_PASSWORD"}]}
+    assert MD_Aether.is_valid_pass(response) is False
+
+
+def test_is_valid_pass_other_reason():
+    """Test is_valid_pass returns True for non-password rejection reasons."""
+    response = {"rejected_files": [{"rejected_reason": "FILE_TOO_LARGE"}]}
+    assert MD_Aether.is_valid_pass(response) is True
+
+
+def test_main_test_module(mocker):
+    """Test main() dispatches test-module command correctly."""
+    import demistomock as demisto
+
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "api_key": {"password": "key123"}})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(MD_Aether, "test_module_command", return_value="ok")
+    MD_Aether.main()
+    MD_Aether.test_module_command.assert_called_once()
+
+
+def test_main_unknown_command(mocker):
+    """Test main() raises NotImplementedError for unknown commands."""
+    import demistomock as demisto
+
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "api_key": {"password": "key123"}})
+    mocker.patch.object(demisto, "command", return_value="unknown-command")
+    mocker.patch.object(demisto, "args", return_value={})
+    mock_return_error = mocker.patch("MetaDefenderAether.return_error")
+
+    MD_Aether.main()
+    assert mock_return_error.called
+    assert "not implemented" in mock_return_error.call_args[0][0].lower()
+
+
+def test_main_scan_url_command(mocker):
+    """Test main() dispatches scan-url command correctly."""
+    import demistomock as demisto
+
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "api_key": {"password": "key123"}})
+    mocker.patch.object(demisto, "command", return_value="metadefender-aether-scan-url")
+    mocker.patch.object(demisto, "args", return_value={"url": "https://example.com"})
+    mock_scan = mocker.patch.object(MD_Aether, "scan_command", return_value="mock-result")
+    mocker.patch.object(demisto, "results")
+
+    MD_Aether.main()
+    mock_scan.assert_called_once()
