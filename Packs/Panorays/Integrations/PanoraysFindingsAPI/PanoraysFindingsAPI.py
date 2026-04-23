@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import * # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 import json
 from typing import Any
@@ -19,13 +19,13 @@ def verify_module(client: Client) -> str:
         return "ok"
     except Exception as e:
         if "Unauthorized" in str(e) or "Forbidden" in str(e):
-            return "Authorization Error: check your API Key."
+            raise Exception("Authorization Error: check your API Key.") from e
         raise e
 
 
 def finding_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    limit = int(args.get("limit", 50))
-    page = int(args.get("page", 1))
+    limit = int(args.get("limit") or 50)
+    page = int(args.get("page") or 1)
     raw_response = client.get_company_findings(limit=limit, page=page)
     findings = raw_response.get("data", [])
 
@@ -67,7 +67,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     for finding in findings:
         finding_time = arg_to_datetime(finding.get("insert_ts"))
 
-        if last_fetch_time and finding_time and finding_time.replace(tzinfo=None) <= last_fetch_time.replace(tzinfo=None):
+        if last_fetch_time and finding_time and finding_time <= last_fetch_time:
             continue
 
         incidents.append(
@@ -87,17 +87,16 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
 
 
 def main() -> None:
-    # Move the try block here to catch params and command errors
     try:
         params = demisto.params()
         command = demisto.command()
-        
+
         api_key = params.get("apikey")
         base_url = params.get("url", "https://api.panoraysapp.com")
 
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        verify_certificate = not params.get("insecure", False)
-        proxy = params.get("proxy", False)
+        verify_certificate = not bool(params.get("insecure", False))
+        proxy = bool(params.get("proxy", False))
 
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
 
@@ -108,13 +107,13 @@ def main() -> None:
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             first_fetch_time = params.get("first_fetch", "3 days")
-            max_fetch = int(params.get("max_fetch", 50))
+            max_fetch = int(params.get("max_fetch") or 50)
 
             next_run, incidents = fetch_incidents_command(client, last_run, first_fetch_time, max_fetch)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-            
+
     except Exception as e:
         return_error(f"Error: {str(e)}")
 
