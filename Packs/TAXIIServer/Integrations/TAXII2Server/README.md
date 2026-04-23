@@ -95,6 +95,16 @@ For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/c
 
 - When retrieving Objects (Cortex XSOAR Indicators and Relationships) from a collection, use the **next** parameter to paginate through additional records.
 
+## Configuration Parameters
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Refresh Rate | How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute. | False |
+| Cache Lock Timeout | The timeout for the cache lock. | False |
+| Cache Lock Age | The age for the cache lock. | False |
+| Cache 404 TTL | The TTL for 404 responses in the cache. | False |
+| Cache Default TTL | The default TTL for responses in the cache. | False |
+
 ## Known Limitations
 
 - GET objects by ID is not allowed.

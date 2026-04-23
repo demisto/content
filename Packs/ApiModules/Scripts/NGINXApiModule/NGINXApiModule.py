@@ -318,23 +318,28 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
 
 
 def parse_nginx_time_to_seconds(time_str: str) -> int:
+    """Parses an NGINX time string (e.g., '3600', '1h', '30m', '60s') into seconds.
+
+    Args:
+        time_str (str): The NGINX time string to parse.
+
+    Returns:
+        int: The time in seconds. If no unit is provided, seconds are assumed.
     """
-    Parses an NGINX time string (e.g., '3600', '1h', '30m', '60s') into seconds.
-    If no unit is provided, seconds are assumed.
-    """
+    time_str = time_str.strip()
     if not time_str:
         return 0
     if time_str.isdigit():
         return int(time_str)
 
     units = {
-        's': 1,
-        'm': 60,
-        'h': 3600,
-        'd': 86400,
-        'w': 604800,
-        'M': 2592000,  # 30 days
-        'y': 31536000,
+        "s": 1,
+        "m": 60,
+        "h": 3600,
+        "d": 86400,
+        "w": 604800,
+        "M": 2592000,  # 30 days
+        "y": 31536000,
     }
 
     unit = time_str[-1]
@@ -343,11 +348,11 @@ def parse_nginx_time_to_seconds(time_str: str) -> int:
     if unit in units and value_str.isdigit():
         return int(value_str) * units[unit]
 
-    # If it doesn't match expected format, try to return as int or 0
+    # If it doesn't match expected format, try to return as int or raise error
     try:
         return int(time_str)
-    except ValueError:
-        return 0
+    except (ValueError, TypeError):
+        raise DemistoException(f"Invalid NGINX time format: {time_str}")
 
 
 def get_params_port(params: dict = None) -> int:
