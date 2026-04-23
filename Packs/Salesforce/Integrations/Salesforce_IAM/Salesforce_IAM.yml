@@ -1,5 +1,8 @@
 category: Identity and Access Management
 provider: Salesforce
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Salesforce IAM
   version: -1
@@ -8,20 +11,24 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: User name
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Consumer Key
   name: consumer_key
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Consumer Secret
   name: consumer_secret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Consumer Key
   name: credentials_consumer
   type: 9
@@ -32,56 +39,67 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 'true'
   display: Automatically create user if not found in update and enable commands
   name: create_if_not_exists
   type: 8
   required: false
+  section: Collect
 - defaultvalue: User Profile - Salesforce (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
+  section: Collect
 - defaultvalue: User Profile - Salesforce (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
+  section: Collect
 - additionalinfo: Used when creating a new user.
   defaultvalue: en_US
   display: Default Local Sid Key
   name: localesidkey
   required: true
   type: 0
+  section: Collect
 - additionalinfo: Used when creating a new user.
   defaultvalue: ISO-8859-1
   display: Default Email Encoding Key
   name: emailencodingkey
   required: true
+  section: Collect
   type: 0
 - additionalinfo: Used when creating a new user.
   defaultvalue: en_US
@@ -89,6 +107,7 @@ configuration:
   name: languagelocalekey
   required: true
   type: 0
+  section: Collect
 description: Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
 display: Salesforce IAM
 name: Salesforce IAM
@@ -265,7 +284,7 @@ script:
     - User Hard Remediation
   - description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8294662
   runonce: false
   script: '-'
   subtype: python3

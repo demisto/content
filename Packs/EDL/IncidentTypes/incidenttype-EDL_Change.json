@@ -26,5 +26,9 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.6.0"
+    "fromVersion": "6.6.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
