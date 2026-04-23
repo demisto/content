@@ -1,0 +1,73 @@
+// ============================================
+// Halcyon Modeling Rules
+// Handles two log types: Alerts and Events
+// ============================================
+
+// ============================================
+// Filter 1: Alert Logs
+// ============================================
+
+[MODEL: dataset="halcyon_halcyon_raw"]
+filter alertType != null
+| alter
+    xdm.alert.category = if(
+        alertType ~= "BruteForceAttempt", XDM_CONST.THREAT_CATEGORY_BRUTE_FORCE,
+        alertType ~= "Dxp", XDM_CONST.THREAT_CATEGORY_DATA_THEFT,
+        alertType ~= "MaliciousExecutable", XDM_CONST.THREAT_CATEGORY_PE,
+        alertType),
+    xdm.alert.subcategory = kind,
+    xdm.alert.status = if(
+        triageStatus ~= "New", XDM_CONST.ALERT_STATUS_PENDING,
+        triageStatus ~= "Reviewed", XDM_CONST.ALERT_STATUS_DONE,
+        triageStatus),
+    xdm.event.type = "Alert",
+    xdm.event.id = id,
+    xdm.alert.original_threat_name = alertType,
+    xdm.source.cloud.project_id = tenantId,
+    xdm.source.process.command_line = primaryProcess -> commandLine,
+    xdm.source.process.parent_id = primaryProcess -> parentPid,
+    xdm.source.process.executable.path = primaryProcess -> artifact.filePath,
+    xdm.source.process.executable.filename = arrayindex(regextract(primaryProcess -> artifact.filePath, "[^\\]+$"),0),
+    xdm.source.process.executable.sha256 = primaryProcess -> artifact.sha256,
+    xdm.source.process.pid = to_integer(primaryProcess -> pid),
+    xdm.source.user.identifier = primaryProcess -> userId,
+    xdm.observer.action = action,
+    xdm.source.user.username = coalesce(arrayindex(regextract(primaryProcess -> username, "\\(.+)$"), 0), primaryProcess -> username),
+    xdm.source.user.domain = arrayindex(regextract(primaryProcess->username, "^([^\\]+)\\"), 0),
+    xdm.target.file.path = summary -> artifact.filePath,
+    xdm.target.file.sha256 = summary -> artifact.sha256,
+    xdm.network.rule = summary -> artifact.offendingRuleValue;
+
+// ============================================
+// Filter 2: Event Logs
+// ============================================
+
+filter alertType = null
+| alter
+    xdm.event.type = "Event",
+    xdm.event.id = coalesce(id, guid),
+    xdm.event.operation_sub_type = summary -> driverAction,
+    xdm.source.cloud.project_id = tenantId,
+    xdm.observer.action = action,
+    xdm.target.resource.id = asset -> id,
+    xdm.target.host.device_id = if(kind IN("BadAuthentication", "BadFileExtension"), asset -> id),
+    xdm.target.resource.type = asset -> kind,
+    xdm.target.resource.name = asset -> name,
+    xdm.target.host.hostname = if(kind IN("BadAuthentication", "BadFileExtension"), asset -> name),
+    xdm.target.process.executable.path = badPath,
+    xdm.event.original_event_type = kind,
+    xdm.event.description = log,
+    xdm.target.process.command_line = primaryProcess -> commandLine,
+    xdm.target.process.parent_id = primaryProcess -> parentPid,
+    xdm.target.process.pid = to_integer(primaryProcess -> pid),
+    xdm.target.process.executable.sha256 = summary -> artifact.sha256,
+    xdm.source.user.identifier = primaryProcess -> userId,
+    xdm.source.user.username = coalesce(arrayindex(regextract(primaryProcess -> username, "\\(.+)$"), 0), primaryProcess -> username),
+    xdm.source.user.domain = arrayindex(regextract(primaryProcess->username, "^([^\\]+)\\"), 0),
+    xdm.event.outcome_reason = summary -> monitoringReason,
+    xdm.source.application.name = summary -> applicationName,
+    xdm.source.sent_bytes = to_integer(bytes),
+    xdm.event.outcome = if(
+        action ~= "Block", XDM_CONST.OUTCOME_FAILED,
+        action ~= "Report", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_UNKNOWN);
