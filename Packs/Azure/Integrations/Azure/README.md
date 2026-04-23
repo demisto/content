@@ -1761,3 +1761,258 @@ Gets all security rules in a network security group.
 | Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-sqldb-security-alert-policy-update
+
+***
+Updates a database's security alert policy. The required permissions are: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write.
+
+#### Base Command
+
+`azure-sqldb-security-alert-policy-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | Server name. | Required |
+| db_name | Database name. | Required |
+| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values: "true" and "false". Possible values are: true, false. | Optional |
+| subscription_id | Subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.SecurityAlertPolicies.kind | String | Kind of threat policy. |
+| Azure.SqlDB.SecurityAlertPolicies.location | String | Threat policy location. |
+| Azure.SqlDB.SecurityAlertPolicies.id | String | Threat policy ID. |
+| Azure.SqlDB.SecurityAlertPolicies.name | String | Threat policy name. |
+| Azure.SqlDB.SecurityAlertPolicies.type | String | Threat policy type. |
+| Azure.SqlDB.SecurityAlertPolicies.state | String | Threat policy state. |
+| Azure.SqlDB.SecurityAlertPolicies.creationTime | String | Threat policy creation time. |
+| Azure.SqlDB.SecurityAlertPolicies.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. |
+| Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. |
+| Azure.SqlDB.SecurityAlertPolicies.storageEndpoint | String | Threat Detection audit storage account. |
+| Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins | Boolean | Email accounts administrators who the alert is sent to. |
+| Azure.SqlDB.SecurityAlertPolicies.emailAddresses | String | List of email addresses to which the alert is sent. |
+| Azure.SqlDB.SecurityAlertPolicies.disabledAlerts | String | List of alerts that are disabled, or an empty string if no alerts are disabled. |
+| Azure.SqlDB.SecurityAlertPolicies.useServerDefault | unknown | Whether to use the default server policy. |
+| Azure.SqlDB.SecurityAlertPolicies.databaseName | String | The name of the database that the threat policy is related to. |
+| Azure.SqlDB.SecurityAlertPolicies.serverName | String | The name of server that the threat policy is related to. |
+
+### azure-keyvault-vault-update
+
+***
+Updates a key vault in the specified subscription. The required permissions are: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write.
+
+#### Base Command
+
+`azure-keyvault-vault-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| vault_name | Key Vault name. | Required |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
+| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.KeyVault.Vault.id | String | Resource ID. |
+| Azure.KeyVault.Vault.name | String | Key Vault name. |
+| Azure.KeyVault.Vault.type | String | Resource type in Azure. |
+| Azure.KeyVault.Vault.location | String | Key Vault location. |
+| Azure.KeyVault.Vault.tags | unknown | Resource tags. |
+| Azure.KeyVault.Vault.properties.sku.family | String | SKU family name. |
+| Azure.KeyVault.Vault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
+| Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| Azure.KeyVault.Vault.properties.accessPolicies | unknown | An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. |
+| Azure.KeyVault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| Azure.KeyVault.Vault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
+| Azure.KeyVault.Vault.properties.accessPolicies.permissions | unknown | Permissions the identity has for keys, secrets and certificates. |
+| Azure.KeyVault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. |
+| Azure.KeyVault.Vault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. |
+| Azure.KeyVault.Vault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. |
+| Azure.KeyVault.Vault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. |
+| Azure.KeyVault.Vault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. |
+| Azure.KeyVault.Vault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. |
+| Azure.KeyVault.Vault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. |
+| Azure.KeyVault.Vault.properties.provisioningState | String | The current provisioning state. |
+| Azure.KeyVault.Vault.properties.privateEndpointConnections | unknown | List of private endpoint connections associated with the key vault. |
+| Azure.KeyVault.Vault.properties.networkAcls | unknown | Rules governing the accessibility of the key vault from specific network locations. |
+| Azure.KeyVault.Vault.properties.networkAcls.bypass | String | What traffic can bypass network rules. |
+| Azure.KeyVault.Vault.properties.networkAcls.defaultAction | String | The default action when no rules match from ipRules and virtualNetworkRules. |
+| Azure.KeyVault.Vault.properties.networkAcls.ipRules | unknown | The list of IP address rules. |
+| Azure.KeyVault.Vault.properties.networkAcls.virtualNetworkRules | unknown | The list of virtual network rules. |
+
+### azure-appservice-webapp-update
+
+***
+Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read, Microsoft.Web/sites/write.
+
+#### Base Command
+
+`azure-appservice-webapp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional |
+| https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
+| client_cert_enabled | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.AppService.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.AppService.WebApp.name | String | The name of the web app. |
+| Azure.AppService.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.AppService.WebApp.location | String | Geographic location of the web app. |
+| Azure.AppService.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.AppService.WebApp.tags | unknown | Resource tags as key-value pairs. |
+| Azure.AppService.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.AppService.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.userAssignedIdentities | unknown | The list of user-assigned identities associated with the web app. |
+| Azure.AppService.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.AppService.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.AppService.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.AppService.WebApp.properties.hostNames | unknown | List of host names associated with the web app. |
+| Azure.AppService.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.AppService.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.AppService.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.AppService.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.AppService.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.AppService.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.AppService.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.AppService.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.AppService.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.AppService.WebApp.properties.siteConfig.appSettings | unknown | List of app settings. |
+| Azure.AppService.WebApp.properties.siteConfig.metadata | unknown | List of metadata settings. |
+| Azure.AppService.WebApp.properties.siteConfig.connectionStrings | unknown | List of connection strings. |
+| Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.alwaysOn | Boolean | Whether Always On is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.http20Enabled | Boolean | Whether HTTP/2 is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.minTlsVersion | String | Minimum TLS version required. |
+| Azure.AppService.WebApp.properties.siteConfig.ftpsState | String | FTPS state \(Disabled, AllAllowed, etc.\). |
+| Azure.AppService.WebApp.properties.siteConfig.linuxFxVersion | String | Runtime stack for Linux apps. |
+| Azure.AppService.WebApp.properties.siteConfig.windowsFxVersion | String | Runtime stack for Windows apps. |
+| Azure.AppService.WebApp.properties.siteConfig.numberOfWorkers | Number | Number of workers allocated. |
+| Azure.AppService.WebApp.properties.siteConfig.webSocketsEnabled | Boolean | Whether WebSockets are enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.preWarmedInstanceCount | Number | Number of pre-warmed instances. |
+| Azure.AppService.WebApp.properties.siteConfig.acrUseManagedIdentityCreds | Boolean | Whether ACR uses managed identity credentials. |
+| Azure.AppService.WebApp.properties.siteConfig.acrUserManagedIdentityID | String | User-assigned identity ID for ACR. |
+| Azure.AppService.WebApp.properties.siteConfig.scmType | String | Source control management type. |
+| Azure.AppService.WebApp.properties.siteConfig.use32BitWorkerProcess | Boolean | Whether to use 32-bit worker process. |
+| Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.AppService.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime | DateTime | Request tracing expiration time. |
+| Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.AppService.WebApp.properties.siteConfig.defaultDocuments | unknown | List of default documents. |
+| Azure.AppService.WebApp.properties.siteConfig.virtualApplications | unknown | List of virtual applications. |
+| Azure.AppService.WebApp.properties.siteConfig.loadBalancing | String | Load balancing settings. |
+| Azure.AppService.WebApp.properties.siteConfig.experiments | unknown | Experiments configuration. |
+| Azure.AppService.WebApp.properties.siteConfig.limits | unknown | Site limits configuration. |
+| Azure.AppService.WebApp.properties.siteConfig.autoSwapSlotName | String | Auto-swap slot name. |
+| Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.ipSecurityRestrictions | unknown | IP security restrictions. |
+| Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictions | unknown | SCM IP security restrictions. |
+| Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain | Boolean | Whether SCM IP restrictions use main settings. |
+| Azure.AppService.WebApp.properties.siteConfig.cors | unknown | CORS settings. |
+| Azure.AppService.WebApp.properties.siteConfig.push | unknown | Push settings. |
+| Azure.AppService.WebApp.properties.siteConfig.apiDefinition | unknown | API definition settings. |
+| Azure.AppService.WebApp.properties.siteConfig.apiManagementConfig | unknown | API management configuration. |
+| Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.AppService.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+
+### azure-cosmosdb-db-account-update
+
+***
+Updates the properties of an existing Azure Cosmos DB database account. The required permissions are: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
+
+#### Base Command
+
+`azure-cosmosdb-db-account-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_name | Cosmos DB database account name. | Required |
+| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
+| subscription_id | Subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.CosmosDB.DBAccounts.id | String | The unique resource identifier of the ARM resource. |
+| Azure.CosmosDB.DBAccounts.name | String | The name of the ARM resource. |
+| Azure.CosmosDB.DBAccounts.location | String | The location of the resource group to which the resource belongs. |
+| Azure.CosmosDB.DBAccounts.kind | String | The database account type. |
+| Azure.CosmosDB.DBAccounts.identity.type | String | The type of identity used for the resource. |
+| Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. |
+| Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. |
+| Azure.CosmosDB.DBAccounts.properties.apiProperties | Dictionary | API specific properties. |
+| Azure.CosmosDB.DBAccounts.properties.backupPolicy | unknown | The policy for taking backups on an account. |
+| Azure.CosmosDB.DBAccounts.properties.capabilities | List | List of Cosmos DB capabilities for the account. |
+| Azure.CosmosDB.DBAccounts.properties.capacity | Integer | Properties related to capacity enforcement on an account. |
+| Azure.CosmosDB.DBAccounts.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.consistencyPolicy | String | The consistency policy for the Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.cors | List | The CORS policy for the Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.createMode | String | The mode of account creation. |
+| Azure.CosmosDB.DBAccounts.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. |
+| Azure.CosmosDB.DBAccounts.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.defaultIdentity | String | The default identity for accessing key vault used in features like customer managed keys. |
+| Azure.CosmosDB.DBAccounts.properties.disableKeyBasedMetadataWriteAccess | Boolean | Whether write operations on metadata resources via account keys is disabled. |
+| Azure.CosmosDB.DBAccounts.properties.disableLocalAuth | Boolean | Whether local authentication is disabled. |
+| Azure.CosmosDB.DBAccounts.properties.documentEndpoint | String | The connection endpoint for the Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.enableAnalyticalStorage | Boolean | Whether storage analytics are enabled. |
+| Azure.CosmosDB.DBAccounts.properties.enableAutomaticFailover | Boolean | Enables automatic failover of the write region. |
+| Azure.CosmosDB.DBAccounts.properties.enableBurstCapacity | Boolean | Whether Burst Capacity is enabled. |
+| Azure.CosmosDB.DBAccounts.properties.enableCassandraConnector | Boolean | Enables the Cassandra connector on the Cosmos DB account. |
+| Azure.CosmosDB.DBAccounts.properties.enableFreeTier | Boolean | Whether Free Tier is enabled. |
+| Azure.CosmosDB.DBAccounts.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. |
+| Azure.CosmosDB.DBAccounts.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. |
+| Azure.CosmosDB.DBAccounts.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. |
+| Azure.CosmosDB.DBAccounts.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. |
+| Azure.CosmosDB.DBAccounts.properties.instanceId | String | A unique identifier assigned to the database account. |
+| Azure.CosmosDB.DBAccounts.properties.ipRules | List | List of IP rules. |
+| Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. |
+| Azure.CosmosDB.DBAccounts.properties.keyVaultKeyUri | String | The URI of the key vault. |
+| Azure.CosmosDB.DBAccounts.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. |
+| Azure.CosmosDB.DBAccounts.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. |
+| Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion | String | The minimum allowed TLS version. |
+| Azure.CosmosDB.DBAccounts.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. |
+| Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. |
+| Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections | List | List of private endpoint connections. |
+| Azure.CosmosDB.DBAccounts.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. |
+| Azure.CosmosDB.DBAccounts.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. |
+| Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
+| Azure.CosmosDB.DBAccounts.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |

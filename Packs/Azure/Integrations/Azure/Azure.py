@@ -140,11 +140,13 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-appservice-webapp-update"
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-appservice-webapp-update"
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
@@ -197,8 +199,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-db-threat-policy-update",
         "azure-sqldb-security-alert-policy-update",
     ],
-    "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update"],
-    "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
+    "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update", "azure-cosmosdb-db-account-update"],
+    "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update", "azure-cosmosdb-db-account-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],

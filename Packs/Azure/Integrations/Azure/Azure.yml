@@ -1707,7 +1707,7 @@ script:
         - 'true'
         - 'false'
     name: azure-appservice-webapp-update
-    description: Updates an Azure Web App.
+    description: "Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
     outputs:
     - contextPath: Azure.AppService.WebApp.id
       description: Fully qualified resource ID for the web app.
@@ -2165,7 +2165,7 @@ script:
       auto: PREDEFINED
       predefined:
         - 'true'
-    description: Updates a key vault in the specified subscription.
+    description: "Updates a key vault in the specified subscription. The required permissions are: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write."
     name: azure-keyvault-vault-update
     outputs:
     - contextPath: Azure.KeyVault.Vault.id
@@ -2327,7 +2327,7 @@ script:
     - description: The name of the resource group.
       name: resource_group_name
       required: true
-    description: updates a database's security alert policy.
+    description: "Updates a database's security alert policy. The required permissions are: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
     name: azure-sqldb-security-alert-policy-update
     outputs:
     - contextPath: Azure.SqlDB.SecurityAlertPolicies.kind
@@ -2568,8 +2568,8 @@ script:
     - description: The name of the resource group.
       required: true
       name: resource_group_name
-    description: Updates the properties of an existing Azure Cosmos DB database account.
-    name: aazure-cosmosdb-db-account-update
+    description: "Updates the properties of an existing Azure Cosmos DB database account. The required permissions are: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write."
+    name: azure-cosmosdb-db-account-update
     outputs:
       - contextPath: Azure.CosmosDB.DBAccounts.id
         description: The unique resource identifier of the ARM resource.
