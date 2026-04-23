@@ -2,7 +2,7 @@
 """
 Workflow State Machine for integrations_report.csv
 
-This script manages the workflow tracking columns (columns 6-16) in the CSV.
+This script manages the workflow tracking columns (columns 7-18) in the CSV.
 It acts as a state machine where each integration progresses through ordered steps.
 
 Data columns (not managed by this script):
@@ -14,17 +14,18 @@ Data columns (not managed by this script):
   6. Auth Detail
 
 Workflow columns (in order):
-  6.  script inputs        - Free text: the inputs/args for the script
-  7.  params required for test - Free text: params needed for testing
-  8.  generated manifest   - ✅ when manifest is generated
-  9.  wrote code           - ✅ when code is written
-  10. validations passed   - ✅ when demisto-sdk validate passes
-  11. unit tests passed    - ✅ when unit tests pass
-  12. param parity test passes - ✅ when param parity test passes
-  13. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
-  14. auth parity test passes   - ✅ when auth parity test passes (or N/A)
-  15. code reviewed        - ✅ when code review is done
-  16. code merged          - ✅ when code is merged
+  7.  auth params set      - ✅ when Auth Class and Auth Detail are verified correct
+  8.  script inputs        - Free text: the inputs/args for the script
+  9.  params required for test - Free text: params needed for testing
+  10. generated manifest   - ✅ when manifest is generated
+  11. wrote code           - ✅ when code is written
+  12. validations passed   - ✅ when demisto-sdk validate passes
+  13. unit tests passed    - ✅ when unit tests pass
+  14. param parity test passes - ✅ when param parity test passes
+  15. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
+  16. auth parity test passes   - ✅ when auth parity test passes (or N/A)
+  17. code reviewed        - ✅ when code review is done
+  18. code merged          - ✅ when code is merged
 
 Rules:
   - You must explicitly name the step you are marking as passed.
@@ -104,6 +105,7 @@ DATA_COLUMNS = [
 
 # Workflow columns in order. These are the columns this script manages.
 WORKFLOW_COLUMNS = [
+    "auth params set",
     "script inputs",
     "params required for test",
     "generated manifest",
@@ -120,6 +122,7 @@ WORKFLOW_COLUMNS = [
 # Checkpoint columns (sequential, must be done in order via markpass)
 # "script inputs" is free text, "requires auth parity test" is a flag
 CHECKPOINT_COLUMNS = [
+    "auth params set",
     "generated manifest",
     "wrote code",
     "validations passed",

@@ -88,34 +88,36 @@ Special case: `NoneRequired` (no auth params)
 
 ## Workflow State Machine (`workflow_state.py`)
 
-The `workflow_state.py` script manages the workflow tracking columns (columns 7–17) in `integrations_report.csv`. It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
+The `workflow_state.py` script manages the workflow tracking columns (columns 7–18) in `integrations_report.csv`. It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
 
 ### Workflow Columns
 
 | # | Column | Type | Description |
 |---|--------|------|-------------|
 | 0 | `assignee` | Free text | Who is working on this integration |
-| 7 | `script inputs` | Free text (JSON) | The inputs/arguments for the script |
-| 7b | `params required for test` | Free text (JSON) | Parameters needed for testing |
-| 8 | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
-| 9 | `wrote code` | Checkpoint ✅ | Python code has been written |
-| 10 | `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
-| 11 | `unit tests passed` | Checkpoint ✅ | Unit tests pass |
-| 12 | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-| 13 | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
-| 14 | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
-| 15 | `code reviewed` | Checkpoint ✅ | Code review completed |
-| 16 | `code merged` | Checkpoint ✅ | Code merged to branch |
+| 7 | `auth params set` | Checkpoint ✅ | Manual verification that Auth Class and Auth Detail are correct |
+| 8 | `script inputs` | Free text (JSON) | The inputs/arguments for the script |
+| 8b | `params required for test` | Free text (JSON) | Parameters needed for testing |
+| 9 | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
+| 10 | `wrote code` | Checkpoint ✅ | Python code has been written |
+| 11 | `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
+| 12 | `unit tests passed` | Checkpoint ✅ | Unit tests pass |
+| 13 | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
+| 14 | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
+| 15 | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
+| 16 | `code reviewed` | Checkpoint ✅ | Code review completed |
+| 17 | `code merged` | Checkpoint ✅ | Code merged to branch |
 
 ### Rules
 
 1. **Explicit step naming** — You must explicitly name the step you are marking as passed via `markpass`. There is no general "advance" command.
-2. **Sequential order** — Checkpoint columns 8–16 must be completed in order. You cannot mark "unit tests passed" before "wrote code" is done. The script will reject the attempt and tell you what the current step is.
-3. **Prerequisites for generated manifest** — Both `script inputs` and `params required for test` must be set (valid JSON) before you can mark `generated manifest` as passed. Use `set-inputs` and `set-params-for-test` respectively.
-4. **Non-checkpoint correction** — If you try to `markpass` a non-checkpoint step (like `script inputs`, `params required for test`, or `requires auth parity test`), the script tells you the correct command to use instead.
-5. **Fail & reset** — When a step fails, use `fail` to reset that step **and all subsequent steps**.
-6. **Reset to stage** — Use `reset-to` to go back to a specific stage, clearing it and everything after it.
-7. **Auth parity flag** — Column 13 is a flag, not a checkpoint. When set to `NO` or `N/A`, column 14 is automatically set to `N/A` and skipped.
+2. **Sequential order** — Checkpoint columns 7–17 must be completed in order. You cannot mark "unit tests passed" before "wrote code" is done. The script will reject the attempt and tell you what the current step is.
+3. **Auth params set** — Column 7 is the first checkpoint. It has no prerequisites and can be marked as passed at any time. It means someone has manually verified the Auth Class and Auth Detail columns are correct by reading the integration's YML and Python code. The Auth Class column uses the format described above (e.g., `APIKey(api_key) — REQUIRED(APIKey)`), and the Auth Detail column contains a JSON object with per-param auth mapping (see the Auth Detail JSON Schema section).
+4. **Prerequisites for generated manifest** — `auth params set` must be passed (sequential enforcement), and both `script inputs` and `params required for test` must be set (valid JSON) before you can mark `generated manifest` as passed. Use `set-inputs` and `set-params-for-test` respectively.
+5. **Non-checkpoint correction** — If you try to `markpass` a non-checkpoint step (like `script inputs`, `params required for test`, or `requires auth parity test`), the script tells you the correct command to use instead.
+6. **Fail & reset** — When a step fails, use `fail` to reset that step **and all subsequent steps**.
+7. **Reset to stage** — Use `reset-to` to go back to a specific stage, clearing it and everything after it.
+8. **Auth parity flag** — Column 14 is a flag, not a checkpoint. When set to `NO` or `N/A`, column 15 is automatically set to `N/A` and skipped.
 
 ### CLI Commands
 
@@ -221,6 +223,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
 
   Workflow Progress:
   ----------------------------------------
+    auth params set                : ⬜
     script inputs                  : (not set)
     params required for test       : (not set)
     generated manifest             : ⬜
@@ -233,7 +236,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
     code reviewed                  : ⬜
     code merged                    : ⬜
 
-  ➡️  Current step: generated manifest
+  ➡️  Current step: auth params set
 ```
 
 #### 2. Try to markpass without setting script inputs first (rejected)
@@ -360,6 +363,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
 
   Workflow Progress:
   ----------------------------------------
+    auth params set                : ✅
     script inputs                  : {"bot_token": "str"}
     params required for test       : {"api_key": "test123"}
     generated manifest             : ✅
@@ -385,9 +389,9 @@ $ python3 connectus/workflow_state.py dashboard
 ================================================================================
   Integration                                   Progress   Step   → Current Step
   ---------------------------------------------------------------------------
-  Cisco Spark                                   [█░░░░░░░] 1/8  → wrote code
-  GLPI                                          [██████░░] 6/8  → code reviewed
-  Wiz                                           [████████] 8/8  → ✅ DONE
+  Cisco Spark                                   [██░░░░░░░] 2/9  → wrote code
+  GLPI                                          [███████░░] 7/9  → code reviewed
+  Wiz                                           [█████████] 9/9  → ✅ DONE
 
   Summary: 1 complete, 2 in progress, 980 not started
 ```
