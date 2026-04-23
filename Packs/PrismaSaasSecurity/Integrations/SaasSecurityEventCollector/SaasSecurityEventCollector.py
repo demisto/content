@@ -246,7 +246,7 @@ def fetch_events_from_saas_security(
             iteration_num += 1
     except Exception as exc:
         demisto.info(f"Got error get_events: {exc}")
-        return events, exc, False
+        return events, exc, True
 
     return events, None, queue_drained
 
@@ -298,13 +298,14 @@ def main() -> None:  # pragma: no cover
                 demisto.info(f"Received error when trying to send events to XSIAM: [{e}]")
                 demisto.setIntegrationContext({"events": events})
                 demisto.debug(f"Successfully set the following events into integration context: {events}")
+                queue_drained = True  # Prevent tight retry loops on push failure
 
             # If the queue has not been fully drained, trigger next fetch in 1 second
             if not queue_drained:
                 last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
                 demisto.debug("Batching in progress. Next run will be triggered in 1 second.")
             else:
-                last_run["nextTrigger"] = None
+                last_run.pop("nextTrigger", None)
                 demisto.debug("All events finished batching. Next run will be triggered based on fetch interval.")
             demisto.setLastRun(last_run)
         elif command == "saas-security-get-events":
