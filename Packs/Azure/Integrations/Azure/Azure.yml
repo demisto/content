@@ -1464,7 +1464,7 @@ script:
       - 'true'
       - 'false'
     - name: client_cert_enabled
-      description: Configures the web site to accept only https requests.
+      description: Whether client certificates are enabled.
       type: bool
       predefined:
       - 'true'
@@ -1612,9 +1612,6 @@ script:
     - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
       description: Request tracing expiration time.
       type: DateTime
-    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
-      description: Whether remote debugging is enabled.
-      type: Boolean
     - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
       description: Remote debugging version.
       type: String
@@ -1632,9 +1629,6 @@ script:
     - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
       description: Auto-swap slot name.
       type: String
-    - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
-      description: Whether local MySQL is enabled.
-      type: Boolean
     - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
       description: IP security restrictions.
     - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
@@ -1650,29 +1644,6 @@ script:
       description: API definition settings.
     - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
       description: API management configuration.
-    - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
-      description: Whether auto-heal is enabled.
-      type: Boolean
-    - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
-      description: Auto-heal rules configuration.
-    - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
-      description: Tracing options.
-      type: String
-    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
-      description: Whether remote debugging is enabled.
-      type: Boolean
-    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-      description: Remote debugging version.
-      type: String
-    - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
-      description: Whether detailed error logging is enabled.
-      type: Boolean
-    - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
-      description: Whether HTTP logging is enabled.
-      type: Boolean
-    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
-      description: Whether request tracing is enabled.
-      type: Boolean
   - arguments:
     - name: resource_group_name
       type: String
@@ -1701,7 +1672,7 @@ script:
         - 'true'
         - 'false'
     - name: client_cert_enabled
-      description: Configures the web site to accept only https requests.
+      description: Whether client certificates are enabled.
       type: bool
       predefined:
         - 'true'
@@ -1849,12 +1820,6 @@ script:
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
       description: Request tracing expiration time.
       type: DateTime
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
-      description: Whether remote debugging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
-      description: Remote debugging version.
-      type: String
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.defaultDocuments
       description: List of default documents.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.virtualApplications
@@ -1869,9 +1834,6 @@ script:
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoSwapSlotName
       description: Auto-swap slot name.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled
-      description: Whether local MySQL is enabled.
-      type: Boolean
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.ipSecurityRestrictions
       description: IP security restrictions.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictions
@@ -1887,29 +1849,6 @@ script:
       description: API definition settings.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiManagementConfig
       description: API management configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled
-      description: Whether auto-heal is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealRules
-      description: Auto-heal rules configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.tracingOptions
-      description: Tracing options.
-      type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
-      description: Whether remote debugging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
-      description: Remote debugging version.
-      type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
-      description: Whether detailed error logging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled
-      description: Whether HTTP logging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled
-      description: Whether request tracing is enabled.
-      type: Boolean
   - arguments:
     - name: resource_group_name
       type: String
@@ -2193,7 +2132,7 @@ script:
       type: String
     - contextPath: Azure.KeyVault.Vault.properties.accessPolicies
       description: An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
-    - contextPath: Azure.KeyVault.properties.accessPolicies.tenantId
+    - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.tenantId
       description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.objectId
@@ -2201,7 +2140,7 @@ script:
       type: String
     - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.permissions
       description: Permissions the identity has for keys, secrets and certificates.
-    - contextPath: Azure.KeyVault.properties.enabledForDeployment
+    - contextPath: Azure.KeyVault.Vault.properties.enabledForDeployment
       description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
       type: Boolean
     - contextPath: Azure.KeyVault.Vault.properties.enabledForDiskEncryption
@@ -2316,7 +2255,7 @@ script:
       name: db_name
       required: true
     - auto: PREDEFINED
-      description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
+      description: Whether the alert is sent to the account administrators.
       name: email_account_admins_enabled
       predefined:
         - 'true'
@@ -3674,9 +3613,6 @@ script:
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
       description: Request tracing expiration time.
       type: DateTime
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
-      description: Whether remote debugging is enabled.
-      type: Boolean
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
       description: Remote debugging version.
       type: String
@@ -3694,9 +3630,6 @@ script:
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoSwapSlotName
       description: Auto-swap slot name.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled
-      description: Whether local MySQL is enabled.
-      type: Boolean
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.ipSecurityRestrictions
       description: IP security restrictions.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictions
@@ -3712,29 +3645,6 @@ script:
       description: API definition settings.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiManagementConfig
       description: API management configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled
-      description: Whether auto-heal is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealRules
-      description: Auto-heal rules configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.tracingOptions
-      description: Tracing options.
-      type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
-      description: Whether remote debugging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
-      description: Remote debugging version.
-      type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
-      description: Whether detailed error logging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled
-      description: Whether HTTP logging is enabled.
-      type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled
-      description: Whether request tracing is enabled.
-      type: Boolean
   - arguments:
     - description: The subscription ID.
       name: subscription_id
