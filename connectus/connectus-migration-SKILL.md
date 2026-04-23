@@ -15,6 +15,7 @@ This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs pla
 2. **Follow the workflow steps sequentially.** You cannot skip ahead — the state machine enforces ordering.
 3. **Always check status first** before doing any work on an integration.
 4. **Use `execute_command` to run all workflow_state.py commands** from the workspace root.
+5. If a step does not pass, such as unit tests passing other any other step, it might be because a previous step was not done well and you should go back to it.
 
 ## Linked Files
 

@@ -42,9 +42,9 @@ def _make_row(
         "Integration Name": name,
         "Support Level": "xsoar",
         "Provider": "TestProvider",
-        "Auth Types": "API_KEY",
-        "Auth Requirement": "REQUIRED(API_KEY)",
-        "Auth Params": "api_key[API_KEY](type4,required)",
+        "Auth Class": "APIKey",
+        "Auth Mode": "SINGLE_REQUIRED",
+        "Auth Detail": '{"params":{"api_key":{"types":["APIKey"],"xsoar_type":4,"required":true}},"notes":null,"required_count":{"APIKey":1}}',
         "script inputs": script_inputs,
         "params required for test": params_for_test,
     }

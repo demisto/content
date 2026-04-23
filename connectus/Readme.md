@@ -1,76 +1,103 @@
 Note, this folder should not be merged to master.
 ## Authentication Type Catalog
 
-Each integration's authentication parameters are classified by the **actual
-HTTP authentication mechanism** used, not by the XSOAR widget type.  Each auth
-type is also tagged as **STATIC** or **DYNAMIC** based on its credential
-lifecycle.
+Each integration's authentication is classified into an **Auth Class** enum
+value, with per-parameter details captured in a structured **Auth Detail** JSON
+object.
 
-### Static vs Dynamic Credentials
+### Auth Class Enum
 
-| Lifecycle | Meaning |
-|---|---|
-| **STATIC** | The credentials themselves are sent directly with each request (API key in header, basic auth, bearer token). They don't change or expire (or expire very slowly). |
-| **DYNAMIC** | The credentials are used to *obtain* a temporary access token from an auth endpoint. The actual API calls use the temporary token. Examples: OAuth flows, managed identity, any integration that calls a `/token` or `/auth` endpoint first. |
-
-### Auth Type Enum Reference
-
-| Auth Type Enum | Lifecycle | Description |
+| Enum Value | Description | Examples |
 |---|---|---|
-| `BASIC_AUTH` | STATIC | Basic Authentication — username:password sent as Base64 in Authorization header (or used directly in request body). STATIC. |
-| `BEARER_TOKEN` | STATIC | Bearer Token — a token/key sent in Authorization: Bearer header or as a query/header param. STATIC. |
-| `API_KEY` | STATIC | API Key — a key sent as a header (e.g., x-api-key), query parameter, or in request body. STATIC. |
-| `OAUTH_CLIENT_CREDENTIALS` | DYNAMIC | OAuth 2.0 Client Credentials — client_id + client_secret exchanged for an access token via token endpoint. DYNAMIC. |
-| `OAUTH_AUTH_CODE` | DYNAMIC | OAuth 2.0 Authorization Code — involves redirect_uri, auth_code, client_id, client_secret. DYNAMIC. |
-| `OAUTH_DEVICE_CODE` | DYNAMIC | OAuth 2.0 Device Code flow. DYNAMIC. |
-| `CERTIFICATE` | STATIC | Certificate/mTLS — client certificate + private key for mutual TLS. STATIC. |
-| `AWS_SIGNATURE` | STATIC | AWS Signature V4 — access_key + secret_key used to sign requests. STATIC. |
-| `MANAGED_IDENTITY` | DYNAMIC | Azure/GCP Managed Identity — no user credentials, identity from cloud platform. DYNAMIC. |
-| `HMAC` | STATIC | HMAC-based signing — a secret key used to compute HMAC signatures on requests. STATIC. |
-| `NONE` | STATIC | No authentication required. |
+| `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow | Lansweeper, Gmail |
+| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow | Akamai WAF, ServiceNow |
+| `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
+| `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
+| `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
+| `TooComplicated` | Auth is too complicated to classify cleanly (multiple OAuth flows + managed identity + certificates) | Microsoft Graph, Azure Log Analytics |
+| `Other` | Non-supported auth that needs explanation (e.g., OAuth Device Code) | Integrations with unsupported flows |
+| `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
 
 ### How to Read the CSV Columns
 
-| Column | Description |
-|---|---|
-| **assignee** | Who is working on this integration (first column) |
-| **Integration Name** | Display name of the integration |
-| **Support Level** | `xsoar`, `partner`, or `community` |
-| **Provider** | The vendor / author of the pack |
-| **Auth Types** | Pipe-separated list of auth type enums, e.g. `BASIC_AUTH \| OAUTH_CLIENT_CREDENTIALS` |
-| **Auth Credential Lifecycle** | `STATIC`, `DYNAMIC`, or `STATIC + DYNAMIC` (if multiple auth types with different lifecycles) |
-| **Auth Requirement** | Shows which auth types are required vs. optional. Examples: `REQUIRED(BASIC_AUTH)`, `CHOICE(API_KEY, OAUTH_CLIENT_CREDENTIALS)`, `REQUIRED(BASIC_AUTH) + OPTIONAL(CERTIFICATE)` |
-| **Auth Params** | Semicolon-separated list of individual parameters, each tagged: `param_name[AUTH_TYPE](typeN,required/optional)` |
+#### Data Columns (not managed by workflow_state.py)
 
-#### Requirement Semantics
+| # | Column | Description |
+|---|---|---|
+| 1 | `assignee` | Who is working on this integration |
+| 2 | `Integration Name` | Display name of the integration |
+| 3 | `Support Level` | `xsoar` or `partner` |
+| 4 | `Provider` | Vendor name |
+| 5 | `Auth Class` | Pipe-separated list of auth type enums (e.g., `OAuth2ClientCreds \| Plain`) |
+| 6 | `Auth Mode` | Whether auth types are all required, a choice, or mixed |
+| 7 | `Auth Detail` | JSON object with per-param auth mapping and notes |
 
-- **REQUIRED(X)** — Auth type X must be configured.
-- **OPTIONAL(X)** — Auth type X can optionally be configured.
-- **CHOICE(X, Y)** — The integration has an auth-type selector; the user picks one of X or Y.
-- **REQUIRED(X) + OPTIONAL(Y)** — X is mandatory, Y is an additional optional method.
+#### Auth Detail JSON Schema
+
+```json
+{
+  "params": {
+    "<param_name>": {
+      "types": ["<AuthEnum>", ...],
+      "xsoar_type": <int>,
+      "required": <bool>
+    }
+  },
+  "notes": "<string or null>",
+  "required_count": {"APIKey": 1, "Plain": 2}
+}
+```
+
+- `params.<name>.types` — Which auth enum(s) this param belongs to
+- `params.<name>.xsoar_type` — XSOAR widget type (0=text, 4=encrypted, 8=bool, 9=credentials, 14=cert key, 15=select)
+- `params.<name>.required` — Whether this param is required in the XSOAR config
+- `notes` — Explanation for `TooComplicated` or `Other` classifications; null otherwise
+- `required_count` — Count of required params per auth type (e.g., `{"APIKey": 2}` means 2 required API key params)
+
+#### Auth Mode Values
+
+| Value | Meaning | Example |
+|---|---|---|
+| `SINGLE_REQUIRED` | One auth type, its params are required | Integration with just `api_key(required)` |
+| `SINGLE_OPTIONAL` | One auth type, its params are optional | Integration with `api_key(optional)` |
+| `ALL_REQUIRED` | Multiple auth types, ALL are required together | Need both API key AND credentials |
+| `CHOICE` | Multiple auth types, pick one (all optional) | Can use either API key OR OAuth |
+| `MIXED` | Some auth types required, others optional | OAuth required, API key optional |
+| `NONE` | No authentication required | `NoneRequired` integrations |
+
+#### Auth Class Examples
+
+| Integration | Auth Class | Auth Mode | Why |
+|---|---|---|---|
+| Abnormal Security | `APIKey` | `SINGLE_REQUIRED` | Single required API key |
+| AlienVault Reputation Feed | `NoneRequired` | `NONE` | No auth params |
+| ActiveMQ | `Plain` | `SINGLE_REQUIRED` | Required username/password |
+| Akamai WAF | `OAuth2ClientCreds \| Plain` | `CHOICE` | Can use either OAuth or plain creds |
+| Azure Log Analytics | `TooComplicated` | `MIXED` | Multiple OAuth flows + managed identity |
+| AWS - S3 | `Plain` | `SINGLE_OPTIONAL` | Optional AWS credentials |
 
 ---
 
 ## Workflow State Machine (`workflow_state.py`)
 
-The `workflow_state.py` script manages the workflow tracking columns (columns 7–16) in `integrations_report.csv`. It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
+The `workflow_state.py` script manages the workflow tracking columns (columns 8–17) in `integrations_report.csv`. It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
 
 ### Workflow Columns
 
 | # | Column | Type | Description |
 |---|--------|------|-------------|
 | 0 | `assignee` | Free text | Who is working on this integration |
-| 7 | `script inputs` | Free text (JSON) | The inputs/arguments for the script |
-| 7b | `params required for test` | Free text (JSON) | Parameters needed for testing |
-| 8 | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
-| 9 | `wrote code` | Checkpoint ✅ | Python code has been written |
-| 10 | `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
-| 11 | `unit tests passed` | Checkpoint ✅ | Unit tests pass |
-| 12 | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-| 13 | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
-| 14 | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
-| 15 | `code reviewed` | Checkpoint ✅ | Code review completed |
-| 16 | `code merged` | Checkpoint ✅ | Code merged to branch |
+| 8 | `script inputs` | Free text (JSON) | The inputs/arguments for the script |
+| 8b | `params required for test` | Free text (JSON) | Parameters needed for testing |
+| 9 | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
+| 10 | `wrote code` | Checkpoint ✅ | Python code has been written |
+| 11 | `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
+| 12 | `unit tests passed` | Checkpoint ✅ | Unit tests pass |
+| 13 | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
+| 14 | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
+| 15 | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
+| 16 | `code reviewed` | Checkpoint ✅ | Code review completed |
+| 17 | `code merged` | Checkpoint ✅ | Code merged to branch |
 
 ### Rules
 
@@ -182,7 +209,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
   Assignee:      (unassigned)
   Support Level: xsoar
   Provider:      Cisco
-  Auth Types:    BEARER_TOKEN
+  Auth Class:    Plain
 
   Workflow Progress:
   ----------------------------------------
@@ -321,7 +348,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
   Assignee:      (unassigned)
   Support Level: xsoar
   Provider:      Cisco
-  Auth Types:    BEARER_TOKEN
+  Auth Class:    Plain
 
   Workflow Progress:
   ----------------------------------------

@@ -10029,6 +10029,23 @@ if 'requests' in sys.modules:
             except NameError:
                 pass
 
+        def getNewToken(self):
+            """Placeholder method to obtain a new API token before each retry attempt.
+
+            Override this method in subclasses to implement token refresh logic.
+            When retries are configured in _http_request, this method is called before
+            each retry attempt, allowing the client to refresh expired tokens.
+
+            By default, this method does nothing. Subclasses should override it to
+            update self._headers or self._auth with a fresh token.
+
+            Example::
+
+                def getNewToken(self):
+                    new_token = self._get_token_from_auth_server()
+                    self._headers = {'Authorization': f'Bearer {new_token}'}
+            """
+
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
