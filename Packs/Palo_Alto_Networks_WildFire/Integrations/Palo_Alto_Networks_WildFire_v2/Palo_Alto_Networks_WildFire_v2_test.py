@@ -3,6 +3,7 @@ import json
 import demistomock as demisto
 import pytest
 from Palo_Alto_Networks_WildFire_v2 import (
+    NotFoundError,
     create_dbot_score_from_url_verdict,
     create_dbot_score_from_verdict,
     create_dbot_score_from_verdicts,
@@ -18,6 +19,7 @@ from Palo_Alto_Networks_WildFire_v2 import (
     prettify_verdict,
     prettify_verdicts,
     run_polling_command,
+    test_module as _test_module,
     wildfire_file_command,
     wildfire_get_file_report,
     wildfire_get_report_command,
@@ -781,7 +783,96 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     mock_get_license = mocker.patch.object(demisto, "getLicenseCustomField", return_value="".join(["X" for i in range(32)]))
 
     mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module", return_value="ok")
     main()
 
     mock_get_license.assert_called()
+
+
+def test_test_module_uses_get_verdict(mocker: MockerFixture):
+    """
+    Given:
+        - A configured WildFire instance with valid credentials.
+    When:
+        - Running test-module.
+    Then:
+        - It should call wildfire_get_verdict with a known hash (not wildfire_upload_url).
+        - It should return 'ok'.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mock_verdict = mocker.patch.object(
+        wf,
+        "wildfire_get_verdict",
+        return_value=(
+            {"wildfire": {"get-verdict-info": {"sha256": "abc", "verdict": "1", "md5": "def"}}},
+            {"sha256": "abc", "verdict": "1", "md5": "def"},
+        ),
+    )
+
+    result = _test_module()
+
+    mock_verdict.assert_called_once_with(file_hash="dca86121cc7427e375fd24fe5871d727")
+    assert result == "ok"
+
+
+def test_test_module_handles_not_found(mocker: MockerFixture):
+    """
+    Given:
+        - A configured WildFire instance where the test hash is not found (e.g., on an appliance).
+    When:
+        - Running test-module.
+    Then:
+        - It should still return 'ok' since NotFoundError means auth and connectivity are working.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch.object(wf, "wildfire_get_verdict", side_effect=NotFoundError("Not Found."))
+
+    result = _test_module()
+
+    assert result == "ok"
+
+
+@pytest.mark.parametrize(
+    "input_name, expected_basename",
+    [
+        ("/tmp/evil/../../../etc/passwd", "passwd"),
+        ("report.pdf", "report.pdf"),
+    ],
+)
+def test_wildfire_upload_file_uses_basename(mocker, input_name, expected_basename):
+    """
+    Given:
+        - A file entry with a name that may contain directory components or path-traversal sequences,
+          or a standard filename with no directory components.
+    When:
+        - Calling wildfire_upload_file.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+    from Palo_Alto_Networks_WildFire_v2 import wildfire_upload_file
+    import os
+
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://test.com")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL_DICT", {"upload_file": "/submit/file"})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.BODY_DICT", {"apikey": "test"})
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": input_name, "id": "entry1"},
+    )
+    mock_copy = mocker.patch("shutil.copy")
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"data"))
+    mocker.patch("os.remove")
+    mocker.patch(
+        "Palo_Alto_Networks_WildFire_v2.http_request",
+        return_value={"wildfire": {"upload-file-info": {"sha256": "abc123"}}},
+    )
+
+    wildfire_upload_file("entry1")
+
+    # Verify shutil.copy was called with the sanitized basename only
+    copy_call_args = mock_copy.call_args[0]
+    assert copy_call_args[1] == expected_basename
+    assert os.path.basename(copy_call_args[1]) == copy_call_args[1]

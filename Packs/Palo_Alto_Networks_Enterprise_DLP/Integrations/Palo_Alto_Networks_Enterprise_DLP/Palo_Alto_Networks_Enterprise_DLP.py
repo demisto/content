@@ -530,7 +530,7 @@ def fetch_notifications(
     if access_token:
         client.set_access_token(access_token)
 
-    last_run = demisto.getLastRun()
+    last_run = demisto.getLastRun() or {}  # May return as "None" on the first fetch
     demisto.debug(f"Got {last_run=}.")
     last_incident_ids = last_run.get(LAST_IDS_KEY) or []
     start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
