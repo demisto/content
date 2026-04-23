@@ -115,6 +115,7 @@ from QRadar_v3 import (
     qradar_search_results_get_command,
     qradar_search_status_get_command,
     qradar_searches_list_command,
+    qradar_reference_data_bulk_load_command,
     qradar_wincollect_destinations_list_command,
     sanitize_outputs,
     validate_integration_context,
@@ -472,7 +473,7 @@ def test_sanitize_outputs(outputs, key_replace_dict, expected):
 
     When:
      - Case a: Sanitizing outputs, 'key_replace_dict' exists.
-     - Case b: Sanitizng outputs, 'key_replace_dict' does not exist.
+     - Case b: Sanitizing outputs, 'key_replace_dict' does not exist.
 
     Then:
      - Case a: Ensure that outputs keys not included in 'key_replace_dict' are dismissed, and key names are changed.
@@ -2351,7 +2352,7 @@ def test_calculate_object_size_success_json_serialization(incident, expected_min
     assert size >= expected_min_size
 
 
-def test_calculate_object_size_fallback_to_str(monkeypatch):
+def test_calculate_object_size_fallback_to_str():
     """
     Given an incident dictionary that includes a non-serializable object
     When calculate_object_size is called
@@ -2364,9 +2365,7 @@ def test_calculate_object_size_fallback_to_str(monkeypatch):
     def json_dumps_fail(*args, **kwargs):
         raise TypeError("Object of type NonSerializable is not JSON serializable")
 
-    monkeypatch.setattr("QRadar_v3.json.dumps", json_dumps_fail)
-
-    with patch("QRadar_v3.demisto.debug") as mock_debug:
+    with patch("QRadar_v3.json.dumps", side_effect=json_dumps_fail), patch("QRadar_v3.demisto.debug") as mock_debug:
         size = calculate_object_size(incident)
         assert isinstance(size, int)
         assert size > 0
@@ -2524,7 +2523,7 @@ def test_remove_context_keys(current_ctx, changes, override_keys, expected_ctx):
 
 def test_get_rules_names(mocker):
     """
-    Given a list of fetched offences
+    Given a list of fetched offenses
     When calling get_rules_names
     Then ensure HTTP request is re-attempted after one failure and the mapping of {rule_id: rule_name} is as expected
     """
@@ -2605,3 +2604,148 @@ def test_qradar_set_integration_context_no_last_fetch(mocker):
 
     mock_set.assert_called_with(context_data)
     assert QRadar_v3.LAST_FETCHED_ID is None
+
+
+class TestReferenceDataBulkLoad:
+    @pytest.mark.parametrize(
+        "args, expected_error",
+        [
+            ({}, "reference_data_name is required"),
+            ({"reference_data_name": "test_map", "reference_data_type": "maps"}, "data is required"),
+            (
+                {"reference_data_name": "test_map", "data": '{"key": "value"}', "reference_data_type": "sets"},
+                "invalid value for reference_data_type",
+            ),
+        ],
+    )
+    def test_missing_inputs(self, args, expected_error):
+        """
+        Given:
+         - Missing or invalid required arguments.
+
+        When:
+         - Calling qradar_reference_data_bulk_load_command.
+
+        Then:
+         - Ensure ValueError is raised with the expected message.
+        """
+        with pytest.raises(ValueError, match=expected_error):
+            qradar_reference_data_bulk_load_command(client, args)
+
+    @pytest.mark.parametrize(
+        "args, api_response",
+        [
+            (
+                {"reference_data_name": "test_map", "data": '{"key": "value"}', "reference_data_type": "maps"},
+                {"number_of_elements": 1, "name": "test_map", "element_type": "ALN"},
+            ),
+            (
+                {"reference_data_name": "my_map_of_sets", "data": '{"key": {"val": null}}', "reference_data_type": "map_of_sets"},
+                {"number_of_elements": 2, "name": "my_map_of_sets", "element_type": "ALN"},
+            ),
+        ],
+    )
+    def test_correct_inputs(self, mocker, args, api_response):
+        """
+        Given:
+         - Valid arguments for bulk loading maps or map_of_sets reference data.
+
+        When:
+         - Calling qradar_reference_data_bulk_load_command.
+
+        Then:
+         - Ensure no ValueError is raised and a CommandResults object is returned.
+        """
+        mocker.patch.object(client, "reference_data_bulk_call", return_value=api_response)
+
+        result = qradar_reference_data_bulk_load_command(client, args)
+
+        assert isinstance(result, CommandResults)
+
+    @pytest.mark.parametrize(
+        "args, expected_call_kwargs",
+        [
+            (
+                {"reference_data_name": "test_map", "data": '{"key": "value"}', "reference_data_type": "maps"},
+                {"name": "test_map", "type": "maps", "data": '{"key": "value"}'},
+            ),
+            (
+                {"reference_data_name": "my_map_of_sets", "data": '{"key": {"val": null}}', "reference_data_type": "map_of_sets"},
+                {"name": "my_map_of_sets", "type": "map_of_sets", "data": '{"key": {"val": null}}'},
+            ),
+        ],
+    )
+    def test_api_call(self, mocker, args, expected_call_kwargs):
+        """
+        Given:
+         - Valid arguments for bulk loading reference data.
+
+        When:
+         - Calling qradar_reference_data_bulk_load_command.
+
+        Then:
+         - Ensure reference_data_bulk_call is invoked with the correct name, type, and data.
+        """
+        api_response = {"number_of_elements": 1, "name": args["reference_data_name"], "element_type": "ALN"}
+        mock_bulk_call = mocker.patch.object(client, "reference_data_bulk_call", return_value=api_response)
+
+        qradar_reference_data_bulk_load_command(client, args)
+
+        mock_bulk_call.assert_called_once_with(**expected_call_kwargs)
+
+    @pytest.mark.parametrize(
+        "args, api_response",
+        [
+            (
+                {"reference_data_name": "test_map", "data": '{"key": "value"}', "reference_data_type": "maps"},
+                {"number_of_elements": 5, "name": "test_map", "element_type": "ALN"},
+            ),
+            (
+                {"reference_data_name": "my_map_of_sets", "data": '{"key": {"val": null}}', "reference_data_type": "map_of_sets"},
+                {"number_of_elements": 10, "name": "my_map_of_sets", "element_type": "ALN"},
+            ),
+        ],
+    )
+    def test_response_return(self, mocker, args, api_response):
+        """
+        Given:
+         - A successful API response from reference_data_bulk_call.
+
+        When:
+         - Calling qradar_reference_data_bulk_load_command.
+
+        Then:
+         - Ensure the returned CommandResults contains the raw API response.
+        """
+        mocker.patch.object(client, "reference_data_bulk_call", return_value=api_response)
+
+        result = qradar_reference_data_bulk_load_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.raw_response == api_response
+
+    @pytest.mark.parametrize(
+        "name, ref_type, data, expected_url_suffix",
+        [
+            ("my_map", "maps", '{"key": "value"}', "/reference_data/maps/bulk_load/my_map"),
+            ("my_map_of_sets", "map_of_sets", '{"key": {"val": null}}', "/reference_data/map_of_sets/bulk_load/my_map_of_sets"),
+        ],
+    )
+    def test_reference_data_bulk_call(self, mocker, name, ref_type, data, expected_url_suffix):
+        """
+        Given:
+         - A reference data name, type, and JSON data payload.
+
+        When:
+         - Calling client.reference_data_bulk_call.
+
+        Then:
+         - Ensure http_request is called with POST, the correct URL suffix, and the data as json_data.
+        """
+        headers = {"Content-Type": "application/json"}
+        api_response = util_load_json("./test_data/ref_data_bulk_resp.json")
+        mock_http = mocker.patch.object(client, "http_request", return_value=api_response)
+
+        client.reference_data_bulk_call(name=name, type=ref_type, data=data)
+
+        mock_http.assert_called_once_with(method="POST", url_suffix=expected_url_suffix, data=data, additional_headers=headers)
