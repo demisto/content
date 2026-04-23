@@ -99,6 +99,23 @@ def main():  # pragma: no cover
     demisto.debug(f"Brands: {brands}")
     try:
         return_results(url_enrichment_script(url_list, external_enrichment, verbose, brands, additional_fields, args))
+    except ValueError as ve:
+        # Graceful response for validation failures (e.g. no valid URLs, unsupported types).
+        # Return HTTP 200 with structured error context instead of HTTP 500 so callers (e.g. AgentiX)
+        # can distinguish a validation failure from a real server error and avoid futile retries.
+        # (CRTX-231934)
+        reason = str(ve)
+        demisto.debug(f"!url-enrichment validation failure (no valid indicators): {reason}")
+        return_results(
+            CommandResults(
+                readable_output=f"No valid URL indicators found. {reason}",
+                outputs={
+                    "URLEnrichment(val.Value && val.Value == obj.Value)": [
+                        {"Value": url, "Status": "Error", "Message": reason} for url in url_list
+                    ]
+                },
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !url-enrichment. Error: {str(ex)}")
 

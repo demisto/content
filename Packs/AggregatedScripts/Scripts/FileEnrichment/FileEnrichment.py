@@ -135,6 +135,23 @@ def main():  # pragma: no cover
     demisto.debug(f"Brands: {brands}")
     try:
         return_results(file_enrichment_script(file_list, external_enrichment, verbose, brands, additional_fields, args))
+    except ValueError as ve:
+        # Graceful response for validation failures (e.g. unsupported hash types, no valid hashes).
+        # Return HTTP 200 with structured error context instead of HTTP 500 so callers (e.g. AgentiX)
+        # can distinguish a validation failure from a real server error and avoid futile retries.
+        # (CRTX-231934)
+        reason = str(ve)
+        demisto.debug(f"!file-enrichment validation failure (no valid indicators): {reason}")
+        return_results(
+            CommandResults(
+                readable_output=f"No valid file hash indicators found. {reason}",
+                outputs={
+                    "FileEnrichment(val.Value && val.Value == obj.Value)": [
+                        {"Value": fh, "Status": "Error", "Message": reason} for fh in file_list
+                    ]
+                },
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !file-enrichment. Error: {str(ex)}")
 
