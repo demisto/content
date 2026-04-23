@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 
-# Policy finding type mapping — keys are user-facing names, values are FindingType enum (master API)
 POLICY_FINDING_TYPE_MAPPING: dict[str, str] = {
     "CI/CD Risk": "CICD_RISKS",
     "Vulnerabilities": "VULNERABILITY",
@@ -16,7 +15,6 @@ POLICY_FINDING_TYPE_MAPPING: dict[str, str] = {
     "Malware": "MALWARE",
 }
 
-# Policy category mapping
 POLICY_CATEGORY_MAPPING: dict[str, str] = {
     "Application": "APPLICATION",
     "Repository": "REPOSITORY",
@@ -34,22 +32,48 @@ APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 # ---------------------------------------------------------------------------
 
 class FilterBuilder:
-    """AND-based filter builder matching the integration's FilterBuilder output."""
+    """AND-based filter builder matching the integration's FilterBuilder (CoreIRApiModule) output.
+
+    Each value in a list becomes a separate filter entry with a scalar SEARCH_VALUE.
+    Multiple values for the same field are wrapped in an OR block.
+    All field blocks are combined under AND.
+    """
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
 
     def __init__(self) -> None:
-        self._filters: list[dict] = []
+        self._fields: list[tuple[str, str, Any]] = []  # (field, op, values)
 
     def add_field(self, field: str, op: str, value: Any) -> None:
         if value is None or value == [] or value == "":
             return
-        self._filters.append({"SEARCH_FIELD": field, "SEARCH_TYPE": op, "SEARCH_VALUE": value})
+        self._fields.append((field, op, value))
 
     def to_dict(self) -> dict:
-        if not self._filters:
+        and_blocks: list[dict] = []
+
+        for field, op, value in self._fields:
+            values_list = value if isinstance(value, list) else [value]
+            values_list = [v for v in values_list if v is not None]
+            if not values_list:
+                continue
+
+            entries = [
+                {self.FIELD: field, self.TYPE: op, self.VALUE: v}
+                for v in values_list
+            ]
+            block = {self.OR: entries} if len(entries) > 1 else entries[0]
+            and_blocks.append(block)
+
+        if not and_blocks:
             return {}
-        if len(self._filters) == 1:
-            return self._filters[0]
-        return {"AND": self._filters}
+        if len(and_blocks) == 1:
+            return and_blocks[0]
+        return {self.AND: and_blocks}
 
 
 class FilterType:
@@ -68,7 +92,9 @@ def _api_call(method: str, path: str, data: dict | None = None) -> dict:
         method=method,
         path=path,
         data=json.dumps(data) if data else None,
+        headers={"content-type": "application/json"},
     )
+    
     raw = res.get("data")
     if isinstance(raw, str):
         try:
@@ -280,7 +306,7 @@ def build_triggers(args: dict) -> dict:
         cicd_report_issue = True
     cicd_enabled = cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
 
-    # CI Image (required in master API)
+    # CI Image
     ci_image_report_issue = argToBoolean(args.get("triggers_ci_image_report_issue", False))
     ci_image_block_cicd = argToBoolean(args.get("triggers_ci_image_block_cicd", False))
     ci_image_report_cicd = argToBoolean(args.get("triggers_ci_image_report_cicd", False))
@@ -289,7 +315,7 @@ def build_triggers(args: dict) -> dict:
         ci_image_report_issue = True
     ci_image_enabled = ci_image_report_issue or ci_image_block_cicd or ci_image_report_cicd or bool(ci_image_override)
 
-    # Image Registry (required in master API)
+    # Image Registry
     image_registry_report_issue = argToBoolean(args.get("triggers_image_registry_report_issue", False))
     image_registry_override = args.get("triggers_image_registry_override_severity")
     if image_registry_override:
@@ -376,7 +402,7 @@ def main() -> None:
 
         demisto.debug(f"CortexCreateAppSecPolicy payload: {payload}")
 
-        _api_call(method="POST", path="/public_api/appsec/v1/policies", data=payload)
+        _api_call(method="POST", path="/api/webapp/public_api/appsec/v1/policies", data=payload)
 
         return_results(CommandResults(readable_output=f"AppSec policy '{policy_name}' created successfully."))
 
