@@ -5536,206 +5536,207 @@ script:
     prettyname: Assign Managed Identity to Function App
     hidden: true
     quickaction: true
+    deprecated: true
     outputs:
-    - contextPath: Azure.AppService.WebApp.id
+    - contextPath: Azure.WebApp.id
       description: Fully qualified resource ID for the web app.
       type: String
-    - contextPath: Azure.AppService.WebApp.name
+    - contextPath: Azure.WebApp.name
       description: The name of the web app.
       type: String
-    - contextPath: Azure.AppService.WebApp.type
+    - contextPath: Azure.WebApp.type
       description: The resource type, e.g., Microsoft.Web/sites.
       type: String
-    - contextPath: Azure.AppService.WebApp.location
+    - contextPath: Azure.WebApp.location
       description: Geographic location of the web app.
       type: String
-    - contextPath: Azure.AppService.WebApp.kind
+    - contextPath: Azure.WebApp.kind
       description: The kind of the app, e.g., app, functionapp, etc.
       type: String
-    - contextPath: Azure.AppService.WebApp.tags
+    - contextPath: Azure.WebApp.tags
       description: Resource tags as key-value pairs.
     - contextPath: Azure.AppService.WebApp.identity.type
       description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
       type: String
-    - contextPath: Azure.AppService.WebApp.identity.principalId
+    - contextPath: Azure.WebApp.identity.principalId
       description: The principal ID of the system-assigned identity.
       type: String
-    - contextPath: Azure.AppService.WebApp.identity.tenantId
+    - contextPath: Azure.WebApp.identity.tenantId
       description: The tenant ID of the system-assigned identity.
       type: String
-    - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
+    - contextPath: Azure.WebApp.identity.userAssignedIdentities
       description: The list of user-assigned identities associated with the web app.
     - contextPath: Azure.AppService.WebApp.properties.state
       description: Current state of the web app (Running, Stopped, etc.).
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.enabled
+    - contextPath: Azure.WebApp.properties.enabled
       description: Whether the web app is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.defaultHostName
+    - contextPath: Azure.WebApp.properties.defaultHostName
       description: Default host name of the web app.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.hostNames
+    - contextPath: Azure.WebApp.properties.hostNames
       description: List of host names associated with the web app.
-    - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
+    - contextPath: Azure.WebApp.properties.repositorySiteName
       description: Name of the repository site.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
+    - contextPath: Azure.WebApp.properties.clientAffinityEnabled
       description: Whether client affinity is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
+    - contextPath: Azure.WebApp.properties.clientCertEnabled
       description: Whether client certificates are enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
+    - contextPath: Azure.WebApp.properties.clientCertExclusionPaths
       description: Paths to exclude from client certificate authentication.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
+    - contextPath: Azure.WebApp.properties.hostingEnvironment
       description: App Service Environment to use for the web app.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.serverFarmId
+    - contextPath: Azure.WebApp.properties.serverFarmId
       description: Resource ID of the associated App Service plan.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.reserved
+    - contextPath: Azure.WebApp.properties.reserved
       description: Whether the web app is on a Linux plan.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.isXenon
+    - contextPath: Azure.WebApp.properties.isXenon
       description: Whether the web app is hosted in Xenon.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.hyperV
+    - contextPath: Azure.WebApp.properties.hyperV
       description: Whether Hyper-V is enabled for the web app.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.appSettings
+    - contextPath: Azure.WebApp.properties.siteConfig.appSettings
       description: List of app settings.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.metadata
+    - contextPath: Azure.WebApp.properties.siteConfig.metadata
       description: List of metadata settings.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.connectionStrings
+    - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
       description: List of connection strings.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
       description: Whether local MySQL is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.alwaysOn
+    - contextPath: Azure.WebApp.properties.siteConfig.alwaysOn
       description: Whether Always On is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.http20Enabled
+    - contextPath: Azure.WebApp.properties.siteConfig.http20Enabled
       description: Whether HTTP/2 is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.minTlsVersion
+    - contextPath: Azure.WebApp.properties.siteConfig.minTlsVersion
       description: Minimum TLS version required.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.ftpsState
+    - contextPath: Azure.WebApp.properties.siteConfig.ftpsState
       description: FTPS state (Disabled, AllAllowed, etc.).
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.linuxFxVersion
+    - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
       description: Runtime stack for Linux apps.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.windowsFxVersion
+    - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
       description: Runtime stack for Windows apps.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.numberOfWorkers
+    - contextPath: Azure.WebApp.properties.siteConfig.numberOfWorkers
       description: Number of workers allocated.
       type: Number
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.webSocketsEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.webSocketsEnabled
       description: Whether WebSockets are enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.preWarmedInstanceCount
+    - contextPath: Azure.WebApp.properties.siteConfig.preWarmedInstanceCount
       description: Number of pre-warmed instances.
       type: Number
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
+    - contextPath: Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
       description: Whether ACR uses managed identity credentials.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.acrUserManagedIdentityID
+    - contextPath: Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID
       description: User-assigned identity ID for ACR.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmType
+    - contextPath: Azure.WebApp.properties.siteConfig.scmType
       description: Source control management type.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.use32BitWorkerProcess
+    - contextPath: Azure.WebApp.properties.siteConfig.use32BitWorkerProcess
       description: Whether to use 32-bit worker process.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
       description: Whether auto-heal is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealRules
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
       description: Auto-heal rules configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.tracingOptions
+    - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
       description: Tracing options.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
       description: Whether remote debugging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
       description: Remote debugging version.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
       description: Whether detailed error logging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
       description: Whether HTTP logging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
       description: Whether request tracing is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
+    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
       description: Request tracing expiration time.
       type: DateTime
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
       description: Whether remote debugging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
       description: Remote debugging version.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.defaultDocuments
+    - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
       description: List of default documents.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.virtualApplications
+    - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
       description: List of virtual applications.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.loadBalancing
+    - contextPath: Azure.WebApp.properties.siteConfig.loadBalancing
       description: Load balancing settings.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.experiments
+    - contextPath: Azure.WebApp.properties.siteConfig.experiments
       description: Experiments configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.limits
+    - contextPath: Azure.WebApp.properties.siteConfig.limits
       description: Site limits configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoSwapSlotName
+    - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
       description: Auto-swap slot name.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
       description: Whether local MySQL is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.ipSecurityRestrictions
+    - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
       description: IP security restrictions.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictions
+    - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
       description: SCM IP security restrictions.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
+    - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
       description: Whether SCM IP restrictions use main settings.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.cors
+    - contextPath: Azure.WebApp.properties.siteConfig.cors
       description: CORS settings.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.push
+    - contextPath: Azure.WebApp.properties.siteConfig.push
       description: Push settings.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiDefinition
+    - contextPath: Azure.WebApp.properties.siteConfig.apiDefinition
       description: API definition settings.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiManagementConfig
+    - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
       description: API management configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
       description: Whether auto-heal is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealRules
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
       description: Auto-heal rules configuration.
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.tracingOptions
+    - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
       description: Tracing options.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
       description: Whether remote debugging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
       description: Remote debugging version.
       type: String
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
       description: Whether detailed error logging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
       description: Whether HTTP logging is enabled.
       type: Boolean
-    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled
+    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
       description: Whether request tracing is enabled.
       type: Boolean
   - arguments:
