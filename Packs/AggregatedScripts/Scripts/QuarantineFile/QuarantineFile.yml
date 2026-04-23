@@ -41,6 +41,12 @@ args:
   deprecated: true
 comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. Currently supported brands are "Cortex XDR - IR", "Cortex Core - IR", and "Microsoft Defender Advanced Threat Protection".
 name: quarantine-file
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- edr
+- xsiam
 outputs:
 - contextPath: QuarantineFile.FilePath
   description: The path of the quarantined file.
@@ -66,7 +72,7 @@ type: python
 subtype: python3
 compliantpolicies:
   - Quarantine File
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8294662
 fromversion: 6.10.0
 polling: true
 tests:

@@ -22,7 +22,7 @@
 !ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator
 !ctix-get-create-threat-data object_names=example.com,8.8.8.8,zzzzz collection=anotherone source=testing
 !ctix-get-actions action_type=manual object_type=indicator
-!ctix-saved-result-set label_name=test query=type=indicator
+!ctix-saved-result-set label_name=malware_families
 !ctix-allowed-iocs reason=test type="ipv4-addr" values=127.0.0.1,127.0.0.2
 !ctix-make-request type=POST endpoint=ingestion/notes/ body="{
     \"text\": \"this is the old text\",
