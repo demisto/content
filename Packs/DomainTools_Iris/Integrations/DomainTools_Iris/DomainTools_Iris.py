@@ -90,7 +90,7 @@ def get_client(proxy_url: str | None = None):
         API_KEY,
         app_partner="cortex_xsoar",
         app_name="iris-plugin",
-        app_version="2.2.9",
+        app_version=get_pack_version(),
         proxy_url=proxy_url,
         verify_ssl=VERIFY_CERT,
         always_sign_api_key=True,
