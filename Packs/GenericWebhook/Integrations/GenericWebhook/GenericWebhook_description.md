@@ -18,3 +18,18 @@ We recommend that you use Cortex XSOAR server rerouting when using this integrat
         For example, if the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.</~XSOAR_ON_PREM>
     
 - If you are not using server rerouting as described above, you can configure an HTTPS server by providing a certificate and private key.
+
+#### Incident Mirroring
+
+The Generic Webhook integration can perform incident mirroring by utilizing the different integration which has the mirroring capability. To enable the mirroring, configure the integration instance which can provide mirroring capabilities and set the following parameters in the Generic Webhook integration instance:
+
+- **Mirroring Direction**: Set the direction of incident mirroring between Cortex XSOAR and the external system. Options are *Incoming*, *Outgoing*, or *Incoming And Outgoing*.
+- **Mirror Tag for Notes**: Tag value used to mirror Cortex XSOAR notes back to the external system. Defaults to `note`.
+- **Mirror Instance**: The integration instance name to use for mirroring.
+
+#### Incident Deduplication
+
+To prevent duplicate incidents from being created by repeated webhook triggers, set the **Duplication Key** parameter to one or more field names or paths (comma-separated). When a new request arrives, the integration checks whether any of the specified field values match a previously seen value. If a match is found, the incident is silently dropped.
+
+- **Simple key**: Set **Duplication Key** to a top-level field name that is unique per event, for example `incidentId`.
+- **JSON Path**: JSON Path expressions are supported for extracting values from nested objects or arrays. For example, if your payload contains a `data` object with an `id` field, set **Duplication Key** to `data.id`.

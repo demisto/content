@@ -1,4 +1,5 @@
 import asyncio
+import json
 from http import HTTPStatus
 from unittest.mock import MagicMock
 
@@ -8,7 +9,15 @@ from CommonServerPython import *
 # import demistomock as demisto
 from fastapi import Request
 from fastapi.testclient import TestClient
-from GenericWebhook import app, main, parse_incidents
+from GenericWebhook import (
+    MAX_FOUND_IDS,
+    app,
+    filter_duplicate_incidents,
+    get_duplication_keys,
+    get_mirroring,
+    main,
+    parse_incidents,
+)
 
 
 @pytest.fixture
@@ -144,6 +153,109 @@ def test_parse_request(body):
     assert result[0]["rawJson"]["key"] == "value"
 
 
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        (
+            {"mirror_direction": "Incoming", "mirror_tags": "tag1", "mirror_instance": "inst1"},
+            {"mirror_direction": "In", "mirror_tags": "tag1", "mirror_instance": "inst1"},
+        ),
+        (
+            {"mirror_direction": "Outgoing", "mirror_tags": "", "mirror_instance": ""},
+            {"mirror_direction": "Out", "mirror_tags": "", "mirror_instance": ""},
+        ),
+        (
+            {"mirror_direction": "None", "mirror_tags": "", "mirror_instance": ""},
+            {"mirror_direction": None, "mirror_tags": "", "mirror_instance": ""},
+        ),
+        (
+            {},
+            {"mirror_direction": None, "mirror_tags": "", "mirror_instance": ""},
+        ),
+    ],
+)
+def test_get_mirroring(mocker, params, expected):
+    """
+    Given: Various mirror_direction param values
+    When: get_mirroring is called
+    Then: The correct mirror dict is returned
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    assert get_mirroring() == expected
+
+
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        ({"duplication_key": "incidentId,alertId"}, ["incidentId", "alertId"]),
+        ({"duplication_key": "singleKey"}, ["singleKey"]),
+        ({"duplication_key": ""}, []),
+        ({}, []),
+    ],
+)
+def test_get_duplication_keys(mocker, params, expected):
+    """
+    Given: Various duplication_key param values
+    When: get_duplication_keys is called
+    Then: The correct list of keys is returned
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    assert get_duplication_keys() == expected
+
+
+def test_filter_duplicate_incidents_no_duplicates(mocker):
+    """
+    Given: Incidents with no previously seen IDs
+    When: filter_duplicate_incidents is called
+    Then: All incidents pass through and context is updated
+    """
+    mocker.patch.object(demisto, "get", side_effect=lambda obj, key: obj.get(key))
+    incidents = [
+        {"rawJson": {"incidentId": "1"}},
+        {"rawJson": {"incidentId": "2"}},
+    ]
+    context: dict = {}
+    result = filter_duplicate_incidents(incidents, ["incidentId"], {}, context)
+    assert len(result) == 2
+    assert set(context["found_ids"]) == {"incidentId:1", "incidentId:2"}
+
+
+def test_filter_duplicate_incidents_with_duplicates(mocker):
+    """
+    Given: Incidents where one ID was already seen
+    When: filter_duplicate_incidents is called
+    Then: The duplicate is filtered out
+    """
+    mocker.patch.object(demisto, "get", side_effect=lambda obj, key: obj.get(key))
+    mocker.patch.object(demisto, "debug")
+    integration_context = {"found_ids": '["incidentId:1"]'}
+    incidents = [
+        {"rawJson": {"incidentId": "1"}},
+        {"rawJson": {"incidentId": "2"}},
+    ]
+    context: dict = {}
+    result = filter_duplicate_incidents(incidents, ["incidentId"], integration_context, context)
+    assert len(result) == 1
+    assert result[0]["rawJson"]["incidentId"] == "2"
+
+
+def test_filter_duplicate_incidents_no_matching_key(mocker):
+    """
+    Given: Incidents whose rawJson does not contain any duplication key
+    When: filter_duplicate_incidents is called
+    Then: All incidents pass through (no composite key means no dedup)
+    """
+    mocker.patch.object(demisto, "get", side_effect=lambda obj, key: obj.get(key))
+    incidents = [
+        {"rawJson": {"other": "x"}},
+        {"rawJson": {"other": "y"}},
+    ]
+    context: dict = {}
+    result = filter_duplicate_incidents(incidents, ["incidentId"], {}, context)
+    assert len(result) == 2
+    assert "found_ids" not in context
+
+
 def test_main_test_module(mocker):
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value={"longRunningPort": "444"})
@@ -173,3 +285,46 @@ def test_main_long_running(mocker):
         """ This is kind of a hack to stop the while true loop"""
 
     assert len(uvicornmock.call_args_list) == 3
+
+
+def test_filter_duplicate_incidents_found_ids_limit(mocker):
+    """
+    Given: An integration context already holding MAX_FOUND_IDS entries
+    When: filter_duplicate_incidents is called with new incidents
+    Then: found_ids in context does not exceed MAX_FOUND_IDS (oldest entries are evicted)
+    """
+    mocker.patch.object(demisto, "get", side_effect=lambda obj, key: obj.get(key))
+
+    existing_ids = [f"incidentId:{i}" for i in range(MAX_FOUND_IDS)]
+    integration_context = {"found_ids": json.dumps(existing_ids)}
+
+    new_incidents = [{"rawJson": {"incidentId": f"{MAX_FOUND_IDS + j}"}} for j in range(10)]
+    context: dict = {}
+    result = filter_duplicate_incidents(new_incidents, ["incidentId"], integration_context, context)
+
+    assert len(result) == 10
+    assert len(context["found_ids"]) == MAX_FOUND_IDS
+    # newest entries must be present; last 10 of parsed_ids are evicted (tail of new_ids + parsed_ids slice)
+    for j in range(10):
+        assert f"incidentId:{MAX_FOUND_IDS + j}" in context["found_ids"]
+    for i in range(MAX_FOUND_IDS - 10, MAX_FOUND_IDS):
+        assert f"incidentId:{i}" not in context["found_ids"]
+
+
+def test_filter_duplicate_incidents_found_ids_within_limit(mocker):
+    """
+    Given: An integration context with fewer than MAX_FOUND_IDS entries
+    When: filter_duplicate_incidents is called with new incidents that keep the total under the limit
+    Then: all entries are preserved and found_ids grows by the number of new incidents
+    """
+    mocker.patch.object(demisto, "get", side_effect=lambda obj, key: obj.get(key))
+
+    existing_ids = [f"incidentId:{i}" for i in range(100)]
+    integration_context = {"found_ids": json.dumps(existing_ids)}
+
+    new_incidents = [{"rawJson": {"incidentId": f"{100 + j}"}} for j in range(5)]
+    context: dict = {}
+    result = filter_duplicate_incidents(new_incidents, ["incidentId"], integration_context, context)
+
+    assert len(result) == 5
+    assert len(context["found_ids"]) == 105
