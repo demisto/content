@@ -843,6 +843,45 @@ class Client(ContentClient):
         demisto.debug(f"[API] Inventory item {item_id} response received")
         return response
 
+    def get_inventory_item_endpoints(
+        self,
+        item_id: str,
+        marketplace: str,
+        version: str,
+        page: int,
+        page_size: int,
+    ) -> dict[str, Any]:
+        """Fetch endpoints that have a specific inventory item installed.
+
+        Args:
+            item_id: Unique identifier for the item.
+            marketplace: The marketplace where the item is hosted.
+            version: The specific version of the item.
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+
+        Returns:
+            The full API response dictionary containing 'endpoints' list and 'total_count'.
+        """
+        params: dict[str, Any] = {
+            "marketplace": marketplace,
+            "version": version,
+            "page": page,
+            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+        }
+
+        url_suffix = f"{API_INVENTORY}/{item_id}/endpoints"
+        demisto.debug(f"[API] Fetching endpoints for item {item_id} | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params,
+        )
+
+        demisto.debug(f"[API] Endpoints for item {item_id} response received")
+        return response
+
     def search_inventory(
         self,
         page: int,
@@ -1976,6 +2015,141 @@ def _search_inventory_with_pagination(
     return items
 
 
+def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List endpoints that have a specific inventory item installed.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' endpoints.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (item_id, marketplace, version, page, page_size, limit).
+
+    Returns:
+        CommandResults with the endpoint list.
+    """
+    demisto.debug("[Command] koi-inventory-item-endpoints-list triggered")
+
+    item_id: str = args["item_id"]
+    marketplace: str = args["marketplace"]
+    version: str = args.get("version") or Config.DEFAULT_VERSION
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        # Single-page mode
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.get_inventory_item_endpoints(
+            item_id=item_id,
+            marketplace=marketplace,
+            version=version,
+            page=page_arg,
+            page_size=page_size,
+        )
+        endpoints = response.get("endpoints", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(endpoints)} endpoints (total_count={total_count})")
+    else:
+        # Auto-paginate mode
+        limit = min(limit_arg or Config.DEFAULT_LIMIT, Config.MAX_LIMIT)
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        endpoints = _fetch_item_endpoints_with_pagination(
+            client,
+            item_id=item_id,
+            marketplace=marketplace,
+            version=version,
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory Item Endpoints",
+        endpoints,
+        headers=[
+            "id",
+            "hostname",
+            "os",
+            "platform",
+            "serial",
+            "last_logged_on_user",
+            "activation_status",
+            "path",
+            "first_seen",
+            "last_seen",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory.Endpoint",
+        outputs_key_field="id",
+        outputs=endpoints,
+    )
+
+
+def _fetch_item_endpoints_with_pagination(
+    client: Client,
+    item_id: str,
+    marketplace: str,
+    version: str,
+    limit: int,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through item endpoints until limit is reached.
+
+    Args:
+        client: The Koi client.
+        item_id: Unique identifier for the item.
+        marketplace: The marketplace where the item is hosted.
+        version: The specific version of the item.
+        limit: Maximum total number of endpoints to collect.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of endpoint dictionaries.
+    """
+    endpoints: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(endpoints) < limit:
+        response = client.get_inventory_item_endpoints(
+            item_id=item_id,
+            marketplace=marketplace,
+            version=version,
+            page=page,
+            page_size=page_size,
+        )
+        page_endpoints = response.get("endpoints", [])
+
+        if not page_endpoints:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        endpoints.extend(page_endpoints)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_endpoints)} endpoints. Total: {len(endpoints)}")
+
+        if len(page_endpoints) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(endpoints) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(endpoints)} endpoints to limit {limit}")
+        endpoints = endpoints[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(endpoints)} endpoints")
+    return endpoints
+
+
 # endregion
 
 # region Main router
@@ -1998,6 +2172,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-inventory-list": koi_inventory_list_command,
     "koi-inventory-item-get": koi_inventory_item_get_command,
     "koi-inventory-search": koi_inventory_search_command,
+    "koi-inventory-item-endpoints-list": koi_inventory_item_endpoints_list_command,
 }
 
 

@@ -13,7 +13,6 @@ from Koi import (
     API_POLICIES,
     API_ALLOWLIST,
     API_BLOCKLIST,
-    API_INVENTORY,
     VALID_AUDIT_TYPES,
     VALID_MARKETPLACES,
     COMMAND_MAP,
@@ -37,9 +36,11 @@ from Koi import (
     koi_inventory_list_command,
     koi_inventory_item_get_command,
     koi_inventory_search_command,
+    koi_inventory_item_endpoints_list_command,
     parse_filter_from_args,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
+    API_INVENTORY,
     API_INVENTORY_SEARCH,
     get_formatted_utc_time,
     parse_date_or_use_current,
@@ -114,6 +115,12 @@ def inventory_response() -> dict:
 def inventory_item_response() -> dict:
     """Fixture for a mock inventory item API response."""
     return load_test_data("inventory_item_response.json")
+
+
+@pytest.fixture
+def inventory_item_endpoints_response() -> dict:
+    """Fixture for a mock inventory item endpoints API response."""
+    return load_test_data("inventory_item_endpoints_response.json")
 
 
 @pytest.fixture
@@ -1525,6 +1532,33 @@ class TestMain:
         main()
 
         mock_return.assert_called_once_with("mock_inventory_search_result")
+
+    def test_main_routes_inventory_item_endpoints_list(self, mocker):
+        """Test main routes koi-inventory-item-endpoints-list command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-inventory-item-endpoints-list")
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={"item_id": "abc123", "marketplace": "chrome_web_store"},
+        )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_endpoints_list = mocker.MagicMock(return_value="mock_endpoints_result")
+        COMMAND_MAP["koi-inventory-item-endpoints-list"] = mock_endpoints_list
+
+        main()
+
+        mock_return.assert_called_once_with("mock_endpoints_result")
 
 
 # endregion
@@ -3194,6 +3228,181 @@ class TestClientSearchInventory:
 
         with pytest.raises(DemistoException, match="Error in API call"):
             mock_client.search_inventory(page=1, page_size=100, filter_obj={"field": "test"})
+
+
+# endregion
+
+# region koi-inventory-item-endpoints-list tests
+
+
+class TestKoiInventoryItemEndpointsListCommand:
+    """Tests for the koi-inventory-item-endpoints-list command."""
+
+    @pytest.mark.parametrize(
+        "args, expected_version, expected_page, expected_page_size",
+        [
+            (
+                {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "1"},
+                Config.DEFAULT_VERSION,
+                1,
+                Config.DEFAULT_PAGE_SIZE,
+            ),
+            (
+                {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "2.0.0", "page": "2", "page_size": "50"},
+                "2.0.0",
+                2,
+                50,
+            ),
+            (
+                {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "3", "page_size": "25", "limit": "200"},
+                Config.DEFAULT_VERSION,
+                3,
+                25,
+            ),
+        ],
+        ids=["default_version_and_page_size", "explicit_version_and_page_size", "limit_ignored_when_page_provided"],
+    )
+    def test_endpoints_list_single_page(
+        self,
+        mock_client,
+        inventory_item_endpoints_response,
+        mocker,
+        args,
+        expected_version,
+        expected_page,
+        expected_page_size,
+    ):
+        """Test koi-inventory-item-endpoints-list in single-page mode with various argument combinations."""
+        mocker.patch.object(mock_client, "get_inventory_item_endpoints", return_value=inventory_item_endpoints_response)
+
+        result = koi_inventory_item_endpoints_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory.Endpoint"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        mock_client.get_inventory_item_endpoints.assert_called_once_with(
+            item_id="abc123",
+            marketplace="chrome_web_store",
+            version=expected_version,
+            page=expected_page,
+            page_size=expected_page_size,
+        )
+
+    @pytest.mark.parametrize(
+        "limit_arg, api_endpoint_count, expected_output_count",
+        [
+            ("500", Config.MAX_PAGE_SIZE, 500),
+            ("500", 0, 0),
+            ("500", 50, 50),
+            ("10", Config.MAX_PAGE_SIZE, 10),
+            ("9999", Config.MAX_PAGE_SIZE, Config.MAX_LIMIT),
+        ],
+        ids=[
+            "full_page_satisfies_limit",
+            "empty_response",
+            "partial_page_stops_pagination",
+            "trims_to_limit",
+            "limit_capped_at_max",
+        ],
+    )
+    def test_endpoints_list_auto_paginate_behavior(
+        self, mock_client, mocker, limit_arg, api_endpoint_count, expected_output_count
+    ):
+        """Test auto-paginate behavior with various limit and API response combinations."""
+        response = {
+            "endpoints": [{"id": f"device-{i}"} for i in range(api_endpoint_count)],
+            "total_count": api_endpoint_count,
+        }
+        mocker.patch.object(mock_client, "get_inventory_item_endpoints", return_value=response)
+
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "limit": limit_arg}
+        result = koi_inventory_item_endpoints_list_command(mock_client, args)
+
+        assert len(result.outputs) == expected_output_count
+
+    def test_endpoints_list_outputs_and_readable(self, mock_client, inventory_item_endpoints_response, mocker):
+        """Test that all expected fields are present in outputs and readable output."""
+        mocker.patch.object(mock_client, "get_inventory_item_endpoints", return_value=inventory_item_endpoints_response)
+
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "1"}
+        result = koi_inventory_item_endpoints_list_command(mock_client, args)
+
+        # Verify readable output
+        assert "Inventory Item Endpoints" in result.readable_output
+        assert "laptop-01" in result.readable_output
+        assert "john.doe" in result.readable_output
+
+        # Verify all fields in outputs
+        assert len(result.outputs) == 2
+        endpoint = result.outputs[0]
+        assert endpoint["id"] == "device-123"
+        assert endpoint["hostname"] == "laptop-01"
+        assert endpoint["os"] == "windows"
+        assert endpoint["platform"] == "chrome"
+        assert endpoint["serial"] == "ABC123XYZ"
+        assert endpoint["last_logged_on_user"] == "john.doe"
+        assert endpoint["activation_status"] == "enabled"
+        assert endpoint["path"] == "/Applications/Google Chrome.app/Contents/Extensions/abc123"
+        assert endpoint["first_seen"] == "2024-01-01T10:00:00Z"
+        assert endpoint["last_seen"] == "2024-10-15T10:00:00Z"
+
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {"marketplace": "chrome_web_store"},
+            {"item_id": "abc123"},
+            {},
+        ],
+        ids=["missing_item_id", "missing_marketplace", "no_args"],
+    )
+    def test_endpoints_list_missing_required_args(self, mock_client, args):
+        """Test that missing required arguments raises KeyError."""
+        with pytest.raises(KeyError):
+            koi_inventory_item_endpoints_list_command(mock_client, args)
+
+
+class TestClientGetInventoryItemEndpoints:
+    """Tests for the Client.get_inventory_item_endpoints method."""
+
+    @pytest.mark.parametrize(
+        "page_size_input, expected_page_size",
+        [
+            (100, 100),
+            (1000, Config.MAX_PAGE_SIZE),
+        ],
+        ids=["normal_page_size", "page_size_capped_at_max"],
+    )
+    def test_get_inventory_item_endpoints_request(
+        self, mock_client, inventory_item_endpoints_response, mocker, page_size_input, expected_page_size
+    ):
+        """Test that get_inventory_item_endpoints sends correct GET request with page_size capping."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_item_endpoints_response)
+
+        result = mock_client.get_inventory_item_endpoints(
+            item_id="abc123", marketplace="chrome_web_store", version="1.0.0", page=1, page_size=page_size_input
+        )
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["url_suffix"] == f"{API_INVENTORY}/abc123/endpoints"
+        assert call_kwargs["params"]["marketplace"] == "chrome_web_store"
+        assert call_kwargs["params"]["version"] == "1.0.0"
+        assert call_kwargs["params"]["page"] == 1
+        assert call_kwargs["params"]["page_size"] == expected_page_size
+        assert result == inventory_item_endpoints_response
+
+    def test_get_inventory_item_endpoints_api_error(self, mock_client, mocker):
+        """Test that get_inventory_item_endpoints propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [404] - Not Found"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.get_inventory_item_endpoints(
+                item_id="nonexistent", marketplace="chrome_web_store", version="1.0.0", page=1, page_size=100
+            )
 
 
 # endregion
