@@ -5555,7 +5555,7 @@ script:
       type: String
     - contextPath: Azure.WebApp.tags
       description: Resource tags as key-value pairs.
-    - contextPath: Azure.AppService.WebApp.identity.type
+    - contextPath: Azure.WebApp.identity.type
       description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
       type: String
     - contextPath: Azure.WebApp.identity.principalId
@@ -5566,7 +5566,7 @@ script:
       type: String
     - contextPath: Azure.WebApp.identity.userAssignedIdentities
       description: The list of user-assigned identities associated with the web app.
-    - contextPath: Azure.AppService.WebApp.properties.state
+    - contextPath: Azure.WebApp.properties.state
       description: Current state of the web app (Running, Stopped, etc.).
       type: String
     - contextPath: Azure.WebApp.properties.enabled
