@@ -13,7 +13,7 @@ Agentless cloud security platform for detecting and addressing cloud issues, det
 | Service Account ID | True |
 | Authentication Endpoint | True |
 | API Endpoint | True |
-| First fetch timestamp (maximum 5 days) | False |
+| First fetch timestamp (maximum 2 days) | False |
 | Max Detections to Fetch | False |
 | Minimum detection severity to fetch | False |
 | Type of detections to fetch | False |
@@ -182,7 +182,7 @@ Resolve a Wiz Threat.
 | --- | --- | --- |
 | issue_id | Threat issue id. | Required |
 | resolution_reason | Resolution reason. Possible values are: MALICIOUS_THREAT, NOT_MALICIOUS_THREAT, SECURITY_TEST_THREAT, PLANNED_ACTION_THREAT, INCONCLUSIVE_THREAT. | Required |
-| resolution_note | Resolution note. | Required |
+| resolution_note | Resolution note. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 ### wiz-defend-set-threat-in-progress
 
@@ -213,7 +213,7 @@ Set a comment on a Wiz Threat.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Threat issue id. | Required |
-| note | Note. | Required |
+| note | Note. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 ### wiz-defend-clear-threat-comments
 
@@ -229,6 +229,16 @@ Clear all the comments from a Wiz Threat.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Threat issue id. | Required |
+
+## Notes
+
+### Detection description fallback
+
+When the Wiz API returns a detection without a description, the integration auto-generates one in the form `<SEVERITY> severity detection triggered by rule '<rule_name>' (ID: <rule_id>)` so that XSOAR incidents always have a populated `wizdetails` field.
+
+### Note truncation
+
+`wiz-defend-set-threat-comment` and `wiz-defend-resolve-threat` truncate any note input longer than 1400 characters (suffixed with `... [truncated]`) to avoid Wiz API errors.
 
 ## Known Limitations
 

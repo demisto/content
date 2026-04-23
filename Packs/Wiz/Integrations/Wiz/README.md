@@ -1,4 +1,4 @@
-Agentless, context-aware and full-stack security and compliance for AWS, Azure and GCP.
+Agentless, context-aware and full-stack security and compliance across AWS, Azure, GCP, OCI, Kubernetes, and other supported cloud platforms.
 This integration was integrated and tested with Wiz
 
 ## Configure Wiz in Cortex
@@ -14,8 +14,47 @@ This integration was integrated and tested with Wiz
 | Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
 | max_fetch | Max Issues to fetch | False |
 | mirror_direction | Incident Mirror Direction. Choose the mirroring direction for Wiz issues: None, Incoming, Outgoing, or Incoming And Outgoing. Default is None (no mirroring). | False |
-| mirror_limit | Maximum number of incidents to mirror each time (1-500). Default: 50. | False |
+| mirror_limit | Page size for mirror API calls (1-500). Controls how many remote issues are fetched per `get-modified-remote-data` call. Default: 50. | False |
 | comment_tag | Tag for comment mirroring. Add this tag to XSOAR war room entries to mirror them as Wiz issue notes. Default: `comments`. | False |
+
+## Mirroring
+
+The Wiz integration supports **bidirectional mirroring** between Wiz Issues and XSOAR incidents. Configure direction via the **Incident Mirror Direction** instance setting:
+
+| Direction | Behavior |
+| --- | --- |
+| `None` | Mirroring disabled. No `dbotMirror*` metadata is attached to fetched incidents. |
+| `Incoming` | Wiz → XSOAR only. Pulls remote status changes and notes into the XSOAR incident. |
+| `Outgoing` | XSOAR → Wiz only. Pushes XSOAR status changes, due-date changes, and tagged war room entries to the Wiz Issue. |
+| `Incoming And Outgoing` | Both directions active. |
+
+### Mirrored fields
+
+| Field | Direction | Notes |
+| --- | --- | --- |
+| Issue status | Both | XSOAR `closed`/`active` map to Wiz `RESOLVED`/`OPEN`. `in_progress` maps to `IN_PROGRESS`. Reopen restores `OPEN`. |
+| Resolution reason | Outgoing | When closing in XSOAR, set `resolutionReason` (e.g. `ISSUE_FIXED`, `WONT_FIX`). When omitted, defaults to `WONT_FIX`. |
+| Notes / comments | Both | Incoming: all Wiz issue notes are added as war room entries (formatted `**Author** (timestamp): text`). Service-account notes use `**[SA] <name>**`. Outgoing: only war room entries tagged with `comment_tag` (default `comments`) are pushed to Wiz. |
+| Due date (`dueAt`) | Outgoing | Setting/clearing the XSOAR `wizissueduedate` field updates the Wiz Issue. |
+
+### Loop prevention
+
+Outgoing notes are prefixed with `Mirrored from Cortex XSOAR` and the Wiz integration filters them out on incoming sync, so mirrored notes are not echoed back into the war room.
+
+### Note truncation
+
+Notes longer than **1400 characters** are truncated and suffixed with `... [truncated]` before being sent to the Wiz API. This applies to all mirrored notes and to the `wiz-set-issue-note`, `wiz-resolve-issue`, `wiz-reject-issue`, and `wiz-defend-set-threat-comment` commands.
+
+### Mirror engine commands
+
+The following commands are invoked by the XSOAR mirroring engine and are **not intended for manual use**:
+
+| Command | Purpose |
+| --- | --- |
+| `get-remote-data` | Fetches updates for a single incident from Wiz. |
+| `get-modified-remote-data` | Returns the list of Wiz Issues modified since the last mirror cycle (paginated; page size = `mirror_limit`). |
+| `update-remote-system` | Pushes local XSOAR changes (status, notes, due date) back to Wiz. |
+| `get-mapping-fields` | Returns the schema of mappable fields. Used by the mapper UI. |
 
 ## Commands
 
@@ -148,7 +187,7 @@ This command returns the raw response data from the Wiz API. The response includ
 ### wiz-issue-in-progress
 
 ***
-Re-open an Issue.
+Set a Wiz Issue to in progress.
 
 <h4> Base Command </h4>
 
@@ -197,13 +236,13 @@ Re-open an Issue.
 #### Command Example
 
 ```
-!wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen-note="still an issue"
+!wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen_note="still an issue"
 ```
 
 ### wiz-reject-issue
 
 ***
-Re-open an Issue.
+Reject a Wiz Issue. Not supported for THREAT_DETECTION issues.
 
 <h4> Base Command </h4>
 
@@ -215,7 +254,7 @@ Re-open an Issue.
 | --- | --- | --- |
 | issue_id | Issue id | Required |
 | reject_reason | Rejection reason. Possible values are: FALSE_POSITIVE, EXCEPTION, WONT_FIX. | Required |
-| reject_note | Note for re-opening Issue | Required |
+| reject_note | Note for the rejection. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 <h4> Context Output </h4>
 
@@ -232,7 +271,7 @@ Re-open an Issue.
 ### wiz-resolve-issue
 
 ***
-Resolve a Threat Detection Issue.
+Resolve a Wiz Issue.
 
 <h4> Base Command </h4>
 
@@ -244,7 +283,7 @@ Resolve a Threat Detection Issue.
 |-------------------|-------------------------------------------------| --- |
 | issue_id          | Issue id                                        | Required |
 | resolution_reason | Issue resolution reason. Possible values are: OBJECT_DELETED, ISSUE_FIXED, FALSE_POSITIVE, EXCEPTION, WONT_FIX. | Required |
-| resolution_note   | Note to explain why the Issue has been resolved | Required |
+| resolution_note   | Note to explain why the Issue has been resolved. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 <h4> Context Output </h4>
 
@@ -272,7 +311,7 @@ Set (append) a note to an Issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Issue id | Required |
-| reject_note | Note for the Issue. Will be appeneded to existing one. | Required |
+| note | Note for the Issue. Will be appended to existing notes. Notes longer than 1400 characters are truncated and suffixed with `... [truncated]`. | Required |
 
 #### Command Example
 
@@ -341,7 +380,7 @@ Set a due date for an Issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Issue id | Required |
-| due_at | Due At Date | Required |
+| due_at | Due At Date. Format must be `YYYY-MM-DD` (e.g. `2026-12-31`). | Required |
 
 #### Command Example
 
@@ -373,7 +412,7 @@ Clear a due date for an Issue.
 ### wiz-get-project-team
 
 ***
-Clear a due date for an Issue.
+Get the Project Owners and Security Champions details.
 
 <h4> Base Command </h4>
 
