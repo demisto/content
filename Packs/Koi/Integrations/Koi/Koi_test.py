@@ -2570,7 +2570,7 @@ class TestKoiInventoryListCommand:
             ("500", 0, 0),
             ("500", 50, 50),
             ("10", Config.MAX_PAGE_SIZE, 10),
-            ("9999", Config.MAX_PAGE_SIZE, Config.MAX_LIMIT),
+            ("9999", Config.MAX_LIMIT + 100, Config.MAX_LIMIT),
         ],
         ids=[
             "full_page_satisfies_limit",
@@ -3072,7 +3072,7 @@ class TestKoiInventorySearchCommand:
             ("500", 0, 0),
             ("500", 50, 50),
             ("10", Config.MAX_PAGE_SIZE, 10),
-            ("9999", Config.MAX_PAGE_SIZE, Config.MAX_LIMIT),
+            ("9999", Config.MAX_LIMIT + 100, Config.MAX_LIMIT),
         ],
         ids=[
             "full_page_satisfies_limit",
@@ -3295,7 +3295,7 @@ class TestKoiInventoryItemEndpointsListCommand:
             ("500", 0, 0),
             ("500", 50, 50),
             ("10", Config.MAX_PAGE_SIZE, 10),
-            ("9999", Config.MAX_PAGE_SIZE, Config.MAX_LIMIT),
+            ("9999", Config.MAX_LIMIT + 100, Config.MAX_LIMIT),
         ],
         ids=[
             "full_page_satisfies_limit",

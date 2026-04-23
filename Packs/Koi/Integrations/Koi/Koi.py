@@ -52,8 +52,8 @@ class Config:
     DEFAULT_VERSION = "1.0.0"
     MAX_PAGES_PER_FETCH = 10
     DEFAULT_PAGE = 1
-    DEFAULT_LIMIT = 100
-    MAX_LIMIT = 500
+    DEFAULT_LIMIT = 500
+    MAX_LIMIT = 1000
 
     # Fetch defaults
     DEFAULT_MAX_FETCH = 5000
@@ -446,6 +446,47 @@ def parse_filter_from_args(args: dict[str, Any]) -> dict[str, Any]:
         return data
 
     raise DemistoException("Either 'filter_json' or 'filter_raw_json_entry_id' must be provided.")
+
+
+def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Parse and validate integration configuration parameters.
+
+    Extracts connection settings from the raw demisto.params() dictionary
+    and validates audit type filters if provided.
+
+    Args:
+        params: Raw parameters from demisto.params().
+
+    Returns:
+        Validated configuration dictionary with keys: base_url, api_key, verify, proxy.
+
+    Raises:
+        DemistoException: If audit type filter contains invalid values.
+    """
+    base_url = params.get("url", "https://api.prod.koi.security/").rstrip("/")
+
+    api_key = params.get("api_key", {})
+    if isinstance(api_key, dict):
+        api_key = api_key.get("password", "")
+
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+
+    # Validate audit types filter if provided
+    audit_types_filter = argToList(params.get("audit_types_filter"))
+    if audit_types_filter:
+        invalid = [t for t in audit_types_filter if t not in VALID_AUDIT_TYPES]
+        if invalid:
+            raise DemistoException(f"Invalid audit log type(s): {invalid}. Valid types: {VALID_AUDIT_TYPES}")
+
+    demisto.debug(f"[Config] URL: {base_url}")
+
+    return {
+        "base_url": base_url,
+        "api_key": api_key,
+        "verify": verify_certificate,
+        "proxy": proxy,
+    }
 
 
 # endregion
@@ -2185,28 +2226,13 @@ def main() -> None:
         if command not in COMMAND_MAP:
             raise DemistoException(f"Command '{command}' is not implemented")
 
-        # Parse parameters
-        params = demisto.params()
-        base_url = params.get("url", "https://api.prod.koi.security/").rstrip("/")
-        api_key = params.get("api_key", {})
-        if isinstance(api_key, dict):
-            api_key = api_key.get("password", "")
-
-        verify_certificate = not argToBoolean(params.get("insecure", False))
-        proxy = argToBoolean(params.get("proxy", False))
-
-        # Validate audit types filter if provided
-        audit_types_filter = argToList(params.get("audit_types_filter"))
-        if audit_types_filter:
-            invalid = [t for t in audit_types_filter if t not in VALID_AUDIT_TYPES]
-            if invalid:
-                raise DemistoException(f"Invalid audit log type(s): {invalid}. Valid types: {VALID_AUDIT_TYPES}")
+        config = parse_integration_params(demisto.params())
 
         client = Client(
-            base_url=base_url,
-            api_key=api_key,
-            verify=verify_certificate,
-            proxy=proxy,
+            base_url=config["base_url"],
+            api_key=config["api_key"],
+            verify=config["verify"],
+            proxy=config["proxy"],
         )
 
         command_func = COMMAND_MAP[command]
@@ -2217,7 +2243,7 @@ def main() -> None:
         elif command == "fetch-events":
             command_func(client)
         elif command == "koi-get-events":
-            result = command_func(client, demisto.args(), params)
+            result = command_func(client, demisto.args(), demisto.params())
             return_results(result)
         else:
             result = command_func(client, demisto.args())
