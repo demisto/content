@@ -27,11 +27,11 @@ from Koi import (
     fetch_events_command,
     koi_policy_list_command,
     koi_allowlist_get_command,
-    koi_allowlist_item_remove_command,
-    koi_allowlist_item_add_command,
+    koi_allowlist_items_remove_command,
+    koi_allowlist_items_add_command,
     koi_blocklist_get_command,
-    koi_blocklist_item_remove_command,
-    koi_blocklist_item_add_command,
+    koi_blocklist_items_remove_command,
+    koi_blocklist_items_add_command,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
@@ -1291,8 +1291,8 @@ class TestMain:
         mock_return.assert_called_once_with("mock_allowlist_result")
 
     def test_main_routes_allowlist_item_remove(self, mocker):
-        """Test main routes koi-allowlist-item-remove command correctly."""
-        mocker.patch.object(demisto, "command", return_value="koi-allowlist-item-remove")
+        """Test main routes koi-allowlist-items-remove command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-allowlist-items-remove")
         mocker.patch.object(demisto, "args", return_value={"item_id": "ext-123", "marketplace": "vscode"})
         mocker.patch.object(
             demisto,
@@ -1307,15 +1307,15 @@ class TestMain:
         mocker.patch("Koi.Client")
         mock_return = mocker.patch("Koi.return_results")
         mock_allowlist_remove = mocker.MagicMock(return_value="mock_allowlist_remove_result")
-        COMMAND_MAP["koi-allowlist-item-remove"] = mock_allowlist_remove
+        COMMAND_MAP["koi-allowlist-items-remove"] = mock_allowlist_remove
 
         main()
 
         mock_return.assert_called_once_with("mock_allowlist_remove_result")
 
     def test_main_routes_allowlist_item_add(self, mocker):
-        """Test main routes koi-allowlist-item-add command correctly."""
-        mocker.patch.object(demisto, "command", return_value="koi-allowlist-item-add")
+        """Test main routes koi-allowlist-items-add command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-allowlist-items-add")
         mocker.patch.object(demisto, "args", return_value={"item_id": "ext-123", "marketplace": "vscode"})
         mocker.patch.object(
             demisto,
@@ -1330,7 +1330,7 @@ class TestMain:
         mocker.patch("Koi.Client")
         mock_return = mocker.patch("Koi.return_results")
         mock_allowlist_add = mocker.MagicMock(return_value="mock_allowlist_add_result")
-        COMMAND_MAP["koi-allowlist-item-add"] = mock_allowlist_add
+        COMMAND_MAP["koi-allowlist-items-add"] = mock_allowlist_add
 
         main()
 
@@ -1360,8 +1360,8 @@ class TestMain:
         mock_return.assert_called_once_with("mock_blocklist_result")
 
     def test_main_routes_blocklist_item_remove(self, mocker):
-        """Test main routes koi-blocklist-item-remove command correctly."""
-        mocker.patch.object(demisto, "command", return_value="koi-blocklist-item-remove")
+        """Test main routes koi-blocklist-items-remove command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-blocklist-items-remove")
         mocker.patch.object(demisto, "args", return_value={"item_id": "mal-001", "marketplace": "vscode"})
         mocker.patch.object(
             demisto,
@@ -1376,15 +1376,15 @@ class TestMain:
         mocker.patch("Koi.Client")
         mock_return = mocker.patch("Koi.return_results")
         mock_blocklist_remove = mocker.MagicMock(return_value="mock_blocklist_remove_result")
-        COMMAND_MAP["koi-blocklist-item-remove"] = mock_blocklist_remove
+        COMMAND_MAP["koi-blocklist-items-remove"] = mock_blocklist_remove
 
         main()
 
         mock_return.assert_called_once_with("mock_blocklist_remove_result")
 
     def test_main_routes_blocklist_item_add(self, mocker):
-        """Test main routes koi-blocklist-item-add command correctly."""
-        mocker.patch.object(demisto, "command", return_value="koi-blocklist-item-add")
+        """Test main routes koi-blocklist-items-add command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-blocklist-items-add")
         mocker.patch.object(demisto, "args", return_value={"item_id": "mal-001", "marketplace": "vscode"})
         mocker.patch.object(
             demisto,
@@ -1399,7 +1399,7 @@ class TestMain:
         mocker.patch("Koi.Client")
         mock_return = mocker.patch("Koi.return_results")
         mock_blocklist_add = mocker.MagicMock(return_value="mock_blocklist_add_result")
-        COMMAND_MAP["koi-blocklist-item-add"] = mock_blocklist_add
+        COMMAND_MAP["koi-blocklist-items-add"] = mock_blocklist_add
 
         main()
 
@@ -1666,14 +1666,14 @@ class TestClientGetAllowlist:
 
 
 class TestKoiAllowlistItemRemoveCommand:
-    """Tests for the koi-allowlist-item-remove command."""
+    """Tests for the koi-allowlist-items-remove command."""
 
     def test_allowlist_item_remove_single_item(self, mock_client, mocker):
-        """Test koi-allowlist-item-remove successfully removes a single item."""
+        """Test koi-allowlist-items-remove successfully removes a single item."""
         mocker.patch.object(mock_client, "remove_allowlist_items", return_value=None)
 
         args = {"item_id": "ext-123", "marketplace": "vscode"}
-        result = koi_allowlist_item_remove_command(mock_client, args)
+        result = koi_allowlist_items_remove_command(mock_client, args)
 
         assert "was removed successfully" in result.readable_output
         assert "ext-123" in result.readable_output
@@ -1698,7 +1698,7 @@ class TestKoiAllowlistItemRemoveCommand:
         ids=["multiple_items", "single_item"],
     )
     def test_allowlist_item_remove_from_file(self, mock_client, mocker, tmp_path, items_data, expected_readable):
-        """Test koi-allowlist-item-remove from a JSON file entry ID."""
+        """Test koi-allowlist-items-remove from a JSON file entry ID."""
         mocker.patch.object(mock_client, "remove_allowlist_items", return_value=None)
 
         json_file = tmp_path / "items.json"
@@ -1707,7 +1707,7 @@ class TestKoiAllowlistItemRemoveCommand:
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
         args = {"items_list_raw_json_entry_id": "entry-abc-123"}
-        result = koi_allowlist_item_remove_command(mock_client, args)
+        result = koi_allowlist_items_remove_command(mock_client, args)
 
         assert expected_readable in result.readable_output
         mock_client.remove_allowlist_items.assert_called_once_with(items_data)
@@ -1760,14 +1760,14 @@ class TestClientRemoveAllowlistItems:
 
 
 class TestKoiAllowlistItemAddCommand:
-    """Tests for the koi-allowlist-item-add command."""
+    """Tests for the koi-allowlist-items-add command."""
 
     def test_allowlist_item_add_single_item(self, mock_client, mocker):
-        """Test koi-allowlist-item-add successfully adds a single item."""
+        """Test koi-allowlist-items-add successfully adds a single item."""
         mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         args = {"item_id": "ext-123", "marketplace": "vscode"}
-        result = koi_allowlist_item_add_command(mock_client, args)
+        result = koi_allowlist_items_add_command(mock_client, args)
 
         assert "was added successfully" in result.readable_output
         assert "ext-123" in result.readable_output
@@ -1775,7 +1775,7 @@ class TestKoiAllowlistItemAddCommand:
         mock_client.add_allowlist_items.assert_called_once_with([{"item_id": "ext-123", "marketplace": "vscode"}])
 
     def test_allowlist_item_add_from_file(self, mock_client, mocker, tmp_path):
-        """Test koi-allowlist-item-add from a JSON file entry ID."""
+        """Test koi-allowlist-items-add from a JSON file entry ID."""
         mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         items_data = [
@@ -1788,13 +1788,13 @@ class TestKoiAllowlistItemAddCommand:
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
         args = {"items_list_raw_json_entry_id": "entry-abc-123"}
-        result = koi_allowlist_item_add_command(mock_client, args)
+        result = koi_allowlist_items_add_command(mock_client, args)
 
         assert "2 allowlist items were added successfully" in result.readable_output
         mock_client.add_allowlist_items.assert_called_once_with(items_data)
 
     def test_allowlist_item_add_from_file_single_item(self, mock_client, mocker, tmp_path):
-        """Test koi-allowlist-item-add from a JSON file with a single item uses singular message."""
+        """Test koi-allowlist-items-add from a JSON file with a single item uses singular message."""
         mocker.patch.object(mock_client, "add_allowlist_items", return_value=None)
 
         items_data = [{"item_id": "ext-1", "marketplace": "vscode"}]
@@ -1804,7 +1804,7 @@ class TestKoiAllowlistItemAddCommand:
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
         args = {"items_list_raw_json_entry_id": "entry-abc-123"}
-        result = koi_allowlist_item_add_command(mock_client, args)
+        result = koi_allowlist_items_add_command(mock_client, args)
 
         assert "ext-1" in result.readable_output
         assert "vscode" in result.readable_output
@@ -2003,18 +2003,18 @@ class TestClientGetBlocklist:
 
 # endregion
 
-# region koi-blocklist-item-remove tests
+# region koi-blocklist-items-remove tests
 
 
 class TestKoiBlocklistItemRemoveCommand:
-    """Tests for the koi-blocklist-item-remove command."""
+    """Tests for the koi-blocklist-items-remove command."""
 
     def test_blocklist_item_remove_single_item(self, mock_client, mocker):
-        """Test koi-blocklist-item-remove successfully removes a single item."""
+        """Test koi-blocklist-items-remove successfully removes a single item."""
         mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
 
         args = {"item_id": "mal-001", "marketplace": "vscode"}
-        result = koi_blocklist_item_remove_command(mock_client, args)
+        result = koi_blocklist_items_remove_command(mock_client, args)
 
         assert "was removed successfully" in result.readable_output
         assert "mal-001" in result.readable_output
@@ -2039,7 +2039,7 @@ class TestKoiBlocklistItemRemoveCommand:
         ids=["multiple_items", "single_item"],
     )
     def test_blocklist_item_remove_from_file(self, mock_client, mocker, tmp_path, items_data, expected_readable):
-        """Test koi-blocklist-item-remove from a JSON file entry ID."""
+        """Test koi-blocklist-items-remove from a JSON file entry ID."""
         mocker.patch.object(mock_client, "remove_blocklist_items", return_value=None)
 
         json_file = tmp_path / "items.json"
@@ -2048,7 +2048,7 @@ class TestKoiBlocklistItemRemoveCommand:
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
         args = {"items_list_raw_json_entry_id": "entry-abc-123"}
-        result = koi_blocklist_item_remove_command(mock_client, args)
+        result = koi_blocklist_items_remove_command(mock_client, args)
 
         assert expected_readable in result.readable_output
         mock_client.remove_blocklist_items.assert_called_once_with(items_data)
@@ -2097,18 +2097,18 @@ class TestClientRemoveBlocklistItems:
 
 # endregion
 
-# region koi-blocklist-item-add tests
+# region koi-blocklist-items-add tests
 
 
 class TestKoiBlocklistItemAddCommand:
-    """Tests for the koi-blocklist-item-add command."""
+    """Tests for the koi-blocklist-items-add command."""
 
     def test_blocklist_item_add_single_item(self, mock_client, mocker):
-        """Test koi-blocklist-item-add successfully adds a single item."""
+        """Test koi-blocklist-items-add successfully adds a single item."""
         mocker.patch.object(mock_client, "add_blocklist_items", return_value=None)
 
         args = {"item_id": "mal-001", "marketplace": "vscode"}
-        result = koi_blocklist_item_add_command(mock_client, args)
+        result = koi_blocklist_items_add_command(mock_client, args)
 
         assert "was added successfully" in result.readable_output
         assert "mal-001" in result.readable_output
@@ -2133,7 +2133,7 @@ class TestKoiBlocklistItemAddCommand:
         ids=["multiple_items", "single_item"],
     )
     def test_blocklist_item_add_from_file(self, mock_client, mocker, tmp_path, items_data, expected_readable):
-        """Test koi-blocklist-item-add from a JSON file entry ID."""
+        """Test koi-blocklist-items-add from a JSON file entry ID."""
         mocker.patch.object(mock_client, "add_blocklist_items", return_value=None)
 
         json_file = tmp_path / "items.json"
@@ -2142,7 +2142,7 @@ class TestKoiBlocklistItemAddCommand:
         mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "items.json"})
 
         args = {"items_list_raw_json_entry_id": "entry-abc-123"}
-        result = koi_blocklist_item_add_command(mock_client, args)
+        result = koi_blocklist_items_add_command(mock_client, args)
 
         assert expected_readable in result.readable_output
         mock_client.add_blocklist_items.assert_called_once_with(items_data)

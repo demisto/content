@@ -195,7 +195,7 @@ script:
     - contextPath: Koi.Allowlist.created_at
       description: The creation time of the allowlist item in ISO 8601 format.
       type: Date
-  - name: koi-allowlist-item-remove
+  - name: koi-allowlist-items-remove
     description: Removes one or more items from the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
     execution: true
     arguments:
@@ -234,7 +234,7 @@ script:
     - name: items_list_raw_json_entry_id
       description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
-  - name: koi-allowlist-item-add
+  - name: koi-allowlist-items-add
     description: Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
     arguments:
     - name: item_id
@@ -303,7 +303,7 @@ script:
     - contextPath: Koi.Blocklist.created_at
       description: The creation time of the blocklist item in ISO 8601 format.
       type: Date
-  - name: koi-blocklist-item-remove
+  - name: koi-blocklist-items-remove
     description: Removes one or more items from the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
     execution: true
     arguments:
@@ -342,7 +342,7 @@ script:
     - name: items_list_raw_json_entry_id
       description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
-  - name: koi-blocklist-item-add
+  - name: koi-blocklist-items-add
     description: Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
     arguments:
     - name: item_id

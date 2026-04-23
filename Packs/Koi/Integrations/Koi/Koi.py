@@ -1159,7 +1159,7 @@ def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
-def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def koi_allowlist_items_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Remove one or more items from the global allowlist.
 
     Supports two input modes:
@@ -1174,7 +1174,7 @@ def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> C
     Returns:
         CommandResults with a success message.
     """
-    demisto.debug("[Command] koi-allowlist-item-remove triggered")
+    demisto.debug("[Command] koi-allowlist-items-remove triggered")
 
     items = resolve_items_from_args(args)
     client.remove_allowlist_items(items)
@@ -1190,7 +1190,7 @@ def koi_allowlist_item_remove_command(client: Client, args: dict[str, Any]) -> C
     return CommandResults(readable_output=readable)
 
 
-def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def koi_allowlist_items_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Add one or more items to the global allowlist.
 
     Supports two input modes:
@@ -1205,7 +1205,7 @@ def koi_allowlist_item_add_command(client: Client, args: dict[str, Any]) -> Comm
     Returns:
         CommandResults with a success message.
     """
-    demisto.debug("[Command] koi-allowlist-item-add triggered")
+    demisto.debug("[Command] koi-allowlist-items-add triggered")
 
     items = resolve_items_from_args(args)
     client.add_allowlist_items(items)
@@ -1264,7 +1264,7 @@ def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
-def koi_blocklist_item_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def koi_blocklist_items_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Remove one or more items from the global blocklist.
 
     Supports two input modes:
@@ -1279,7 +1279,7 @@ def koi_blocklist_item_remove_command(client: Client, args: dict[str, Any]) -> C
     Returns:
         CommandResults with a success message.
     """
-    demisto.debug("[Command] koi-blocklist-item-remove triggered")
+    demisto.debug("[Command] koi-blocklist-items-remove triggered")
 
     items = resolve_items_from_args(args)
     client.remove_blocklist_items(items)
@@ -1295,7 +1295,7 @@ def koi_blocklist_item_remove_command(client: Client, args: dict[str, Any]) -> C
     return CommandResults(readable_output=readable)
 
 
-def koi_blocklist_item_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def koi_blocklist_items_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Add one or more items to the global blocklist.
 
     Supports two input modes:
@@ -1310,7 +1310,7 @@ def koi_blocklist_item_add_command(client: Client, args: dict[str, Any]) -> Comm
     Returns:
         CommandResults with a success message.
     """
-    demisto.debug("[Command] koi-blocklist-item-add triggered")
+    demisto.debug("[Command] koi-blocklist-items-add triggered")
 
     items = resolve_items_from_args(args)
     client.add_blocklist_items(items)
@@ -1339,11 +1339,11 @@ COMMAND_MAP: dict[str, Any] = {
     "fetch-events": fetch_events_command,
     "koi-policy-list": koi_policy_list_command,
     "koi-allowlist-get": koi_allowlist_get_command,
-    "koi-allowlist-item-remove": koi_allowlist_item_remove_command,
-    "koi-allowlist-item-add": koi_allowlist_item_add_command,
+    "koi-allowlist-items-remove": koi_allowlist_items_remove_command,
+    "koi-allowlist-items-add": koi_allowlist_items_add_command,
     "koi-blocklist-get": koi_blocklist_get_command,
-    "koi-blocklist-item-remove": koi_blocklist_item_remove_command,
-    "koi-blocklist-item-add": koi_blocklist_item_add_command,
+    "koi-blocklist-items-remove": koi_blocklist_items_remove_command,
+    "koi-blocklist-items-add": koi_blocklist_items_add_command,
 }
 
 
