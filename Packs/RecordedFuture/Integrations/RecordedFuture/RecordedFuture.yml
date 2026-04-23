@@ -31,35 +31,70 @@ configuration:
   displaypassword: API Token
   hiddenusername: true
   section: Connect
-- display: File Threshold
+- display: File Suspicious Threshold
+  additionalinfo: Minimum risk score from Recorded Future to consider the file suspicious.
+  name: file_threshold_suspicious
+  defaultvalue: "25"
+  type: 0
+  required: false
+  section: Collect
+- display: File Malicious Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the file malicious.
   name: file_threshold
   defaultvalue: "65"
   type: 0
   required: false
   section: Collect
-- display: CVE Threshold
+- display: CVE Suspicious Threshold
+  additionalinfo: Minimum risk score from Recorded Future to consider the CVE suspicious.
+  name: cve_threshold_suspicious
+  defaultvalue: "25"
+  type: 0
+  required: false
+  section: Collect
+- display: CVE Malicious Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the CVE malicious.
   name: cve_threshold
   defaultvalue: "65"
   type: 0
   required: false
   section: Collect
-- display: IP Threshold
-  additionalinfo: Minimum risk score from RF to consider the IP malicious.
+- display: IP Suspicious Threshold
+  additionalinfo: Minimum risk score from Recorded Future to consider the IP suspicious.
+  name: ip_threshold_suspicious
+  defaultvalue: "25"
+  type: 0
+  required: false
+  section: Collect
+- display: IP Malicious Threshold
+  additionalinfo: Minimum risk score from Recorded Future to consider the IP malicious.
   name: ip_threshold
   defaultvalue: "65"
   type: 0
   required: false
   section: Collect
-- display: Domain Threshold
+- display: Domain Suspicious Threshold
+  additionalinfo: Minimum risk score from Recorded Future to consider the domain suspicious.
+  name: domain_threshold_suspicious
+  defaultvalue: "25"
+  type: 0
+  required: false
+  section: Collect
+- display: Domain Malicious Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
   defaultvalue: "65"
   type: 0
   required: false
   section: Collect
-- display: URL Threshold
+- display: URL Suspicious Threshold
+  additionalinfo: Minimum risk score from Recorded Future to consider the URL suspicious.
+  name: url_threshold_suspicious
+  defaultvalue: "25"
+  type: 0
+  required: false
+  section: Collect
+- display: URL Malicious Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
   defaultvalue: "65"
