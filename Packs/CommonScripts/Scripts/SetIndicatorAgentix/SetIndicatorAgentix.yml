@@ -44,4 +44,4 @@ fromversion: 6.1.0
 marketplaces:
 - platform
 supportedModules:
-- TIM
+- tim
