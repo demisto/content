@@ -2404,9 +2404,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
         # in case of a single key, create a column table where each element is in a different row.
         headers = list(t.keys())
-        # if the value of the single key is a list, unpack it for creating a column table.
-        if isinstance(list(t.values())[0], list):
-            t = list(t.values())[0]
+        # if the value of the single key is a non-empty list, unpack it for creating a column table.
+        single_value = list(t.values())[0]
+        if isinstance(single_value, list) and single_value:
+            t = single_value
 
     if not isinstance(t, list):
         t = [t]
@@ -12226,7 +12227,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': fetch_limit,
+            'limit': new_limit if look_back > 0 else fetch_limit,
         }
     else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,

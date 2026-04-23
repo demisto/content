@@ -400,30 +400,30 @@ Get case information based on the specified filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved. | Optional |
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved. | Optional |
-| lte_modification_time | Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional |
-| gte_modification_time | Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional |
-| case_id_list | A comma seperated list of case IDs. | Optional |
-| since_creation_time | Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional |
-| since_modification_time | Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional |
-| sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
-| sort_by_creation_time | Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional |
+| case_id_list | A comma-separated list of case IDs to filter by. | Optional |
+| sort_by_creation_time | Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending). Possible values are: ASC, DESC. | Optional |
+| sort_by_modification_time | Sorts returned cases by the date/time that the case was modified ("asc" - ascending, "desc" - descending). Possible values are: ASC, DESC. | Optional |
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
-| limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
-| case_domain | A comma-separated list of domains to filter cases by. | Optional |
-| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, in_progress, resolved. | Optional |
-| not_status | A comma-separated list of case statuses to exclude. Possible values are: new, in_progress, resolved. | Optional |
-| severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
+| limit | Maximum number of cases to return per page. The default and maximum value is 100. Default is 100. | Optional |
+| case_domain | A comma-separated list of domains to filter cases by. Possible values are: DOMAIN_SECURITY, DOMAIN_POSTURE, DOMAIN_IT, DOMAIN_HEALTH, DOMAIN_HUNTING. | Optional |
+| status | A comma-separated list of case statuses to filter cases by.<br/>. Possible values are: new, in_progress, resolved. | Optional |
+| not_status | A comma-separated list of statuses to exclude. Possible values are: new, in_progress, resolved. | Optional |
+| severity | A comma-separated list of severity levels to filter cases by.<br/>. Possible values are: low, medium, high, critical. | Optional |
 | asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
 | asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
 | hosts | A comma-separated list of hosts to filter cases by. | Optional |
-| tags | A comma-separated list of tags to filter cases by. | Optional |
-| assignee | A comma-separated list of assignee names or emails to filter cases by. | Optional |
+| assignee | A comma-separated list of assignee names or emails to filter cases by. Note: all values must be either names or emails - mixing both in the same request is not supported. Use the special values: "assigned" - to get all cases with assignees, "unassigned" - to get cases with no assignees. | Optional |
 | starred | Filter cases by whether they are starred or not. Possible values are: true, false. | Optional |
 | case_name | A comma-separated list of names to filter cases by. | Optional |
 | case_description | A comma-separated list of descriptions to filter cases by. | Optional |
-| get_enriched_case_data | Whether to include enriched case data in the response. Recommended for up to 10 cases. Possible values are: true, false. Default is false. | Optional |
+| lte_creation_time | A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or before the specified datetime will be retrieved. | Optional |
+| gte_creation_time | A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved. | Optional |
+| since_creation_time | Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on. | Optional |
+| lte_modification_time | Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00. | Optional |
+| gte_modification_time | Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00. | Optional |
+| since_modification_time | Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on. | Optional |
+| get_enriched_case_data | Whether to include enriched case data in the response (detection_time, notes, xdr_url, manual_description, starred_manually). Only supported for up to 10 cases. When more than 10 cases are returned, the command automatically falls back to standard case data. Possible values are: true, false. Default is false. | Optional |
+| tags | A comma-separated list of tags to filter cases by. | Optional |
 
 #### Context Output
 
@@ -446,14 +446,15 @@ Get case information based on the specified filters.
 | Core.Case.user_count | Number | Number of users involved in the case. |
 | Core.Case.host_count | Number | Number of hosts involved in the case. |
 | Core.Case.resolve_comment | String | Comments added when resolving the case. May be null. |
+| Core.Case.resolve_reason | String | The reason for resolving the case \(e.g. known_issue, duplicate, false_positive, other, true_positive, security_testing\). May be null. |
 | Core.Case.resolved_timestamp | Number | Timestamp when the case was resolved. |
 | Core.Case.manual_severity | Number | Severity manually assigned by the user. May be null. |
 | Core.Case.starred | Boolean | Indicates whether the case is starred. |
 | Core.Case.hosts | Array | List of hosts involved in the case. |
 | Core.Case.users | Array | List of users involved in the case. |
 | Core.Case.case_sources | Array | Sources of the case. |
-| Core.Case.rule_based_score | Number | Score based on rules. |
 | Core.Case.manual_score | Number | Manually assigned score. May be null. |
+| Core.Case.rule_based_score | Number | Score based on rules. |
 | Core.Case.wildfire_hits | Number | Number of WildFire hits. |
 | Core.Case.issues_grouping_status | String | Status of issue grouping. |
 | Core.Case.mitre_tactics_ids_and_names | Array | List of MITRE ATT&amp;CK tactic IDs and names associated with the case. |
@@ -471,8 +472,8 @@ Get case information based on the specified filters.
 | Core.Case.CaseExtraData.manual_description | String | Description manually provided by the user. |
 | Core.Case.CaseExtraData.notes | String | The notes related to the case. |
 | Core.Case.CaseExtraData.detection_time | Date | The timestamp when the first issue was detected in the case. |
-| Core.CasesMetadata.returned_count | String | The actual number of cases that match all filter criteria and returned in this specific response. |
-| Core.CasesMetadata.filtered_count | String | The total number of cases in the system that match all filter criteria. |
+| Core.CasesMetadata.returned_count | Number | The actual number of cases that match all filter criteria and returned in this specific response. |
+| Core.CasesMetadata.filtered_count | Number | The total number of cases in the system that match all filter criteria. |
 
 ### core-update-case
 
@@ -485,20 +486,20 @@ Updates the properties of a case.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| case_id | A comma-separated list of case IDs to update. | Required |
-| case_name | The new name for the case. | Optional |
-| description | The new description for the case. | Optional |
-| assignee | The email address of the new assignee. Use "unassigned" to remove an existing assignee. | Optional |
-| status | The new status for the case. Possible values are: new, in_progress, resolved. | Optional |
-| notes | Additional notes for the case. | Optional |
-| starred | Whether the case should be starred. Possible values are: true, false. | Optional |
-| user_defined_severity | The user-defined severity for the case. Possible values are: low, medium, high, critical. | Optional |
-| resolve_reason | The reason for resolving the case. Only relevant when status is set to resolved. Possible values are: known_issue, duplicate, false_positive, true_positive, security_testing, other. | Optional |
-| resolved_comment | Comment when resolving the case. Only relevant when status is set to resolved. | Optional |
-| resolve_all_alerts | Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Possible values are: true, false. | Optional |
-| custom_fields | A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`). | Optional |
+| **Argument Name**     | **Description**                                                                                                                                                                       | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| case_id               | A comma-separated list of case IDs to update.                                                                                                                                         | Required     |
+| case_name             | The new name for the case.                                                                                                                                                            | Optional     |
+| description           | The new description for the case.                                                                                                                                                     | Optional     |
+| assignee              | The email address of the new assignee. Use "unassigned" to remove an existing assignee.                                                                                               | Optional     |
+| status                | The new status for the case. Possible values are: new, in_progress, resolved.                                                                                                         | Optional     |
+| notes                 | Additional notes for the case.                                                                                                                                                        | Optional     |
+| starred               | Whether the case should be starred. Possible values are: true, false.                                                                                                                 | Optional     |
+| user_defined_severity | The user-defined severity for the case. Possible values are: low, medium, high, critical.                                                                                             | Optional     |
+| resolve_reason        | The reason for resolving the case. Only relevant when status is set to resolved. Possible values are: known_issue, duplicate, false_positive, true_positive, security_testing, other. | Optional     |
+| resolved_comment      | Comment when resolving the case. Only relevant when status is set to resolved.                                                                                                        | Optional     |
+| resolve_all_alerts    | Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Possible values are: true, false.                                               | Optional     |
+| custom_fields         | A JSON encoded string representing custom field name-value pairs to update.  (e.g., `{"field1": "value1", "multiselect_field": ["a", "b"]}`).                                         | Optional     |
 
 #### Context Output
 
@@ -719,6 +720,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
+| Core.IssueRecommendations.network_reachability | Json | The Network reachability information for the issue. |
 
 ### core-enable-scanners
 

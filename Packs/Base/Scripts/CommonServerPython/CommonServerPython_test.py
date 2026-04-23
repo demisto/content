@@ -684,6 +684,20 @@ class TestTableToMarkdown:
         assert table_single_key_dict_nested == expected_single_key_dict_nested_tbl
 
     @staticmethod
+    def test_single_key_dict_with_empty_list():
+        """
+        Given:
+          - A single-key dict whose value is an empty list, and no explicit headers.
+        When:
+          - Calling tableToMarkdown.
+        Then:
+          - Should return a 'No entries.' table without raising an IndexError.
+        """
+        table = tableToMarkdown('tableToMarkdown test with single key dict and empty list',
+                                {'Name Servers': []})
+        assert '|Name Servers|\n|---|\n|  |' in table
+
+    @staticmethod
     def test_dict_with_special_character():
         """
         When:
@@ -9008,7 +9022,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
@@ -9024,7 +9038,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-07T10:13:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )

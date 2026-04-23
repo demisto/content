@@ -10,7 +10,7 @@ BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
 TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
-TOKEN_EXPIRY_BUFFER_SECONDS = 30  # Refresh the cached token this many seconds before it actually expires
+TOKEN_EXPIRY_BUFFER_SECONDS = 120  # Refresh the cached token this many seconds before it actually expires
 
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -181,26 +181,25 @@ class Client(BaseClient):
         else:
             raise DemistoException(f"The request failed with status code {res.status_code}.\nMessage: {res.text}")
 
-    def api_request(
+    def _do_http_request(
         self,
         method: str,
         url_suffix: str,
-        data: dict | list | None = None,
-        params: dict | None = None,
-        resp_type: str = "json",
+        data: dict | list | None,
+        params: dict | None,
+        resp_type: str,
     ):
-        """Makes an authenticated API request to the ZIA API.
+        """Executes a single authenticated HTTP request to the ZIA API.
 
-        Automatically injects the Bearer token Authorization header and retries
-        on HTTP 429 (rate limit) responses up to 3 times.
+        Injects the current Bearer token Authorization header and retries
+        automatically on HTTP 429 (rate limit) responses up to 3 times.
 
         Args:
             method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
             url_suffix: The API path suffix appended to BASE_API_URL.
             data: Optional JSON-serializable body payload (dict or list).
             params: Optional URL query parameters dict.
-            resp_type: Response parsing mode passed to _http_request
-                (e.g. "json", "response", "content").
+            resp_type: Response parsing mode passed to _http_request.
 
         Returns:
             The parsed API response (type depends on resp_type).
@@ -217,6 +216,46 @@ class Client(BaseClient):
             retries=3,
             status_list_to_retry=[429],
         )
+
+    def api_request(
+        self,
+        method: str,
+        url_suffix: str,
+        data: dict | list | None = None,
+        params: dict | None = None,
+        resp_type: str = "json",
+    ):
+        """Makes an authenticated API request to the ZIA API.
+
+        Automatically injects the Bearer token Authorization header and retries
+        on HTTP 429 (rate limit) responses up to 3 times.
+
+        If a 401 response is received (e.g. due to a stale cached token caused
+        by clock drift), the cached token is cleared and the request is retried
+        once with a freshly obtained token.
+
+        Args:
+            method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
+            url_suffix: The API path suffix appended to BASE_API_URL.
+            data: Optional JSON-serializable body payload (dict or list).
+            params: Optional URL query parameters dict.
+            resp_type: Response parsing mode passed to _http_request
+                (e.g. "json", "response", "content").
+
+        Returns:
+            The parsed API response (type depends on resp_type).
+        """
+        try:
+            return self._do_http_request(method, url_suffix, data, params, resp_type)
+        except DemistoException as e:
+            if getattr(getattr(e, "res", None), "status_code", None) == 401:
+                demisto.debug("401 detected - forcing token refresh and retrying request.")
+                ctx = get_integration_context() or {}
+                ctx.pop("access_token", None)
+                ctx.pop("token_expires_at", None)
+                set_integration_context(ctx)
+                return self._do_http_request(method, url_suffix, data, params, resp_type)
+            raise
 
     def activate_changes(self) -> dict:
         """Activates saved ZIA configuration changes.

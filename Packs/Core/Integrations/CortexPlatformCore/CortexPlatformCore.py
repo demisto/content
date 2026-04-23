@@ -198,10 +198,12 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "other": "STATUS_070_RESOLVED_OTHER",
         "true_positive": "STATUS_090_TRUE_POSITIVE",
         "security_testing": "STATUS_100_SECURITY_TESTING",
-        "other": "STATUS_070_RESOLVED_OTHER",
     }
+
+    STATUS_RESOLVED_REASON_OUTPUT = {v: k for k, v in STATUS_RESOLVED_REASON.items()}
 
     FIELDS = {
         "case_id_list": "CASE_ID",
@@ -460,6 +462,17 @@ DAYS_MAPPING = {
     "thursday": 5,
     "friday": 6,
     "saturday": 7,
+}
+
+# Mapping from human-readable issue type names to table names.
+ISSUE_TYPE_TABLE_MAPPING: dict[str, str] = {
+    "vulnerabilities": "ISSUES_CVES",
+    "secrets": "ISSUES_SECRETS",
+    "iac": "ISSUES_IAC",
+    "weaknesses": "ISSUES_WEAKNESSES",
+    "operational_risk": "ISSUES_OPERATIONAL_RISK",
+    "licenses": "ISSUES_LICENSES",
+    "cicd": "ISSUES_CI_CD",
 }
 
 
@@ -813,7 +826,7 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             data=request_body,
-            headers={**self._headers, "content-type": "application/json"},
+            headers=self._headers,
             url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
 
@@ -837,7 +850,7 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             data=policy_payload,
-            headers={**self._headers, "content-type": "application/json"},
+            headers=self._headers,
             url_suffix="/public_api/appsec/v1/policies",
         )
 
@@ -1304,6 +1317,7 @@ def create_issue_recommendations_readable_output(issue_ids: list[str], all_recom
         "severity",
         "description",
         "remediation",
+        "network_reachability",
     ]
 
     # Flags to track what headers we need to append
@@ -1412,6 +1426,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
             "severity": issue.get("severity"),
             "description": issue.get("alert_description"),
             "remediation": issue.get("remediation"),
+            "network_reachability": issue.get("extended_fields", {}).get("network_reachability") or {},
         }
 
         # --- Playbook and Quick Action Suggestions ---
@@ -1755,10 +1770,14 @@ def map_case_format(case_list):
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
             "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON_OUTPUT.get(
+                case_data.get("RESOLVE_REASON"), case_data.get("RESOLVE_REASON")
+            ),
             "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
-            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
-            "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
+            "original_tags": [tag.get("tag_name") for tag in (case_data.get("ORIGINAL_TAGS") or [])],
+            "tags": [tag.get("tag_name") for tag in (case_data.get("CURRENT_TAGS") or [])],
             "issue_count": case_data.get("ACC_ALERT_COUNT"),
             "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
             "high_severity_issue_count": case_data.get("HIGH_SEVERITY_ALERTS"),
@@ -1771,11 +1790,10 @@ def map_case_format(case_list):
             "wildfire_hits": case_data.get("WF_HITS"),
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
-            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
             "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
-            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "custom_fields": {k.removeprefix("CUSTOM_").lower(): v for k, v in case_data.items() if k.startswith("CUSTOM_")},
             "hosts": case_data.get("HOSTS") or [],
             "users": case_data.get("USERS") or [],
             "host_count": len(case_data.get("HOSTS", []) or []),
@@ -2689,6 +2707,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
             - conditions_*: Various condition parameters (finding type, severity, etc.)
             - scope_*: Policy scope configuration parameters
             - trigger_*: Policy trigger configuration (periodic, PR, CI/CD)
+            - suggestion_id: Optional ID of an AI-generated policy suggestion to link to
 
     Returns:
         CommandResults: Results object containing the created policy information with
@@ -2721,8 +2740,12 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         "assetGroupIds": asset_group_ids,
         "triggers": triggers,
     }
+
+    # Optional: link to an AI-generated policy suggestion
+    if suggestion_id := args.get("suggestion_id"):
+        payload["suggestionId"] = suggestion_id
+
     payload = json.dumps(payload)
-    demisto.debug(f"{payload=}")
 
     client.create_policy(payload)
 
@@ -2752,7 +2775,16 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         # Default to all finding types if none specified
         finding_types = [ft for ft in POLICY_FINDING_TYPE_MAPPING if ft != "CI/CD Risk"]
 
-    builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
+    # Support both human-readable names ("Vulnerabilities") and raw API values ("CAS_CVE_SCANNER").
+    api_values = set(POLICY_FINDING_TYPE_MAPPING.values())
+    resolved_finding_types = []
+    for ft in finding_types:
+        if ft in api_values:
+            resolved_finding_types.append(ft)
+        elif ft in POLICY_FINDING_TYPE_MAPPING:
+            resolved_finding_types.append(POLICY_FINDING_TYPE_MAPPING[ft])
+
+    builder.add_field("Finding Type", FilterType.EQ, resolved_finding_types)
 
     # Severity
     if severities := argToList(args.get("conditions_severity")):
@@ -2762,33 +2794,37 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
-    # Backlog
-    if backlog := args.get("conditions_backlog_status"):
-        builder.add_field("Backlog Status", FilterType.EQ, backlog)
-
     # Packages
-    for field in ["package_name", "package_version", "package_operational_risk"]:
+    package_field_map = {
+        "package_name": ("PackageName", FilterType.EQ),
+        "package_version": ("PackageVersion", FilterType.EQ),
+        "package_operational_risk": ("Package Operational Risk", FilterType.EQ),
+    }
+    for field, (api_field_name, op) in package_field_map.items():
         if val := args.get(f"conditions_{field}"):
-            op = FilterType.CONTAINS if field == "package_name" else FilterType.EQ
-            builder.add_field(field.replace("_", " ").title(), op, val)
+            builder.add_field(api_field_name, op, val)
 
     # AppSec Rules
     if rule_names := argToList(args.get("conditions_appsec_rule_names")):
         rule_ids = get_appsec_rule_ids_from_names(client, rule_names)
         builder.add_field("AppSec Rule", FilterType.EQ, rule_ids)
 
+    # HasAFix
+    if has_a_fix := arg_to_bool_or_none(args.get("conditions_has_a_fix")):
+        builder.add_field("HasAFix", FilterType.EQ, has_a_fix)
+
+    # Backlog
+    if backlog := args.get("conditions_backlog_status"):
+        builder.add_field("Backlog Status", FilterType.EQ, backlog)
+
+    # IsKev
+    if is_kev := arg_to_bool_or_none(args.get("conditions_is_kev")):
+        builder.add_field("IsKev", FilterType.EQ, is_kev)
+
     # CVSS / EPSS
     for f, n in [("cvss", "CVSS"), ("epss", "EPSS")]:
         if val := arg_to_number(args.get(f"conditions_{f}")):
             builder.add_field(n, FilterType.GTE, val)
-
-    # Boolean Conditions
-    for key, label in {
-        "has_a_fix": "HasAFix",
-        "is_kev": "IsKev",
-    }.items():
-        if val := arg_to_bool_or_none(args.get(f"conditions_{key}")):
-            builder.add_field(label, FilterType.EQ, val)
 
     # Secret Validity, License Type
     for key, label in {
@@ -2805,23 +2841,37 @@ def parse_custom_fields(custom_fields: str) -> dict:
     """
     Parse and sanitize custom fields from JSON string input.
 
+    Accepts two formats:
+    - Dict: ``{"field1": "value1", "field2": ["a", "b"]}``
+    - List of single-key objects (legacy): ``[{"field1": "value1"}, {"field2": ["a", "b"]}]``
+
     Args:
-        custom_fields: JSON string containing array of custom field objects
+        custom_fields: JSON string in either dict or list-of-objects format.
 
     Returns:
-        dict: Dictionary with sanitized alphanumeric keys and string values,
-              duplicate keys are ignored (first occurrence wins)
+        dict: Dictionary with sanitized alphanumeric keys and native values.
+              Values are passed as-is (no stringification) so that multiselect
+              list values, booleans, and numbers reach the API in the correct type.
+              Duplicate keys are ignored (first occurrence wins).
     """
-    custom_fields = safe_load_json(custom_fields)
+    parsed = safe_load_json(custom_fields)
 
-    parsed_fields = {}
+    parsed_fields: dict = {}
 
-    for custom_field in custom_fields:
-        for key, value in custom_field.items():
-            # Sanitize key: remove non-alphanumeric characters
-            sanitized_key = "".join(char for char in key if char.isalnum())
-            if sanitized_key and sanitized_key not in parsed_fields:
-                parsed_fields[sanitized_key] = str(value)
+    if isinstance(parsed, dict):
+        # New preferred format: {"field1": "value1", "field2": ["a", "b"]}
+        raw_items = list(parsed.items())
+    elif isinstance(parsed, list):
+        # Legacy format: [{"field1": "value1"}, {"field2": ["a", "b"]}]
+        raw_items = [(k, v) for obj in parsed if isinstance(obj, dict) for k, v in obj.items()]
+    else:
+        return {}
+
+    for key, value in raw_items:
+        # Sanitize key: remove non-alphanumeric characters
+        sanitized_key = "".join(char for char in key if char.isalnum())
+        if sanitized_key and sanitized_key not in parsed_fields:
+            parsed_fields[sanitized_key] = value
 
     return parsed_fields
 
@@ -2852,16 +2902,16 @@ def create_policy_build_scope(args: dict) -> dict:
 
     # Category
     if categories := argToList(args.get("scope_category", [])):
-        builder.add_field("category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
+        resolved_categories = [POLICY_CATEGORY_MAPPING.get(c.title(), POLICY_CATEGORY_MAPPING.get(c, c)) for c in categories]
+        builder.add_field("category", FilterType.EQ, resolved_categories)
 
-    # Business application names - use the exact field name
+    # Business application names — always use ARRAY_CONTAINS since the field is an array type.
     if business_app_names := argToList(args.get("scope_business_application_names")):
-        filter_type = FilterType.ARRAY_CONTAINS if len(business_app_names) > 1 else FilterType.CONTAINS
-        builder.add_field("business_application_names", filter_type, business_app_names)
+        builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS, business_app_names)
 
     # Application business criticality
-    if app_criticality := args.get("scope_application_business_criticality"):
-        builder.add_field("application_business_criticality", FilterType.CONTAINS, app_criticality)
+    if app_criticality := argToList(args.get("scope_application_business_criticality")):
+        builder.add_field("application_business_criticality", FilterType.EQ, app_criticality)
 
     # Repository name
     if repo_name := args.get("scope_repository_name"):
@@ -2873,7 +2923,7 @@ def create_policy_build_scope(args: dict) -> dict:
         "scope_has_deployed_assets": "has_deployed_assets",
         "scope_has_internet_exposed_deployed_assets": "has_internet_exposed",
         "scope_has_sensitive_data_access": "has_sensitive_data_access",
-        "scope_has_privileged_capabilities": "has_privileged_capabilities",
+        "scope_has_privileged_capabilities": "has_leverage_privileged_capabilities",
     }.items():
         if val := arg_to_bool_or_none(args.get(key)):
             builder.add_field(label, FilterType.EQ, val)
@@ -2998,9 +3048,23 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     tables_filters = {}
     filter_builder = FilterBuilder()
 
-    for issue_type in AppsecIssues.ISSUE_TYPES:
-        if special_filter_args.issubset(issue_type.filters):
-            tables_filters[issue_type.table_name] = filter_builder
+    # If issue_category is specified, restrict to those specific tables
+    requested_types = argToList(args.get("issue_category"))
+    if requested_types:
+        valid_table_names = {it.table_name for it in AppsecIssues.ISSUE_TYPES}
+        for rt in requested_types:
+            rt_lower = rt.lower().strip()
+            table_name = ISSUE_TYPE_TABLE_MAPPING.get(rt_lower) or rt.upper().strip()
+            if table_name in valid_table_names:
+                tables_filters[table_name] = filter_builder
+            else:
+                raise DemistoException(
+                    f"Unknown issue type '{rt}'. " f"Supported values: {', '.join(ISSUE_TYPE_TABLE_MAPPING.keys())}."
+                )
+    else:
+        for issue_type in AppsecIssues.ISSUE_TYPES:
+            if special_filter_args.issubset(issue_type.filters):
+                tables_filters[issue_type.table_name] = filter_builder
 
     if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
@@ -3105,10 +3169,13 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "secret_validation": {"path": ["secret_validation"]},
         "is_fixable": {"path": ["cas_issues_is_fixable"]},
         "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "package_version": {"path": ["cas_issues_extended_fields", "package_version"]},
+        "fix_versions": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.fix_versions"]},
         "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
         "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
         "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
         "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "repository_is_public": {"path": ["cas_issues_extended_fields", "repository_is_public"]},
         "backlog_status": {"path": ["backlog_status"]},
     }
     appsec_issue = {}
@@ -3458,7 +3525,10 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+            "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+        }
         for f in fields_data
         if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
@@ -3475,7 +3545,19 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                 f" be set with custom_fields argument."
             )
         elif field_name in custom_fields:
-            valid_fields[field_name] = field_value
+            field_type = custom_fields[field_name]["field_type"]
+            if field_type == "multiSelect" and not isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
+                    f" Received: {field_value!r}"
+                )
+            elif field_type == "shortText" and isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type shortText and does not accept a list value."
+                    f" Provide a single value instead."
+                )
+            else:
+                valid_fields[field_name] = field_value
         else:
             error_messages.append(f"Field '{field_name}' does not exist.")
 
@@ -3614,7 +3696,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        scripts = scripts_results[0].outputs.get("Scripts", [])  # type: ignore
+        scripts: list = scripts_results[0].outputs or []  # type: ignore
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
