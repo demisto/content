@@ -234,7 +234,7 @@ class AuthClient(BaseClient):
 
             demisto.debug(
                 f"{LOG_PREFIX}Access token received successfully and set to integration context."
-                f"\naccess_token: {access_token}\nexpired_at: {expired_at}\nscope: {scope}"
+                f"\nexpired_at: {expired_at}\nscope: {scope}"
             )
 
             return access_token
@@ -256,13 +256,11 @@ class AuthClient(BaseClient):
             demisto.debug(f"{LOG_PREFIX}Private key must end with {suffix}")
             raise DemistoException(f"Private key must end with {suffix}")
 
-        demisto.debug(f"{LOG_PREFIX}Private key before strip: {private_key_pem}")
         private_key_pem = private_key_pem.replace(prefix, "").replace(suffix, "")
         private_key_sections = private_key_pem.strip().split(" ")
         striped_private_key = "".join(private_key_sections)
         formatted_private_key = prefix + "\n" + striped_private_key + "\n" + suffix
 
-        demisto.debug(f"{LOG_PREFIX}Private key after strip: {formatted_private_key}")
         return formatted_private_key
 
     def get_jwt(self, scopes: str) -> str:
@@ -272,7 +270,7 @@ class AuthClient(BaseClient):
             str: Signed JWT token
 
         """
-        demisto.debug(f"{LOG_PREFIX}Generating JWT for authentication.\nprivate_key_pem:\n{self.private_key_pem}")
+        demisto.debug(f"{LOG_PREFIX}Generating JWT for authentication.")
         now = _utcnow()
         headers = {"alg": "RS256", "typ": "JWT"}
         payload = {
