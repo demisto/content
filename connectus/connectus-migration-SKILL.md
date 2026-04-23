@@ -7,7 +7,7 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a **10-step workflow state machine** tracked in `connectus/integrations_report.csv` via the `connectus/workflow_state.py` CLI tool.
+This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows an **11-step workflow** tracked in `connectus/integrations_report.csv` via the `connectus/workflow_state.py` CLI tool. Step 1 (Verify Auth Classification) is a manual pre-check; steps 2–11 are tracked by the state machine.
 
 ## Critical Rules
 
@@ -51,7 +51,77 @@ python3 connectus/workflow_state.py set-assignee "<Integration Name>" "<Name>"
 
 ## Workflow Steps
 
-### Step 1: Set Script Inputs (column 7)
+### Step 1: Verify Auth Classification
+
+**Before starting any migration work**, manually verify that the Auth Class and Auth Detail for this integration are correct. The automated classification was done by analyzing YML param metadata (widget types), which produces systematic errors that must be caught before proceeding.
+
+#### Why This Step Exists
+
+The automated classifier has known blind spots:
+
+| Scenario | Classifier Output | Likely Correct Value |
+|---|---|---|
+| `type=9` (credentials widget) used for OAuth2 client_credentials flow | `Plain` | `OAuth2ClientCreds` |
+| `type=9` (credentials widget) used as static API key | `Plain` | `APIKey` |
+| `type=4` (encrypted) param that is an OAuth client secret | `APIKey` | `OAuth2ClientCreds` |
+| JWT signing with private keys | `Plain` or `APIKey` | `OAuth2JWT` |
+| Old `type=4` + new `type=9` params for the same credential (one hidden/deprecated) | `CHOICE(APIKey, Plain)` | Single mechanism (e.g., `APIKey` or `Plain`) |
+| OAuth/JWT flows detected in code but not mapped to params | Missing from Auth Class | Should be included |
+
+#### Procedure
+
+1. **Check the current Auth Class** from the status output:
+
+   ```bash
+   python3 connectus/workflow_state.py status "<Integration Name>"
+   ```
+
+2. **Read the integration's YML** — open the `configuration` section and identify all auth-related params:
+
+   - `type: 9` — credentials widget (username + password pair)
+   - `type: 4` — encrypted text field
+   - `type: 14` — certificate/key text
+   - `hiddenusername: true` — hides the username field (often means API key, not user/pass)
+   - `display` / `displaypassword` — labels that reveal the actual credential type
+
+   **Pay special attention to hidden and deprecated params:**
+   - Params with `hidden: true` are excluded from the classification but may still be used in code. Check whether they represent an old input path for the same credential (e.g., an old `type=4` param replaced by a new `type=9` param).
+   - Params with `deprecated: true` or names containing `_deprecated` should be ignored entirely — they are no longer functional.
+   - If a hidden param and a visible param carry the same credential (old/new migration), the classification should reflect only the visible param's mechanism, **not** `CHOICE` between two types.
+
+3. **Read the integration's Python code** to understand the actual auth flow. Search for these patterns:
+
+   - **OAuth2 Client Credentials**: `grant_type.*client_credentials`, `client_credentials`, `/oauth2/token`, `MicrosoftClient(`
+   - **OAuth2 Authorization Code**: `authorization_code`, `redirect_uri`, `oauth-start`, `oauth-complete`
+   - **OAuth2 JWT Bearer**: `jwt.encode`, `urn:ietf:params:oauth:grant-type:jwt-bearer`, `ServiceAccountCredentials`, `google.auth`
+   - **API Key**: `X-API-Key`, `apikey` header, `api_key` query param
+   - **Basic Auth**: `requests.auth.HTTPBasicAuth`, `auth=(username, password)`
+   - **Bearer Token**: `Authorization: Bearer`, `Bearer {token}`
+
+4. **Compare the code's actual auth mechanism against the CSV classification.** Common corrections:
+
+   - If a `type=9` `credentials` param is used to carry OAuth2 client ID + secret → change from `Plain(credentials)` to `OAuth2ClientCreds(credentials)`
+   - If a `type=9` param with `hiddenusername: true` carries a static API key → change from `Plain(credentials)` to `APIKey(credentials)`
+   - If `type=4` params named `client_secret` or `enc_key` are OAuth secrets → change from `APIKey(client_secret)` to `OAuth2ClientCreds(client_secret)`
+   - If the code does JWT signing → ensure `OAuth2JWT` is in the Auth Class
+   - If old `type=4` (hidden) and new `type=9` (visible) params exist for the same credential → it's not `CHOICE`, it's a single mechanism; classify based on the visible param only
+
+5. **If corrections are needed**, edit the Auth Class and Auth Detail columns directly in `connectus/integrations_report.csv`. These are data columns (not managed by `workflow_state.py`).
+
+#### Auth Type Reference
+
+See `connectus/Readme.md` for the full Auth Type definitions:
+
+| Value | Description |
+|---|---|
+| `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow |
+| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow |
+| `OAuth2JWT` | OAuth 2.0 JWT Bearer flow |
+| `APIKey` | API Key, HMAC, and similar static secret mechanisms |
+| `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates |
+| `NoneRequired` | No authentication needed |
+
+### Step 2: Set Script Inputs (column 7)
 
 Before any code generation, you must define the script inputs as valid JSON. This is a prerequisite for all subsequent steps.
 
@@ -71,7 +141,7 @@ python3 connectus/workflow_state.py set-inputs "MyIntegration" '{"credentials": 
 
 **Validation:** The command rejects invalid JSON and tells you the parse error.
 
-### Step 2: Generate Manifest (column 8)
+### Step 3: Generate Manifest (column 8)
 
 Generate the ConnectUs manifest YAML for the integration. Once generated and verified:
 
@@ -79,7 +149,7 @@ Generate the ConnectUs manifest YAML for the integration. Once generated and ver
 python3 connectus/workflow_state.py markpass "<Integration Name>" "generated manifest"
 ```
 
-### Step 3: Write Code (column 9)
+### Step 4: Write Code (column 9)
 
 Write the Python integration code. Follow the patterns in `Templates/Integrations/` and the project's `AGENTS.md` rules:
 
@@ -96,7 +166,7 @@ When code is written:
 python3 connectus/workflow_state.py markpass "<Integration Name>" "wrote code"
 ```
 
-### Step 4: Validations Passed (column 10)
+### Step 5: Validations Passed (column 10)
 
 Run `demisto-sdk validate` on the integration:
 
@@ -116,7 +186,7 @@ If validation fails, fix the issues and retry. If you need to reset:
 python3 connectus/workflow_state.py fail "<Integration Name>" "validations passed"
 ```
 
-### Step 5: Unit Tests Passed (column 11)
+### Step 6: Unit Tests Passed (column 11)
 
 Run unit tests via demisto-sdk pre-commit (which runs in Docker):
 
@@ -130,7 +200,7 @@ When tests pass:
 python3 connectus/workflow_state.py markpass "<Integration Name>" "unit tests passed"
 ```
 
-### Step 6: Param Parity Test Passes (column 12)
+### Step 7: Param Parity Test Passes (column 12)
 
 Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
 
@@ -138,7 +208,7 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration Name>" "param parity test passes"
 ```
 
-### Step 7: Auth Parity Flag (column 13)
+### Step 8: Auth Parity Flag (column 13)
 
 This is a **flag**, not a checkpoint. Set it based on whether the integration requires auth parity testing:
 
@@ -155,7 +225,7 @@ python3 connectus/workflow_state.py set-auth-flag "<Integration Name>" N/A
 
 **Important:** When set to `NO` or `N/A`, the next step (auth parity test passes) is automatically set to `N/A` and skipped.
 
-### Step 8: Auth Parity Test Passes (column 14)
+### Step 9: Auth Parity Test Passes (column 14)
 
 Only relevant if the auth flag is `YES`. Run the auth parity test to verify authentication works identically:
 
@@ -165,7 +235,7 @@ python3 connectus/workflow_state.py markpass "<Integration Name>" "auth parity t
 
 If the flag was `NO` or `N/A`, this step is auto-skipped.
 
-### Step 9: Code Reviewed (column 15)
+### Step 10: Code Reviewed (column 15)
 
 After code review is complete:
 
@@ -173,7 +243,7 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration Name>" "code reviewed"
 ```
 
-### Step 10: Code Merged (column 16)
+### Step 11: Code Merged (column 16)
 
 After the code is merged to the branch:
 
