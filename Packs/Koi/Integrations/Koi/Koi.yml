@@ -662,6 +662,124 @@ script:
     - contextPath: Koi.Inventory.software_category_koi
       description: The software category (Koi classification).
       type: String
+  - name: koi-inventory-item-get
+    description: Retrieves comprehensive details for a specific software item, extension, or package using its unique identifier, marketplace, and version.
+    arguments:
+    - name: item_id
+      description: Unique identifier for the item.
+      required: true
+    - name: marketplace
+      description: The marketplace where the item is hosted.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github_mcp_registry
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - notepad++
+      - npm
+      - office_add_ins
+      - open_vsx_registry
+      - pypi
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: version
+      description: The specific version of the item to retrieve.
+      defaultValue: '1.0.0'
+    outputs:
+    - contextPath: Koi.Inventory.item_id
+      description: The unique identifier of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.item_display_name
+      description: The display name of the inventory item.
+      type: String
+    - contextPath: Koi.Inventory.marketplace
+      description: The marketplace source of the item.
+      type: String
+    - contextPath: Koi.Inventory.version
+      description: The version of the item.
+      type: String
+    - contextPath: Koi.Inventory.platforms
+      description: List of platforms where the item is installed.
+      type: Unknown
+    - contextPath: Koi.Inventory.publisher_name
+      description: The publisher name of the item.
+      type: String
+    - contextPath: Koi.Inventory.risk
+      description: The numeric risk score of the item.
+      type: Number
+    - contextPath: Koi.Inventory.risk_level
+      description: The risk level classification of the item.
+      type: String
+    - contextPath: Koi.Inventory.status
+      description: The governance status of the item.
+      type: String
+    - contextPath: Koi.Inventory.endpoint_count
+      description: The number of endpoints where the item is installed.
+      type: Number
+    - contextPath: Koi.Inventory.installs_count
+      description: The total number of installs for the item.
+      type: Number
+    - contextPath: Koi.Inventory.installation_method
+      description: The method used to install the item.
+      type: String
+    - contextPath: Koi.Inventory.is_first_party
+      description: Whether the item is a first-party item.
+      type: Boolean
+    - contextPath: Koi.Inventory.is_signed
+      description: Whether the item is signed.
+      type: Boolean
+    - contextPath: Koi.Inventory.first_seen
+      description: The date the item was first seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_seen
+      description: The date the item was last seen in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.last_used
+      description: The date the item was last used in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Inventory.released_at
+      description: The release date of the item.
+      type: Date
+    - contextPath: Koi.Inventory.short_description
+      description: A short description of the item.
+      type: String
+    - contextPath: Koi.Inventory.categories
+      description: List of categories the item belongs to.
+      type: Unknown
+    - contextPath: Koi.Inventory.findings
+      description: List of findings associated with the item including severity and evidence.
+      type: Unknown
+    - contextPath: Koi.Inventory.governed_details
+      description: Governance policy details for the item.
+      type: Unknown
+    - contextPath: Koi.Inventory.brew_category_koi
+      description: The Homebrew package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.browser_category_koi
+      description: The browser extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.chocolatey_category_koi
+      description: The Chocolatey package category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.ide_category_koi
+      description: The IDE extension category (Koi classification).
+      type: String
+    - contextPath: Koi.Inventory.software_category_koi
+      description: The software category (Koi classification).
+      type: String
   runonce: false
   script: '-'
   type: python

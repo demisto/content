@@ -35,6 +35,7 @@ from Koi import (
     koi_blocklist_items_add_command,
     koi_policy_status_update_command,
     koi_inventory_list_command,
+    koi_inventory_item_get_command,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
@@ -104,6 +105,12 @@ def policy_update_response() -> dict:
 def inventory_response() -> dict:
     """Fixture for a mock inventory API response."""
     return load_test_data("inventory_response.json")
+
+
+@pytest.fixture
+def inventory_item_response() -> dict:
+    """Fixture for a mock inventory item API response."""
+    return load_test_data("inventory_item_response.json")
 
 
 @pytest.fixture
@@ -1466,6 +1473,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_inventory_result")
 
+    def test_main_routes_inventory_item_get(self, mocker):
+        """Test main routes koi-inventory-item-get command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-inventory-item-get")
+        mocker.patch.object(demisto, "args", return_value={"item_id": "abc123", "marketplace": "chrome_web_store"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_inventory_item_get = mocker.MagicMock(return_value="mock_inventory_item_result")
+        COMMAND_MAP["koi-inventory-item-get"] = mock_inventory_item_get
+
+        main()
+
+        mock_return.assert_called_once_with("mock_inventory_item_result")
+
 
 # endregion
 
@@ -2713,6 +2743,125 @@ class TestClientGetInventory:
         assert params["sort_by"] == "first_seen"
         assert params["sort_direction"] == "asc"
         assert params["view"] == "extensions"
+
+
+# endregion
+
+# region koi-inventory-item-get tests
+
+
+class TestKoiInventoryItemGetCommand:
+    """Tests for the koi-inventory-item-get command."""
+
+    @pytest.mark.parametrize(
+        "args, expected_version",
+        [
+            ({"item_id": "abc123", "marketplace": "chrome_web_store"}, Config.DEFAULT_VERSION),
+            ({"item_id": "abc123", "marketplace": "chrome_web_store", "version": "2.0.0"}, "2.0.0"),
+        ],
+        ids=["default_version", "explicit_version"],
+    )
+    def test_inventory_item_get(self, mock_client, inventory_item_response, mocker, args, expected_version):
+        """Test koi-inventory-item-get with default and explicit version."""
+        mocker.patch.object(mock_client, "get_inventory_item", return_value=inventory_item_response)
+
+        result = koi_inventory_item_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory"
+        assert result.outputs_key_field == "item_id"
+        assert result.outputs["item_id"] == "abc123"
+        assert result.outputs["item_display_name"] == "React Developer Tools"
+        mock_client.get_inventory_item.assert_called_once_with(
+            item_id="abc123",
+            marketplace="chrome_web_store",
+            version=expected_version,
+        )
+
+    def test_inventory_item_get_outputs_and_readable(self, mock_client, inventory_item_response, mocker):
+        """Test that all expected fields are present in outputs and readable output."""
+        mocker.patch.object(mock_client, "get_inventory_item", return_value=inventory_item_response)
+
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store"}
+        result = koi_inventory_item_get_command(mock_client, args)
+
+        # Verify readable output contains key data
+        assert "React Developer Tools" in result.readable_output
+        assert "Meta" in result.readable_output
+        assert "Inventory Item" in result.readable_output
+
+        # Verify all fields in outputs
+        item = result.outputs
+        assert item["item_id"] == "abc123"
+        assert item["item_display_name"] == "React Developer Tools"
+        assert item["marketplace"] == "chrome_web_store"
+        assert item["version"] == "1.0.0"
+        assert item["platforms"] == ["chrome", "edge"]
+        assert item["publisher_name"] == "Meta"
+        assert item["risk"] == 5
+        assert item["risk_level"] == "high"
+        assert item["status"] == "Allowed"
+        assert item["endpoint_count"] == 42
+        assert item["installs_count"] == 1000000
+        assert item["installation_method"] == "marketplace"
+        assert item["is_first_party"] is False
+        assert item["is_signed"] is True
+        assert item["first_seen"] == "2024-01-01T10:00:00Z"
+        assert item["last_seen"] == "2024-10-15T10:00:00Z"
+        assert item["last_used"] == "2025-06-15T10:00:00Z"
+        assert item["released_at"] == "2023-01-15"
+        assert item["short_description"] == "React debugging tools"
+        assert item["categories"] == ["Developer Tools"]
+        assert len(item["findings"]) == 1
+        assert item["findings"][0]["finding_id"] == "malware_detected"
+        assert item["findings"][0]["severity"] == "critical"
+        assert "default" in item["governed_details"]
+        assert item["brew_category_koi"] == "Command Line Tools & Utilities"
+        assert item["browser_category_koi"] == "Developer Tools"
+        assert item["chocolatey_category_koi"] == "Command Line Tools & Utilities"
+        assert item["ide_category_koi"] == "Language Support & Tooling"
+        assert item["software_category_koi"] == "Docs tools"
+
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {"marketplace": "chrome_web_store"},
+            {"item_id": "abc123"},
+            {},
+        ],
+        ids=["missing_item_id", "missing_marketplace", "no_args"],
+    )
+    def test_inventory_item_get_missing_required_args(self, mock_client, args):
+        """Test koi-inventory-item-get raises error for missing required arguments."""
+        with pytest.raises(KeyError):
+            koi_inventory_item_get_command(mock_client, args)
+
+
+class TestClientGetInventoryItem:
+    """Tests for the Client.get_inventory_item method."""
+
+    def test_get_inventory_item_request(self, mock_client, inventory_item_response, mocker):
+        """Test that get_inventory_item sends correct GET request with all required params."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_item_response)
+
+        result = mock_client.get_inventory_item(item_id="abc123", marketplace="chrome_web_store", version="2.0.0")
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["url_suffix"] == f"{API_INVENTORY}/abc123"
+        assert call_kwargs["params"]["marketplace"] == "chrome_web_store"
+        assert call_kwargs["params"]["version"] == "2.0.0"
+        assert result == inventory_item_response
+
+    def test_get_inventory_item_api_error(self, mock_client, mocker):
+        """Test that get_inventory_item propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [404] - Not Found"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.get_inventory_item(item_id="nonexistent", marketplace="chrome_web_store", version="1.0.0")
 
 
 # endregion

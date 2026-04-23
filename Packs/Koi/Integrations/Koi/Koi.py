@@ -48,6 +48,7 @@ class Config:
     # Pagination
     DEFAULT_PAGE_SIZE = 100
     MAX_PAGE_SIZE = 500
+    DEFAULT_VERSION = "1.0.0"
     MAX_PAGES_PER_FETCH = 10
     DEFAULT_PAGE = 1
     DEFAULT_LIMIT = 100
@@ -742,6 +743,39 @@ class Client(ContentClient):
         )
 
         demisto.debug("[API] Inventory response received")
+        return response
+
+    def get_inventory_item(
+        self,
+        item_id: str,
+        marketplace: str,
+        version: str,
+    ) -> dict[str, Any]:
+        """Fetch details for a specific inventory item from the Koi API.
+
+        Args:
+            item_id: Unique identifier for the item.
+            marketplace: The marketplace where the item is hosted.
+            version: The specific version of the item to retrieve.
+
+        Returns:
+            The full API response dictionary with item details.
+        """
+        params: dict[str, Any] = {
+            "marketplace": marketplace,
+            "version": version,
+        }
+
+        url_suffix = f"{API_INVENTORY}/{item_id}"
+        demisto.debug(f"[API] Fetching inventory item {item_id} | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params,
+        )
+
+        demisto.debug(f"[API] Inventory item {item_id} response received")
         return response
 
     def send_events(self, events: list[dict]) -> None:
@@ -1615,6 +1649,74 @@ def _fetch_inventory_with_pagination(
     return items
 
 
+def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Retrieve comprehensive details for a specific inventory item.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (item_id, marketplace, version).
+
+    Returns:
+        CommandResults with the inventory item details.
+    """
+    demisto.debug("[Command] koi-inventory-item-get triggered")
+
+    item_id: str = args["item_id"]
+    marketplace: str = args["marketplace"]
+    version: str = args.get("version") or Config.DEFAULT_VERSION
+
+    response = client.get_inventory_item(
+        item_id=item_id,
+        marketplace=marketplace,
+        version=version,
+    )
+
+    demisto.debug(f"[Command Result] Retrieved inventory item {item_id}")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory Item",
+        response,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "version",
+            "platforms",
+            "publisher_name",
+            "risk",
+            "risk_level",
+            "status",
+            "endpoint_count",
+            "installs_count",
+            "installation_method",
+            "is_first_party",
+            "is_signed",
+            "first_seen",
+            "last_seen",
+            "last_used",
+            "released_at",
+            "short_description",
+            "categories",
+            "findings",
+            "brew_category_koi",
+            "browser_category_koi",
+            "chocolatey_category_koi",
+            "ide_category_koi",
+            "software_category_koi",
+            "governed_details",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory",
+        outputs_key_field="item_id",
+        outputs=response,
+    )
+
+
 # endregion
 
 # region Main router
@@ -1635,6 +1737,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-blocklist-items-add": koi_blocklist_items_add_command,
     "koi-policy-status-update": koi_policy_status_update_command,
     "koi-inventory-list": koi_inventory_list_command,
+    "koi-inventory-item-get": koi_inventory_item_get_command,
 }
 
 
