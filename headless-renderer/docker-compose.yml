@@ -1,0 +1,31 @@
+services:
+  renderer:
+    build: .
+    command: ["--input", "/app/input/batch.json", "--output-dir", "/app/screenshots"]
+    deploy:
+      resources:
+        limits:
+          memory: 7g
+        reservations:
+          memory: 2g
+    volumes:
+      - ./input:/app/input:ro
+      - ./screenshots:/app/screenshots
+    environment:
+      - MAX_CONCURRENCY=20
+      - INITIAL_CONCURRENCY=10
+      - MIN_CONCURRENCY=2
+      - MEMORY_LOW_THRESHOLD=50
+      - MEMORY_MEDIUM_THRESHOLD=50
+      - MEMORY_HIGH_THRESHOLD=70
+      - MEMORY_CRITICAL_THRESHOLD=85
+      - TAB_MEMORY_LIMIT_MB=150
+      - TAB_TIMEOUT_MS=30000
+      - NETWORK_IDLE_TIMEOUT_MS=15000
+      - SCREENSHOT_DIR=/app/screenshots
+      - LOG_LEVEL=info
+      - TOTAL_MEMORY_MB=8192
+      - CHROME_MAX_MEMORY_MB=4096
+      - MEMORY_POLL_INTERVAL_MS=2000
+    tmpfs:
+      - /tmp:size=512m
