@@ -34,6 +34,7 @@ API_POLICIES = f"{API_BASE}/policies"
 API_ALLOWLIST = f"{API_BASE}/policies/allowlist"
 API_BLOCKLIST = f"{API_BASE}/policies/blocklist"
 API_INVENTORY = f"{API_BASE}/inventory"
+API_INVENTORY_SEARCH = f"{API_BASE}/inventory/search"
 
 
 class Config:
@@ -381,6 +382,70 @@ def resolve_items_from_args(args: dict[str, Any]) -> list[dict[str, Any]]:
     raise DemistoException(
         "Either 'item_id' and 'marketplace' must be provided, or 'items_list_raw_json_entry_id' must be provided."
     )
+
+
+def parse_filter_from_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a filter object from command arguments.
+
+    Supports two input modes:
+    - Inline JSON: 'filter_json' with a JSON string.
+    - File upload: 'filter_raw_json_entry_id' with a War Room entry ID of a JSON file.
+
+    File entry ID takes priority when both are provided.
+
+    Args:
+        args: Command arguments dictionary.
+
+    Returns:
+        Parsed filter dictionary.
+
+    Raises:
+        DemistoException: If no filter is provided, the JSON cannot be parsed, or the file cannot be read.
+    """
+    entry_id: str | None = args.get("filter_raw_json_entry_id")
+    filter_json: str | None = args.get("filter_json")
+
+    if entry_id:
+        try:
+            filepath_result = demisto.getFilePath(entry_id)
+        except Exception as e:
+            raise DemistoException(f"Could not find file for entry ID '{entry_id}': {e}")
+
+        if not filepath_result or "path" not in filepath_result:
+            raise DemistoException(f"Entry ID '{entry_id}' is not a valid file entry.")
+
+        file_path = filepath_result["path"]
+        demisto.debug(f"[Filter Parse] Reading filter from file: {file_path}")
+
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to parse JSON filter file from entry ID '{entry_id}': {e}")
+        except OSError as e:
+            raise DemistoException(f"Failed to read filter file from entry ID '{entry_id}': {e}")
+
+        if not isinstance(data, dict):
+            raise DemistoException(
+                f"Invalid filter JSON structure in entry ID '{entry_id}': " f"expected a dictionary, got {type(data).__name__}."
+            )
+
+        demisto.debug(f"[Filter Parse] Parsed filter from file: {data}")
+        return data
+
+    if filter_json:
+        try:
+            data = json.loads(filter_json)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Failed to parse filter_json: {e}")
+
+        if not isinstance(data, dict):
+            raise DemistoException(f"Invalid filter_json structure: expected a dictionary, got {type(data).__name__}.")
+
+        demisto.debug(f"[Filter Parse] Parsed inline filter: {data}")
+        return data
+
+    raise DemistoException("Either 'filter_json' or 'filter_raw_json_entry_id' must be provided.")
 
 
 # endregion
@@ -776,6 +841,48 @@ class Client(ContentClient):
         )
 
         demisto.debug(f"[API] Inventory item {item_id} response received")
+        return response
+
+    def search_inventory(
+        self,
+        page: int,
+        page_size: int,
+        filter_obj: dict[str, Any],
+        sort_by: str | None = None,
+        sort_direction: str | None = None,
+    ) -> dict[str, Any]:
+        """Search inventory items using advanced filters via POST.
+
+        Args:
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+            filter_obj: Filter object using query builder syntax.
+            sort_by: Column to sort by.
+            sort_direction: Sort direction (asc or desc).
+
+        Returns:
+            The full API response dictionary containing 'items' list and 'total_count'.
+        """
+        body: dict[str, Any] = {
+            "page": page,
+            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "filter": filter_obj,
+        }
+
+        if sort_by:
+            body["sort_by"] = sort_by
+        if sort_direction:
+            body["sort_direction"] = sort_direction
+
+        demisto.debug(f"[API] Searching inventory | Body: {body}")
+
+        response = self._http_request(
+            method="POST",
+            url_suffix=API_INVENTORY_SEARCH,
+            json_data=body,
+        )
+
+        demisto.debug("[API] Inventory search response received")
         return response
 
     def send_events(self, events: list[dict]) -> None:
@@ -1717,6 +1824,158 @@ def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
 
+def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Search inventory items using advanced filters.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' items.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments including filter, pagination, and sorting parameters.
+
+    Returns:
+        CommandResults with the search results.
+    """
+    demisto.debug("[Command] koi-inventory-search triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    filter_obj: dict[str, Any] = parse_filter_from_args(args)
+    sort_by: str | None = args.get("sort_by")
+    sort_direction: str | None = args.get("sort_direction")
+
+    if page_arg:
+        # Single-page mode
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.search_inventory(
+            page=page_arg,
+            page_size=page_size,
+            filter_obj=filter_obj,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+        items = response.get("items", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(items)} items (total_count={total_count})")
+    else:
+        # Auto-paginate mode
+        limit = min(limit_arg or Config.DEFAULT_LIMIT, Config.MAX_LIMIT)
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        items = _search_inventory_with_pagination(
+            client,
+            limit=limit,
+            filter_obj=filter_obj,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory Search",
+        items,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "platforms",
+            "publisher_name",
+            "risk",
+            "risk_level",
+            "version",
+            "status",
+            "endpoint_count",
+            "installs_count",
+            "installation_method",
+            "is_first_party",
+            "is_signed",
+            "first_seen",
+            "last_seen",
+            "last_used",
+            "released_at",
+            "short_description",
+            "categories",
+            "findings",
+            "brew_category_koi",
+            "browser_category_koi",
+            "chocolatey_category_koi",
+            "ide_category_koi",
+            "software_category_koi",
+            "governed_details",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def _search_inventory_with_pagination(
+    client: Client,
+    limit: int,
+    filter_obj: dict[str, Any],
+    sort_by: str | None = None,
+    sort_direction: str | None = None,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through inventory search results until limit is reached.
+
+    Args:
+        client: The Koi client.
+        limit: Maximum total number of items to collect.
+        filter_obj: Filter object for the search.
+        sort_by: Column to sort by.
+        sort_direction: Sort direction.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of inventory item dictionaries.
+    """
+    items: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(items) < limit:
+        response = client.search_inventory(
+            page=page,
+            page_size=page_size,
+            filter_obj=filter_obj,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+        page_items = response.get("items", [])
+
+        if not page_items:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        items.extend(page_items)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_items)} items. Total: {len(items)}")
+
+        if len(page_items) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(items) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(items)} items to limit {limit}")
+        items = items[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(items)} inventory search results")
+    return items
+
+
 # endregion
 
 # region Main router
@@ -1738,6 +1997,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-policy-status-update": koi_policy_status_update_command,
     "koi-inventory-list": koi_inventory_list_command,
     "koi-inventory-item-get": koi_inventory_item_get_command,
+    "koi-inventory-search": koi_inventory_search_command,
 }
 
 

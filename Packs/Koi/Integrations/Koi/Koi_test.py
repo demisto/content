@@ -36,8 +36,11 @@ from Koi import (
     koi_policy_status_update_command,
     koi_inventory_list_command,
     koi_inventory_item_get_command,
+    koi_inventory_search_command,
+    parse_filter_from_args,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
+    API_INVENTORY_SEARCH,
     get_formatted_utc_time,
     parse_date_or_use_current,
     main,
@@ -1496,6 +1499,33 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_inventory_item_result")
 
+    def test_main_routes_inventory_search(self, mocker):
+        """Test main routes koi-inventory-search command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-inventory-search")
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={"filter_json": '{"field": "risk_level", "operator": "eq", "value": "high"}'},
+        )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_inventory_search = mocker.MagicMock(return_value="mock_inventory_search_result")
+        COMMAND_MAP["koi-inventory-search"] = mock_inventory_search
+
+        main()
+
+        mock_return.assert_called_once_with("mock_inventory_search_result")
+
 
 # endregion
 
@@ -2862,6 +2892,308 @@ class TestClientGetInventoryItem:
 
         with pytest.raises(DemistoException, match="Error in API call"):
             mock_client.get_inventory_item(item_id="nonexistent", marketplace="chrome_web_store", version="1.0.0")
+
+
+# endregion
+
+# region koi-inventory-search tests
+
+
+class TestParseFilterFromArgs:
+    """Tests for the parse_filter_from_args helper function."""
+
+    def test_parse_inline_filter_json(self):
+        """Test parsing a valid inline JSON filter string."""
+        args = {"filter_json": '{"field": "risk_level", "operator": "eq", "value": "high"}'}
+        result = parse_filter_from_args(args)
+
+        assert result == {"field": "risk_level", "operator": "eq", "value": "high"}
+
+    def test_parse_filter_from_file(self, mocker, tmp_path):
+        """Test parsing a filter from a JSON file entry ID."""
+        filter_data = {"field": "marketplace", "operator": "eq", "value": "vscode"}
+        json_file = tmp_path / "filter.json"
+        json_file.write_text(json.dumps(filter_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "filter.json"})
+
+        args = {"filter_raw_json_entry_id": "entry-123"}
+        result = parse_filter_from_args(args)
+
+        assert result == filter_data
+
+    def test_file_entry_takes_priority_over_inline(self, mocker, tmp_path):
+        """Test that file entry ID takes priority over inline filter_json."""
+        file_filter = {"source": "file"}
+        json_file = tmp_path / "filter.json"
+        json_file.write_text(json.dumps(file_filter))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "filter.json"})
+
+        args = {
+            "filter_raw_json_entry_id": "entry-123",
+            "filter_json": '{"source": "inline"}',
+        }
+        result = parse_filter_from_args(args)
+
+        assert result == file_filter
+
+    def test_no_filter_raises_error(self):
+        """Test that missing both filter sources raises DemistoException."""
+        with pytest.raises(DemistoException, match="Either 'filter_json' or 'filter_raw_json_entry_id'"):
+            parse_filter_from_args({})
+
+    @pytest.mark.parametrize(
+        "args, file_content, error_match",
+        [
+            ({"filter_json": "not valid json {{{"}, None, "Failed to parse filter_json"),
+            ({"filter_json": json.dumps(["not", "a", "dict"])}, None, "expected a dictionary"),
+            ({"filter_raw_json_entry_id": "entry-123"}, "not valid json {{{", "Failed to parse JSON filter file"),
+            ({"filter_raw_json_entry_id": "entry-123"}, json.dumps(["not", "a", "dict"]), "expected a dictionary"),
+        ],
+        ids=["invalid_inline_json", "inline_not_a_dict", "invalid_file_json", "file_not_a_dict"],
+    )
+    def test_invalid_filter_content(self, mocker, tmp_path, args, file_content, error_match):
+        """Test that invalid filter content raises DemistoException."""
+        if file_content is not None:
+            json_file = tmp_path / "filter.json"
+            json_file.write_text(file_content)
+            mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "filter.json"})
+
+        with pytest.raises(DemistoException, match=error_match):
+            parse_filter_from_args(args)
+
+    @pytest.mark.parametrize(
+        "mock_kwargs, error_match",
+        [
+            ({"side_effect": Exception("Entry not found")}, "Could not find file"),
+            ({"return_value": {}}, "not a valid file entry"),
+        ],
+        ids=["entry_not_found", "entry_not_a_file"],
+    )
+    def test_file_entry_resolution_errors(self, mocker, mock_kwargs, error_match):
+        """Test that entry resolution errors raise DemistoException."""
+        mocker.patch.object(demisto, "getFilePath", **mock_kwargs)
+
+        with pytest.raises(DemistoException, match=error_match):
+            parse_filter_from_args({"filter_raw_json_entry_id": "entry-123"})
+
+
+class TestKoiInventorySearchCommand:
+    """Tests for the koi-inventory-search command."""
+
+    @pytest.mark.parametrize(
+        "args, expected_filter, expected_sort_by, expected_sort_direction",
+        [
+            (
+                {"page": "1", "filter_json": '{"field": "risk_level", "operator": "eq", "value": "high"}'},
+                {"field": "risk_level", "operator": "eq", "value": "high"},
+                None,
+                None,
+            ),
+            (
+                {
+                    "page": "1",
+                    "filter_json": '{"field": "marketplace", "operator": "eq", "value": "vscode"}',
+                    "sort_by": "risk_level",
+                    "sort_direction": "desc",
+                },
+                {"field": "marketplace", "operator": "eq", "value": "vscode"},
+                "risk_level",
+                "desc",
+            ),
+        ],
+        ids=["basic_filter", "filter_with_sorting"],
+    )
+    def test_inventory_search_single_page(
+        self,
+        mock_client,
+        inventory_response,
+        mocker,
+        args,
+        expected_filter,
+        expected_sort_by,
+        expected_sort_direction,
+    ):
+        """Test koi-inventory-search in single-page mode with various argument combinations."""
+        mocker.patch.object(mock_client, "search_inventory", return_value=inventory_response)
+
+        result = koi_inventory_search_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        mock_client.search_inventory.assert_called_once_with(
+            page=1,
+            page_size=Config.DEFAULT_PAGE_SIZE,
+            filter_obj=expected_filter,
+            sort_by=expected_sort_by,
+            sort_direction=expected_sort_direction,
+        )
+
+    @pytest.mark.parametrize(
+        "limit_arg, api_item_count, expected_output_count",
+        [
+            ("500", Config.MAX_PAGE_SIZE, 500),
+            ("500", 0, 0),
+            ("500", 50, 50),
+            ("10", Config.MAX_PAGE_SIZE, 10),
+            ("9999", Config.MAX_PAGE_SIZE, Config.MAX_LIMIT),
+        ],
+        ids=[
+            "full_page_satisfies_limit",
+            "empty_response",
+            "partial_page_stops_pagination",
+            "trims_to_limit",
+            "limit_capped_at_max",
+        ],
+    )
+    def test_inventory_search_auto_paginate_behavior(self, mock_client, mocker, limit_arg, api_item_count, expected_output_count):
+        """Test auto-paginate behavior with various limit and API response combinations."""
+        response = {
+            "items": [{"item_id": f"item-{i}"} for i in range(api_item_count)],
+            "total_count": api_item_count,
+        }
+        mocker.patch.object(mock_client, "search_inventory", return_value=response)
+
+        args = {
+            "limit": limit_arg,
+            "filter_json": '{"field": "risk_level", "operator": "eq", "value": "high"}',
+        }
+        result = koi_inventory_search_command(mock_client, args)
+
+        assert len(result.outputs) == expected_output_count
+
+    def test_inventory_search_missing_filter_raises_error(self, mock_client):
+        """Test that missing filter raises DemistoException."""
+        with pytest.raises(DemistoException, match="Either 'filter_json' or 'filter_raw_json_entry_id'"):
+            koi_inventory_search_command(mock_client, {"page": "1"})
+
+    def test_inventory_search_from_file(self, mock_client, inventory_response, mocker, tmp_path):
+        """Test koi-inventory-search with filter from file entry ID."""
+        filter_data = {"field": "publisher_name", "operator": "contains", "value": "Meta"}
+        json_file = tmp_path / "filter.json"
+        json_file.write_text(json.dumps(filter_data))
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(json_file), "name": "filter.json"})
+        mocker.patch.object(mock_client, "search_inventory", return_value=inventory_response)
+
+        args = {"page": "1", "filter_raw_json_entry_id": "entry-123"}
+        result = koi_inventory_search_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory"
+        mock_client.search_inventory.assert_called_once_with(
+            page=1,
+            page_size=Config.DEFAULT_PAGE_SIZE,
+            filter_obj=filter_data,
+            sort_by=None,
+            sort_direction=None,
+        )
+
+    def test_inventory_search_outputs_and_readable(self, mock_client, inventory_response, mocker):
+        """Test that all expected fields are present in outputs and readable output."""
+        mocker.patch.object(mock_client, "search_inventory", return_value=inventory_response)
+
+        args = {
+            "page": "1",
+            "filter_json": '{"field": "risk_level", "operator": "eq", "value": "high"}',
+        }
+        result = koi_inventory_search_command(mock_client, args)
+
+        # Verify readable output contains key data
+        assert "Inventory Search" in result.readable_output
+        assert "React Developer Tools" in result.readable_output
+        assert "Meta" in result.readable_output
+
+        # Verify outputs structure
+        assert len(result.outputs) == 2
+        item = result.outputs[0]
+        assert item["item_id"] == "abc123"
+        assert item["item_display_name"] == "React Developer Tools"
+        assert item["marketplace"] == "chrome_web_store"
+        assert item["version"] == "1.0.0"
+        assert item["platforms"] == ["chrome", "edge"]
+        assert item["publisher_name"] == "Meta"
+        assert item["risk"] == 5
+        assert item["risk_level"] == "high"
+        assert item["status"] == "APPROVED"
+        assert item["endpoint_count"] == 42
+        assert item["installs_count"] == 1000000
+        assert item["installation_method"] == "marketplace"
+        assert item["is_first_party"] is False
+        assert item["is_signed"] is True
+        assert item["first_seen"] == "2024-01-01T10:00:00Z"
+        assert item["last_seen"] == "2024-10-15T10:00:00Z"
+        assert item["last_used"] == "2025-06-15T10:00:00Z"
+        assert item["released_at"] == "2023-01-15"
+        assert item["short_description"] == "React debugging tools"
+        assert item["categories"] == ["Developer Tools"]
+        assert item["findings"] == ["malware", "permissions"]
+        assert "group-uuid-123" in item["governed_details"]
+        assert item["governed_details"]["group-uuid-123"]["action"] == "allow"
+        assert item["brew_category_koi"] == "Command Line Tools & Utilities"
+        assert item["browser_category_koi"] == "Developer Tools"
+        assert item["chocolatey_category_koi"] == "Command Line Tools & Utilities"
+        assert item["ide_category_koi"] == "Language Support & Tooling"
+        assert item["software_category_koi"] == "Docs tools"
+
+
+class TestClientSearchInventory:
+    """Tests for the Client.search_inventory method."""
+
+    @pytest.mark.parametrize(
+        "sort_by, sort_direction, expect_sort_in_body",
+        [
+            ("first_seen", "desc", True),
+            (None, None, False),
+        ],
+        ids=["with_sorting", "without_sorting"],
+    )
+    def test_search_inventory_request(
+        self, mock_client, inventory_response, mocker, sort_by, sort_direction, expect_sort_in_body
+    ):
+        """Test that search_inventory sends correct POST request with and without sorting."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+
+        filter_obj = {"field": "risk_level", "operator": "eq", "value": "high"}
+        result = mock_client.search_inventory(
+            page=1, page_size=100, filter_obj=filter_obj, sort_by=sort_by, sort_direction=sort_direction
+        )
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "POST"
+        assert call_kwargs["url_suffix"] == API_INVENTORY_SEARCH
+        body = call_kwargs["json_data"]
+        assert body["page"] == 1
+        assert body["page_size"] == 100
+        assert body["filter"] == filter_obj
+        if expect_sort_in_body:
+            assert body["sort_by"] == sort_by
+            assert body["sort_direction"] == sort_direction
+        else:
+            assert "sort_by" not in body
+            assert "sort_direction" not in body
+        assert result == inventory_response
+
+    def test_search_inventory_max_page_size_cap(self, mock_client, inventory_response, mocker):
+        """Test that page_size is capped at MAX_PAGE_SIZE."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+
+        mock_client.search_inventory(page=1, page_size=1000, filter_obj={"field": "test"})
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["json_data"]["page_size"] == Config.MAX_PAGE_SIZE
+
+    def test_search_inventory_api_error(self, mock_client, mocker):
+        """Test that search_inventory propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [400] - Bad Request"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.search_inventory(page=1, page_size=100, filter_obj={"field": "test"})
 
 
 # endregion
