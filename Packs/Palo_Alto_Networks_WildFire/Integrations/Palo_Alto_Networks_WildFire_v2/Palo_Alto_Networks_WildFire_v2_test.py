@@ -783,7 +783,7 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     mock_get_license = mocker.patch.object(demisto, "getLicenseCustomField", return_value="".join(["X" for i in range(32)]))
 
     mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module", return_value="ok")
     main()
 
     mock_get_license.assert_called()
@@ -809,12 +809,11 @@ def test_test_module_uses_get_verdict(mocker: MockerFixture):
             {"sha256": "abc", "verdict": "1", "md5": "def"},
         ),
     )
-    mock_results = mocker.patch.object(demisto, "results")
 
-    _test_module()
+    result = _test_module()
 
     mock_verdict.assert_called_once_with(file_hash="dca86121cc7427e375fd24fe5871d727")
-    mock_results.assert_called_once_with("ok")
+    assert result == "ok"
 
 
 def test_test_module_handles_not_found(mocker: MockerFixture):
@@ -829,11 +828,10 @@ def test_test_module_handles_not_found(mocker: MockerFixture):
     import Palo_Alto_Networks_WildFire_v2 as wf
 
     mocker.patch.object(wf, "wildfire_get_verdict", side_effect=NotFoundError("Not Found."))
-    mock_results = mocker.patch.object(demisto, "results")
 
-    _test_module()
+    result = _test_module()
 
-    mock_results.assert_called_once_with("ok")
+    assert result == "ok"
 
 
 @pytest.mark.parametrize(

@@ -389,7 +389,7 @@ def test_module():
         # Hash not found is still a valid API response —
         # connectivity and authentication are working.
         pass
-    demisto.results("ok")
+    return "ok"
 
 
 @logger
@@ -1620,7 +1620,7 @@ def main():  # pragma: no cover
         demisto.info(f"WildFire_v2: using agent_value={agent_value}, token_type={token_type}, token_length={token_length}")
 
         if command == "test-module":
-            test_module()
+            return_results(test_module())
 
         elif command == "wildfire-upload":
             if args.get("polling") == "true":
