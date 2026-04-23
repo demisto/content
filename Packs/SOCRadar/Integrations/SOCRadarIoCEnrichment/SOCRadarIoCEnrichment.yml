@@ -1,3 +1,5 @@
+name: SOCRadarIoCEnrichment
+display: SOCRadar IoC Enrichment
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: SOCRadarIoCEnrichment
@@ -38,8 +40,6 @@ configuration:
   required: false
 defaultclassifier: 'null'
 description: Enrich indicators with deep threat intelligence using SOCRadar IoC Enrichment API. Get categorization, signal strength, confidence levels, and historical data.
-display: SOCRadar IoC Enrichment
-name: SOCRadarIoCEnrichment
 script:
   commands:
   - arguments:
@@ -198,6 +198,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual DBot score.
       type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: Domain name.
       type: String
@@ -258,6 +267,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual DBot score.
       type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: URL.Data
       description: URL.
       type: String
@@ -318,6 +336,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual DBot score.
       type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: File.MD5
       description: MD5 hash.
       type: String
@@ -352,6 +379,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual DBot score.
       type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'

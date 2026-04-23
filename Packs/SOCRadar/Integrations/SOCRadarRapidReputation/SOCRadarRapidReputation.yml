@@ -1,3 +1,5 @@
+name: SOCRadarRapidReputation
+display: SOCRadar Rapid Reputation
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: SOCRadarRapidReputation
@@ -47,8 +49,6 @@ configuration:
   required: false
 defaultclassifier: 'null'
 description: Enrich indicators (IP, Domain, URL, Hash) by obtaining reputation information via SOCRadar Rapid Reputation API.
-display: SOCRadar Rapid Reputation
-name: SOCRadarRapidReputation
 script:
   commands:
   - arguments:
@@ -104,6 +104,9 @@ script:
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: IP.Address
       description: IP address
@@ -161,6 +164,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: Domain name
       type: String
@@ -217,6 +223,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: URL.Data
       description: URL
       type: String
@@ -272,6 +281,9 @@ script:
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: File.MD5
       description: MD5 hash of the file
