@@ -32,6 +32,7 @@ from Koi import (
     koi_blocklist_get_command,
     koi_blocklist_items_remove_command,
     koi_blocklist_items_add_command,
+    koi_policy_status_update_command,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
@@ -89,6 +90,12 @@ def allowlist_response() -> dict:
 def blocklist_response() -> dict:
     """Fixture for a mock blocklist API response."""
     return load_test_data("blocklist_response.json")
+
+
+@pytest.fixture
+def policy_update_response() -> dict:
+    """Fixture for a mock policy update API response."""
+    return load_test_data("policy_update_response.json")
 
 
 @pytest.fixture
@@ -1405,6 +1412,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_blocklist_add_result")
 
+    def test_main_routes_policy_status_update(self, mocker):
+        """Test main routes koi-policy-status-update command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-policy-status-update")
+        mocker.patch.object(demisto, "args", return_value={"policy_id": "1", "enabled": "true"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_policy_update = mocker.MagicMock(return_value="mock_policy_update_result")
+        COMMAND_MAP["koi-policy-status-update"] = mock_policy_update
+
+        main()
+
+        mock_return.assert_called_once_with("mock_policy_update_result")
+
 
 # endregion
 
@@ -2268,6 +2298,104 @@ class TestResolveItemsFromArgs:
         result = resolve_items_from_args(args)
 
         assert result == items_data
+
+
+# endregion
+
+# region koi-policy-status-update tests
+
+
+class TestKoiPolicyStatusUpdateCommand:
+    """Tests for the koi-policy-status-update command."""
+
+    @pytest.mark.parametrize(
+        "enabled_arg, expected_enabled, expected_text",
+        [
+            ("true", True, "enabled"),
+            ("false", False, "disabled"),
+        ],
+        ids=["enable", "disable"],
+    )
+    def test_policy_status_update(
+        self, mock_client, policy_update_response, mocker, enabled_arg, expected_enabled, expected_text
+    ):
+        """Test koi-policy-status-update enables or disables a policy."""
+        response = {**policy_update_response, "enabled": expected_enabled}
+        mocker.patch.object(mock_client, "update_policy_status", return_value=response)
+
+        args = {"policy_id": "1", "enabled": enabled_arg}
+        result = koi_policy_status_update_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Policy"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == 1
+        assert result.outputs["enabled"] == expected_enabled
+        assert "Policy Updated" in result.readable_output
+        mock_client.update_policy_status.assert_called_once_with(policy_id=1, enabled=expected_enabled)
+
+    def test_policy_status_update_outputs_and_readable(self, mock_client, policy_update_response, mocker):
+        """Test that all expected fields are present in outputs and readable output."""
+        mocker.patch.object(mock_client, "update_policy_status", return_value=policy_update_response)
+
+        args = {"policy_id": "1", "enabled": "true"}
+        result = koi_policy_status_update_command(mock_client, args)
+
+        # Verify all fields in outputs
+        assert result.outputs["id"] == 1
+        assert result.outputs["name"] == "My Policy"
+        assert result.outputs["description"] == "This policy blocks high-risk extensions"
+        assert result.outputs["action"] == "block"
+        assert result.outputs["enabled"] is True
+        assert result.outputs["group_ids"] == [1, 2, 3]
+        assert result.outputs["creator_fullname"] == "John Doe"
+
+        # Verify readable output contains key data
+        assert "My Policy" in result.readable_output
+        assert "block" in result.readable_output
+
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {"policy_id": "abc", "enabled": "true"},
+            {"policy_id": "1", "enabled": "not_a_bool"},
+            {"enabled": "true"},
+            {"policy_id": "1"},
+            {},
+        ],
+        ids=["invalid_policy_id", "invalid_enabled", "missing_policy_id", "missing_enabled", "no_args"],
+    )
+    def test_policy_status_update_invalid_input(self, mock_client, args):
+        """Test koi-policy-status-update raises error for invalid or missing input."""
+        with pytest.raises((ValueError, KeyError, DemistoException)):
+            koi_policy_status_update_command(mock_client, args)
+
+
+class TestClientUpdatePolicyStatus:
+    """Tests for the Client.update_policy_status method."""
+
+    @pytest.mark.parametrize("enabled", [True, False], ids=["enable", "disable"])
+    def test_update_policy_status_request(self, mock_client, policy_update_response, mocker, enabled):
+        """Test update_policy_status sends correct PUT request."""
+        mocker.patch.object(mock_client, "_http_request", return_value=policy_update_response)
+
+        result = mock_client.update_policy_status(policy_id=42, enabled=enabled)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "PUT"
+        assert call_kwargs["url_suffix"] == f"{API_POLICIES}/42"
+        assert call_kwargs["json_data"] == {"enabled": enabled}
+        assert result == policy_update_response
+
+    def test_update_policy_status_api_error(self, mock_client, mocker):
+        """Test that update_policy_status propagates API errors."""
+        mocker.patch.object(
+            mock_client,
+            "_http_request",
+            side_effect=DemistoException("Error in API call [404] - Not Found"),
+        )
+
+        with pytest.raises(DemistoException, match="Error in API call"):
+            mock_client.update_policy_status(policy_id=999, enabled=True)
 
 
 # endregion

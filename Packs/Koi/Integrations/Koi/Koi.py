@@ -509,6 +509,30 @@ class Client(ContentClient):
         demisto.debug("[API] Policies response received")
         return response
 
+    def update_policy_status(self, policy_id: int, enabled: bool) -> dict[str, Any]:
+        """Update the enabled/disabled status of a policy.
+
+        Args:
+            policy_id: The ID of the policy to update.
+            enabled: Whether to enable (True) or disable (False) the policy.
+
+        Returns:
+            The full updated policy object from the API.
+        """
+        url_suffix = f"{API_POLICIES}/{policy_id}"
+        body: dict[str, Any] = {"enabled": enabled}
+
+        demisto.debug(f"[API] Updating policy {policy_id} status to enabled={enabled}")
+
+        response = self._http_request(
+            method="PUT",
+            url_suffix=url_suffix,
+            json_data=body,
+        )
+
+        demisto.debug(f"[API] Policy {policy_id} status updated successfully")
+        return response
+
     def get_allowlist(self) -> dict[str, Any]:
         """Fetch all items in the allowlist from the Koi API.
 
@@ -1326,6 +1350,52 @@ def koi_blocklist_items_add_command(client: Client, args: dict[str, Any]) -> Com
     return CommandResults(readable_output=readable)
 
 
+def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Enable or disable a policy by ID.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments (policy_id, enabled).
+
+    Returns:
+        CommandResults with the updated policy.
+    """
+    demisto.debug("[Command] koi-policy-status-update triggered")
+
+    policy_id = int(args["policy_id"])
+    enabled = argToBoolean(args["enabled"])
+
+    response = client.update_policy_status(policy_id=policy_id, enabled=enabled)
+
+    status_text = "enabled" if enabled else "disabled"
+    demisto.debug(f"[Command Result] Policy {policy_id} {status_text} successfully")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Policy Updated",
+        response,
+        headers=[
+            "id",
+            "name",
+            "description",
+            "action",
+            "enabled",
+            "group_ids",
+            "creator_fullname",
+            "created_at",
+            "updated_at",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Policy",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
 # endregion
 
 # region Main router
@@ -1344,6 +1414,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-blocklist-get": koi_blocklist_get_command,
     "koi-blocklist-items-remove": koi_blocklist_items_remove_command,
     "koi-blocklist-items-add": koi_blocklist_items_add_command,
+    "koi-policy-status-update": koi_policy_status_update_command,
 }
 
 

@@ -380,6 +380,47 @@ script:
     - name: items_list_raw_json_entry_id
       description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
+  - name: koi-policy-status-update
+    description: Enables or disables a policy by ID.
+    arguments:
+    - name: policy_id
+      description: The ID of the policy to update.
+      required: true
+    - name: enabled
+      description: Whether to enable (true) or disable (false) the policy.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Koi.Policy.id
+      description: The unique identifier of the policy.
+      type: Number
+    - contextPath: Koi.Policy.name
+      description: The name of the policy.
+      type: String
+    - contextPath: Koi.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: Koi.Policy.action
+      description: The action taken by the policy (e.g., block).
+      type: String
+    - contextPath: Koi.Policy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.Policy.group_ids
+      description: List of group IDs associated with the policy.
+      type: Unknown
+    - contextPath: Koi.Policy.creator_fullname
+      description: The full name of the policy creator.
+      type: String
+    - contextPath: Koi.Policy.created_at
+      description: The creation time of the policy in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Policy.updated_at
+      description: The last update time of the policy in ISO 8601 format.
+      type: Date
   runonce: false
   script: '-'
   type: python
