@@ -56,12 +56,12 @@ def build_entry_context(indicators: Union[dict, List]) -> list[dict]:
         indicator_type = indicator_dict.get("type", "")
         indicator_context_dict = {
             "Indicator": indicator,
-            "Indicator Type": indicator_type,
+            "IndicatorType": indicator_type,
             "rawJSON": indicator_dict.get("rawJSON", {}),
-            "First Seen Date": indicator_dict.get("fields", {}).get("firstseenbysource", ""),
-            "Last Seen Date": indicator_dict.get("fields", {}).get("lastseenbysource", ""),
-            "Feed Maintainer Name": indicator_dict["fields"].get("collection_maintainer_name", ""),
-            "Seen Count": indicator_dict["fields"].get("extra_info", {}).get("seen_count", 1),
+            "FirstSeenDate": indicator_dict.get("fields", {}).get("firstseenbysource", ""),
+            "LastSeenDate": indicator_dict.get("fields", {}).get("lastseenbysource", ""),
+            "FeedMaintainerName": indicator_dict["fields"].get("collection_maintainer_name", ""),
+            "SeenCount": indicator_dict["fields"].get("extra_info", {}).get("seen_count", 1),
             "Score": indicator_dict["fields"].get("extra_info", {}).get("score", 0),
         }
 
@@ -74,7 +74,7 @@ def build_entry_context(indicators: Union[dict, List]) -> list[dict]:
             geo_location_dict = {
                 key: value for key, value in geo_location_dict.items() if key.lower() not in ("ip", "asncode", "asnname")
             }
-            indicator_context_dict["Geo Location"] = geo_location_dict
+            indicator_context_dict["GeoLocation"] = geo_location_dict
 
         return_context.append(indicator_context_dict)
     return return_context

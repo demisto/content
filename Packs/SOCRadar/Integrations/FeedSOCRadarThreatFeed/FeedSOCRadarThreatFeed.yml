@@ -1,3 +1,5 @@
+name: FeedSOCRadarThreatFeed
+display: SOCRadar Threat Feed
 category: Data Enrichment & Threat Intelligence
 provider: SOCRadar
 commonfields:
@@ -98,14 +100,13 @@ configuration:
   hidden: true
   required: false
 description: Retrieve indicators provided by SOCRadar Collection Based IOC Feed using collection UUIDs. Users can create custom feed collections on the SOCRadar platform and use their UUIDs to fetch IOCs via this integration.
-display: SOCRadar Threat Feed
-name: FeedSOCRadarThreatFeed
 script:
   commands:
   - arguments:
     - description: The maximum number of indicators to be retrieved.
       name: limit
     - description: Comma-separated list of collection UUIDs to retrieve indicators from.
+      isArray: true
       name: collection_uuids
       required: true
     description: Retrieves indicators from SOCRadar Collection Based IOC Feed.
@@ -114,19 +115,19 @@ script:
     - contextPath: SOCRadarThreatFeed.Indicators[0].Indicator
       description: The value of the indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Indicator Type
+    - contextPath: SOCRadarThreatFeed.Indicators[0].IndicatorType
       description: The type of the indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Feed Maintainer Name
+    - contextPath: SOCRadarThreatFeed.Indicators[0].FeedMaintainerName
       description: Name of the maintainer that the indicator found from.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].First Seen Date
+    - contextPath: SOCRadarThreatFeed.Indicators[0].FirstSeenDate
       description: The date that the indicator was in SOCRadar collections for the first time.
       type: Date
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Last Seen Date
+    - contextPath: SOCRadarThreatFeed.Indicators[0].LastSeenDate
       description: The latest date that the indicator was seen in SOCRadar collections.
       type: Date
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Seen Count
+    - contextPath: SOCRadarThreatFeed.Indicators[0].SeenCount
       description: Number of times this IoC has been observed.
       type: Number
     - contextPath: SOCRadarThreatFeed.Indicators[0].Score
@@ -135,40 +136,40 @@ script:
     - contextPath: SOCRadarThreatFeed.Indicators[0].rawJSON
       description: Raw JSON object that contains the value and type of the indicator.
       type: JSON
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.ASN
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.ASN
       description: ASN field Geographical location information of the IP type indicator.
       type: Number
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnCode
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.AsnCode
       description: ASN code field Geographical location information of the IP type indicator.
       type: Number
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnName
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.AsnName
       description: ASN name field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Cidr
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.Cidr
       description: CIDR field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CityName
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.CityName
       description: City name field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryCode
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.CountryCode
       description: Country code field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryName
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.CountryName
       description: Country name field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Latitude
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.Latitude
       description: Latitude field Geographical location information of the IP type indicator.
       type: Number
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Longitude
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.Longitude
       description: Longitude field Geographical location information of the IP type indicator.
       type: Number
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.RegionName
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.RegionName
       description: Region name field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Timezone
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.Timezone
       description: Timezone field Geographical location information of the IP type indicator.
       type: String
-    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.ZipCode
+    - contextPath: SOCRadarThreatFeed.Indicators[0].GeoLocation.ZipCode
       description: Zip code field Geographical location information of the IP type indicator.
       type: String
   - description: Resets the indicator fetch history.
