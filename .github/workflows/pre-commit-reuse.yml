@@ -90,14 +90,14 @@ jobs:
     - name: "Check coverage.xml exists"
       if: always()
       id: check-coverage-xml-exists
-      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
+      uses: andstor/file-existence-action@558493d6c74bf472d87c84eab196434afc2fa029 # v3.1.0
       with:
         files: "coverage_report/coverage.xml"
 
     - name: "Check pytest report exists"
       if: always()
       id: check-pytest-junit-exists
-      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
+      uses: andstor/file-existence-action@558493d6c74bf472d87c84eab196434afc2fa029 # v3.1.0
       with:
         files: "report_pytest.xml"
 
