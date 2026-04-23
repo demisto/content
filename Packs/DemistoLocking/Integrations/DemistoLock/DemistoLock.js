@@ -35,8 +35,10 @@ function attemptToAcquireLock(guid, lockInfo, version) {
     logDebug("Attempting to acquire lock");
     try {
         setLock(guid, lockInfo, version);
+        return true;
     } catch (err) {
-        logDebug(err.message);
+        logDebug("Failed to acquire lock: " + err.message);
+        return false;
     }
 }
 var lockName = args.name || 'Default';
@@ -66,9 +68,18 @@ switch (command) {
             }
             logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
+            // stopping condition - we already hold the lock (re-entry on polling retry)
+            if (lock.guid === guid) {
+                var md = '### Demisto Locking Mechanism\n';
+                md += 'Lock acquired successfully\n';
+                md += 'GUID: ' + guid;
+                logDebug(md)
+                return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
+            }
+
             // if no lock found, try to acquire a new lock
             if (!lock.guid) {
-                attemptToAcquireLock(guid, lockInfo, version)
+                attemptToAcquireLock(guid, lockInfo, version);
                 lock_candidate = getLock();
             }
 
@@ -129,13 +140,10 @@ switch (command) {
 
     case 'demisto-lock-release':
         logDebug('Releasing lock lockName: ' + lockName);
-        if(sync)   {
-            mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
-        } else {
-            integrationContext = getVersionedIntegrationContext(sync);
-            delete integrationContext[lockName];
-            setVersionedIntegrationContext(integrationContext, sync);
-        }
+        // Always use mergeVersionedIntegrationContext (with retries) regardless of sync mode.
+        // The non-sync path previously used getVersionedIntegrationContext(false) + setVersionedIntegrationContext(false)
+        // which is a non-atomic read-modify-write — concurrent releases would overwrite each other (lost update).
+        mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
         [lock, version] = getLock();
         logDebug('Current lock is: ' + JSON.stringify(lock) + ', version: ' + JSON.stringify(version));
 
