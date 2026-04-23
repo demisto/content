@@ -2,7 +2,7 @@
 """
 Workflow State Machine for integrations_report.csv
 
-This script manages the workflow tracking columns (columns 8-18) in the CSV.
+This script manages the workflow tracking columns (columns 6-16) in the CSV.
 It acts as a state machine where each integration progresses through ordered steps.
 
 Data columns (not managed by this script):
@@ -11,21 +11,20 @@ Data columns (not managed by this script):
   3. Support Level
   4. Provider
   5. Auth Class
-  6. Auth Mode
-  7. Auth Detail
+  6. Auth Detail
 
 Workflow columns (in order):
-  8.  script inputs        - Free text: the inputs/args for the script
-  9.  params required for test - Free text: params needed for testing
-  10. generated manifest   - ✅ when manifest is generated
-  11. wrote code           - ✅ when code is written
-  12. validations passed   - ✅ when demisto-sdk validate passes
-  13. unit tests passed    - ✅ when unit tests pass
-  14. param parity test passes - ✅ when param parity test passes
-  15. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
-  16. auth parity test passes   - ✅ when auth parity test passes (or N/A)
-  17. code reviewed        - ✅ when code review is done
-  18. code merged          - ✅ when code is merged
+  6.  script inputs        - Free text: the inputs/args for the script
+  7.  params required for test - Free text: params needed for testing
+  8.  generated manifest   - ✅ when manifest is generated
+  9.  wrote code           - ✅ when code is written
+  10. validations passed   - ✅ when demisto-sdk validate passes
+  11. unit tests passed    - ✅ when unit tests pass
+  12. param parity test passes - ✅ when param parity test passes
+  13. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
+  14. auth parity test passes   - ✅ when auth parity test passes (or N/A)
+  15. code reviewed        - ✅ when code review is done
+  16. code merged          - ✅ when code is merged
 
 Rules:
   - You must explicitly name the step you are marking as passed.
@@ -100,7 +99,6 @@ DATA_COLUMNS = [
     "Support Level",
     "Provider",
     "Auth Class",
-    "Auth Mode",
     "Auth Detail",
 ]
 
@@ -334,8 +332,10 @@ def format_status(row: dict[str, str]) -> str:
     lines.append(f"  Assignee:      {assignee if assignee else '(unassigned)'}")
     lines.append(f"  Support Level: {row.get('Support Level', '')}")
     lines.append(f"  Provider:      {row.get('Provider', '')}")
-    lines.append(f"  Auth Class:    {row.get('Auth Class', '')}")
-    lines.append(f"  Auth Mode:     {row.get('Auth Mode', '')}")
+
+    # Show Auth Class
+    auth_class = row.get("Auth Class", "").strip()
+    lines.append(f"  Auth Class:    {auth_class if auth_class else '(not set)'}")
     lines.append("")
 
     # Workflow columns

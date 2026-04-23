@@ -1,22 +1,51 @@
 Note, this folder should not be merged to master.
 ## Authentication Type Catalog
 
-Each integration's authentication is classified into an **Auth Class** enum
+Each integration's authentication is classified into an **Auth Class** string
 value, with per-parameter details captured in a structured **Auth Detail** JSON
 object.
 
-### Auth Class Enum
+### Auth Class Format
 
-| Enum Value | Description | Examples |
+The `Auth Class` column is a human-readable string with two parts separated by ` — `:
+
+**Part 1**: Auth types grouped by type with param names (pipe-separated between types)
+**Part 2**: Requirement expression using `REQUIRED()`, `OPTIONAL()`, `CHOICE()`, combined with `+`
+
+Special case: `NoneRequired` (no auth params)
+
+#### Auth Type Values
+
+| Value | Description | Examples |
 |---|---|---|
 | `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow | Lansweeper, Gmail |
-| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow | Akamai WAF, ServiceNow |
+| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow | CrowdStrike Falcon, Wiz |
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
 | `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
-| `TooComplicated` | Auth is too complicated to classify cleanly (multiple OAuth flows + managed identity + certificates) | Microsoft Graph, Azure Log Analytics |
-| `Other` | Non-supported auth that needs explanation (e.g., OAuth Device Code) | Integrations with unsupported flows |
 | `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
+
+#### Requirement Expression
+
+| Expression | Meaning |
+|---|---|
+| `REQUIRED(Type)` | One required param of that type |
+| `REQUIRED(Type, Type)` | Two required params of the same type |
+| `OPTIONAL(Type)` | Optional param(s) of that type |
+| `CHOICE(Type1, Type2)` | Multiple types, all optional — pick one |
+| `REQUIRED(X) + OPTIONAL(Y)` | X is required, Y is optional |
+
+#### Auth Class Examples
+
+| Integration | Auth Class | Why |
+|---|---|---|
+| Abnormal Security | `APIKey(api_key) — REQUIRED(APIKey)` | Single required API key |
+| AlienVault Reputation Feed | `NoneRequired` | No auth params |
+| CrowdStrike Falcon | `OAuth2ClientCreds(credentials) — REQUIRED(OAuth2ClientCreds)` | OAuth client credentials (effectively required) |
+| Darktrace Admin | `APIKey(privateApiKey, publicApiKey) — REQUIRED(APIKey, APIKey)` | Two required API keys |
+| AbuseIPDB | `APIKey(credentials, hunting_credentials) — OPTIONAL(APIKey)` | Two optional API key params |
+| Salesforce IAM | `OAuth2ClientCreds(credentials_consumer) \| Plain(credentials) — REQUIRED(Plain) + OPTIONAL(OAuth2ClientCreds)` | Plain required, OAuth optional |
+| Wiz | `OAuth2ClientCreds(credentials) — REQUIRED(OAuth2ClientCreds)` | OAuth client credentials |
 
 ### How to Read the CSV Columns
 
@@ -28,76 +57,55 @@ object.
 | 2 | `Integration Name` | Display name of the integration |
 | 3 | `Support Level` | `xsoar` or `partner` |
 | 4 | `Provider` | Vendor name |
-| 5 | `Auth Class` | Pipe-separated list of auth type enums (e.g., `OAuth2ClientCreds \| Plain`) |
-| 6 | `Auth Mode` | Whether auth types are all required, a choice, or mixed |
-| 7 | `Auth Detail` | JSON object with per-param auth mapping and notes |
+| 5 | `Auth Class` | Human-readable auth classification (e.g., `OAuth2ClientCreds(credentials) — REQUIRED(OAuth2ClientCreds)`) |
+| 6 | `Auth Detail` | JSON object with per-param auth mapping and notes |
 
 #### Auth Detail JSON Schema
 
 ```json
 {
+  "auth_types": [{"type": "<AuthEnum>", "name": "<param_name>"}],
+  "config": "<requirement_expression>",
   "params": {
     "<param_name>": {
-      "types": ["<AuthEnum>", ...],
+      "type": "<AuthEnum>",
       "xsoar_type": <int>,
       "required": <bool>
     }
   },
-  "notes": "<string or null>",
-  "required_count": {"APIKey": 1, "Plain": 2}
+  "notes": "<string or null>"
 }
 ```
 
-- `params.<name>.types` — Which auth enum(s) this param belongs to
+- `auth_types` — Array of `{type, name}` entries, sorted by (type, name)
+- `config` — Requirement expression (e.g., `REQUIRED(APIKey)`, `CHOICE(APIKey, Plain)`)
+- `params.<name>.type` — Which auth type this param belongs to (string or array)
 - `params.<name>.xsoar_type` — XSOAR widget type (0=text, 4=encrypted, 8=bool, 9=credentials, 14=cert key, 15=select)
 - `params.<name>.required` — Whether this param is required in the XSOAR config
-- `notes` — Explanation for `TooComplicated` or `Other` classifications; null otherwise
-- `required_count` — Count of required params per auth type (e.g., `{"APIKey": 2}` means 2 required API key params)
-
-#### Auth Mode Values
-
-| Value | Meaning | Example |
-|---|---|---|
-| `SINGLE_REQUIRED` | One auth type, its params are required | Integration with just `api_key(required)` |
-| `SINGLE_OPTIONAL` | One auth type, its params are optional | Integration with `api_key(optional)` |
-| `ALL_REQUIRED` | Multiple auth types, ALL are required together | Need both API key AND credentials |
-| `CHOICE` | Multiple auth types, pick one (all optional) | Can use either API key OR OAuth |
-| `MIXED` | Some auth types required, others optional | OAuth required, API key optional |
-| `NONE` | No authentication required | `NoneRequired` integrations |
-
-#### Auth Class Examples
-
-| Integration | Auth Class | Auth Mode | Why |
-|---|---|---|---|
-| Abnormal Security | `APIKey` | `SINGLE_REQUIRED` | Single required API key |
-| AlienVault Reputation Feed | `NoneRequired` | `NONE` | No auth params |
-| ActiveMQ | `Plain` | `SINGLE_REQUIRED` | Required username/password |
-| Akamai WAF | `OAuth2ClientCreds \| Plain` | `CHOICE` | Can use either OAuth or plain creds |
-| Azure Log Analytics | `TooComplicated` | `MIXED` | Multiple OAuth flows + managed identity |
-| AWS - S3 | `Plain` | `SINGLE_OPTIONAL` | Optional AWS credentials |
+- `notes` — Explanation for complex auth setups (managed identity, device code, etc.); null otherwise
 
 ---
 
 ## Workflow State Machine (`workflow_state.py`)
 
-The `workflow_state.py` script manages the workflow tracking columns (columns 8–17) in `integrations_report.csv`. It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
+The `workflow_state.py` script manages the workflow tracking columns (columns 7–17) in `integrations_report.csv`. It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
 
 ### Workflow Columns
 
 | # | Column | Type | Description |
 |---|--------|------|-------------|
 | 0 | `assignee` | Free text | Who is working on this integration |
-| 8 | `script inputs` | Free text (JSON) | The inputs/arguments for the script |
-| 8b | `params required for test` | Free text (JSON) | Parameters needed for testing |
-| 9 | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
-| 10 | `wrote code` | Checkpoint ✅ | Python code has been written |
-| 11 | `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
-| 12 | `unit tests passed` | Checkpoint ✅ | Unit tests pass |
-| 13 | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-| 14 | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
-| 15 | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
-| 16 | `code reviewed` | Checkpoint ✅ | Code review completed |
-| 17 | `code merged` | Checkpoint ✅ | Code merged to branch |
+| 7 | `script inputs` | Free text (JSON) | The inputs/arguments for the script |
+| 7b | `params required for test` | Free text (JSON) | Parameters needed for testing |
+| 8 | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
+| 9 | `wrote code` | Checkpoint ✅ | Python code has been written |
+| 10 | `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
+| 11 | `unit tests passed` | Checkpoint ✅ | Unit tests pass |
+| 12 | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
+| 13 | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
+| 14 | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
+| 15 | `code reviewed` | Checkpoint ✅ | Code review completed |
+| 16 | `code merged` | Checkpoint ✅ | Code merged to branch |
 
 ### Rules
 
@@ -209,7 +217,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
   Assignee:      (unassigned)
   Support Level: xsoar
   Provider:      Cisco
-  Auth Class:    Plain
+  Auth Class:    Plain(credentials) — REQUIRED(Plain)
 
   Workflow Progress:
   ----------------------------------------
@@ -348,7 +356,7 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
   Assignee:      (unassigned)
   Support Level: xsoar
   Provider:      Cisco
-  Auth Class:    Plain
+  Auth Class:    Plain(credentials) — REQUIRED(Plain)
 
   Workflow Progress:
   ----------------------------------------
