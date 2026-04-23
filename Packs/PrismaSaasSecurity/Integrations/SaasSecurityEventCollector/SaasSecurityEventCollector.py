@@ -16,6 +16,7 @@ MAX_ITERATIONS = 50
 MAX_EVENTS_PER_REQUEST = 1000
 MAX_LIMIT = 5000
 DEFAULT_LIMIT = 1000
+NEXT_TRIGGER_VALUE = "1"
 
 """ CLIENT CLASS """
 
@@ -181,7 +182,7 @@ def get_events_command(
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     should_push_events = argToBoolean(args.get("should_push_events"))
-    events, exception = fetch_events_from_saas_security(client=client, max_fetch=max_fetch, max_iterations=max_iterations)
+    events, exception, _ = fetch_events_from_saas_security(client=client, max_fetch=max_fetch, max_iterations=max_iterations)
     if exception:
         raise exception
 
@@ -210,7 +211,7 @@ def get_events_command(
 
 def fetch_events_from_saas_security(
     client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
-) -> tuple[List[dict], Exception | None]:
+) -> tuple[list[dict], Exception | None, bool]:
     """
     Fetches events from the saas-security queue.
 
@@ -218,9 +219,13 @@ def fetch_events_from_saas_security(
     https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/
     api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id8089db72-8f30-
     4cce-93d2-e39446be650d
+
+    Returns:
+        tuple: (events, exception, queue_drained) - queue_drained is True if got 204 (no more events in queue).
     """
-    events: List[dict] = []
+    events: list[dict] = []
     under_max_fetch = True
+    queue_drained = False
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     try:
@@ -228,6 +233,7 @@ def fetch_events_from_saas_security(
         while under_max_fetch and iteration_num < max_iterations + 1:
             response = client.get_events_request()
             if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
+                queue_drained = True
                 break
             fetched_events = response.json().get("events") or []
             demisto.info(f"fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
@@ -240,9 +246,9 @@ def fetch_events_from_saas_security(
             iteration_num += 1
     except Exception as exc:
         demisto.info(f"Got error get_events: {exc}")
-        return events, exc
+        return events, exc, False
 
-    return events, None
+    return events, None, queue_drained
 
 
 def main() -> None:  # pragma: no cover
@@ -270,10 +276,12 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-events":
+            last_run = demisto.getLastRun()
             integration_context = demisto.getIntegrationContext()
             demisto.info(f"{integration_context=}")
+            queue_drained = True
             if not integration_context.get("events"):
-                events, exception = fetch_events_from_saas_security(
+                events, exception, queue_drained = fetch_events_from_saas_security(
                     client=client, max_fetch=max_fetch, max_iterations=max_iterations
                 )
                 if len(events) == 0 and exception:
@@ -281,6 +289,7 @@ def main() -> None:  # pragma: no cover
             else:
                 events = integration_context.get("events")
                 demisto.info("Fetching events from integration context")
+                queue_drained = False
             try:
                 demisto.info(f"Sending the following amount of events into XSIAM: {len(events)}")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
@@ -288,7 +297,16 @@ def main() -> None:  # pragma: no cover
             except Exception as e:
                 demisto.info(f"Received error when trying to send events to XSIAM: [{e}]")
                 demisto.setIntegrationContext({"events": events})
-                demisto.info(f"Successfully set the following events into integration context: {events}")
+                demisto.debug(f"Successfully set the following events into integration context: {events}")
+
+            # If the queue has not been fully drained, trigger next fetch in 1 second
+            if not queue_drained:
+                last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
+                demisto.debug("Batching in progress. Next run will be triggered in 1 second.")
+            else:
+                last_run["nextTrigger"] = None
+                demisto.debug("All events finished batching. Next run will be triggered based on fetch interval.")
+            demisto.setLastRun(last_run)
         elif command == "saas-security-get-events":
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
