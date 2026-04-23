@@ -1,0 +1,28 @@
+{
+    "name": "FireCompass",
+    "description": "FireCompass is an Attack Surface Management (ASM) platform that continuously discovers, monitors, and prioritizes external attack surface risks including domains, subdomains, IP addresses, web applications, and leaked credentials.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex",
+    "created": "2026-03-22T00:00:00Z",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "FireCompass",
+        "Attack Surface Management",
+        "ASM",
+        "Risk"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}

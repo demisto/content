@@ -1,0 +1,85 @@
+category: Analytics & SIEM
+provider: FireCompass
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: FireCompass
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://apis.firecompass.com
+  additionalinfo: The base URL of the FireCompass API.
+  required: true
+  type: 0
+  section: Connect
+- display: API Key
+  name: credentials
+  displaypassword: API Key
+  hiddenusername: true
+  additionalinfo: The API key for authenticating with the FireCompass API.
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  defaultvalue: "false"
+  required: false
+  type: 8
+  section: Collect
+- display: Maximum number of events per fetch
+  name: max_events
+  defaultvalue: "1000"
+  additionalinfo: The maximum number of risk events to fetch per cycle. Maximum page size from the API is 100.
+  type: 0
+  section: Collect
+  required: false
+description: FireCompass is an Attack Surface Management (ASM) platform that continuously discovers, monitors, and prioritizes external attack surface risks.
+display: FireCompass
+name: FireCompass
+script:
+  commands:
+  - arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: "false"
+      description: If true, the command creates events, otherwise it only displays them.
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - name: limit
+      description: Maximum number of results to return.
+      required: false
+      defaultValue: "50"
+    - name: from_date
+      description: 'Start date from which to get events. Supports ISO format or natural language (e.g., "7 days ago", "1 hour ago"). Default is 3 days ago.'
+      required: false
+    - name: to_date
+      description: 'End date until which to get events. Supports ISO format or natural language (e.g., "now", "30 minutes ago"). Default is now.'
+      required: false
+    description: Fetches risk events from FireCompass.
+    name: firecompass-get-events
+  dockerimage: demisto/fastapi:0.125.0.7704170
+  isfetchevents: true
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
