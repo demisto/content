@@ -41,13 +41,13 @@ from argus_api.lib.events.v1.aggregated import (
     list_aggregated_events,
 )
 from argus_api.lib.events.v1.case.case import get_events_for_case
-from argus_api.lib.events.v1.nids import find_nids_events, list_nids_events
+from argus_api.lib.events.v1.nids import find_n_i_d_s_events, list_n_i_d_s_events
 from argus_api.lib.events.v1.payload import get_payload
 from argus_api.lib.events.v1.pcap import get_pcap
 from argus_api.lib.pdns.v3.search import search_records
 from argus_api.lib.reputation.v1.observation import (
     fetch_observations_for_domain,
-    fetch_observations_for_ip,
+    fetch_observations_for_i_p,
 )
 
 # Disable insecure warnings
@@ -1145,7 +1145,7 @@ def get_pcap_command(args: dict[str, Any]) -> Any:
 
 def find_nids_events_command(args: dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
-    result = find_nids_events(
+    result = find_n_i_d_s_events(
         skipFutureEvents=args.get("skip_future_events"),
         exclude=args.get("exclude"),
         eventIdentifier=argToList(args.get("event_identifier")),
@@ -1192,7 +1192,7 @@ def find_nids_events_command(args: dict[str, Any]) -> CommandResults:
 
 
 def list_nids_events_command(args: dict[str, Any]) -> CommandResults:
-    result = list_nids_events(
+    result = list_n_i_d_s_events(
         customerID=args.get("customer_id"),
         signature=args.get("signature"),
         ip=args.get("ip"),
@@ -1248,12 +1248,12 @@ def fetch_observations_for_domain_command(args: dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_observations_for_ip_command(args: dict[str, Any]) -> CommandResults:
+def fetch_observations_for_i_p_command(args: dict[str, Any]) -> CommandResults:
     ip = args.get("ip")
     if not ip:
         raise ValueError("ip not specified")
 
-    result = fetch_observations_for_ip(ip=ip)
+    result = fetch_observations_for_i_p(ip=ip)
     return CommandResults(
         readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
         outputs_prefix="Argus.ObservationsIP",
@@ -1404,7 +1404,7 @@ def main() -> None:
             return_results(fetch_observations_for_domain_command(demisto.args()))
 
         elif demisto.command() == "argus-fetch-observations-for-ip":
-            return_results(fetch_observations_for_ip_command(demisto.args()))
+            return_results(fetch_observations_for_i_p_command(demisto.args()))
 
         elif demisto.command() == "argus-print-case-comments":
             return_results(print_case_comments_command(demisto.args()))
