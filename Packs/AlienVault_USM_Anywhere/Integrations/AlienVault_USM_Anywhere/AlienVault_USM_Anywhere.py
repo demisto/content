@@ -390,11 +390,16 @@ def search_alarms(
     if end_time:
         params["timestamp_occured_lte"] = end_time
 
+    demisto.debug(f"search_alarms request params: {params}")
     res = http_request("GET", "/alarms", params=params)
-    if res["page"]["totalElements"] == 0:
+    total_elements = res.get("page", {}).get("totalElements", 0)
+    demisto.debug(f"search_alarms response: totalElements={total_elements}, page={res.get('page')}")
+    if total_elements == 0:
         return []
 
-    return res.get("_embedded", {}).get("alarms", [])
+    alarms = res.get("_embedded", {}).get("alarms", [])
+    demisto.debug(f"search_alarms returning {len(alarms)} alarms")
+    return alarms
 
 
 def search_events_command():
@@ -466,6 +471,7 @@ def get_events_by_alarm_command():
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
+    demisto.debug(f"fetch_incidents starting with last_run={last_run}")
     # Get the last fetch time, if exists
     last_fetch = last_run.get("timestamp")
 
@@ -478,10 +484,19 @@ def fetch_incidents():
             last_fetch = date_to_timestamp(time_field, parse_time(time_field))
         else:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        demisto.debug(f"First fetch or post-release, computed last_fetch={last_fetch}")
 
     incidents = []
     limit = dict_value_to_int(demisto.params(), "fetch_limit")
+    demisto.debug(f"Fetching alarms with start_time={last_fetch}, direction=asc, limit={limit}")
     items = search_alarms(start_time=last_fetch, direction="asc", limit=limit)
+    demisto.debug(f"Received {len(items)} alarms from API")
+
+    # Log full details of all returned alarms for debugging
+    for item in items:
+        ts = item.get("timestamp_occured_iso8601") or item.get("timestamp_occured")
+        demisto.debug(f"Alarm uuid={item.get('uuid', '')}, timestamp_occured={ts}")
+
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
@@ -489,14 +504,20 @@ def fetch_incidents():
     if incidents:
         #  updating according to latest incident
         time_str = str(incidents[-1].get("occurred"))
+        demisto.debug(f"Last incident occurred time (before adjustment): {time_str}")
 
         # add one second to last incident occurred time to avoid duplications
         occurred = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
         occurred = occurred + timedelta(seconds=1)
         time_str = occurred.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+        demisto.debug(f"Last incident occurred time (after +1s adjustment): {time_str}")
 
         last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
+        demisto.debug(f"New last_fetch epoch: {last_fetch}")
+    else:
+        demisto.debug("No incidents created in this fetch cycle")
 
+    demisto.debug(f"fetch_incidents complete: {len(incidents)} incidents created, setting last_fetch={last_fetch}")
     demisto.setLastRun({"timestamp": last_fetch})
     demisto.incidents(incidents)
 
