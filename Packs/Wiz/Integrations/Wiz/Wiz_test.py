@@ -2291,6 +2291,39 @@ def test_reject_or_resolve_issue_truncates_long_comment(mock_check_api):
     assert sent_note.endswith("... [truncated]")
 
 
+@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
+def test_reject_issue_sends_rejected_status_and_reason(mock_check_api):
+    """Reject path must send status=REJECTED with resolutionReason and the note text."""
+    from Wiz import reject_issue
+
+    reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e")
+
+    variables = mock_check_api.call_args[0][1]
+    assert variables["issueId"] == "12345678-2222-3333-1111-ff5fa2ff7f78"
+    assert variables["patch"]["status"] == "REJECTED"
+    assert variables["patch"]["resolutionReason"] == "FALSE_POSITIVE"
+    assert variables["patch"]["note"] == "rejecting_for_e2e"
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
+def test_resolve_issue_sends_resolved_status_and_reason(mock_check_api):
+    """Resolve path must send status=RESOLVED with resolutionReason and the note text."""
+    # resolve_issue requires the issue type to be THREAT_DETECTION; mock _get_issue accordingly
+    from unittest.mock import patch as _patch
+
+    threat_issue = {"data": {"issues": {"nodes": [{"type": "THREAT_DETECTION"}]}}}
+    with _patch("Wiz._get_issue", return_value=threat_issue):
+        from Wiz import resolve_issue
+
+        resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "resolving_for_e2e")
+
+    variables = mock_check_api.call_args[0][1]
+    assert variables["issueId"] == "12345678-2222-3333-1111-ff5fa2ff7f78"
+    assert variables["patch"]["status"] == "RESOLVED"
+    assert variables["patch"]["resolutionReason"] == "ISSUE_FIXED"
+    assert variables["patch"]["note"] == "resolving_for_e2e"
+
+
 # ===== _build_new_note_entries tests =====
 
 

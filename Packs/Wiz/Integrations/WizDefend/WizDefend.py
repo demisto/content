@@ -1635,8 +1635,8 @@ def translate_severity(detection):
 
 
 def build_fallback_description(detection):
-    rule_name = (detection.get(WizApiVariables.RULE_MATCH) or {}).get(
-        WizApiVariables.RULE, {}
+    rule_name = (
+        (detection.get(WizApiVariables.RULE_MATCH) or {}).get(WizApiVariables.RULE) or {}
     ).get(WizApiVariables.NAME)
     severity = detection.get(WizApiVariables.SEVERITY, "Unknown")
     detection_id = detection.get(WizApiVariables.ID, "Unknown")
@@ -1651,7 +1651,7 @@ def build_incidents(detection):
     if detection is None:
         return {}
 
-    rule_name = (detection.get(WizApiVariables.RULE_MATCH) or {}).get(WizApiVariables.RULE, {}).get(WizApiVariables.NAME)
+    rule_name = ((detection.get(WizApiVariables.RULE_MATCH) or {}).get(WizApiVariables.RULE) or {}).get(WizApiVariables.NAME)
 
     incident_name = f"{rule_name or 'Unknown Rule'} - {detection.get(WizApiVariables.ID, '')}"
 

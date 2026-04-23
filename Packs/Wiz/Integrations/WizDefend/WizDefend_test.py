@@ -5346,3 +5346,14 @@ def test_build_incidents_rulematch_null():
     }
     result = build_incidents(detection)
     assert "Unknown Rule" in result[DemistoParams.NAME]
+
+
+def test_build_incidents_rulematch_rule_null():
+    detection = {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "HIGH",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "ruleMatch": {"rule": None},
+    }
+    result = build_incidents(detection)
+    assert "Unknown Rule" in result[DemistoParams.NAME]
