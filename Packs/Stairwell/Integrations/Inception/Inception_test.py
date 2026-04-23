@@ -895,6 +895,7 @@ def test_asset_get_command_notfound(requests_mock):
 # _resolve_file_source Tests
 # ─────────────────────────────────────────────
 
+
 def test_resolve_file_source_no_source():
     _, _, err = _resolve_file_source()
     assert "Missing file source" in err
@@ -918,18 +919,22 @@ def test_resolve_file_source_file_path_not_found():
 
 
 def test_resolve_file_source_entry_id_success():
-    with patch("Inception.demisto.getFilePath", return_value={"path": "/tmp/f.exe", "name": "f.exe"}):
-        with patch("Inception.os.path.exists", return_value=True):
-            path, name, err = _resolve_file_source(entry_id="123@4")
+    with (
+        patch("Inception.demisto.getFilePath", return_value={"path": "/tmp/f.exe", "name": "f.exe"}),
+        patch("Inception.os.path.exists", return_value=True),
+    ):
+        path, name, err = _resolve_file_source(entry_id="123@4")
     assert err is None
     assert path == "/tmp/f.exe"
     assert name == "f.exe"
 
 
 def test_resolve_file_source_entry_id_file_not_on_disk():
-    with patch("Inception.demisto.getFilePath", return_value={"path": "/tmp/missing.exe", "name": "f.exe"}):
-        with patch("Inception.os.path.exists", return_value=False):
-            _, _, err = _resolve_file_source(entry_id="123@4")
+    with (
+        patch("Inception.demisto.getFilePath", return_value={"path": "/tmp/missing.exe", "name": "f.exe"}),
+        patch("Inception.os.path.exists", return_value=False),
+    ):
+        _, _, err = _resolve_file_source(entry_id="123@4")
     assert "not found at" in err
 
 
@@ -1012,6 +1017,7 @@ def test_resolve_file_source_url_request_exception():
 # _parse_int_arg Tests
 # ─────────────────────────────────────────────
 
+
 def test_parse_int_arg_none():
     assert _parse_int_arg(None, "test") is None
 
@@ -1038,6 +1044,7 @@ def test_parse_int_arg_negative_allowed():
 # _hash_sha256 Tests
 # ─────────────────────────────────────────────
 
+
 def test_hash_sha256_error():
     sha, err = _hash_sha256("/nonexistent/file.bin")
     assert sha is None
@@ -1060,6 +1067,7 @@ def test_hash_sha256_success():
 # ─────────────────────────────────────────────
 # intake_preflight_and_upload Additional Paths
 # ─────────────────────────────────────────────
+
 
 def test_intake_preflight_and_upload_unexpected_preflight_response():
     """Preflight returns response with no fileActions key"""
@@ -1117,6 +1125,7 @@ def test_intake_preflight_and_upload_hash_error():
 # ─────────────────────────────────────────────
 # Missing Args Tests for Network Intel Commands
 # ─────────────────────────────────────────────
+
 
 def test_hostname_get_command_missing_args():
     results = hostname_get_command(test_client_network, "")
@@ -1187,6 +1196,7 @@ def test_utilities_canonicalize_url_command_missing_args():
 # YARA Command Error Paths
 # ─────────────────────────────────────────────
 
+
 def test_yara_create_rule_command_400(requests_mock):
     TEST_ENV = "test-environment-id"
     requests_mock.post(f"https://app.stairwell.com/v1/environments/{TEST_ENV}/yaraRules", status_code=400)
@@ -1220,6 +1230,7 @@ def test_yara_query_matches_command_missing_args():
 # ─────────────────────────────────────────────
 # Asset Command Error Paths
 # ─────────────────────────────────────────────
+
 
 def test_asset_create_command_missing_args():
     results = asset_create_command(test_client_v1_base, "test-env", "")
@@ -1264,6 +1275,7 @@ def test_asset_create_command_409(requests_mock):
 # ─────────────────────────────────────────────
 # Object Command Error Paths
 # ─────────────────────────────────────────────
+
 
 def test_object_sightings_command_404(requests_mock):
     requests_mock.get(f"https://app.stairwell.com/v1/objects/{TEST_OBJECT_ID}/sightings", status_code=404)
@@ -1316,6 +1328,7 @@ def test_run_to_ground_generate_command_404(requests_mock):
 # ─────────────────────────────────────────────
 # Optional Parameter Coverage
 # ─────────────────────────────────────────────
+
 
 def test_hostname_get_command_with_record_type(requests_mock):
     mock_response = {"hostname": "example.com", "records": []}
@@ -1396,6 +1409,7 @@ def test_ai_triage_summarize_command_non_dict_response(requests_mock):
 # AI Triage — Rich Response (conditional branch coverage)
 # ─────────────────────────────────────────────
 
+
 def test_ai_triage_summarize_command_rich_response(requests_mock):
     """Test AI triage with all optional summaryJson fields populated"""
     mock_response = {
@@ -1444,6 +1458,7 @@ def test_ai_triage_summarize_command_rich_response(requests_mock):
 # ─────────────────────────────────────────────
 # Intake — Upload Step Failures
 # ─────────────────────────────────────────────
+
 
 def test_intake_preflight_and_upload_upload_timeout(requests_mock):
     """Upload step times out after preflight succeeds"""
@@ -1526,6 +1541,7 @@ def test_intake_preflight_and_upload_with_entry_id():
 # Cloud IP Ranges — Exception Paths
 # ─────────────────────────────────────────────
 
+
 def test_utilities_get_cloud_ip_ranges_400():
     """Cloud IP ranges 400 error (invalid provider)"""
     mock_client = MagicMock()
@@ -1570,6 +1586,7 @@ def test_utilities_get_cloud_ip_ranges_with_provider(requests_mock):
 # ─────────────────────────────────────────────
 # Utilities — Exception Re-raise Paths
 # ─────────────────────────────────────────────
+
 
 def test_utilities_batch_canonicalize_hostnames_400():
     mock_client = MagicMock()
@@ -1659,6 +1676,7 @@ def test_utilities_canonicalize_url_other_exception():
 # Network Intel — Non-404 Exception Re-raises
 # ─────────────────────────────────────────────
 
+
 def test_ipaddress_lookup_cloud_provider_non_404():
     mock_client = MagicMock()
     mock_client.lookup_cloud_provider.side_effect = DemistoException("503 Service Unavailable")
@@ -1691,15 +1709,14 @@ def test_hostname_batch_get_resolutions_raises():
 # Batch Hostname Resolutions — With Data
 # ─────────────────────────────────────────────
 
+
 def test_hostname_batch_get_resolutions_with_data(requests_mock):
     """Batch resolutions with actual resolution data exercises lines 1015-1023"""
     mock_response = {
         "resolutions": [
             {
                 "reversedHostname": "com.example",
-                "resolutions": [
-                    {"ipAddress": "93.184.216.34", "recordType": "A", "timestamp": "2024-01-01T00:00:00Z"}
-                ],
+                "resolutions": [{"ipAddress": "93.184.216.34", "recordType": "A", "timestamp": "2024-01-01T00:00:00Z"}],
             }
         ]
     }
@@ -1716,6 +1733,7 @@ def test_hostname_batch_get_resolutions_with_data(requests_mock):
 # File Enrichment / Variant — Non-standard Exception Re-raises
 # ─────────────────────────────────────────────
 
+
 def test_file_enrichment_command_non_404():
     """file_enrichment_command re-raises non-404 DemistoException"""
     mock_client = MagicMock()
@@ -1730,3 +1748,32 @@ def test_variant_discovery_command_non_500():
     mock_client.get_file_variants.side_effect = DemistoException("403 Forbidden")
     with pytest.raises(DemistoException):
         variant_discovery_command(mock_client, TEST_FILE_HASH)
+
+
+# ─────────────────────────────────────────────
+# Asset / YARA — Non-404 Exception Re-raises
+# ─────────────────────────────────────────────
+
+
+def test_asset_list_command_non_404():
+    """asset_list_command re-raises non-404 DemistoException"""
+    mock_client = MagicMock()
+    mock_client.list_assets.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        asset_list_command(mock_client, "test-env")
+
+
+def test_asset_get_command_non_404():
+    """asset_get_command re-raises non-404 DemistoException"""
+    mock_client = MagicMock()
+    mock_client.get_asset.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        asset_get_command(mock_client, "test-asset")
+
+
+def test_yara_query_matches_command_non_404():
+    """yara_query_matches_command re-raises non-404 DemistoException"""
+    mock_client = MagicMock()
+    mock_client.query_yara_matches.side_effect = DemistoException("503 Service Unavailable")
+    with pytest.raises(DemistoException):
+        yara_query_matches_command(mock_client, "test-env", "test-rule")

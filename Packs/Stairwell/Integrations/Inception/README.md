@@ -151,6 +151,7 @@ Upload files to Stairwell for analysis with automatic preflight checks, SHA256 c
 | Stairwell.Intake.upload_status | Number | HTTP status code from upload |
 
 **Command Examples**
+
 ```
 # Upload from War Room (recommended for production)
 
@@ -330,6 +331,7 @@ Create a new YARA rule in your Stairwell environment.
 | Stairwell.YaraRule | Dict | Created YARA rule details |
 
 **Command Examples**
+
 ```
 # Simple rule (single line)
 
@@ -918,6 +920,7 @@ Get a specific asset by ID.
 ### Common Workflows
 
 **File Analysis Workflow:**
+
 1. Enrich file using hash → `stairwell-file-enrichment`
 2. Discover variants → `stairwell-variant-discovery`
 3. Get AI analysis → `stairwell-ai-triage-summarize`
@@ -926,12 +929,14 @@ Get a specific asset by ID.
 6. Retrieve results → `stairwell-object-detonation-get`
 
 **File Upload & Analysis Workflow:**
+
 1. Upload file from War Room → `stairwell-intake-upload entry_id=${File.EntryID}`
 2. Wait for processing (files are analyzed automatically)
 3. Query for matches → `stairwell-yara-query-matches`
 4. Generate Run-To-Ground → `stairwell-run-to-ground-generate`
 
 **Threat Hunting Workflow:**
+
 1. Create YARA rule → `stairwell-yara-create-rule`
 2. Query matches → `stairwell-yara-query-matches`
 3. Analyze each match → `stairwell-file-enrichment`

@@ -1,6 +1,7 @@
 ## Stairwell
 
 Stairwell continuously collects, stores, and analyzes threat intelligence and artifacts in a private vault to accelerate security investigations. The Stairwell integration enables you to:
+
 - Reanalyze files continuously as new threat intelligence is identified.
 - Correlate threat and signal intelligence with your existing artifacts.
 - Perform retrospective analysis to investigate alerts regardless of when they occurred.
@@ -13,6 +14,7 @@ Not a customer and interested in signing up? You can request access [here](https
 
 This command enables instant enrichment of a provided hash. This enrichment leverages data from your organization, along with Stairwell's shared malware corpus.
 The results will include:
+
 - Hash details
 - Seen asset(s)
 - Matching YARA
