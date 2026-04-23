@@ -27,7 +27,7 @@ MAX_BULK_CHECK_INDICATORS = 100  # Maximum indicators per bulk check to avoid XS
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """
     Client class to interact with the SOCRadar Rapid Reputation API
     """
@@ -93,7 +93,10 @@ class Client(BaseClient):
             demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
             raise DemistoException(status_code_messages[response.status_code])
         else:
-            raise DemistoException(str(response.raise_for_status()))
+            try:
+                response.raise_for_status()
+            except Exception as e:
+                raise DemistoException(f"Error in API call [{response.status_code}] - {response.text}\n{e}")
 
 
 """ HELPER FUNCTIONS """
@@ -306,7 +309,7 @@ def test_module(client: Client) -> str:
         raise DemistoException(error_details)
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any], reliability: str = None) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given IP entity."""
     ips = args.get("ip", "")
     ip_list: list = argToList(ips)
@@ -339,7 +342,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     indicator_type=DBotScoreType.IP,
                     integration_name=INTEGRATION_NAME,
                     score=score,
-                    reliability=demisto.params().get("integrationReliability"),
+                    reliability=reliability,
                 )
 
                 ip_object = Common.IP(ip=ip_to_score, dbot_score=dbot_score)
@@ -370,7 +373,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     return command_results_list
 
 
-def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def domain_command(client: Client, args: dict[str, Any], reliability: str = None) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given domain entity."""
     domains = args.get("domain", "")
     domain_list: list = argToList(domains)
@@ -403,7 +406,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                     indicator_type=DBotScoreType.DOMAIN,
                     integration_name=INTEGRATION_NAME,
                     score=score,
-                    reliability=demisto.params().get("integrationReliability"),
+                    reliability=reliability,
                 )
 
                 domain_object = Common.Domain(domain=domain_to_score, dbot_score=dbot_score)
@@ -434,7 +437,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     return command_results_list
 
 
-def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def url_command(client: Client, args: dict[str, Any], reliability: str = None) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given URL entity."""
     urls = args.get("url", "")
     url_list: list = argToList(urls)
@@ -467,7 +470,7 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     indicator_type=DBotScoreType.URL,
                     integration_name=INTEGRATION_NAME,
                     score=score,
-                    reliability=demisto.params().get("integrationReliability"),
+                    reliability=reliability,
                 )
 
                 url_object = Common.URL(url=url_to_score, dbot_score=dbot_score)
@@ -498,7 +501,7 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     return command_results_list
 
 
-def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def file_command(client: Client, args: dict[str, Any], reliability: str = None) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given file hash entity."""
     file_hashes = args.get("file", "")
     file_hash_list: list = argToList(file_hashes)
@@ -532,7 +535,7 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     indicator_type=DBotScoreType.FILE,
                     integration_name=INTEGRATION_NAME,
                     score=score,
-                    reliability=demisto.params().get("integrationReliability"),
+                    reliability=reliability,
                 )
 
                 file_object = Common.File(dbot_score=dbot_score)
@@ -723,7 +726,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
     return command_results_list
 
 
-def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def socradar_reputation_command(client: Client, args: dict[str, Any], reliability: str = None) -> list[CommandResults]:
     """Generic reputation check for any entity type."""
     entity_value = args.get("entity_value")
     entity_type = args.get("entity_type")
@@ -783,13 +786,12 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[Co
                 indicator_object = Common.URL(url=entity_value, dbot_score=dbot_score)
             elif entity_type == "hash":
                 indicator_object = Common.File(dbot_score=dbot_score)
-                # Set appropriate hash field based on hash length
-                hash_len = len(entity_value)
-                if hash_len == 64:
+                hash_type = get_hash_type(entity_value)
+                if hash_type == "sha256":
                     indicator_object.sha256 = entity_value
-                elif hash_len == 40:
+                elif hash_type == "sha1":
                     indicator_object.sha1 = entity_value
-                elif hash_len == 32:
+                elif hash_type == "md5":
                     indicator_object.md5 = entity_value
             else:
                 indicator_object = None
@@ -819,10 +821,12 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[Co
 def main() -> None:
     """main function, parses params and runs command functions"""
 
-    api_key = demisto.params().get("apikey")
+    params = demisto.params()
+    api_key = params.get("apikey")
     base_url = SOCRADAR_API_ENDPOINT
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    reliability = params.get("integrationReliability")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -836,19 +840,19 @@ def main() -> None:
             return_results(result)
         elif command == "ip":
             demisto.debug("Executing ip command")
-            return_results(ip_command(client, demisto.args()))
+            return_results(ip_command(client, demisto.args(), reliability))
         elif command == "domain":
             demisto.debug("Executing domain command")
-            return_results(domain_command(client, demisto.args()))
+            return_results(domain_command(client, demisto.args(), reliability))
         elif command == "url":
             demisto.debug("Executing url command")
-            return_results(url_command(client, demisto.args()))
+            return_results(url_command(client, demisto.args(), reliability))
         elif command == "file":
             demisto.debug("Executing file command")
-            return_results(file_command(client, demisto.args()))
+            return_results(file_command(client, demisto.args(), reliability))
         elif command == "socradar-reputation":
             demisto.debug("Executing socradar-reputation command")
-            return_results(socradar_reputation_command(client, demisto.args()))
+            return_results(socradar_reputation_command(client, demisto.args(), reliability))
         elif command == "socradar-bulk-check":
             demisto.debug("Executing socradar-bulk-check command")
             return_results(socradar_bulk_check_command(client, demisto.args()))
