@@ -208,7 +208,7 @@ There is no context output for this command.
 ### aws-eks-access-entry-update
 
 ***
-Updates an existing Access Entry for an Amazon EKS cluster.
+Updates an existing Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:UpdateAccessEntry.
 
 #### Base Command
 
@@ -247,7 +247,7 @@ Updates an existing Access Entry for an Amazon EKS cluster.
 ### aws-eks-access-entry-create
 
 ***
-Creates a new Access Entry for an Amazon EKS cluster.
+Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:CreateAccessEntry.
 
 #### Base Command
 
@@ -288,7 +288,7 @@ Creates a new Access Entry for an Amazon EKS cluster.
 ### aws-eks-clusters-list
 
 ***
-Returns a list of EKS clusters.
+Returns a list of EKS clusters. Required IAM Permission: eks:ListClusters.
 
 #### Base Command
 
@@ -2812,7 +2812,7 @@ Modifies the specified network interface attribute. You can specify only one att
 ### aws-ec2-iam-instance-profile-associations-describe
 
 ***
-Describes IAM instance profile associations.
+Describes IAM instance profile associations. Required IAM Permission: ec2:DescribeIamInstanceProfileAssociations.
 
 #### Base Command
 
@@ -2843,7 +2843,7 @@ Describes IAM instance profile associations.
 ### aws-ec2-launch-template-create
 
 ***
-Creates a launch template. A launch template contains the parameters to launch an instance.
+Creates a launch template. A launch template contains the parameters to launch an instance. Required IAM Permission: ec2:CreateLaunchTemplate.
 
 #### Base Command
 
@@ -2918,7 +2918,7 @@ Creates a launch template. A launch template contains the parameters to launch a
 ### aws-ec2-volumes-describe
 
 ***
-Describes the specified EBS volumes or all of your EBS volumes.
+Describes the specified EBS volumes or all of your EBS volumes. Required IAM Permission: ec2:DescribeVolumes.
 
 #### Base Command
 
@@ -2967,7 +2967,7 @@ Describes the specified EBS volumes or all of your EBS volumes.
 ### aws-ec2-reserved-instances-describe
 
 ***
-Describes one or more of the Reserved Instances that you purchased.
+Describes one or more of the Reserved Instances that you purchased. Required IAM Permission: ec2:DescribeReservedInstances.
 
 #### Base Command
 
@@ -3012,7 +3012,7 @@ Describes one or more of the Reserved Instances that you purchased.
 ### aws-ec2-address-disassociate
 
 ***
-Disassociates an Elastic IP address from the instance or network interface it's associated with.
+Disassociates an Elastic IP address from the instance or network interface it's associated with. Required IAM Permission: ec2:DisassociateAddress.
 
 #### Base Command
 
@@ -3033,7 +3033,7 @@ There is no context output for this command.
 ### aws-ec2-instances-unmonitor
 
 ***
-Disables detailed monitoring for one or more running Amazon EC2 instances.
+Disables detailed monitoring for one or more running Amazon EC2 instances. Required IAM Permission: ec2:UnmonitorInstances.
 
 #### Base Command
 
@@ -3057,7 +3057,7 @@ Disables detailed monitoring for one or more running Amazon EC2 instances.
 ### aws-ec2-launch-template-delete
 
 ***
-Deletes a launch template. Deleting a launch template deletes all of its versions.
+Deletes a launch template. Deleting a launch template deletes all of its versions. Required IAM Permission: ec2:DeleteLaunchTemplate.
 
 #### Base Command
 
@@ -3089,7 +3089,7 @@ Deletes a launch template. Deleting a launch template deletes all of its version
 ### aws-ec2-password-data-get
 
 ***
-Retrieves the encrypted administrator password for a running Windows instance.
+Retrieves the encrypted administrator password for a running Windows instance. Required IAM Permission: ec2:GetPasswordData.
 
 #### Base Command
 
@@ -3115,7 +3115,7 @@ Retrieves the encrypted administrator password for a running Windows instance.
 ### aws-ec2-volume-attach
 
 ***
-Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name. Required IAM Permission: ec2:AttachVolume.
 
 #### Base Command
 
@@ -3148,7 +3148,7 @@ Attaches an EBS volume to a running or stopped instance and exposes it to the in
 ### aws-ec2-launch-templates-describe
 
 ***
-Describes one or more launch templates.
+Describes one or more launch templates. Required IAM Permission: ec2:DescribeLaunchTemplates.
 
 #### Base Command
 
@@ -3183,7 +3183,7 @@ Describes one or more launch templates.
 ### aws-ec2-address-release
 
 ***
-Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you.
+Releases the specified Elastic IP address. After releasing an Elastic IP address, it is released to the IP address pool and might be unavailable to you. Required IAM Permission: ec2:ReleaseAddress.
 
 #### Base Command
 
@@ -3205,7 +3205,7 @@ There is no context output for this command.
 ### aws-ec2-addresses-describe
 
 ***
-Describes one or more of your Elastic IP addresses.
+Describes one or more of your Elastic IP addresses. Required IAM Permission: ec2:DescribeAddresses.
 
 #### Base Command
 
@@ -3244,7 +3244,7 @@ Describes one or more of your Elastic IP addresses.
 ### aws-lambda-layer-version-delete
 
 ***
-Deletes a version of a Lambda layer.
+Deletes a version of a Lambda layer. Required IAM Permission: lambda:DeleteLayerVersion.
 
 #### Base Command
 
@@ -3266,7 +3266,7 @@ There is no context output for this command.
 ### aws-ec2-instances-reboot
 
 ***
-Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances.
+Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances. Required IAM Permission: ec2:RebootInstances.
 
 #### Base Command
 
@@ -3287,7 +3287,7 @@ There is no context output for this command.
 ### aws-ec2-volume-create
 
 ***
-Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+Creates an EBS volume that can be attached to an instance in the same Availability Zone. Required IAM Permission: ec2:CreateVolume.
 
 #### Base Command
 
@@ -3343,7 +3343,7 @@ Creates an EBS volume that can be attached to an instance in the same Availabili
 ### aws-ec2-instance-terminated-waiter
 
 ***
-Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstances.
 
 #### Base Command
 
@@ -3367,7 +3367,7 @@ There is no context output for this command.
 ### aws-ec2-address-allocate
 
 ***
-Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface.
+Allocates an Elastic IP address to your AWS account. After you allocate the Elastic IP address you can associate it with an instance or network interface. Required IAM Permission: ec2:AllocateAddress.
 
 #### Base Command
 
@@ -3401,7 +3401,7 @@ Allocates an Elastic IP address to your AWS account. After you allocate the Elas
 ### aws-ec2-address-associate
 
 ***
-Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface.
+Associates an Elastic IP address, or carrier IP address (for instances that are in subnets in Wavelength Zones) with an instance or a network interface. Required IAM Permission: ec2:AssociateAddress.
 
 #### Base Command
 
@@ -3429,7 +3429,7 @@ Associates an Elastic IP address, or carrier IP address (for instances that are 
 ### aws-lambda-layer-version-publish
 
 ***
-Creates a Lambda layer from a ZIP archive.
+Creates a Lambda layer from a ZIP archive. Required IAM Permission: lambda:PublishLayerVersion.
 
 #### Base Command
 
@@ -3466,7 +3466,7 @@ Creates a Lambda layer from a ZIP archive.
 ### aws-ec2-volume-modify
 
 ***
-You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity. Required IAM Permission: ec2:ModifyVolume.
 
 #### Base Command
 
@@ -3509,7 +3509,7 @@ You can modify several parameters of an existing EBS volume, including volume si
 ### aws-ec2-instance-stopped-waiter
 
 ***
-Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstances.
 
 #### Base Command
 
@@ -3533,7 +3533,7 @@ There is no context output for this command.
 ### aws-ec2-volume-delete
 
 ***
-Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance). Required IAM Permission: ec2:DeleteVolume.
 
 #### Base Command
 
@@ -3554,7 +3554,7 @@ There is no context output for this command.
 ### aws-ec2-volume-detach
 
 ***
-Detaches an EBS volume from an instance.
+Detaches an EBS volume from an instance. Required IAM Permission: ec2:DetachVolume.
 
 #### Base Command
 
@@ -3588,7 +3588,7 @@ Detaches an EBS volume from an instance.
 ### aws-ec2-instance-status-ok-waiter
 
 ***
-Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached.
+Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstanceStatus.
 
 #### Base Command
 
@@ -3613,7 +3613,7 @@ There is no context output for this command.
 ### aws-ec2-instance-running-waiter
 
 ***
-Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`).
+Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`). Required IAM Permission: ec2:DescribeInstances.
 
 #### Base Command
 
@@ -3637,7 +3637,7 @@ There is no context output for this command.
 ### aws-ec2-instances-monitor
 
 ***
-Enables detailed monitoring on one or more running Amazon EC2 instances.
+Enables detailed monitoring on one or more running Amazon EC2 instances. Required IAM Permission: ec2:MonitorInstances.
 
 #### Base Command
 
@@ -3661,7 +3661,7 @@ Enables detailed monitoring on one or more running Amazon EC2 instances.
 ### aws-s3-bucket-delete
 
 ***
-Delete AWS S3 bucket, the bucket must be empty from files.
+Delete AWS S3 bucket, the bucket must be empty from files. Required IAM Permission: s3:DeleteBucket.
 
 #### Base Command
 
@@ -3682,7 +3682,7 @@ There is no context output for this command.
 ### aws-s3-bucket-objects-list
 
 ***
-Returns some or all (up to 1,000) of the objects in a bucket.
+Returns some or all (up to 1,000) of the objects in a bucket. Required IAM Permission: s3:ListBucket.
 
 #### Base Command
 
@@ -3739,7 +3739,7 @@ There is no context output for this command.
 ### aws-ec2-images-describe
 
 ***
-Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you.
+Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you. Required IAM Permission: ec2:DescribeImages.
 
 #### Base Command
 
@@ -3809,7 +3809,7 @@ Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of
 ### aws-ec2-image-create
 
 ***
-Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The instance must be in the running or stopped state.
+Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The instance must be in the running or stopped state. Required IAM Permission: ec2:CreateImage.
 
 #### Base Command
 
@@ -3840,7 +3840,7 @@ Creates an Amazon Machine Image (AMI) from an Amazon EBS-backed instance. The in
 ### aws-ec2-image-deregister
 
 ***
-Deregisters the specified Amazon Machine Image (AMI). After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect any instances that you've already launched from the AMI.
+Deregisters the specified Amazon Machine Image (AMI). After you deregister an AMI, it can't be used to launch new instances. However, it doesn't affect any instances that you've already launched from the AMI. Required IAM Permission: ec2:DeregisterImage.
 
 #### Base Command
 
@@ -3861,7 +3861,7 @@ There is no context output for this command.
 ### aws-ec2-image-copy
 
 ***
-Initiates the copy of an AMI from the specified source region to the current region. You can copy an AMI across regions to enable consistent global deployment.
+Initiates the copy of an AMI from the specified source region to the current region. You can copy an AMI across regions to enable consistent global deployment. Required IAM Permission: ec2:CopyImage.
 
 #### Base Command
 
@@ -3894,7 +3894,7 @@ Initiates the copy of an AMI from the specified source region to the current reg
 ### aws-ec2-image-available-waiter
 
 ***
-Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached.
+Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached. Required IAM Permission: ec2:DescribeImages.
 
 #### Base Command
 
@@ -3920,7 +3920,7 @@ There is no context output for this command.
 ### aws-ec2-snapshots-describe
 
 ***
-Describes the EBS snapshots available to you or all snapshots accessible in your environment.
+Describes the EBS snapshots available to you or all snapshots accessible in your environment. Required IAM Permission: ec2:DescribeSnapshots.
 
 #### Base Command
 
@@ -3967,7 +3967,7 @@ Describes the EBS snapshots available to you or all snapshots accessible in your
 ### aws-ec2-snapshot-delete
 
 ***
-Deletes the specified snapshot.
+Deletes the specified snapshot. Required IAM Permission: ec2:DeleteSnapshot.
 
 #### Base Command
 
@@ -3988,7 +3988,7 @@ There is no context output for this command.
 ### aws-ec2-snapshot-copy
 
 ***
-Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost.
+Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost. Required IAM Permission: ec2:CopySnapshot.
 
 #### Base Command
 
@@ -4020,7 +4020,7 @@ Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You
 ### aws-ec2-snapshot-completed-waiter
 
 ***
-A waiter function that waits until the snapshot is complete.
+A waiter function that waits until the snapshot is complete. Required IAM Permission: ec2:DescribeSnapshots.
 
 #### Base Command
 
@@ -4046,7 +4046,7 @@ There is no context output for this command.
 ### aws-lambda-function-get
 
 ***
-Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned.
+Returns information about the function or the specified version, including a link to download the deployment package (valid for 10 minutes). If a version is specified, only version-specific details are returned. Required IAM Permission: lambda:GetFunction.
 
 #### Base Command
 
@@ -4089,7 +4089,7 @@ Returns information about the function or the specified version, including a lin
 ### aws-lambda-functions-list
 
 ***
-Returns a list of your Lambda functions. For each function, the response includes the function configuration information.
+Returns a list of your Lambda functions. For each function, the response includes the function configuration information. Required IAM Permission: lambda:ListFunctions.
 
 #### Base Command
 
@@ -4139,7 +4139,7 @@ Returns a list of your Lambda functions. For each function, the response include
 ### aws-lambda-aliases-list
 
 ***
-Returns a list of aliases created for a Lambda function.
+Returns a list of aliases created for a Lambda function. Required IAM Permission: lambda:ListAliases.
 
 #### Base Command
 
@@ -4171,7 +4171,7 @@ Returns a list of aliases created for a Lambda function.
 ### aws-lambda-account-settings-get
 
 ***
-Retrieves details about the account's limits and usage in an AWS Region.
+Retrieves details about the account's limits and usage in an AWS Region. Required IAM Permission: lambda:GetAccountSettings.
 
 #### Base Command
 
@@ -4201,7 +4201,7 @@ Retrieves details about the account's limits and usage in an AWS Region.
 ### aws-lambda-function-versions-list
 
 ***
-Returns a list of versions, with the version-specific configuration of each.
+Returns a list of versions, with the version-specific configuration of each. Required IAM Permission: lambda:ListVersionsByFunction.
 
 #### Base Command
 
@@ -4255,7 +4255,7 @@ Returns a list of versions, with the version-specific configuration of each.
 ### aws-lambda-function-url-config-delete
 
 ***
-Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address.
+Deletes a Lambda function URL. When you delete a function URL, you can't recover it. Creating a new function URL results in a different URL address. Required IAM Permission: lambda:DeleteFunctionUrlConfig.
 
 #### Base Command
 
@@ -4277,7 +4277,7 @@ There is no context output for this command.
 ### aws-lambda-function-create
 
 ***
-Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+Creates a Lambda function. To create a function, you need a deployment package and an execution role. Required IAM Permission: lambda:CreateFunction.
 
 #### Base Command
 
@@ -4333,7 +4333,7 @@ Creates a Lambda function. To create a function, you need a deployment package a
 ### aws-lambda-layer-version-list
 
 ***
-Lists the versions of an Lambda layer.
+Lists the versions of an Lambda layer. Required IAM Permission: lambda:ListLayerVersions.
 
 #### Base Command
 
@@ -4367,7 +4367,7 @@ Lists the versions of an Lambda layer.
 ### aws-lambda-function-delete
 
 ***
-Deletes a Lambda function.
+Deletes a Lambda function. Required IAM Permission: lambda:DeleteFunction.
 
 #### Base Command
 
@@ -4389,7 +4389,7 @@ There is no context output for this command.
 ### aws-ec2-fleet-create
 
 ***
-Launches an EC2 Fleet.
+Launches an EC2 Fleet. Required IAM Permission: ec2:CreateFleet.
 
 #### Base Command
 
@@ -4464,7 +4464,7 @@ Launches an EC2 Fleet.
 ### aws-ec2-fleet-delete
 
 ***
-Deletes the specified EC2 Fleet.
+Deletes the specified EC2 Fleet. Required IAM Permission: ec2:DeleteFleets.
 
 #### Base Command
 
@@ -4492,7 +4492,7 @@ Deletes the specified EC2 Fleet.
 ### aws-ec2-fleets-describe
 
 ***
-Describes one or more of your EC2 Fleets.
+Describes one or more of your EC2 Fleets. Required IAM Permission: ec2:DescribeFleets.
 
 #### Base Command
 
@@ -4547,7 +4547,7 @@ Describes one or more of your EC2 Fleets.
 ### aws-ec2-fleet-instances-describe
 
 ***
-Describes the running instances for the specified EC2 Fleet.
+Describes the running instances for the specified EC2 Fleet. Required IAM Permission: ec2:DescribeFleetInstances.
 
 #### Base Command
 
@@ -4578,7 +4578,7 @@ Describes the running instances for the specified EC2 Fleet.
 ### aws-ec2-fleet-modify
 
 ***
-Modifies the specified EC2 Fleet.
+Modifies the specified EC2 Fleet. Required IAM Permission: ec2:ModifyFleet.
 
 #### Base Command
 
@@ -4629,7 +4629,7 @@ There is no context output for this command.
 ### aws-ec2-vpc-delete
 
 ***
-Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
+Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it. Required IAM Permission: ec2:DeleteVpc.
 
 #### Base Command
 
@@ -4650,7 +4650,7 @@ There is no context output for this command.
 ### aws-ec2-vpc-endpoint-create
 
 ***
-Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
+Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service. Required IAM Permission: ec2:CreateVpcEndpoint.
 
 #### Base Command
 
@@ -4726,7 +4726,7 @@ Creates a VPC endpoint for a specified service. An endpoint enables you to creat
 ### aws-ec2-internet-gateway-describe
 
 ***
-A description of one or more of your internet gateways.
+A description of one or more of your internet gateways. Required IAM Permission: ec2:DescribeInternetGateways.
 
 #### Base Command
 
@@ -4758,7 +4758,7 @@ A description of one or more of your internet gateways.
 ### aws-ec2-internet-gateway-detach
 
 ***
-Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
+Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC. Required IAM Permission: ec2:DetachInternetGateway.
 
 #### Base Command
 
@@ -4780,7 +4780,7 @@ There is no context output for this command.
 ### aws-ec2-internet-gateway-delete
 
 ***
-Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
+Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it. Required IAM Permission: ec2:DeleteInternetGateway.
 
 #### Base Command
 
@@ -4801,7 +4801,7 @@ There is no context output for this command.
 ### aws-ec2-subnet-delete
 
 ***
-Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
+Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet. Required IAM Permission: ec2:DeleteSubnet.
 
 #### Base Command
 
@@ -4822,7 +4822,7 @@ There is no context output for this command.
 ### aws-ec2-network-acl-entry-create
 
 ***
-Creates an entry (a rule) in a network ACL with the specified rule number.
+Creates an entry (a rule) in a network ACL with the specified rule number. Required IAM Permission: ec2:CreateNetworkAclEntry.
 
 #### Base Command
 
@@ -4853,7 +4853,7 @@ There is no context output for this command.
 ### aws-ec2-key-pairs-describe
 
 ***
-Describes the specified key pairs or all of your key pairs.
+Describes the specified key pairs or all of your key pairs. Required IAM Permission: ec2:DescribeKeyPairs.
 
 #### Base Command
 
@@ -4885,7 +4885,7 @@ Describes the specified key pairs or all of your key pairs.
 ### aws-ec2-hosts-allocate
 
 ***
-Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate.
+Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate. Required IAM Permission: ec2:AllocateHosts.
 
 #### Base Command
 
@@ -4919,7 +4919,7 @@ Allocates Dedicated Hosts to your account. Requires the instance type or family,
 ### aws-ec2-hosts-release
 
 ***
-Releases the specified Dedicated Hosts.
+Releases the specified Dedicated Hosts. Required IAM Permission: ec2:ReleaseHosts.
 
 #### Base Command
 
@@ -4943,7 +4943,7 @@ Releases the specified Dedicated Hosts.
 ### aws-ec2-traffic-mirror-session-create
 
 ***
-Creates a Traffic Mirror session. A Traffic Mirror session actively copies packets from a Traffic Mirror source to a Traffic Mirror target.
+Creates a Traffic Mirror session. A Traffic Mirror session actively copies packets from a Traffic Mirror source to a Traffic Mirror target. Required IAM Permission: ec2:CreateTrafficMirrorSession.
 
 #### Base Command
 
@@ -4983,7 +4983,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 ### aws-redshift-cluster-modify
 
 ***
-Modifies the settings of a cluster. Requires the redshift:ModifyCluster permission.
+Modifies the settings of a cluster. Requires the redshift:ModifyCluster permission. Required IAM Permission: redshift:ModifyCluster.
 
 #### Base Command
 
@@ -5141,7 +5141,7 @@ Modifies the settings of a cluster. Requires the redshift:ModifyCluster permissi
 ### aws-rds-db-instances-describe
 
 ***
-Returns information about provisioned RDS instances. Requires the rds:DescribeDBInstances permission.
+Returns information about provisioned RDS instances. Requires the rds:DescribeDBInstances permission. Required IAM Permission: rds:DescribeDBInstances.
 
 #### Base Command
 
@@ -5311,7 +5311,7 @@ Returns information about provisioned RDS instances. Requires the rds:DescribeDB
 ### aws-lambda-function-configuration-update
 
 ***
-Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission.
+Updates the configuration for a Lambda function. Requires the lambda:UpdateFunctionConfiguration permission. Required IAM Permission: lambda:UpdateFunctionConfiguration.
 
 #### Base Command
 

@@ -1902,7 +1902,7 @@ script:
       required: true
     outputs: []
   - name: gcp-bq-dataset-policy-remove
-    description: Removes an email from the BigQuery dataset policy. Requires the bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy permissions.
+    description: "Removes an email from the BigQuery dataset policy. Requires the bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy permissions. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy."
     arguments:
     - name: project_id
       required: true

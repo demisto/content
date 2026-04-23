@@ -2193,7 +2193,7 @@ script:
         type: String
         required: true
   - name: azure-vn-security-group-create
-    description: Creates a network security group. Requires the Microsoft.Network/networkSecurityGroups/write permission.
+    description: "Creates a network security group. Requires the Microsoft.Network/networkSecurityGroups/write permission. Required Permissions: Microsoft.Network/networkSecurityGroups/write."
     arguments:
       - name: subscription_id
         description: The subscription ID.
@@ -2939,7 +2939,7 @@ script:
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
   - name: azure-vn-network-interface-update
-    description: Updates a network interface.Requires the Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action permissions.
+    description: "Updates a network interface.Requires the Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action permissions. Required Permissions: Microsoft.Network/networkInterfaces/read, Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action."
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -7240,7 +7240,7 @@ script:
     quickaction: true
     prettyname: Enable SSL on Postgres Server
   - name: azure-compute-vm-list
-    description: Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Requires the Microsoft.Compute/virtualMachines/read permission.
+    description: "Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Requires the Microsoft.Compute/virtualMachines/read permission. Required Permissions: Microsoft.Compute/virtualMachines/read."
     arguments:
     - name: subscription_id
       description: "The subscription ID."
