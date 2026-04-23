@@ -19,5 +19,9 @@
     "layout": "GCP Kubernetes Engine Misconfiguration",
     "weeks": 0,
     "weeksR": 0,
-    "preProcessingScript": ""
+    "preProcessingScript": "",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
