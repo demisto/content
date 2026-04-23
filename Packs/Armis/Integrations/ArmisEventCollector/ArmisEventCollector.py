@@ -198,6 +198,11 @@ class Client(BaseClient):
             demisto.debug("Access token missing or expired, attempting to get new access token.")
             access_token = self.refresh_access_token()
             demisto.debug("New access token was successfully generated.")
+        else:
+            integration_context = demisto.getIntegrationContext()
+            token_generated_at = integration_context.get("token_generated_at", "unknown")
+            token_prefix = access_token[:8] if access_token else "None"
+            demisto.debug(f"Reusing existing token (prefix: {token_prefix}..., generated_at: {token_generated_at})")
         self.apply_access_token(access_token)
 
     def _is_token_still_fresh(self, access_token: str) -> bool:
@@ -321,8 +326,12 @@ class Client(BaseClient):
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
+                integration_context = demisto.getIntegrationContext()
+                token_generated_at = integration_context.get("token_generated_at", "unknown")
+                token_prefix = self._access_token[:8] if self._access_token else "None"
                 safe_debug(
-                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}"
+                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}. "
+                    f"Token prefix: {token_prefix}..., generated_at: {token_generated_at}"
                 )
 
                 # If using context manager, try to get fresh token from context first
