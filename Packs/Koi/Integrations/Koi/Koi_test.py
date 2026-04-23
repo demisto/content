@@ -13,6 +13,7 @@ from Koi import (
     API_POLICIES,
     API_ALLOWLIST,
     API_BLOCKLIST,
+    API_INVENTORY,
     VALID_AUDIT_TYPES,
     VALID_MARKETPLACES,
     COMMAND_MAP,
@@ -33,6 +34,7 @@ from Koi import (
     koi_blocklist_items_remove_command,
     koi_blocklist_items_add_command,
     koi_policy_status_update_command,
+    koi_inventory_list_command,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
@@ -96,6 +98,12 @@ def blocklist_response() -> dict:
 def policy_update_response() -> dict:
     """Fixture for a mock policy update API response."""
     return load_test_data("policy_update_response.json")
+
+
+@pytest.fixture
+def inventory_response() -> dict:
+    """Fixture for a mock inventory API response."""
+    return load_test_data("inventory_response.json")
 
 
 @pytest.fixture
@@ -1435,6 +1443,29 @@ class TestMain:
 
         mock_return.assert_called_once_with("mock_policy_update_result")
 
+    def test_main_routes_inventory_list(self, mocker):
+        """Test main routes koi-inventory-list command correctly."""
+        mocker.patch.object(demisto, "command", return_value="koi-inventory-list")
+        mocker.patch.object(demisto, "args", return_value={"page": "1"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mock_inventory_list = mocker.MagicMock(return_value="mock_inventory_result")
+        COMMAND_MAP["koi-inventory-list"] = mock_inventory_list
+
+        main()
+
+        mock_return.assert_called_once_with("mock_inventory_result")
+
 
 # endregion
 
@@ -2396,6 +2427,292 @@ class TestClientUpdatePolicyStatus:
 
         with pytest.raises(DemistoException, match="Error in API call"):
             mock_client.update_policy_status(policy_id=999, enabled=True)
+
+
+# endregion
+
+# region koi-inventory-list tests
+
+
+class TestKoiInventoryListCommand:
+    """Tests for the koi-inventory-list command."""
+
+    @pytest.mark.parametrize(
+        "args, expected_page, expected_page_size",
+        [
+            ({"page": "1"}, 1, Config.DEFAULT_PAGE_SIZE),
+            ({"page": "2", "page_size": "50"}, 2, 50),
+            ({"page": "3", "page_size": "25", "limit": "200"}, 3, 25),
+        ],
+        ids=["default_page_size", "custom_page_size", "limit_ignored_when_page_provided"],
+    )
+    def test_inventory_list_single_page_mode(
+        self, mock_client, inventory_response, mocker, args, expected_page, expected_page_size
+    ):
+        """Test koi-inventory-list in single-page mode with various argument combinations."""
+        mocker.patch.object(mock_client, "get_inventory", return_value=inventory_response)
+
+        result = koi_inventory_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        mock_client.get_inventory.assert_called_once_with(page=expected_page, page_size=expected_page_size)
+
+    def test_inventory_list_auto_paginate_default_limit(self, mock_client, inventory_response, mocker):
+        """Test koi-inventory-list in auto-paginate mode with default limit (no args)."""
+        mocker.patch.object(mock_client, "get_inventory", return_value=inventory_response)
+
+        args: dict[str, str] = {}
+        result = koi_inventory_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory"
+        assert len(result.outputs) == 2
+
+    @pytest.mark.parametrize(
+        "limit_arg, api_item_count, expected_output_count",
+        [
+            ("500", Config.MAX_PAGE_SIZE, 500),
+            ("500", 0, 0),
+            ("500", 50, 50),
+            ("10", Config.MAX_PAGE_SIZE, 10),
+            ("9999", Config.MAX_PAGE_SIZE, Config.MAX_LIMIT),
+        ],
+        ids=[
+            "full_page_satisfies_limit",
+            "empty_response",
+            "partial_page_stops_pagination",
+            "trims_to_limit",
+            "limit_capped_at_max",
+        ],
+    )
+    def test_inventory_list_auto_paginate_behavior(self, mock_client, mocker, limit_arg, api_item_count, expected_output_count):
+        """Test auto-paginate behavior with various limit and API response combinations."""
+        response = {
+            "items": [{"item_id": f"item-{i}"} for i in range(api_item_count)],
+            "total_count": api_item_count,
+        }
+        mocker.patch.object(mock_client, "get_inventory", return_value=response)
+
+        args = {"limit": limit_arg}
+        result = koi_inventory_list_command(mock_client, args)
+
+        assert len(result.outputs) == expected_output_count
+
+    def test_inventory_list_empty_response(self, mock_client, mocker):
+        """Test koi-inventory-list when no items are returned."""
+        mocker.patch.object(mock_client, "get_inventory", return_value={"items": [], "total_count": 0})
+
+        args: dict[str, str] = {}
+        result = koi_inventory_list_command(mock_client, args)
+
+        assert result.outputs == []
+        assert "Inventory" in result.readable_output
+
+    @pytest.mark.parametrize(
+        "filter_args, expected_call_kwargs",
+        [
+            (
+                {
+                    "marketplace": "chrome_web_store",
+                    "risk_level": "high",
+                    "publisher_name": "Meta",
+                    "platform": "chrome",
+                    "view": "extensions",
+                    "sort_by": "risk_level",
+                    "sort_direction": "desc",
+                },
+                {
+                    "marketplace": "chrome_web_store",
+                    "risk_level": "high",
+                    "publisher_name": "Meta",
+                    "platform": "chrome",
+                    "view": "extensions",
+                    "sort_by": "risk_level",
+                    "sort_direction": "desc",
+                },
+            ),
+            (
+                {
+                    "brew_category_koi": "Command Line Tools & Utilities",
+                    "browser_category_koi": "Developer Tools",
+                    "chocolatey_category_koi": "Command Line Tools & Utilities",
+                    "ide_category_koi": "Language Support & Tooling",
+                    "software_category_koi": "Docs tools",
+                },
+                {
+                    "brew_category_koi": "Command Line Tools & Utilities",
+                    "browser_category_koi": "Developer Tools",
+                    "chocolatey_category_koi": "Command Line Tools & Utilities",
+                    "ide_category_koi": "Language Support & Tooling",
+                    "software_category_koi": "Docs tools",
+                },
+            ),
+            (
+                {
+                    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "finding_id": "550e8400-e29b-41d4-a716-446655440001",
+                    "item_id": "f53b1d43-eef4-4909-99ca-56b5fa3e108c",
+                },
+                {
+                    "device_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "finding_id": "550e8400-e29b-41d4-a716-446655440001",
+                    "item_id": "f53b1d43-eef4-4909-99ca-56b5fa3e108c",
+                },
+            ),
+        ],
+        ids=["marketplace_and_sorting_filters", "category_filters", "id_filters"],
+    )
+    def test_inventory_list_with_filters(self, mock_client, inventory_response, mocker, filter_args, expected_call_kwargs):
+        """Test koi-inventory-list passes various filter arguments to the client."""
+        mocker.patch.object(mock_client, "get_inventory", return_value=inventory_response)
+
+        args = {"page": "1", **filter_args}
+        result = koi_inventory_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Inventory"
+        mock_client.get_inventory.assert_called_once_with(
+            page=1,
+            page_size=Config.DEFAULT_PAGE_SIZE,
+            **expected_call_kwargs,
+        )
+
+    def test_inventory_list_outputs_and_readable(self, mock_client, inventory_response, mocker):
+        """Test that all expected fields are present in outputs and readable output contains data."""
+        mocker.patch.object(mock_client, "get_inventory", return_value=inventory_response)
+
+        args = {"page": "1"}
+        result = koi_inventory_list_command(mock_client, args)
+
+        # Verify readable output contains key data
+        assert "React Developer Tools" in result.readable_output
+        assert "Meta" in result.readable_output
+        assert "chrome_web_store" in result.readable_output
+
+        # Verify all fields in outputs
+        item = result.outputs[0]
+        assert item["item_id"] == "abc123"
+        assert item["item_display_name"] == "React Developer Tools"
+        assert item["marketplace"] == "chrome_web_store"
+        assert item["platforms"] == ["chrome", "edge"]
+        assert item["publisher_name"] == "Meta"
+        assert item["risk"] == 5
+        assert item["risk_level"] == "high"
+        assert item["version"] == "1.0.0"
+        assert item["status"] == "APPROVED"
+        assert item["endpoint_count"] == 42
+        assert item["installs_count"] == 1000000
+        assert item["first_seen"] == "2024-01-01T10:00:00Z"
+        assert item["last_seen"] == "2024-10-15T10:00:00Z"
+        assert item["installation_method"] == "marketplace"
+        assert item["is_first_party"] is False
+        assert item["is_signed"] is True
+        assert item["short_description"] == "React debugging tools"
+        assert item["categories"] == ["Developer Tools"]
+        assert item["findings"] == ["malware", "permissions"]
+
+    def test_inventory_list_auto_paginate_passes_filters(self, mock_client, mocker):
+        """Test that auto-paginate mode passes filter arguments to each page request."""
+        page1 = {"items": [{"item_id": "item-1"}], "total_count": 1}
+
+        mocker.patch.object(mock_client, "get_inventory", return_value=page1)
+
+        args = {"limit": "10", "marketplace": "vscode", "risk_level": "high"}
+        koi_inventory_list_command(mock_client, args)
+
+        call_kwargs = mock_client.get_inventory.call_args[1]
+        assert call_kwargs["marketplace"] == "vscode"
+        assert call_kwargs["risk_level"] == "high"
+
+
+class TestClientGetInventory:
+    """Tests for the Client.get_inventory method."""
+
+    def test_get_inventory_params(self, mock_client, inventory_response, mocker):
+        """Test that get_inventory passes correct params to the API."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+
+        result = mock_client.get_inventory(page=2, page_size=50, marketplace="vscode", risk_level="high")
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["url_suffix"] == API_INVENTORY
+        assert call_kwargs["params"]["page"] == 2
+        assert call_kwargs["params"]["page_size"] == 50
+        assert call_kwargs["params"]["marketplace"] == "vscode"
+        assert call_kwargs["params"]["risk_level"] == "high"
+        assert result == inventory_response
+
+    def test_get_inventory_max_page_size_cap(self, mock_client, inventory_response, mocker):
+        """Test that page_size is capped at MAX_PAGE_SIZE."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+
+        mock_client.get_inventory(page=1, page_size=1000)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["params"]["page_size"] == Config.MAX_PAGE_SIZE
+
+    def test_get_inventory_no_optional_params(self, mock_client, inventory_response, mocker):
+        """Test that None optional params are excluded from the request (assign_params behavior)."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+
+        mock_client.get_inventory(page=1, page_size=100)
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        params = call_kwargs["params"]
+        assert "marketplace" not in params
+        assert "risk_level" not in params
+        assert "platform" not in params
+        assert "publisher_name" not in params
+        assert "view" not in params
+
+    def test_get_inventory_all_filters(self, mock_client, inventory_response, mocker):
+        """Test that all filter parameters are passed correctly."""
+        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+
+        mock_client.get_inventory(
+            page=1,
+            page_size=100,
+            brew_category_koi="Command Line Tools & Utilities",
+            browser_category_koi="Developer Tools",
+            chocolatey_category_koi="Command Line Tools & Utilities",
+            device_id="device-123",
+            finding_id="finding-456",
+            first_seen="2024-01-01T00:00:00Z",
+            ide_category_koi="Language Support & Tooling",
+            installation_method="marketplace",
+            item_display_name="React",
+            item_id="abc123",
+            marketplace="chrome_web_store",
+            platform="chrome",
+            publisher_name="Meta",
+            risk_level="high",
+            software_category_koi="Docs tools",
+            sort_by="first_seen",
+            sort_direction="asc",
+            view="extensions",
+        )
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        params = call_kwargs["params"]
+        assert params["brew_category_koi"] == "Command Line Tools & Utilities"
+        assert params["browser_category_koi"] == "Developer Tools"
+        assert params["chocolatey_category_koi"] == "Command Line Tools & Utilities"
+        assert params["device_id"] == "device-123"
+        assert params["finding_id"] == "finding-456"
+        assert params["first_seen"] == "2024-01-01T00:00:00Z"
+        assert params["ide_category_koi"] == "Language Support & Tooling"
+        assert params["installation_method"] == "marketplace"
+        assert params["item_display_name"] == "React"
+        assert params["item_id"] == "abc123"
+        assert params["marketplace"] == "chrome_web_store"
+        assert params["platform"] == "chrome"
+        assert params["publisher_name"] == "Meta"
+        assert params["risk_level"] == "high"
+        assert params["software_category_koi"] == "Docs tools"
+        assert params["sort_by"] == "first_seen"
+        assert params["sort_direction"] == "asc"
+        assert params["view"] == "extensions"
 
 
 # endregion

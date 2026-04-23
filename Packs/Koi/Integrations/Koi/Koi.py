@@ -33,6 +33,7 @@ API_AUDIT_LOGS = f"{API_BASE}/audit-logs"
 API_POLICIES = f"{API_BASE}/policies"
 API_ALLOWLIST = f"{API_BASE}/policies/allowlist"
 API_BLOCKLIST = f"{API_BASE}/policies/blocklist"
+API_INVENTORY = f"{API_BASE}/inventory"
 
 
 class Config:
@@ -658,6 +659,90 @@ class Client(ContentClient):
         )
 
         demisto.debug(f"[API] Successfully added {len(items)} blocklist item(s)")
+
+    def get_inventory(
+        self,
+        page: int,
+        page_size: int,
+        brew_category_koi: str | None = None,
+        browser_category_koi: str | None = None,
+        chocolatey_category_koi: str | None = None,
+        device_id: str | None = None,
+        finding_id: str | None = None,
+        first_seen: str | None = None,
+        ide_category_koi: str | None = None,
+        installation_method: str | None = None,
+        item_display_name: str | None = None,
+        item_id: str | None = None,
+        marketplace: str | None = None,
+        platform: str | None = None,
+        publisher_name: str | None = None,
+        risk_level: str | None = None,
+        software_category_koi: str | None = None,
+        sort_by: str | None = None,
+        sort_direction: str | None = None,
+        view: str | None = None,
+    ) -> dict[str, Any]:
+        """Fetch a single page of inventory items from the Koi API.
+
+        Args:
+            page: Page number for pagination (1-based).
+            page_size: Number of results per page (max 500).
+            brew_category_koi: Filter by Homebrew package category (Koi classification).
+            browser_category_koi: Filter by browser extension category (Koi classification).
+            chocolatey_category_koi: Filter by Chocolatey package category (Koi classification).
+            device_id: Filter devices by device id.
+            finding_id: Filter devices by finding id.
+            first_seen: Filter by first seen date (ISO 8601 format).
+            ide_category_koi: Filter by IDE extension category (Koi classification).
+            installation_method: Filter by installation method.
+            item_display_name: Filter by item display name (case-insensitive partial match).
+            item_id: Filter by item ID.
+            marketplace: Filter by marketplace.
+            platform: Filter by platform.
+            publisher_name: Filter by publisher name (case-insensitive partial match).
+            risk_level: Filter by risk level.
+            software_category_koi: Filter by software category (Koi classification).
+            sort_by: Column to sort by.
+            sort_direction: Sort direction (asc or desc).
+            view: Filter by predefined view (marketplace group).
+
+        Returns:
+            The full API response dictionary containing 'items' list and 'total_count'.
+        """
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            brew_category_koi=brew_category_koi,
+            browser_category_koi=browser_category_koi,
+            chocolatey_category_koi=chocolatey_category_koi,
+            device_id=device_id,
+            finding_id=finding_id,
+            first_seen=first_seen,
+            ide_category_koi=ide_category_koi,
+            installation_method=installation_method,
+            item_display_name=item_display_name,
+            item_id=item_id,
+            marketplace=marketplace,
+            platform=platform,
+            publisher_name=publisher_name,
+            risk_level=risk_level,
+            software_category_koi=software_category_koi,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+            view=view,
+        )
+
+        demisto.debug(f"[API] Fetching inventory | Params: {params}")
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=API_INVENTORY,
+            params=params,
+        )
+
+        demisto.debug("[API] Inventory response received")
+        return response
 
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
@@ -1396,6 +1481,140 @@ def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> Co
     )
 
 
+def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List inventory items with pagination and filtering support.
+
+    Supports two modes:
+    - Single page: provide 'page' and/or 'page_size' to fetch a specific page.
+    - Auto-paginate: provide 'limit' to automatically paginate and collect up to 'limit' items.
+
+    If 'page' is provided, single-page mode is used (limit is ignored).
+    If only 'limit' is provided, auto-pagination mode is used.
+
+    Args:
+        client: The KOI client.
+        args: Command arguments including pagination and filter parameters.
+
+    Returns:
+        CommandResults with the inventory item list.
+    """
+    demisto.debug("[Command] koi-inventory-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    # Extract filter arguments
+    filter_kwargs: dict[str, Any] = assign_params(
+        brew_category_koi=args.get("brew_category_koi"),
+        browser_category_koi=args.get("browser_category_koi"),
+        chocolatey_category_koi=args.get("chocolatey_category_koi"),
+        device_id=args.get("device_id"),
+        finding_id=args.get("finding_id"),
+        first_seen=args.get("first_seen"),
+        ide_category_koi=args.get("ide_category_koi"),
+        installation_method=args.get("installation_method"),
+        item_display_name=args.get("item_display_name"),
+        item_id=args.get("item_id"),
+        marketplace=args.get("marketplace"),
+        platform=args.get("platform"),
+        publisher_name=args.get("publisher_name"),
+        risk_level=args.get("risk_level"),
+        software_category_koi=args.get("software_category_koi"),
+        sort_by=args.get("sort_by"),
+        sort_direction=args.get("sort_direction"),
+        view=args.get("view"),
+    )
+
+    if page_arg:
+        # Single-page mode: fetch the requested page
+        demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
+        response = client.get_inventory(page=page_arg, page_size=page_size, **filter_kwargs)
+        items = response.get("items", [])
+        total_count = response.get("total_count")
+        demisto.debug(f"[Command Result] Retrieved {len(items)} inventory items (total_count={total_count})")
+    else:
+        # Auto-paginate mode: fetch pages until limit is reached
+        limit = min(limit_arg or Config.DEFAULT_LIMIT, Config.MAX_LIMIT)
+        demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
+        items = _fetch_inventory_with_pagination(client, limit=limit, filter_kwargs=filter_kwargs)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Inventory",
+        items,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "platform",
+            "publisher_name",
+            "risk_level",
+            "risk",
+            "version",
+            "status",
+            "endpoint_count",
+            "installs_count",
+            "first_seen",
+            "last_seen",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Inventory",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def _fetch_inventory_with_pagination(
+    client: Client,
+    limit: int,
+    filter_kwargs: dict[str, Any],
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Auto-paginate through inventory items until limit is reached.
+
+    Args:
+        client: The Koi client.
+        limit: Maximum total number of items to collect.
+        filter_kwargs: Filter parameters to pass to the API.
+        page_size: Number of results per API page.
+
+    Returns:
+        List of inventory item dictionaries.
+    """
+    items: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(items) < limit:
+        response = client.get_inventory(page=page, page_size=page_size, **filter_kwargs)
+        page_items = response.get("items", [])
+
+        if not page_items:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+
+        items.extend(page_items)
+        demisto.debug(f"[Pagination] Page {page}: +{len(page_items)} items. Total: {len(items)}")
+
+        if len(page_items) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+
+        page += 1
+
+    # Trim to limit
+    if len(items) > limit:
+        demisto.debug(f"[Pagination] Trimming {len(items)} items to limit {limit}")
+        items = items[:limit]
+
+    demisto.debug(f"[Pagination] Returning {len(items)} inventory items")
+    return items
+
+
 # endregion
 
 # region Main router
@@ -1415,6 +1634,7 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-blocklist-items-remove": koi_blocklist_items_remove_command,
     "koi-blocklist-items-add": koi_blocklist_items_add_command,
     "koi-policy-status-update": koi_policy_status_update_command,
+    "koi-inventory-list": koi_inventory_list_command,
 }
 
 
