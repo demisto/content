@@ -257,6 +257,7 @@ def main():
         params = demisto.params()
         results = ""
         auth: Optional[tuple[str, str]] = None
+        apikey_in_header = argToBoolean(params.get("apikey_in_header", False))
         base_url = params.get("base_url", "")
         is_auth = params.get("is_auth", True)
         creds = params.get("credentials", "")
@@ -266,7 +267,7 @@ def main():
         command = demisto.command()
 
         if command == "generic-api-call":
-            if is_auth:
+            if is_auth and not apikey_in_header:
                 # Credential object - API Key or HTTP Basic Auth
                 if "credentials" in creds and creds["credentials"]["name"]:
                     auth = (creds["credentials"]["user"], creds["credentials"]["password"])
