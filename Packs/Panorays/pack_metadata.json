@@ -7,16 +7,14 @@
     "url": "https://panorays.com",
     "email": "support@panorays.com",
     "categories": [
-        "Security Information Event Management"
+        "Vulnerability Management"
     ],
     "tags": [
         "Security",
-        "Compliance",
-        "Security Analytics",
-        "Vulnerability Management"
+        "Compliance"
     ],
     "useCases": [
-        "Vulnerability Management:", 
+        "Vulnerability Management",
         "Compliance"
     ],
     "keywords": [

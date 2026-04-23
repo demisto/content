@@ -1,3 +1,6 @@
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: PanoraysFindingsAPI
   version: -1
@@ -5,42 +8,57 @@ name: PanoraysFindingsAPI
 display: Panorays Findings API
 category: Vulnerability Management
 description: Retrieve and monitor internal security findings for your organization from the Panorays platform to streamline self-assessment posture and automate internal incident response within Cortex XSOAR.
-fromversion: "5.0.0"
+fromversion: "6.0.0"
+provider: Panorays
 configuration:
 - display: Panorays PAPI base URL
   name: url
-  default_value: https://api.panoraysapp.com
+  defaultvalue: https://api.panoraysapp.com
   type: 0
   required: true
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   required: true
+  section: Connect
 - display: Maximum number of incidents to fetch per run
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
+  section: Collect
 - display: First fetch timestamp (e.g., 7 days)
   name: first_fetch
   defaultvalue: 7 days
   type: 0
   required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.12.13.8319994
   isfetch: true
   commands:
   - name: panorays-finding-list
+    description: Lists the company findings as detected by Panorays.
     arguments:
     - name: limit
       defaultValue: "50"
+      description: The maximum number of findings to return.
     - name: page
       defaultValue: "1"
-    description: Lists the company findings as detected by Panorays
+      description: The page number of results to retrieve.
+tests:
+- No tests
