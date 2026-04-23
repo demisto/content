@@ -140,13 +140,13 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
-        "azure-appservice-webapp-update"
+        "azure-appservice-webapp-update",
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
-        "azure-appservice-webapp-update"
+        "azure-appservice-webapp-update",
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
