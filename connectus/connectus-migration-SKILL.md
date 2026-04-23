@@ -39,7 +39,7 @@ The status output shows:
 - **Assignee** — who is working on it
 - **Support Level** — `xsoar`, `partner`, or `community`
 - **Provider** — the vendor
-- **Auth Types** — authentication mechanisms used
+- **Auth Class** — authentication class and detail
 - **Workflow Progress** — which steps are done, which remain
 - **Current step** — what to work on next
 
@@ -59,13 +59,14 @@ Before any code generation, you must define the script inputs as valid JSON. Thi
 python3 connectus/workflow_state.py set-inputs "<Integration Name>" '<JSON>'
 ```
 
-The JSON should describe the parameters the integration needs. Derive these from the **Auth Params** column in the status output and from examining the integration's existing YAML configuration.
+The JSON should describe the parameters the integration needs. Derive these from the **Auth Class** and **Auth Detail** columns in the status output and from examining the integration's existing YAML configuration.
 
-**Auth Params format:** `param_name[AUTH_TYPE](typeN,required/optional)` separated by semicolons.
+- **Auth Class** column — contains a two-part format: `Type(params) | Type2(params) — EXPR`
+- **Auth Detail** column — contains JSON with keys: `auth_types`, `config`, `params`, `notes`
 
-Example: For an integration with `credentials[BASIC_AUTH](type9,required)`:
+Example: For an integration with Auth Class `Plain(credentials) — REQUIRED`:
 ```bash
-python3 connectus/workflow_state.py set-inputs "MyIntegration" '{"credentials": {"type": "type9", "required": true, "auth_type": "BASIC_AUTH"}}'
+python3 connectus/workflow_state.py set-inputs "MyIntegration" '{"credentials": {"type": "type9", "required": true, "auth_class": "Plain"}}'
 ```
 
 **Validation:** The command rejects invalid JSON and tells you the parse error.
@@ -216,26 +217,18 @@ python3 connectus/workflow_state.py status-all
 python3 connectus/workflow_state.py list-by-assignee "<assignee name>"
 ```
 
-## Auth Type Reference
+## Auth Class Reference
 
 When analyzing an integration's authentication, use these enum values:
 
-| Auth Type Enum | Lifecycle | Description |
-|---|---|---|
-| `BASIC_AUTH` | STATIC | Username:password as Base64 in Authorization header |
-| `BEARER_TOKEN` | STATIC | Token in Authorization: Bearer header |
-| `API_KEY` | STATIC | Key as header, query param, or request body |
-| `OAUTH_CLIENT_CREDENTIALS` | DYNAMIC | client_id + client_secret exchanged for access token |
-| `OAUTH_AUTH_CODE` | DYNAMIC | Redirect URI + auth code + client_id + client_secret |
-| `OAUTH_DEVICE_CODE` | DYNAMIC | Device code flow |
-| `CERTIFICATE` | STATIC | Client certificate + private key for mTLS |
-| `AWS_SIGNATURE` | STATIC | AWS Signature V4 signing |
-| `MANAGED_IDENTITY` | DYNAMIC | Azure/GCP managed identity |
-| `HMAC` | STATIC | HMAC-based request signing |
-| `NONE` | STATIC | No authentication |
-
-**STATIC** = credentials sent directly with each request, don't change.
-**DYNAMIC** = credentials used to obtain a temporary token first.
+| Auth Class Enum | Description |
+|---|---|
+| `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow |
+| `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow |
+| `OAuth2JWT` | OAuth 2.0 JWT Bearer flow |
+| `APIKey` | API key authentication (header or query parameter) |
+| `Plain` | Simple credentials (username/password, token, etc.) |
+| `NoneRequired` | No authentication required |
 
 ## Auth Requirement Semantics
 
@@ -250,7 +243,7 @@ Different workflow steps are best handled in different modes:
 
 | Step | Recommended Mode |
 |------|-----------------|
-| Analyzing auth types, understanding integration | Ask |
+| Analyzing auth class, understanding integration | Ask |
 | Planning script inputs, designing manifest | Architect |
 | Writing integration code, unit tests | Code |
 | Fixing validation/test failures | Debug |
