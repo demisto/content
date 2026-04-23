@@ -105,26 +105,20 @@ class Client(ContentClient):
 def calculate_dbot_score(score: float) -> int:
     """Transforms reputation score from SOCRadar API to DBot Score.
 
-    Args:
-        score: Reputation score from SOCRadar API (0-100 range typically)
+    SOCRadar score ranges:
+        0       → Unknown    (0)
+        1–49    → Suspicious (2)
+        50–100  → Malicious  (3)
 
     Returns:
-        Score representation in DBot (0=Unknown, 1=Good, 2=Suspicious, 3=Malicious)
+        DBot score (0=Unknown, 2=Suspicious, 3=Malicious)
     """
-    return_score = 0
-    if score is None:
-        return_score = 0  # Unknown
-    # Malicious
-    elif score > 80:
-        return_score = 3
-    # Suspicious
-    elif score > 40:
-        return_score = 2
-    # Good
-    elif score > 0:
-        return_score = 1
-    # Unknown
-    return return_score
+    if score is None or score == 0:
+        return 0  # Unknown
+    elif score > 49:
+        return 3  # Malicious
+    else:
+        return 2  # Suspicious
 
 
 class Validator:
@@ -771,7 +765,7 @@ def socradar_reputation_command(client: Client, args: dict[str, Any], reliabilit
                 indicator_type=dbot_type,
                 integration_name=INTEGRATION_NAME,
                 score=score,
-                reliability=demisto.params().get("integrationReliability"),
+                reliability=reliability,
             )
 
             # Initialize indicator_object with Union type

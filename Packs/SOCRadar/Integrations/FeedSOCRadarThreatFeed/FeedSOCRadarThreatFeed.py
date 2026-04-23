@@ -127,7 +127,7 @@ def convert_to_demisto_indicator_type(socradar_indicator_type: str, indicator_va
 
 
 class Client(ContentClient):
-    """Client class to interact with SOCRadar Collection Based IOC Feed API. Overrides BaseClient."""
+    """Client class to interact with SOCRadar Collection Based IOC Feed API."""
 
     def __init__(self, base_url, api_key, tags, tlp_color, verify, proxy):
         super().__init__(base_url, verify=verify, proxy=proxy)
