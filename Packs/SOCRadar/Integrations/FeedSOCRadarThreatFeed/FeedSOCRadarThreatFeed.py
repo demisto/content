@@ -52,14 +52,14 @@ def build_entry_context(indicators: Union[dict, List]) -> list[dict]:
     return_context = []
 
     for indicator_dict in indicators:
-        indicator = indicator_dict["value"]
-        indicator_type = indicator_dict["type"]
+        indicator = indicator_dict.get("value", "")
+        indicator_type = indicator_dict.get("type", "")
         indicator_context_dict = {
             "Indicator": indicator,
             "Indicator Type": indicator_type,
-            "rawJSON": indicator_dict["rawJSON"],
-            "First Seen Date": indicator_dict["fields"]["firstseenbysource"],
-            "Last Seen Date": indicator_dict["fields"]["lastseenbysource"],
+            "rawJSON": indicator_dict.get("rawJSON", {}),
+            "First Seen Date": indicator_dict.get("fields", {}).get("firstseenbysource", ""),
+            "Last Seen Date": indicator_dict.get("fields", {}).get("lastseenbysource", ""),
             "Feed Maintainer Name": indicator_dict["fields"].get("collection_maintainer_name", ""),
             "Seen Count": indicator_dict["fields"].get("extra_info", {}).get("seen_count", 1),
             "Score": indicator_dict["fields"].get("extra_info", {}).get("score", 0),
@@ -80,7 +80,7 @@ def build_entry_context(indicators: Union[dict, List]) -> list[dict]:
     return return_context
 
 
-def date_string_to_iso_format_parsing(date_str: str) -> str:
+def date_string_to_iso_format_parsing(date_str: str) -> Optional[str]:
     """Formats a datestring to the ISO-8601 format which the server expects to receive.
 
     :type date_str: ``str``
@@ -89,8 +89,12 @@ def date_string_to_iso_format_parsing(date_str: str) -> str:
     :return: ISO-8601 date string
     :rtype: ``str``
     """
+    if not date_str:
+        return None
     parsed_date_format = dateparser.parse(date_str, date_formats=[SOCRADAR_DATE_FORMAT], settings={"TIMEZONE": "UTC"})
-    assert parsed_date_format is not None, f"could not parse {date_str}"
+    if parsed_date_format is None:
+        demisto.debug(f"Could not parse date: {date_str}")
+        return None
     return parsed_date_format.strftime(DATE_FORMAT)
 
 
@@ -116,13 +120,13 @@ def convert_to_demisto_indicator_type(socradar_indicator_type: str, indicator_va
         "ip": (FeedIndicatorType.ip_to_indicator_type(indicator_value) if indicator_value else FeedIndicatorType.IP),
         "hash": FeedIndicatorType.File,
     }
-    return indicator_type_mapping.get(socradar_indicator_type, FeedIndicatorType.File)
+    return indicator_type_mapping.get(socradar_indicator_type)
 
 
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client class to interact with SOCRadar Collection Based IOC Feed API. Overrides BaseClient."""
 
     def __init__(self, base_url, api_key, tags, tlp_color, verify, proxy):
@@ -272,7 +276,10 @@ class Client(BaseClient):
             demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
             raise DemistoException(status_code_messages[response.status_code])
         else:
-            raise DemistoException(response.raise_for_status())
+            try:
+                response.raise_for_status()
+            except Exception as e:
+                raise DemistoException(f"Error in API call [{response.status_code}] - {response.text}\n{e}")
 
 
 """ COMMAND FUNCTIONS """
