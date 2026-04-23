@@ -571,9 +571,57 @@ class TestRealResponse:
 
         next_run, events = manage.fetch_events(
             client=client_with_real_payload,
-            last_run={"last_time": 0},
+            last_run={"last_time": "0"},
             max_events_per_fetch=50,
         )
 
         assert len(events) == 17
         assert int(next_run["last_time"]) == newest_ts + 1
+
+
+def test_fetch_events_no_events_does_not_advance_cursor(client, mocker):
+    """
+    Given:
+        - last_run has a stored last_time.
+        - The API returns 0 events in the time window.
+    When:
+        - Calling `fetch_events()`.
+    Then:
+        - The cursor (last_time) should NOT advance to 'now'.
+        - It should remain at the original last_time so the window
+          grows on the next fetch, allowing delayed events to be caught.
+    """
+    from ManageEngineEventCollector import fetch_events
+
+    mocker.patch.object(client, "search_events", return_value=[])
+
+    original_last_time = "1700000000000"
+    next_run, events_returned = fetch_events(client, {"last_time": original_last_time}, max_events_per_fetch=10)
+
+    assert events_returned == []
+    assert next_run["last_time"] == original_last_time
+
+
+def test_fetch_events_with_events_advances_cursor(client, mocker):
+    """
+    Given:
+        - last_run has a stored last_time.
+        - The API returns events.
+    When:
+        - Calling `fetch_events()`.
+    Then:
+        - The cursor (last_time) should advance past the latest event's eventTime.
+    """
+    from ManageEngineEventCollector import fetch_events
+
+    events = [
+        {"eventTime": 1700000001000},
+        {"eventTime": 1700000002000},
+        {"eventTime": 1700000005000},
+    ]
+    mocker.patch.object(client, "search_events", return_value=events)
+
+    next_run, events_returned = fetch_events(client, {"last_time": "1700000000000"}, max_events_per_fetch=10)
+
+    assert len(events_returned) == 3
+    assert next_run["last_time"] == "1700000005001"
