@@ -1528,7 +1528,14 @@ def build_observables(file_name):
     indicators = {}
     ttps = {}
 
-    for action, element in etree.iterparse(file_name, events=("start", "end"), recover=True):
+    for action, element in etree.iterparse(
+        file_name,
+        events=("start", "end"),
+        recover=True,
+        resolve_entities=False,
+        load_dtd=False,
+        no_network=True,
+    ):
         if action == "start":
             tag_stack.append(element.tag)
 
