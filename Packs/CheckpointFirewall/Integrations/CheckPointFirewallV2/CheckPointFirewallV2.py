@@ -631,7 +631,7 @@ class Client(BaseClient):
     def add_access_section(
         self,
         layer: str,
-        position: str,
+        position: str | dict,
         details_level: Optional[str] = None,
         name: Optional[str] = None,
         tags: Optional[list] = None,
@@ -2633,11 +2633,19 @@ def checkpoint_service_group_list_command(client: Client, **kwargs) -> CommandRe
             raise DemistoException(
                 "The 'domains_to_process' argument cannot be used with details_level set to 'full'."
             )
-
-    # Build order object: API expects [{"ASC": "name"}] or [{"DESC": "name"}]
+    '''
+    Build order object: parse comma-separated direction:field pairs
+    "ASC:name" -> [{"ASC": "name"}]
+    "ASC:type,ASC:name,DESC:uid" -> [{"ASC": "type"}, {"ASC": "name"}, {"DESC": "uid"}]
+    '''
     order = None
     if order_arg:
-        order = [{"ASC": "name"}] if order_arg.upper() == "ASC" else [{"DESC": "name"}]
+        order = []
+        for pair in order_arg.split(","):
+            pair = pair.strip()
+            if ":" in pair:
+                direction, field = pair.split(":", 1)
+                order.append({direction.strip().upper(): field.strip()})
 
     result = client.list_service_groups(
         filter_search=filter_search,
@@ -2692,7 +2700,6 @@ def checkpoint_service_group_update_command(client: Client, **kwargs) -> Command
     demisto.debug(f"checkpoint-service-group-update command called with args: {demisto.args()}")
 
     identifier = kwargs["identifier"]
-    action = kwargs.get("action", "")
     new_name = kwargs.get("new_name")
     color = kwargs.get("color")
     comments = kwargs.get("comments")
@@ -2700,17 +2707,17 @@ def checkpoint_service_group_update_command(client: Client, **kwargs) -> Command
     ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
     details_level = kwargs.get("details_level")
 
-    # Handle members with add/remove action
+    members_action = kwargs.get("members_action")
     members_raw = argToList(kwargs.get("members")) or None
-    members = {action: members_raw} if members_raw and action in ("add", "remove") else members_raw
+    members = {members_action: members_raw} if members_raw and members_action in ("add", "remove") else members_raw
 
-    # Handle groups with add/remove action
+    groups_action = kwargs.get("groups_action")
     groups_raw = argToList(kwargs.get("groups")) or None
-    groups = {action: groups_raw} if groups_raw and action in ("add", "remove") else groups_raw
+    groups = {groups_action: groups_raw} if groups_raw and groups_action in ("add", "remove") else groups_raw
 
-    # Handle tags with add/remove action
+    tags_action = kwargs.get("tags_action")
     tags_raw = argToList(kwargs.get("tags")) or None
-    tags = {action: tags_raw} if tags_raw and action in ("add", "remove") else tags_raw
+    tags = {tags_action: tags_raw} if tags_raw and tags_action in ("add", "remove") else tags_raw
 
     result = client.update_service_group(
         identifier=identifier,
@@ -2756,7 +2763,6 @@ def checkpoint_service_group_clone_command(client: Client, **kwargs) -> CommandR
     demisto.debug(f"checkpoint-service-group-clone command called with args: {demisto.args()}")
 
     identifier = kwargs["identifier"]
-    action = kwargs.get("action", "")
     new_name = kwargs.get("new_name")
     color = kwargs.get("color")
     comments = kwargs.get("comments")
@@ -2764,17 +2770,17 @@ def checkpoint_service_group_clone_command(client: Client, **kwargs) -> CommandR
     ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
     details_level = kwargs.get("details_level")
 
-    # Handle members with add/remove action
+    members_action = kwargs.get("members_action")
     members_raw = argToList(kwargs.get("members")) or None
-    members = {action: members_raw} if members_raw and action in ("add", "remove") else members_raw
+    members = {members_action: members_raw} if members_raw and members_action in ("add", "remove") else members_raw
 
-    # Handle groups with add/remove action
+    groups_action = kwargs.get("groups_action")
     groups_raw = argToList(kwargs.get("groups")) or None
-    groups = {action: groups_raw} if groups_raw and action in ("add", "remove") else groups_raw
+    groups = {groups_action: groups_raw} if groups_raw and groups_action in ("add", "remove") else groups_raw
 
-    # Handle tags with add/remove action
+    tags_action = kwargs.get("tags_action")
     tags_raw = argToList(kwargs.get("tags")) or None
-    tags = {action: tags_raw} if tags_raw and action in ("add", "remove") else tags_raw
+    tags = {tags_action: tags_raw} if tags_raw and tags_action in ("add", "remove") else tags_raw
 
     result = client.clone_service_group(
         identifier=identifier,
@@ -2854,7 +2860,12 @@ def checkpoint_access_section_add_command(client: Client, **kwargs) -> CommandRe
     demisto.debug(f"checkpoint-access-section-add command called with args: {demisto.args()}")
 
     layer = kwargs["layer"]
-    position = kwargs["position"]
+    position_value = kwargs["position"]
+    position_rule = kwargs.get("position_rule")
+    if position_rule:
+        position = {position_value: position_rule}
+    else:
+        position = position_value
     details_level = kwargs.get("details_level")
     name = kwargs.get("name")
     tags = argToList(kwargs.get("tags")) or None
@@ -2941,7 +2952,11 @@ def checkpoint_access_section_update_command(client: Client, **kwargs) -> Comman
     layer = kwargs["layer"]
     new_name = kwargs.get("new_name")
     details_level = kwargs.get("details_level")
-    tags = argToList(kwargs.get("tags")) or None
+
+    tags_action = kwargs.get("tags_action")
+    tags_raw = argToList(kwargs.get("tags")) or None
+    tags = {tags_action: tags_raw} if tags_raw and tags_action in ("add", "remove") else tags_raw
+
     ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
     ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
 

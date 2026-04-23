@@ -2031,12 +2031,8 @@ script:
     - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
       name: offset
-    - auto: PREDEFINED
-      description: Sorts the results by search criteria. Automatically sorts the results by Name.
+    - description: 'Define the sort order using a single string made of comma-separated direction:field pairs. The direction can be ASC or DESC. Example: "ASC:type,ASC:name,DESC:uid". Automatically sorts the results by Name, in the ascending order.'
       name: order
-      predefined:
-      - ASC
-      - DESC
     - auto: PREDEFINED
       defaultValue: 'false'
       description: "When true, the service group's matched content is displayed as ranges of port numbers rather than service objects. Objects that are not represented using port numbers are presented as objects. The 'members' parameter is omitted from the response and instead the 'ranges' parameter is displayed."
@@ -2066,7 +2062,7 @@ script:
       - uid
       - standard
       - full
-    - description: Indicates which domains to process the commands on. It cannot be used with details_level set to 'full', must be run from the System Domain only and with ignore_warnings set to true. Valid values are CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.
+    - description: List of the next values:CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER. Indicates which domains to process the commands on. It cannot be used with details_level set to 'full', must be run from the System Domain only and with ignore_warnings set to true.
       isArray: true
       name: domains_to_process
     - defaultValue: None
@@ -2097,7 +2093,13 @@ script:
     - description: Object unique identifier (UID) or name.
       name: identifier
       required: true
-    - description: Collection of Network objects identified by the name or UID.
+    - auto: PREDEFINED
+      description: 'When the action is "add" or "remove", the members list is wrapped as {members_action: members}. Otherwise, members are sent without an action.'
+      name: members_action
+      predefined:
+      - add
+      - remove
+    - description: List of Network objects identified by the name or UID.
       isArray: true
       name: members
     - description: New name of the object.
@@ -2169,20 +2171,24 @@ script:
       - uid
       - standard
       - full
-    - description: Collection of group identifiers.
-      isArray: true
-      name: groups
-    - description: Collection of tag identifiers.
-      isArray: true
-      name: tags
     - auto: PREDEFINED
-      defaultValue: modify
-      description: The action that should be taken towards the members, groups, and tags values.
-      name: action
+      description: 'When the action is "add" or "remove", the groups list is wrapped as {groups_action: groups}. Otherwise, groups are sent without an action.'
+      name: groups_action
       predefined:
       - add
       - remove
-      - modify
+    - description: List of group identifiers.
+      isArray: true
+      name: groups
+    - auto: PREDEFINED
+      description: 'When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: List of tag identifiers.
+      isArray: true
+      name: tags
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
@@ -2232,7 +2238,13 @@ script:
     - description: Object unique identifier (UID) or name of the service group to clone.
       name: identifier
       required: true
-    - description: Collection of Network objects identified by the name or UID.
+    - auto: PREDEFINED
+      description: 'When the action is "add" or "remove", the members list is wrapped as {members_action: members}. Otherwise, members are sent without an action.'
+      name: members_action
+      predefined:
+      - add
+      - remove
+    - description: List of Network objects identified by the name or UID.
       isArray: true
       name: members
     - description: New name of the object.
@@ -2304,20 +2316,24 @@ script:
       - uid
       - standard
       - full
-    - description: Collection of group identifiers.
-      isArray: true
-      name: groups
-    - description: Collection of tag identifiers.
-      isArray: true
-      name: tags
     - auto: PREDEFINED
-      defaultValue: modify
-      description: The action that should be taken towards the members, groups, and tags values.
-      name: action
+      description: 'When the action is "add" or "remove", the groups list is wrapped as {groups_action: groups}. Otherwise, groups are sent without an action.'
+      name: groups_action
       predefined:
       - add
       - remove
-      - modify
+    - description: List of group identifiers.
+      isArray: true
+      name: groups
+    - auto: PREDEFINED
+      description: 'When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: List of tag identifiers.
+      isArray: true
+      name: tags
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
@@ -2401,8 +2417,11 @@ script:
     - description: Layer that the rule belongs to identified by the name or UID.
       name: layer
       required: true
+    - description: Rule name. Add rule relatively to another rule or section.
+      name: position_rule
+      required: true
     - auto: PREDEFINED
-      description: Add rule relatively to another rule or section.
+      description: The position of the rule.
       name: position
       predefined:
       - top
@@ -2519,7 +2538,13 @@ script:
       - uid
       - standard
       - full
-    - description: Collection of tag identifiers.
+    - auto: PREDEFINED
+      description: 'When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: List of tag identifiers.
       isArray: true
       name: tags
     - auto: PREDEFINED
