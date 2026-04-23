@@ -59,7 +59,12 @@ function sendRequestInSession(method, uri, body) {
     var response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
     if (response.StatusCode === 401) {
         // ── UCP: invalidate cache and get fresh credentials, fall back to legacy ──
-        if (shouldUseUcpAuth()) {
+        try {
+            var use_ucp_auth = shouldUseUcpAuth();
+        } catch (e) {
+            var use_ucp_auth = false;
+        }
+        if (use_ucp_auth) {
             logDebug('[UCP][Salesforce.js] Received 401 — invalidating cached credentials and retrying');
             invalidateUcpCredentialsCache(getUcpMethodUniqueId());
             var ucpCreds = getUcpCredentials();
@@ -843,7 +848,12 @@ function fetchIncident() {
 }
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
 
-if (shouldUseUcpAuth()) {
+try {
+    var use_ucp_auth = shouldUseUcpAuth();
+} catch (e) {
+    var use_ucp_auth = false;
+}
+if (use_ucp_auth) {
     logDebug("[UCP][Salesforce.js] Using UCP-managed token");
     var ucpCredentials = getUcpCredentials();
     if (!ucpCredentials || !ucpCredentials.access_token) {

@@ -39,7 +39,12 @@ class Client(BaseClient):
         self._conn_username = conn_username
         self._conn_password = conn_password
         self.token = None
-        if not should_use_ucp_auth():
+        use_ucp_auth = False
+        try:
+            use_ucp_auth = should_use_ucp_auth()
+        except NameError:
+            use_ucp_auth = False
+        if not use_ucp_auth:
             self.token = self.get_access_token_()
         self.demisto_params = demisto_params
 
@@ -351,7 +356,12 @@ def main():
     password = ""
     client_id = ""
     client_secret = ""
-    if not should_use_ucp_auth():
+    use_ucp_auth = False
+    try:
+        use_ucp_auth = should_use_ucp_auth()
+    except NameError:
+        use_ucp_auth = False
+    if not use_ucp_auth:
         demisto.debug("Using basic auth")
         username = params.get("credentials").get("identifier")
         password = params.get("credentials").get("password")
