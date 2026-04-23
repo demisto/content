@@ -1,5 +1,3 @@
-name: SailPoint IdentityNow
-display: SailPoint IdentityNow
 category: Data Enrichment & Threat Intelligence
 provider: SailPoint Technologies
 commonfields:

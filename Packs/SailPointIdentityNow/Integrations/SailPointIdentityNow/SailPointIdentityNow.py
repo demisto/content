@@ -621,7 +621,7 @@ def main():
     # Other configs
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    request_timeout = int(params.get("request_timeout", 60))
+    request_timeout = arg_to_number(params.get("request_timeout")) or 60
 
     headers = {}
     try:
