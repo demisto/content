@@ -123,7 +123,7 @@ configuration:
   section: Collect
   advanced: true
   additionalinfo: 'Add this tag to XSOAR war room entries to mirror them as Wiz issue notes.'
-description: Agentless cloud security.
+description: Agentless cloud security with bidirectional Issue mirroring, status sync, comment sync, and due-date sync between Wiz and Cortex XSOAR.
 display: Wiz
 name: Wiz
 script:
@@ -437,7 +437,7 @@ script:
       description: issue id.
       required: true
   - name: wiz-resolve-issue
-    description: Resolve a Threat Detection Issue.
+    description: Resolve a Wiz Issue.
     arguments:
     - name: issue_id
       required: true
