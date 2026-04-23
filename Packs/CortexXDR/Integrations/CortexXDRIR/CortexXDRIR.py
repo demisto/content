@@ -244,13 +244,12 @@ class Client(CoreClient):
     def headers(self):
         return get_headers(self._params)
 
-    def test_module(self, first_fetch_time):
+    def test_module(self):
         """
         Performs basic get request to get item samples
         """
-        last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
-            self.list_users()
+            self.run_healthcheck()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
@@ -2967,7 +2966,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     try:
         if command == "test-module":
-            client.test_module(first_fetch_time)
+            client.test_module()
             demisto.results("ok")
 
         elif command == "fetch-incidents":
