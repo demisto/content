@@ -646,8 +646,8 @@ def test_fetch_observations_for_domain_command(requests_mock):
     assert result.raw_response == data
 
 
-def test_fetch_observations_for_i_p_command(requests_mock):
-    from ArgusManagedDefence import fetch_observations_for_i_p_command
+def test_fetch_observations_for_ip_command(requests_mock):
+    from ArgusManagedDefence import fetch_observations_for_ip_command
 
     with open("argus_json/argus_event_obs_ip.json") as json_file:
         data = json.load(json_file)
@@ -656,7 +656,7 @@ def test_fetch_observations_for_i_p_command(requests_mock):
     method_url = f"/reputation/v1/observation/ip/{ip}"
 
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
-    result = fetch_observations_for_i_p_command({"ip": ip})
+    result = fetch_observations_for_ip_command({"ip": ip})
     assert result.raw_response == data
 
 
