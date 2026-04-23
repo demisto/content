@@ -8,6 +8,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 
+FORWARD_USER_RUN_RBAC = False
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
@@ -249,7 +250,7 @@ class Client(CoreClient):
         """
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
-            self.get_incidents(lte_creation_time=last_one_day, limit=1)
+            self.list_users()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
@@ -2851,7 +2852,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     resolve_reason_mapper = {
         "resolved_known_issue": "Resolved - Known Issue",
-        "resolved_duplicate": "Resolved - Duplicate Issue",
+        "resolved_duplicate": "Resolved - Duplicate Case",
         "resolved_false_positive": "Resolved - False Positive",
         "resolved_other": "Resolved - Other",
     }

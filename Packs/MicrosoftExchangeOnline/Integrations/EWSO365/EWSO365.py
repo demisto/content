@@ -331,13 +331,13 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     """
     Checks if an item is a duplicate based on ID and Timestamp.
 
-    Note:
-    According to RFC 5322, Message-IDs should be enclosed in angle brackets (e.g., <id@domain>).
-    However, EWS search might return id@domain first, while subsequent fetches might add them.
-    This function normalizes both forms to prevent duplication caused by this inconsistency.
+    RFC 5322 defines Message-ID values as ``<id@domain>``, but in practice the same
+    message may appear in different forms across fetches — such as ``id@domain``,
+    ``<id@domain>``, ``id@domain>``, or ``<id@domain`` — and they might change between fetches.
+    To avoid duplicate incidents, we verify all possible forms in exclude_ids.
 
     Features:
-    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>).
+    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>, <abc, abc>).
     2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
     3. Timestamp Logic: Compares stored time vs item time.
 
@@ -352,14 +352,14 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     clean_id = item.message_id.strip().strip("<>")
 
     found_key = None
-    if clean_id in exclude_ids:
-        found_key = clean_id
-    elif f"<{clean_id}>" in exclude_ids:
-        found_key = f"<{clean_id}>"
+    for candidate in (clean_id, f"<{clean_id}>", f"{clean_id}>", f"<{clean_id}"):
+        if candidate in exclude_ids:
+            found_key = candidate
+            break
 
     if found_key is None:
         return False, None
-
+    demisto.debug(f"Dedup match: {item.message_id=}, {found_key=}, {clean_id=}")
     stored_time = exclude_ids[found_key]
 
     # If stored_time is "" or None, it means it was from an old fetch (List format).
@@ -1791,7 +1791,7 @@ def fetch_last_emails(
                     f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
                 )
                 continue
-            demisto.debug(f"Appending {item.subject=}")
+            demisto.debug(f"Appending {item.subject=} with {item.message_id=}")
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
