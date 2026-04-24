@@ -357,6 +357,90 @@ script:
       description: Total count of matching indicators.
       type: Number
     description: Returns the count of indicators matching the given filters.
+  - name: cyberint-premium-enrich
+    arguments:
+    - name: type
+      description: The IOC type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - domain
+      - url
+      - sha256
+      - sha1
+      - md5
+    - name: value
+      description: The indicator value (e.g. IP address, domain name, URL, or file hash).
+      required: true
+    outputs:
+    - contextPath: CyberintPremium.enrichment.indicator_type
+      description: The indicator type.
+      type: String
+    - contextPath: CyberintPremium.enrichment.indicator_value
+      description: The indicator value.
+      type: String
+    - contextPath: CyberintPremium.enrichment.activity
+      description: Activity classification.
+      type: String
+    - contextPath: CyberintPremium.enrichment.confidence
+      description: Confidence score (0-100).
+      type: Number
+    - contextPath: CyberintPremium.enrichment.severity
+      description: Severity level (0-5).
+      type: Number
+    - contextPath: CyberintPremium.enrichment.malicious
+      description: Malicious classification (yes/no/inconclusive).
+      type: String
+    - contextPath: CyberintPremium.enrichment.kill_chain_stage
+      description: Kill chain stage.
+      type: String
+    - contextPath: CyberintPremium.enrichment.first_seen
+      description: First seen date-time.
+      type: Date
+    - contextPath: CyberintPremium.enrichment.last_seen
+      description: Last seen date-time.
+      type: Date
+    - contextPath: CyberintPremium.enrichment.valid_until
+      description: Valid until date-time.
+      type: Date
+    - contextPath: CyberintPremium.enrichment.malware_types
+      description: List of malware types.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.malware_family
+      description: Malware family name.
+      type: String
+    - contextPath: CyberintPremium.enrichment.origin_countries
+      description: Origin countries.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.targeted_countries
+      description: Targeted countries.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.targeted_sectors
+      description: Targeted sectors.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.targeted_brands
+      description: Targeted brands.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.threat_actors
+      description: Associated threat actors.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.campaigns
+      description: Associated campaigns.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.cves
+      description: Associated CVEs.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.ttps
+      description: Associated TTPs with MITRE IDs.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.tags
+      description: Tags.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.enrichment
+      description: Type-specific enrichment data (geo, whois, file info, etc.).
+      type: Unknown
+    description: Enriches a single IOC indicator with reputation, threat intelligence, and type-specific enrichment data.
   dockerimage: demisto/python3:3.12.13.7444307
   feed: true
   subtype: python3

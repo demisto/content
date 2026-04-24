@@ -5,10 +5,13 @@ from unittest.mock import patch, MagicMock
 import FeedCyberintPremium
 import pytest
 
+import json
+
 BASE_URL = "https://feed-example.com"
 TOKEN = "example_token"
 FEED_URL = f"{BASE_URL}/ioc-intel/feed-api/v1/feed/jsonl"
 COUNT_URL = f"{BASE_URL}/ioc-intel/feed-api/v1/feed/count"
+ENRICH_URL = f"{BASE_URL}/ioc-intel/enrichment-api/v1/enrichment"
 
 
 def load_mock_response() -> str:
@@ -427,3 +430,99 @@ def test_test_module(mock_client, requests_mock):
         result = FeedCyberintPremium.test_module(mock_client)
 
     assert result == "ok"
+
+
+def test_enrich_command_ipv4(mock_client, requests_mock):
+    """Test enrichment of an IPv4 indicator."""
+    with open("test_data/enrichment_ipv4.json") as f:
+        mock_response = json.load(f)
+
+    requests_mock.post(ENRICH_URL, json=mock_response)
+
+    args = {"type": "ipv4", "value": "1.1.1.1"}
+    result = FeedCyberintPremium.enrich_command(mock_client, args)
+
+    assert result is not None
+    assert result.outputs["indicator_type"] == "ipv4"
+    assert result.outputs["indicator_value"] == "1.1.1.1"
+    assert result.outputs["activity"] == "CnC Server"
+    assert result.outputs["confidence"] == 90
+    assert result.outputs["severity"] == 4
+    assert result.outputs["malicious"] == "yes"
+    assert result.outputs["malware_family"] == "LockBit"
+    assert "APT28" in result.outputs["threat_actors"]
+    assert "CVE-2024-1234" in result.outputs["cves"]
+    assert result.outputs["enrichment"]["geo"]["country"] == "Russia"
+    assert result.outputs["enrichment"]["asn"]["number"] == 12345
+
+    # Check human readable contains key sections
+    assert "Indicator Details" in result.readable_output
+    assert "Threat Intelligence" in result.readable_output
+    assert "TTPs" in result.readable_output
+    assert "IPv4 Enrichment" in result.readable_output
+
+
+def test_enrich_command_domain(mock_client, requests_mock):
+    """Test enrichment of a domain indicator."""
+    with open("test_data/enrichment_domain.json") as f:
+        mock_response = json.load(f)
+
+    requests_mock.post(ENRICH_URL, json=mock_response)
+
+    args = {"type": "domain", "value": "malicious-example.com"}
+    result = FeedCyberintPremium.enrich_command(mock_client, args)
+
+    assert result is not None
+    assert result.outputs["indicator_type"] == "domain"
+    assert result.outputs["indicator_value"] == "malicious-example.com"
+    assert result.outputs["activity"] == "Phishing"
+    assert result.outputs["enrichment"]["ips"] == ["2.2.2.2", "3.3.3.3"]
+    assert result.outputs["enrichment"]["whois"]["registrant_name"] == "John Doe"
+
+    assert "Indicator Details" in result.readable_output
+    assert "Domain Enrichment" in result.readable_output
+
+    # Verify request body
+    last_request = requests_mock.last_request
+    body = last_request.json()
+    assert body["type"] == "domain"
+    assert body["value"] == "malicious-example.com"
+
+
+def test_enrich_command_no_enrichment(mock_client, requests_mock):
+    """Test enrichment when no type-specific enrichment data is returned."""
+    mock_response = {
+        "indicator_type": "ipv4",
+        "indicator_value": "9.9.9.9",
+        "activity": "Unknown",
+        "confidence": 10,
+        "severity": 1,
+        "malicious": "inconclusive",
+        "first_seen": None,
+        "last_seen": None,
+        "valid_until": None,
+        "kill_chain_stage": None,
+        "malware_types": [],
+        "malware_family": None,
+        "origin_countries": [],
+        "targeted_countries": [],
+        "targeted_sectors": [],
+        "targeted_brands": [],
+        "threat_actors": [],
+        "campaigns": [],
+        "cves": [],
+        "ttps": [],
+        "tags": [],
+        "enrichment": None,
+    }
+
+    requests_mock.post(ENRICH_URL, json=mock_response)
+
+    args = {"type": "ipv4", "value": "9.9.9.9"}
+    result = FeedCyberintPremium.enrich_command(mock_client, args)
+
+    assert result is not None
+    assert result.outputs["indicator_value"] == "9.9.9.9"
+    assert "Indicator Details" in result.readable_output
+    # Should NOT have enrichment sections
+    assert "IPv4 Enrichment" not in result.readable_output

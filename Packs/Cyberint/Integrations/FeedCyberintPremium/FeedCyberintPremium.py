@@ -203,6 +203,33 @@ class Client(BaseClient):
         )
         return response.get("count", 0)
 
+    @logger
+    def enrich_indicator(self, indicator_type: str, value: str) -> dict[str, Any]:
+        """
+        Enriches a single IOC via the enrichment API.
+
+        Args:
+            indicator_type: The IOC type (ipv4, domain, url, sha256, sha1, md5).
+            value: The indicator value.
+
+        Returns:
+            Enriched IOC data.
+        """
+        url_suffix = "/ioc-intel/enrichment-api/v1/enrichment"
+        body = {"type": indicator_type, "value": value}
+        demisto.debug(f"Enriching indicator: {indicator_type}={value}")
+        response = self._http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=body,
+            cookies=self._cookies,
+            timeout=120,
+            retries=RETRIES,
+            status_list_to_retry=STATUS_LIST_TO_RETRY,
+            backoff_factor=BACKOFF_FACTOR,
+        )
+        return response
+
 
 def test_module(client: Client) -> str:
     """
@@ -564,6 +591,150 @@ def get_indicators_count_command(
     )
 
 
+def enrich_command(
+    client: Client,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    Enriches a single IOC indicator.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments (type, value).
+
+    Returns:
+        Enrichment results.
+    """
+    indicator_type = args.get("type", "")
+    value = args.get("value", "")
+
+    data = client.enrich_indicator(indicator_type, value)
+
+    enrichment = data.get("enrichment") or {}
+
+    # Build base info table
+    base_info = {
+        "indicator_type": data.get("indicator_type"),
+        "indicator_value": data.get("indicator_value"),
+        "activity": data.get("activity"),
+        "confidence": data.get("confidence"),
+        "severity": data.get("severity"),
+        "malicious": data.get("malicious"),
+        "kill_chain_stage": data.get("kill_chain_stage"),
+        "first_seen": data.get("first_seen"),
+        "last_seen": data.get("last_seen"),
+        "valid_until": data.get("valid_until"),
+        "malware_family": data.get("malware_family"),
+    }
+
+    human_readable = tableToMarkdown(
+        "Indicator Details",
+        [base_info],
+        headers=[
+            "indicator_type", "indicator_value", "activity", "confidence",
+            "severity", "malicious", "kill_chain_stage", "first_seen",
+            "last_seen", "valid_until", "malware_family",
+        ],
+        headerTransform=premium_header_transformer,
+        removeNull=True,
+    )
+
+    # Threat intelligence section
+    threat_intel = {}
+    for field in ("malware_types", "origin_countries", "targeted_countries",
+                  "targeted_sectors", "targeted_brands", "threat_actors",
+                  "campaigns", "cves", "tags"):
+        val = data.get(field)
+        if val:
+            threat_intel[field] = ", ".join(val) if isinstance(val, list) else val
+
+    if threat_intel:
+        human_readable += tableToMarkdown(
+            "Threat Intelligence",
+            [threat_intel],
+            headerTransform=premium_header_transformer,
+            removeNull=True,
+        )
+
+    # TTPs section
+    ttps = data.get("ttps", [])
+    if ttps:
+        ttps_formatted = [{"mitre_id": t.get("mitre_id"), "title": t.get("title")} for t in ttps]
+        human_readable += tableToMarkdown(
+            "TTPs",
+            ttps_formatted,
+            headers=["mitre_id", "title"],
+            headerTransform=premium_header_transformer,
+            removeNull=True,
+        )
+
+    # Type-specific enrichment section
+    if enrichment:
+        if indicator_type == "ipv4":
+            geo = enrichment.get("geo") or {}
+            asn = enrichment.get("asn") or {}
+            enrichment_formatted = {
+                "country": geo.get("country"),
+                "city": geo.get("city"),
+                "asn_number": asn.get("number"),
+                "asn_organization": asn.get("organization"),
+            }
+            human_readable += tableToMarkdown(
+                "IPv4 Enrichment",
+                [enrichment_formatted],
+                headerTransform=premium_header_transformer,
+                removeNull=True,
+            )
+
+        elif indicator_type == "domain":
+            whois = enrichment.get("whois") or {}
+            enrichment_formatted = {
+                "ips": ", ".join(enrichment.get("ips", [])),
+            }
+            enrichment_formatted.update(whois)
+            human_readable += tableToMarkdown(
+                "Domain Enrichment",
+                [enrichment_formatted],
+                headerTransform=premium_header_transformer,
+                removeNull=True,
+            )
+
+        elif indicator_type == "url":
+            whois = enrichment.get("whois") or {}
+            enrichment_formatted = {
+                "ips": ", ".join(enrichment.get("ips", [])),
+                "hostname": enrichment.get("hostname"),
+                "domain": enrichment.get("domain"),
+            }
+            enrichment_formatted.update(whois)
+            human_readable += tableToMarkdown(
+                "URL Enrichment",
+                [enrichment_formatted],
+                headerTransform=premium_header_transformer,
+                removeNull=True,
+            )
+
+        elif indicator_type in ("sha256", "sha1", "md5"):
+            enrichment_formatted = {
+                "filenames": ", ".join(enrichment.get("filenames", [])),
+                "download_urls": ", ".join(enrichment.get("download_urls", [])),
+            }
+            human_readable += tableToMarkdown(
+                "File Hash Enrichment",
+                [enrichment_formatted],
+                headerTransform=premium_header_transformer,
+                removeNull=True,
+            )
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="CyberintPremium.enrichment",
+        outputs_key_field="indicator_value",
+        raw_response=data,
+        outputs=data,
+    )
+
+
 def fetch_indicators_command(
     client: Client,
     params: dict[str, Any],
@@ -635,6 +806,42 @@ def premium_header_transformer(header: str) -> str:
         "malware_types": "Malware Types",
         "has_cve": "Has CVE",
         "has_campaign": "Has Campaign",
+        "malware_family": "Malware Family",
+        "origin_countries": "Origin Countries",
+        "targeted_countries": "Targeted Countries",
+        "targeted_sectors": "Targeted Sectors",
+        "targeted_brands": "Targeted Brands",
+        "threat_actors": "Threat Actors",
+        "campaigns": "Campaigns",
+        "cves": "CVEs",
+        "tags": "Tags",
+        "ttps": "TTPs",
+        "mitre_id": "MITRE ID",
+        "title": "Title",
+        "ips": "IPs",
+        "country": "Country",
+        "city": "City",
+        "asn_number": "ASN Number",
+        "asn_organization": "ASN Organization",
+        "hostname": "Hostname",
+        "domain": "Domain",
+        "filenames": "Filenames",
+        "download_urls": "Download URLs",
+        "registrant_name": "Registrant Name",
+        "registrant_email": "Registrant Email",
+        "registrant_organization": "Registrant Organization",
+        "registrant_country": "Registrant Country",
+        "registrant_telephone": "Registrant Telephone",
+        "technical_contact_email": "Technical Contact Email",
+        "technical_contact_name": "Technical Contact Name",
+        "technical_contact_organization": "Technical Contact Organization",
+        "registrar_name": "Registrar Name",
+        "admin_contact_name": "Admin Contact Name",
+        "admin_contact_organization": "Admin Contact Organization",
+        "admin_contact_email": "Admin Contact Email",
+        "created_date": "Created Date",
+        "updated_date": "Updated Date",
+        "expiration_date": "Expiration Date",
     }
     return header_map.get(header, string_to_table_header(header))
 
@@ -688,6 +895,9 @@ def main():
 
         elif command == "cyberint-premium-get-indicators-count":
             return_results(get_indicators_count_command(client, args))
+
+        elif command == "cyberint-premium-enrich":
+            return_results(enrich_command(client, args))
 
         elif command == "fetch-indicators":
             fetch_indicators_command(client, params)
