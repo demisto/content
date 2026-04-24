@@ -1,12 +1,12 @@
 {
-    "name": "MetaDefender Sandbox (Deprecated)",
-    "description": "Deprecated. Use MetaDefender Aether instead.",
+    "name": "MetaDefender Aether",
+    "description": "Next-generation unified Zero-Day detection solution",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.0",
     "author": "OPSWAT",
-    "url": "https://docs.opswat.com/filescan",
+    "url": "https://www.opswat.com/products/metadefender/aether",
     "email": "threatintel@opswat.com",
-    "created": "2024-02-09T00:00:00Z",
+    "created": "2026-04-15T00:00:00Z",
     "categories": [
         "Forensics & Malware Analysis"
     ],
@@ -14,18 +14,22 @@
         "Malware",
         "Simulation",
         "Threat Intelligence",
-        "New"
+        "New",
+        "MITRE ATT&CK"
     ],
     "useCases": [
         "Threat Intelligence Management",
-        "Malware"
+        "Malware",
+        "Hunting"
     ],
     "keywords": [
+        "OPSWAT",
         "scan",
         "adaptive",
         "threat analysis",
         "zero-day",
-        "IOC"
+        "IOC",
+        "sandbox"
     ],
     "marketplaces": [
         "xsoar"
