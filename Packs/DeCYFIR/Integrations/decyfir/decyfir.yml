@@ -53,7 +53,29 @@ description: DeCYFIR API's provides External Threat Landscape Management insight
 display: DeCYFIR
 name: decyfir
 script:
-  commands: []
+  commands:
+  - deprecated: false
+    description: Initiate a take down request.
+    execution: false
+    name: initiate-take-down
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of the alert for which to initiate the take down request.
+  - deprecated: false
+    description: Get take down list.
+    execution: false
+    name: take-down-list
+    arguments:
+    - name: sub_category
+      required: false
+      description: The sub-category for which to retrieve the take down list. If not provided, the take down list for all sub-categories will be retrieved.
+    - name: size
+      required: false
+      description: The number of records to retrieve. If not provided, the default value is 100.
+    - name: page
+      required: false
+      description: The page number to retrieve. If not provided, the default value is 0.
   dockerimage: demisto/python3:3.12.8.3296088
   feed: false
   isfetch: true

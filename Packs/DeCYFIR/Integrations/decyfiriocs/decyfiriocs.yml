@@ -94,10 +94,26 @@ display: DeCYFIR Indicators & Threat Intelligence Feed
 name: DeCYFIR Feed
 script:
   commands:
-  - deprecated: false
-    description: Gets indicators from the feed.
-    execution: false
+  - deprecated: true
+    description: Get indicators from CYFIRMA.
+    execution: true
     name: decyfir-get-indicators
+  - deprecated: false
+    description: Get IP indicators from CYFIRMA.
+    execution: false
+    name: ip
+  - deprecated: false
+    description: Get Domain indicators from CYFIRMA.
+    execution: false
+    name: domain
+  - deprecated: false
+    description: Get URL indicators from CYFIRMA.
+    execution: false
+    name: url
+  - deprecated: false
+    description: Get File Hash indicators from CYFIRMA.
+    execution: false
+    name: file
   dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   isfetch: false
