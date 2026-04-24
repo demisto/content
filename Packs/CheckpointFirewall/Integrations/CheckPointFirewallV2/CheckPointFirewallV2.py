@@ -2614,8 +2614,8 @@ def checkpoint_service_group_get_command(
 def checkpoint_service_group_list_command(
     client: Client,
     filter: str = None,
-    limit: str = "50",
-    offset: str = "0",
+    limit: str = None,
+    offset: str = None,
     order: str = None,
     show_as_ranges: str = None,
     dereference_group_members: str = None,

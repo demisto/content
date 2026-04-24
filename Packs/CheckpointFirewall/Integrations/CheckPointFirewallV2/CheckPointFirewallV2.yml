@@ -2025,11 +2025,9 @@ script:
   - arguments:
     - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
       name: filter
-    - defaultValue: '50'
-      description: The maximum number of results to return. Default is 50.
+    - description: The maximum number of results to return. API default is 50.
       name: limit
-    - defaultValue: '0'
-      description: Number of results to initially skip. Default is 0.
+    - description: Number of results to initially skip. API default is 0.
       name: offset
     - description: 'Define the sort order using a single string made of comma-separated direction:field pairs. The direction can be ASC or DESC. Example: "ASC:type,ASC:name,DESC:uid". Automatically sorts the results by Name, in the ascending order.'
       name: order
