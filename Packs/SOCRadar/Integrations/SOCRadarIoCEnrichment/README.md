@@ -317,9 +317,9 @@ Similar to IP command, with `SOCRadarIoCEnrichment.File.*` prefix.
 
 ## Additional Resources
 
-- **API Documentation**: https://platform.socradar.com/docs/api/
+- **API Documentation**: <https://platform.socradar.com/docs/api/>
 - **Support**: operation@socradar.io
-- **SOCRadar Platform**: https://platform.socradar.com
+- **SOCRadar Platform**: <https://platform.socradar.com>
 
 ---
 

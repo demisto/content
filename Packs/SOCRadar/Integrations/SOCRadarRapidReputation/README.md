@@ -105,26 +105,26 @@ This powerful command allows you to check reputation for a mixed list of IPs, do
 The bulk check command provides:
 
 1. **Summary Statistics**:
-   - Total indicators processed
-   - Success/failure counts
-   - Breakdown by entity type (IPs, domains, URLs, hashes)
-   - Breakdown by threat level (malicious, suspicious, good, unknown, whitelisted)
+   * Total indicators processed
+   * Success/failure counts
+   * Breakdown by entity type (IPs, domains, URLs, hashes)
+   * Breakdown by threat level (malicious, suspicious, good, unknown, whitelisted)
 
 2. **Individual Results**:
-   - Each indicator gets its own detailed result card
-   - Includes reputation score, whitelisting status, and threat sources
-   - Clear classification (Malicious/Suspicious/Good/Unknown)
+   * Each indicator gets its own detailed result card
+   * Includes reputation score, whitelisting status, and threat sources
+   * Clear classification (Malicious/Suspicious/Good/Unknown)
 
 3. **Automatic Type Detection**:
-   - IPs: Automatically detected (IPv4 and IPv6)
-   - Domains: Detected based on domain validation
-   - URLs: Detected by http:// or https:// prefix
-   - Hashes: Detected (MD5, SHA1, SHA256)
+   * IPs: Automatically detected (IPv4 and IPv6)
+   * Domains: Detected based on domain validation
+   * URLs: Detected by http:// or https:// prefix
+   * Hashes: Detected (MD5, SHA1, SHA256)
 
 4. **Error Handling**:
-   - Invalid indicators are reported with clear error messages
-   - Processing continues even if some indicators fail
-   - Failed indicators don't stop the entire batch
+   * Invalid indicators are reported with clear error messages
+   * Processing continues even if some indicators fail
+   * Failed indicators don't stop the entire batch
 
 #### Human Readable Output Example
 
