@@ -512,7 +512,7 @@ class Client(BaseClient):
         filter_search: Optional[str] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
-        order: Optional[dict] = None,
+        order: Optional[list] = None,
         show_as_ranges: Optional[bool] = None,
         dereference_group_members: Optional[bool] = None,
         show_membership: Optional[bool] = None,
@@ -670,7 +670,7 @@ class Client(BaseClient):
         layer: str,
         new_name: Optional[str] = None,
         details_level: Optional[str] = None,
-        tags: Optional[list] = None,
+        tags: Optional[dict | list] = None,
         ignore_warnings: Optional[bool] = None,
         ignore_errors: Optional[bool] = None,
     ) -> dict:
@@ -2511,38 +2511,44 @@ def build_group_data(result: dict, readable_output: str, printable_result: dict)
     return readable_output, printable_result
 
 
-def checkpoint_service_group_add_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_service_group_add_command(
+    client: Client,
+    name: str,
+    members = None,
+    color: str = None,
+    comments: str = None,
+    details_level: str = None,
+    groups = None,
+    tags = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
     """Add a new service group object.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-service-group-add command called with args: {demisto.args()}")
 
-    name = kwargs["name"]
-    members = argToList(kwargs.get("members")) or None
-    color = kwargs.get("color")
-    comments = kwargs.get("comments")
-    details_level = kwargs.get("details_level")
-    groups = argToList(kwargs.get("groups")) or None
-    tags = argToList(kwargs.get("tags")) or None
-    ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
-    ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
+    members_list = argToList(members) or None
+    groups_list = argToList(groups) or None
+    tags_list = argToList(tags) or None
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
     result = client.add_service_group(
         name=name,
-        members=members,
+        members=members_list,
         color=color,
         comments=comments,
         details_level=details_level,
-        groups=groups,
-        tags=tags,
-        ignore_warnings=ignore_warnings,
-        ignore_errors=ignore_errors,
+        groups=groups_list,
+        tags=tags_list,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
     )
 
     headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
@@ -2563,25 +2569,27 @@ def checkpoint_service_group_add_command(client: Client, **kwargs) -> CommandRes
     )
 
 
-def checkpoint_service_group_get_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_service_group_get_command(
+    client: Client,
+    identifier: str,
+    show_as_ranges: str = None,
+    details_level: str = None,
+) -> CommandResults:
     """Show existing service group object using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-service-group-get command called with args: {demisto.args()}")
 
-    identifier = kwargs["identifier"]
-    show_as_ranges = argToBoolean(kwargs["show_as_ranges"]) if kwargs.get("show_as_ranges") is not None else None
-    details_level = kwargs.get("details_level")
+    show_as_ranges_bool = argToBoolean(show_as_ranges) if show_as_ranges is not None else None
 
     result = client.get_service_group(
         identifier=identifier,
-        show_as_ranges=show_as_ranges,
+        show_as_ranges=show_as_ranges_bool,
         details_level=details_level,
     )
 
@@ -2603,32 +2611,39 @@ def checkpoint_service_group_get_command(client: Client, **kwargs) -> CommandRes
     )
 
 
-def checkpoint_service_group_list_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_service_group_list_command(
+    client: Client,
+    filter: str = None,
+    limit: str = "50",
+    offset: str = "0",
+    order: str = None,
+    show_as_ranges: str = None,
+    dereference_group_members: str = None,
+    show_membership: str = None,
+    details_level: str = None,
+    domains_to_process = None,
+) -> CommandResults:
     """Retrieve all service group objects.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-service-group-list command called with args: {demisto.args()}")
 
-    filter_search = kwargs.get("filter")
-    limit = arg_to_number(kwargs.get("limit", 50))
-    offset = arg_to_number(kwargs.get("offset", 0))
-    order_arg = kwargs.get("order")
-    show_as_ranges = argToBoolean(kwargs["show_as_ranges"]) if kwargs.get("show_as_ranges") is not None else None
-    dereference_group_members = (
-        argToBoolean(kwargs["dereference_group_members"]) if kwargs.get("dereference_group_members") is not None else None
+    limit_int = arg_to_number(limit)
+    offset_int = arg_to_number(offset)
+    show_as_ranges_bool = argToBoolean(show_as_ranges) if show_as_ranges is not None else None
+    dereference_group_members_bool = (
+        argToBoolean(dereference_group_members) if dereference_group_members is not None else None
     )
-    show_membership = argToBoolean(kwargs["show_membership"]) if kwargs.get("show_membership") is not None else None
-    details_level = kwargs.get("details_level")
-    domains_to_process = argToList(kwargs.get("domains_to_process")) or None
+    show_membership_bool = argToBoolean(show_membership) if show_membership is not None else None
+    domains_to_process_list = argToList(domains_to_process) or None
 
     # domains_to_process cannot be used with details-level full, and must be used with ignore-warnings true.
-    if domains_to_process is not None:
+    if domains_to_process_list is not None:
         if details_level == "full":
             raise DemistoException(
                 "The 'domains_to_process' argument cannot be used with details_level set to 'full'."
@@ -2638,25 +2653,25 @@ def checkpoint_service_group_list_command(client: Client, **kwargs) -> CommandRe
     "ASC:name" -> [{"ASC": "name"}]
     "ASC:type,ASC:name,DESC:uid" -> [{"ASC": "type"}, {"ASC": "name"}, {"DESC": "uid"}]
     '''
-    order = None
-    if order_arg:
-        order = []
-        for pair in order_arg.split(","):
+    order_list = None
+    if order:
+        order_list = []
+        for pair in order.split(","):
             pair = pair.strip()
             if ":" in pair:
                 direction, field = pair.split(":", 1)
-                order.append({direction.strip().upper(): field.strip()})
+                order_list.append({direction.strip().upper(): field.strip()})
 
     result = client.list_service_groups(
-        filter_search=filter_search,
-        limit=limit,
-        offset=offset,
-        order=order,
-        show_as_ranges=show_as_ranges,
-        dereference_group_members=dereference_group_members,
-        show_membership=show_membership,
+        filter_search=filter,
+        limit=limit_int,
+        offset=offset_int,
+        order=order_list,
+        show_as_ranges=show_as_ranges_bool,
+        dereference_group_members=dereference_group_members_bool,
+        show_membership=show_membership_bool,
         details_level=details_level,
-        domains_to_process=domains_to_process,
+        domains_to_process=domains_to_process_list,
     )
 
     printable_result = []
@@ -2687,49 +2702,55 @@ def checkpoint_service_group_list_command(client: Client, **kwargs) -> CommandRe
     )
 
 
-def checkpoint_service_group_update_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_service_group_update_command(
+    client: Client,
+    identifier: str,
+    members_action: str = None,
+    members = None,
+    new_name: str = None,
+    color: str = None,
+    comments: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    details_level: str = None,
+    groups_action: str = None,
+    groups = None,
+    tags_action: str = None,
+    tags = None,
+) -> CommandResults:
     """Edit existing service group using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-service-group-update command called with args: {demisto.args()}")
 
-    identifier = kwargs["identifier"]
-    new_name = kwargs.get("new_name")
-    color = kwargs.get("color")
-    comments = kwargs.get("comments")
-    ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
-    ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
-    details_level = kwargs.get("details_level")
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
-    members_action = kwargs.get("members_action")
-    members_raw = argToList(kwargs.get("members")) or None
-    members = {members_action: members_raw} if members_raw and members_action in ("add", "remove") else members_raw
+    members_raw = argToList(members) or None
+    members_parsed = {members_action: members_raw} if members_raw and members_action else members_raw
 
-    groups_action = kwargs.get("groups_action")
-    groups_raw = argToList(kwargs.get("groups")) or None
-    groups = {groups_action: groups_raw} if groups_raw and groups_action in ("add", "remove") else groups_raw
+    groups_raw = argToList(groups) or None
+    groups_parsed = {groups_action: groups_raw} if groups_raw and groups_action else groups_raw
 
-    tags_action = kwargs.get("tags_action")
-    tags_raw = argToList(kwargs.get("tags")) or None
-    tags = {tags_action: tags_raw} if tags_raw and tags_action in ("add", "remove") else tags_raw
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
 
     result = client.update_service_group(
         identifier=identifier,
-        members=members,
+        members=members_parsed,
         new_name=new_name,
         color=color,
         comments=comments,
-        ignore_warnings=ignore_warnings,
-        ignore_errors=ignore_errors,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
         details_level=details_level,
-        groups=groups,
-        tags=tags,
+        groups=groups_parsed,
+        tags=tags_parsed,
     )
 
     headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
@@ -2750,49 +2771,55 @@ def checkpoint_service_group_update_command(client: Client, **kwargs) -> Command
     )
 
 
-def checkpoint_service_group_clone_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_service_group_clone_command(
+    client: Client,
+    identifier: str,
+    members_action: str = None,
+    members = None,
+    new_name: str = None,
+    color: str = None,
+    comments: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    details_level: str = None,
+    groups_action: str = None,
+    groups = None,
+    tags_action: str = None,
+    tags= None,
+) -> CommandResults:
     """Clone existing service group object.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-service-group-clone command called with args: {demisto.args()}")
 
-    identifier = kwargs["identifier"]
-    new_name = kwargs.get("new_name")
-    color = kwargs.get("color")
-    comments = kwargs.get("comments")
-    ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
-    ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
-    details_level = kwargs.get("details_level")
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
-    members_action = kwargs.get("members_action")
-    members_raw = argToList(kwargs.get("members")) or None
-    members = {members_action: members_raw} if members_raw and members_action in ("add", "remove") else members_raw
+    members_raw = argToList(members) or None
+    members_parsed = {members_action: members_raw} if members_raw and members_action else members_raw
 
-    groups_action = kwargs.get("groups_action")
-    groups_raw = argToList(kwargs.get("groups")) or None
-    groups = {groups_action: groups_raw} if groups_raw and groups_action in ("add", "remove") else groups_raw
+    groups_raw = argToList(groups) or None
+    groups_parsed = {groups_action: groups_raw} if groups_raw and groups_action else groups_raw
 
-    tags_action = kwargs.get("tags_action")
-    tags_raw = argToList(kwargs.get("tags")) or None
-    tags = {tags_action: tags_raw} if tags_raw and tags_action in ("add", "remove") else tags_raw
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
 
     result = client.clone_service_group(
         identifier=identifier,
-        members=members,
+        members=members_parsed,
         new_name=new_name,
         color=color,
         comments=comments,
-        ignore_warnings=ignore_warnings,
-        ignore_errors=ignore_errors,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
         details_level=details_level,
-        groups=groups,
-        tags=tags,
+        groups=groups_parsed,
+        tags=tags_parsed,
     )
 
     headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
@@ -2813,28 +2840,31 @@ def checkpoint_service_group_clone_command(client: Client, **kwargs) -> CommandR
     )
 
 
-def checkpoint_service_group_delete_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_service_group_delete_command(
+    client: Client,
+    identifier: str,
+    details_level: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
     """Delete service group object using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-service-group-delete command called with args: {demisto.args()}")
 
-    identifier = kwargs["identifier"]
-    details_level = kwargs.get("details_level")
-    ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
-    ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
     client.delete_service_group(
         identifier=identifier,
         details_level=details_level,
-        ignore_warnings=ignore_warnings,
-        ignore_errors=ignore_errors,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
     )
 
     readable_output = tableToMarkdown(
@@ -2847,39 +2877,43 @@ def checkpoint_service_group_delete_command(client: Client, **kwargs) -> Command
     )
 
 
-def checkpoint_access_section_add_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_access_section_add_command(
+    client: Client,
+    layer: str,
+    position: str,
+    position_rule: str = None,
+    details_level: str = None,
+    name: str = None,
+    tags = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
     """Add a new access section.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-access-section-add command called with args: {demisto.args()}")
 
-    layer = kwargs["layer"]
-    position_value = kwargs["position"]
-    position_rule = kwargs.get("position_rule")
     if position_rule:
-        position = {position_value: position_rule}
+        position_obj: str | dict = {position: position_rule}
     else:
-        position = position_value
-    details_level = kwargs.get("details_level")
-    name = kwargs.get("name")
-    tags = argToList(kwargs.get("tags")) or None
-    ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
-    ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
+        position_obj = position
+    tags_list = argToList(tags) or None
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
     result = client.add_access_section(
         layer=layer,
-        position=position,
+        position=position_obj,
         details_level=details_level,
         name=name,
-        tags=tags,
-        ignore_warnings=ignore_warnings,
-        ignore_errors=ignore_errors,
+        tags=tags_list,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
     )
 
     headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier"]
@@ -2898,21 +2932,21 @@ def checkpoint_access_section_add_command(client: Client, **kwargs) -> CommandRe
     )
 
 
-def checkpoint_access_section_get_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_access_section_get_command(
+    client: Client,
+    layer: str,
+    identifier: str,
+    details_level: str = None,
+) -> CommandResults:
     """Show existing access section using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-access-section-get command called with args: {demisto.args()}")
-
-    layer = kwargs["layer"]
-    identifier = kwargs["identifier"]
-    details_level = kwargs.get("details_level")
 
     result = client.get_access_section(
         layer=layer,
@@ -2936,38 +2970,41 @@ def checkpoint_access_section_get_command(client: Client, **kwargs) -> CommandRe
     )
 
 
-def checkpoint_access_section_update_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_access_section_update_command(
+    client: Client,
+    identifier: str,
+    layer: str,
+    new_name: str = None,
+    details_level: str = None,
+    tags_action: str = None,
+    tags = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
     """Edit existing access section using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-access-section-update command called with args: {demisto.args()}")
 
-    identifier = kwargs["identifier"]
-    layer = kwargs["layer"]
-    new_name = kwargs.get("new_name")
-    details_level = kwargs.get("details_level")
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
 
-    tags_action = kwargs.get("tags_action")
-    tags_raw = argToList(kwargs.get("tags")) or None
-    tags = {tags_action: tags_raw} if tags_raw and tags_action in ("add", "remove") else tags_raw
-
-    ignore_warnings = argToBoolean(kwargs["ignore_warnings"]) if kwargs.get("ignore_warnings") is not None else None
-    ignore_errors = argToBoolean(kwargs["ignore_errors"]) if kwargs.get("ignore_errors") is not None else None
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
     result = client.update_access_section(
         identifier=identifier,
         layer=layer,
         new_name=new_name,
         details_level=details_level,
-        tags=tags,
-        ignore_warnings=ignore_warnings,
-        ignore_errors=ignore_errors,
+        tags=tags_parsed,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
     )
 
     headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier"]
@@ -2986,21 +3023,21 @@ def checkpoint_access_section_update_command(client: Client, **kwargs) -> Comman
     )
 
 
-def checkpoint_access_section_delete_command(client: Client, **kwargs) -> CommandResults:
+def checkpoint_access_section_delete_command(
+    client: Client,
+    identifier: str,
+    layer: str,
+    details_level: str = None,
+) -> CommandResults:
     """Delete access section using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        **kwargs: Command arguments from demisto.args().
 
     Returns:
         CommandResults: The command results.
     """
     demisto.debug(f"checkpoint-access-section-delete command called with args: {demisto.args()}")
-
-    identifier = kwargs["identifier"]
-    layer = kwargs["layer"]
-    details_level = kwargs.get("details_level")
 
     client.delete_access_section(
         identifier=identifier,
