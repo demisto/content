@@ -22,8 +22,8 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Username
-  displaypassword: Password
+- display: Username / Client ID
+  displaypassword: Password / Client Secret
   hiddenusername: true
   name: credentials
   required: true
@@ -112,11 +112,8 @@ name: ServiceNowGenericFeed
 script:
   commands:
     - arguments:
-      - defaultValue: 1
-        description: The number of indicators that can be returned
-        name: limit
       description: retrieve indicators from ServiceNow
-      name: snow-get-indicators
+      name: fetch-indicators
   dockerimage: demisto/auth-utils:1.0.0.5427065
   feed: true
   isFetchSamples: true

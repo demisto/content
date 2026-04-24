@@ -1,7 +1,6 @@
 # What does this pack do?
 
-- Enables users to fetch Indicators from ServiceNow platform into Cortex XSIAM.
-- Add indicators form ServiceNow directly in to the XSIAM TIM.
+- Enables users to fetch Indicators from ServiceNow platform into Cortex XSIAM TIM.
 - Tag indicators that are added into the TIM.
 - Query ServiceNow data with the ServiceNow query URL.
 
@@ -30,7 +29,7 @@
 - SSDeep = "ssdeep"
 - URL = "URL"
 
-### Configure ServiceNow Genric Feed Indicator on XSIAM Tenant
+### Configure ServiceNow Generic Feed Indicator on XSIAM Tenant
 
 1. Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
 2. Search for ServiceNowGenericFeed
@@ -38,6 +37,6 @@
 4. Insert the ServiceNow URL.
 5. Insert your credentials (user name and password).
 6. Scroll down to the **Collect** section.
-7. Mark **Fetch Indicators** and select the desire event types to fetch
+7. Mark **Fetch Indicators** and select the desired indicator type to fetch
 
 </~XSIAM>
