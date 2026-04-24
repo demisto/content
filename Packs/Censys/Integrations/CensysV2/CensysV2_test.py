@@ -1,19 +1,32 @@
 import json
+
 import pytest
 from CensysV2 import (
+    CENSYS_API_URL,
+    ENDPOINTS,
+    ERRORS,
+    OUTPUT_PREFIX,
+    VALID_RELATED_INFRA_IOC_TYPE,
+    VALID_TRANSPORT_PROTOCOL,
     Client,
-    censys_view_command,
+    ExecutionMetrics,
+    censys_host_history_list_command,
+    censys_related_infrastructure_list_command,
+    censys_rescan_command,
     censys_search_command,
-    ip_command,
-    domain_command,
     censys_search_with_pagination,
+    censys_view_command,
+    domain_command,
     get_dbot_score,
     handle_exceptions,
-    test_module as censys_test_module,
+    ip_command,
     main,
-    ExecutionMetrics,
+    run_polling_command,
 )
-from CommonServerPython import DemistoException, Common
+from CensysV2 import (
+    test_module as censys_test_module,
+)
+from CommonServerPython import Common, DemistoException
 
 
 def util_load_json(path):
@@ -164,7 +177,9 @@ def test_censys_search_command_certs(client, requests_mock):
     assert result.outputs_prefix == "Censys.Search"
     assert result.outputs_key_field == "fingerprint_sha256"
     assert len(result.outputs) == 1  # type: ignore
-    assert result.outputs[0]["fingerprint_sha256"] == "0003da4aee3b252097bfc7f871ab6fbe3e08eb94c34ff5cea91aaa29248d3c8b"  # type: ignore
+    assert result.outputs[0]["fingerprint_sha256"] == (  # type: ignore
+        "0003da4aee3b252097bfc7f871ab6fbe3e08eb94c34ff5cea91aaa29248d3c8b"
+    )
 
 
 def test_ip_command(client, requests_mock):
@@ -257,6 +272,7 @@ def test_domain_command_with_malicious_labels(client, requests_mock):
     mock_res["result"]["hits"][0]["host_v1"]["resource"]["labels"] = [{"value": "malicious"}, {"value": "phishing"}]
     # Update the domain in the response
     mock_res["result"]["hits"][0]["host_v1"]["resource"]["dns"]["names"] = ["malicious.com"]
+    mock_res["result"]["hits"][1]["webproperty_v1"]["resource"]["hostname"] = "malicious.com"
     requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
 
     # When
@@ -299,6 +315,7 @@ def test_domain_command_with_suspicious_labels(client, requests_mock):
     mock_res["result"]["hits"][0]["host_v1"]["resource"]["labels"] = [{"value": "suspicious"}]
     # Update the domain in the response
     mock_res["result"]["hits"][0]["host_v1"]["resource"]["dns"]["names"] = ["suspicious.com"]
+    mock_res["result"]["hits"][1]["webproperty_v1"]["resource"]["hostname"] = "suspicious.com"
     requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json=mock_res)
 
     # When
@@ -1169,3 +1186,1047 @@ def test_search_certs_command_error(client, requests_mock):
     requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {}})
     with pytest.raises(ValueError, match="Unexpected response: 'hits' path not found"):
         search_certs_command(client, args, "query", 1)
+
+
+def test_censys_host_history_list_command_success_with_pagination(client, requests_mock, mocker):
+    """
+    Test Case 1: Success scenario with 3 API calls and MAX_NUMBER_OF_RECORDS=8
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - MAX_NUMBER_OF_RECORDS mocked to 8
+        - API returns 2 events per page for 2 pages (total 4 events)
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure 3 API calls are made (2 with data, 1 stops at max records)
+        - Ensure exactly 4 events are returned
+        - Ensure partial_data is False
+        - Ensure HR output contains correct headers and data
+        - Ensure context output matches expected structure
+    """
+    import CensysV2
+
+    # Mock MAX_NUMBER_OF_RECORDS to 8
+    mocker.patch.object(CensysV2, "MAX_NUMBER_OF_RECORDS", 8)
+
+    # Load test data
+    api_responses = util_load_json("host_history_api_response.json")
+    context_data = util_load_json("host_history_context_output.json")
+    with open("test_data/host_history_sucess_hr.md") as f:
+        hr_output = f.read()
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}",
+        [
+            {"json": api_responses["page1_response"]},
+            {"json": api_responses["page2_response"]},
+            {"json": api_responses["page3_response"]},
+            {"json": api_responses["page4_response"]},
+        ],
+    )
+
+    # Execute command
+    result = censys_host_history_list_command(client, args)
+
+    # Assertions
+    assert result.outputs_prefix == OUTPUT_PREFIX["HOST_EVENT_HISTORY"]
+    assert result.outputs_key_field == "ip"
+    assert result.outputs == context_data["success_context"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_host_history_list_command_pagination_no_scanned_to(client, requests_mock, mocker):
+    """
+    Test Case 1b: Success scenario with pagination stopping when scanned_to is None
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - MAX_NUMBER_OF_RECORDS mocked to 8
+        - API returns 2 events on page1, then page2 has no scanned_to cursor
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure pagination stops when scanned_to is None (covers lines 1055-1056)
+        - Ensure exactly 4 events are returned
+        - Ensure partial_data is False
+        - Ensure HR output contains correct headers and data
+    """
+    # Load test data
+    api_responses = util_load_json("host_history_api_response.json")
+    context_data = util_load_json("host_history_context_output.json")
+    with open("test_data/host_history_no_scanned_to_hr.md") as f:
+        hr_output = f.read()
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}",
+        [
+            {"json": api_responses["page1_response"]},  # 2 events, scanned_to="2026-03-01T08:00:00.000Z"
+            {"json": api_responses["page5_response"]},  # 2 events, no scanned_to
+        ],
+    )
+
+    # Execute command
+    result = censys_host_history_list_command(client, args)
+
+    # Assertions
+    assert result.outputs_prefix == OUTPUT_PREFIX["HOST_EVENT_HISTORY"]
+    assert result.outputs_key_field == "ip"
+    assert result.outputs == context_data["pagination_no_scanned_to_context"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_host_history_list_command_pagination_scanned_to_boundary(client, requests_mock, mocker):
+    """
+    Test Case Success scenario with pagination stopping when scanned_to <= start_time
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - MAX_NUMBER_OF_RECORDS mocked to 10
+        - API returns events until scanned_to="0001-01-01T00:00:00Z" which is <= start_time
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure pagination stops when scanned_to <= start_time (covers lines 1060-1063)
+        - Ensure exactly 8 events are returned
+        - Ensure partial_data is False
+        - Ensure HR output contains correct headers and data
+    """
+    import CensysV2
+
+    # Mock MAX_NUMBER_OF_RECORDS to 8
+    mocker.patch.object(CensysV2, "MAX_NUMBER_OF_RECORDS", 10)
+
+    # Load test data
+    api_responses = util_load_json("host_history_api_response.json")
+    context_data = util_load_json("host_history_context_output.json")
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}",
+        [
+            {"json": api_responses["page1_response"]},
+            {"json": api_responses["page2_response"]},
+            {"json": api_responses["page3_response"]},
+            {"json": api_responses["page4_response"]},
+        ],
+    )
+
+    # Execute command
+    result = censys_host_history_list_command(client, args)
+
+    # Assertions
+    assert result.outputs_prefix == OUTPUT_PREFIX["HOST_EVENT_HISTORY"]
+    assert result.outputs_key_field == "ip"
+    assert result.outputs == context_data["success_context"]
+
+
+def test_censys_host_history_list_command_partial_data_api_error(client, requests_mock, mocker):
+    """
+    Test Case 2: Partial data scenario with 2 API calls where 2nd call fails
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - First API call succeeds with 2 events
+        - Second API call fails with DemistoException
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure warning message is returned
+        - Ensure partial_data is True
+        - Ensure 2 events from first call are returned
+        - Ensure warning message contains error details
+    """
+    # Load test data
+    api_responses = util_load_json("host_history_api_response.json")
+    context_data = util_load_json("host_history_context_output.json")
+    with open("test_data/host_history_partial_data_hr.md") as f:
+        hr_output = f.read()
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    # Mock return_warning to capture warning messages
+    warning_messages = []
+    mocker.patch("CensysV2.return_warning", side_effect=lambda msg: warning_messages.append(msg))
+
+    # Mock API calls - first succeeds, second fails
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}",
+        [
+            {"json": api_responses["page1_response"]},  # Returns 2 events
+            {"status_code": 500, "json": {"error": "Internal Server Error"}},  # Fails
+        ],
+    )
+
+    # Execute command
+    result = censys_host_history_list_command(client, args)
+
+    # Assertions
+    assert result.outputs_prefix == OUTPUT_PREFIX["HOST_EVENT_HISTORY"]
+    assert result.outputs_key_field == "ip"
+    assert result.outputs == context_data["partial_data_scenario_context"]
+    assert result.readable_output == hr_output
+
+    # Verify warning was called
+    assert len(warning_messages) == 1
+    assert "WARNING: Partial data collected (2 event(s))" in warning_messages[0]
+    assert "Pagination stopped at page 2" in warning_messages[0]
+
+
+def test_censys_host_history_list_command_timeout_scenario(client, requests_mock, mocker):
+    """
+    Test Case 3: Timeout scenario after 2 API calls
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - has_passed_time_threshold returns True after 2 successful API calls
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure warning message about timeout is returned
+        - Ensure partial_data is True
+        - Ensure events from first 2 calls are returned
+        - Ensure warning message contains timeout information and platform link
+    """
+    # Load test data
+    api_responses = util_load_json("host_history_api_response.json")
+    context_data = util_load_json("host_history_context_output.json")
+    with open("test_data/host_history_timeout_hr.md") as f:
+        hr_output = f.read()
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    # Mock return_warning to capture warning messages
+    warning_messages = []
+    mocker.patch("CensysV2.return_warning", side_effect=lambda msg: warning_messages.append(msg))
+
+    # Mock has_passed_time_threshold to return False first 2 times, then True
+    call_count = {"count": 0}
+
+    def mock_has_passed_time_threshold(start_time, threshold):
+        call_count["count"] += 1
+        return call_count["count"] > 2  # Return True after 2 calls
+
+    mocker.patch("CensysV2.has_passed_time_threshold", side_effect=mock_has_passed_time_threshold)
+
+    # Mock API calls - both succeed
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}",
+        [
+            {"json": api_responses["page1_response"]},  # Returns 2 events
+            {"json": api_responses["page2_response"]},  # Returns 2 events
+        ],
+    )
+
+    # Execute command
+    result = censys_host_history_list_command(client, args)
+
+    # Assertions
+    assert result.outputs_prefix == OUTPUT_PREFIX["HOST_EVENT_HISTORY"]
+    assert result.outputs_key_field == "ip"
+    assert result.outputs == context_data["timeout_scenario_context"]
+    assert result.readable_output == hr_output
+
+    # Verify warning was called with timeout message
+    assert len(warning_messages) == 1
+    assert "Results limited due to command execution time constraint (4 minutes)" in warning_messages[0]
+    assert "https://platform.censys.io/hosts/0.0.0.1/events" in warning_messages[0]
+
+
+def test_censys_host_history_list_command_no_events_found(client, requests_mock):
+    """
+    Test Case 5: No events found scenario
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - API returns empty events list
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure appropriate message is returned
+        - Ensure no context data is created
+    """
+    # Load test data
+    api_responses = util_load_json("host_history_api_response.json")
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    # Mock API call with empty response
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}", json=api_responses["empty_response"]
+    )
+
+    # Execute command
+    result = censys_host_history_list_command(client, args)
+
+    # Assertions
+    assert "No historical data found for host 0.0.0.1" in result.readable_output
+    assert result.outputs is None
+
+
+def test_censys_host_history_list_command_error_in_first_call(client, requests_mock):
+    """
+    Test Case 6: Error in first API call scenario
+
+    Given:
+        - Valid host_id, start_time, and end_time arguments
+        - API returns error in first call (500 Internal Server Error)
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure exception is raised
+        - Ensure no partial data warning is issued since no events were collected
+    """
+
+    # Setup args and params
+    args = {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"}
+
+    # Mock API call with error response
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_EVENT_HISTORY'].format('0.0.0.1')}",
+        status_code=500,
+        json={"error": "Internal Server Error"},
+    )
+
+    # Execute command and expect DemistoException to be raised
+    with pytest.raises(DemistoException) as exc_info:
+        censys_host_history_list_command(client, args)
+
+    # Verify the exception contains error information
+    assert "500" in str(exc_info.value) or "Internal Server Error" in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "args,expected_error",
+    [
+        # Missing host_id
+        (
+            {"start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"},
+            ERRORS["REQUIRED_ARGUMENT"].format("host_id"),
+        ),
+        # Missing start_time
+        (
+            {"host_id": "0.0.0.1", "end_time": "2026-03-01T12:00:00.000Z"},
+            ERRORS["REQUIRED_ARGUMENT"].format("start_time"),
+        ),
+        # Missing end_time
+        (
+            {"host_id": "0.0.0.1", "start_time": "2026-02-20T00:00:00.000Z"},
+            ERRORS["REQUIRED_ARGUMENT"].format("end_time"),
+        ),
+        # Invalid IP address
+        (
+            {"host_id": "invalid_ip", "start_time": "2026-02-20T00:00:00.000Z", "end_time": "2026-03-01T12:00:00.000Z"},
+            ERRORS["INVALID_IP"].format("invalid_ip"),
+        ),
+        # Invalid time range (start_time after end_time)
+        (
+            {"host_id": "0.0.0.1", "start_time": "2026-03-01T12:00:00.000Z", "end_time": "2026-02-20T00:00:00.000Z"},
+            ERRORS["INVALID_TIME_RANGE"].format("start_time", "2026-03-01T12:00:00.000Z", "end_time", "2026-02-20T00:00:00.000Z"),
+        ),
+    ],
+)
+def test_censys_host_history_list_command_invalid_arguments(client, args, expected_error):
+    """
+    Test Case 4: Invalid arguments scenarios
+
+    Given:
+        - Various invalid argument combinations
+    When:
+        - Running censys_host_history_list_command command
+    Then:
+        - Ensure ValueError is raised with appropriate error message
+    """
+
+    with pytest.raises(ValueError) as err:
+        censys_host_history_list_command(client, args)
+
+    assert expected_error in str(err.value)
+
+
+def test_censys_rescan_command_initiate(client, requests_mock):
+    """
+    Test Case 1: Initiate the rescan
+
+    Given:
+        - Valid arguments for initiating a rescan (Service type)
+        - polling=False (initial request)
+    When:
+        - Running censys_rescan_command
+    """
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "transport_protocol": "tcp",
+        "polling": False,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+    context_data = util_load_json("rescan_context_output.json")
+    with open("test_data/rescan_initiate_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_RESCAN']}", json=api_responses["rescan_initiate"])
+
+    result = censys_rescan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["INITIATE_RESCAN"]
+    assert result.outputs == context_data["rescan_initiate"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_rescan_command_initiate_no_scan_id_returned(client, requests_mock):
+    """
+    Test Case 1b: Initiate the rescan - No scan ID returned
+
+    Given:
+        - Valid arguments for initiating a rescan (Service type)
+        - polling=False (initial request)
+        - API returns response without scan_id
+    When:
+        - Running censys_rescan_command
+    Then:
+        - Ensure the command handles the missing scan_id gracefully
+        - Ensure status is set to 'failed' and is_completed is True
+    """
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "transport_protocol": "tcp",
+        "polling": False,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+    context_data = util_load_json("rescan_context_output.json")
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_RESCAN']}", json=api_responses["rescan_initiate_no_scan_id"])
+
+    result = censys_rescan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["INITIATE_RESCAN"]
+    assert result.outputs == context_data["rescan_initiate_no_scan_id"]
+
+
+def test_censys_rescan_command_status_in_progress(client, requests_mock):
+    """
+    Test Case 2: Check the rescan status - In progress
+
+    Given:
+        - A scan_id from a previously initiated rescan
+        - polling=True
+        - Scan status is 'scanning' (in progress)
+    When:
+        - Running censys_rescan_command with polling
+    """
+    scan_id = "00000000-0000-0000-0000-000000000001"
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "scan_id": scan_id,
+        "polling": True,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+    context_data = util_load_json("rescan_context_output.json")
+    with open("test_data/rescan_status_in_progress_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['RESCAN_STATUS'].format(scan_id)}", json=api_responses["scan_status_in_progress"]
+    )
+
+    result = censys_rescan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["INITIATE_RESCAN"]
+    assert result.outputs == context_data["scan_status_in_progress"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_rescan_command_status_failed(client, requests_mock):
+    """
+    Test Case 3: Check the rescan status - Failed
+
+    Given:
+        - A scan_id from a previously initiated rescan
+        - polling=True
+        - Scan status is 'failed'
+    When:
+        - Running censys_rescan_command with polling
+    """
+    scan_id = "00000000-0000-0000-0000-000000000001"
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "scan_id": scan_id,
+        "polling": True,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+    context_data = util_load_json("rescan_context_output.json")
+    with open("test_data/rescan_status_failed_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['RESCAN_STATUS'].format(scan_id)}", json=api_responses["scan_status_failed"])
+
+    result = censys_rescan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["INITIATE_RESCAN"]
+    assert result.outputs == context_data["scan_status_failed"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_rescan_command_complete_service_type(client, requests_mock):
+    """
+    Test Case 4: Rescan status complete for Service (IP)
+
+    Given:
+        - A scan_id from a previously initiated rescan
+        - polling=True
+        - Scan status is 'completed'
+        - ioc_type='Service'
+    When:
+        - Running censys_rescan_command with polling
+    """
+    scan_id = "00000000-0000-0000-0000-000000000001"
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "scan_id": scan_id,
+        "polling": True,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+    context_data = util_load_json("rescan_context_output.json")
+    with open("test_data/rescan_status_completed_service_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['RESCAN_STATUS'].format(scan_id)}", json=api_responses["scan_status_completed"]
+    )
+    requests_mock.get(f"{CENSYS_API_URL}/v3/global/asset/host/0.0.0.1", json=api_responses["ip_enrichment_data"])
+
+    result = censys_rescan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["INITIATE_RESCAN"]
+    assert result.outputs == context_data["scan_status_completed_service"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_rescan_command_complete_web_property_type(client, requests_mock):
+    """
+    Test Case 5: Rescan status complete for Web Property
+
+    Given:
+        - A scan_id from a previously initiated rescan
+        - polling=True
+        - Scan status is 'completed'
+        - ioc_type='Web Property'
+    When:
+        - Running censys_rescan_command with polling
+    """
+    scan_id = "00000000-0000-0000-0000-000000000001"
+    args = {
+        "ioc_type": "Web Property",
+        "ioc_value": "example.com",
+        "port": "443",
+        "scan_id": scan_id,
+        "polling": True,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+    context_data = util_load_json("rescan_context_output.json")
+    with open("test_data/rescan_status_completed_web_property_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['RESCAN_STATUS'].format(scan_id)}", json=api_responses["scan_status_completed"]
+    )
+    requests_mock.get(
+        f"{CENSYS_API_URL}/v3/global/asset/webproperty/example.com:443", json=api_responses["web_property_enrichment_data"]
+    )
+
+    result = censys_rescan_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["INITIATE_RESCAN"]
+    assert result.outputs == context_data["scan_status_completed_web_property"]
+    assert result.readable_output == hr_output
+
+
+@pytest.mark.parametrize(
+    "args,expected_error",
+    [
+        (
+            {"ioc_type": " ", "port": "443", "protocol": "HTTP"},
+            ERRORS["REQUIRED_ARGUMENT"].format("ioc_type"),
+        ),
+        (
+            {"ioc_type": "Service", "port": "443", "protocol": "HTTP"},
+            ERRORS["REQUIRED_ARGUMENT"].format("ioc_value"),
+        ),
+        (
+            {"ioc_type": "Service", "ioc_value": "0.0.0.1", "port": "", "protocol": "HTTP"},
+            ERRORS["REQUIRED_ARGUMENT"].format("port"),
+        ),
+        (
+            {"ioc_type": "Service", "ioc_value": "0.0.0.1", "port": "443"},
+            "Protocol is required when IOC Type is Service.",
+        ),
+        (
+            {"ioc_type": "InvalidType", "ioc_value": "0.0.0.1", "port": "443", "protocol": "HTTP"},
+            ERRORS["INVALID_SELECT"].format("InvalidType", "ioc_type", "Service, Web Property"),
+        ),
+        (
+            {"ioc_type": "Service", "ioc_value": "invalid_ip", "port": "443", "protocol": "HTTP"},
+            ERRORS["INVALID_IP"].format("invalid_ip"),
+        ),
+        (
+            {"ioc_type": "Service", "ioc_value": "0.0.0.1", "port": "70000", "protocol": "HTTP"},
+            ERRORS["INVALID_PORT"].format(70000, 1, 65535),
+        ),
+        (
+            {"ioc_type": "Service", "ioc_value": "0.0.0.1", "port": "-1", "protocol": "HTTP"},
+            ERRORS["INVALID_PORT"].format(-1, 1, 65535),
+        ),
+        (
+            {"ioc_type": "Service", "ioc_value": "0.0.0.1", "transport_protocol": "invalid_protocol", "protocol": "HTTP"},
+            ERRORS["INVALID_SELECT"].format(
+                "invalid_protocol", "transport_protocol", ", ".join(VALID_TRANSPORT_PROTOCOL.values())
+            ),
+        ),
+    ],
+)
+def test_censys_rescan_invalid_arguments(client, args, expected_error):
+    """
+    Test Case 6: Invalid arguments
+
+    Given:
+        - Various invalid argument combinations
+    When:
+        - Running censys_rescan_command
+    Then:
+        - Ensure ValueError is raised with appropriate error message
+    """
+    with pytest.raises(ValueError) as err:
+        censys_rescan_command(client, args)
+
+    assert expected_error in str(err.value)
+
+
+def test_run_polling_command_completed_scan(client, requests_mock):
+    """
+    Test run_polling_command when scan is completed
+
+    Given:
+        - A completed scan result from censys_rescan_command
+    When:
+        - Running run_polling_command
+    Then:
+        - Ensure it returns the result directly without scheduling
+    """
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "scan_id": "00000000-0000-0000-0000-000000000001",
+        "polling": True,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+
+    # Mock the status check and enrichment endpoints
+    scan_id = "00000000-0000-0000-0000-000000000001"
+    requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['RESCAN_STATUS'].format(scan_id)}", json=api_responses["scan_status_completed"]
+    )
+    requests_mock.get(f"{CENSYS_API_URL}/v3/global/asset/host/0.0.0.1", json=api_responses["ip_enrichment_data"])
+
+    result = run_polling_command(client, args, "cen-rescan", censys_rescan_command)
+
+    # Should return single CommandResults, not a list
+    assert isinstance(result, type(result))
+    assert not isinstance(result, list)
+    assert result.outputs.get("is_completed") is True
+    assert result.outputs.get("status") == "completed"
+
+
+def test_run_polling_command_initiate_scan(client, requests_mock):
+    """
+    Test run_polling_command when initiating a new scan
+
+    Given:
+        - Arguments to initiate a new scan (polling=False)
+    When:
+        - Running run_polling_command
+    Then:
+        - Ensure it returns a list with result and ScheduledCommand for polling
+    """
+    args = {
+        "ioc_type": "Service",
+        "ioc_value": "0.0.0.1",
+        "port": "443",
+        "protocol": "HTTP",
+        "transport_protocol": "tcp",
+        "polling": False,
+    }
+    api_responses = util_load_json("rescan_api_response.json")
+
+    # Mock the initiate rescan endpoint
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_RESCAN']}", json=api_responses["rescan_initiate"])
+
+    result = run_polling_command(client, args, "cen-rescan", censys_rescan_command)
+
+    # Should return list with result and scheduled command
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].outputs.get("is_completed") is False
+    assert result[0].outputs.get("status") == "initiated"
+    assert result[0].outputs.get("scan_id") == "00000000-0000-0000-0000-000000000001"
+    assert result[1].scheduled_command is not None
+
+
+def test_censys_related_infra_command_initiate_host(client, requests_mock):
+    """
+    Test Case : Initiate a related infrastructure job for Host type
+
+    Given:
+        - Valid arguments for initiating a job (Host type)
+    When:
+        - Running censys_related_infrastructure_list_command
+    Then:
+        - Ensure the command returns the correct outputs and HR
+    """
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1"}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_initiate_host_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_JOB']}", json=api_responses["host_initiate"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["host_initiate"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_related_infra_command_initiate_web_property(client, requests_mock):
+    """
+    Test Case : Initiate a related infrastructure job for Web Property type
+
+    Given:
+        - Valid arguments for initiating a job (Web Property type)
+    When:
+        - Running censys_related_infrastructure_list_command
+    Then:
+        - Ensure the command returns the correct outputs and HR
+    """
+    args = {"ioc_type": "Web Property", "ioc_value": "example.com:443"}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_initiate_web_property_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_JOB']}", json=api_responses["web_property_initiate"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["web_property_initiate"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_related_infra_command_initiate_certificate(client, requests_mock):
+    """
+    Test Case : Initiate a related infrastructure job for Certificate type
+
+    Given:
+        - Valid arguments for initiating a job (Certificate type)
+    When:
+        - Running censys_related_infrastructure_list_command
+    Then:
+        - Ensure the command returns the correct outputs and HR
+    """
+    args = {"ioc_type": "Certificate", "ioc_value": "0000000000000000000000000000000000000000000000000000000000000001"}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_initiate_certificate_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_JOB']}", json=api_responses["certificate_initiate"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["certificate_initiate"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_related_infra_command_initiate_no_job_id_returned(client, requests_mock):
+    """
+    Test Case : Initiate a related infrastructure job - No job ID returned
+
+    Given:
+        - Valid arguments for initiating a job (Host type)
+        - API returns response without job_id
+    When:
+        - Running censys_related_infrastructure_list_command
+    Then:
+        - Ensure the command handles the missing job_id gracefully
+        - Ensure status is set to 'failed' and is_completed is True
+    """
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1"}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_JOB']}", json=api_responses["host_initiate_no_job_id"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["host_initiate_no_job_id"]
+
+
+def test_censys_related_infra_command_status_in_progress(client, requests_mock):
+    """
+    Test Case : Check the job status - In progress
+
+    Given:
+        - A job_id from a previously initiated job
+        - polling=True
+        - Job state is 'started' (in progress)
+    When:
+        - Running censys_related_infrastructure_list_command with polling
+    Then:
+        - Ensure the command returns in_progress status
+    """
+    job_id = "00000000-0000-0000-0000-000000000001"
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1", "job_id": job_id, "polling": True}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_status_in_progress_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_STATUS'].format(job_id)}", json=api_responses["job_status_in_progress"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["job_status_in_progress"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_related_infra_command_status_failed(client, requests_mock):
+    """
+    Test Case: Check the job status - Failed
+
+    Given:
+        - A job_id from a previously initiated job
+        - polling=True
+        - Job state is 'failed' (in progress)
+    When:
+        - Running censys_related_infrastructure_list_command with polling
+    Then:
+        - Ensure the command returns in_progress status
+    """
+    job_id = "00000000-0000-0000-0000-000000000001"
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1", "job_id": job_id, "polling": True}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_status_failed_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_STATUS'].format(job_id)}", json=api_responses["job_status_failed"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["job_status_failed"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_related_infra_command_completed_host(client, requests_mock):
+    """
+    Test Case : Job completed for Host type
+
+    Given:
+        - A job_id from a previously initiated job
+        - polling=True
+        - Job state is 'completed'
+    When:
+        - Running censys_related_infrastructure_list_command with polling
+    Then:
+        - Ensure the command returns completed status with pivot data
+    """
+    job_id = "00000000-0000-0000-0000-000000000001"
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1", "job_id": job_id, "polling": True}
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_completed_host_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_STATUS'].format(job_id)}", json=api_responses["job_status_completed"])
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_RESULTS'].format(job_id)}", json=api_responses["host_job_results"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["host_job_completed"]
+    assert result.readable_output == hr_output
+
+
+def test_censys_related_infra_command_completed_no_pivot_data(client, requests_mock):
+    """
+    Test Case : Job completed but no pivot data found
+
+    Given:
+        - A job_id from a previously initiated job
+        - polling=True
+        - Job state is 'completed'
+        - Job results contain empty pivot data
+    When:
+        - Running censys_related_infrastructure_list_command with polling
+    Then:
+        - Ensure the command returns completed status with empty pivot_data
+        - Ensure HR contains "No pivot data found" message
+    """
+    job_id = "00000000-0000-0000-0000-000000000001"
+    args = {
+        "ioc_type": "Host",
+        "ioc_value": "0.0.0.1",
+        "job_id": job_id,
+        "polling": True,
+    }
+    api_responses = util_load_json("related_infra_api_response.json")
+    context_data = util_load_json("related_infra_context_output.json")
+    with open("test_data/related_infra_completed_no_pivot_data_hr.md") as f:
+        hr_output = f.read()
+
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_STATUS'].format(job_id)}", json=api_responses["job_status_completed"])
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_RESULTS'].format(job_id)}", json=api_responses["host_job_results_empty"])
+
+    result = censys_related_infrastructure_list_command(client, args)
+
+    assert result.outputs_prefix == OUTPUT_PREFIX["RELATED_INFRASTRUCTURE"]
+    assert result.outputs == context_data["host_job_completed_no_pivot_data"]
+    assert result.readable_output == hr_output
+    assert "No pivot data found" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args,expected_error",
+    [
+        (
+            {"ioc_type": " ", "ioc_value": "0.0.0.1"},
+            ERRORS["REQUIRED_ARGUMENT"].format("ioc_type"),
+        ),
+        (
+            {"ioc_type": "Host"},
+            ERRORS["REQUIRED_ARGUMENT"].format("ioc_value"),
+        ),
+        (
+            {"ioc_type": "InvalidType", "ioc_value": "0.0.0.1"},
+            ERRORS["INVALID_SELECT"].format("InvalidType", "ioc_type", ", ".join(VALID_RELATED_INFRA_IOC_TYPE.values())),
+        ),
+        (
+            {"ioc_type": "Host", "ioc_value": "invalid_ip"},
+            ERRORS["INVALID_IP"].format("invalid_ip"),
+        ),
+        (
+            {"ioc_type": "Web Property", "ioc_value": "example.com"},
+            "For Web Property IOC type, ioc_value must include port in the format hostname:port",
+        ),
+        (
+            {"ioc_type": "Web Property", "ioc_value": "example.com:70000"},
+            ERRORS["INVALID_PORT"].format(70000, 1, 65535),
+        ),
+        (
+            {"ioc_type": "Web Property", "ioc_value": "example.com:-1"},
+            ERRORS["INVALID_PORT"].format(-1, 1, 65535),
+        ),
+    ],
+)
+def test_censys_related_infra_invalid_arguments(client, args, expected_error):
+    """
+    Test Case : Invalid arguments
+
+    Given:
+        - Various invalid argument combinations
+    When:
+        - Running censys_related_infrastructure_list_command
+    Then:
+        - Ensure ValueError is raised with appropriate error message
+    """
+    with pytest.raises(ValueError) as err:
+        censys_related_infrastructure_list_command(client, args)
+
+    assert expected_error in str(err.value)
+
+
+def test_run_polling_command_completed_related_infra_job(client, requests_mock):
+    """
+    Test run_polling_command when related infrastructure job is completed
+
+    Given:
+        - A completed job result from censys_related_infrastructure_list_command
+    When:
+        - Running run_polling_command
+    Then:
+        - Ensure it returns the result directly without scheduling
+    """
+    job_id = "00000000-0000-0000-0000-000000000001"
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1", "job_id": job_id, "polling": True}
+    api_responses = util_load_json("related_infra_api_response.json")
+
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_STATUS'].format(job_id)}", json=api_responses["job_status_completed"])
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['JOB_RESULTS'].format(job_id)}", json=api_responses["host_job_results"])
+
+    result = run_polling_command(client, args, "cen-related-infrastructure-list", censys_related_infrastructure_list_command)
+
+    # Should return single CommandResults, not a list
+    assert isinstance(result, type(result))
+    assert not isinstance(result, list)
+    assert result.outputs.get("is_completed") is True
+    assert result.outputs.get("status") == "completed"
+
+
+def test_run_polling_command_initiate_related_infra_job(client, requests_mock):
+    """
+    Test run_polling_command when initiating a new related infrastructure job
+
+    Given:
+        - Arguments to initiate a new job (polling=False)
+    When:
+        - Running run_polling_command
+    Then:
+        - Ensure it returns a list with result and ScheduledCommand for polling
+    """
+    args = {"ioc_type": "Host", "ioc_value": "0.0.0.1", "polling": False}
+    api_responses = util_load_json("related_infra_api_response.json")
+
+    requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['INITIATE_JOB']}", json=api_responses["host_initiate"])
+
+    result = run_polling_command(client, args, "cen-related-infrastructure-list", censys_related_infrastructure_list_command)
+
+    # Should return list with result and scheduled command
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].outputs.get("is_completed") is False
+    assert result[0].outputs.get("status") == "initiated"
+    assert result[0].outputs.get("job_id") == "00000000-0000-0000-0000-000000000001"
+    assert result[1].scheduled_command is not None

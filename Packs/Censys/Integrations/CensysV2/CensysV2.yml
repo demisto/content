@@ -444,6 +444,18 @@ script:
     - contextPath: Censys.Search.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
+    - contextPath: Censys.Search.parsed.subject.common_name
+      description: Common name(s) from the certificate subject.
+      type: Unknown
+    - contextPath: Censys.Search.parsed.signature.self_signed
+      description: Whether the certificate is self-signed.
+      type: Boolean
+    - contextPath: Censys.Search.valid_to
+      description: Timestamp of when the certificate is valid to.
+      type: String
+    - contextPath: Censys.Search.self_signed
+      description: Whether the certificate is self-signed.
+      type: Boolean
   - name: ip
     arguments:
     - name: ip
@@ -517,6 +529,33 @@ script:
     - contextPath: Censys.IP.location.country_code
       description: Country code of the location associated with the IP address.
       type: String
+    - contextPath: Censys.IP.service_count
+      description: The total number of services running on the IP address.
+      type: Number
+    - contextPath: Censys.IP.services.labels.value
+      description: Labels associated with services running on the IP address.
+      type: String
+    - contextPath: Censys.IP.services.threats.name
+      description: Threat names associated with services running on the IP address.
+      type: String
+    - contextPath: Censys.IP.services.vulns
+      description: Vulnerabilities associated with services running on the IP address.
+      type: String
+    - contextPath: Censys.IP.services.scan_time
+      description: Scan time for services running on the IP address.
+      type: String
+    - contextPath: Censys.IP.dns.names
+      description: DNS names associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.dns.forward_dns.names
+      description: Forward DNS names associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.whois.network.name
+      description: WHOIS network name associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.whois.network.cidrs
+      description: WHOIS network CIDR blocks associated with the IP address.
+      type: String
     - contextPath: IP.Address
       description: The IP address.
     - contextPath: IP.ASN
@@ -549,6 +588,10 @@ script:
       isArray: true
       default: true
       type: textArea
+    - name: port
+      description: A comma-separated ports associated with the domain.
+      isArray: true
+      defaultValue: "80, 443"
     description: Return all related IPs as relationships.
     outputs:
     - contextPath: Censys.Domain.location.postal_code
@@ -611,6 +654,63 @@ script:
     - contextPath: Censys.Domain.dns.reverse_dns.names
       description: The reverse DNS names associated with the domain.
       type: String
+    - contextPath: Censys.Domain.hostname
+      description: The hostname of the web property associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.port
+      description: The port number of the web property associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.labels.value
+      description: Labels associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.threats.name
+      description: Threat names associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.vulns.id
+      description: Vulnerability IDs associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.vulns.cvss
+      description: CVSS scores for vulnerabilities associated with the web property.
+      type: Number
+    - contextPath: Censys.Domain.vulns.severity
+      description: Severity levels for vulnerabilities associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.software.vendor
+      description: Software vendors detected on the web property.
+      type: String
+    - contextPath: Censys.Domain.software.product
+      description: Software products detected on the web property.
+      type: String
+    - contextPath: Censys.Domain.software.version
+      description: Software versions detected on the web property.
+      type: String
+    - contextPath: Censys.Domain.cert.fingerprint_sha256
+      description: SHA-256 fingerprint of the certificate associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.cert.parsed.subject_dn
+      description: Subject DN of the certificate associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.cert.parsed.issuer_dn
+      description: Issuer DN of the certificate associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.tls.version_selected
+      description: TLS version selected for the web property.
+      type: String
+    - contextPath: Censys.Domain.tls.cipher_selected
+      description: Cipher suite selected for the web property.
+      type: String
+    - contextPath: Censys.Domain.endpoints.endpoint_type
+      description: Endpoint types associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.endpoints.path
+      description: Endpoint paths associated with the web property.
+      type: String
+    - contextPath: Censys.Domain.jarm.fingerprint
+      description: JARM fingerprint of the web property.
+      type: String
+    - contextPath: Censys.Domain.scan_time
+      description: Scan time for the web property.
+      type: String
     - contextPath: Domain.Name
       description: The domain.
       type: string
@@ -637,6 +737,529 @@ script:
       description: The actual score.
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+  - name: cen-host-history-list
+    arguments:
+    - name: host_id
+      description: Specify the IP address of a host.
+      required: true
+    - name: start_time
+      description: "Specify the start time of the host timeline.\n\nSupported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-10T14:05:44Z."
+      required: true
+    - name: end_time
+      description: "Specify the end time of the host timeline.\n\nSupported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-10T14:05:44Z."
+      required: true
+    description: Retrieve the event history for a host (IP address).
+    outputs:
+    - contextPath: Censys.HostEventHistory.ip
+      description: The IP address of the host.
+      type: String
+    - contextPath: Censys.HostEventHistory.total_events
+      description: The total number of events associated with the host.
+      type: Number
+    - contextPath: Censys.HostEventHistory.partial_data
+      description: Whether the data is partial or not.
+      type: Boolean
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.scan_time
+      description: The timestamp when the service scan was performed.
+      type: Date
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.ip
+      description: The IP address of the scanned service.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.port
+      description: The port number of the scanned service.
+      type: Number
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.protocol
+      description: The protocol used by the scanned service.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.transport_protocol
+      description: The transport protocol used during the service scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.is_success
+      description: Whether the service scan was successful or not.
+      type: Boolean
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_code
+      description: The MySQL error code returned during the scan.
+      type: Number
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_id
+      description: The MySQL error identifier returned during the scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_message
+      description: The MySQL error message returned during the scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.forward_dns_resolved.name
+      description: The domain name resolved from the forward DNS lookup.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.forward_dns_resolved.resolve_time
+      description: The timestamp when the forward DNS resolution occurred.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.diff.additionalProp.new
+      description: The new value in the JARM scan difference.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.diff.additionalProp.old
+      description: The old value in the JARM scan difference.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.cipher_and_version_fingerprint
+      description: The cipher and version fingerprint from the JARM scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.fingerprint
+      description: The JARM fingerprint of the scanned service.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.hostname
+      description: The hostname used in the JARM scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.ip
+      description: The IP address scanned by JARM.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.is_success
+      description: Whether the JARM scan was successful or not.
+      type: Boolean
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.port
+      description: The port number scanned by JARM.
+      type: Number
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.scan_time
+      description: The timestamp when the JARM scan was performed.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.tls_extensions_sha256
+      description: The SHA-256 hash of the TLS extensions from the JARM scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.jarm_scanned.scan.transport_protocol
+      description: The transport protocol used during the JARM scan.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.city
+      description: The city where the host is located.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.continent
+      description: The continent where the host is located.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.coordinates.latitude
+      description: The latitude coordinate of the host location.
+      type: Number
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.coordinates.longitude
+      description: The longitude coordinate of the host location.
+      type: Number
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.country
+      description: The country where the host is located.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.country_code
+      description: The country code where the host is located.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.postal_code
+      description: The postal code of the host location.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.province
+      description: The province or state where the host is located.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.registered_country
+      description: The registered country of the host.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.registered_country_code
+      description: The registered country code of the host.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.location_updated.location.timezone
+      description: The timezone of the host location.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.reverse_dns_resolved.names
+      description: The domain names resolved from the reverse DNS lookup.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.reverse_dns_resolved.resolve_time
+      description: The timestamp when the reverse DNS resolution occurred.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.diff.additionalProp.new
+      description: The new value in the route update difference.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.diff.additionalProp.old
+      description: The old value in the route update difference.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.route.asn
+      description: The Autonomous System Number of the route.
+      type: Number
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.route.bgp_prefix
+      description: The BGP prefix of the route.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.route.country_code
+      description: The country code associated with the route.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.route.description
+      description: The description of the route.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.route.name
+      description: The name of the route.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.route_updated.route.organization
+      description: The organization associated with the route.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.diff.additionalProp.new
+      description: The new value in the WHOIS update difference.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.diff.additionalProp.old
+      description: The old value in the WHOIS update difference.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.network.allocation_type
+      description: The allocation type of the network in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.network.cidrs
+      description: The CIDR blocks of the network in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.network.created
+      description: The creation timestamp of the network in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.network.handle
+      description: The handle identifier of the network in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.network.name
+      description: The name of the network in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.network.updated
+      description: The last update timestamp of the network in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.email
+      description: The email address of the abuse contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.handle
+      description: The handle identifier of the abuse contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.name
+      description: The name of the abuse contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.address
+      description: The address of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.email
+      description: The email address of the admin contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.handle
+      description: The handle identifier of the admin contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.name
+      description: The name of the admin contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.city
+      description: The city of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.country
+      description: The country of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.handle
+      description: The handle identifier of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.name
+      description: The name of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.postal_code
+      description: The postal code of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.state
+      description: The state or province of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.street
+      description: The street address of the organization in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.email
+      description: The email address of the technical contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.handle
+      description: The handle identifier of the technical contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.name
+      description: The name of the technical contact in WHOIS data.
+      type: String
+    - contextPath: Censys.HostEventHistory.extensions
+      description: The extensions associated with the host event history.
+      type: Unknown
+  - name: cen-rescan
+    polling: true
+    arguments:
+    - name: ioc_type
+      description: Specify the type of IOC.
+      required: true
+      defaultValue: Service
+      auto: PREDEFINED
+      predefined:
+      - Service
+      - Web Property
+    - name: ioc_value
+      description: Specify the value of IOC.
+      required: true
+    - name: port
+      description: Specify the port number associated with the IOC.
+      required: true
+      defaultValue: '443'
+    - name: protocol
+      description: "Specify the service protocol.\n\nNote:This argument is required only if the IOC type is Service."
+      required: false
+    - name: transport_protocol
+      description: "Specify the transport protocol.\n\nNote: This argument is required only if the IOC type is Service."
+      required: false
+      defaultValue: Unknown
+      auto: PREDEFINED
+      predefined:
+      - Unknown
+      - TCP
+      - UDP
+      - ICMP
+      - QUIC
+    - name: scan_id
+      description: The ID of the scan. This argument is used internally by the scheduled command for polling and should not be provided manually.
+      hidden: true
+    - name: polling
+      description: Whether to poll for the command.
+      hidden: true
+    description: Initiate a live rescan for a known host service at a specific IP and port (ip:port) or hostname and port (hostname:port).
+    outputs:
+    - contextPath: Censys.Rescan.scan_id
+      description: The unique identifier for the rescan operation.
+      type: String
+    - contextPath: Censys.Rescan.status
+      description: The status of the rescan (initiated, in_progress, completed, failed).
+      type: String
+    - contextPath: Censys.Rescan.is_completed
+      description: Whether the rescan has completed.
+      type: Boolean
+    - contextPath: Censys.Rescan.enrichment_data.ip
+      description: The IP address of the rescanned host.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.service_count
+      description: The total number of services detected on the host.
+      type: Number
+    - contextPath: Censys.Rescan.enrichment_data.labels
+      description: Labels associated with the host.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.location.continent
+      description: The continent of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.country
+      description: The name of the country of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.country_code
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.city
+      description: The city of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.province
+      description: The province or state of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.postal_code
+      description: The postal code of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.timezone
+      description: The timezone of the host's detected location.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.location.coordinates.latitude
+      description: The latitude of the host's detected location.
+      type: Number
+    - contextPath: Censys.Rescan.enrichment_data.location.coordinates.longitude
+      description: The longitude of the host's detected location.
+      type: Number
+    - contextPath: Censys.Rescan.enrichment_data.autonomous_system.asn
+      description: The autonomous system number (ASN) that the host is in.
+      type: Number
+    - contextPath: Censys.Rescan.enrichment_data.autonomous_system.description
+      description: A brief description of the autonomous system.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.autonomous_system.bgp_prefix
+      description: The autonomous system's CIDR.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.autonomous_system.name
+      description: The friendly name of the autonomous system.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.autonomous_system.country_code
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.whois.network.handle
+      description: The WHOIS network handle identifier.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.whois.network.name
+      description: The WHOIS network name.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.whois.network.cidrs
+      description: The WHOIS network CIDRs.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.whois.network.created
+      description: The creation date of the WHOIS network record.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.whois.network.updated
+      description: The last update date of the WHOIS network record.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.whois.organization.handle
+      description: The WHOIS organization handle identifier.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.whois.organization.name
+      description: The WHOIS organization name.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.whois.organization.address
+      description: The WHOIS organization address.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.whois.organization.abuse_contacts
+      description: The WHOIS organization abuse contacts.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.whois.organization.admin_contacts
+      description: The WHOIS organization admin contacts.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.services
+      description: List of services detected on the host.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.services.port
+      description: The port the service was reached at.
+      type: Number
+    - contextPath: Censys.Rescan.enrichment_data.services.protocol
+      description: The name of the service on the port.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.transport_protocol
+      description: The transport protocol used to contact this service.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.software
+      description: Software identified on the service.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.services.software.source
+      description: The source of the software identification.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.software.confidence
+      description: The confidence level of the software identification.
+      type: Number
+    - contextPath: Censys.Rescan.enrichment_data.services.software.part
+      description: The part classification of the software in CPE format.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.software.vendor
+      description: The vendor of the identified software.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.software.product
+      description: The product name of the identified software.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.labels
+      description: Labels associated with the service.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.services.labels.value
+      description: The value of the service label.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.threats
+      description: Threats detected on the service.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.services.vulns
+      description: Vulnerabilities detected on the service.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.services.ip
+      description: The IP address of the service.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.scan_time
+      description: The time when the service was scanned.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.services.banner
+      description: The banner returned by the service.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.banner_hash_sha256
+      description: The SHA-256 hash of the service banner.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.services.banner_hex
+      description: The hexadecimal representation of the service banner.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.dns.reverse_dns.resolve_time
+      description: The time when reverse DNS was resolved.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.dns.names
+      description: DNS names associated with the host.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.dns.forward_dns.names
+      description: Forward DNS names for the host.
+      type: Unknown
+    - contextPath: Censys.Rescan.enrichment_data.dns.reverse_dns.names
+      description: Reverse DNS names for the host.
+      type: Unknown
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - name: cen-related-infrastructure-list
+    polling: true
+    arguments:
+    - name: ioc_type
+      description: Specify the type of IOC.
+      required: true
+      defaultValue: Host
+      auto: PREDEFINED
+      predefined:
+      - Host
+      - Web Property
+      - Certificate
+    - name: ioc_value
+      description: "Specify the value of IOC.\n\nNote: For Web Property IOC type, include the port in the format hostname:port (e.g., example.com:443)."
+      required: true
+    - name: job_id
+      description: The ID of the job. This argument is used internally by the scheduled command for polling and should not be provided manually.
+      hidden: true
+    - name: polling
+      description: Whether to poll for the command.
+      hidden: true
+    description: Initiate a CensEye (Related Infrastructure) pivot analysis job for a Host, Web Property, or SHA256 Certificate.
+    outputs:
+    - contextPath: Censys.RelatedInfrastructure.job_id
+      description: The unique identifier for the related infrastructure job.
+      type: String
+    - contextPath: Censys.RelatedInfrastructure.pivot_data.count
+      description: The count of related infrastructure entries for this pivot.
+      type: Number
+    - contextPath: Censys.RelatedInfrastructure.pivot_data.field_value_pairs.field
+      description: The field name of the pivot.
+      type: String
+    - contextPath: Censys.RelatedInfrastructure.pivot_data.field_value_pairs.value
+      description: The value of the pivot field.
+      type: String
+    - contextPath: Censys.RelatedInfrastructure.status
+      description: The status of the job (initiated, in_progress, completed, failed).
+      type: String
+    - contextPath: Censys.RelatedInfrastructure.is_completed
+      description: Whether the job has completed.
+      type: Boolean
+    - contextPath: Censys.RelatedInfrastructure.ioc_value
+      description: The value of the IOC.
+      type: String
   dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: '-'

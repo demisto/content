@@ -169,6 +169,10 @@ Return previews of hosts matching a specified search query or a list of certific
 | Censys.Search.parsed.validity_period.not_after | Date | Timestamp of when the certificate expires. Time zone is UTC. |
 | Censys.Search.parsed.validity_period.not_before | Date | Timestamp of when the certificate is first valid. Time zone is UTC. |
 | Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. |
+| Censys.Search.parsed.subject.common_name | Unknown | Common name\(s\) from the certificate subject. |
+| Censys.Search.parsed.signature.self_signed | Boolean | Whether the certificate is self-signed. |
+| Censys.Search.valid_to | String | Timestamp of when the certificate is valid to. |
+| Censys.Search.self_signed | Boolean | Whether the certificate is self-signed. |
 
 #### Command example
 
@@ -245,6 +249,7 @@ Return all related IPs as relationships.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | A comma-separated list of domains to check. | Required |
+| port | A comma-separated ports associated with the domain. Default is 80, 443. | Optional |
 
 #### Context Output
 
@@ -270,6 +275,25 @@ Return all related IPs as relationships.
 | Censys.Domain.services.cert | String | The SSL/TLS certificate associated with the service associated with the domain. |
 | Censys.Domain.ip | String | The IP address associated with the domain. |
 | Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
+| Censys.Domain.hostname | String | The hostname of the web property associated with the domain. |
+| Censys.Domain.port | Number | The port number of the web property associated with the domain. |
+| Censys.Domain.labels.value | String | Labels associated with the web property. |
+| Censys.Domain.threats.name | String | Threat names associated with the web property. |
+| Censys.Domain.vulns.id | String | Vulnerability IDs associated with the web property. |
+| Censys.Domain.vulns.cvss | Number | CVSS scores for vulnerabilities associated with the web property. |
+| Censys.Domain.vulns.severity | String | Severity levels for vulnerabilities associated with the web property. |
+| Censys.Domain.software.vendor | String | Software vendors detected on the web property. |
+| Censys.Domain.software.product | String | Software products detected on the web property. |
+| Censys.Domain.software.version | String | Software versions detected on the web property. |
+| Censys.Domain.cert.fingerprint_sha256 | String | SHA-256 fingerprint of the certificate associated with the web property. |
+| Censys.Domain.cert.parsed.subject_dn | String | Subject DN of the certificate associated with the web property. |
+| Censys.Domain.cert.parsed.issuer_dn | String | Issuer DN of the certificate associated with the web property. |
+| Censys.Domain.tls.version_selected | String | TLS version selected for the web property. |
+| Censys.Domain.tls.cipher_selected | String | Cipher suite selected for the web property. |
+| Censys.Domain.endpoints.endpoint_type | String | Endpoint types associated with the web property. |
+| Censys.Domain.endpoints.path | String | Endpoint paths associated with the web property. |
+| Censys.Domain.jarm.fingerprint | String | JARM fingerprint of the web property. |
+| Censys.Domain.scan_time | String | Scan time for the web property. |
 | Domain.Name | string | The domain. |
 | Domain.Relationships.EntityA | string | The domain name. |
 | Domain.Relationships.EntityAType | string | The entity type. |
@@ -1138,6 +1162,14 @@ Return all related IPs as relationships.
 
 #### Human Readable Output
 
+>### Censys results for Domain amazon.com
+>
+>### Enriched Web Property Data
+>
+>|Hostname|Port|Scan Time|Endpoint Types|Endpoint Paths|Labels|Threat Names|Vulns Names|Vendors|Products|Versions|sha256|Subject DN|Issuer DN|Common Names|Not Before|Not After|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| amazon.com | 443 | 2026-03-10T07:52:06Z | HTTP | / | WEB_SERVER, HTTPS | OUTDATED_SOFTWARE | CVE-2024-11111 | f5 | nginx | 1.18.0 | 0000000000000000000000000000000000000000000000000000000000000001 | CN=example.com | C=US, O=Let's Encrypt, CN=R11 | example.com | 2025-01-03T04:11:45Z | 2025-04-03T04:11:44Z |
+>
 >### Information for IP 8.8.8.8
 >
 >|ASN|Network|Protocols|Routing|Whois Last Updated|
@@ -1620,7 +1652,7 @@ Runs reputation on IPs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Censys.IP.services.port | Number   | The port number associated with the service running on the IP. |
+| Censys.IP.services.port | Number | The port number associated with the service running on the IP. |
 | Censys.IP.services.transport_protocol | String | The transport protocol used by the service running on the IP. |
 | Censys.IP.services.protocol | String | The name of the service running on the IP. |
 | Censys.IP.services.cert | String | The SSL/TLS certificate associated with the service running on the IP. |
@@ -1630,7 +1662,7 @@ Runs reputation on IPs.
 | Censys.IP.autonomous_system.description | String | Description of the autonomous system associated with the IP address. |
 | Censys.IP.autonomous_system.name | String | Name of the autonomous system associated with the IP address. |
 | Censys.IP.autonomous_system.bgp_prefix | String | BGP prefix of the autonomous system associated with the IP address. |
-| Censys.IP.autonomous_system.asn | Number | Autonomous System Number (ASN) of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.asn | Number | Autonomous System Number \(ASN\) of the autonomous system associated with the IP address. |
 | Censys.IP.ip | String | The IP address. |
 | Censys.IP.location.country | String | Country name of the location associated with the IP address. |
 | Censys.IP.location.timezone | String | Time zone of the location associated with the IP address. |
@@ -1640,13 +1672,22 @@ Runs reputation on IPs.
 | Censys.IP.location.continent | String | Continent name of the location associated with the IP address. |
 | Censys.IP.location.postal_code | String | Postal code of the location associated with the IP address. |
 | Censys.IP.location.city | String | City name of the location associated with the IP address. |
-| Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
+| Censys.IP.location.country_code | String | Country code of the location associated with the IP address. |
+| Censys.IP.service_count | Number | The total number of services running on the IP address. |
+| Censys.IP.services.labels.value | String | Labels associated with services running on the IP address. |
+| Censys.IP.services.threats.name | String | Threat names associated with services running on the IP address. |
+| Censys.IP.services.vulns | String | Vulnerabilities associated with services running on the IP address. |
+| Censys.IP.services.scan_time | String | Scan time for services running on the IP address. |
+| Censys.IP.dns.names | String | DNS names associated with the IP address. |
+| Censys.IP.dns.forward_dns.names | String | Forward DNS names associated with the IP address. |
+| Censys.IP.whois.network.name | String | WHOIS network name associated with the IP address. |
+| Censys.IP.whois.network.cidrs | String | WHOIS network CIDR blocks associated with the IP address. |
 | IP.Address | unknown | The IP address. |
 | IP.ASN | unknown | The IP ASN. |
 | IP.Geo.Country | unknown | The IP country. |
 | IP.Geo.Location | unknown | The IP location. |
-| IP.UpdatedDate | unknown | The IP last update |
-| IP.Port | unknown | The IP port |
+| IP.UpdatedDate | unknown | The IP last update. |
+| IP.Port | unknown | The IP port. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Score | Number | The actual score. |
@@ -1724,8 +1765,675 @@ Runs reputation on IPs.
 
 #### Human Readable Output
 
->### censys results for IP: 8.8.8.8
+>### Censys results for IP: 8.8.8.8
 >
->| **Asn** | **Geo Country** | **Geo Latitude** | **Geo Longitude** | **Ip** | **Port** | **Reputation** | **Updated** |
->| --- | --- | --- | --- | --- | --- | --- |  --- |
->| 15169 | United States | 37.4056 | -122.0775 | 8.8.8.8 | 53, 443, 443, 853 | 0 | 2024-04-14T08:03:28.159Z |
+>### Enriched Host Data
+>
+>|IP|Labels|Service Count|Service Ports|Service Protocols|Service Transport Protocols|Reverse DNS Names|Autonomous System Name|Autonomous System ASN|City|Province|Postal Code|Country|Country Code|Continent|Latitude|Longitude|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 8.8.8.8 | database, email, file-sharing, iot, login-page | 4 | 53, 443, 443, 853 | DNS, HTTP, UNKNOWN, UNKNOWN | UDP, TCP, QUIC, TCP | dns.google | GOOGLE | 15169 | Mountain View | California | 94043 | United States | US | North America | 37.4056 | -122.0775 |
+
+### cen-host-history-list
+
+***
+Retrieve the event history for a host (IP address).
+
+#### Base Command
+
+`cen-host-history-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | Specify the IP address of a host. | Required |
+| start_time | Specify the start time of the host timeline.<br/><br/>Supported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-10T14:05:44Z. | Required |
+| end_time | Specify the end time of the host timeline.<br/><br/>Supported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-10T14:05:44Z. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.HostEventHistory.ip | String | The IP address of the host. |
+| Censys.HostEventHistory.total_events | Number | The total number of events associated with the host. |
+| Censys.HostEventHistory.partial_data | Boolean | Whether the data is partial or not. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.scan_time | Date | The timestamp when the service scan was performed. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.ip | String | The IP address of the scanned service. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.port | Number | The port number of the scanned service. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.protocol | String | The protocol used by the scanned service. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.transport_protocol | String | The transport protocol used during the service scan. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.is_success | Boolean | Whether the service scan was successful or not. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_code | Number | The MySQL error code returned during the scan. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_id | String | The MySQL error identifier returned during the scan. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_message | String | The MySQL error message returned during the scan. |
+| Censys.HostEventHistory.events.resource.forward_dns_resolved.name | String | The domain name resolved from the forward DNS lookup. |
+| Censys.HostEventHistory.events.resource.forward_dns_resolved.resolve_time | String | The timestamp when the forward DNS resolution occurred. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.diff.additionalProp.new | String | The new value in the JARM scan difference. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.diff.additionalProp.old | String | The old value in the JARM scan difference. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.cipher_and_version_fingerprint | String | The cipher and version fingerprint from the JARM scan. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.fingerprint | String | The JARM fingerprint of the scanned service. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.hostname | String | The hostname used in the JARM scan. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.ip | String | The IP address scanned by JARM. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.is_success | Boolean | Whether the JARM scan was successful or not. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.port | Number | The port number scanned by JARM. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.scan_time | String | The timestamp when the JARM scan was performed. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.tls_extensions_sha256 | String | The SHA-256 hash of the TLS extensions from the JARM scan. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.transport_protocol | String | The transport protocol used during the JARM scan. |
+| Censys.HostEventHistory.events.resource.location_updated.location.city | String | The city where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.continent | String | The continent where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.coordinates.latitude | Number | The latitude coordinate of the host location. |
+| Censys.HostEventHistory.events.resource.location_updated.location.coordinates.longitude | Number | The longitude coordinate of the host location. |
+| Censys.HostEventHistory.events.resource.location_updated.location.country | String | The country where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.country_code | String | The country code where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.postal_code | String | The postal code of the host location. |
+| Censys.HostEventHistory.events.resource.location_updated.location.province | String | The province or state where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.registered_country | String | The registered country of the host. |
+| Censys.HostEventHistory.events.resource.location_updated.location.registered_country_code | String | The registered country code of the host. |
+| Censys.HostEventHistory.events.resource.location_updated.location.timezone | String | The timezone of the host location. |
+| Censys.HostEventHistory.events.resource.reverse_dns_resolved.names | String | The domain names resolved from the reverse DNS lookup. |
+| Censys.HostEventHistory.events.resource.reverse_dns_resolved.resolve_time | String | The timestamp when the reverse DNS resolution occurred. |
+| Censys.HostEventHistory.events.resource.route_updated.diff.additionalProp.new | String | The new value in the route update difference. |
+| Censys.HostEventHistory.events.resource.route_updated.diff.additionalProp.old | String | The old value in the route update difference. |
+| Censys.HostEventHistory.events.resource.route_updated.route.asn | Number | The Autonomous System Number of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.bgp_prefix | String | The BGP prefix of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.country_code | String | The country code associated with the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.description | String | The description of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.name | String | The name of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.organization | String | The organization associated with the route. |
+| Censys.HostEventHistory.events.resource.whois_updated.diff.additionalProp.new | String | The new value in the WHOIS update difference. |
+| Censys.HostEventHistory.events.resource.whois_updated.diff.additionalProp.old | String | The old value in the WHOIS update difference. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.allocation_type | String | The allocation type of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.cidrs | String | The CIDR blocks of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.created | String | The creation timestamp of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.handle | String | The handle identifier of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.name | String | The name of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.updated | String | The last update timestamp of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.email | String | The email address of the abuse contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.handle | String | The handle identifier of the abuse contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.name | String | The name of the abuse contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.address | String | The address of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.email | String | The email address of the admin contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.handle | String | The handle identifier of the admin contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.name | String | The name of the admin contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.city | String | The city of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.country | String | The country of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.handle | String | The handle identifier of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.name | String | The name of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.postal_code | String | The postal code of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.state | String | The state or province of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.street | String | The street address of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.email | String | The email address of the technical contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.handle | String | The handle identifier of the technical contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.name | String | The name of the technical contact in WHOIS data. |
+| Censys.HostEventHistory.extensions | Unknown | The extensions associated with the host event history. |
+
+#### Command example
+
+```!cen-host-history-list host_id=0.0.0.1 start_time="1 week" end_time="1 day"```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "HostEventHistory": {
+            "ip": "0.0.0.1",
+            "total_events": 8,
+            "partial_data": false,
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T10:00:00.000Z",
+                        "service_scanned": {
+                            "scan": {
+                                "port": 443,
+                                "protocol": "https",
+                                "transport_protocol": "tcp"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T09:00:00.000Z",
+                        "reverse_dns_resolved": {
+                            "names": [
+                                "example.com",
+                                "www.example.com"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T08:00:00.000Z",
+                        "endpoint_scanned": {
+                            "scan": {
+                                "port": 8080,
+                                "endpoint_type": "http"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T07:00:00.000Z",
+                        "forward_dns_resolved": {
+                            "name": "test.example.com"
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T06:00:00.000Z",
+                        "jarm_scanned": {
+                            "scan": {
+                                "port": 443,
+                                "fingerprint": "0000000000000000000000000000000000000000000000000000000000001"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T05:00:00.000Z",
+                        "location_updated": {
+                            "location": {
+                                "city": "San Francisco",
+                                "country": "United States"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T04:00:00.000Z",
+                        "route_updated": {
+                            "route": {
+                                "asn": "15169",
+                                "organization": "Google LLC"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T03:00:00.000Z",
+                        "whois_updated": {
+                            "whois": {
+                                "organization": {
+                                    "name": "Example Organization"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Successfully retrieved 8 event(s) for host 0.0.0.1
+>
+>### Host History Events
+>
+>|Event Time|Resource Type|Resource Details|Link to Censys|
+>|---|---|---|---|
+>| 2026-03-01T10:00:00.000Z | service_scanned | 443/TCP/https | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T10:00:00.000Z) |
+>| 2026-03-01T09:00:00.000Z | reverse_dns_resolved | example.com | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T09:00:00.000Z) |
+>| 2026-03-01T08:00:00.000Z | endpoint_scanned | 8080/http | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T08:00:00.000Z) |
+>| 2026-03-01T07:00:00.000Z | forward_dns_resolved | test.example.com | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T07:00:00.000Z) |
+>| 2026-03-01T06:00:00.000Z | jarm_scanned | 443/0000000000000000000000000000000000000000000000000000000000001 | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T06:00:00.000Z) |
+>| 2026-03-01T05:00:00.000Z | location_updated | San Francisco/United States | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T05:00:00.000Z) |
+>| 2026-03-01T04:00:00.000Z | route_updated | 15169/Google LLC | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T04:00:00.000Z) |
+>| 2026-03-01T03:00:00.000Z | whois_updated | Example Organization | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T03:00:00.000Z) |
+
+### cen-rescan
+
+***
+Initiate a live rescan for a known host service at a specific IP and port (ip:port) or hostname and port (hostname:port).
+
+#### Base Command
+
+`cen-rescan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_type | Specify the type of IOC. Possible values are: Service, Web Property. Default is Service. | Required |
+| ioc_value | Specify the value of IOC. | Required |
+| port | Specify the port number associated with the IOC. Default is 443. | Required |
+| protocol | Specify the service protocol.<br/><br/>Note:This argument is required only if the IOC type is Service. | Optional |
+| transport_protocol | Specify the transport protocol.<br/><br/>Note: This argument is required only if the IOC type is Service. Possible values are: Unknown, TCP, UDP, ICMP, QUIC. Default is Unknown. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.Rescan.scan_id | String | The unique identifier for the rescan operation. |
+| Censys.Rescan.status | String | The status of the rescan \(initiated, in_progress, completed, failed\). |
+| Censys.Rescan.is_completed | Boolean | Whether the rescan has completed. |
+| Censys.Rescan.enrichment_data.ip | String | The IP address of the rescanned host. |
+| Censys.Rescan.enrichment_data.service_count | Number | The total number of services detected on the host. |
+| Censys.Rescan.enrichment_data.labels | Unknown | Labels associated with the host. |
+| Censys.Rescan.enrichment_data.location.continent | String | The continent of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.country | String | The name of the country of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.city | String | The city of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.province | String | The province or state of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.postal_code | String | The postal code of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.timezone | String | The timezone of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.coordinates.latitude | Number | The latitude of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.coordinates.longitude | Number | The longitude of the host's detected location. |
+| Censys.Rescan.enrichment_data.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. |
+| Censys.Rescan.enrichment_data.autonomous_system.description | String | A brief description of the autonomous system. |
+| Censys.Rescan.enrichment_data.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. |
+| Censys.Rescan.enrichment_data.autonomous_system.name | String | The friendly name of the autonomous system. |
+| Censys.Rescan.enrichment_data.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code. |
+| Censys.Rescan.enrichment_data.whois.network.handle | String | The WHOIS network handle identifier. |
+| Censys.Rescan.enrichment_data.whois.network.name | String | The WHOIS network name. |
+| Censys.Rescan.enrichment_data.whois.network.cidrs | Unknown | The WHOIS network CIDRs. |
+| Censys.Rescan.enrichment_data.whois.network.created | Date | The creation date of the WHOIS network record. |
+| Censys.Rescan.enrichment_data.whois.network.updated | Date | The last update date of the WHOIS network record. |
+| Censys.Rescan.enrichment_data.whois.organization.handle | String | The WHOIS organization handle identifier. |
+| Censys.Rescan.enrichment_data.whois.organization.name | String | The WHOIS organization name. |
+| Censys.Rescan.enrichment_data.whois.organization.address | String | The WHOIS organization address. |
+| Censys.Rescan.enrichment_data.whois.organization.abuse_contacts | Unknown | The WHOIS organization abuse contacts. |
+| Censys.Rescan.enrichment_data.whois.organization.admin_contacts | Unknown | The WHOIS organization admin contacts. |
+| Censys.Rescan.enrichment_data.services | Unknown | List of services detected on the host. |
+| Censys.Rescan.enrichment_data.services.port | Number | The port the service was reached at. |
+| Censys.Rescan.enrichment_data.services.protocol | String | The name of the service on the port. |
+| Censys.Rescan.enrichment_data.services.transport_protocol | String | The transport protocol used to contact this service. |
+| Censys.Rescan.enrichment_data.services.software | Unknown | Software identified on the service. |
+| Censys.Rescan.enrichment_data.services.software.source | String | The source of the software identification. |
+| Censys.Rescan.enrichment_data.services.software.confidence | Number | The confidence level of the software identification. |
+| Censys.Rescan.enrichment_data.services.software.part | String | The part classification of the software in CPE format. |
+| Censys.Rescan.enrichment_data.services.software.vendor | String | The vendor of the identified software. |
+| Censys.Rescan.enrichment_data.services.software.product | String | The product name of the identified software. |
+| Censys.Rescan.enrichment_data.services.labels | Unknown | Labels associated with the service. |
+| Censys.Rescan.enrichment_data.services.labels.value | String | The value of the service label. |
+| Censys.Rescan.enrichment_data.services.threats | Unknown | Threats detected on the service. |
+| Censys.Rescan.enrichment_data.services.vulns | Unknown | Vulnerabilities detected on the service. |
+| Censys.Rescan.enrichment_data.services.ip | String | The IP address of the service. |
+| Censys.Rescan.enrichment_data.services.scan_time | Date | The time when the service was scanned. |
+| Censys.Rescan.enrichment_data.services.banner | String | The banner returned by the service. |
+| Censys.Rescan.enrichment_data.services.banner_hash_sha256 | String | The SHA-256 hash of the service banner. |
+| Censys.Rescan.enrichment_data.services.banner_hex | String | The hexadecimal representation of the service banner. |
+| Censys.Rescan.enrichment_data.dns.reverse_dns.resolve_time | Date | The time when reverse DNS was resolved. |
+| Censys.Rescan.enrichment_data.dns.names | Unknown | DNS names associated with the host. |
+| Censys.Rescan.enrichment_data.dns.forward_dns.names | Unknown | Forward DNS names for the host. |
+| Censys.Rescan.enrichment_data.dns.reverse_dns.names | Unknown | Reverse DNS names for the host. |
+| IP.Address | String | The IP address. |
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". |
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. |
+| IP.Geo.Country | String | The country in which the IP address is located. |
+| IP.Geo.Description | String | Additional information about the location. |
+| IP.ASOwner | String | The autonomous system owner of the IP. |
+| IP.Port | String | Ports that are associated with the IP. |
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. |
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. |
+| Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+
+#### Command example
+
+```!cen-rescan ioc_type="Service" ioc_value="0.0.0.1" port="443" protocol="HTTPS" transport_protocol="TCP"```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "Rescan": {
+            "ioc_value": "0.0.0.1",
+            "port": 443,
+            "status": "completed",
+            "scan_id": "00000000-0000-0000-0000-000000000001",
+            "is_completed": true,
+            "enrichment_data": {
+                "ip": "0.0.0.1",
+                "labels": [
+                    {
+                        "source": "censys",
+                        "value": "CLOUD_PROVIDER"
+                    },
+                    {
+                        "source": "censys",
+                        "value": "WEB_SERVER"
+                    }
+                ],
+                "location": {
+                    "continent": "Asia",
+                    "country": "South Korea",
+                    "country_code": "KR",
+                    "city": "Seoul",
+                    "postal_code": "03141",
+                    "timezone": "Asia/Seoul",
+                    "province": "Seoul",
+                    "coordinates": {
+                        "latitude": 37.566,
+                        "longitude": 126.9784
+                    }
+                },
+                "autonomous_system": {
+                    "asn": 12345,
+                    "description": "EXAMPLE-AS-AP Example.Co.LTD",
+                    "bgp_prefix": "0.0.0.1/24",
+                    "name": "EXAMPLE-AS-AP Example.Co.LTD",
+                    "country_code": "KR"
+                },
+                "whois": {
+                    "network": {
+                        "handle": "HK-EXAMPLE-20190703",
+                        "name": "EXAMPLE LIMITED",
+                        "cidrs": [
+                            "0.0.0.1/24"
+                        ],
+                        "created": "2024-11-26T00:00:00Z",
+                        "updated": "2025-08-18T00:00:00Z"
+                    },
+                    "organization": {
+                        "handle": "ORG-XL117-RIPE",
+                        "name": "EXAMPLE LIMITED",
+                        "address": "RM 29-33,5/F,EXAMPLE COMMERCIAL CENTRE,87-105 EXAMPLE ROAD\\n000000\\nEXAMPLE CITY\\nEXAMPLE COUNTRY",
+                        "abuse_contacts": [
+                            {
+                                "handle": "EXAMPLE-RIPE",
+                                "name": "EXAMPLE-ROLE",
+                                "email": "noc@example.com"
+                            }
+                        ],
+                        "admin_contacts": [
+                            {
+                                "handle": "EXAMPLE-RIPE",
+                                "name": "EXAMPLE-ROLE",
+                                "email": "noc@example.com"
+                            }
+                        ]
+                    }
+                },
+                "services": [
+                    {
+                        "port": 22,
+                        "protocol": "SSH",
+                        "transport_protocol": "tcp",
+                        "software": [
+                            {
+                                "source": "censys",
+                                "confidence": 0.9,
+                                "evidence": [
+                                    {
+                                        "data_path": "protocol",
+                                        "found_value": "SSH",
+                                        "literal_match": "SSH"
+                                    }
+                                ],
+                                "type": [
+                                    "REMOTE_ACCESS"
+                                ],
+                                "part": "a"
+                            }
+                        ],
+                        "labels": [
+                            {
+                                "source": "censys",
+                                "confidence": 0.9,
+                                "evidence": [
+                                    {
+                                        "data_path": "protocol",
+                                        "found_value": "SSH",
+                                        "literal_match": "SSH"
+                                    }
+                                ],
+                                "value": "REMOTE_ACCESS"
+                            }
+                        ],
+                        "threats": [
+                            {
+                                "name": "BRUTE_FORCE_ATTACK",
+                                "source": "censys"
+                            }
+                        ],
+                        "vulns": [
+                            {
+                                "id": "CVE-2023-12345",
+                                "cvss": 7.5,
+                                "severity": "HIGH"
+                            },
+                            {
+                                "id": "CVE-2023-67890",
+                                "cvss": 5.3,
+                                "severity": "MEDIUM"
+                            }
+                        ],
+                        "ip": "0.0.0.1",
+                        "scan_time": "2026-02-02T00:46:23Z",
+                        "banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3",
+                        "banner_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                        "banner_hex": "5353482d322e302d4f70656e5353485f392e3270312044656269616e2d322b64656231327533",
+                        "ja4tscan": {
+                            "scan_time": "2026-02-01T17:09:57Z",
+                            "fingerprint": "65160_2-4-8-1-3_1460_7_1-2-4-8-16"
+                        },
+                        "ssh": {
+                            "endpoint_id": {
+                                "raw": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3",
+                                "protocol_version": "2.0",
+                                "software_version": "OpenSSH_9.2p1",
+                                "comment": "Debian-2+deb12u3"
+                            },
+                            "kex_init_message": {
+                                "kex_algorithms": [
+                                    "example@openssh.com",
+                                    "curve25519-sha256",
+                                    "example@openssh.com"
+                                ],
+                                "host_key_algorithms": [
+                                    "rsa-sha2-512",
+                                    "rsa-sha2-256",
+                                    "ecdsa-sha2-nistp256",
+                                    "ssh-ed25519"
+                                ],
+                                "client_to_server_ciphers": [
+                                    "example@openssh.com",
+                                    "aes128-ctr"
+                                ],
+                                "server_to_client_ciphers": [
+                                    "example@openssh.com",
+                                    "aes128-ctr"
+                                ],
+                                "client_to_server_macs": [
+                                    "example@openssh.com",
+                                    "example@openssh.com"
+                                ],
+                                "server_to_client_macs": [
+                                    "example@openssh.com",
+                                    "example@openssh.com"
+                                ],
+                                "client_to_server_compression": [
+                                    "none",
+                                    "example@openssh.com"
+                                ],
+                                "server_to_client_compression": [
+                                    "none",
+                                    "example@openssh.com"
+                                ]
+                            },
+                            "algorithm_selection": {
+                                "kex_algorithm": "example@libssh.org",
+                                "host_key_algorithm": "ecdsa-sha2-nistp256",
+                                "client_to_server_cipher": "example@openssh.com",
+                                "server_to_client_cipher": "example@openssh.com",
+                                "client_to_server_mac": "example@openssh.com",
+                                "server_to_client_mac": "example@openssh.com",
+                                "client_to_server_compression": "none",
+                                "server_to_client_compression": "none"
+                            },
+                            "server_host_key": {
+                                "ecdsa_public_key": {
+                                    "b": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "curve": "P256",
+                                    "gx": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "gy": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "length": 256,
+                                    "n": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "p": "/////wAAAAEAAAAAAAAAAAAAAAD///////////////8=",
+                                    "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "y": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                                }
+                            },
+                            "hassh_fingerprint": "00000000000000000000000000000000"
+                        }
+                    }
+                ],
+                "service_count": 3,
+                "dns": {
+                    "names": [
+                        "example.com",
+                        "www.example.com"
+                    ],
+                    "forward_dns": {
+                        "names": [
+                            "example.com",
+                            "www.example.com",
+                            "mail.example.com"
+                        ]
+                    },
+                    "reverse_dns": {
+                        "names": [
+                            "host.example.com"
+                        ],
+                        "resolve_time": "2026-01-30T18:11:14Z"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scan completed successfully for 0.0.0.1:443
+>
+>### Enriched Host Data
+>
+>|IP|Labels|Service Count|Service Ports|Service Protocols|Service Transport Protocols|Service Labels|Service Vulns|Service Threats|Service Scan Times|DNS Names|Forward DNS Names|Reverse DNS Names|Network Name|CIDRs|Autonomous System Name|Autonomous System ASN|City|Province|Postal Code|Country|Country Code|Continent|Latitude|Longitude|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 0.0.0.1 | CLOUD_PROVIDER, WEB_SERVER | 3 | 22 | SSH | tcp | REMOTE_ACCESS | CVE-2023-12345, CVE-2023-67890 | BRUTE_FORCE_ATTACK | 2026-02-02T00:46:23Z | example.com, www.example.com | example.com, www.example.com, mail.example.com | host.example.com | EXAMPLE LIMITED | 0.0.0.1/24 | EXAMPLE-AS-AP Example.Co.LTD | 12345 | Seoul | Seoul | 03141 | South Korea | KR | Asia | 37.566 | 126.9784 |
+
+### cen-related-infrastructure-list
+
+***
+Initiate a CensEye (Related Infrastructure) pivot analysis job for a Host, Web Property, or SHA256 Certificate.
+
+#### Base Command
+
+`cen-related-infrastructure-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_type | Specify the type of IOC. Possible values are: Host, Web Property, Certificate. Default is Host. | Required |
+| ioc_value | Specify the value of IOC.<br/><br/>Note: For Web Property IOC type, include the port in the format hostname:port (e.g., example.com:443). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.RelatedInfrastructure.job_id | String | The unique identifier for the related infrastructure job. |
+| Censys.RelatedInfrastructure.pivot_data.count | Number | The count of related infrastructure entries for this pivot. |
+| Censys.RelatedInfrastructure.pivot_data.field_value_pairs.field | String | The field name of the pivot. |
+| Censys.RelatedInfrastructure.pivot_data.field_value_pairs.value | String | The value of the pivot field. |
+| Censys.RelatedInfrastructure.status | String | The status of the job \(initiated, in_progress, completed, failed\). |
+| Censys.RelatedInfrastructure.is_completed | Boolean | Whether the job has completed. |
+| Censys.RelatedInfrastructure.ioc_value | String | The value of the IOC. |
+
+#### Command example
+
+```!cen-related-infrastructure-list ioc_type="Host" ioc_value="0.0.0.1"```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "RelatedInfrastructure": {
+            "ioc_value": "0.0.0.1",
+            "status": "completed",
+            "job_id": "00000000-0000-0000-0000-000000000001",
+            "is_completed": true,
+            "pivot_data": [
+                {
+                    "count": 5395,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.banner_hash_sha256",
+                            "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    ]
+                },
+                {
+                    "count": 123620,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.http.headers.key",
+                            "value": "Connection"
+                        },
+                        {
+                            "field": "host.services.endpoints.http.headers.value",
+                            "value": "close"
+                        }
+                    ]
+                },
+                {
+                    "count": 5395,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.banner_hash_sha256",
+                            "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    ]
+                },
+                {
+                    "count": 36216,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.http.headers.key",
+                            "value": "Content-Type"
+                        },
+                        {
+                            "field": "host.services.endpoints.http.headers.value",
+                            "value": "text/plain"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Job completed successfully for 0.0.0.1
+>
+>### 4 Pivots Data
+>
+>|Key|Value|Count|See results in Censys|
+>|---|---|---|---|
+>| host.services.banner_hash_sha256 | 0000000000000000000000000000000000000000000000000000000000000001 | 5395 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.banner_hash_sha256+%3D+%220000000000000000000000000000000000000000000000000000000000000001%22) |
+>| host.services.endpoints.banner_hash_sha256 | 0000000000000000000000000000000000000000000000000000000000000001 | 5395 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.banner_hash_sha256+%3D+%220000000000000000000000000000000000000000000000000000000000000001%22) |
+>| host.services.endpoints.http.headers.key<br>host.services.endpoints.http.headers.value | Content-Type<br>text/plain | 36216 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Content-Type%22+and+value+%3D+%22text%2Fplain%22%29) |
+>| host.services.endpoints.http.headers.key<br>host.services.endpoints.http.headers.value | Connection<br>close | 123620 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Connection%22+and+value+%3D+%22close%22%29) |
