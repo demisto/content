@@ -631,9 +631,17 @@ def enrich_command(
         "Indicator Details",
         [base_info],
         headers=[
-            "indicator_type", "indicator_value", "activity", "confidence",
-            "severity", "malicious", "kill_chain_stage", "first_seen",
-            "last_seen", "valid_until", "malware_family",
+            "indicator_type",
+            "indicator_value",
+            "activity",
+            "confidence",
+            "severity",
+            "malicious",
+            "kill_chain_stage",
+            "first_seen",
+            "last_seen",
+            "valid_until",
+            "malware_family",
         ],
         headerTransform=premium_header_transformer,
         removeNull=True,
@@ -641,9 +649,17 @@ def enrich_command(
 
     # Threat intelligence section
     threat_intel = {}
-    for field in ("malware_types", "origin_countries", "targeted_countries",
-                  "targeted_sectors", "targeted_brands", "threat_actors",
-                  "campaigns", "cves", "tags"):
+    for field in (
+        "malware_types",
+        "origin_countries",
+        "targeted_countries",
+        "targeted_sectors",
+        "targeted_brands",
+        "threat_actors",
+        "campaigns",
+        "cves",
+        "tags",
+    ):
         val = data.get(field)
         if val:
             threat_intel[field] = ", ".join(val) if isinstance(val, list) else val

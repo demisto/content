@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
@@ -351,9 +350,7 @@ def test_raw_to_indicator_returns_none_for_invalid():
     """Test that raw_to_indicator returns None for unrecognized values."""
     with patch("FeedCyberintPremium.auto_detect_indicator_type") as mock_auto_detect:
         mock_auto_detect.return_value = None
-        result = FeedCyberintPremium.raw_to_indicator(
-            {"indicator_value": "not-valid"}, tlp_color="", feed_tags=[]
-        )
+        result = FeedCyberintPremium.raw_to_indicator({"indicator_value": "not-valid"}, tlp_color="", feed_tags=[])
     assert result is None
 
     result = FeedCyberintPremium.raw_to_indicator({}, tlp_color="", feed_tags=[])
