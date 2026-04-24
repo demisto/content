@@ -129,25 +129,28 @@ Collection-based IoC feed integration for automated indicator ingestion:
 Depending on the integrations you intend to use, different licensing and activation steps apply:
 
 ### 1. Standard API Licensing
+
 The following integrations are included with standard API licensing and require a standard SOCRadar API Key (obtainable from the SOCRadar platform via **Settings → API Options / Keys**):
 
-* SOCRadar Incidents
-* SOCRadar Incidents v4
-* SOCRadar Threat Feed
+- SOCRadar Incidents
+- SOCRadar Incidents v4
+- SOCRadar Threat Feed
 
 ### 2. Advanced Intelligence API (Add-on or Standalone)
+
 SOCRadar Rapid Reputation and SOCRadar IoC Enrichment operate using the Advanced Intelligence API, which is optimized for high-volume, deep context, and fast reputation queries.
 
-* **Licensing Model:** The features of these modules are licensed separately from the standard SOCRadar platform package. To use these integrations, your API key must be explicitly activated with "Rapid Reputation" and/or "IoC Enrichment" privileges.
-* **Standalone Purchase:** This service can be added to your existing SOCRadar subscription, or it can be purchased as a standalone key completely independent of a platform membership.
-* **Purchase & Activation:** For API authorization, pricing information, or to purchase a new standalone key, please contact our support team at support@socradar.io.
+- **Licensing Model:** The features of these modules are licensed separately from the standard SOCRadar platform package. To use these integrations, your API key must be explicitly activated with "Rapid Reputation" and/or "IoC Enrichment" privileges.
+- **Standalone Purchase:** This service can be added to your existing SOCRadar subscription, or it can be purchased as a standalone key completely independent of a platform membership.
+- **Purchase & Activation:** For API authorization, pricing information, or to purchase a new standalone key, please contact our support team at support@socradar.io.
 
 ### 3. Multi-Tenant Usage
+
 To use Multi-tenant Incident API, the Multi-tenant Incidents API must be enabled. You must contact the MSSP Enablement Team to activate this specific API for your account. To activate, please contact our support team at **support@socradar.io**.
 
 ## Support
 
-For Cortex XSOAR support, contact **xsoar@socradar.io** or visit https://socradar.io
+For Cortex XSOAR support, contact **xsoar@socradar.io** or visit <https://socradar.io>
 
 ### Demo Video
 
