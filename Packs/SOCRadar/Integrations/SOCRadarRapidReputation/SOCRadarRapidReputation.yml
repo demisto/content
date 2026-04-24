@@ -109,7 +109,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
   - arguments:
     - description: Domain entities to check reputation.
@@ -168,7 +168,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: String
   - arguments:
     - description: URL entities to check reputation.
@@ -227,7 +227,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URL.Data
-      description: URL
+      description: URL.
       type: String
   - arguments:
     - description: File hash entities to check reputation. (MD5, SHA1, or SHA256).
@@ -286,13 +286,13 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: File.MD5
-      description: MD5 hash of the file
+      description: MD5 hash of the file.
       type: String
     - contextPath: File.SHA1
-      description: SHA1 hash of the file
+      description: SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: String
   - arguments:
     - description: Entity value to check (IP, domain, URL, or hash).
@@ -391,4 +391,4 @@ script:
   type: python
 tests:
 - SOCRadarRapidReputation-Test
-fromversion: 6.0.0
+fromversion: 6.10.0

@@ -182,4 +182,4 @@ script:
   type: python
 tests:
 - FeedSOCRadarThreatFeed-Test
-fromversion: 6.0.0
+fromversion: 6.10.0

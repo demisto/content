@@ -33,7 +33,7 @@ configuration:
   type: 15
   required: false
 - additionalinfo: Include AI-generated insights in enrichment results. Warning - This significantly increases response time (2-5x slower) due to AI processing. Recommended to keep disabled for performance.
-  defaultvalue: false
+  defaultvalue: 'false'
   display: Include AI Insights (slower response time)
   name: include_ai_insights
   type: 8
@@ -393,6 +393,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - No tests
