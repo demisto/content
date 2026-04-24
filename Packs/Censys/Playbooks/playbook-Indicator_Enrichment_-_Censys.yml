@@ -1,0 +1,1056 @@
+id: Indicator Enrichment - Censys
+version: -1
+name: Indicator Enrichment - Censys
+description: This playbook enriches the IP addresses, domains, and SHA256 file hashes indicators with Censys threat intelligence data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7b1740d5-dd25-4fd9-8055-578768757f34
+    type: start
+    task:
+      id: 7b1740d5-dd25-4fd9-8055-578768757f34
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8fd64b85-f8e5-4954-83ac-e29d071c7df6
+    type: condition
+    task:
+      id: 8fd64b85-f8e5-4954-83ac-e29d071c7df6
+      version: -1
+      name: Is Censys v2 integration enabled?
+      description: Checks whether Censys v2 integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CensysV2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7962aed9-012f-4974-864a-a5b30d1de0d5
+    type: regular
+    task:
+      id: 7962aed9-012f-4974-864a-a5b30d1de0d5
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Deletes specific keys from context to ensure a clean run.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: FoundIndicators, Collect the IP address / Domain / SHA256 File Hash Indicators
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: cc8e0384-3ce8-42ac-849e-7b1b783c9b19
+    type: regular
+    task:
+      id: cc8e0384-3ce8-42ac-849e-7b1b783c9b19
+      version: -1
+      name: Extract the indicators.
+      description: Automatically pulls indicators from the incident.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e0a979ec-91c9-4131-8db5-5eb0ae80151f
+    type: condition
+    task:
+      id: e0a979ec-91c9-4131-8db5-5eb0ae80151f
+      version: -1
+      name: Check whether IP addresses, domains or file hashes are available in playbook input
+      description: Validates if IP addresses, domains or file hashes were provided at launch.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ip_addresses
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.domains
+                transformers:
+                - operator: trim
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_hashes
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 41773bb2-75dd-411c-8e89-5d098cd0f00e
+    type: title
+    task:
+      id: 41773bb2-75dd-411c-8e89-5d098cd0f00e
+      version: -1
+      name: Enrich the indicators.
+      description: Enriches the IP addresses, domains and SHA256 file hashes indicators.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "18"
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b471ce9a-4f86-4b97-87f3-eac9e3ebf2ca
+    type: collection
+    task:
+      id: b471ce9a-4f86-4b97-87f3-eac9e3ebf2ca
+      version: -1
+      name: Collect the IP address, domain and SHA256 file indicators values.
+      description: Provide the IP addresses, domains or file hashes indicators values.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the IP address, domain and SHA256 file indicators values.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the IP address(es) value to enrich.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the domain(s) value to enrich.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Specify the SHA256 file hash(es) value to enrich.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Collect the IP address / Domain / SHA256 File Hash Indicators
+      description: Collect the IP address / Domain / SHA256 File Hash Indicators
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7c6d6f59-6754-4415-80c8-b906dcf81ca6
+    type: condition
+    task:
+      id: 7c6d6f59-6754-4415-80c8-b906dcf81ca6
+      version: -1
+      name: Collect or Extract Indicators?
+      description: Collect the indicators or extract the indicators from incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Collect:
+      - "6"
+      Extract:
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Extract the IP addresses, domains and file hashes indicators from the incident?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Extract
+      - Collect
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 529f2378-5be0-4f72-8951-a53cb1c23786
+    type: condition
+    task:
+      id: 529f2378-5be0-4f72-8951-a53cb1c23786
+      version: -1
+      name: Check indicators availability.
+      description: Verifies whether IP addresses, domains and SHA256 file hashes are available in incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ipv6
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                accessor: |
+                  value
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: file
+                    ignorecase: true
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: FoundIndicators.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
+                accessor: value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2d935a37-3ccc-49a0-85f0-a8e8d881d5fb
+    type: regular
+    task:
+      id: 2d935a37-3ccc-49a0-85f0-a8e8d881d5fb
+      version: -1
+      name: Enrich the IP address indicator
+      description: Runs reputation on IPs.
+      script: CensysV2|||ip
+      type: regular
+      iscommand: true
+      brand: CensysV2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      ip:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: ipv6
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ip_addresses
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the IP address / Domain / SHA256 File Hash Indicators.Answers.0
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: bb2a7eed-e67b-43fb-80a7-f13a5cf50ca2
+    type: condition
+    task:
+      id: bb2a7eed-e67b-43fb-80a7-f13a5cf50ca2
+      version: -1
+      name: Check that IP address indicators are present or not
+      description: Checks whether IP address indicators are present for enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ipv6
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ip_addresses
+                      iscontext: true
+                - operator: trim
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Collect the IP address / Domain / SHA256 File Hash Indicators.Answers.0
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1e5be226-86b0-47e1-869e-232cf6f91c1c
+    type: condition
+    task:
+      id: 1e5be226-86b0-47e1-869e-232cf6f91c1c
+      version: -1
+      name: Check that domain indicators are present or not
+      description: Checks whether domain indicators are present for enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.domains
+                      iscontext: true
+                - operator: trim
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Collect the IP address / Domain / SHA256 File Hash Indicators.Answers.1
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ffe7e085-7704-4f51-8d6b-c4165c2245dc
+    type: condition
+    task:
+      id: ffe7e085-7704-4f51-8d6b-c4165c2245dc
+      version: -1
+      name: Check that SHA256 file hash indicators are present or not
+      description: Checks whether SHA256 file hash indicators are present for enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: file
+                    ignorecase: true
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: FoundIndicators.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.file_hashes
+                      iscontext: true
+                - operator: trim
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Collect the IP address / Domain / SHA256 File Hash Indicators.Answers.2
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3ec7586a-2a22-48e0-89d4-35253b5b062c
+    type: regular
+    task:
+      id: 3ec7586a-2a22-48e0-89d4-35253b5b062c
+      version: -1
+      name: Enrich the Domain indicator
+      description: Looks up the "Domain" type indicator details. The reputation of the domain is decided from the indicator score if it is found in the Ignite IOC database.
+      script: CensysV2|||domain
+      type: regular
+      iscommand: true
+      brand: CensysV2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      domain:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the IP address / Domain / SHA256 File Hash Indicators.Answers.1
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 10189a04-66b9-4779-8e27-e19264dddf98
+    type: regular
+    task:
+      id: 10189a04-66b9-4779-8e27-e19264dddf98
+      version: -1
+      name: Enrich the SHA256 file hash indicator
+      description: Return previews of hosts matching a specified search query or a list of certificates that match the given query.
+      script: '|||cen-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      index:
+        simple: certificates
+      query:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: FoundIndicators.value
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.file_hashes
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the IP address / Domain / SHA256 File Hash Indicators.Answers.2
+                iscontext: true
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'cert.fingerprint_sha256:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 461b0f74-0cbf-497a-8ed2-394e98cf9b99
+    type: title
+    task:
+      id: 461b0f74-0cbf-497a-8ed2-394e98cf9b99
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_3_Extract": 0.41,
+      "13_6_Collect": 0.55,
+      "14_5_yes": 0.34,
+      "14_6_#default#": 0.62,
+      "18_17_yes": 0.41,
+      "18_23_#default#": 0.36,
+      "19_21_yes": 0.44,
+      "1_23_#default#": 0.24,
+      "1_2_yes": 0.52,
+      "4_13_#default#": 0.48,
+      "4_5_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1965,
+        "width": 1285,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ip_addresses
+  value: {}
+  required: false
+  description: Specify the IP address(es) to enrich.
+  playbookInputQuery:
+- key: domains
+  value: {}
+  required: false
+  description: Specify the domain(s) to enrich.
+  playbookInputQuery:
+- key: file_hashes
+  value: {}
+  required: false
+  description: Specify the SHA256 file hash(es) to enrich.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

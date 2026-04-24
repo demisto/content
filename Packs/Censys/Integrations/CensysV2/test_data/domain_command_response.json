@@ -47,6 +47,282 @@
                         ]
                     }
                 }
+            },
+            {
+                "webproperty_v1": {
+                    "resource": {
+                        "hostname": "facebook.com",
+                        "port": 443,
+                        "cert": {
+                            "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "fingerprint_sha1": "0000000000000000000000000000000000000001",
+                            "fingerprint_md5": "00000000000000000000000000000001",
+                            "tbs_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "tbs_no_ct_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "spki_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "parent_spki_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "parsed": {
+                                "version": 3,
+                                "serial_number": "421141808822754871174302685478563463580102",
+                                "issuer_dn": "C=US, O=Let's Encrypt, CN=R11",
+                                "issuer": {
+                                    "common_name": [
+                                        "R11"
+                                    ],
+                                    "country": [
+                                        "US"
+                                    ],
+                                    "organization": [
+                                        "Let's Encrypt"
+                                    ]
+                                },
+                                "subject_dn": "CN=example.com",
+                                "subject": {
+                                    "common_name": [
+                                        "example.com"
+                                    ]
+                                },
+                                "subject_key_info": {
+                                    "key_algorithm": {
+                                        "name": "RSA",
+                                        "oid": "1.2.840.113549.1.1.1"
+                                    },
+                                    "rsa": {
+                                        "exponent": 65537,
+                                        "modulus": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+                                        "length": 2048
+                                    },
+                                    "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+                                },
+                                "validity_period": {
+                                    "not_before": "2025-01-03T04:11:45Z",
+                                    "not_after": "2025-04-03T04:11:44Z",
+                                    "length_seconds": 7776000
+                                },
+                                "signature": {
+                                    "signature_algorithm": {
+                                        "name": "SHA256-RSA",
+                                        "oid": "1.2.840.113549.1.1.11"
+                                    },
+                                    "value": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+                                },
+                                "extensions": {
+                                    "key_usage": {
+                                        "digital_signature": true,
+                                        "key_encipherment": true,
+                                        "value": 5
+                                    },
+                                    "basic_constraints": {},
+                                    "subject_alt_name": {
+                                        "dns_names": [
+                                            "example.com"
+                                        ]
+                                    },
+                                    "authority_key_id": "0000000000000000000000000000000000000001",
+                                    "subject_key_id": "0000000000000000000000000000000000000001",
+                                    "extended_key_usage": {
+                                        "server_auth": true,
+                                        "client_auth": true
+                                    },
+                                    "certificate_policies": [
+                                        {
+                                            "id": "0.0.0.1.2.1"
+                                        }
+                                    ],
+                                    "authority_info_access": {
+                                        "ocsp_urls": [
+                                            "http://example-ocsp.lencr.org"
+                                        ],
+                                        "issuer_urls": [
+                                            "http://example-issuer.lencr.org//"
+                                        ]
+                                    },
+                                    "signed_certificate_timestamps": [
+                                        {
+                                            "log_id": "0000000000000000000000000000000000000000000000000000000000000001",
+                                            "timestamp": "2025-01-03T05:10:16Z",
+                                            "signature": {
+                                                "hash_algorithm": "SHA256",
+                                                "signature_algorithm": "ECDSA",
+                                                "signature": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+                                            }
+                                        },
+                                        {
+                                            "log_id": "0000000000000000000000000000000000000000000000000000000000000001",
+                                            "timestamp": "2025-01-03T05:10:16Z",
+                                            "signature": {
+                                                "hash_algorithm": "SHA256",
+                                                "signature_algorithm": "ECDSA",
+                                                "signature": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "serial_number_hex": "0000000000000000000000000000000000000001",
+                                "ja4x": "0000000000000000000000000000000001"
+                            },
+                            "names": [
+                                "example.com"
+                            ],
+                            "revocation": {
+                                "ocsp": {
+                                    "reason": "unspecified"
+                                },
+                                "crl": {}
+                            },
+                            "ever_seen_in_scan": true,
+                            "added_at": "2025-01-03T05:14:00Z",
+                            "modified_at": "2025-04-04T01:06:45Z",
+                            "validated_at": "2025-04-04T01:06:44Z",
+                            "parse_status": "success",
+                            "zlint": {
+                                "version": 3,
+                                "timestamp": "2025-01-03T05:14:00Z",
+                                "notices_present": true,
+                                "failed_lints": [
+                                    "n_subject_common_name_included"
+                                ]
+                            },
+                            "spki_subject_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "parent_spki_subject_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+                        },
+                        "labels": [
+                            {
+                                "source": "censys",
+                                "value": "WEB_SERVER"
+                            },
+                            {
+                                "source": "censys",
+                                "value": "HTTPS"
+                            }
+                        ],
+                        "threats": [
+                            {
+                                "name": "OUTDATED_SOFTWARE",
+                                "source": "censys"
+                            }
+                        ],
+                        "vulns": [
+                            {
+                                "id": "CVE-2024-11111",
+                                "cvss": 6.5,
+                                "severity": "MEDIUM"
+                            }
+                        ],
+                        "software": [
+                            {
+                                "source": "recog",
+                                "confidence": 0.25,
+                                "evidence": [
+                                    {
+                                        "data_path": "http.headers.server"
+                                    }
+                                ],
+                                "part": "a",
+                                "vendor": "f5",
+                                "product": "nginx",
+                                "version": "1.18.0",
+                                "cpe": "cpe:2.3:a:f5:nginx:*:*:*:*:*:*:*:*"
+                            }
+                        ],
+                        "tls": {
+                            "version_selected": "tlsv1_3",
+                            "cipher_selected": "TLS_AES_256_GCM_SHA384",
+                            "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "ja3s": "00000000000000000000000000000001",
+                            "presented_chain": [
+                                {
+                                    "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                                    "subject_dn": "C=US, O=Let's Encrypt, CN=R11",
+                                    "issuer_dn": "C=US, O=Internet Security Research Group, CN=ISRG Root X1"
+                                }
+                            ],
+                            "ja4s": "t130200_1302_0000000000001",
+                            "versions": [
+                                {
+                                    "version": "tlsv1_2",
+                                    "ja3s": "00000000000000000000000000000001",
+                                    "ja4s": "t120200_cca8_0000000000001"
+                                },
+                                {
+                                    "version": "tlsv1_1",
+                                    "ja3s": "00000000000000000000000000000001",
+                                    "ja4s": "t110200_c013_0000000000001"
+                                }
+                            ]
+                        },
+                        "scan_time": "2026-03-10T07:52:06Z",
+                        "endpoints": [
+                            {
+                                "hostname": "example.com",
+                                "port": 443,
+                                "path": "/",
+                                "endpoint_type": "HTTP",
+                                "transport_protocol": "tcp",
+                                "scan_time": "2026-03-10T07:52:06Z",
+                                "banner": "HTTP/1.1 403 Forbidden\r\nServer: nginx\r\nDate:  <REDACTED>\r\nContent-Type: text/html\r\nContent-Length: 146\r\nConnection: keep-alive\r\n",
+                                "banner_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                                "http": {
+                                    "uri": "https://example.com/",
+                                    "protocol": "HTTP/1.1",
+                                    "status_code": 403,
+                                    "status_reason": "Forbidden",
+                                    "headers": {
+                                        "Connection": {
+                                            "headers": [
+                                                "keep-alive"
+                                            ]
+                                        },
+                                        "Content-Length": {
+                                            "headers": [
+                                                "146"
+                                            ]
+                                        },
+                                        "Content-Type": {
+                                            "headers": [
+                                                "text/html"
+                                            ]
+                                        },
+                                        "Date": {
+                                            "headers": [
+                                                "<REDACTED>"
+                                            ]
+                                        },
+                                        "Server": {
+                                            "headers": [
+                                                "nginx"
+                                            ]
+                                        }
+                                    },
+                                    "html_tags": [
+                                        "<title>403 Forbidden</title>"
+                                    ],
+                                    "body_size": 146,
+                                    "body": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n",
+                                    "html_title": "403 Forbidden",
+                                    "body_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                                    "body_hash_sha1": "0000000000000000000000000000000000000001",
+                                    "supported_versions": [
+                                        "HTTP/1.1",
+                                        "HTTP/2"
+                                    ]
+                                },
+                                "ip": "0.0.0.1"
+                            }
+                        ],
+                        "jarm": {
+                            "ip": "0.0.0.1",
+                            "port": 443,
+                            "transport_protocol": "tcp",
+                            "is_success": true,
+                            "fingerprint": "0000000000000000000000000000000000000000000000000000000000000001",
+                            "cipher_and_version_fingerprint": "0000000000000000000000000000000001",
+                            "tls_extensions_sha256": "0000000000000000000000000000000001",
+                            "scan_time": "2026-03-03T05:15:49Z"
+                        }
+                    },
+                    "extensions": {}
+                }
             }
         ]
     }

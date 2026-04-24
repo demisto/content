@@ -1,8 +1,8 @@
 {
     "name": "Censys",
-    "description": "Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, websites, and certificates are configured and deployed.",
+    "description": "The Censys integration adds the ability to enrich IPs, web properties, and certificates in Palo Alto XSOAR and XSIAM with Censys Platform data. It also adds actions to initiate a Censys rescan of a host or web property and retrieve event history for an IP address. Additionally, users can find related infrastructure to a host, certificate, or web property.",
     "support": "partner",
-    "currentVersion": "3.0.1",
+    "currentVersion": "3.1.0",
     "author": "Censys",
     "url": "https://docs.censys.com",
     "email": "support@censys.com",
@@ -10,9 +10,17 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": ["Censys"],
+    "tags": [
+        "Plug & Enrich",
+        "Threat Intelligence",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "Censys"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
