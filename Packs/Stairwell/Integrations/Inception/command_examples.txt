@@ -1,0 +1,30 @@
+!stairwell-file-enrichment file_hash=9fe1ac46f0cdebf03156a6232d771c14559f8daf
+!stairwell-variant-discovery sha256=e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
+!stairwell-ai-triage-summarize object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-intake-upload asset_id=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entry_id=${File.EntryID}
+!stairwell-object-sightings object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-object-detonation-trigger object_id=f916f8c54f8228926e2eaa9d712658f6d97ddd54382048225c5e6a1813c4337b
+!stairwell-object-detonation-get object_id=7986bbaee8940da11ce089383521ab420c443ab7b15ed42aed91fd31ce833896
+!stairwell-object-opinions object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-run-to-ground-generate object_ids=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283,e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
+!stairwell-asn-get-whois asn=15169
+!stairwell-hostname-get hostname=google.com record_type=A
+!stairwell-hostname-get-resolutions hostname=www.google.com
+!stairwell-hostname-batch-get-resolutions hostnames=www.google.com,www.stairwell.com
+!stairwell-ipaddress-get ip_address=8.8.8.8
+!stairwell-ipaddress-lookup-cloud-provider ip_address=8.8.8.8
+!stairwell-ipaddress-get-hostnames-resolving-to-ip ip_address=104.26.12.236
+!stairwell-ipaddress-get-whois ip_address=8.8.8.8
+!stairwell-utilities-get-cloud-ip-ranges provider=AWS
+!stairwell-utilities-batch-canonicalize-hostnames hostnames=EXAMPLE.COM,WWW.TEST.COM
+!stairwell-utilities-canonicalize-hostname hostname=EXAMPLE.COM
+!stairwell-utilities-batch-compute-etld-plus-one domains=subdomain.example.com,www.test.co.uk
+!stairwell-utilities-compute-etld-plus-one domain=subdomain.example.com
+!stairwell-utilities-batch-canonicalize-urls urls=https://EXAMPLE.COM/PATH,http://TEST.COM/
+!stairwell-utilities-canonicalize-url url=https://EXAMPLE.COM/PATH
+!stairwell-yara-create-rule environment=YOUR_ENV_ID rule_definition="rule simple_rule { condition: true }"
+!stairwell-yara-get-rule environment=YOUR_ENV_ID yara_rule=YOUR_RULE_ID
+!stairwell-yara-query-matches environment=YOUR_ENV_ID yara_rule=YOUR_RULE_ID
+!stairwell-asset-list environment=BJJKNH-MCGB8F-WAED6B-3ELG8CPJ
+!stairwell-asset-create environment=BJJKNH-MCGB8F-WAED6B-3ELG8CPJ label=xSOAR
+!stairwell-asset-get asset=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6

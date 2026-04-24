@@ -1,8 +1,9 @@
 {
     "name": "Stairwell",
-    "description": "Inception is a security intelligence engine that automates the continuous capture, storage, and analysis of executable files.",
+    "description": "Stairwell continuously collects, stores, and analyzes threat intelligence and malware files in a private, out-of-band vault.",
     "support": "partner",
-    "currentVersion": "1.0.21",
+    "currentVersion": "2.0.0",
+    "created": "2024-05-20T00:00:00Z",
     "author": "Stairwell",
     "url": "https://www.stairwell.com",
     "email": "support@stairwell.com",
@@ -20,6 +21,7 @@
         "Threat Intelligence Management"
     ],
     "keywords": [
+        "Stairwell",
         "Malware",
         "Enrichment",
         "Variant Discovery",
@@ -31,9 +33,7 @@
         "marketplacev2",
         "platform"
     ],
-    "githubUser": [
-        "mikewilusz-stairwell"
-    ],
+    "githubUser": ["mikewilusz-stairwell"],
     "supportedModules": [
         "agentix",
         "xsiam"
