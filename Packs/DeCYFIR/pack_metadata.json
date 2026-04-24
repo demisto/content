@@ -33,7 +33,7 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "xsoar_saas"
     ],
     "dependencies": {
         "DefaultPlaybook": {
