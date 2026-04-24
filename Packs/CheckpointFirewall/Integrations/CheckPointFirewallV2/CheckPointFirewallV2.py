@@ -2514,12 +2514,12 @@ def build_group_data(result: dict, readable_output: str, printable_result: dict)
 def checkpoint_service_group_add_command(
     client: Client,
     name: str,
-    members = None,
+    members=None,
     color: str = None,
     comments: str = None,
     details_level: str = None,
-    groups = None,
-    tags = None,
+    groups=None,
+    tags=None,
     ignore_warnings: str = None,
     ignore_errors: str = None,
 ) -> CommandResults:
@@ -2621,7 +2621,7 @@ def checkpoint_service_group_list_command(
     dereference_group_members: str = None,
     show_membership: str = None,
     details_level: str = None,
-    domains_to_process = None,
+    domains_to_process=None,
 ) -> CommandResults:
     """Retrieve all service group objects.
 
@@ -2636,23 +2636,18 @@ def checkpoint_service_group_list_command(
     limit_int = arg_to_number(limit)
     offset_int = arg_to_number(offset)
     show_as_ranges_bool = argToBoolean(show_as_ranges) if show_as_ranges is not None else None
-    dereference_group_members_bool = (
-        argToBoolean(dereference_group_members) if dereference_group_members is not None else None
-    )
+    dereference_group_members_bool = argToBoolean(dereference_group_members) if dereference_group_members is not None else None
     show_membership_bool = argToBoolean(show_membership) if show_membership is not None else None
     domains_to_process_list = argToList(domains_to_process) or None
 
     # domains_to_process cannot be used with details-level full, and must be used with ignore-warnings true.
-    if domains_to_process_list is not None:
-        if details_level == "full":
-            raise DemistoException(
-                "The 'domains_to_process' argument cannot be used with details_level set to 'full'."
-            )
-    '''
+    if domains_to_process_list is not None and details_level == "full":
+        raise DemistoException("The 'domains_to_process' argument cannot be used with details_level set to 'full'.")
+    """
     Build order object: parse comma-separated direction:field pairs
     "ASC:name" -> [{"ASC": "name"}]
     "ASC:type,ASC:name,DESC:uid" -> [{"ASC": "type"}, {"ASC": "name"}, {"DESC": "uid"}]
-    '''
+    """
     order_list = None
     if order:
         order_list = []
@@ -2686,9 +2681,7 @@ def checkpoint_service_group_list_command(
                 current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
-        readable_output = tableToMarkdown(
-            "CheckPoint data for all service groups:", printable_result, headers, removeNull=True
-        )
+        readable_output = tableToMarkdown("CheckPoint data for all service groups:", printable_result, headers, removeNull=True)
     else:
         readable_output = "No service group objects were found."
 
@@ -2706,7 +2699,7 @@ def checkpoint_service_group_update_command(
     client: Client,
     identifier: str,
     members_action: str = None,
-    members = None,
+    members=None,
     new_name: str = None,
     color: str = None,
     comments: str = None,
@@ -2714,9 +2707,9 @@ def checkpoint_service_group_update_command(
     ignore_errors: str = None,
     details_level: str = None,
     groups_action: str = None,
-    groups = None,
+    groups=None,
     tags_action: str = None,
-    tags = None,
+    tags=None,
 ) -> CommandResults:
     """Edit existing service group using object name or uid.
 
@@ -2775,7 +2768,7 @@ def checkpoint_service_group_clone_command(
     client: Client,
     identifier: str,
     members_action: str = None,
-    members = None,
+    members=None,
     new_name: str = None,
     color: str = None,
     comments: str = None,
@@ -2783,9 +2776,9 @@ def checkpoint_service_group_clone_command(
     ignore_errors: str = None,
     details_level: str = None,
     groups_action: str = None,
-    groups = None,
+    groups=None,
     tags_action: str = None,
-    tags= None,
+    tags=None,
 ) -> CommandResults:
     """Clone existing service group object.
 
@@ -2884,7 +2877,7 @@ def checkpoint_access_section_add_command(
     position_rule: str = None,
     details_level: str = None,
     name: str = None,
-    tags = None,
+    tags=None,
     ignore_warnings: str = None,
     ignore_errors: str = None,
 ) -> CommandResults:
@@ -2977,7 +2970,7 @@ def checkpoint_access_section_update_command(
     new_name: str = None,
     details_level: str = None,
     tags_action: str = None,
-    tags = None,
+    tags=None,
     ignore_warnings: str = None,
     ignore_errors: str = None,
 ) -> CommandResults:
