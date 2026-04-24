@@ -4,14 +4,14 @@ Use the SOCRadar Threat Feed integration to fetch indicators from SOCRadar Colle
 
 ### How to obtain an API key
 
-To obtain your SOCRadar API key, navigate to **Company Settings** page in the SOCRadar platform. Under the **API Options** tab, retrieve your API key or regenerate a new one.
+To obtain your SOCRadar API key, navigate to **Settings** page in the SOCRadar platform. Under the **API&Integration -> API Options** page, retrieve your company API key or regenerate a new one.
 
 After obtaining the SOCRadar API key, insert it into the **API Key** field.
 
 ### How to get Collection UUIDs
 
 1. Log in to the SOCRadar platform.
-2. Navigate to **Threat Intelligence > Feeds** section.
+2. Navigate to **CTI > Tactical Intelligence > Threat & Premium Feeds** section.
 3. Create a custom collection or use existing ones.
 4. Copy the collection UUID(s) from the collection detail page.
 5. Enter the UUID(s) as a comma-separated list in the **Collection UUIDs** field.
