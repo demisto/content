@@ -513,6 +513,22 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             json_data=json_data,
         )
 
+    def get_users_and_groups(self, query: str, max_results: int = DEFAULT_PAGE_SIZE) -> Dict[str, Any]:
+        """This method is in charge of returning the users and groups matching a string.
+
+        Args:
+            query (str): The search string.
+            max_results (int, optional): The maximum number of results. Defaults to DEFAULT_PAGE_SIZE (50).
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold data about the users and groups matching the query.
+        """
+        return self.http_request(
+            method="GET",
+            url_suffix=f"rest/api/{self.api_version}/groupuserpicker",
+            params={"query": query, "maxResults": max_results},
+        )
+
     def get_comments(self, issue_id_or_key: str, max_results: int = DEFAULT_PAGE_SIZE) -> Dict[str, Any]:
         """This method is in charge of returning the comments of a specific issue.
 
@@ -2608,6 +2624,30 @@ def update_issue_assignee_command(client: JiraBaseClient, args: Dict) -> Command
         outputs=outputs,
         outputs_key_field="Id",
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict, headerTransform=pascalToSpace),
+        raw_response=res,
+    )
+
+
+def get_users_and_groups_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of getting the users and groups of an issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    query = args.get("query", "")
+    limit = arg_to_number(args.get("limit", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
+    res = client.get_users_and_groups(query=query, max_results=limit)
+    outputs: Dict[str, Any] = {"Users": res.get("users", ""), "Groups": res.get("groups", "")}
+    markdown_dict: list[Dict[str, Any]] = [{"Users": res.get("users", ""), "Groups": res.get("groups", "")}]
+    return CommandResults(
+        outputs_prefix="Jira.GetUsersAndGroups",
+        outputs=outputs,
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(name="Get User and Groups", t=markdown_dict),
         raw_response=res,
     )
 
@@ -4902,6 +4942,7 @@ def main():  # pragma: no cover
         "jira-issue-query": issue_query_command,
         "jira-issue-add-link": add_link_command,
         # New Commands
+        "jira-issue-get-users-groups": get_users_and_groups_command,
         "jira-issue-get-attachment": issue_get_attachment_command,
         "jira-issue-delete-comment": delete_comment_command,
         "jira-issue-edit-comment": edit_comment_command,
