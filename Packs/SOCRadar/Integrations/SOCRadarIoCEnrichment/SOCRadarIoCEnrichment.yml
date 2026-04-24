@@ -1,0 +1,398 @@
+name: SOCRadarIoCEnrichment
+display: SOCRadar IoC Enrichment
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SOCRadarIoCEnrichment
+  version: -1
+configuration:
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+- additionalinfo: Include AI-generated insights in enrichment results. Warning - This significantly increases response time (2-5x slower) due to AI processing. Recommended to keep disabled for performance.
+  defaultvalue: 'false'
+  display: Include AI Insights (slower response time)
+  name: include_ai_insights
+  type: 8
+  required: false
+defaultclassifier: 'null'
+description: Enrich indicators with deep threat intelligence using SOCRadar IoC Enrichment API. Get categorization, signal strength, confidence levels, and historical data.
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP addresses to enrich (IPv4 or IPv6).
+      isArray: true
+      name: ip
+      required: true
+    description: Enriches IP addresses with SOCRadar IoC threat intelligence data.
+    name: ip
+    outputs:
+    - contextPath: SOCRadarIoCEnrichment.IP.Indicator
+      description: The IP address.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.Score
+      description: Threat score (0-100).
+      type: Number
+    - contextPath: SOCRadarIoCEnrichment.IP.Name
+      description: Associated name/hostname.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.Country
+      description: Country of origin.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.ASN
+      description: AS Name.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.ASNCode
+      description: AS Number.
+      type: Number
+    - contextPath: SOCRadarIoCEnrichment.IP.CIDR
+      description: CIDR block.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.IsWhitelisted
+      description: Whether the indicator is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarIoCEnrichment.IP.SignalStrength
+      description: IoC signal strength (Very Strong, Strong, Moderate, Slightly Noisy, Noisy).
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.Confidence
+      description: Cross-source confidence level (Very High, High, Medium, Low).
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.IP.FirstSeen
+      description: First seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.IP.LastSeen
+      description: Last seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.IP.Activity
+      description: Activity labels for different time periods (Last1Day, Last7Days, Last30Days, Last90Days).
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.IP.Categorization
+      description: Categorization flags (CDN, Cloud, Malware, ThreatActor, etc.).
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.IP.Classifications
+      description: Classifications (Campaign, Malwares, ThreatActors, Industries, etc.).
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.IP.PremiumFeeds
+      description: Premium threat feeds where this indicator appears.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.IP.Relations
+      description: Related entities (limited to 10).
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.IP.History
+      description: Historical events (limited to 10 most recent).
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.IP.AIInsight
+      description: AI-generated threat intelligence insight (only if AI insights enabled).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain names to enrich.
+      isArray: true
+      name: domain
+      required: true
+    description: Enriches domains with SOCRadar IoC threat intelligence data.
+    name: domain
+    outputs:
+    - contextPath: SOCRadarIoCEnrichment.Domain.Indicator
+      description: The domain name.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.Score
+      description: Threat score (0-100).
+      type: Number
+    - contextPath: SOCRadarIoCEnrichment.Domain.Name
+      description: Associated name.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.Country
+      description: Country of registration/hosting.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.ASN
+      description: AS Name.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.ASNCode
+      description: AS Number.
+      type: Number
+    - contextPath: SOCRadarIoCEnrichment.Domain.CIDR
+      description: CIDR block.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.IsWhitelisted
+      description: Whether the indicator is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarIoCEnrichment.Domain.SignalStrength
+      description: IoC signal strength.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.Confidence
+      description: Cross-source confidence level.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.FirstSeen
+      description: First seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.Domain.LastSeen
+      description: Last seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.Domain.Activity
+      description: Activity labels for different time periods.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.Domain.Categorization
+      description: Categorization flags.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.Domain.Classifications
+      description: Classifications.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.Domain.PremiumFeeds
+      description: Premium threat feeds where this indicator appears.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.Domain.Relations
+      description: Related entities.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.Domain.History
+      description: Historical events.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.Domain.AIInsight
+      description: AI-generated threat intelligence insight (only if AI insights enabled).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+  - arguments:
+    - default: true
+      description: URLs to enrich.
+      isArray: true
+      name: url
+      required: true
+    description: Enriches URLs with SOCRadar IoC threat intelligence data.
+    name: url
+    outputs:
+    - contextPath: SOCRadarIoCEnrichment.URL.Indicator
+      description: The URL.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.URL.Score
+      description: Threat score (0-100).
+      type: Number
+    - contextPath: SOCRadarIoCEnrichment.URL.IsWhitelisted
+      description: Whether the indicator is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarIoCEnrichment.URL.SignalStrength
+      description: IoC signal strength.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.URL.Confidence
+      description: Cross-source confidence level.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.URL.FirstSeen
+      description: First seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.URL.LastSeen
+      description: Last seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.URL.Activity
+      description: Activity labels for different time periods.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.URL.Categorization
+      description: Categorization flags.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.URL.Classifications
+      description: Classifications.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.URL.PremiumFeeds
+      description: Premium threat feeds where this indicator appears.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.URL.Relations
+      description: Related entities.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.URL.History
+      description: Historical events.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.URL.AIInsight
+      description: AI-generated threat intelligence insight (only if AI insights enabled).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: URL.Data
+      description: URL.
+      type: String
+  - arguments:
+    - default: true
+      description: File hashes to enrich (MD5, SHA1, SHA256).
+      isArray: true
+      name: file
+      required: true
+    description: Enriches file hashes with SOCRadar IoC threat intelligence data.
+    name: file
+    outputs:
+    - contextPath: SOCRadarIoCEnrichment.File.Indicator
+      description: The file hash.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.File.Score
+      description: Threat score (0-100).
+      type: Number
+    - contextPath: SOCRadarIoCEnrichment.File.IsWhitelisted
+      description: Whether the indicator is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarIoCEnrichment.File.SignalStrength
+      description: IoC signal strength.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.File.Confidence
+      description: Cross-source confidence level.
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.File.FirstSeen
+      description: First seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.File.LastSeen
+      description: Last seen date.
+      type: Date
+    - contextPath: SOCRadarIoCEnrichment.File.Activity
+      description: Activity labels for different time periods.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.File.Categorization
+      description: Categorization flags.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.File.Classifications
+      description: Classifications (Malwares, Campaigns, ThreatActors).
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.File.PremiumFeeds
+      description: Premium threat feeds where this indicator appears.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.File.Relations
+      description: Related entities.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.File.History
+      description: Historical events.
+      type: Unknown
+    - contextPath: SOCRadarIoCEnrichment.File.AIInsight
+      description: AI-generated threat intelligence insight (only if AI insights enabled).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash.
+      type: String
+  - arguments:
+    - description: Indicator to enrich (IP, domain, URL, or hash). Type is automatically detected.
+      name: indicator
+      required: true
+    description: Generic enrichment command with automatic indicator type detection. Enriches any indicator type (IP, domain, URL, hash) without specifying the type.
+    name: socradar-ioc-enrichment
+    outputs:
+    - contextPath: SOCRadarIoCEnrichment.IP.Indicator
+      description: The indicator (if IP).
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.Domain.Indicator
+      description: The indicator (if domain).
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.URL.Indicator
+      description: The indicator (if URL).
+      type: String
+    - contextPath: SOCRadarIoCEnrichment.File.Indicator
+      description: The indicator (if hash).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  dockerimage: demisto/python3:3.12.8.3296088
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests

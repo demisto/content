@@ -1,0 +1,394 @@
+name: SOCRadarRapidReputation
+display: SOCRadar Rapid Reputation
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SOCRadarRapidReputation
+  version: -1
+configuration:
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
+  required: false
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  type: 1
+  required: false
+defaultclassifier: 'null'
+description: Enrich indicators (IP, Domain, URL, Hash) by obtaining reputation information via SOCRadar Rapid Reputation API.
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP entities to check reputation. (IPv4 or IPv6).
+      isArray: true
+      name: ip
+      required: true
+    description: Checks reputation of provided IP entities using SOCRadar Rapid Reputation API.
+    name: ip
+    outputs:
+    - contextPath: SOCRadarRapidReputation.IP.Entity
+      description: The queried IP address.
+      type: String
+    - contextPath: SOCRadarRapidReputation.IP.EntityType
+      description: Type of the entity (ip).
+      type: String
+    - contextPath: SOCRadarRapidReputation.IP.Score
+      description: Reputation score of the IP address.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.IP.IsWhitelisted
+      description: Whether the IP is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources
+      description: List of threat sources that detected this IP.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources.SourceName
+      description: Name of the threat intelligence source.
+      type: String
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources.MainCategory
+      description: Primary threat category.
+      type: String
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources.MaintainerName
+      description: Organization maintaining the threat list.
+      type: String
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources.FirstSeenDate
+      description: First time the IP was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources.LastSeenDate
+      description: Last time the IP was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.IP.FindingSources.SeenCount
+      description: Number of times the IP was observed on this source.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - arguments:
+    - description: Domain entities to check reputation.
+      isArray: true
+      name: domain
+      required: true
+    description: Checks reputation of provided domain entities using SOCRadar Rapid Reputation API.
+    name: domain
+    outputs:
+    - contextPath: SOCRadarRapidReputation.Domain.Entity
+      description: The queried domain.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Domain.EntityType
+      description: Type of the entity (hostname).
+      type: String
+    - contextPath: SOCRadarRapidReputation.Domain.Score
+      description: Reputation score of the domain.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.Domain.IsWhitelisted
+      description: Whether the domain is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources
+      description: List of threat sources that detected this domain.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources.SourceName
+      description: Name of the threat intelligence source.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources.MainCategory
+      description: Primary threat category.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources.MaintainerName
+      description: Organization maintaining the threat list.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources.FirstSeenDate
+      description: First time the domain was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources.LastSeenDate
+      description: Last time the domain was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.Domain.FindingSources.SeenCount
+      description: Number of times the domain was observed on this source.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+  - arguments:
+    - description: URL entities to check reputation.
+      isArray: true
+      name: url
+      required: true
+    description: Checks reputation of provided URL entities using SOCRadar Rapid Reputation API.
+    name: url
+    outputs:
+    - contextPath: SOCRadarRapidReputation.URL.Entity
+      description: The queried URL.
+      type: String
+    - contextPath: SOCRadarRapidReputation.URL.EntityType
+      description: Type of the entity (url).
+      type: String
+    - contextPath: SOCRadarRapidReputation.URL.Score
+      description: Reputation score of the URL.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.URL.IsWhitelisted
+      description: Whether the URL is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources
+      description: List of threat sources that detected this URL.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources.SourceName
+      description: Name of the threat intelligence source.
+      type: String
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources.MainCategory
+      description: Primary threat category.
+      type: String
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources.MaintainerName
+      description: Organization maintaining the threat list.
+      type: String
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources.FirstSeenDate
+      description: First time the URL was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources.LastSeenDate
+      description: Last time the URL was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.URL.FindingSources.SeenCount
+      description: Number of times the URL was observed on this source.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: URL.Data
+      description: URL.
+      type: String
+  - arguments:
+    - description: File hash entities to check reputation. (MD5, SHA1, or SHA256).
+      isArray: true
+      name: file
+      required: true
+    description: Checks reputation of provided file hash entities using SOCRadar Rapid Reputation API.
+    name: file
+    outputs:
+    - contextPath: SOCRadarRapidReputation.File.Entity
+      description: The queried file hash.
+      type: String
+    - contextPath: SOCRadarRapidReputation.File.EntityType
+      description: Type of the entity (hash).
+      type: String
+    - contextPath: SOCRadarRapidReputation.File.Score
+      description: Reputation score of the hash.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.File.IsWhitelisted
+      description: Whether the hash is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarRapidReputation.File.FindingSources
+      description: List of threat sources that detected this hash.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.File.FindingSources.SourceName
+      description: Name of the threat intelligence source.
+      type: String
+    - contextPath: SOCRadarRapidReputation.File.FindingSources.MainCategory
+      description: Primary threat category.
+      type: String
+    - contextPath: SOCRadarRapidReputation.File.FindingSources.MaintainerName
+      description: Organization maintaining the threat list.
+      type: String
+    - contextPath: SOCRadarRapidReputation.File.FindingSources.FirstSeenDate
+      description: First time the hash was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.File.FindingSources.LastSeenDate
+      description: Last time the hash was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.File.FindingSources.SeenCount
+      description: Number of times the hash was observed on this source.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+  - arguments:
+    - description: Entity value to check (IP, domain, URL, or hash).
+      name: entity_value
+      required: true
+    - description: Type of entity to check.
+      name: entity_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - hostname
+      - url
+      - hash
+    description: Checks reputation of any entity type using SOCRadar Rapid Reputation API.
+    name: socradar-reputation
+    outputs:
+    - contextPath: SOCRadarRapidReputation.Reputation.Entity
+      description: The queried entity value.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Reputation.EntityType
+      description: Type of the entity.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Reputation.Score
+      description: Reputation score of the entity.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.Reputation.IsWhitelisted
+      description: Whether the entity is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources
+      description: List of threat sources that detected this entity.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources.SourceName
+      description: Name of the threat intelligence source.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources.MainCategory
+      description: Primary threat category.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources.MaintainerName
+      description: Organization maintaining the threat list.
+      type: String
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources.FirstSeenDate
+      description: First time the entity was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources.LastSeenDate
+      description: Last time the entity was seen on this source.
+      type: Date
+    - contextPath: SOCRadarRapidReputation.Reputation.FindingSources.SeenCount
+      description: Number of times the entity was observed on this source.
+      type: Number
+  - arguments:
+    - description: Mixed list of indicators to check (IPs, domains, URLs, hashes). Maximum 100 indicators per command. Automatically detects entity types. Supports comma-separated values. Rate limit - 1 request/second applies.
+      name: indicators
+      required: true
+      isArray: true
+    description: Bulk check reputation for mixed list of indicators. Automatically detects and processes IPs, domains, URLs, and hashes. Maximum 100 indicators per batch. Rate limit - 1 req/sec (100 indicators = ~100 seconds).
+    name: socradar-bulk-check
+    outputs:
+    - contextPath: SOCRadarRapidReputation.BulkCheck.Entity
+      description: The queried entity value.
+      type: String
+    - contextPath: SOCRadarRapidReputation.BulkCheck.EntityType
+      description: Detected type of the entity.
+      type: String
+    - contextPath: SOCRadarRapidReputation.BulkCheck.DetectedType
+      description: Auto-detected entity type.
+      type: String
+    - contextPath: SOCRadarRapidReputation.BulkCheck.Score
+      description: Reputation score of the entity.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.BulkCheck.IsWhitelisted
+      description: Whether the entity is whitelisted.
+      type: Boolean
+    - contextPath: SOCRadarRapidReputation.BulkCheck.FindingSources
+      description: List of threat sources that detected this entity.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.BulkCheckSummary.total
+      description: Total number of indicators checked.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.BulkCheckSummary.processed
+      description: Number of successfully processed indicators.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.BulkCheckSummary.failed
+      description: Number of failed indicators.
+      type: Number
+    - contextPath: SOCRadarRapidReputation.BulkCheckSummary.by_type
+      description: Breakdown by entity type.
+      type: Unknown
+    - contextPath: SOCRadarRapidReputation.BulkCheckSummary.by_score
+      description: Breakdown by score classification.
+      type: Unknown
+  dockerimage: demisto/python3:3.12.8.3296088
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- SOCRadarRapidReputation-Test
+fromversion: 6.10.0

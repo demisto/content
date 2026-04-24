@@ -47,7 +47,14 @@ def convert_to_demisto_severity(severity: str) -> int | float:
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, api_key: str, multi_tenant_id: str, verify: bool, proxy: bool):
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str,
+        multi_tenant_id: str,
+        verify: bool,
+        proxy: bool,
+    ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
         self.multi_tenant_id = multi_tenant_id
@@ -145,7 +152,12 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(
-                method="GET", url_suffix=url_suffix, params=params, headers=self._get_headers(), timeout=60, resp_type="json"
+                method="GET",
+                url_suffix=url_suffix,
+                params=params,
+                headers=self._get_headers(),
+                timeout=60,
+                resp_type="json",
             )
 
             demisto.debug(f"[SOCRadar-MT] Response type: {type(response)}")
@@ -233,7 +245,13 @@ class Client(BaseClient):
             raise DemistoException(f"API Error: {response.get('message')}")
         return response
 
-    def add_alarm_comment(self, alarm_id: int, user_email: str, comment: str, company_id: str | None = None) -> dict[str, Any]:
+    def add_alarm_comment(
+        self,
+        alarm_id: int,
+        user_email: str,
+        comment: str,
+        company_id: str | None = None,
+    ) -> dict[str, Any]:
         """Add comment to an alarm"""
         if not company_id:
             raise ValueError("company_id must be provided for alarm operations")
@@ -242,7 +260,11 @@ class Client(BaseClient):
         url_suffix = f"/company/{company_id}/alarm/add/comment/v2"
         json_data = {"alarm_id": alarm_id, "user_email": user_email, "comment": comment}
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
     def add_alarm_assignee(
@@ -266,7 +288,11 @@ class Client(BaseClient):
             json_data["user_emails"] = user_emails
 
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
     def add_remove_tag(self, alarm_id: int, tag: str, company_id: str | None = None) -> dict[str, Any]:
@@ -278,7 +304,11 @@ class Client(BaseClient):
         url_suffix = f"/company/{company_id}/alarm/tag"
         json_data = {"alarm_id": alarm_id, "tag": tag}
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
     def get_company_id_for_alarm(self, alarm_id: int) -> str | None:
@@ -529,7 +559,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     incident = {
         "name": incident_name,
-        "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
+        "occurred": (occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z"),
         "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
@@ -808,7 +838,10 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         email,
     )
 
-    return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
+    return CommandResults(
+        readable_output=f"Status changed for {len(alarm_ids)} alarm(s)",
+        raw_response=response,
+    )
 
 
 def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -829,7 +862,10 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
     comments = args.get("comments", "Marked as false positive")
     response = client.change_alarm_status([int(alarm_id)], "FALSE_POSITIVE", comments, company_id)
 
-    return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
+    return CommandResults(
+        readable_output=f"Alarm {alarm_id} marked as false positive",
+        raw_response=response,
+    )
 
 
 def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -847,7 +883,12 @@ def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandRes
         if not company_id:
             raise ValueError(f"Could not find company_id for alarm {alarm_id}. Please provide company_id parameter.")
 
-    response = client.change_alarm_status([int(alarm_id)], "RESOLVED", args.get("comments", "Marked as resolved"), company_id)
+    response = client.change_alarm_status(
+        [int(alarm_id)],
+        "RESOLVED",
+        args.get("comments", "Marked as resolved"),
+        company_id,
+    )
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as resolved", raw_response=response)
 
@@ -925,7 +966,10 @@ def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
 
     response = client.add_remove_tag(alarm_id, tag, company_id)
 
-    return CommandResults(readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}", raw_response=response)
+    return CommandResults(
+        readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}",
+        raw_response=response,
+    )
 
 
 def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -999,7 +1043,7 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
                     "Status": incident.get("status", "UNKNOWN"),
                     "Asset": incident.get("alarm_asset", "N/A"),
                     "Type": alarm_type_display,
-                    "Date": incident.get("date", "")[:19] if incident.get("date") else "N/A",
+                    "Date": (incident.get("date", "")[:19] if incident.get("date") else "N/A"),
                     "Extra": entity_summary,
                 }
             )
@@ -1043,7 +1087,10 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
         message += f"- Date parsing (tried to parse: '{args.get('first_fetch', '3 days')}')\n\n"
         message += f"Full error:\n{traceback.format_exc()}"
 
-        return CommandResults(readable_output=message, raw_response={"error": error_msg, "traceback": traceback.format_exc()})
+        return CommandResults(
+            readable_output=message,
+            raw_response={"error": error_msg, "traceback": traceback.format_exc()},
+        )
 
 
 def main() -> None:
