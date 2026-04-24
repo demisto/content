@@ -394,11 +394,11 @@ Whitelisted entities are always assigned a DBot score of 1 (Good), regardless of
 
 The Rapid Reputation API aggregates data from multiple threat intelligence sources, including:
 
-- CTU AIPP Blacklist
-- Abuse.ch URLhaus
-- Malware feeds
-- Botnet C&C lists
-- And many more
+* CTU AIPP Blacklist
+* Abuse.ch URLhaus
+* Malware feeds
+* Botnet C&C lists
+* And many more
 
 Each finding source provides detailed information about when and how many times the entity was observed.
 
@@ -411,7 +411,7 @@ Each finding source provides detailed information about when and how many times 
 
 ### Best Practices
 
-- Use the generic `socradar-reputation` command when you need flexibility in entity type
-- Use specific commands (`ip`, `domain`, `url`, `file`) when you know the entity type for better context integration
-- Monitor the FindingSources field to understand which threat intelligence feeds detected the entity
-- Pay attention to the FirstSeenDate and LastSeenDate to understand the timeline of malicious activity
+* Use the generic `socradar-reputation` command when you need flexibility in entity type
+* Use specific commands (`ip`, `domain`, `url`, `file`) when you know the entity type for better context integration
+* Monitor the FindingSources field to understand which threat intelligence feeds detected the entity
+* Pay attention to the FirstSeenDate and LastSeenDate to understand the timeline of malicious activity
