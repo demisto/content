@@ -98,7 +98,7 @@ def date_string_to_iso_format_parsing(date_str: str) -> Optional[str]:
     return parsed_date_format.strftime(DATE_FORMAT)
 
 
-def convert_to_demisto_indicator_type(socradar_indicator_type: str, indicator_value: str = None) -> str:
+def convert_to_demisto_indicator_type(socradar_indicator_type: str, indicator_value: str = None) -> Optional[str]:
     """Maps SOCRadar indicator type to Cortex XSOAR indicator type.
 
     Converts the SOCRadar indicator types ('hostname', 'domain', 'url', 'ip', 'hash') to Cortex XSOAR indicator type

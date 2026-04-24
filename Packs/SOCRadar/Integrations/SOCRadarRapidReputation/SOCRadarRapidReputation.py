@@ -586,7 +586,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
             f"- XSOAR has command argument size limits (~10KB)\n"
             f"- War Room output size limits (~500KB)\n"
             f"- Context data size limits (~1MB)\n"
-            f"- Rate limit: 1 request/second = {MAX_BULK_CHECK_INDICATORS} seconds (~{MAX_BULK_CHECK_INDICATORS / 60:.1f} min)\n\n"
+            f"- Rate limit: 1 req/sec = {MAX_BULK_CHECK_INDICATORS} sec (~{MAX_BULK_CHECK_INDICATORS / 60:.1f} min)\n\n"
             f"**Solution:** Split into batches of {MAX_BULK_CHECK_INDICATORS} or less\n\n"
             f"**Example:**\n"
             f"```\n"
