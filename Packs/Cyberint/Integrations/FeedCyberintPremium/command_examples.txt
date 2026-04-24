@@ -2,4 +2,7 @@
 !cyberint-premium-get-indicators-count indicator_type=ipv4 severity_min=3
 !cyberint-premium-enrich type=ipv4 value=1.1.1.1
 !cyberint-premium-enrich type=domain value=example.com
+!cyberint-premium-enrich type=url value=http://example.com/payload
 !cyberint-premium-enrich type=sha256 value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789
+!cyberint-premium-enrich type=sha1 value=da39a3ee5e6b4b0d3255bfef95601890afd80709
+!cyberint-premium-enrich type=md5 value=d41d8cd98f00b204e9800998ecf8427e
