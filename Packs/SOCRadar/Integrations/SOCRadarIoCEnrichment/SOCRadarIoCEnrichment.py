@@ -28,7 +28,7 @@ DEFAULT_FIELDS = ["indicator_details", "indicator_history", "indicator_relations
 """ CLIENT CLASS """
 
 
-class Client(ContentClient):
+class Client(BaseClient):
     """Client class to interact with the SOCRadar IoC Enrichment API"""
 
     def __init__(self, base_url, api_key, verify, proxy, include_ai_insights=False):
@@ -611,7 +611,6 @@ def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any], reliab
                 score = score_value[0]
             else:
                 score = score_value or 0
-
 
             dbot_score_value = calculate_dbot_score(score)
 
