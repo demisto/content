@@ -26,9 +26,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### How to obtain SOCRadar API key?
 
-To obtain your SOCRadar API key, please contact the SOCRadar operation team via **operation@socradar.io**
+SOCRadar Rapid Reputation is an **Advanced Intelligence API** optimized for high-volume and fast reputation queries.
 
-After obtaining the SOCRadar API key, insert it into the **API Key** field and start using the SOCRadar Rapid Reputation integration by creating the instance.
+* **Licensing Model:** The features of this module are licensed separately from the standard SOCRadar platform package. To use the integration, your API key must be activated with "Rapid Reputation" privileges.
+* **Standalone Purchase:** This service can be added to your existing SOCRadar subscription, or it can be purchased as a **standalone key** completely independent of a platform membership.
+* **Purchase & Activation:** For API authorization, pricing information, or to purchase a new key, please contact our support team at **support@socradar.io**.
 
 ---
 
