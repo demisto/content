@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "fix-overall-failed-tests"
+  CURRENT_BRANCH_NAME: "michal-test-validation"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "fix-overall-failed-tests"
+    ref: "michal-test-validation"
     project: "${CI_PROJECT_NAMESPACE}/infra"
