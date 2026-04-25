@@ -1438,8 +1438,69 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
-  dockerimage: demisto/python3:3.12.8.3296088
+  - arguments:
+    - description: "when to start searching for compromised accounts."
+      name: start
+      defaultvalue: '1 week'
+    - description: "when to stop searching for compromised accounts."
+      name: end
+      defaultvalue: 'now'
+    - description: "If True, only return results for senders that represent a high risk to the organization default:false"
+      name: high_risk
+      defaultvalue: 'false'
+    - description: "Which page of results to return."
+      name: page
+      defaultvalue: "0"
+    - description: "The maximum number of results to return default: 50"
+      name: limit
+      defaultvalue: "50"
+    description: Get compromised accounts.
+    name: proofpoint-list-compromised-accounts
+    outputs:
+    - contextPath: Proofpoint.CompromisedAccount.address
+      description: Email address of the compromised account.
+      type: String
+    - contextPath: Proofpoint.CompromisedAccount.observations
+      description: Observations which led Proofpoint to determine this account was compromised.
+      type: array
+    - contextPath: Proofpoint.CompromisedAccount.identity
+      description: Relationship between my organization and the sender.
+      type: String
+    - contextPath: Proofpoint.CompromisedAccount.timeRanges
+      description: Provides the time ranges during which a account was compromised.
+      type: array
+    - contextPath: Proofpoint.CompromisedAccount.threatCategories
+      description: Unique set of threat categories observed by this sender.
+      type: array
+    - contextPath: Proofpoint.CompromisedAccount.trafficType
+      description: Supplier Threat Protection leverages message activity.
+      type: String
+    - contextPath: Proofpoint.CompromisedAccount.maliciousMessages
+      description: Count of malicious messages sent from this sender.
+      type: Number
+    - contextPath: Proofpoint.CompromisedAccount.deliveredMessages
+      description: Count of malicious messages sent from this sender that were delivered.
+      type: Number
+    - contextPath: Proofpoint.CompromisedAccount.context
+      description: Context into why Proofpoint has highlighted this compromised account.
+      type: array
+    - contextPath: Proofpoint.CompromisedAccount.titles
+      description: Business titles of the intended recipients for messages from this sender.
+      type: array
+    - contextPath: Proofpoint.CompromisedAccount.departments
+      description: Department names of the intended recipients for messages from this sender.
+      type: array
+    - contextPath: Proofpoint.CompromisedAccount.lastMaliciousMessage
+      description: datetime of last malicious message sent from this sender.
+      type: String
+    - contextPath: Proofpoint.CompromisedAccount.dashboardLink
+      description: URL to Proofpoint TAP Dashboard specific for this sender.
+      type: String
+    - contextPath: Proofpoint.CompromisedAccount.highRisk
+      description: Indicates whether this compromised sender represents a high risk to your organization.
+      type: Boolean
   isfetch: true
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
