@@ -1,0 +1,21 @@
+{
+    "name": "CommunityElasticSearch",
+    "description": "This pack allows for using Elastic Security for SIEM for security operations management. It also allows for searching Elastic logs.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "whsmith1223",
+    "url": "",
+    "email": "",
+    "created": "2026-04-08T21:25:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "whsmith1223"
+    ]
+}
