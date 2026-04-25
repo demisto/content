@@ -1,0 +1,27 @@
+{
+    "name": "SpecterOpsBHE",
+    "description": "This content pack integrates with BloodHound Enterprise to automatically ingest and analyze attack path findings from Active Directory and Azure environments, helping security teams identify and remediate privilege escalation risks.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "SpecterOps",
+    "url": "",
+    "email": "",
+    "created": "2025-12-15T00:00:00Z",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "SpecterOps",
+        "BloodHound"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "githubUser": [
+        "ishikap-metron"
+    ]
+}

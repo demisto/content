@@ -5848,7 +5848,8 @@
         {
             "playbookID": "GetUserData - Test",
             "integrations": [
-                "Microsoft Graph User"
+                "Microsoft Graph User",
+                "AWS - IAM"
             ],
             "instance_names": [
                 "ms_graph_user_dev"
@@ -5931,7 +5932,7 @@
             "instance_names": [
                 "virus_total_v3"
             ],
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "GetEndpointData-Test",
@@ -5940,7 +5941,7 @@
                 "active_directory_80k"
             ],
             "timeout": 300,
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "integrations": "Unit 42 Intelligence",
@@ -6144,7 +6145,8 @@
         "SaasSecurity-Test": "blocked by SCA-8028",
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
         "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
-        "Gmail Single User - Test": "CIAC-11417"
+        "Gmail Single User - Test": "CIAC-11417",
+        "AWS-securityhub Test": "The creds were expired CRTX-237114"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",

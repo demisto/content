@@ -600,18 +600,17 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
 """ Command Functions """
 
 
-def fetch_attachments_for_message(
-    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None, identifiers_filter=""
-):  # pragma: no cover
+def fetch_attachments_for_message(client: EWSClient, args: dict):  # pragma: no cover
     """
     Fetches attachments for a message
     :param client: EWS Client
-    :param item_id: item id
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) attachment_ids: attachment ids
-    :param (Optional) identifiers_filter: attachment ids or content ids to create a fileResult
+    :param args: dict of command arguments
     :return: list of parsed entries
     """
+    item_id = args.get("item_id", "")
+    target_mailbox = args.get("target_mailbox")
+    attachment_ids = args.get("attachment_ids")
+    identifiers_filter = args.get("identifiers_filter", "")
     identifiers_filter = argToList(identifiers_filter)
     attachment_ids = argToList(attachment_ids)
     account = client.get_account(target_mailbox)
@@ -643,28 +642,20 @@ def fetch_attachments_for_message(
     return entries
 
 
-def search_items_in_mailbox(
-    client: EWSClient,
-    query=None,
-    message_id=None,
-    folder_path="",
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    selected_fields="all",
-):  # pragma: no cover
+def search_items_in_mailbox(client: EWSClient, args: dict):  # pragma: no cover
     """
     Search items in mailbox
     :param client: EWS Client
-    :param (Optional) query: query to execute
-    :param (Optional) message_id: message ids to search
-    :param (Optional) folder_path: folder path to search
-    :param (Optional) limit: max amount of items to fetch
-    :param (Optional) target_mailbox: mailbox containing the items
-    :param (Optional) is_public: is the targeted folder public
-    :param (Optional) selected_fields: Selected fields
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    query = args.get("query")
+    message_id = args.get("message_id")
+    folder_path = args.get("folder_path", "")
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+    selected_fields = args.get("selected_fields", "all")
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
@@ -729,14 +720,15 @@ def search_items_in_mailbox(
     return readable_output, output, searched_items_result
 
 
-def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no cover
+def get_contacts(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve contacts of the target mailbox or client mailbox
     :param client: EWS Client
-    :param limit: max amount of contacts to retrieve
-    :param (Optional) target_mailbox: Target mailbox
+    :param args: dict of command arguments
     :return:
     """
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
 
     def parse_physical_address(address):
         result = {}
@@ -778,13 +770,14 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no c
     return readable_output, output, contacts
 
 
-def find_folders(client: EWSClient, target_mailbox=None):
+def find_folders(client: EWSClient, args: dict):
     """
     Finds folders in the mailbox
     :param client: EWS Client
-    :param (Optional) target_mailbox: target mailbox
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    target_mailbox = args.get("target_mailbox")
     account = client.get_account(target_mailbox)
     root = account.root
 
@@ -800,24 +793,18 @@ def find_folders(client: EWSClient, target_mailbox=None):
     return readable_output, output, folders
 
 
-def get_items_from_folder(
-    client: EWSClient,
-    folder_path,
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    get_internal_item="no",
-):  # pragma: no cover
+def get_items_from_folder(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve items from folder path
     :param client: EWS Client
-    :param folder_path: folder path
-    :param (Optional) limit: max amount of items to retrieve
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) is_public: is the folder public
-    :param (Optional) get_internal_item: should also retrieve internal items ("no" by default)
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    folder_path = args.get("folder_path", "")
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+    get_internal_item = args.get("get_internal_item", "no")
     account = client.get_account(target_mailbox)
     limit = int(limit)
     get_internal_item = get_internal_item == "yes"
@@ -856,14 +843,15 @@ def get_items_from_folder(
     return readable_output, output, items_result
 
 
-def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no cover
+def get_items(client: EWSClient, args: dict):  # pragma: no cover
     """
     Get items from target mailbox or client mailbox
     :param client: EWS Client
-    :param item_ids: item ids to retrieve
-    :param (Optional) target_mailbox: target mailbox to retrieve items from
+    :param args: dict of command arguments
     :return:
     """
+    item_ids = args.get("item_ids", "")
+    target_mailbox = args.get("target_mailbox")
     item_ids = argToList(item_ids)
     account = client.get_account(target_mailbox)
     items = client.get_items_from_mailbox(account, item_ids)
@@ -1128,36 +1116,28 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(
-    client: EWSClient,
-    to=None,
-    subject="",
-    body="",
-    bcc=None,
-    cc=None,
-    htmlBody=None,
-    attachIDs="",
-    attachCIDs="",
-    attachNames="",
-    manualAttachObj=None,
-    transientFile=None,
-    transientFileContent=None,
-    transientFileCID=None,
-    templateParams=None,
-    additionalHeader=None,
-    raw_message=None,
-    from_address=None,
-    replyTo=None,
-    importance=None,
-    renderBody=False,
-    handle_inline_image=True,
-):  # pragma: no cover
-    to = argToList(to)
-    cc = argToList(cc)
-    bcc = argToList(bcc)
-    reply_to = argToList(replyTo)
-    render_body = argToBoolean(renderBody)
-    handle_inline_image = argToBoolean(handle_inline_image)
+def send_email(client: EWSClient, args: dict):  # pragma: no cover
+    to = argToList(args.get("to"))
+    subject = args.get("subject", "")
+    body = args.get("body", "")
+    bcc = argToList(args.get("bcc"))
+    cc = argToList(args.get("cc"))
+    htmlBody = args.get("htmlBody")
+    attachIDs = args.get("attachIDs", "")
+    attachCIDs = args.get("attachCIDs", "")
+    attachNames = args.get("attachNames", "")
+    manualAttachObj = args.get("manualAttachObj")
+    transientFile = args.get("transientFile")
+    transientFileContent = args.get("transientFileContent")
+    transientFileCID = args.get("transientFileCID")
+    templateParams = args.get("templateParams")
+    additionalHeader = args.get("additionalHeader")
+    raw_message = args.get("raw_message")
+    from_address = args.get("from_address")
+    reply_to = argToList(args.get("replyTo"))
+    importance = args.get("importance")
+    render_body = argToBoolean(args.get("renderBody", False))
+    handle_inline_image = argToBoolean(args.get("handle_inline_image", True))
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1221,25 +1201,19 @@ def send_email(
     return results
 
 
-def reply_mail(
-    client: EWSClient,
-    to,
-    inReplyTo,
-    subject="",
-    body="",
-    bcc=None,
-    cc=None,
-    htmlBody=None,
-    attachIDs="",
-    attachCIDs="",
-    attachNames="",
-    manualAttachObj=None,
-    handle_inline_image=True,
-):  # pragma: no cover
-    to = argToList(to)
-    cc = argToList(cc)
-    bcc = argToList(bcc)
-    handle_inline_image: bool = argToBoolean(handle_inline_image)
+def reply_mail(client: EWSClient, args: dict):  # pragma: no cover
+    to = argToList(args.get("to", ""))
+    inReplyTo = args.get("inReplyTo", "")
+    subject = args.get("subject", "")
+    body = args.get("body", "")
+    bcc = argToList(args.get("bcc"))
+    cc = argToList(args.get("cc"))
+    htmlBody = args.get("htmlBody")
+    attachIDs = args.get("attachIDs", "")
+    attachCIDs = args.get("attachCIDs", "")
+    attachNames = args.get("attachNames", "")
+    manualAttachObj = args.get("manualAttachObj")
+    handle_inline_image: bool = argToBoolean(args.get("handle_inline_image", True))
     # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
@@ -1256,14 +1230,15 @@ def reply_mail(
     )
 
 
-def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
+def get_item_as_eml(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve item as an eml
     :param client: EWS Client
-    :param item_id: Item id to retrieve
-    :param (Optional) target_mailbox: target mailbox
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    item_id = args.get("item_id", "")
+    target_mailbox = args.get("target_mailbox")
     account = client.get_account(target_mailbox)
     item = client.get_item_from_mailbox(account, item_id)
 
@@ -1744,7 +1719,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         demisto.setLastRun(new_last_run)
 
         if client.mark_as_read:
-            mark_item_as_read(client, emails_ids)
+            mark_item_as_read(client, {"item_ids": emails_ids})
 
         return incidents
 
@@ -1934,7 +1909,7 @@ def sub_main():  # pragma: no cover
             demisto.incidents(incidents)
 
         elif command == "send-mail":
-            commands_res = send_email(client, **args)
+            commands_res = send_email(client, args)
             return_results(commands_res)
 
         elif command == "ews-move-item-between-mailboxes":
@@ -1945,25 +1920,21 @@ def sub_main():  # pragma: no cover
             return_results(
                 move_item_between_mailboxes(
                     src_client=client,
-                    item_id=args.get("item_id", ""),
-                    destination_mailbox=args.get("destination_mailbox", ""),
-                    destination_folder_path=args.get("destination_folder_path", ""),
+                    args=args,
                     dest_client=dest_client,
-                    source_mailbox=args.get("source_mailbox", None),
-                    is_public=args.get("is_public", None),  # type: ignore[assignment]
                 )
             )
 
         # special outputs commands
         elif command in special_output_commands:
-            demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
+            demisto.results(special_output_commands[command](client, args))  # type: ignore[operator]
 
         elif command == "ews-auth-reset":
             return_results(reset_auth())
 
         # normal commands
         else:
-            output = normal_commands[command](client, **args)  # type: ignore[operator]
+            output = normal_commands[command](client, args)  # type: ignore[operator]
             if isinstance(output, tuple):  # Legacy, some commands return a tuple for return outputs
                 return_outputs(*output)
             else:

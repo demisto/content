@@ -1,13 +1,15 @@
 [MODEL: dataset = "msft_azure_flowlogs_raw"]
-// --- NSG Flow Logs ---
-filter category = "NetworkSecurityGroupFlowEvent"
+// --- NSG & VNet Flow Logs ---
+filter category in ("NetworkSecurityGroupFlowEvent", "FlowLogFlowEvent")
+| alter
+    get_flowState = if(category = "NetworkSecurityGroupFlowEvent", flowState, category = "FlowLogFlowEvent", deviceAction, null)
 | alter
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_CLOUD),
     xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
     xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
     xdm.target.resource.id = resourceId,
     xdm.event.operation_sub_type = operationName,
-    xdm.event.original_event_type = "Network Security Group Flow Event",
+    xdm.event.original_event_type = if(category = "NetworkSecurityGroupFlowEvent", "Network Security Group Flow Event", category = "FlowLogFlowEvent", "VNet Flow Log Event", null),
     xdm.network.rule = nsgRuleName,
 	xdm.source.ipv4 = arrayindex(regextract(sourceAddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
 	xdm.source.ipv6 = arrayindex(regextract(sourceAddress, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0),
@@ -17,21 +19,31 @@ filter category = "NetworkSecurityGroupFlowEvent"
 	xdm.source.port = to_integer(sourcePort),
 	xdm.target.port = to_integer(destinationPort),
 	xdm.network.ip_protocol = if(
-		transportProtocol = "T", XDM_CONST.IP_PROTOCOL_TCP, 
+		transportProtocol = "T", XDM_CONST.IP_PROTOCOL_TCP,
 		transportProtocol = "U", XDM_CONST.IP_PROTOCOL_UDP,
-		transportProtocol = null, null , to_string(transportProtocol)
+		transportProtocol = "6", XDM_CONST.IP_PROTOCOL_TCP,
+		transportProtocol = "17", XDM_CONST.IP_PROTOCOL_UDP,
+		transportProtocol = "1", XDM_CONST.IP_PROTOCOL_ICMP,
+		transportProtocol = "58", XDM_CONST.IP_PROTOCOL_IPV6_ICMP,
+		transportProtocol = null, null, to_string(transportProtocol)
 		),
 	xdm.event.outcome = if(
-		deviceAction = "A", XDM_CONST.OUTCOME_SUCCESS,
+		deviceAction in ("A", "B", "C", "E"), XDM_CONST.OUTCOME_SUCCESS,
 		deviceAction = "D", XDM_CONST.OUTCOME_FAILED,
 		deviceAction = null, null, to_string(deviceAction)
 		),
 	xdm.event.outcome_reason = deviceAction,
 	xdm.observer.type = if(
-		flowState = "B", "Begin, a flow is created. Statistics aren't provided",
-		flowState = "C", "Continuing for an ongoing flow. Statistics are provided at 5-minute intervals",
-		flowState = "E", "End, when a flow is terminated. Statistics are provided",
-		flowState = null, null, to_string(flowState)
+		get_flowState = "B", "Begin, a flow is created. No statistics are provided",
+		get_flowState = "C", "Continuing for an ongoing flow. Statistics are provided at five-minute intervals",
+		get_flowState = "E", "End, when a flow is terminated. Statistics are provided",
+		get_flowState = "D", "Deny, when a flow is denied",
+		get_flowState = null, null, to_string(get_flowState)
+		),
+	xdm.event.description = if(
+		deviceDirection = "I", "Inbound",
+		deviceDirection = "O", "Outbound",
+		deviceDirection = null, null, to_string(deviceDirection)
 		),
 	xdm.source.sent_packets = to_integer(packetsStoD),
 	xdm.source.sent_bytes = to_integer(bytesStoD),
@@ -39,7 +51,7 @@ filter category = "NetworkSecurityGroupFlowEvent"
 	xdm.target.sent_bytes = to_integer(bytesDtoS);
 
 
-// --- NTA Flow Logs --- 
+// --- NTA Flow Logs ---
 filter _raw_log -> Type = "NTAIpDetails"
 | alter
 	lower_ThreatType = lowercase(_raw_log -> ThreatType),

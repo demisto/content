@@ -1,16 +1,34 @@
 [MODEL: dataset=sentinelone_xdr_raw]
 filter eventType = "Activity"
 | alter
+    data_ipAddress = json_extract_scalar(data, "$.ipAddress"),
+    data_osType = json_extract_scalar(data, "$.osType")
+
+| alter
     xdm.event.type = eventType,
     xdm.source.user.identifier = accountId,
-    xdm.source.user.username = json_extract_scalar(data, "$.byUser"),
-    xdm.event.id = to_string(activityType),
+    xdm.source.user.username = coalesce(
+                                       json_extract_scalar(data, "$.byUser"),
+                                       json_extract_scalar(data, "$.lastLoggedInUserName"),
+                                       json_extract_scalar(data, "$.realUser")),
+    xdm.source.interface = json_extract_scalar(data, "$.interface"),
+    xdm.source.ipv4 = if(is_ipv4(data_ipAddress), data_ipAddress),
+    xdm.source.ipv6 = if(is_ipv6(data_ipAddress), data_ipAddress),
+    xdm.event.id = activityUuid,
     xdm.source.agent.identifier = agentId,
     xdm.source.agent.version = agentUpdatedVersion,
     xdm.source.user.groups = arraycreate(groupName),
     xdm.session_context_id = id,
-    xdm.source.host.os_family = if(osFamily="Linux","LINUX", osFamily="Macos","MACOS", osFamily="Windows","WINDOWS", osFamily="Windows_legacy","WINDOWS", null),
-    xdm.event.description = primaryDescription,
+    xdm.source.host.os_family = if(
+                                    data_osType ~="[Ll]inux", XDM_CONST.OS_FAMILY_LINUX,
+                                    data_osType ~= "[Mm]acos|osx", XDM_CONST.OS_FAMILY_MACOS,
+                                    data_osType~="[Ww]indows", XDM_CONST.OS_FAMILY_WINDOWS,
+                                    osFamily~="[Ll]inux", XDM_CONST.OS_FAMILY_LINUX,
+                                    osFamily~="[Mm]acos|osx", XDM_CONST.OS_FAMILY_MACOS,
+                                    osFamily~="[Ww]indows", XDM_CONST.OS_FAMILY_WINDOWS),
+    xdm.source.host.os = coalesce(data_osType, osFamily),
+    xdm.source.host.hostname = json_extract_scalar(data, "$.computerName"),
+    xdm.event.description = coalesce(description, primaryDescription),
     xdm.alert.original_threat_id = threatId,
     xdm.source.user.employee_id = userId,
     xdm.target.user.identifier = json_extract_scalar(data, "$.accountId"),
@@ -36,7 +54,10 @@ filter eventType = "Threat"
     xdm.source.host.hostname = json_extract_scalar(agentRealtimeInfo, "$.agentComputerName"),
     xdm.source.host.device_id = json_extract_scalar(agentRealtimeInfo, "$.agentId"),
     xdm.observer.type = json_extract_scalar(agentRealtimeInfo, "$.agentMachineType"),
-    xdm.source.host.os_family = if(osFamily="Linux","LINUX", osFamily="Macos","MACOS", osFamily="Windows","WINDOWS", osFamily="Windows_legacy","WINDOWS", null),
+    xdm.source.host.os_family = if(
+                                    osFamily~="[Ll]inux", XDM_CONST.OS_FAMILY_LINUX,
+                                    osFamily~="[Mm]acos|osx", XDM_CONST.OS_FAMILY_MACOS,
+                                    osFamily~="[Ww]indows", XDM_CONST.OS_FAMILY_WINDOWS),
     xdm.source.host.mac_addresses = arraycreate(json_extract_scalar(agentRealtimeInfo, "$.networkInterfaces.0.physical")),
     xdm.source.location.region = json_extract_scalar(agentRealtimeInfo, "$.siteName"),
     xdm.source.process.container_id = json_extract_scalar(containerInfo, "$.id"),
@@ -57,7 +78,10 @@ filter eventType = "Alert"
 | alter
     xdm.event.type = eventType,
     xdm.source.host.hostname = json_extract_scalar(agentDetectionInfo, "$.name"),
-    xdm.source.host.os_family = if(osFamily="Linux","LINUX", osFamily="Macos","MACOS", osFamily="Windows","WINDOWS", osFamily="Windows_legacy","WINDOWS", null),
+    xdm.source.host.os_family = if(
+                                    osFamily~="[Ll]inux",XDM_CONST.OS_FAMILY_LINUX,
+                                    osFamily~="[Mm]acos|osx", XDM_CONST.OS_FAMILY_MACOS,
+                                    osFamily~="[Ww]indows", XDM_CONST.OS_FAMILY_WINDOWS),
     xdm.source.host.os = json_extract_scalar(agentDetectionInfo, "$.osName"),
     xdm.source.agent.identifier = json_extract_scalar(agentDetectionInfo, "$.uuid"),
     xdm.source.agent.version = json_extract_scalar(agentDetectionInfo, "$.version"),
@@ -69,7 +93,19 @@ filter eventType = "Alert"
     xdm.event.operation_sub_type = json_extract_scalar(alertInfo, "$.eventType"),
     xdm.source.user.domain = json_extract_scalar(alertInfo, "$.loginAccountDomain"),
     xdm.source.user.identifier = json_extract_scalar(alertInfo, "$.loginAccountSid"),
-    xdm.logon.type = if(loginType="SYSTEM","SERVICE", loginType="INTERACTIVE","INTERACTIVE", loginType="NETWORK","NETWORK", loginType="BATCH","BATCH", loginType="SERVICE","SERVICE", loginType="UNLOCK","UNLOCK", loginType="NETWORK_CREDENTIALS","NEW_CREDENTIALS", loginType="NETWORK_CLEAR_TEXT","NETWORK_CLEARTEXT", loginType="REMOTE_INTERACTIVE","REMOTE_INTERACTIVE", loginType="CACHED_INTERACTIVE","CACHED_INTERACTIVE", loginType="CACHED_REMOTE_INTERACTIVE","CACHED_REMOTE_INTERACTIVE", loginType="CACHED_UNLOCK","CACHED_UNLOCK", null),
+    xdm.logon.type = if(
+                        loginType IN("SYSTEM", "SERVICE"), XDM_CONST.LOGON_TYPE_SERVICE,
+                        loginType="INTERACTIVE", XDM_CONST.LOGON_TYPE_INTERACTIVE,
+                        loginType="NETWORK", XDM_CONST.LOGON_TYPE_NETWORK,
+                        loginType="BATCH", XDM_CONST.LOGON_TYPE_BATCH,
+                        loginType="UNLOCK", XDM_CONST.LOGON_TYPE_UNLOCK,
+                        loginType="NETWORK_CREDENTIALS", XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS,
+                        loginType="NETWORK_CLEAR_TEXT", XDM_CONST.LOGON_TYPE_NETWORK_CLEARTEXT,
+                        loginType="REMOTE_INTERACTIVE", XDM_CONST.LOGON_TYPE_REMOTE_INTERACTIVE,
+                        loginType="CACHED_INTERACTIVE", XDM_CONST.LOGON_TYPE_CACHED_INTERACTIVE,
+                        loginType="CACHED_REMOTE_INTERACTIVE", XDM_CONST.LOGON_TYPE_CACHED_REMOTE_INTERACTIVE,
+                        loginType="CACHED_UNLOCK", XDM_CONST.LOGON_TYPE_CACHED_UNLOCK,
+                        loginType),
     xdm.source.user.username = json_extract_scalar(sourceParentProcessInfo, "$.user"),
     xdm.source.ipv4 = json_extract_scalar(alertInfo, "$.srcIp"),
     xdm.source.port = to_integer(json_extract_scalar(alertInfo, "$.srcPort")),

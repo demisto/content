@@ -1,0 +1,153 @@
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: SpecterOpsBHE
+  version: -1
+provider: SpecterOps
+name: SpecterOpsBHE
+display: SpecterOpsBHE
+category: Network Security
+description: Use the SpecterOpsBHE integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
+detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBHE integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
+configuration:
+- display: BloodHound Enterprise Domain
+  name: url
+  type: 0
+  required: true
+  additionalinfo: BloodHound Enterprise Domain URL
+  section: Connect
+- section: Connect
+  display: Token ID
+  displaypassword: Token Key
+  name: token_id
+  type: 0
+  required: true
+  additionalinfo: BloodHound Enterprise API token ID
+- display: Token Key
+  name: token_key
+  type: 4
+  required: true
+  additionalinfo: BloodHound Enterprise API token key
+  section: Connect
+- display: Proxy URL
+  name: proxy_url
+  type: 0
+  required: false
+  section: Connect
+- display: Proxy URL Username
+  name: proxy_username
+  type: 0
+  required: false
+  section: Connect
+- display: Proxy URL Password
+  name: proxy_password
+  type: 4
+  required: false
+  section: Connect
+- display: Finding Environment
+  name: finding_domain
+  defaultvalue: all
+  type: 0
+  required: false
+  additionalinfo: The environment from which to fetch attack paths. Default is all.
+  section: Collect
+- display: Finding Category
+  name: finding_category
+  defaultvalue: all
+  type: 0
+  required: false
+  additionalinfo: The category of attack paths to fetch. Default is all.
+  section: Collect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "10"
+  type: 19
+  required: false
+  additionalinfo: The interval for fetching attack paths
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
+script:
+  script: ''
+  commands:
+  - name: bhe-object-id-get
+    arguments:
+    - name: object_names
+      required: true
+      description: The object name associated with object ID.
+      isArray: true
+    outputs:
+    - contextPath: SpecterOpsBHE.Object.Status
+      description: The status of the object ID lookup (success or error).
+      type: string
+    - contextPath: SpecterOpsBHE.Object.Message
+      description: The message describing the result of the lookup.
+      type: string
+    - contextPath: SpecterOpsBHE.Object.ObjectID
+      description: The unique object ID of the found object.
+      type: string
+    - contextPath: 'SpecterOpsBHE.Object.ObjectName'
+      description: The name of the object that was searched.
+      type: string
+    description: Fetches the object ID using the object name.
+  - name: bhe-asset-info-get
+    arguments:
+    - name: object_ids
+      required: true
+      description: The object ID to fetch asset information.
+      isArray: true
+    outputs:
+    - contextPath: SpecterOpsBHE.Asset.Status
+      description: The status of the asset information fetch (success or error).
+      type: string
+    - contextPath: SpecterOpsBHE.Asset.Message
+      description: The message describing the result of the asset information fetch.
+      type: string
+    - contextPath: SpecterOpsBHE.Asset.ObjectID
+      description: The object ID for which asset information was fetched.
+      type: string
+    - contextPath: SpecterOpsBHE.Asset.Data
+      description: The raw asset data containing all asset information fields (name, type, objectid, domain, enabled, email, and other properties).
+      type: unknown
+    description: Fetches asset information using the object ID.
+  - name: bhe-path-exist
+    arguments:
+    - name: from_principal
+      description: The start node.
+    - name: to_principal
+      description: The end node.
+    outputs:
+    - contextPath: SpecterOpsBHE.Path.FromPrincipal
+      description: The start node (from principal) used in the path check.
+      type: String
+    - contextPath: SpecterOpsBHE.Path.ToPrincipal
+      description: The end node (to principal) used in the path check.
+      type: String
+    - contextPath: SpecterOpsBHE.Path.Status
+      description: The status of the path check (success or error).
+      type: String
+    - contextPath: SpecterOpsBHE.Path.Message
+      description: The message describing the result of the path check.
+      type: String
+    - contextPath: SpecterOpsBHE.Path.Data
+      description: Whether a path exists between the nodes (True or False).
+      type: Boolean
+    description: Checks if a path exists between the two nodes.
+  type: python
+  dockerimage: demisto/python3:3.12.13.7444307
+  subtype: python3
+  isfetch: true
+  runonce: false
+  isFetchSamples: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

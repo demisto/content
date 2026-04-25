@@ -1,6 +1,7 @@
 import json
 from urllib.parse import urljoin
 import pytest
+from freezegun import freeze_time
 from QualysFIM import Client
 
 BASE_URL = "https://gateway.qg2.apps.qualys.eu/"
@@ -283,6 +284,67 @@ def test_fetch_incidents_command(requests_mock, authenticated_client: Client) ->
 
     assert raw_json["id"] == "75539bfc-c0e7-4bcb-b55a-48065ef89ebe"
     assert raw_json["createdBy"]["date"] == 1613378492427
+
+
+@pytest.mark.parametrize(
+    "last_run, fetch_filter, expected_filter",
+    [
+        pytest.param(
+            {"last_fetch": 1613205600},  # 10 digits - seconds format
+            None,
+            "createdBy.date: ['1613205600000'..'1613469600000']",
+            id="Seconds timestamp, empty filter",
+        ),
+        pytest.param(
+            {"last_fetch": 1613205600},  # 10 digits - seconds format
+            "status: OPEN",
+            "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN",
+            id="Seconds timestamp, with filter",
+        ),
+        pytest.param(
+            {"last_fetch": 1613205600000},  # 13 digits - milliseconds format
+            None,
+            "createdBy.date: ['1613205600000'..'1613469600000']",
+            id="Milliseconds timestamp, empty filter",
+        ),
+        pytest.param(
+            {"last_fetch": 1613205600000},  # 13 digits - milliseconds format
+            "status: OPEN",
+            "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN",
+            id="Milliseconds timestamp, with filter",
+        ),
+    ],
+)
+@freeze_time("2021-02-16 10:00:00", tz_offset=0)
+def test_fetch_incidents_filter_construction(
+    mocker, authenticated_client: Client, last_run: dict, fetch_filter: str | None, expected_filter: str
+) -> None:
+    """
+    Given:
+        - last_run with timestamp in seconds (10 digits) or milliseconds (13 digits)
+        - fetch_filter parameter (empty or with value)
+    When:
+        - fetch_incidents is called
+    Then:
+        - Assert the filter string sent to the API is correctly constructed with 13-digit millisecond timestamps
+        - Assert backward compatibility: both seconds and milliseconds input formats produce correct output
+    """
+    from QualysFIM import fetch_incidents
+
+    # Mocking incidents_list to capture the params
+    mock_incidents_list = mocker.patch.object(Client, "incidents_list", return_value=[])
+
+    # Act
+    fetch_incidents(
+        client=authenticated_client,
+        last_run=last_run,
+        fetch_filter=fetch_filter,
+        first_fetch_time="3 days",
+        max_fetch="50",
+    )
+
+    # Assert
+    assert mock_incidents_list.call_args.args[0]["filter"] == expected_filter
 
 
 def test_create_event_or_incident_output() -> None:

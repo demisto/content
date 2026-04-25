@@ -13,12 +13,41 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The Atlassian account email.
+- additionalinfo: Select the authentication method to use. Basic authentication requires username and API token. OAuth 2.0 requires Client ID and Client Secret.
+  display: Authentication Method
+  name: auth_method
+  type: 15
+  required: false
+  defaultvalue: Basic
+  options:
+  - Basic
+  - OAuth 2.0
+  section: Connect
+- additionalinfo: The Atlassian account email. Required for Basic authentication.
   display: Email
   displaypassword: API Token
   name: username
-  required: true
+  required: false
   type: 9
+  section: Connect
+- additionalinfo: Required for Confluence Cloud instances using OAuth 2.0. You can find your Cloud ID by navigating to https://admin.atlassian.com and selecting your site.
+  display: Cloud ID
+  name: cloud_id
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: The redirect URL to use for OAuth 2.0 (e.g., https://localhost/myapp)
+  display: Callback URL
+  name: callback_url
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: OAuth 2.0 credentials. Required when using OAuth 2.0 authentication.
+  display: Client ID
+  name: client_credentials
+  required: false
+  type: 9
+  displaypassword: Client Secret
   section: Connect
 - display: Use system proxy settings
   name: proxy
@@ -2108,7 +2137,19 @@ script:
     - contextPath: ConfluenceCloud.Content._links.base
       description: Base URL of the Confluence site.
       type: String
-  dockerimage: demisto/python3:3.12.11.4508456
+  - arguments: []
+    name: confluence-cloud-oauth-start
+    description: Starts the OAuth 2.0 authentication flow. Returns an authorization URL that the user must visit to authorize the integration.
+  - arguments:
+    - description: The authorization code received from the OAuth callback URL after user authorization.
+      name: code
+      required: true
+    name: confluence-cloud-oauth-complete
+    description: Completes the OAuth 2.0 authentication flow by exchanging the authorization code for access and refresh tokens.
+  - arguments: []
+    name: confluence-cloud-oauth-test
+    description: Tests the OAuth 2.0 authentication by verifying the current access token is valid.
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetchevents: true
   isfetchevents:xsoar: false
   runonce: false
@@ -2118,3 +2159,38 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
+triggers:
+- conditions:
+  - name: auth_method
+    operator: equal
+    value: Basic
+  effects:
+  - name: username
+    action:
+      required: true
+  - name: client_credentials
+    action:
+      hidden: true
+  - name: callback_url
+    action:
+      hidden: true
+  - name: cloud_id
+    action:
+      hidden: true
+- conditions:
+  - name: auth_method
+    operator: equal
+    value: OAuth 2.0
+  effects:
+  - name: username
+    action:
+      hidden: true
+  - name: client_credentials
+    action:
+      required: true
+  - name: callback_url
+    action:
+      required: true
+  - name: cloud_id
+    action:
+      required: true

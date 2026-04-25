@@ -27,6 +27,7 @@ from Unit42Intelligence import (
     get_threat_object_score,
     unit42_error_handler,
     parse_url_list,
+    encode_url_indicator,
     INTEGRATION_NAME,
 )
 from CommonServerPython import *
@@ -1950,3 +1951,380 @@ def test_parse_url_list_custom_scheme():
     assert result[0] == "custom://example.com"
     assert result[1] == "myscheme://test.com"
     assert result[2] == "http://normal.com"
+
+
+def test_parse_url_list_quoted_scheme_less_urls():
+    """
+    Given:
+        - Two scheme-less URLs each wrapped in double-quote characters,
+          comma-separated (e.g. from email security tools or JSON extraction)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing double-quote characters are stripped from each URL
+    """
+    url_input = '"share.google/abc","example.com/url?a=https://share.google/abc"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/abc"
+    assert result[1] == "example.com/url?a=https://share.google/abc"
+
+
+def test_parse_url_list_quoted_urls_with_commas_in_query():
+    """
+    Given:
+        - Quoted URLs where the second URL contains commas in its query string
+    When:
+        - parse_url_list is called
+    Then:
+        - Splits on the quote-comma-quote boundary between the two URLs
+        - Preserves commas that are inside a URL's query string
+        - Strips surrounding quotes from each URL
+    """
+    url_input = '"share.google/a","example.com/url?a=https://share.google/a&c=e,1,abc"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/a"
+    assert result[1] == "example.com/url?a=https://share.google/a&c=e,1,abc"
+
+
+def test_parse_url_list_single_quoted_url():
+    """
+    Given:
+        - A single URL wrapped in double-quote characters
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns a list with one URL, with quotes stripped
+    """
+    url_input = '"example.com/path/to/page"'
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 1
+    assert result[0] == "example.com/path/to/page"
+
+
+def test_parse_url_list_single_quoted_multiple_urls():
+    """
+    Given:
+        - Two URLs each wrapped in single-quote characters, comma-separated
+          (e.g. 'url1','url2' — the new single-quote support added in this branch)
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing single-quote characters are stripped from each URL
+    """
+    url_input = "'https://example.com','https://test.com'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "https://example.com"
+    assert result[1] == "https://test.com"
+
+
+def test_parse_url_list_single_quoted_scheme_less_urls():
+    """
+    Given:
+        - Two scheme-less URLs each wrapped in single-quote characters, comma-separated
+    When:
+        - parse_url_list is called
+    Then:
+        - Returns both URLs as separate entries
+        - Leading and trailing single-quote characters are stripped from each URL
+    """
+    url_input = "'share.google/abc','example.com/url?a=https://share.google/abc'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/abc"
+    assert result[1] == "example.com/url?a=https://share.google/abc"
+
+
+def test_parse_url_list_single_quoted_urls_with_commas_in_query():
+    """
+    Given:
+        - Single-quoted URLs where the second URL contains commas in its query string
+    When:
+        - parse_url_list is called
+    Then:
+        - Splits on the single-quote-comma-single-quote boundary between the two URLs
+        - Preserves commas that are inside a URL's query string
+        - Strips surrounding single-quotes from each URL
+    """
+    url_input = "'share.google/a','example.com/url?a=https://share.google/a&c=e,1,abc'"
+
+    result = parse_url_list(url_input)
+
+    assert len(result) == 2
+    assert result[0] == "share.google/a"
+    assert result[1] == "example.com/url?a=https://share.google/a&c=e,1,abc"
+
+
+def test_encode_url_indicator_with_special_characters():
+    """
+    Given:
+        - URLs with special characters (^, |, <, >) in the path
+        - URLs with and without schemes
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Returns properly encoded URLs
+        - Special characters in path are double-encoded
+        - URLs without schemes have the scheme removed after encoding
+        - URLs with schemes keep the scheme and it gets encoded
+    """
+    # Test URL without scheme and with special characters (^ and |) - from XSUP-63627
+    url_without_scheme = "example.com/path/ab^cd|ef"
+    result = encode_url_indicator(url_without_scheme)
+    # Should NOT include http:// in the final result (scheme is removed)
+    # Special characters should be double-encoded: ^ -> %5E -> %255E, | -> %7C -> %257C
+    assert result == "example.com%2Fpath%2Fab%255Ecd%257Cef"
+    assert "%255E" in result  # ^ encoded twice
+    assert "%257C" in result  # | encoded twice
+    assert "http" not in result  # Scheme should be removed
+
+    # Test URL with scheme and special characters
+    url_with_scheme = "http://example.com/path/ab^cd|ef"
+    result_with_scheme = encode_url_indicator(url_with_scheme)
+    # Should preserve and encode http://
+    assert "http%3A%2F%2Fexample.com%2Fpath%2Fab%255Ecd%257Cef" in result_with_scheme
+    assert "%255E" in result_with_scheme  # ^ encoded twice
+    assert "%257C" in result_with_scheme  # | encoded twice
+
+    # Test URL with < and > characters
+    url_with_brackets = "https://example.com/search?query=<test>"
+    result_brackets = encode_url_indicator(url_with_brackets)
+    assert result_brackets == "https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E"
+
+    # Test normal URL without special characters
+    normal_url = "https://example.com/path?param=value"
+    result_normal = encode_url_indicator(normal_url)
+    assert result_normal == "https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
+
+    # Test URL with commas in query parameters
+    url_with_commas = "https://fonts.googleapis.com/css?family=Roboto:100,100italic,200"
+    result_commas = encode_url_indicator(url_with_commas)
+    assert result_commas == "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%253A100%252C100italic%252C200"
+
+
+def test_encode_url_indicator_custom_schemes():
+    """
+    Given:
+        - URLs with custom or unlisted schemes (sftp://, ldap://, etc.)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Custom schemes are preserved and properly encoded
+        - The scheme is not treated as the host
+        - The colon is not lost during reconstruction
+    """
+    # Test SFTP scheme - should preserve sftp:// and not treat it as schemeless
+    sftp_url = "sftp://example.com/path/file.txt"
+    result_sftp = encode_url_indicator(sftp_url)
+    # Should preserve and encode sftp://
+    assert result_sftp == "sftp%3A%2F%2Fexample.com%2Fpath%2Ffile.txt"
+    assert "sftp%3A%2F%2F" in result_sftp  # sftp:// should be encoded
+    assert result_sftp != "sftp%2F%2Fexample.com%2Fpath%2Ffile.txt"  # Should NOT lose the colon
+
+    # Test LDAP scheme
+    ldap_url = "ldap://ldap.example.com:389/dc=example,dc=com"
+    result_ldap = encode_url_indicator(ldap_url)
+    assert "ldap%3A%2F%2F" in result_ldap  # ldap:// should be encoded
+    assert "ldap.example.com" in result_ldap  # Host should be preserved
+
+    # Test custom scheme with path and query
+    custom_url = "custom://server.com/resource?param=value"
+    result_custom = encode_url_indicator(custom_url)
+    assert "custom%3A%2F%2F" in result_custom  # custom:// should be encoded
+    assert "server.com" in result_custom  # Host should be preserved
+
+
+def test_encode_url_indicator_strips_trailing_fragment():
+    """
+    Given:
+        - A URL with a trailing '#' (empty fragment), e.g. linkprotect.cudasvc.com/url#utm=a#
+          as seen in url (23).log — the API returns HTTP 400 TAS-0002 for such URLs
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The trailing '#' (and everything after the first '#') is stripped before encoding
+        - The encoded result does NOT contain '%23' (encoded '#')
+        - The result is identical to encoding the same URL without the trailing '#'
+    """
+    # URL with trailing '#' — mirrors the failing case in url (23).log
+    url_with_trailing_hash = "linkprotect.cudasvc.com/url#utm=a#"
+    result = encode_url_indicator(url_with_trailing_hash)
+
+    # Fragment must be stripped: no encoded '#' (%23) should appear in the result
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    # Result must equal encoding the same URL without any fragment
+    url_without_fragment = "linkprotect.cudasvc.com/url"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_strips_mid_url_fragment():
+    """
+    Given:
+        - A URL with a fragment that contains another '#', e.g. linkprotect.cudasvc.com/url#utm=a#b
+          as seen in url (25).log — the API returns HTTP 400 TAS-0002 for such URLs
+    When:
+        - encode_url_indicator is called
+    Then:
+        - Everything from the first '#' onwards is stripped before encoding
+        - The encoded result does NOT contain '%23'
+        - The result is identical to encoding the base URL without any fragment
+    """
+    # URL with '#utm=a#b' fragment — mirrors the failing case in url (25).log
+    url_with_double_hash = "linkprotect.cudasvc.com/url#utm=a#b"
+    result = encode_url_indicator(url_with_double_hash)
+
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    url_without_fragment = "linkprotect.cudasvc.com/url"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_encode_url_indicator_strips_fragment_with_scheme():
+    """
+    Given:
+        - A URL with a scheme and a fragment, e.g. https://example.com/page#section
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The fragment is stripped and the scheme + path are encoded correctly
+        - No '%23' appears in the result
+    """
+    url_with_fragment = "https://example.com/page#section"
+    result = encode_url_indicator(url_with_fragment)
+
+    assert "%23" not in result, "Fragment was not stripped — encoded '#' found in result"
+
+    url_without_fragment = "https://example.com/page"
+    expected = encode_url_indicator(url_without_fragment)
+    assert result == expected
+
+
+def test_create_relationships_malicious_tool():
+    """
+    Given:
+        - Threat objects with malicious_tool threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with ThreatIntel.ObjectsNames.TOOL
+        - Sets proper entity types and relationship name
+    """
+    threat_objects = [{"name": "ScreenConnect", "threat_object_class": "malicious_tool"}]
+
+    relationships = create_relationships("hash123", FeedIndicatorType.File, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "ScreenConnect"
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.TOOL
+    assert relationships[0]._name == EntityRelationship.Relationships.RELATED_TO
+
+
+def test_create_relationships_attack_pattern_underscore():
+    """
+    Given:
+        - Threat objects with attack_pattern (underscore) threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with ThreatIntel.ObjectsNames.ATTACK_PATTERN
+    """
+    threat_objects = [{"name": "T1059 - Command and Scripting Interpreter", "threat_object_class": "attack_pattern"}]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.ATTACK_PATTERN
+
+
+def test_create_relationships_vulnerability():
+    """
+    Given:
+        - Threat objects with vulnerability threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with FeedIndicatorType.CVE
+    """
+    threat_objects = [{"name": "CVE-2024-9999", "threat_object_class": "vulnerability"}]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "CVE-2024-9999"
+    assert relationships[0]._entity_b_type == FeedIndicatorType.CVE
+
+
+def test_create_relationships_grayware():
+    """
+    Given:
+        - Threat objects with grayware threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with ThreatIntel.ObjectsNames.MALWARE
+    """
+    threat_objects = [{"name": "PUP.Optional.Adware", "threat_object_class": "grayware"}]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "PUP.Optional.Adware"
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.MALWARE
+
+
+def test_create_relationships_unknown_threat_class_skipped():
+    """
+    Given:
+        - Threat objects where one has an unknown threat_object_class (e.g. 'generic')
+          and one has a known class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - The unknown class is skipped gracefully (no KeyError)
+        - Only the known class produces a relationship
+    """
+    threat_objects = [
+        {"name": "SomeUnknownThing", "threat_object_class": "generic"},
+        {"name": "APT29", "threat_object_class": "actor"},
+    ]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "APT29"
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.THREAT_ACTOR
+
+
+def test_encode_url_indicator_no_fragment_unchanged():
+    """
+    Given:
+        - A URL with no fragment (no '#' character)
+    When:
+        - encode_url_indicator is called
+    Then:
+        - The result is identical to the pre-fix behaviour (fragment stripping is a no-op)
+        - The URL is still correctly double-encoded
+    """
+    url = "linkprotect.cudasvc.com/url?param=value"
+    result = encode_url_indicator(url)
+
+    # No fragment to strip — result should be the standard double-encoded form
+    assert "%23" not in result
+    assert result == "linkprotect.cudasvc.com%2Furl%3Fparam%3Dvalue"

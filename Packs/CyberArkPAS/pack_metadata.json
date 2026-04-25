@@ -2,7 +2,7 @@
     "name": "CyberArk",
     "description": "Provides a Safe Haven, where all your administrative passwords can be securely archived, transferred and shared by authorized users.",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.4",
     "author": "CyberArk",
     "url": "https://www.cyberark.com/services-support/technical-support-contact/",
     "email": "support@cyberark.com",
@@ -13,17 +13,15 @@
     "defaultDataSource": "CyberArkPAS",
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "CyberArk"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

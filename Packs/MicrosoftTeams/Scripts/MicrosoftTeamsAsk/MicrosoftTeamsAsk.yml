@@ -26,6 +26,8 @@ args:
 - default: true
   description: The question recipient. Accepts the team member's email address or username.
   name: team_member
+- description: The question recipient. Accepts the user's email address or username.
+  name: user_id
 - description: Task ID of the playbook task to close with the reply. If not provided, no playbook task will be closed.
   name: task_id
 - description: Channel to which to send the question.
@@ -44,7 +46,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.12.13.7444307
 tests:
 - No test
 dependson:

@@ -19,8 +19,3 @@ XSOAR will query for Orca Alerts/ Alert updates every 1 minute
     - Choose if to check "Fetch Existing Alerts" and/or "Also Fetch Informational Alerts" checkboxes
     - Click "Test" button to make sure Api Key is valid and then click the "Done" button
     
-
-
-
-
-
