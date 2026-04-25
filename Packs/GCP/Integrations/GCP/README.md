@@ -17,7 +17,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### gcp-compute-firewall-patch
 
 ***
-Updates the specified firewall rule with the data included in the request.
+Updates the specified firewall rule with the data included in the request. Required Permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list.
 
 #### Base Command
 
@@ -74,7 +74,7 @@ Updates the specified firewall rule with the data included in the request.
 ### gcp-storage-bucket-policy-delete
 
 ***
-Removes an entity from a bucket's Access Control List.
+Removes an entity from a bucket's Access Control List. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy.
 
 #### Base Command
 
@@ -95,7 +95,7 @@ There is no context output for this command.
 ### gcp-compute-subnet-update
 
 ***
-Enables flow logs or Private Google Access on a subnet.
+Enables flow logs or Private Google Access on a subnet. Required Permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list.
 
 #### Base Command
 
@@ -130,7 +130,7 @@ Enables flow logs or Private Google Access on a subnet.
 ### gcp-container-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility.
+Configures security settings for GKE clusters, including access controls and visibility. Required Permissions: container.clusters.update, container.clusters.get, container.clusters.list.
 
 #### Base Command
 
@@ -179,7 +179,7 @@ Configures security settings for GKE clusters, including access controls and vis
 ### gcp-storage-bucket-metadata-update
 
 ***
-Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
+Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA). Required Permissions: storage.buckets.update.
 
 #### Base Command
 
@@ -226,7 +226,7 @@ Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings 
 ### gcp-iam-project-policy-binding-remove
 
 ***
-Removes a specified IAM role binding from a GCP project.
+Removes a specified IAM role binding from a GCP project. Required Permissions: resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy.
 
 #### Base Command
 
@@ -247,7 +247,7 @@ There is no context output for this command.
 ### gcp-compute-instance-service-account-set
 
 ***
-Sets the service account for a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+Sets the service account for a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed. Required Permissions: compute.instances.setServiceAccount, compute.instances.get.
 
 #### Base Command
 
@@ -293,7 +293,7 @@ Sets the service account for a GCP Compute Engine VM instance. The instance must
 ### gcp-compute-instance-service-account-remove
 
 ***
-Removes the service account associated with a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+Removes the service account associated with a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed. Required Permissions: compute.instances.setServiceAccount, compute.instances.get.
 
 #### Base Command
 
@@ -337,7 +337,7 @@ Removes the service account associated with a GCP Compute Engine VM instance. Th
 ### gcp-compute-instance-start
 
 ***
-Starts an instance that was stopped using the instances().stop method.
+Starts an instance that was stopped using the instances().stop method. Required Permissions: compute.instances.start.
 
 #### Base Command
 
@@ -381,7 +381,7 @@ Starts an instance that was stopped using the instances().stop method.
 ### gcp-compute-instance-stop
 
 ***
-Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
+Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. Required Permissions: compute.instances.stop.
 
 #### Base Command
 
@@ -425,7 +425,7 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 ### gcp-compute-instances-list
 
 ***
-Retrieves the list of instances in the specified zone.
+Retrieves the list of instances in the specified zone. Required Permissions: compute.instances.list.
 
 #### Base Command
 
@@ -497,7 +497,7 @@ Retrieves the list of instances in the specified zone.
 ### gcp-compute-instance-labels-set
 
 ***
-Sets labels on an instance.
+Sets labels on an instance. Required Permissions: compute.instances.setLabels.
 
 #### Base Command
 
@@ -543,7 +543,7 @@ Sets labels on an instance.
 ### gcp-compute-instance-get
 
 ***
-Returns the specified Instance resource. To get a list of available instances, make a list() request.
+Returns the specified Instance resource. To get a list of available instances, make a list() request. Required Permissions: compute.instances.get.
 
 #### Base Command
 
@@ -626,7 +626,7 @@ Returns the specified Instance resource. To get a list of available instances, m
 ### gcp-storage-bucket-list
 
 ***
-Retrieves the list of buckets in the project associated with the client.
+Retrieves the list of buckets in the project associated with the client. Required Permissions: storage.buckets.list.
 
 #### Base Command
 
@@ -667,7 +667,7 @@ Retrieves the list of buckets in the project associated with the client.
 ### gcp-storage-bucket-get
 
 ***
-Retrieves information about a specific bucket.
+Retrieves information about a specific bucket. Required Permissions: storage.buckets.get.
 
 #### Base Command
 
@@ -702,7 +702,7 @@ Retrieves information about a specific bucket.
 ### gcp-storage-bucket-objects-list
 
 ***
-Retrieves the list of objects in a bucket.
+Retrieves the list of objects in a bucket. Required Permissions: storage.objects.list.
 
 #### Base Command
 
@@ -749,7 +749,7 @@ Retrieves the list of objects in a bucket.
 ### gcp-storage-bucket-policy-list
 
 ***
-Retrieves the IAM policy for a bucket.
+Retrieves the IAM policy for a bucket. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.get.
 
 #### Base Command
 
@@ -779,7 +779,7 @@ Retrieves the IAM policy for a bucket.
 ### gcp-storage-bucket-policy-set
 
 ***
-Sets the IAM policy for a bucket.
+Sets the IAM policy for a bucket. Required Permissions: storage.buckets.setIamPolicy.
 
 #### Base Command
 
@@ -841,7 +841,7 @@ Notes:
 ### gcp-storage-bucket-object-policy-list
 
 ***
-Retrieves the IAM policy for a specific object in a bucket.
+Retrieves the IAM policy for a specific object in a bucket. Required Permissions: storage.objects.getIamPolicy.
 
 #### Base Command
 
@@ -873,7 +873,7 @@ Retrieves the IAM policy for a specific object in a bucket.
 ### gcp-storage-bucket-object-policy-set
 
 ***
-Sets the IAM policy for a specific object in a bucket.
+Sets the IAM policy for a specific object in a bucket. Required Permissions: storage.objects.setIamPolicy.
 
 #### Base Command
 
@@ -902,7 +902,7 @@ Sets the IAM policy for a specific object in a bucket.
 ### gcp-compute-firewall-insert
 
 ***
-Creates a new firewall rule in the specified project.
+Creates a new firewall rule in the specified project. Required Permissions: compute.firewalls.create.
 
 #### Base Command
 
@@ -949,7 +949,7 @@ Creates a new firewall rule in the specified project.
 ### gcp-compute-firewall-list
 
 ***
-Lists firewall rules in the specified project.
+Lists firewall rules in the specified project. Required Permissions: compute.firewalls.list.
 
 #### Base Command
 
@@ -986,7 +986,7 @@ Lists firewall rules in the specified project.
 ### gcp-compute-firewall-get
 
 ***
-Retrieves a specific firewall rule by name.
+Retrieves a specific firewall rule by name. Required Permissions: compute.firewalls.get.
 
 #### Base Command
 
@@ -1014,7 +1014,7 @@ Retrieves a specific firewall rule by name.
 ### gcp-compute-snapshots-list
 
 ***
-Lists snapshots in the specified project.
+Lists snapshots in the specified project. Required Permissions: compute.snapshots.list.
 
 #### Base Command
 
@@ -1060,7 +1060,7 @@ Lists snapshots in the specified project.
 ### gcp-compute-snapshot-get
 
 ***
-Retrieves details for a specific snapshot.
+Retrieves details for a specific snapshot. Required Permissions: compute.snapshots.get.
 
 #### Base Command
 
@@ -1103,7 +1103,7 @@ Retrieves details for a specific snapshot.
 ### gcp-compute-instances-aggregated-list-by-ip
 
 ***
-Aggregated list of instances across all zones; can be filtered by internal or external IP.
+Aggregated list of instances across all zones; can be filtered by internal or external IP. Required Permissions: cloudasset.assets.searchAllResources.
 
 #### Base Command
 
@@ -1132,7 +1132,7 @@ Aggregated list of instances across all zones; can be filtered by internal or ex
 ### gcp-compute-network-tag-set
 
 ***
-Adds a network tag to a VM instance (merges with existing tags).
+Adds a network tag to a VM instance (merges with existing tags). Required Permissions: compute.instances.setTags.
 
 #### Base Command
 
@@ -1170,7 +1170,7 @@ Adds a network tag to a VM instance (merges with existing tags).
 ### gcp-compute-image-get
 
 ***
-Returns the specified image. Gets a list of available images by making a list() request.
+Returns the specified image. Gets a list of available images by making a list() request. Required Permissions: compute.images.get.
 
 ##### Base Command
 
@@ -1240,7 +1240,7 @@ Returns the specified image. Gets a list of available images by making a list() 
 ### gcp-compute-instance-group-get
 
 ***
-Returns the specified instance group. Gets a list of available instance groups by making a list() request.
+Returns the specified instance group. Gets a list of available instance groups by making a list() request. Required Permissions: compute.instanceGroups.get.
 
 ##### Base Command
 
@@ -1277,7 +1277,7 @@ Returns the specified instance group. Gets a list of available instance groups b
 ### gcp-compute-region-get
 
 ***
-Returns the specified Region resource. Gets a list of available regions by making a list() request.
+Returns the specified Region resource. Gets a list of available regions by making a list() request. Required Permissions: compute.regions.get.
 
 ##### Base Command
 
@@ -1317,7 +1317,7 @@ Returns the specified Region resource. Gets a list of available regions by makin
 ### gcp-compute-zone-get
 
 ***
-Returns the specified Zone resource. Gets a list of available zones by making a list() request.
+Returns the specified Zone resource. Gets a list of available zones by making a list() request. Required Permissions: compute.zone.get.
 
 ##### Base Command
 
@@ -1353,7 +1353,7 @@ Returns the specified Zone resource. Gets a list of available zones by making a 
 ### gcp-compute-networks-list
 
 ***
-Retrieves the list of networks available to the specified project.
+Retrieves the list of networks available to the specified project. Required Permissions: compute.networks.list.
 
 ##### Base Command
 
@@ -1395,7 +1395,7 @@ Retrieves the list of networks available to the specified project.
 ### gcp-compute-network-insert
 
 ***
-Creates a network in the specified project using the data included in the request.
+Creates a network in the specified project using the data included in the request. Required Permissions: compute.networks.insert.
 
 ##### Base Command
 
@@ -1445,7 +1445,7 @@ Creates a network in the specified project using the data included in the reques
 ### gcp-compute-network-get
 
 ***
-Returns the specified network.
+Returns the specified network. Required Permissions: compute.networks.get.
 
 ##### Base Command
 

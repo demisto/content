@@ -111,7 +111,7 @@ configuration:
 script:
   commands:
   - name: aws-s3-public-access-block-update
-    description: "Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket."
+    description: "Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket. Required IAM Permission: s3:PutBucketPublicAccessBlock."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -185,7 +185,7 @@ script:
 
     
   - name: aws-s3-bucket-acl-put
-    description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
+    description: "Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security. Required IAM Permission: s3:PutBucketAcl."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -244,7 +244,7 @@ script:
       required: true
 
   - name: aws-s3-bucket-acl-set-to-private-quick-action
-    description: Sets the Access Control List (ACL) for the S3 bucket to private.
+    description: "Sets the Access Control List (ACL) for the S3 bucket to private. Required IAM Permission: s3:PutBucketAcl."
     prettyname: Set Bucket ACL to Private
     hidden: true
     quickaction: true
@@ -276,7 +276,7 @@ script:
         hidden: true
 
   - name: aws-s3-bucket-logging-put
-    description: Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket.
+    description: "Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket. Required IAM Permission: s3:PutBucketLogging."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -331,7 +331,7 @@ script:
       required: false
 
   - name: aws-s3-bucket-enable-bucket-access-logging-quick-action
-    description: Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix.
+    description: "Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix. Required IAM Permission: s3:PutBucketLogging."
     prettyname: Enable S3 Access Logging
     hidden: true
     quickaction: true
@@ -367,7 +367,7 @@ script:
         hidden: true
 
   - name: aws-s3-bucket-versioning-put
-    description: Sets the versioning state of an existing bucket.
+    description: "Sets the versioning state of an existing bucket. Required IAM Permission: s3:PutBucketVersioning."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -426,7 +426,7 @@ script:
       required: true
 
   - name: aws-s3-bucket-versioning-enable-quick-action
-    description: Enables versioning on the S3 bucket to retain multiple versions of objects.
+    description: "Enables versioning on the S3 bucket to retain multiple versions of objects. Required IAM Permission: s3:PutBucketVersioning."
     prettyname: Enable S3 Versioning
     hidden: true
     quickaction: true
@@ -458,7 +458,7 @@ script:
         hidden: true
 
   - name: aws-s3-bucket-policy-put
-    description: Applies an Amazon S3 bucket policy to an Outposts bucket.
+    description: "Applies an Amazon S3 bucket policy to an Outposts bucket. Required IAM Permission: s3:PutBucketPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -510,7 +510,7 @@ script:
       required: true
 
   - name: aws-s3-bucket-policy-put-quick-action
-    description: Enforces SSL-only access on the S3 bucket by applying a bucket policy that denies all non-HTTPS requests.
+    description: "Enforces SSL-only access on the S3 bucket by applying a bucket policy that denies all non-HTTPS requests. Required IAM Permission: s3:PutBucketPolicy."
     prettyname: Enforce SSL Only on Bucket
     hidden: true
     quickaction: true
@@ -542,7 +542,7 @@ script:
         hidden: true
 
   - name: aws-s3-bucket-website-delete
-    description: Removes the website configuration for a bucket.
+    description: "Removes the website configuration for a bucket. Required IAM Permission: s3:DeleteBucketWebsite."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -591,7 +591,7 @@ script:
         required: true
 
   - name: aws-s3-bucket-website-disable-hosting-quick-action
-    description: Removes the static website hosting configuration from an S3 bucket.
+    description: "Removes the static website hosting configuration from an S3 bucket. Required IAM Permission: s3:DeleteBucketWebsite."
     prettyname: Disable S3 Website Hosting
     hidden: true
     quickaction: true
@@ -619,7 +619,7 @@ script:
           Bucket Name: ${asset.xdm.asset.name}
 
   - name: aws-s3-bucket-ownership-controls-put
-    description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
+    description: "Creates or modifies OwnershipControls for an Amazon S3 bucket. Required IAM Permission: s3:PutBucketOwnershipControls."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -676,7 +676,7 @@ script:
           - BucketOwnerEnforced
 
   - name: aws-s3-bucket-ownership-controls-put-quick-action
-    description: Switches the bucket to "Bucket Owner Enforced" mode. This remediation step aligns the bucket with AWS security best practices by making ACLs irrelevant and centralizing all access control under your account's policies.
+    description: 'Switches the bucket to "Bucket Owner Enforced" mode. This remediation step aligns the bucket with AWS security best practices by making ACLs irrelevant and centralizing all access control under your account''s policies. Required IAM Permission: s3:PutBucketOwnershipControls.'
     prettyname: Set S3 ACL to BucketOwnerEnforced
     hidden: true
     quickaction: true
@@ -708,7 +708,7 @@ script:
         hidden: true
 
   - name: aws-s3-bucket-website-get
-    description: Returns the website configuration for a bucket.
+    description: "Returns the website configuration for a bucket. Required IAM Permission: s3:GetBucketWebsite."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -770,7 +770,7 @@ script:
         type: Array
 
   - name: aws-s3-bucket-acl-get
-    description: Return the access control list (ACL) of a bucket.
+    description: "Return the access control list (ACL) of a bucket. Required IAM Permission: s3:GetBucketAcl."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -826,7 +826,7 @@ script:
         type: Object
 
   - name: aws-iam-account-password-policy-get
-    description: Gets the AWS account password policy.
+    description: "Gets the AWS account password policy. Required IAM Permission: iam:GetAccountPasswordPolicy."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -902,7 +902,7 @@ script:
       type: boolean
 
   - name: aws-iam-account-password-policy-update
-    description: Create or Update AWS account password policy.
+    description: "Create or Update AWS account password policy. Required IAM Permission: iam:UpdateAccountPasswordPolicy."
     execution: true
     arguments:
     - description: The AWS account ID.
@@ -952,7 +952,7 @@ script:
       - 'false'
 
   - name: aws-iam-role-policy-put
-    description: Adds or updates an inline policy document that is embedded in the specified IAM role.
+    description: "Adds or updates an inline policy document that is embedded in the specified IAM role. Required IAM Permission: iam:PutRolePolicy."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1006,7 +1006,7 @@ script:
       required: true
 
   - name: aws-iam-login-profile-delete
-    description: Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
+    description: "Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console. Required IAM Permission: iam:DeleteLoginProfile."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1053,7 +1053,7 @@ script:
       required: true
 
   - name: aws-iam-user-policy-put
-    description: Adds or updates an inline policy document that is embedded in the specified IAM user.
+    description: "Adds or updates an inline policy document that is embedded in the specified IAM user. Required IAM Permission: iam:PutUserPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1106,7 +1106,7 @@ script:
       required: true
 
   - name: aws-iam-role-from-instance-profile-remove
-    description: Removes the specified IAM role from the specified EC2 instance profile.
+    description: "Removes the specified IAM role from the specified EC2 instance profile. Required IAM Permission: iam:RemoveRoleFromInstanceProfile."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1156,7 +1156,7 @@ script:
       required: false
 
   - name: aws-iam-access-key-update
-    description: Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow.
+    description: "Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow. Required IAM Permission: iam:UpdateAccessKey."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1213,7 +1213,7 @@ script:
       required: false
 
   - name: aws-eks-cluster-config-update
-    description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
+    description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call. Required IAM Permission: eks:UpdateClusterConfig.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1267,7 +1267,7 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
   - name: aws-eks-enable-control-plane-logging-quick-action
-    description: Enables control plane logging for an EKS cluster.
+    description: "Enables control plane logging for an EKS cluster. Required IAM Permission: eks:UpdateClusterConfig."
     prettyname: Enable Control Plane Logging
     hidden: true
     quickaction: true
@@ -1299,7 +1299,7 @@ script:
         hidden: true
 
   - name: aws-eks-disable-public-access-quick-action
-    description: Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
+    description: "Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC. Required IAM Permission: eks:UpdateClusterConfig."
     prettyname: Set EKS Cluster to Private
     hidden: true
     quickaction: true
@@ -1331,7 +1331,7 @@ script:
         hidden: true
 
   - name: aws-eks-cluster-describe
-    description: Describes an Amazon EKS cluster.
+    description: "Describes an Amazon EKS cluster. Required IAM Permission: eks:DescribeCluster."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1492,7 +1492,7 @@ script:
       type: String
 
   - name: aws-eks-access-policy-associate
-    description: Associates an access policy and its scope to an access entry.
+    description: "Associates an access policy and its scope to an access entry. Required IAM Permission: eks:AssociateAccessPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1579,7 +1579,7 @@ script:
       type: String
 
   - name: aws-rds-db-cluster-modify
-    description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
+    description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options. Required IAM Permission: rds:ModifyDBCluster."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1640,7 +1640,7 @@ script:
       - 'false'
 
   - name: aws-rds-db-cluster-enable-iam-auth-quick-action
-    description: This action enables 'iam database authentication' for the RDS cluster.
+    description: "This action enables 'iam database authentication' for the RDS cluster. Required IAM Permission: rds:ModifyDBCluster."
     prettyname: Enable IAM Authentication on RDS Cluster
     hidden: true
     quickaction: true
@@ -1672,7 +1672,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-cluster-snapshot-attribute-modify
-    description: Modifies the attributes associated with a DB cluster snapshot.
+    description: "Modifies the attributes associated with a DB cluster snapshot. Required IAM Permission: rds:ModifyDBClusterSnapshotAttribute."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1730,7 +1730,7 @@ script:
       required: false
 
   - name: aws-rds-db-cluster-snapshot-set-to-private-quick-action
-    description: Revokes public access to the RDS DB cluster snapshot, making it private.
+    description: "Revokes public access to the RDS DB cluster snapshot, making it private. Required IAM Permission: rds:ModifyDBClusterSnapshotAttribute."
     prettyname: Set RDS Cluster Snapshot to Private
     hidden: true
     quickaction: true
@@ -1766,7 +1766,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-cluster-enable-deletion-protection-quick-action
-    description: Enables deletion protection for the RDS DB cluster to prevent accidental deletion.
+    description: "Enables deletion protection for the RDS DB cluster to prevent accidental deletion. Required IAM Permission: rds:ModifyDBCluster."
     prettyname: Enable RDS Cluster Deletion Protection
     hidden: true
     quickaction: true
@@ -1799,7 +1799,7 @@ script:
 
 
   - name: aws-rds-db-instance-modify
-    description: "Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance."
+    description: "Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance. Required IAM Permission: rds:ModifyDBInstance."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1905,7 +1905,7 @@ script:
       required: false
 
   - name: aws-rds-db-instance-modify-publicly-accessible-quick-action
-    description: This action will disable public access for AWS RDS database instance by modifying the instance settings.
+    description: "This action will disable public access for AWS RDS database instance by modifying the instance settings. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Disable Public Access on RDS
     hidden: true
     quickaction: true
@@ -1941,7 +1941,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action
-    description: This action enables 'copy tags to snapshots' for the RDS instance.
+    description: "This action enables 'copy tags to snapshots' for the RDS instance. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Enable Copy Tags on RDS Snapshot
     hidden: true
     quickaction: true
@@ -1977,7 +1977,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-modify-enable-automatic-backup-quick-action
-    description: Enables the automatic backup settings for the RDS DB instance with a default retention period of 30 days.
+    description: "Enables the automatic backup settings for the RDS DB instance with a default retention period of 30 days. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Enable Automatic Backup for RDS DB
     hidden: true
     quickaction: true
@@ -2013,7 +2013,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-iam-auth-quick-action
-    description: Enables 'iam database authentication' for the RDS DB instance.
+    description: "Enables 'iam database authentication' for the RDS DB instance. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Enable IAM Authentication on RDS
     hidden: true
     quickaction: true
@@ -2045,7 +2045,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-deletion-protection-quick-action
-    description: Enables 'deletion protection' for the RDS DB instance.
+    description: "Enables 'deletion protection' for the RDS DB instance. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Enable Deletion Protection on RDS
     hidden: true
     quickaction: true
@@ -2077,7 +2077,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-auto-upgrade-quick-action
-    description: Enables automatic minor version upgrades for the RDS DB instance.
+    description: "Enables automatic minor version upgrades for the RDS DB instance. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Enable RDS Auto Upgrade
     hidden: true
     quickaction: true
@@ -2113,7 +2113,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-multi-az-quick-action
-    description: Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability.
+    description: "Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability. Required IAM Permission: rds:ModifyDBInstance."
     prettyname: Enable Multi-AZ for RDS
     hidden: true
     quickaction: true
@@ -2149,7 +2149,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-snapshot-attribute-modify
-    description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
+    description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot. Required IAM Permission: rds:ModifyDBSnapshotAttribute.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2210,7 +2210,7 @@ script:
       isArray: true
 
   - name: aws-rds-event-subscription-modify
-    description: Modifies an existing RDS event notification subscription.
+    description: "Modifies an existing RDS event notification subscription. Required IAM Permission: rds:ModifyEventSubscription."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -2299,7 +2299,7 @@ script:
         type: string
 
   - name: aws-rds-event-subscription-modify-quick-action
-    description: Activates an existing RDS event subscription.
+    description: "Activates an existing RDS event subscription. Required IAM Permission: rds:ModifyEventSubscription."
     prettyname: Enable RDS Event Subscription
     hidden: true
     quickaction: true
@@ -2362,7 +2362,7 @@ script:
       type: string
 
   - name: aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
-    description: Revokes public access to the RDS DB snapshot, making it private.
+    description: "Revokes public access to the RDS DB snapshot, making it private. Required IAM Permission: rds:ModifyDBSnapshotAttribute."
     prettyname: Set RDS Snapshot to Private
     hidden: true
     quickaction: true
@@ -2398,7 +2398,7 @@ script:
         hidden: true
 
   - name: aws-ec2-security-group-ingress-revoke
-    description: 'Revokes one or more ingress rules in a security group.'
+    description: 'Revokes one or more ingress rules in a security group. Required IAM Permission: ec2:RevokeSecurityGroupIngress.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2466,7 +2466,7 @@ script:
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
       required: false
   - name: aws-ec2-security-group-ingress-authorize
-    description: 'Adds the specified inbound (ingress) rules to a security group.'
+    description: 'Adds the specified inbound (ingress) rules to a security group. Required IAM Permission: ec2:AuthorizeSecurityGroupIngress.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2534,7 +2534,7 @@ script:
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
       required: false
   - name: aws-ec2-security-group-egress-revoke
-    description: 'Removes the specified outbound (egress) rules from the specified security group.'
+    description: 'Removes the specified outbound (egress) rules from the specified security group. Required IAM Permission: ec2:RevokeSecurityGroupEgress.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2603,7 +2603,7 @@ script:
       required: false
   - name: aws-ec2-security-group-egress-authorize
     execution: true
-    description: 'Adds the specified inbound (egress) rules to a security group.'
+    description: 'Adds the specified inbound (egress) rules to a security group. Required IAM Permission: ec2:AuthorizeSecurityGroupEgress.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2668,7 +2668,7 @@ script:
       required: false
 
   - name: aws-ec2-snapshot-attribute-modify
-    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
+    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications. Required IAM Permission: ec2:ModifySnapshotAttribute.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2740,7 +2740,7 @@ script:
       - 'all'
 
   - name: aws-ec2-instance-attribute-modify
-    description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
+    description: "Modifies the specified attribute of the specified instance. You can specify only one attribute at a time. Required IAM Permission: ec2:ModifyInstanceAttribute."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -2817,7 +2817,7 @@ script:
       description: A new value for the attribute. Use only with the kernel, ramdisk, userData, disableApiTermination, or instanceInitiatedShutdownBehavior attribute.
 
   - name: aws-ec2-instance-attribute-modify-quick-action
-    description: Remove the associated security group from the EC2 instance profile.
+    description: "Remove the associated security group from the EC2 instance profile. Required IAM Permission: ec2:ModifyInstanceAttribute."
     prettyname: Detach Security Group from EC2
     hidden: true
     quickaction: true
@@ -2845,7 +2845,7 @@ script:
         defaultValue: EC2 Instance ID
 
   - name: aws-ec2-image-attribute-modify
-    description: 'Modifies the specified attribute of the specified AMI.'
+    description: 'Modifies the specified attribute of the specified AMI. Required IAM Permission: ec2:ModifyImageAttribute.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2919,7 +2919,7 @@ script:
       required: false
 
   - name: aws-ec2-image-attribute-set-ami-to-private-quick-action
-    description: Revokes public launch permissions for the EC2 AMI.
+    description: "Revokes public launch permissions for the EC2 AMI. Required IAM Permission: ec2:ModifyImageAttribute."
     prettyname: Set AMI to Private
     hidden: true
     quickaction: true
@@ -2955,7 +2955,7 @@ script:
         hidden: true
 
   - name: aws-ec2-instance-metadata-options-modify
-    description: Modify the EC2 instance metadata parameters on a running or stopped instance.
+    description: "Modify the EC2 instance metadata parameters on a running or stopped instance. Required IAM Permission: ec2:ModifyInstanceMetadataOptions."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -3066,7 +3066,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+    description: "Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance. Required IAM Permission: ec2:CreateSnapshot."
     outputs:
     - contextPath: AWS.EC2.Snapshot.DataEncryptionKeyId
       description: The data encryption key identifier for the snapshot.
@@ -3181,10 +3181,10 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Adds or removes permission settings for the specified snapshot.
+    description: "Adds or removes permission settings for the specified snapshot. Required IAM Permission: ec2:ModifySnapshotAttribute."
 
   - name: aws-ec2-set-snapshot-to-private-quick-action
-    description: Revokes public access to the EC2 snapshot.
+    description: "Revokes public access to the EC2 snapshot. Required IAM Permission: ec2:ModifySnapshotAttribute."
     prettyname: Set Snapshot to Private
     hidden: true
     quickaction: true
@@ -3274,10 +3274,10 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Updates the containerInsights setting of an ECS cluster.
+    description: "Updates the containerInsights setting of an ECS cluster. Required IAM Permission: ecs:UpdateClusterSettings."
 
   - name: aws-ec2-subnet-attribute-modify
-    description: Modifies a subnet attribute.
+    description: "Modifies a subnet attribute. Required IAM Permission: ec2:ModifySubnetAttribute."
     arguments:
       - description: The AWS account ID.
         name: account_id
@@ -3392,7 +3392,7 @@ script:
         - sa-east-1
         - us-gov-east-1
         - us-gov-west-1
-    description: Describes one or more of your VPCs.
+    description: "Describes one or more of your VPCs. Required IAM Permission: ec2:DescribeVpcs."
     name: aws-ec2-vpcs-describe
     outputs:
     - contextPath: AWS.EC2.Vpcs.CidrBlock
@@ -3494,7 +3494,7 @@ script:
         - sa-east-1
         - us-gov-east-1
         - us-gov-west-1
-    description: Describes one or more of your subnets.
+    description: "Describes one or more of your subnets. Required IAM Permission: ec2:DescribeSubnets."
     name: aws-ec2-subnets-describe
     outputs:
     - contextPath: AWS.EC2.Subnets.AvailabilityZone
@@ -3613,7 +3613,7 @@ script:
     - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
       description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
-    description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+    description: "Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account. Required IAM Permission: ec2:DescribeIpamResourceDiscoveries."
     name: aws-ec2-ipam-resource-discoveries-describe
 
   - arguments:
@@ -3683,11 +3683,11 @@ script:
     - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.AccountId
       description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
-    description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+    description: "Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM. Required IAM Permission: ec2:DescribeIpamResourceDiscoveryAssociations."
     name: aws-ec2-ipam-resource-discovery-associations-describe
 
   - name: aws-cloudtrail-trail-update
-    description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
+    description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown. Required IAM Permission: cloudtrail:UpdateTrail.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -3824,7 +3824,7 @@ script:
       type: boolean
 
   - name: aws-cloudtrail-trail-enable-log-validation-quick-action
-    description: Enables log file validation for the reported CloudTrail.
+    description: "Enables log file validation for the reported CloudTrail. Required IAM Permission: cloudtrail:UpdateTrail."
     prettyname: Enable CloudTrail Log Validation
     hidden: true
     quickaction: true
@@ -3905,7 +3905,7 @@ script:
         type: boolean
 
   - name: aws-cloudtrail-logging-start
-    description: Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+    description: "Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions. Required IAM Permission: cloudtrail:StartLogging."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -3954,7 +3954,7 @@ script:
       required: true
 
   - name: aws-cloudtrail-logging-start-enable-logging-quick-action
-    description: Enables logging of a CloudTrail.
+    description: "Enables logging of a CloudTrail. Required IAM Permission: cloudtrail:StartLogging."
     prettyname: Enable CloudTrail Logging
     hidden: true
     quickaction: true
@@ -3982,7 +3982,7 @@ script:
           Name: ${asset.xdm.asset.name}
 
   - name: aws-ec2-instances-describe
-    description: "Describes specified instances or all instances."
+    description: "Describes specified instances or all instances. Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -4326,7 +4326,7 @@ script:
       type: String
 
   - name: aws-ec2-instances-start
-    description: "Starts an Amazon EBS-backed instance that was previously stopped."
+    description: "Starts an Amazon EBS-backed instance that was previously stopped. Required IAM Permission: ec2:StartInstances."
     execution: true
     arguments:
     - name: account_id
@@ -4377,7 +4377,7 @@ script:
       isArray: true
 
   - name: aws-ec2-instances-stop
-    description: "Stops an Amazon EBS-backed instance."
+    description: "Stops an Amazon EBS-backed instance. Required IAM Permission: ec2:StopInstances."
     execution: true
     arguments:
     - name: account_id
@@ -4443,7 +4443,7 @@ script:
       - 'false'
       defaultValue: 'false'
   - name: aws-ec2-instances-terminate
-    description: "Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error."
+    description: "Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error. Required IAM Permission: ec2:TerminateInstances."
     execution: true
     arguments:
     - name: account_id
@@ -4494,7 +4494,7 @@ script:
       isArray: true
 
   - name: aws-ec2-instances-run
-    description: Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+    description: "Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe. Required IAM Permission: ec2:RunInstances."
     execution: true
     arguments:
     - name: account_id
@@ -4933,7 +4933,7 @@ script:
       type: String
 
   - name: aws-ec2-latest-ami-get
-    description: Get The latest AMI.
+    description: "Get The latest AMI. Required IAM Permission: ec2:DescribeImages."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -5111,7 +5111,7 @@ script:
         type: string
 
   - name: aws-ec2-network-acl-create
-    description: Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC.
+    description: "Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC. Required IAM Permission: ec2:CreateNetworkAcl."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -5222,7 +5222,7 @@ script:
         type: string
 
   - name: aws-ec2-ipam-discovered-public-addresses-get
-    description: Gets the public IP addresses that have been discovered by IPAM, Amazon VPC IP Address Manager.
+    description: "Gets the public IP addresses that have been discovered by IPAM, Amazon VPC IP Address Manager. Required IAM Permission: ec2:GetIpamDiscoveredPublicAddresses."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -5302,7 +5302,7 @@ script:
         type: string
 
   - name: aws-ec2-tags-create
-    description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value.
+    description: "Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value. Required IAM Permission: ec2:CreateTags."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -5354,7 +5354,7 @@ script:
         required: true
 
   - name: aws-cloudtrail-trails-describe
-    description: Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
+    description: "Retrieves settings for the specified trail or returns information about all trails in the current AWS account. Required IAM Permission: cloudtrail:DescribeTrails."
     arguments:
     - description: A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region.
       name: trail_names
@@ -5454,7 +5454,7 @@ script:
       description: Specifies whether the trail is an organization trail.
       type: boolean
   - name: aws-s3-bucket-policy-delete
-    description: Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions.
+    description: "Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions. Required IAM Permission: s3:DeleteBucketPolicy."
     execution: true
     arguments:
     - description: The AWS account ID.
@@ -5504,7 +5504,7 @@ script:
       required: true
 
   - name: aws-s3-public-access-block-get
-    description: Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects.
+    description: "Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects. Required IAM Permission: s3:GetBucketPublicAccessBlock."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -5571,7 +5571,7 @@ script:
       type: boolean
 
   - name: aws-s3-bucket-encryption-get
-    description: Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
+    description: "Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket. Required IAM Permission: s3:GetEncryptionConfiguration."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -5627,7 +5627,7 @@ script:
       type: array
 
   - name: aws-s3-bucket-policy-get
-    description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
+    description: "Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists. Required IAM Permission: s3:GetBucketPolicy."
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -5751,7 +5751,7 @@ script:
       description: Name, ARN, or qualified name of the Lambda function.
     - name: qualifier
       description: Version number or alias name.
-    description: Retrieves configuration information about a Lambda function.
+    description: "Retrieves configuration information about a Lambda function. Required IAM Permission: lambda:GetFunctionConfiguration."
     outputs:
     - contextPath: AWS.Lambda.FunctionConfig.FunctionName
       description: The name of the function.
@@ -5965,7 +5965,7 @@ script:
       description: Name of the Lambda function.
     - name: qualifier
       description: The alias name or version number.
-    description: Returns the configuration for a Lambda function URL.
+    description: "Returns the configuration for a Lambda function URL. Required IAM Permission: lambda:GetFunctionUrlConfig."
     outputs:
     - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
       description: The HTTP URL endpoint for your function.
@@ -6053,7 +6053,7 @@ script:
       description: Name of the Lambda function, version, or alias.
     - name: qualifier
       description: Version or alias to get the policy for.
-    description: Returns the resource-based IAM policy for a Lambda function.
+    description: "Returns the resource-based IAM policy for a Lambda function. Required IAM Permission: lambda:GetPolicy."
     outputs:
       - contextPath: AWS.Lambda.Policy.Version
         description: The policy version.
@@ -6155,7 +6155,7 @@ script:
       description: JSON input to provide to the Lambda function.
     - name: qualifier
       description: Version or alias to invoke.
-    description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+    description: "Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this. Required IAM Permission: lambda:InvokeFunction."
     execution: true
     outputs:
     - contextPath: AWS.Lambda.InvokedFunction.StatusCode
@@ -6257,7 +6257,7 @@ script:
       - "BUFFERED"
       - "RESPONSE_STREAM"
       description: BUFFERED or RESPONSE_STREAM.
-    description: Updates the configuration for a Lambda function URL.
+    description: "Updates the configuration for a Lambda function URL. Required IAM Permission: lambda:UpdateFunctionUrlConfig."
     outputs:
     - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
       description: The HTTP URL endpoint for your function.
@@ -6348,7 +6348,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Upload file to S3 bucket.
+    description: "Upload file to S3 bucket. Required IAM Permission: s3:PutObject."
     name: aws-s3-file-upload
     outputs: []
   - arguments:
@@ -6400,7 +6400,7 @@ script:
       - sa-east-1
       - us-gov-east-1
       - us-gov-west-1
-    description: Download a file from S3 bucket to the War Room.
+    description: "Download a file from S3 bucket to the War Room. Required IAM Permission: s3:GetObject."
     name: aws-s3-file-download
     outputs:
     - contextPath: File.Size
@@ -6434,7 +6434,7 @@ script:
       description: The file extension.
       type: String
   - name: aws-billing-cost-usage-list
-    description: Retrieves actual cost and usage data for a given time range and optional service filter.
+    description: "Retrieves actual cost and usage data for a given time range and optional service filter. Required IAM Permission: ce:GetCostAndUsage."
     arguments:
     - name: account_id
       description: The AWS account on which to run the command.
@@ -6584,7 +6584,7 @@ script:
       type: string
 
   - name: aws-billing-forecast-list
-    description: Forecasts AWS spending over a given future time period using historical trends.
+    description: "Forecasts AWS spending over a given future time period using historical trends. Required IAM Permission: ce:GetCostForecast."
     arguments:
     - name: account_id
       description: AWS account to run the command on.
@@ -6708,7 +6708,7 @@ script:
       type: string
 
   - name: aws-billing-budgets-list
-    description: Lists configured budgets for a given AWS account.
+    description: "Lists configured budgets for a given AWS account. Required IAM Permission: budgets:DescribeBudgets."
     arguments:
     - name: account_id
       description: AWS account to run the command on.
@@ -6831,7 +6831,7 @@ script:
       type: string
 
   - name: aws-billing-budget-notification-list
-    description: Lists the notifications that are associated with a budget.
+    description: "Lists the notifications that are associated with a budget. Required IAM Permission: budgets:DescribeNotificationsForBudget."
     arguments:
     - name: account_id
       description: AWS account to run the command on.
@@ -6915,7 +6915,7 @@ script:
       description: Next page token for pagination.
       type: string
   - name: aws-kms-key-rotation-enable
-    description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores. The default value is us-east-1.
+    description: "Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores. The default value is us-east-1. Required IAM Permission: kms:EnableKeyRotation."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -6968,7 +6968,7 @@ script:
       type: number
     outputs: []
   - name: aws-elb-load-balancer-attributes-modify
-    description: Modifies attributes for a Classic Elastic Load Balancer.
+    description: "Modifies attributes for a Classic Elastic Load Balancer. Required IAM Permission: elasticloadbalancing:ModifyLoadBalancerAttributes."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7103,7 +7103,7 @@ script:
       type: unknown
 
   - name: aws-s3-public-access-block-quick-action
-    description: Blocks all public access to the S3 bucket.
+    description: "Blocks all public access to the S3 bucket. Required IAM Permission: s3:PutBucketPublicAccessBlock."
     prettyname: Block S3 Public Access
     hidden: true
     quickaction: true
@@ -7147,7 +7147,7 @@ script:
         hidden: true
 
   - name: aws-ec2-enable-imdsv2-quick-action
-    description: Enables instance metadata services v2.0 for the EC2 instance.
+    description: "Enables instance metadata services v2.0 for the EC2 instance. Required IAM Permission: ec2:ModifyInstanceMetadataOptions."
     prettyname: Enable IMDSv2
     hidden: true
     quickaction: true
@@ -7183,7 +7183,7 @@ script:
         hidden: true
 
   - name: aws-acm-certificate-options-update
-    description: Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+    description: "Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED). Required IAM Permission: acm:UpdateCertificateOptions."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7239,7 +7239,7 @@ script:
       - DISABLED
     outputs: []
   - name: aws-ec2-network-interface-attribute-modify
-    description: Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
+    description: "Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance. Required IAM Permission: ec2:ModifyNetworkInterfaceAttribute."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7366,7 +7366,7 @@ script:
         description: The ID of the network interface.
         type: String
   - name: aws-ec2-regions-describe
-    description: Describes the Regions that are enabled for your account, or all Regions.
+    description: "Describes the Regions that are enabled for your account, or all Regions. Required IAM Permission: ec2:DescribeRegions."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7433,7 +7433,7 @@ script:
         description: The Region opt-in status. The possible values are opt-in-not-required, opted-in, and not-opted-in.
         type: string
   - name: aws-s3-bucket-create
-    description: Creates a new S3 bucket.
+    description: "Creates a new S3 bucket. Required IAM Permission: s3:CreateBucket."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7554,7 +7554,7 @@ script:
         description: The Amazon Resource Name (ARN) of the S3 bucket.
         type: string
   - name: aws-s3-buckets-list
-    description: Returns a list of all buckets owned by the authenticated sender of the request.
+    description: "Returns a list of all buckets owned by the authenticated sender of the request. Required IAM Permission: s3:ListAllMyBuckets."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7672,7 +7672,7 @@ script:
         description: If Prefix was sent with the request, it is included in the response.
         type: string
   - name: aws-ssm-inventory-entries-list
-    description: Returns a list of inventory items.
+    description: "Returns a list of inventory items. Required IAM Permission: ssm:ListInventoryEntries."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -7752,7 +7752,7 @@ script:
         description: The token to use when requesting the next set of items.
         type: object
   - name: aws-ssm-command-run
-    description: Runs commands on one or more managed nodes.
+    description: "Runs commands on one or more managed nodes. Required IAM Permission: ssm:SendCommand, ssm:ListCommands."
     polling: true
     arguments:
       - name: account_id
@@ -7936,7 +7936,7 @@ script:
 
   - name: aws-ec2-security-group-create
     execution: true
-    description: Creates a security group.
+    description: "Creates a security group. Required IAM Permission: ec2:CreateSecurityGroup."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -7991,7 +7991,7 @@ script:
       required: false
   - name: aws-ec2-security-group-delete
     execution: true
-    description: Deletes a security group.
+    description: "Deletes a security group. Required IAM Permission: ec2:DeleteSecurityGroup."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -8040,7 +8040,7 @@ script:
     - name: group_name
       description: The name of the security group to delete. Required if group_id is not provided. Note that you can’t reference a security group for EC2-VPC by name.
   - name: aws-ec2-security-groups-describe
-    description: Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information.
+    description: "Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information. Required IAM Permission: ec2:DescribeSecurityGroups."
     arguments:
     - name: account_id
       description: The AWS account ID.

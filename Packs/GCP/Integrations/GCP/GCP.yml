@@ -31,7 +31,7 @@ description: Cloud integrations are installed from the Data Sources page. To con
 script:
   commands:
   - name: gcp-compute-firewall-patch
-    description: Updates the specified firewall rule with the data included in the request.
+    description: "Updates the specified firewall rule with the data included in the request. Required Permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list."
     arguments:
     - name: project_id
       required: true
@@ -143,7 +143,7 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
   - name: gcp-compute-firewall-insert
-    description: Creates a new firewall rule in the specified project.
+    description: "Creates a new firewall rule in the specified project. Required Permissions: compute.firewalls.create."
     arguments:
     - name: project_id
       required: true
@@ -230,7 +230,7 @@ script:
       description: The user account that performed the operation.
       type: String
   - name: gcp-compute-firewall-list
-    description: Lists firewall rules in the specified project.
+    description: "Lists firewall rules in the specified project. Required Permissions: compute.firewalls.list."
     arguments:
     - name: project_id
       required: true
@@ -287,7 +287,7 @@ script:
       description: Next page token for pagination.
       type: String
   - name: gcp-compute-firewall-get
-    description: Retrieves a specific firewall rule by name.
+    description: "Retrieves a specific firewall rule by name. Required Permissions: compute.firewalls.get."
     arguments:
     - name: project_id
       required: true
@@ -318,7 +318,7 @@ script:
       description: Target instance tags.
       type: Unknown
   - name: gcp-compute-snapshots-list
-    description: Lists snapshots in the specified project.
+    description: "Lists snapshots in the specified project. Required Permissions: compute.snapshots.list."
     arguments:
     - name: project_id
       required: true
@@ -401,7 +401,7 @@ script:
       description: Next page token for pagination.
       type: String
   - name: gcp-compute-snapshot-get
-    description: Retrieves details for a specific snapshot.
+    description: "Retrieves details for a specific snapshot. Required Permissions: compute.snapshots.get."
     arguments:
     - name: project_id
       required: true
@@ -477,7 +477,7 @@ script:
       description: List of storage locations for the snapshot.
       type: Unknown
   - name: gcp-compute-instances-aggregated-list-by-ip
-    description: Aggregated list of instances across all zones; can be filtered by internal or external IP.
+    description: "Aggregated list of instances across all zones; can be filtered by internal or external IP. Required Permissions: cloudasset.assets.searchAllResources."
     arguments:
     - name: project_id
       required: true
@@ -513,7 +513,7 @@ script:
       description: Network interfaces of the instance.
       type: Unknown
   - name: gcp-compute-network-tag-set
-    description: Adds a network tag to a VM instance (merges with existing tags).
+    description: "Adds a network tag to a VM instance (merges with existing tags). Required Permissions: compute.instances.setTags."
     arguments:
     - name: project_id
       required: true
@@ -670,7 +670,7 @@ script:
         type: string
 
   - name: gcp-storage-bucket-policy-delete
-    description: Removes an entity from a bucket's Access Control List.
+    description: "Removes an entity from a bucket's Access Control List. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -771,7 +771,7 @@ script:
 
 
   - name: gcp-compute-subnet-update
-    description: Enables flow logs or Private Google Access on a subnet.
+    description: "Enables flow logs or Private Google Access on a subnet. Required Permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     arguments:
     - name: project_id
       required: true
@@ -974,7 +974,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update
-    description: Configures security settings for GKE clusters, including access controls and visibility.
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Required Permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     arguments:
     - name: project_id
       required: true
@@ -1295,7 +1295,7 @@ script:
         type: String
 
   - name: gcp-storage-bucket-metadata-update
-    description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
+    description: "Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA). Required Permissions: storage.buckets.update."
     arguments:
     - name: project_id
       required: true
@@ -1593,7 +1593,7 @@ script:
         description: The path to the custom 404 page for the bucket website.
         type: String
   - name: gcp-storage-bucket-list
-    description: Retrieves the list of buckets in the project associated with the client.
+    description: "Retrieves the list of buckets in the project associated with the client. Required Permissions: storage.buckets.list."
     arguments:
     - name: project_id
       required: true
@@ -1651,7 +1651,7 @@ script:
         description: The link to the bucket resource on the GCP API.
         type: String
   - name: gcp-storage-bucket-get
-    description: Retrieves information about a specific bucket.
+    description: "Retrieves information about a specific bucket. Required Permissions: storage.buckets.get."
     arguments:
     - name: project_id
       required: true
@@ -1703,7 +1703,7 @@ script:
         description: The link to the bucket resource on the GCP API.
         type: String
   - name: gcp-storage-bucket-objects-list
-    description: Retrieves the list of objects in a bucket.
+    description: "Retrieves the list of objects in a bucket. Required Permissions: storage.objects.list."
     arguments:
     - name: project_id
       required: true
@@ -1779,7 +1779,7 @@ script:
       description: The time when the object was last modified.
       type: Date
   - name: gcp-storage-bucket-policy-list
-    description: Retrieves the IAM policy for a bucket.
+    description: "Retrieves the IAM policy for a bucket. Required Permissions: storage.buckets.getIamPolicy, storage.buckets.get."
     arguments:
     - name: project_id
       required: true
@@ -1805,7 +1805,7 @@ script:
       description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
       type: String
   - name: gcp-storage-bucket-policy-set
-    description: Sets the IAM policy for a bucket.
+    description: "Sets the IAM policy for a bucket. Required Permissions: storage.buckets.setIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -1835,7 +1835,7 @@ script:
       description: List of role bindings for the bucket.
       type: List
   - name: gcp-storage-bucket-object-policy-list
-    description: Retrieves the IAM policy for a specific object in a bucket.
+    description: "Retrieves the IAM policy for a specific object in a bucket. Required Permissions: storage.objects.getIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -1860,7 +1860,7 @@ script:
       description: List of role bindings for the object.
       type: List
   - name: gcp-storage-bucket-object-policy-set
-    description: Sets the IAM policy for a specific object in a bucket.
+    description: "Sets the IAM policy for a specific object in a bucket. Required Permissions: storage.objects.setIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -1888,7 +1888,7 @@ script:
       description: List of role bindings for the object.
       type: Unknown  
   - name: gcp-iam-project-policy-binding-remove
-    description: Removes a specified IAM role binding from a GCP project.
+    description: "Removes a specified IAM role binding from a GCP project. Required Permissions: resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy."
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -1946,7 +1946,7 @@ script:
   - name: gcp-compute-instance-service-account-set
     description: >
       Sets the service account for a GCP Compute Engine VM instance.
-      The instance must be stopped before the service account can be changed.
+      The instance must be stopped before the service account can be changed. Required Permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2036,7 +2036,7 @@ script:
   - name: gcp-compute-instance-service-account-remove
     description: >
       Removes the service account associated with a GCP Compute Engine VM instance.
-      The instance must be stopped before the service account can be changed.
+      The instance must be stopped before the service account can be changed. Required Permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2153,7 +2153,7 @@ script:
 
 
   - name: gcp-compute-instance-start
-    description: Starts an instance that was stopped using the instances().stop method.
+    description: "Starts an instance that was stopped using the instances().stop method. Required Permissions: compute.instances.start."
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2241,7 +2241,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified network.
+    description: "Returns the specified network. Required Permissions: compute.networks.get."
     name: gcp-compute-network-get
     outputs:
     - contextPath: GCP.Compute.Networks.id
@@ -2307,7 +2307,7 @@ script:
     - description: Name of the image resource to return.
       name: image
       required: true
-    description: Returns the specified image.
+    description: "Returns the specified image. Required Permissions: compute.images.get."
     name: gcp-compute-image-get
     outputs:
     - contextPath: GCP.Compute.Images.id
@@ -2466,7 +2466,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified Region resource.
+    description: "Returns the specified Region resource. Required Permissions: compute.regions.get."
     name: gcp-compute-region-get
     outputs:
     - contextPath: GCP.Compute.Regions.id
@@ -2538,7 +2538,7 @@ script:
     - description: The name of the zone where the instance group is located.
       name: zone
       required: true
-    description: Returns the specified instance group.
+    description: "Returns the specified instance group. Required Permissions: compute.instanceGroups.get."
     name: gcp-compute-instance-group-get
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
@@ -2595,7 +2595,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified Zone resource.
+    description: "Returns the specified Zone resource. Required Permissions: compute.zone.get."
     name: gcp-compute-zone-get
     outputs:
     - contextPath: GCP.Compute.Zones.id
@@ -2658,7 +2658,7 @@ script:
       name: order_by
     - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
       name: page_token
-    description: Retrieves the list of networks available to the specified project.
+    description: "Retrieves the list of networks available to the specified project. Required Permissions: compute.networks.list."
     name: gcp-compute-networks-list
     outputs:
     - contextPath: GCP.Compute.Networks.id
@@ -2739,7 +2739,7 @@ script:
       predefined:
       - REGIONAL
       - GLOBAL
-    description: Creates a network in the specified project using the data included in the request.
+    description: "Creates a network in the specified project using the data included in the request. Required Permissions: compute.networks.insert."
     name: gcp-compute-network-insert
     outputs:
     - contextPath: GCP.Compute.Operations.id
@@ -2838,7 +2838,7 @@ script:
 
 
   - name: gcp-compute-instance-stop
-    description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
+    description: "Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. Required Permissions: compute.instances.stop."
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2932,7 +2932,7 @@ script:
       name: order_by
     - description: Specifies a page token. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
       name: page_token
-    description: Retrieves the list of instances in the specified zone.
+    description: "Retrieves the list of instances in the specified zone. Required Permissions: compute.instances.list."
     name: gcp-compute-instances-list
     outputs:
       - contextPath: GCP.Compute.Instances.kind
@@ -3086,7 +3086,7 @@ script:
     - description: Name of the instance resource to return.
       name: instance
       required: true
-    description: Returns the specified Instance resource. To get a list of available instances, make a list() request.
+    description: "Returns the specified Instance resource. To get a list of available instances, make a list() request. Required Permissions: compute.instances.get."
     name: gcp-compute-instance-get
     outputs:
       - contextPath: GCP.Compute.Instances.id
@@ -3295,7 +3295,7 @@ script:
         predefined:
           - 'true'
           - 'false'
-    description: Sets labels on an instance.
+    description: "Sets labels on an instance. Required Permissions: compute.instances.setLabels."
     name: gcp-compute-instance-labels-set
     outputs:
       - contextPath: GCP.Compute.Operations.id

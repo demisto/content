@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### aws-s3-public-access-block-update
 
 ***
-Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket. Required IAM Permission: s3:PutBucketPublicAccessBlock.
 
 #### Base Command
 
@@ -55,7 +55,7 @@ There is no context output for this command.
 ### aws-iam-account-password-policy-get
 
 ***
-Get AWS account password policy.
+Get AWS account password policy. Required IAM Permission: iam:GetAccountPasswordPolicy.
 
 #### Base Command
 
@@ -86,7 +86,7 @@ Get AWS account password policy.
 ### aws-ec2-instance-metadata-options-modify
 
 ***
-Modify the EC2 instance metadata parameters on a running or stopped instance.
+Modify the EC2 instance metadata parameters on a running or stopped instance. Required IAM Permission: ec2:ModifyInstanceMetadataOptions.
 
 #### Base Command
 
@@ -109,7 +109,7 @@ There is no context output for this command.
 ### aws-iam-account-password-policy-update
 
 ***
-Create/update password policy.
+Create/update password policy. Required IAM Permission: iam:UpdateAccountPasswordPolicy.
 
 #### Base Command
 
@@ -137,7 +137,7 @@ There is no context output for this command.
 ### aws-ec2-security-group-ingress-revoke
 
 ***
-Revokes one or more ingress rules in a security group.
+Revokes one or more ingress rules in a security group. Required IAM Permission: ec2:RevokeSecurityGroupIngress.
 
 #### Base Command
 
@@ -163,7 +163,7 @@ There is no context output for this command.
 ### aws-iam-role-from-instance-profile-remove
 
 ***
-Removes the specified IAM role from the specified EC2 instance profile.
+Removes the specified IAM role from the specified EC2 instance profile. Required IAM Permission: iam:RemoveRoleFromInstanceProfile.
 
 #### Base Command
 
@@ -185,7 +185,7 @@ There is no context output for this command.
 ### aws-eks-cluster-config-update
 
 ***
-Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.
+Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call. Required IAM Permission: eks:UpdateClusterConfig.
 
 #### Base Command
 
@@ -208,7 +208,7 @@ There is no context output for this command.
 ### aws-rds-db-instance-modify
 
 ***
-Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance.
+Modifies an existing Amazon RDS DB instance. Allows updating various settings, including the instance class, storage capacity, security groups, and other configuration parameters, without the need to create a new instance. Required IAM Permission: rds:ModifyDBInstance.
 
 #### Base Command
 
@@ -238,7 +238,7 @@ There is no context output for this command.
 ### aws-cloudtrail-trail-update
 
 ***
-Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.
+Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown. Required IAM Permission: cloudtrail:UpdateTrail.
 
 #### Base Command
 
@@ -285,7 +285,7 @@ Updates trail settings that control what events you are logging, and how to hand
 ### aws-ec2-security-group-ingress-authorize
 
 ***
-Adds the specified inbound (ingress) rules to a security group.
+Adds the specified inbound (ingress) rules to a security group. Required IAM Permission: ec2:AuthorizeSecurityGroupIngress.
 
 #### Base Command
 
@@ -311,7 +311,7 @@ There is no context output for this command.
 ### aws-ec2-image-attribute-modify
 
 ***
-Modifies the specified attribute of the specified AMI.
+Modifies the specified attribute of the specified AMI. Required IAM Permission: ec2:ModifyImageAttribute.
 
 #### Base Command
 
@@ -337,7 +337,7 @@ There is no context output for this command.
 ### aws-rds-db-cluster-snapshot-attribute-modify
 
 ***
-Modifies the attributes associated with a DB cluster snapshot.
+Modifies the attributes associated with a DB cluster snapshot. Required IAM Permission: rds:ModifyDBClusterSnapshotAttribute.
 
 #### Base Command
 
@@ -361,7 +361,7 @@ There is no context output for this command.
 ### aws-s3-bucket-logging-put
 
 ***
-Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket.
+Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket. Required IAM Permission: s3:PutBucketLogging.
 
 #### Base Command
 
@@ -384,7 +384,7 @@ There is no context output for this command.
 ### aws-iam-login-profile-delete
 
 ***
-Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
+Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console. Required IAM Permission: iam:DeleteLoginProfile.
 
 #### Base Command
 
@@ -405,7 +405,7 @@ There is no context output for this command.
 ### aws-rds-db-snapshot-attribute-modify
 
 ***
-Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
+Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot. Required IAM Permission: rds:ModifyDBSnapshotAttribute.
 
 #### Base Command
 
@@ -429,7 +429,7 @@ There is no context output for this command.
 ### aws-s3-bucket-policy-put
 
 ***
-Applies an Amazon S3 bucket policy to an Outposts bucket.
+Applies an Amazon S3 bucket policy to an Outposts bucket. Required IAM Permission: s3:PutBucketPolicy.
 
 #### Base Command
 
@@ -451,7 +451,7 @@ There is no context output for this command.
 ### aws-cloudtrail-logging-start
 
 ***
-Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions. Required IAM Permission: cloudtrail:StartLogging.
 
 #### Base Command
 
@@ -472,7 +472,7 @@ There is no context output for this command.
 ### aws-ec2-instance-attribute-modify
 
 ***
-Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
+Modifies the specified attribute of the specified instance. You can specify only one attribute at a time. Required IAM Permission: ec2:ModifyInstanceAttribute.
 
 #### Base Command
 
@@ -497,7 +497,7 @@ There is no context output for this command.
 ### aws-iam-access-key-update
 
 ***
-Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow.
+Changes the status of the specified access key from Active to Inactive, or vice versa. This operation can be used to disable a user's access key as part of a key rotation workflow. Required IAM Permission: iam:UpdateAccessKey.
 
 #### Base Command
 
@@ -520,7 +520,7 @@ There is no context output for this command.
 ### aws-ec2-security-group-egress-revoke
 
 ***
-Removes the specified outbound (egress) rules from the specified security group.
+Removes the specified outbound (egress) rules from the specified security group. Required IAM Permission: ec2:RevokeSecurityGroupEgress.
 
 #### Base Command
 
@@ -546,7 +546,7 @@ There is no context output for this command.
 ### aws-iam-role-policy-put
 
 ***
-Adds or updates an inline policy document that is embedded in the specified IAM role.
+Adds or updates an inline policy document that is embedded in the specified IAM role. Required IAM Permission: iam:PutRolePolicy.
 
 #### Base Command
 
@@ -569,7 +569,7 @@ There is no context output for this command.
 ### aws-rds-db-cluster-modify
 
 ***
-Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options. Required IAM Permission: rds:ModifyDBCluster.
 
 #### Base Command
 
@@ -592,7 +592,7 @@ There is no context output for this command.
 ### aws-s3-public-access-block-update
 
 ***
-Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
+Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket. Required IAM Permission: s3:PutBucketPublicAccessBlock.
 
 #### Base Command
 
@@ -617,7 +617,7 @@ There is no context output for this command.
 ### aws-iam-user-policy-put
 
 ***
-Adds or updates an inline policy document that is embedded in the specified IAM user.
+Adds or updates an inline policy document that is embedded in the specified IAM user. Required IAM Permission: iam:PutUserPolicy.
 
 #### Base Command
 
@@ -640,7 +640,7 @@ There is no context output for this command.
 ### aws-s3-bucket-versioning-put
 
 ***
-Sets the versioning state of an existing bucket.
+Sets the versioning state of an existing bucket. Required IAM Permission: s3:PutBucketVersioning.
 
 #### Base Command
 
@@ -663,7 +663,7 @@ There is no context output for this command.
 ### aws-s3-bucket-acl-put
 
 ***
-Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
+Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security. Required IAM Permission: s3:PutBucketAcl.
 
 #### Base Command
 
@@ -685,7 +685,7 @@ There is no context output for this command.
 ### aws-ec2-snapshot-attribute-modify
 
 ***
-Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.
+Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications. Required IAM Permission: ec2:ModifySnapshotAttribute.
 
 #### Base Command
 
@@ -710,7 +710,7 @@ There is no context output for this command.
 ### aws-s3-bucket-encryption-get
 
 ***
-Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
+Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket. Required IAM Permission: s3:GetEncryptionConfiguration.
 
 #### Base Command
 
@@ -734,7 +734,7 @@ Retrieves the default encryption configuration for an Amazon S3 bucket. Shows th
 ### aws-s3-file-download
 
 ***
-Download a file from S3 bucket to the War Room.
+Download a file from S3 bucket to the War Room. Required IAM Permission: s3:GetObject.
 
 #### Base Command
 
@@ -767,7 +767,7 @@ Download a file from S3 bucket to the War Room.
 ### aws-s3-bucket-policy-delete
 
 ***
-Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions.
+Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions. Required IAM Permission: s3:DeleteBucketPolicy.
 
 #### Base Command
 
@@ -788,7 +788,7 @@ There is no context output for this command.
 ### aws-ecs-cluster-settings-update
 
 ***
-Updates the containerInsights setting of an ECS cluster.
+Updates the containerInsights setting of an ECS cluster. Required IAM Permission: ecs:UpdateClusterSettings.
 
 #### Base Command
 
@@ -810,7 +810,7 @@ There is no context output for this command.
 ### aws-s3-file-upload
 
 ***
-Upload file to S3 bucket.
+Upload file to S3 bucket. Required IAM Permission: s3:PutObject.
 
 #### Base Command
 
@@ -833,7 +833,7 @@ There is no context output for this command.
 ### aws-ec2-subnet-attribute-modify
 
 ***
-Modifies a subnet attribute.
+Modifies a subnet attribute. Required IAM Permission: ec2:ModifySubnetAttribute.
 
 #### Base Command
 
@@ -864,7 +864,7 @@ There is no context output for this command.
 ### aws-ec2-instances-terminate
 
 ***
-Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error.
+Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error. Required IAM Permission: ec2:TerminateInstances.
 
 #### Base Command
 
@@ -885,7 +885,7 @@ There is no context output for this command.
 ### aws-s3-public-access-block-get
 
 ***
-Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects.
+Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects. Required IAM Permission: s3:GetBucketPublicAccessBlock.
 
 #### Base Command
 
@@ -913,7 +913,7 @@ Retrieves the public access block configuration for an Amazon S3 bucket. Shows t
 ### aws-ec2-instances-stop
 
 ***
-Stops an Amazon EBS-backed instance.
+Stops an Amazon EBS-backed instance. Required IAM Permission: ec2:StopInstances.
 
 #### Base Command
 
@@ -936,7 +936,7 @@ There is no context output for this command.
 ### aws-ec2-instances-describe
 
 ***
-Describes specified instances or all instances.
+Describes specified instances or all instances. Required IAM Permission: ec2:DescribeInstances.
 
 #### Base Command
 
@@ -1055,7 +1055,7 @@ Describes specified instances or all instances.
 ### aws-s3-bucket-policy-get
 
 ***
-Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
+Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists. Required IAM Permission: s3:GetBucketPolicy.
 
 #### Base Command
 
@@ -1087,7 +1087,7 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 ### aws-cloudtrail-trails-describe
 
 ***
-Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
+Retrieves settings for the specified trail or returns information about all trails in the current AWS account. Required IAM Permission: cloudtrail:DescribeTrails.
 
 #### Base Command
 
@@ -1125,7 +1125,7 @@ Retrieves settings for the specified trail or returns information about all trai
 ### aws-ec2-instances-start
 
 ***
-Starts an Amazon EBS-backed instance that was previously stopped.
+Starts an Amazon EBS-backed instance that was previously stopped. Required IAM Permission: ec2:StartInstances.
 
 #### Base Command
 
@@ -1146,7 +1146,7 @@ There is no context output for this command.
 ### aws-ec2-snapshot-create
 
 ***
-Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance. Required IAM Permission: ec2:CreateSnapshot.
 
 #### Base Command
 
@@ -1186,7 +1186,7 @@ Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snap
 ### aws-ec2-instances-run
 
 ***
-Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe. Required IAM Permission: ec2:RunInstances.
 
 #### Base Command
 
@@ -1326,7 +1326,7 @@ Launches a specified number of instances using an AMI you have access to. You ca
 ### aws-rds-event-subscription-modify
 
 ***
-Modifies an existing RDS event notification subscription.
+Modifies an existing RDS event notification subscription. Required IAM Permission: rds:ModifyEventSubscription.
 
 #### Base Command
 
@@ -1362,7 +1362,7 @@ Modifies an existing RDS event notification subscription.
 ### aws-ec2-snapshot-permission-modify
 
 ***
-Adds or removes permission settings for the specified snapshot.
+Adds or removes permission settings for the specified snapshot. Required IAM Permission: ec2:ModifySnapshotAttribute.
 
 #### Base Command
 
@@ -1387,7 +1387,7 @@ There is no context output for this command.
 ### aws-s3-bucket-website-delete
 
 ***
-Removes the website configuration for a bucket.
+Removes the website configuration for a bucket. Required IAM Permission: s3:DeleteBucketWebsite.
 
 #### Base Command
 
@@ -1408,7 +1408,7 @@ There is no context output for this command.
 ### aws-s3-bucket-ownership-controls-put
 
 ***
-Creates or modifies OwnershipControls for an Amazon S3 bucket.
+Creates or modifies OwnershipControls for an Amazon S3 bucket. Required IAM Permission: s3:PutBucketOwnershipControls.
 
 #### Base Command
 
@@ -1430,7 +1430,7 @@ There is no context output for this command.
 ### aws-eks-cluster-describe
 
 ***
-Describes an Amazon EKS cluster.
+Describes an Amazon EKS cluster. Required IAM Permission: eks:DescribeCluster.
 
 #### Base Command
 
@@ -1489,7 +1489,7 @@ Describes an Amazon EKS cluster.
 ### aws-eks-access-policy-associate
 
 ***
-Associates an access policy and its scope to an access entry.
+Associates an access policy and its scope to an access entry. Required IAM Permission: eks:AssociateAccessPolicy.
 
 #### Base Command
 
@@ -1522,7 +1522,7 @@ Associates an access policy and its scope to an access entry.
 ### aws-billing-cost-usage-list
 
 ***
-Retrieves actual cost and usage data for a given time range and optional service filter.
+Retrieves actual cost and usage data for a given time range and optional service filter. Required IAM Permission: ce:GetCostAndUsage.
 
 #### Base Command
 
@@ -1580,7 +1580,7 @@ Retrieves actual cost and usage data for a given time range and optional service
 ### aws-billing-forecast-list
 
 ***
-Forecasts AWS spending over a given future time period using historical trends.
+Forecasts AWS spending over a given future time period using historical trends. Required IAM Permission: ce:GetCostForecast.
 
 #### Base Command
 
@@ -1624,7 +1624,7 @@ Forecasts AWS spending over a given future time period using historical trends.
 ### aws-billing-budgets-list
 
 ***
-Lists configured budgets for a given AWS account.
+Lists configured budgets for a given AWS account. Required IAM Permission: budgets:DescribeBudgets.
 
 #### Base Command
 
@@ -1672,7 +1672,7 @@ Lists configured budgets for a given AWS account.
 ### aws-billing-budget-notification-list
 
 ***
-Lists the notifications that are associated with a budget.
+Lists the notifications that are associated with a budget. Required IAM Permission: budgets:DescribeNotificationsForBudget.
 
 #### Base Command
 
@@ -1707,7 +1707,7 @@ Lists the notifications that are associated with a budget.
 ### aws-lambda-function-configuration-get
 
 ***
-Retrieves configuration information about a Lambda function.
+Retrieves configuration information about a Lambda function. Required IAM Permission: lambda:GetFunctionConfiguration.
 
 #### Base Command
 
@@ -1785,7 +1785,7 @@ Retrieves configuration information about a Lambda function.
 ### aws-lambda-function-url-config-get
 
 ***
-Returns the configuration for a Lambda function URL.
+Returns the configuration for a Lambda function URL. Required IAM Permission: lambda:GetFunctionUrlConfig.
 
 #### Base Command
 
@@ -1820,7 +1820,7 @@ Returns the configuration for a Lambda function URL.
 ### aws-lambda-policy-get
 
 ***
-Returns the resource-based IAM policy for a Lambda function.
+Returns the resource-based IAM policy for a Lambda function. Required IAM Permission: lambda:GetPolicy.
 
 #### Base Command
 
@@ -1855,7 +1855,7 @@ Returns the resource-based IAM policy for a Lambda function.
 ### aws-lambda-invoke
 
 ***
-Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this. Required IAM Permission: lambda:InvokeFunction.
 
 #### Base Command
 
@@ -1888,7 +1888,7 @@ Invokes a Lambda function. Specify just a function name to invoke the latest ver
 ### aws-lambda-function-url-config-update
 
 ***
-Updates the configuration for a Lambda function URL.
+Updates the configuration for a Lambda function URL. Required IAM Permission: lambda:UpdateFunctionUrlConfig.
 
 #### Base Command
 
@@ -1931,7 +1931,7 @@ Updates the configuration for a Lambda function URL.
 ### aws-kms-key-rotation-enable
 
 ***
-Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores. Required IAM Permission: kms:EnableKeyRotation.
 
 #### Base Command
 
@@ -1953,7 +1953,7 @@ There is no context output for this command.
 ### aws-elb-load-balancer-attributes-modify
 
 ***
-Modifies attributes for a Classic Elastic Load Balancer.
+Modifies attributes for a Classic Elastic Load Balancer. Required IAM Permission: elasticloadbalancing:ModifyLoadBalancerAttributes.
 
 #### Base Command
 
@@ -1994,7 +1994,7 @@ Modifies attributes for a Classic Elastic Load Balancer.
 ### aws-ec2-vpcs-describe
 
 ***
-Describes one or more of your VPCs.
+Describes one or more of your VPCs. Required IAM Permission: ec2:DescribeVpcs.
 
 #### Base Command
 
@@ -2034,7 +2034,7 @@ Describes one or more of your VPCs.
 ### aws-ec2-subnets-describe
 
 ***
-Describes one or more of your subnets.
+Describes one or more of your subnets. Required IAM Permission: ec2:DescribeSubnets.
 
 #### Base Command
 
@@ -2073,7 +2073,7 @@ Describes one or more of your subnets.
 ### aws-ec2-ipam-resource-discoveries-describe
 
 ***
-Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account. Required IAM Permission: ec2:DescribeIpamResourceDiscoveries.
 
 #### Base Command
 
@@ -2103,7 +2103,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 ### aws-ec2-ipam-resource-discovery-associations-describe
 
 ***
-Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM. Required IAM Permission: ec2:DescribeIpamResourceDiscoveryAssociations.
 
 #### Base Command
 
@@ -2133,7 +2133,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 ### aws-ec2-latest-ami-get
 
 ***
-Get The latest AMI.
+Get The latest AMI. Required IAM Permission: ec2:DescribeImages.
 
 #### Base Command
 
@@ -2197,7 +2197,7 @@ Get The latest AMI.
 ### aws-ec2-network-acl-create
 
 ***
-Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC.
+Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC. Required IAM Permission: ec2:CreateNetworkAcl.
 
 #### Base Command
 
@@ -2240,7 +2240,7 @@ Creates a network ACL in a VPC. Network ACLs provide an optional layer of securi
 ### aws-ec2-ipam-discovered-public-addresses-get
 
 ***
-Gets the public IP addresses that have been discovered by IPAM.
+Gets the public IP addresses that have been discovered by IPAM. Required IAM Permission: ec2:GetIpamDiscoveredPublicAddresses.
 
 #### Base Command
 
@@ -2273,7 +2273,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 ### aws-ec2-tags-create
 
 ***
-Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value.
+Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value. Required IAM Permission: ec2:CreateTags.
 
 #### Base Command
 
@@ -2295,7 +2295,7 @@ There is no context output for this command.
 ### aws-s3-bucket-website-get
 
 ***
-Returns the website configuration for a bucket.
+Returns the website configuration for a bucket. Required IAM Permission: s3:GetBucketWebsite.
 
 #### Base Command
 
@@ -2321,7 +2321,7 @@ Returns the website configuration for a bucket.
 ### aws-s3-bucket-acl-get
 
 ***
-Return the access control list (ACL) of a bucket.
+Return the access control list (ACL) of a bucket. Required IAM Permission: s3:GetBucketAcl.
 
 #### Base Command
 
@@ -2345,7 +2345,7 @@ Return the access control list (ACL) of a bucket.
 ### aws-acm-certificate-options-update
 
 ***
-Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED). Required IAM Permission: acm:UpdateCertificateOptions.
 
 #### Base Command
 
@@ -2367,7 +2367,7 @@ There is no context outputs for this command.
 ### aws-ec2-security-group-create
 
 ***
-Creates a security group.
+Creates a security group. Required IAM Permission: ec2:CreateSecurityGroup.
 
 #### Base Command
 
@@ -2390,7 +2390,7 @@ There is no context output for this command.
 ### aws-ec2-security-group-delete
 
 ***
-Deletes a security group.
+Deletes a security group. Required IAM Permission: ec2:DeleteSecurityGroup.
 
 #### Base Command
 
@@ -2412,7 +2412,7 @@ There is no context output for this command.
 ### aws-ec2-security-groups-describe
 
 ***
-Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information.
+Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information. Required IAM Permission: ec2:DescribeSecurityGroups.
 
 #### Base Command
 
@@ -2450,7 +2450,7 @@ Describes the specified security groups or all of your security groups. Returns 
 ### aws-ec2-security-group-egress-authorize
 
 ***
-Adds the specified inbound (egress) rules to a security group.
+Adds the specified inbound (egress) rules to a security group. Required IAM Permission: ec2:AuthorizeSecurityGroupEgress.
 
 #### Base Command
 
@@ -2476,7 +2476,7 @@ There is no context output for this command.
 ### aws-ssm-inventory-entries-list
 
 ***
-Returns a list of inventory items.
+Returns a list of inventory items. Required IAM Permission: ssm:ListInventoryEntries.
 
 #### Base Command
 
@@ -2508,7 +2508,7 @@ Returns a list of inventory items.
 ### aws-s3-buckets-list
 
 ***
-Returns a list of all buckets owned by the authenticated sender of the request.
+Returns a list of all buckets owned by the authenticated sender of the request. Required IAM Permission: s3:ListAllMyBuckets.
 
 #### Base Command
 
@@ -2541,7 +2541,7 @@ Returns a list of all buckets owned by the authenticated sender of the request.
 ### aws-ssm-command-run
 
 ***
-Runs commands on one or more managed nodes.
+Runs commands on one or more managed nodes. Required IAM Permission: ssm:SendCommand, ssm:ListCommands.
 
 #### Base Command
 
@@ -2605,7 +2605,7 @@ Runs commands on one or more managed nodes.
 ### aws-ec2-regions-describe
 
 ***
-Describes the Regions that are enabled for your account, or all Regions.
+Describes the Regions that are enabled for your account, or all Regions. Required IAM Permission: ec2:DescribeRegions.
 
 #### Base Command
 
@@ -2632,7 +2632,7 @@ Describes the Regions that are enabled for your account, or all Regions.
 ### aws-s3-bucket-create
 
 ***
-Creates a new S3 bucket.
+Creates a new S3 bucket. Required IAM Permission: s3:CreateBucket.
 
 #### Base Command
 
@@ -2664,7 +2664,7 @@ Creates a new S3 bucket.
 ### aws-ec2-network-interface-attribute-modify
 
 ***
-Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
+Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance. Required IAM Permission: ec2:ModifyNetworkInterfaceAttribute.
 
 #### Base Command
 

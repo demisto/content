@@ -120,7 +120,7 @@ script:
       predefined:
       - Allow
       - Deny
-    description: Update a security rule. If one does not exist, it will be created.
+    description: "Update a security rule. If one does not exist, it will be created. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
     name: azure-nsg-security-rule-update
     outputs:
     - contextPath: Azure.NSGRule.name
@@ -327,7 +327,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Updates a specific account storage.
+    description: "Updates a specific account storage. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
     name: azure-storage-account-update
     outputs:
     - contextPath: Azure.StorageAccount.id
@@ -420,7 +420,7 @@ script:
       type: bool
     - description: The number of days the deleted item should be retained.
       name: delete_rentention_policy_days
-    description: Sets properties for the blob service in a specific account storage.
+    description: "Sets properties for the blob service in a specific account storage. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write."
     name: azure-storage-blob-service-properties-set
     outputs:
     - contextPath: Azure.StorageAccountBlobServiceProperties.id
@@ -551,7 +551,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve properties for the specified Container.
+    description: "Retrieve properties for the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/read."
     name: azure-storage-container-property-get
     outputs:
     - contextPath: Azure.StorageContainer.Container.Property.last_modified
@@ -591,7 +591,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Create a new Container under the specified account.
+    description: "Create a new Container under the specified account. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
     name: azure-storage-container-create
 
   - arguments:
@@ -607,7 +607,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
+    description: "Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/delete."
     execution: true
     name: azure-storage-container-delete
 
@@ -629,7 +629,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve Blob from Container.
+    description: "Retrieve Blob from Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     name: azure-storage-container-blob-create
 
   - arguments:
@@ -648,7 +648,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve Blob from Container.
+    description: "Retrieve Blob from Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     name: azure-storage-container-blob-get
     outputs:
     - contextPath: File.Size
@@ -698,7 +698,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve the tags of the specified Blob.
+    description: "Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read."
     name: azure-storage-container-blob-tag-get
     outputs:
     - contextPath: Azure.StorageContainer.Container.Blob.Tag.Key
@@ -740,7 +740,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags.
+    description: "Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write."
     name: azure-storage-container-blob-tag-set
 
   - arguments:
@@ -759,7 +759,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Retrieve Blob properties.
+    description: "Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     name: azure-storage-container-blob-property-get
     outputs:
     - contextPath: Azure.StorageContainer.Container.Blob.Property.last_modified
@@ -840,7 +840,7 @@ script:
       name: request_id
     - description: Required if the blob has an active lease.
       name: lease_id
-    description: Set Blob properties.
+    description: "Set Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     name: azure-storage-container-blob-property-set
 
   - arguments:
@@ -856,7 +856,7 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    description: Block public access to a container.
+    description: "Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action."
     name: azure-storage-container-public-access-block
 
   - arguments:
@@ -883,7 +883,7 @@ script:
       type: string
       description: This message will be part of the response in case of policy violation.
     name: azure-policy-assignment-create
-    description: Creates a policy assignment.
+    description: "Creates a policy assignment. Required Permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write."
     outputs:
     - contextPath: Azure.PolicyAssignment.ID
       description: The resource ID of the policy assignment.
@@ -958,7 +958,7 @@ script:
       type: string
       description: Value of the configuration.
     name: azure-postgres-config-set
-    description: Updates a configuration of a server.
+    description: "Updates a configuration of a server. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: resource_group_name
@@ -1000,7 +1000,7 @@ script:
       - '1.2'
       - '1.3'
     name: azure-webapp-config-set
-    description: Updates the configuration settings of an existing Azure Web App.
+    description: "Updates the configuration settings of an existing Azure Web App. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     outputs:
     - contextPath: Azure.WebAppConfig.id
       description: Resource ID.
@@ -1111,7 +1111,7 @@ script:
       - 'true'
       - 'false'
     name: azure-webapp-auth-update
-    description: Updates the authentication and authorization settings of an existing Azure Web App.
+    description: "Updates the authentication and authorization settings of an existing Azure Web App. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     outputs:
     - contextPath: Azure.WebAppAuth.id
       description: Resource ID.
@@ -1235,7 +1235,7 @@ script:
       required: false
       description: Value of the configuration.
     name: azure-mysql-flexible-server-param-set
-    description: Updates a configuration of a server.
+    description: "Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
     outputs: [] # No outputs are returned in response
   - arguments:
     - name: log_profile_name
@@ -1259,7 +1259,7 @@ script:
       - 'true'
       - 'false'
     name: azure-monitor-log-profile-update
-    description: Updates a log profile in Azure Monitoring REST API.
+    description: "Updates a log profile in Azure Monitoring REST API. Required Permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write."
     outputs:
     - contextPath: Azure.LogProfile.id
       type: String
@@ -1332,7 +1332,7 @@ script:
       - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
     name: azure-disk-update
-    description: Updates a disk.
+    description: "Updates a disk. Required Permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
     outputs:
     - contextPath: Azure.Disk.id
       description: Resource ID of the disk.
@@ -1470,7 +1470,7 @@ script:
       - 'true'
       - 'false'
     name: azure-webapp-update
-    description: Updates an Azure Web App.
+    description: "Updates an Azure Web App. Required Permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
     outputs:
     - contextPath: Azure.WebApp.id
       description: Fully qualified resource ID for the web app.
@@ -1713,7 +1713,7 @@ script:
       - enabled
       description: Whether the policy is enabled or not.
     name: azure-acr-update
-    description: Updates a container registry.
+    description: "Updates a container registry. Required Permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
     outputs:
     - contextPath: Azure.ACR.id
       description: The resource ID.
@@ -1804,7 +1804,7 @@ script:
       - Disabled
       - Enabled
     name: azure-postgres-server-update
-    description: Updates an existing server.
+    description: "Updates an existing server. Required Permissions: Microsoft.DBforPostgreSQL/servers/read, Microsoft.DBforPostgreSQL/servers/write."
     outputs: [] # No outputs are returned in the response.
   - arguments:
     - description: Key Vault name.
@@ -1830,7 +1830,7 @@ script:
       auto: PREDEFINED
       predefined:
       - 'true'
-    description: Updates a key vault in the specified subscription.
+    description: "Updates a key vault in the specified subscription. Required Permissions: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write."
     name: azure-key-vault-update
     outputs:
     - contextPath: Azure.KeyVault.id
@@ -1923,7 +1923,7 @@ script:
     - description: The name of the resource group.
       name: resource_group_name
       required: true
-    description: Updates the database's threat detection policy.
+    description: "Updates the database's threat detection policy. Required Permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
     name: azure-sql-db-threat-policy-update
     outputs:
     - contextPath: Azure.SqlDBThreatPolicy.kind
@@ -1993,7 +1993,7 @@ script:
     - description: The name of the resource group.
       name: resource_group_name
       required: true
-    description: Updates a logical database's transparent data encryption configuration.
+    description: "Updates a logical database's transparent data encryption configuration. Required Permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write."
     name: azure-sql-db-transparent-data-encryption-set
     outputs: [] # has no outputs for this command from response
   - arguments:
@@ -2013,7 +2013,7 @@ script:
     - description: The name of the resource group.
       required: true
       name: resource_group_name
-    description: Updates the properties of an existing Azure Cosmos DB database account.
+    description: "Updates the properties of an existing Azure Cosmos DB database account. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write."
     name: azure-cosmos-db-update
     outputs:
     - contextPath: Azure.CosmosDB.id
@@ -2148,7 +2148,7 @@ script:
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
   - name: azure-nsg-security-groups-list
-    description: List all network security groups.
+    description: "List all network security groups. Required Permissions: Microsoft.Network/networkSecurityGroups/read."
     outputs:
       - contextPath: Azure.NSGSecurityGroup.name
         description: The security group's name.
@@ -2193,7 +2193,7 @@ script:
         type: String
         required: true
   - name: azure-nsg-security-rule-get
-    description: Get a specific rule.
+    description: "Get a specific rule. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
     outputs:
       - contextPath: Azure.NSGRule.name
         description: The rule's name.
@@ -2260,7 +2260,7 @@ script:
         name: security_rule_name
         required: true
   - name: azure-nsg-security-rules-list
-    description: Gets all security rules in a network security group.
+    description: "Gets all security rules in a network security group. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
     arguments:
       - description: The subscription ID.
         name: subscription_id
@@ -2309,7 +2309,7 @@ script:
         description: The rule's direction, which can be "Inbound" or "Outbound".
         type: String
   - name: azure-nsg-security-rule-create
-    description: Create a security rule.
+    description: "Create a security rule. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
     outputs:
       - contextPath: Azure.NSGRule.name
         description: The rule's name.
@@ -2625,7 +2625,7 @@ script:
           - "false"
           - "true"
   - name: azure-vm-instance-start
-    description: Powers on a given virtual machine.
+    description: "Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/start/action."
     execution: true
     arguments:
     - description: The subscription ID.
@@ -2650,7 +2650,7 @@ script:
       description: Whether the VM instance is powered on or off.
       type: string
   - name: azure-vm-instance-power-off
-    description: Powers off a given virtual machine.
+    description: "Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/poweroff/action."
     execution: true
     arguments:
     - description: The subscription ID.
@@ -2682,7 +2682,7 @@ script:
       description: Whether the virtual machine instance is powered on or off.
       type: string
   - name: azure-vm-instance-details-get
-    description: Gets the properties of a given virtual machine.
+    description: "Gets the properties of a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read."
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2753,7 +2753,7 @@ script:
       description: The configuration for boot diagnostics and monitoring of the virtual machine.
       type: string
   - name: azure-vm-network-interface-details-get
-    description: Gets the properties of a given network interface.
+    description: "Gets the properties of a given network interface. Required Permissions: Microsoft.Network/networkInterfaces/read."
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2810,7 +2810,7 @@ script:
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
   - name: azure-vm-public-ip-details-get
-    description: Gets the properties of a given public IP address.
+    description: "Gets the properties of a given public IP address. Required Permissions: Microsoft.Network/publicIPAddresses/read."
     arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -2891,7 +2891,7 @@ script:
       prettyname: NSG Rule
       prettypredefined:
         NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
-    description: "Deletes a network security group (NSG) rule."
+    description: "Deletes a network security group (NSG) rule. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete."
     name: azure-nsg-security-rule-delete-quick-action
     prettyname: Delete NSG Rule
     hidden: true
@@ -2973,7 +2973,7 @@ script:
       defaultValue: SystemAssigned
       description: Managed service identity type.
       hidden: true
-    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials."
+    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. Required Permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
     name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
     quickaction: true
@@ -3208,7 +3208,7 @@ script:
       auto: PREDEFINED
       isArray: true
       defaultValue: AzureServices
-    description: "Configures the storage account's network rules to allow traffic from trusted Azure services."
+    description: "Configures the storage account's network rules to allow traffic from trusted Azure services. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
     name: azure-storage-allow-access-quick-action
     prettyname: Allow Access by Trusted Services
     quickaction: true
@@ -3318,7 +3318,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Enables HTTP 2.0 for the web app."
+    description: "Enables HTTP 2.0 for the web app. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     name: azure-webapp-set-http2-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
     quickaction: true
@@ -3442,7 +3442,7 @@ script:
       required: false
       description: Whether App Service Authentication/Authorization is enabled.
       defaultValue: 'true'
-    description: "Enables App Service Authentication for the web app."
+    description: "Enables App Service Authentication for the web app. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     name: azure-webapp-auth-update-quick-action
     prettyname: Enable Azure App Service Auth
     quickaction: true
@@ -3571,7 +3571,7 @@ script:
       description: Whether to allow AD cross-tenant object replication.
       name: allow_cross_tenant_replication
       defaultValue: 'false'
-    description: "Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants."
+    description: "Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
     name: azure-storage-disable-cross-tenant-replication-quick-action
     prettyname: Disable Storage Account Cross Tenant Replication
     quickaction: true
@@ -3684,7 +3684,7 @@ script:
       defaultValue: 'true'
     name: azure-set-function-app-http-version2-0-quick-action
     prettyname: Set Function App HTTP Version to 2.0
-    description: "Enables HTTP 2.0 for the Function App."
+    description: "Enables HTTP 2.0 for the Function App. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     quickaction: true
     hidden: true
     outputs:
@@ -3803,7 +3803,7 @@ script:
       name: allow_blob_public_access
       defaultValue: 'false'
     name: azure-storage-disable-storage-account-public-access-quick-action
-    description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs."
+    description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
     prettyname: Disable Storage Account Public Access
     hidden: true
     quickaction: true
@@ -3910,7 +3910,7 @@ script:
       required: false
       description: Whether remote debugging is enabled.
       defaultValue: 'false'
-    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access."
+    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     name: azure-webapp-disable-remote-debugging-quick-action
     prettyname: Disable Remote Debugging on Azure App
     hidden: true
@@ -4003,7 +4003,7 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
   - name: azure-billing-usage-list
-    description: Returns actual usage and cost details for a given time period, optionally filtered by service name.
+    description: "Returns actual usage and cost details for a given time period, optionally filtered by service name. Required Permissions: Microsoft.Consumption/usageDetails/read."
     arguments:
       - name: subscription_id
         description: The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
@@ -4207,7 +4207,7 @@ script:
         description: Next page token for pagination.
         type: String
   - name: azure-billing-forecast-list
-    description: Returns cost forecast for a subscription over a given time range.
+    description: "Returns cost forecast for a subscription over a given time range. Required Permissions: Microsoft.CostManagement/forecast/read."
     arguments:
       - name: subscription_id
         description: Azure subscription ID (required).
@@ -4290,7 +4290,7 @@ script:
         description: Currency code for the forecast.
         type: String
   - name: azure-billing-budgets-list
-    description: Lists configured budgets at the subscription or resource group scope.
+    description: "Lists configured budgets at the subscription or resource group scope. Required Permissions: Microsoft.Consumption/budgets/read."
     arguments:
       - name: subscription_id
         description: The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
@@ -4408,7 +4408,7 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: Sets the web app's minimum accepted TLS version to 1.2 to enhance security.
+    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     name: azure-webapp-set-min-tls-version-quick-action
     prettyname: Set Web App Min TLS Version
     hidden: true
@@ -4536,7 +4536,7 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: Sets the Function App's minimum accepted TLS version to 1.2 to enhance security.
+    description: "Sets the Function App's minimum accepted TLS version to 1.2 to enhance security. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     name: azure-function-app-set-min-tls-version-quick-action
     prettyname: Set Function App Min TLS Version
     hidden: true
@@ -4662,7 +4662,7 @@ script:
       type: string
       description: Configuration value.
       defaultValue: 'on'
-    description: Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server.
+    description: "Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server. Required Permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
     name: azure-mysql-set-secure-transport-quick-action
     prettyname: Set Secure Transport for MySQL
     hidden: true
@@ -4695,7 +4695,7 @@ script:
       description: Default action when no other network rule matches.
       name: network_ruleset_default_action
       defaultValue: Deny
-    description: Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access.
+    description: "Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
     name: azure-network-disable-storage-account-access-quick-action
     prettyname: Disable Network Access to Storage Account
     hidden: true
@@ -4801,7 +4801,7 @@ script:
       description: Whether to enable the retention policy.
       type: bool
       defaultValue: 'true'
-    description: Sets the log profile’s retention policy to 365 days and enables it across all supported locations.
+    description: "Sets the log profile’s retention policy to 365 days and enables it across all supported locations. Required Permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write."
     name: azure-monitor-log-retention-period-quick-action
     prettyname: Update Azure Monitor Log Retention Period
     hidden: true
@@ -4868,7 +4868,7 @@ script:
       description: Whether to allow only HTTPS traffic to the storage account.
       name: supports_https_traffic_only
       defaultValue: 'true'
-    description: Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP.
+    description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
     name: azure-set-storage-account-https-only-quick-action
     prettyname: Set Storage Account to HTTPS only
     hidden: true
@@ -4976,7 +4976,7 @@ script:
       prettyname: Identity Type
       defaultValue: 'SystemAssigned'
       hidden: true
-    description: Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them.
+    description: "Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. Required Permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
     name: azure-webapp-update-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Function App
     hidden: true
@@ -5219,7 +5219,7 @@ script:
       defaultValue: '30'
       type: number
       hidden: true
-    description: Enables blob soft delete for the storage account to retain deleted blobs for 30 days.
+    description: "Enables blob soft delete for the storage account to retain deleted blobs for 30 days. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write."
     name: azure-storage-blob-enable-soft-delete-quick-action
     prettyname: Enable Soft Delete on Blob
     hidden: true
@@ -5288,7 +5288,7 @@ script:
       description: Policy for accessing the disk via network.
       defaultValue: 'DenyAll'
       hidden: true
-    description: Disables all public and private network access for the managed disk.
+    description: "Disables all public and private network access for the managed disk. Required Permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
     name: azure-disable-public-private-access-vm-disk-quick-action
     prettyname: Disable Public & Private Access to VM Disk
     hidden: true
@@ -5426,7 +5426,7 @@ script:
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
       defaultValue: AzureActiveDirectory
       hidden: true
-    description: Sets the data access authentication mode for the managed disk to Azure Active Directory.
+    description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. Required Permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write."
     name: azure-disk-set-data-access-ad-quick-action
     prettyname: Set Disk Data Access to AD
     hidden: true
@@ -5568,7 +5568,7 @@ script:
       description: Whether public network access is allowed for the container registry.
       defaultValue: Disabled
       hidden: true
-    description: Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security.
+    description: "Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. Required Permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
     name: azure-acr-disable-public-private-access-quick-action
     prettyname: Disable Public Access and Exports on ACR
     hidden: true
@@ -5672,7 +5672,7 @@ script:
       description: Whether the policy is enabled or not.
       defaultValue: disabled
       hidden: true
-    description: Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR).
+    description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). Required Permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
     name: azure-acr-disable-authentication-as-arm-quick-action
     prettyname: Disable ACR Authentication as ARM
     hidden: true
@@ -5777,7 +5777,7 @@ script:
       description: Whether to enable registry-wide pulls from unauthenticated clients.
       defaultValue: 'false'
       hidden: true
-    description: Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images.
+    description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. Required Permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write."
     name: azure-acr-disable-anonymous-pull-quick-action
     prettyname: Disable ACR Anonymous Pull
     hidden: true
@@ -5893,7 +5893,7 @@ script:
       Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
       for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
       disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
-      Rules for adaptive application controls, endpoint protection, and security configuration are excluded.   
+      Rules for adaptive application controls, endpoint protection, and security configuration are excluded. Required Permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
     prettyname: Apply MS Defender Policy
     quickaction: true
     hidden: true
@@ -5990,7 +5990,7 @@ script:
     prettyname: Enable Disconnection Logging on PostgreSQL
     hidden: true
     quickaction: true
-    description: Enables logging of client disconnections on the PostgreSQL server.
+    description: "Enables logging of client disconnections on the PostgreSQL server. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
@@ -6035,7 +6035,7 @@ script:
     prettyname: Enable PostgreSQL Checkpoint Logging
     hidden: true
     quickaction: true
-    description: Enables checkpoint logging on the PostgreSQL server.
+    description: "Enables checkpoint logging on the PostgreSQL server. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
@@ -6080,7 +6080,7 @@ script:
     prettyname: Enable Connection Throttling on PostgreSQL
     hidden: true
     quickaction: true
-    description: Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
+    description: "Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
@@ -6125,7 +6125,7 @@ script:
     prettyname: Enable Session Connection Logging on PostgreSQL
     hidden: true
     quickaction: true
-    description: Enables logging of client connections on the PostgreSQL.
+    description: "Enables logging of client connections on the PostgreSQL. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
@@ -6170,7 +6170,7 @@ script:
     prettyname: Set Postgres Log Retention
     hidden: true
     quickaction: true
-    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: The recommended log retention period can be any value from 4 to 7 days.'
+    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: The recommended log retention period can be any value from 4 to 7 days. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write.'
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
@@ -6215,7 +6215,7 @@ script:
     prettyname: Enable Postgres Statement Logging
     hidden: true
     quickaction: true
-    description: Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis.
+    description: "Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis. Required Permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
@@ -6248,7 +6248,7 @@ script:
       defaultValue: Enabled
       hidden: true
     name: azure-postgres-server-update-ssl-enforcement-quick-action
-    description: Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.
+    description: "Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic. Required Permissions: Microsoft.DBforPostgreSQL/servers/read, Microsoft.DBforPostgreSQL/servers/write."
     outputs: [] # No outputs are returned in the response.
     hidden: true
     quickaction: true
