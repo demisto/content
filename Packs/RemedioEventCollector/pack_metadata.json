@@ -1,0 +1,13 @@
+{
+  "name": "Remedio Event Collector",
+  "description": "Ingests misconfiguration events from Remedio (Gytpol) into the XSIAM data lake.",
+  "support": "community",
+  "currentVersion": "1.0.0",
+  "author": "Joe Plunkett",
+  "url": "",
+  "categories": ["Analytics & SIEM"],
+  "tags": ["remedio", "gytpol", "misconfigurations"],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": ["marketplacev2"]
+}
