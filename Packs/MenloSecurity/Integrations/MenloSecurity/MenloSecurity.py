@@ -1,8 +1,13 @@
 import hashlib
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
+from datetime import UTC
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa
+from ContentClientApiModule import *
 
 """ CONSTANTS """
 
@@ -18,10 +23,9 @@ API_PATH = "/api/rep/v1/fetch/client_select"
 
 # Mapping from UI log type name to API log_type value.
 # "safemail" is the name used in the official Menlo Python script; the API body uses "email".
-# TODO: Verify that "safemail" is the correct UI label (the official script uses it, but the
-#       API docs use "email" as the log_type value). Confirm with Menlo Security.
-# TODO: Verify that "isoc" is a valid log_type for this API endpoint. The official Python
-#       script help text does not list it, but the Logging API docs mention it as valid.
+# TODO: Verify that "safemail" is the correct UI label. Confirm with Menlo Security.
+# TODO: Verify that "isoc" is a valid log_type. The official Python script help text does not
+#       list it, but the Logging API docs mention it as valid.
 LOG_TYPE_MAP: dict[str, str] = {
     "web": "web",
     "safemail": "email",
@@ -32,7 +36,7 @@ LOG_TYPE_MAP: dict[str, str] = {
     "isoc": "isoc",
 }
 
-# Mapping from UI log type name to the source_log_type value added to each event.
+# Maps UI log type name to the source_log_type field added to each enriched event.
 SOURCE_LOG_TYPE_MAP: dict[str, str] = {
     "web": "web_logs",
     "safemail": "email_logs",
@@ -49,16 +53,22 @@ ALL_LOG_TYPES = list(LOG_TYPE_MAP.keys())
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
-    """Client class to interact with the Menlo Security Logging API.
+class Client(ContentClient):
+    """Menlo Security Logging API client.
 
-    Authenticates via an API token passed in the POST body.
-    All log fetch requests are POST to /api/rep/v1/fetch/client_select.
+    Extends ContentClient for built-in retry, rate-limit handling, and thread safety.
+    Authenticates via an API token passed in the POST body of each request.
     """
 
     def __init__(self, base_url: str, token: str, verify: bool, proxy: bool) -> None:
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._token = token
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            client_name="MenloSecurity",
+            ok_codes=(200,),
+        )
 
     def fetch_log_page(
         self,
@@ -71,37 +81,21 @@ class Client(BaseClient):
         """Fetch a single page of logs from the Menlo Security API.
 
         Args:
-            log_type: The API log_type value (e.g. "web", "email", "audit").
+            log_type: API log_type value (e.g. "web", "email", "audit").
             start: UTC start time in seconds since epoch.
             end: UTC end time in seconds since epoch.
-            limit: Maximum number of records per page (max 1000).
-            paging_identifiers: Pagination state from the previous response.
-                                 None or empty dict for the first page.
+            limit: Maximum records per page (API max: 1000).
+            paging_identifiers: Pagination state from the previous response; None for first page.
 
         Returns:
-            dict: The full API response JSON.
+            dict: Full API response JSON.
         """
-        params = {
-            "start": start,
-            "end": end,
-            "limit": limit,
-            "format": "json",
-        }
-        body: dict[str, Any] = {
-            "token": self._token,
-            "log_type": log_type,
-        }
+        params = {"start": start, "end": end, "limit": limit, "format": "json"}
+        body: dict[str, Any] = {"token": self._token, "log_type": log_type}
         if paging_identifiers:
             body["pagingIdentifiers"] = paging_identifiers
 
-        return self._http_request(
-            method="POST",
-            url_suffix=API_PATH,
-            params=params,
-            json_data=body,
-            resp_type="json",
-            ok_codes=(200,),
-        )
+        return self.post(url_suffix=API_PATH, params=params, json_data=body)
 
 
 """ HELPER FUNCTIONS """
@@ -109,7 +103,7 @@ class Client(BaseClient):
 
 def epoch_to_timestamp(epoch_seconds: int) -> str:
     """Convert epoch seconds to ISO 8601 timestamp string."""
-    return datetime.utcfromtimestamp(epoch_seconds).strftime(DATE_FORMAT)
+    return datetime.fromtimestamp(epoch_seconds, UTC).strftime(DATE_FORMAT)
 
 
 def timestamp_to_epoch(timestamp: str) -> int:
@@ -121,27 +115,23 @@ def timestamp_to_epoch(timestamp: str) -> int:
 
 
 def hash_event(event: dict) -> str:
-    """Return a stable MD5 hex digest of an event dict.
-
-    Used for cross-cycle dedup: events at the boundary timestamp are hashed
-    so the next cycle can identify and skip exact duplicates.
-    """
+    """Return a stable MD5 hex digest of an event dict (used for cross-cycle dedup)."""
     serialized = json.dumps(event, sort_keys=True, default=str)
     return hashlib.md5(serialized.encode()).hexdigest()  # noqa: S324
 
 
 def get_boundary_hashes(events: list[dict], boundary_time: str) -> list[str]:
-    """Return hashes of all events whose event_time equals boundary_time.
+    """Return hashes of all events at boundary_time.
 
-    Iterates backwards (most efficient since boundary events are at the end)
-    and stops as soon as a different timestamp is encountered.
+    Iterates backwards (boundary events are at the end) and stops at the first
+    event with a different timestamp.
 
     Args:
-        events: List of events in ascending time order.
+        events: Events in ascending time order.
         boundary_time: The event_time of the last (most recent) event.
 
     Returns:
-        list[str]: MD5 hashes of all events at the boundary timestamp.
+        MD5 hashes of all events at the boundary timestamp.
     """
     hashes: list[str] = []
     for event in reversed(events):
@@ -164,29 +154,23 @@ def get_events_for_log_type(
 
     Args:
         client: The Menlo Security API client.
-        log_type_ui: The UI log type name (e.g. "web", "safemail").
+        log_type_ui: UI log type name (e.g. "web", "safemail").
         start_epoch: Fetch start time as epoch seconds.
         end_epoch: Fetch end time as epoch seconds.
-        max_events: Maximum total events to collect for this log type.
-        enrich: If True, add _time and source_log_type fields to each event.
-                Should be True when sending to XSIAM, False for display-only.
+        max_events: Maximum total events to collect.
+        enrich: Add _time and source_log_type to each event. True when sending to XSIAM.
 
     Returns:
-        list[dict]: All collected events, enriched if enrich=True.
+        Collected events, enriched if enrich=True.
     """
+    thread_name = threading.current_thread().name
     api_log_type = LOG_TYPE_MAP[log_type_ui]
-    source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui]
     events: list[dict] = []
     paging_identifiers: dict | None = None
 
     while len(events) < max_events:
-        remaining = max_events - len(events)
-        page_limit = min(MAX_EVENTS_PER_PAGE, remaining)
-
-        demisto.debug(
-            f"Fetching {log_type_ui} logs: start={start_epoch}, end={end_epoch}, "
-            f"page_limit={page_limit}, paging_identifiers={paging_identifiers}"
-        )
+        page_limit = min(MAX_EVENTS_PER_PAGE, max_events - len(events))
+        demisto.debug(f"[{thread_name}] Fetching {log_type_ui}: start={start_epoch}, end={end_epoch}, limit={page_limit}")
 
         try:
             response = client.fetch_log_page(
@@ -197,24 +181,25 @@ def get_events_for_log_type(
                 paging_identifiers=paging_identifiers,
             )
         except Exception as e:
-            demisto.error(f"Error fetching {log_type_ui} logs: {e}")
+            demisto.error(f"[{thread_name}] Error fetching {log_type_ui}: {e}")
             break
 
         # The API may return an empty 200 response (Content-Length: 0) when there is no data.
         if not response:
-            demisto.debug(f"Empty response for {log_type_ui} logs — no data available.")
+            demisto.debug(f"[{thread_name}] Empty response for {log_type_ui} — no data.")
             break
 
         result = response.get("result", {})
         page_events = result.get("events", [])
 
         if not page_events:
-            demisto.debug(f"No more events for {log_type_ui} logs.")
+            demisto.debug(f"[{thread_name}] No more events for {log_type_ui}.")
             break
 
-        demisto.debug(f"Fetched {len(page_events)} {log_type_ui} events in this page.")
+        demisto.debug(f"[{thread_name}] Got {len(page_events)} {log_type_ui} events.")
 
         # Per the API docs, each element in the events list is {"event": {...}}.
+        source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
         for event in page_events:
             inner = event.get("event", event)  # unwrap the {"event": {...}} envelope
             if enrich:
@@ -228,47 +213,32 @@ def get_events_for_log_type(
                 inner["source_log_type"] = source_log_type
             events.append(inner)
 
-        # Update paging state for the next request.
         paging_identifiers = result.get("pagingIdentifiers") or {}
         if not paging_identifiers:
-            demisto.debug(f"No pagingIdentifiers returned — all {log_type_ui} events fetched.")
+            demisto.debug(f"[{thread_name}] All {log_type_ui} events fetched.")
             break
 
-    demisto.debug(f"Total {log_type_ui} events collected: {len(events)}")
+    demisto.debug(f"[{thread_name}] Collected {len(events)} {log_type_ui} events total.")
     return events
 
 
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, log_types: list[str]) -> str:
+def test_module(client: Client, log_types: list[str]) -> str:  # noqa: PT
     """Test API connectivity and authentication.
 
-    Fetches a single record for each configured log type for the last 1 hour.
-    Returns 'ok' on success, a descriptive error string for known failures,
-    or raises an exception for unexpected errors.
-
-    Args:
-        client: The Menlo Security API client.
-        log_types: List of selected log type UI names.
-
-    Returns:
-        str: 'ok' if all configured log types are reachable.
+    Fetches one record per configured log type for the last 1 hour.
+    Returns 'ok' on success, a descriptive string for known errors, or re-raises unexpected ones.
     """
-    end_epoch = int(datetime.utcnow().timestamp())
+    end_epoch = int(datetime.now(UTC).timestamp())
     start_epoch = end_epoch - 3600  # last 1 hour
 
-    types_to_test = log_types if log_types else ALL_LOG_TYPES
-    for log_type_ui in types_to_test:
+    for log_type_ui in log_types or ALL_LOG_TYPES:
         api_log_type = LOG_TYPE_MAP.get(log_type_ui, log_type_ui)
-        demisto.debug(f"Testing connectivity for log type: {log_type_ui}")
+        demisto.debug(f"[test-module] Testing log type: {log_type_ui}")
         try:
-            client.fetch_log_page(
-                log_type=api_log_type,
-                start=start_epoch,
-                end=end_epoch,
-                limit=1,
-            )
+            client.fetch_log_page(log_type=api_log_type, start=start_epoch, end=end_epoch, limit=1)
         except Exception as e:
             error_str = str(e)
             if "401" in error_str or "Unauthorized" in error_str:
@@ -277,49 +247,64 @@ def test_module(client: Client, log_types: list[str]) -> str:
                 return f"Authorization Error: the token does not have permission to access '{log_type_ui}' logs."
             if "ConnectionError" in error_str or "Failed to establish" in error_str:
                 return "Connection Error: could not reach the Menlo Security API. Check the Server URL and network connectivity."
-            raise e
+            raise
 
     return "ok"
 
 
-def fetch_events(
+test_module.__test__ = False  # type: ignore[attr-defined]  # prevent pytest from collecting this as a test
+
+
+@dataclass
+class FetchResult:
+    """Result of fetching events for a single log type in a thread."""
+
+    log_type_ui: str
+    events: list[dict] = field(default_factory=list)
+    next_run_state: dict | None = None  # None means preserve previous state
+    error: str | None = None
+
+
+def _fetch_log_type_task(
     client: Client,
+    log_type_ui: str,
     last_run: dict,
-    log_types: list[str],
     first_fetch_time: str,
+    end_epoch: int,
+    end_timestamp: str,
     max_events_per_fetch: int,
-) -> tuple[dict, list[dict]]:
-    """Fetch events from all selected log types.
+) -> FetchResult:
+    """Fetch and process events for a single log type (runs in a thread).
+
+    Each thread receives a copy of last_run — no shared mutable state.
+    Results are merged by the main thread after all threads complete.
 
     Args:
-        client: The Menlo Security API client.
-        last_run: The last run dict from demisto.getLastRun().
-        log_types: List of selected log type UI names.
-        first_fetch_time: Human-readable first fetch time (e.g. "3 days").
-        max_events_per_fetch: Maximum events to fetch per log type per cycle.
+        client: Thread-safe API client (ContentClient/httpx).
+        log_type_ui: UI log type name (e.g. "web", "safemail").
+        last_run: Copy of the current last_run state dict.
+        first_fetch_time: Human-readable first fetch time (e.g. "3 hours").
+        end_epoch: Fetch end time as epoch seconds (read-only).
+        end_timestamp: Fetch end time as ISO 8601 string (read-only).
+        max_events_per_fetch: Maximum events to fetch for this log type.
 
     Returns:
-        tuple[dict, list[dict]]: (next_run dict, list of all events)
+        FetchResult with events, next_run_state, and any error.
     """
-    end_dt = datetime.utcnow()
-    end_epoch = int(end_dt.timestamp())
-    end_timestamp = end_dt.strftime(DATE_FORMAT)
+    thread_name = threading.current_thread().name
+    result = FetchResult(log_type_ui=log_type_ui)
 
-    all_events: list[dict] = []
-    next_run: dict = {}
-
-    for log_type_ui in log_types:
-        # Determine start time for this log type.
+    try:
         last_fetch_time = last_run.get(log_type_ui, {}).get("last_fetch_time")
         if last_fetch_time:
             start_epoch = timestamp_to_epoch(last_fetch_time)
-            demisto.debug(f"Resuming {log_type_ui} from last fetch time: {last_fetch_time}")
+            demisto.debug(f"[{thread_name}] {log_type_ui}: resuming from {last_fetch_time}")
         else:
             first_fetch_dt = arg_to_datetime(first_fetch_time)
             if first_fetch_dt is None:
-                raise ValueError(f"Invalid first_fetch_time value: {first_fetch_time!r}")
+                raise ValueError(f"Invalid first_fetch_time: {first_fetch_time!r}")
             start_epoch = int(first_fetch_dt.timestamp())
-            demisto.debug(f"First fetch for {log_type_ui}, starting from: {epoch_to_timestamp(start_epoch)}")
+            demisto.debug(f"[{thread_name}] {log_type_ui}: first fetch from {epoch_to_timestamp(start_epoch)}")
 
         events = get_events_for_log_type(
             client=client,
@@ -329,6 +314,8 @@ def fetch_events(
             max_events=max_events_per_fetch,
         )
 
+        # Dedup: API start is inclusive — leading events may duplicate the previous cycle.
+        # Events are in ascending time order, so only leading events can be duplicates.
         boundary_hashes: set[str] = set(last_run.get(log_type_ui, {}).get("boundary_hashes", []))
         if last_fetch_time and events and boundary_hashes:
             skip = 0
@@ -338,30 +325,101 @@ def fetch_events(
                 else:
                     break
             if skip:
-                demisto.debug(f"Removed {skip} duplicate {log_type_ui} event(s) with event_time={last_fetch_time!r} (hash match)")
+                demisto.debug(f"[{thread_name}] {log_type_ui}: removed {skip} duplicate(s) at {last_fetch_time!r}")
                 events = events[skip:]
 
-        all_events.extend(events)
+        result.events = events
 
         if events:
             last_event_time = events[-1].get("event_time") or events[-1].get("_time", "")
-            next_fetch_time = last_event_time if last_event_time else end_timestamp
-            # Compute hashes of all events at the boundary timestamp (iterate backwards,
-            # stop at first different timestamp) for dedup in the next cycle.
+            next_fetch_time = last_event_time or end_timestamp
             next_boundary_hashes = get_boundary_hashes(events, last_event_time)
+            demisto.debug(
+                f"[{thread_name}] {log_type_ui}: next fetch from {next_fetch_time} "
+                f"({len(next_boundary_hashes)} boundary hash(es))"
+            )
+            result.next_run_state = {"last_fetch_time": next_fetch_time, "boundary_hashes": next_boundary_hashes}
         else:
-            next_fetch_time = end_timestamp
-            next_boundary_hashes = []
+            # No events — preserve previous state so the next cycle retries from the same point.
+            prev_state = last_run.get(log_type_ui)
+            if prev_state:
+                demisto.debug(f"[{thread_name}] {log_type_ui}: no events — preserving state.")
+                result.next_run_state = prev_state
+            else:
+                # First fetch with no results — advance to now to avoid re-querying the same empty window.
+                demisto.debug(f"[{thread_name}] {log_type_ui}: first fetch, no events — advancing to {end_timestamp}")
+                result.next_run_state = {"last_fetch_time": end_timestamp, "boundary_hashes": []}
 
-        demisto.debug(
-            f"Next fetch for {log_type_ui} will start from: {next_fetch_time} with {len(next_boundary_hashes)} boundary hash(es)"
-        )
-        next_run[log_type_ui] = {
-            "last_fetch_time": next_fetch_time,
-            "boundary_hashes": next_boundary_hashes,
+    except Exception as e:
+        result.error = str(e)
+        demisto.error(f"[{thread_name}] {log_type_ui}: fetch failed: {e}")
+
+    return result
+
+
+def fetch_events(
+    client: Client,
+    last_run: dict,
+    log_types: list[str],
+    first_fetch_time: str,
+    max_events_per_fetch: int,
+) -> tuple[dict, list[dict]]:
+    """Fetch events from all selected log types in parallel.
+
+    Each log type runs in its own thread. Results are merged sequentially after
+    all threads complete. Failed types preserve their previous last_run state.
+
+    Args:
+        client: Thread-safe API client.
+        last_run: Last run dict from demisto.getLastRun().
+        log_types: Selected log type UI names.
+        first_fetch_time: Human-readable first fetch time (e.g. "3 hours").
+        max_events_per_fetch: Maximum events per log type per cycle.
+
+    Returns:
+        (next_run dict, list of all events)
+    """
+    end_dt = datetime.now(UTC)
+    end_epoch = int(end_dt.timestamp())
+    end_timestamp = end_dt.strftime(DATE_FORMAT)
+
+    demisto.debug(f"[fetch-events] Starting parallel fetch for: {log_types}")
+
+    fetch_results: list[FetchResult] = []
+    with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
+        futures = {
+            executor.submit(
+                _fetch_log_type_task,
+                client=client,
+                log_type_ui=log_type_ui,
+                last_run=dict(last_run),  # copy per thread — no shared mutable state
+                first_fetch_time=first_fetch_time,
+                end_epoch=end_epoch,
+                end_timestamp=end_timestamp,
+                max_events_per_fetch=max_events_per_fetch,
+            ): log_type_ui
+            for log_type_ui in log_types
         }
+        for future in as_completed(futures):
+            log_type_ui = futures[future]
+            try:
+                fetch_results.append(future.result())
+            except Exception as e:
+                demisto.error(f"[fetch-events] Thread for {log_type_ui} raised: {e}")
 
-    demisto.debug(f"Total events fetched across all log types: {len(all_events)}")
+    # Merge: start from last_run so failed types keep their previous state.
+    all_events: list[dict] = []
+    next_run: dict = dict(last_run)
+
+    for result in fetch_results:
+        if result.error:
+            demisto.debug(f"[fetch-events] {result.log_type_ui}: error — previous state preserved.")
+            continue
+        all_events.extend(result.events)
+        if result.next_run_state is not None:
+            next_run[result.log_type_ui] = result.next_run_state
+
+    demisto.debug(f"[fetch-events] Total events: {len(all_events)}")
     return next_run, all_events
 
 
@@ -375,12 +433,12 @@ def get_events_command(
 
     Args:
         client: The Menlo Security API client.
-        args: Command arguments (start_time, end_time, log_types, limit, should_push_events).
+        args: Command arguments.
         log_types: Default log types from integration params.
         max_events_per_fetch: Default max events from integration params.
 
     Returns:
-        CommandResults: Human-readable output for display in the War Room.
+        CommandResults for display in the War Room.
     """
     start_time_str = args.get("start_time", "1 hour")
     end_time_str = args.get("end_time", "now")
@@ -391,9 +449,9 @@ def get_events_command(
     start_dt = arg_to_datetime(start_time_str)
     end_dt = arg_to_datetime(end_time_str)
     if start_dt is None:
-        raise ValueError(f"Invalid start_time value: {start_time_str!r}")
+        raise ValueError(f"Invalid start_time: {start_time_str!r}")
     if end_dt is None:
-        raise ValueError(f"Invalid end_time value: {end_time_str!r}")
+        raise ValueError(f"Invalid end_time: {end_time_str!r}")
 
     start_epoch = int(start_dt.timestamp())
     end_epoch = int(end_dt.timestamp())
@@ -401,7 +459,7 @@ def get_events_command(
     all_events: list[dict] = []
     for log_type_ui in arg_log_types:
         if log_type_ui not in LOG_TYPE_MAP:
-            demisto.debug(f"Unknown log type: {log_type_ui}, skipping.")
+            demisto.debug(f"[get-events] Unknown log type: {log_type_ui}, skipping.")
             continue
         events = get_events_for_log_type(
             client=client,
@@ -409,25 +467,23 @@ def get_events_command(
             start_epoch=start_epoch,
             end_epoch=end_epoch,
             max_events=limit,
-            enrich=should_push,  # only enrich (_time, source_log_type) when sending to XSIAM
+            enrich=should_push,
         )
         all_events.extend(events)
 
-    hr = tableToMarkdown(
-        name=f"{VENDOR} - {PRODUCT} Events",
-        t=all_events,
-        removeNull=True,
-    )
     if should_push:
         send_events_to_xsiam(all_events, vendor=VENDOR, product=PRODUCT)
 
-    return CommandResults(readable_output=hr, raw_response=all_events)
+    return CommandResults(
+        readable_output=tableToMarkdown(name=f"{VENDOR} - {PRODUCT} Events", t=all_events, removeNull=True),
+        raw_response=all_events,
+    )
 
 
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """Main function — parses params and dispatches commands."""
     params = demisto.params()
     args = demisto.args()
@@ -438,52 +494,37 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    log_types: list[str] = argToList(params.get("log_types", ",".join(ALL_LOG_TYPES)))
-    if not log_types:
-        log_types = ALL_LOG_TYPES
-
-    first_fetch_time: str = DEFAULT_FIRST_FETCH
+    log_types: list[str] = argToList(params.get("log_types", ",".join(ALL_LOG_TYPES))) or ALL_LOG_TYPES
     max_events_per_fetch: int = (
         arg_to_number(params.get("max_events_per_fetch", DEFAULT_MAX_EVENTS_PER_FETCH)) or DEFAULT_MAX_EVENTS_PER_FETCH
     )
 
-    demisto.debug(f"Command being called: {command}")
-    demisto.debug(f"Selected log types: {log_types}")
+    demisto.debug(f"[main] Command: {command}, log types: {log_types}")
 
     try:
-        client = Client(
-            base_url=base_url,
-            token=token,
-            verify=verify_certificate,
-            proxy=proxy,
-        )
+        client = Client(base_url=base_url, token=token, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
-            result = test_module(client, log_types)
-            return_results(result)
+            return_results(test_module(client, log_types))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f"Last run: {last_run}")
+            demisto.debug(f"[main] Last run: {last_run}")
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
                 log_types=log_types,
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=DEFAULT_FIRST_FETCH,
                 max_events_per_fetch=max_events_per_fetch,
             )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
-            demisto.debug(f"Next run set to: {next_run}")
+            demisto.debug(f"[main] Next run: {next_run}")
 
         elif command == "menlo-security-get-events":
-            results = get_events_command(
-                client=client,
-                args=args,
-                log_types=log_types,
-                max_events_per_fetch=max_events_per_fetch,
+            return_results(
+                get_events_command(client=client, args=args, log_types=log_types, max_events_per_fetch=max_events_per_fetch)
             )
-            return_results(results)
 
         else:
             raise NotImplementedError(f"Command {command!r} is not implemented.")
