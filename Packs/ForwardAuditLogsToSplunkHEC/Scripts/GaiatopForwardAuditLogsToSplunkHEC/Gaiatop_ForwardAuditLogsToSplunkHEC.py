@@ -1,4 +1,6 @@
-register_module_line('Gaiatop_ForwardAuditLogsToSplunkHEC', 'start', __line__())
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 API_ENDPOINT_URL = "/public_api/v1/audits/management_logs"
 
@@ -62,5 +64,4 @@ if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
 
 
-register_module_line('Gaiatop_ForwardAuditLogsToSplunkHEC', 'end', __line__())
 
