@@ -13,5 +13,8 @@ Read more about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Cont
 #### API References
 
 [Oracle Cloud Infrastructure Audit Logs API documentation](https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/audit_logs.htm)
+
+[Oracle Cloud Infrastructure SearchLogsDetails API documentation](https://docs.oracle.com/en-us/iaas/api/#/en/logging-search/20190909/datatypes/SearchLogsDetails)
+
 <br>
 [Oracle Cloud Infrastructure Audit API Endpoints (available Regions)](https://docs.oracle.com/en-us/iaas/api/#/en/audit/20190901)

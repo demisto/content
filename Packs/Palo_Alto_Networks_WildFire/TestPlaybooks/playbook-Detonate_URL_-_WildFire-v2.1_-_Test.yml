@@ -4,7 +4,7 @@ name: Detonate URL - WildFire v2.1 - Test
 fromversion: 5.0.0
 description: |-
   test pb of:
-  Detonate URL - WildFire-v2.1
+  Detonate URL - WildFire-v2.2
 starttaskid: "0"
 tasks:
   "0":
@@ -57,8 +57,7 @@ tasks:
         simple: URL.Data
       stringify: {}
       value:
-        simple: http://www.software995.net/bin/pdf995s.exe, https://www.demisto.com,
-          https://www.paloaltonetworks.com
+        simple: https://www.demisto.com, https://www.paloaltonetworks.com
     separatecontext: false
     view: |-
       {
@@ -197,8 +196,8 @@ tasks:
     task:
       id: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
       version: -1
-      name: Detonate URL - WildFire v2.1
-      playbookName: Detonate URL - WildFire v2.1
+      name: Detonate URL - WildFire v2.2
+      playbookName: Detonate URL - WildFire v2.2
       type: playbook
       iscommand: false
       brand: ""
