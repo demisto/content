@@ -108,11 +108,7 @@ class Client(BaseClient):
         if cached_tenant_url:
             return cached_tenant_url
 
-        headers = {
-            "authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        }
+        headers = {"authorization": f"Bearer {access_token}", "Content-Type": "application/json", "Accept": "application/json"}
 
         try:
             tenant_url_response = self._http_request(
@@ -130,7 +126,7 @@ class Client(BaseClient):
         if not tenant_url:
             raise DemistoException("Failed to obtain tenant URL. Response missing tenant URL.")
 
-        tenant_url = tenant_url_response.get(TENANT_URL).rstrip('/')
+        tenant_url = tenant_url_response.get(TENANT_URL).rstrip("/")
         demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
         cached_context = get_integration_context() or {}
         cached_context[TENANT_URL] = tenant_url
@@ -196,6 +192,8 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
 def get_sets(client: Client) -> list:
     sets_response = client.http_request("GET", url_suffix="Sets")
     return sets_response.get("Sets", [])
