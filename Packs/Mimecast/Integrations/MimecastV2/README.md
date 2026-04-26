@@ -47,6 +47,13 @@ successfully execute a command, a DBot message appears in the War Room with the 
 ***
 Query Mimecast emails. This is an archive search command.
 
+#### Prerequisite
+In order to successfully use this endpoint to search across a customers entire archive, the role assigned to the app must have at least the following level of application permissions granted Archive | Search | Read.
+To use this endpoint to search for messages for the logged in user or an address that the logged in user has delegate permission to, no administrator permissions are required.
+
+#### application permissions 
+Archive | Search | Read
+
 #### Base Command
 
 `mimecast-query`
@@ -90,6 +97,9 @@ Query Mimecast emails. This is an archive search command.
 
 ***
 Deprecate - use mimecast-list-policies instead
+
+#### application permissions required
+Gateway | Policies | Read
 
 #### Base Command
 
