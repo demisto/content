@@ -1,0 +1,37 @@
+{
+    "name": "Panorays",
+    "description": "The Panorays pack enables organizations to monitor their own security posture by ingesting internal findings and security events from the Panorays platform, allowing for automated internal risk management and reporting.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Panorays",
+    "url": "https://panorays.com",
+    "email": "support@panorays.com",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
+    "useCases": [
+        "Vulnerability Management",
+        "Compliance"
+    ],
+    "keywords": [
+        "Panorays",
+        "TPRM",
+        "Vendor Risk Management",
+        "Supply Chain Security",
+        "SaaS Security",
+        "Risk Assessment",
+        "External Security Posture"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}
