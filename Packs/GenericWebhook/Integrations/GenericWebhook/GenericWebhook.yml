@@ -59,6 +59,35 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Mirroring Direction
+  name: mirror_direction
+  additionalinfo: The direction of incident mirroring between XSOAR and the external system.
+  type: 15
+  section: Connect
+  required: false
+  options:
+  - Outgoing
+  - Incoming
+  - Incoming And Outgoing
+- display: Mirror Tag for Notes
+  name: mirror_tags
+  additionalinfo: Tag value used to mirror XSOAR notes back to external system.
+  type: 0
+  section: Connect
+  required: false
+  defaultvalue: note
+- display: Mirror Instance
+  name: mirror_instance
+  additionalinfo: The integration instance name to use for mirroring.
+  type: 0
+  section: Connect
+  required: false
+- display: Duplication Key
+  name: duplication_key
+  type: 0
+  additionalinfo: The key to use for deduplicating incidents. Multiple values can be provided as a comma-separated list.
+  section: Connect
+  required: false
 - display: After adding the Generic Webhook settings, a unique link will be generated below.
   section: Result
   name: resultLink

@@ -27,6 +27,10 @@ To use the Generic Webhook integration, you need to complete the following steps
 | Result | Automatically generated webhook trigger link (based on user configuration). | Auto-populated. <br><br> Note: This field does not appear for Cortex XSOAR 6.x or Cortex XSOAR 8.9 On-prem|
 | incidentType | Incident, issue, or alert type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
+| Mirroring Direction | The direction of incident mirroring between XSOAR and the external system. Options: Incoming, Outgoing, Incoming And Outgoing. | False |
+| Mirror Tag for Notes | Tag value used to mirror XSOAR notes back to the external system. Default value: `note`. | False |
+| Mirror Instance | The integration instance name to use for mirroring. | False |
+| Duplication Key | The field key(s) used to deduplicate incoming incidents. Multiple keys can be provided as a comma-separated list. When a duplication key is specified, any incoming incident that contains a previously seen value for any of these keys will be automatically ignored to prevent duplication. | False |
 
 2. Click **Done**.
 3. For Cortex XSOAR 6.x:
@@ -112,6 +116,27 @@ The payload can then be mapped. For more information see:
 * [Create a mapper (Cortex XSIAM)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Map-Fields-to-Alert-Types)
 
 **Note**: To use the mapping wizard, the **Store sample events** for mapping parameter must be set. Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, we recommend turning off the sample events storage to reduce performance overhead.
+
+## Incident Mirroring
+
+The Generic Webhook integration can perform incident mirroring by utilizing the different integration which has the mirroring capability. To enable the mirroring, configure the integration instance which can provide mirroring capabilities and set the following parameters in the Generic Webhook integration instance:
+
+| **Parameter** | **Description** |
+| --- | --- |
+| Mirroring Direction | Controls the direction of mirroring: **Incoming** (external → XSOAR), **Outgoing** (XSOAR → external), or **Incoming And Outgoing** (both directions). |
+| Mirror Tag for Notes | Tag applied to XSOAR notes that should be mirrored back to the external system. Defaults to `note`. |
+| Mirror Instance | The name of the integration instance responsible for mirroring. |
+
+When mirroring is enabled, the `mirror_direction`, `mirror_tags`, and `mirror_instance` values are automatically injected into each incident information.
+
+#### Incident Deduplication
+
+To prevent duplicate incidents from being created by repeated webhook triggers, set the **Duplication Key** parameter to one or more field names or paths (comma-separated). When a new request arrives, the integration checks whether any of the specified field values match a previously seen value. If a match is found, the incident is silently dropped.
+
+* **Simple key**: Set **Duplication Key** to a top-level field name that is unique per event, for example `incidentId`.
+* **JSON Path**: JSON Path expressions are supported for extracting values from nested objects or arrays. For example, if your payload contains a `data` object with an `id` field, set **Duplication Key** to `data.id`.
+
+**Note**: Seen values are stored in the integration context. Clearing the integration context will reset the deduplication history.
 
 ## Authorization headers
 
