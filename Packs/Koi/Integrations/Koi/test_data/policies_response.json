@@ -1,0 +1,33 @@
+{
+  "policies": [
+    {
+      "action": "block",
+      "created_at": "2025-04-23T17:22:24.023Z",
+      "creator_fullname": "John Doe",
+      "description": "This policy blocks high-risk extensions",
+      "enabled": true,
+      "group_ids": [
+        1,
+        2,
+        3
+      ],
+      "id": 1,
+      "name": "My Policy",
+      "updated_at": "2025-04-23T17:22:24.023Z"
+    },
+    {
+      "action": "allow",
+      "created_at": "2025-04-24T10:00:00.000Z",
+      "creator_fullname": "Jane Smith",
+      "description": "This policy allows approved extensions",
+      "enabled": false,
+      "group_ids": [
+        4
+      ],
+      "id": 2,
+      "name": "Allow Policy",
+      "updated_at": "2025-04-24T12:30:00.000Z"
+    }
+  ],
+  "total_count": 2
+}
