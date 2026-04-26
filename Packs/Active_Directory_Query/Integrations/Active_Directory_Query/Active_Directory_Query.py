@@ -1975,6 +1975,7 @@ def main():
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
+
     except Exception as e:
         message = str(e)
         if connection:
