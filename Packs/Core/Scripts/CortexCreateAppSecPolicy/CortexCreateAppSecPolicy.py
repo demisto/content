@@ -212,7 +212,7 @@ def build_conditions(args: dict) -> dict:
 
     # 7. Package Operational Risk
     if package_risk := args.get("conditions_package_operational_risk"):
-        builder.add_field("Package Operational Risk", FilterType.GTE, package_risk)
+        builder.add_field("Package Operational Risk", FilterType.EQ, package_risk)
 
     # Additional fields (order less critical)
     if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
