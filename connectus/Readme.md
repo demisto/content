@@ -23,6 +23,7 @@ Special case: `NoneRequired` (no auth params)
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
 | `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
+| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow). The `notes` field MUST explain the specific auth mechanism. | Azure WAF, Azure Kubernetes Services |
 | `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
 
 #### Requirement Expression
