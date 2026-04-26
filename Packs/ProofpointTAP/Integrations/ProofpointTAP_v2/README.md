@@ -18,6 +18,7 @@ This integration was integrated and tested with version v2 of Proofpoint TAP v2
 | Maximum number of incident per fetch |  | False |
 | First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
 | Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
+| Look-Back Buffer (in minutes) | Buffer to account for Proofpoint API indexing delay. Prevents missing events by only querying for fully indexed data. Recommended: 1 for production, 0 for legacy behavior. Default value is 0. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 

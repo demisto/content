@@ -99,6 +99,14 @@ configuration:
   type: 0
   section: Collect
   required: false
+- additionalinfo: 'Buffer to account for Proofpoint SIEM API indexing delay. Prevents missing events by only querying for fully indexed data. Recommended: 1 for production, 0 for legacy behavior.'
+  defaultvalue: '0'
+  display: Look-Back Buffer (in minutes)
+  name: look_back_minutes
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
