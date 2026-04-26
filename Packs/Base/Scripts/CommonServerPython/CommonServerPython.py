@@ -13900,6 +13900,142 @@ def invalidate_ucp_credentials(method_unique_id):
 ###########################################
 
 
+def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='medium', context=None, raise_on_error=True):
+    """Resolve a loosely-written user input to the closest matching item from a canonical list.
+
+    The function first attempts deterministic matching (exact case-insensitive match).
+    If no deterministic match is found, it falls back to AI semantic matching via the
+    ``MapInputToListItem`` command.
+
+    :type value: ``str``
+    :param value: The user-provided input to resolve against the list.
+        May contain typos, abbreviations, or semantic variations. (required)
+
+    :type valid_items: ``list``
+    :param valid_items: The canonical list of valid values to match against.
+        Can be a list of strings (e.g., ``["High", "Medium", "Low"]``) or a list of
+        dicts when used with the ``key`` parameter. (required)
+
+    :type key: ``str``
+    :param key: When ``valid_items`` is a list of dicts, specifies which key contains
+        the values to match against (similar to Python's ``sorted(key=...)``).
+        For example, if ``valid_items`` is ``[{"name": "High", "id": 1}, ...]``,
+        set ``key="name"`` to match against the ``name`` field.
+        When a match is found, the **full original dict** is returned (not just the
+        matched key value).
+
+    :type confidence_threshold: ``str``
+    :param confidence_threshold: Controls how strict the matching must be.
+        Allowed values: ``low``, ``medium``, ``high``. Default is ``medium``.
+
+    :type context: ``str``
+    :param context: Free-text domain hint to help disambiguate between multiple
+        potential matches (e.g., ``"endpoint security products"``, ``"cloud regions"``).
+
+    :type raise_on_error: ``bool``
+    :param raise_on_error: If ``True`` (default), raise a ``DemistoException`` when no
+        match is found. If ``False``, return an empty string instead.
+
+    :return: When ``key`` is not provided: the verbatim matched string from the list.
+        When ``key`` is provided: the full original dict whose key value matched.
+        Returns an empty string if ``raise_on_error`` is ``False`` and no match is found.
+    :rtype: ``str`` or ``dict``
+
+    :raises DemistoException: If no confident match is found or the command fails
+        (only when ``raise_on_error`` is ``True``).
+    """
+    if not isinstance(valid_items, list):
+        raise DemistoException(
+            'map_input_to_list_item: valid_items must be a list, got {}'.format(type(valid_items).__name__)
+        )
+
+    # --- Extract string values; when key is provided, build a lookup back to original items ---
+    items: list = []
+    item_to_original: dict = {}  # Maps matched string -> original item
+
+    if key:
+        for item in valid_items:
+            if isinstance(item, dict):
+                if key in item:
+                    str_val = str(item[key])
+                    items.append(str_val)
+                    item_to_original[str_val] = item
+                else:
+                    demisto.debug(
+                        'map_input_to_list_item: key "{}" not found in dict item: {}'.format(key, item)
+                    )
+            else:
+                str_val = str(item)
+                items.append(str_val)
+                item_to_original[str_val] = item
+    else:
+        items = [str(item) for item in valid_items]
+
+    def _resolve_return(matched_str):
+        """Return the full original object when key is used, otherwise the matched string."""
+        if key and matched_str in item_to_original:
+            return item_to_original[matched_str]
+        return matched_str
+
+    # --- Exact case-insensitive matching ---
+    value_lower = value.strip().lower()
+    exact_matches = [item for item in items if item.strip().lower() == value_lower]
+    if len(exact_matches) == 1:
+        demisto.debug('map_input_to_list_item: deterministic exact match found for "{}": "{}"'.format(value, exact_matches[0]))
+        return _resolve_return(exact_matches[0])
+
+    # --- Ensure no multiple substring matches ---
+    substring_matches = [item for item in items if value_lower in item.strip().lower()]
+    if len(substring_matches) > 1:
+        msg = (
+            'MapInputToListItem: ambiguous input "{}". '
+            'The value is a substring of multiple valid items: {}'.format(value, substring_matches)
+        )
+        if not raise_on_error:
+            demisto.debug(msg)
+            return ''
+        raise DemistoException(msg)
+
+    # --- AI Task semantic matching ---
+    list_arg = json.dumps(items)
+
+    args = {
+        'list': list_arg,
+        'value': value,
+        'confidence_threshold': confidence_threshold,
+    }
+    if context:
+        args['context'] = context
+
+    result = execute_command('MapInputToListItem', args)
+
+    if isinstance(result, dict):
+        matched = result.get('result', '')
+    elif isinstance(result, list) and result:
+        matched = result[0].get('result', '') if isinstance(result[0], dict) else str(result[0])
+    elif isinstance(result, str):
+        matched = result
+    else:
+        matched = ''
+
+    # The AI command returns a wrapper like "AI Task Name:\n\tMapInputToListItem\n\nAnswer:<value>".
+    # Extract only the actual answer portion.
+    _AI_RESPONSE_PREFIX = re.compile(r'^AI Task Name:\s*\n\s*MapInputToListItem\s*\n+Answer:', re.IGNORECASE)
+    if isinstance(matched, str):
+        matched = _AI_RESPONSE_PREFIX.sub('', matched)
+
+    matched = matched.strip() if matched else ''
+
+    if not matched:
+        msg = 'MapInputToListItem: no confident match found for value "{}" in the provided list.'.format(value)
+        if not raise_on_error:
+            demisto.debug(msg)
+            return ''
+        raise DemistoException(msg)
+
+    return _resolve_return(matched)
+
+
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
