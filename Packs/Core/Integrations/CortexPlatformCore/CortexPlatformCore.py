@@ -3565,9 +3565,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             else:
                 valid_fields[field_name] = field_value
         else:
-            error_messages.append(
-                f"Field '{field_name}' does not exist. Use the CLI/machine name as shown in Object Setup."
-            )
+            error_messages.append(f"Field '{field_name}' does not exist. Use the CLI/machine name as shown in Object Setup.")
 
     return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
