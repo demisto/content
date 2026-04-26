@@ -49,7 +49,7 @@ ALLOWED_EMAIL_TAGS = {
 
 ALLOWED_EMAIL_ATTRIBUTES: dict[str, set[str]] = {
     "*": {"style", "class", "id", "dir", "align", "width", "height", "bgcolor", "valign"},
-    "a": {"href", "target", "rel"},
+    "a": {"href", "target"},
     "img": {"src", "alt", "title"},
     "td": {"colspan", "rowspan"},
     "th": {"colspan", "rowspan", "scope"},
