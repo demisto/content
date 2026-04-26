@@ -1,6 +1,7 @@
 import copy
 import itertools
 import threading
+import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
@@ -18,6 +19,9 @@ EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
 MAX_PAGINATION_DURATION_SECONDS = 120
+MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
+TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
+TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 
 
 class EVENT_TYPE:
@@ -87,7 +91,7 @@ class IntegrationContextManager:
 
         Lock #1 (_lock): General-purpose RLock for protecting integration context operations
         - Type: threading.RLock() - Reentrant lock (same thread can acquire multiple times)
-        - Purpose: Protects all read/write operations to integration context (last_run)
+        - Purpose: Protects all read/write operations to integration context and last_run
         - Used by: get_access_token(), save_access_token_to_context(), update_event_type_state(), get_last_run()
         - Why RLock: Methods can call each other while holding the lock without deadlocking
 
@@ -122,22 +126,24 @@ class IntegrationContextManager:
             Optional[str]: The current access token, or None if not set.
         """
         with self._lock:
-            last_run = demisto.getLastRun()
-            return last_run.get("access_token")
+            integration_context = demisto.getIntegrationContext()
+            return integration_context.get("access_token")
 
     def save_access_token_to_context(self, new_token: str) -> None:
         """Thread-safe persistence of access token to integration context.
 
-        This method saves the access token to the integration context (last_run),
+        This method saves the access token to the integration context,
         making it available to all threads and persisting it between executions.
+        Also saves the generation timestamp to enable proactive time-based refresh.
 
         Args:
             new_token (str): The new access token to store.
         """
         with self._lock:
-            last_run = demisto.getLastRun()
-            last_run["access_token"] = new_token
-            demisto.setLastRun(last_run)
+            integration_context = demisto.getIntegrationContext()
+            integration_context["access_token"] = new_token
+            integration_context["token_generated_at"] = datetime.utcnow().isoformat()
+            demisto.setIntegrationContext(integration_context)
             demisto.debug(f"Access token saved to integration context by thread {threading.current_thread().name}")
 
     def update_event_type_state(self, state: dict) -> None:
@@ -188,11 +194,47 @@ class Client(BaseClient):
         self._context_manager = context_manager
         self._access_token = None  # Initialize to prevent AttributeError in refresh_access_token
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        if not access_token or not self.is_valid_access_token(access_token):
-            demisto.debug("Invalid access token was used, attempting to get new access token.")
+        if not access_token or not self._is_token_still_fresh(access_token):
+            demisto.debug("Access token missing or expired, attempting to get new access token.")
             access_token = self.refresh_access_token()
             demisto.debug("New access token was successfully generated.")
+        else:
+            integration_context = demisto.getIntegrationContext()
+            token_generated_at = integration_context.get("token_generated_at", "unknown")
+            token_prefix = access_token[:8] if access_token else "None"
+            demisto.debug(f"Reusing existing token (prefix: {token_prefix}..., generated_at: {token_generated_at})")
         self.apply_access_token(access_token)
+
+    def _is_token_still_fresh(self, access_token: str) -> bool:
+        """Check if the token is still within its valid TTL window using a saved timestamp.
+
+        Armis tokens have a fixed 30-minute TTL (confirmed by Armis).
+        We proactively refresh at 25 minutes to avoid mid-cycle 401 errors.
+        This avoids the extra API call that is_valid_access_token() makes.
+
+        Falls back to is_valid_access_token() if no timestamp is available (e.g., first run
+        or token saved before this change was deployed).
+
+        Args:
+            access_token (str): The access token to check.
+
+        Returns:
+            bool: True if the token is still fresh (< 25 min old), False if it needs refresh.
+        """
+        integration_context = demisto.getIntegrationContext()
+        token_generated_at_str = integration_context.get("token_generated_at")
+        if token_generated_at_str:
+            try:
+                token_generated_at = datetime.fromisoformat(token_generated_at_str)
+                age_seconds = (datetime.utcnow() - token_generated_at).total_seconds()
+                is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
+                demisto.debug(f"Token age: {age_seconds:.0f}s, fresh: {is_fresh} (threshold: {TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS}s)")
+                return is_fresh
+            except Exception as ex:
+                demisto.debug(f"Could not parse token_generated_at '{token_generated_at_str}': {ex}, falling back to API validation")
+        # No timestamp available - fall back to live API check
+        demisto.debug("No token_generated_at found, falling back to is_valid_access_token() API check")
+        return self.is_valid_access_token(access_token)
 
     def apply_access_token(self, access_token=None):
         """Apply access token to client instance (updates headers and internal state).
@@ -219,8 +261,14 @@ class Client(BaseClient):
             str: The refreshed access token.
         """
         if not self._context_manager:
-            # No context manager - single-threaded mode, just refresh
-            return self.get_access_token()
+            # No context manager - single-threaded mode, just refresh and save timestamp
+            new_token = self.get_access_token()
+            integration_context = demisto.getIntegrationContext()
+            integration_context["access_token"] = new_token
+            integration_context["token_generated_at"] = datetime.utcnow().isoformat()
+            demisto.setIntegrationContext(integration_context)
+            demisto.debug("Single-threaded: access token and token_generated_at saved to integration context")
+            return new_token
 
         # Use token refresh lock to ensure only one thread refreshes at a time
         with self._context_manager.acquire_token_refresh_lock():
@@ -262,7 +310,13 @@ class Client(BaseClient):
         """
         try:
             raw_response = self._http_request(
-                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                url_suffix="/search/",
+                method="GET",
+                params=params,
+                headers=self._headers,
+                timeout=API_TIMEOUT,
+                retries=1,
+                status_list_to_retry={500, 502},
             )
         except Exception as e:
             # Use repr() for JSON errors to avoid parsing issues, str() for others
@@ -272,8 +326,12 @@ class Client(BaseClient):
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
+                integration_context = demisto.getIntegrationContext()
+                token_generated_at = integration_context.get("token_generated_at", "unknown")
+                token_prefix = self._access_token[:8] if self._access_token else "None"
                 safe_debug(
-                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}"
+                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}. "
+                    f"Token prefix: {token_prefix}..., generated_at: {token_generated_at}"
                 )
 
                 # If using context manager, try to get fresh token from context first
@@ -313,6 +371,31 @@ class Client(BaseClient):
                 raw_response = self._http_request(
                     url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                 )
+            elif isinstance(e, json.JSONDecodeError):
+                # Armis occasionally returns malformed/truncated JSON (nginx internal timeout on large responses).
+                # Retry up to 3 times with exponential backoff (1s, 2s, 4s) as recommended by Armis.
+                demisto.debug(f"JSONDecodeError on fetch, will retry up to 3 times: {repr(e)}")
+                last_retry_exc: Exception = e
+                for attempt in range(1, 4):
+                    backoff = 2 ** (attempt - 1)  # 1s, 2s, 4s
+                    demisto.debug(f"JSONDecodeError retry {attempt}/3, backing off {backoff}s")
+                    time.sleep(backoff)
+                    try:
+                        raw_response = self._http_request(
+                            url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                        )
+                        demisto.debug(f"JSONDecodeError retry {attempt}/3 succeeded")
+                        break  # success - raw_response is set
+                    except Exception as retry_e:
+                        last_retry_exc = retry_e
+                        demisto.debug(
+                            f"JSONDecodeError retry {attempt}/3 failed: "
+                            f"{repr(retry_e) if isinstance(retry_e, json.JSONDecodeError) else str(retry_e)}"
+                        )
+                else:
+                    # All 3 retries exhausted
+                    demisto.debug("JSONDecodeError: all 3 retries exhausted, raising last exception")
+                    raise last_retry_exc
             else:
                 demisto.debug(f"Error occurred while fetching events: {e}")
                 raise e
@@ -358,7 +441,9 @@ class Client(BaseClient):
         if before:
             aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"  # noqa: E231
             demisto.info(f"Fetching events until {before}.")
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": max_fetch, "orderBy": order_by}
+        # Cap page size to MAX_PAGE_SIZE per Armis recommendation (100K causes nginx timeouts)
+        page_size = min(max_fetch, MAX_PAGE_SIZE)
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": page_size, "orderBy": order_by}
         if from_param:
             params["from"] = from_param
         raw_response = self.perform_fetch(params)
@@ -370,8 +455,7 @@ class Client(BaseClient):
         start_time = datetime.now()
         try:
             while next and (len(results) < max_fetch):
-                if len(results) < max_fetch:
-                    params["length"] = max_fetch - len(results)
+                params["length"] = min(max_fetch - len(results), MAX_PAGE_SIZE)
                 params["from"] = next
                 raw_response = self.perform_fetch(params)
                 next = raw_response.get("data", {}).get("next") or 0
@@ -654,14 +738,19 @@ def fetch_by_event_type(
     )
     new_events: list[dict] = []
     demisto.debug(f"fetched {len(response)} {event_type.type} from API")
+    demisto.debug(f"[checkpoint 1] starting dedup for {event_type.type}")
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
         )
+        demisto.debug(f"[checkpoint 2] dedup complete for {event_type.type}: {len(new_events)} new events")
         events.setdefault(event_type.dataset_name, []).extend(new_events)
         demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
-        demisto.debug(f"last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}")
+        last_event_str = str(new_events[-1])[:500] if new_events else "{}"
+        demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
+        demisto.debug(f"[checkpoint 3] logged last event for {event_type.type}")
 
+    demisto.debug(f"[checkpoint 4] updating next_run for {event_type.type}")
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
         #  can empty the list.
@@ -670,6 +759,7 @@ def fetch_by_event_type(
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
     demisto.debug(f"updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}")
+    demisto.debug(f"[checkpoint 5] fetch_by_event_type complete for {event_type.type}")
 
 
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
@@ -685,14 +775,16 @@ def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
 
     """
     demisto.debug(f"Fetching Activities and Devices for specific alert IDs: {aql_alert_id}")
-    activities_aql_query = f'{EVENT_TYPES["Activities"].aql_query}  {aql_alert_id}'
-    devices_aql_query = f'{EVENT_TYPES["Devices"].aql_query}  {aql_alert_id}'
+    activities_aql_query = f"{EVENT_TYPES['Activities'].aql_query}  {aql_alert_id}"
+    devices_aql_query = f"{EVENT_TYPES['Devices'].aql_query}  {aql_alert_id}"
     activities_response = client.fetch_by_ids_in_aql_query(
         aql_query=activities_aql_query, order_by=EVENT_TYPES["Activities"].order_by
     )
     devices_response = client.fetch_by_ids_in_aql_query(aql_query=devices_aql_query, order_by=EVENT_TYPES["Devices"].order_by)
-    demisto.debug(f"fetch by alert ids\
-fetched {len(activities_response)} Activities and {len(devices_response)} Devices")
+    demisto.debug(
+        f"fetch by alert ids\
+fetched {len(activities_response)} Activities and {len(devices_response)} Devices"
+    )
     alert["activitiesData"] = activities_response if activities_response else {}
     alert["devicesData"] = devices_response if devices_response else {}
 
@@ -731,9 +823,11 @@ def fetch_event_type_worker(
     try:
         fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
 
+        safe_debug(f"[{thread_id}] [checkpoint 6] fetch_by_event_type returned, updating context state")
         # Update context for this event type atomically
         context_manager.update_event_type_state(next_run)
 
+        safe_debug(f"[{thread_id}] [checkpoint 7] context state updated")
         event_count = len(events.get(event_type.dataset_name, []))
         safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
 
@@ -813,7 +907,6 @@ def fetch_events(
     # Process remaining event types
     if not event_types_to_fetch:
         safe_debug("No remaining event types to fetch")
-        next_run["access_token"] = client._access_token
         fetch_duration = (datetime.now() - fetch_start).total_seconds()
         total_events = sum(len(event_list) for event_list in events.values())
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
@@ -903,8 +996,6 @@ def fetch_events(
 
             parallel_duration = (datetime.now() - parallel_start).total_seconds()
             safe_debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
-
-    next_run["access_token"] = client._access_token
 
     # Final summary
     fetch_duration = (datetime.now() - fetch_start).total_seconds()
@@ -1036,7 +1127,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
-    access_token = last_run.get("access_token")
+    access_token = demisto.getIntegrationContext().get("access_token")
     api_key = params.get("credentials", {}).get("password")
     base_url = urljoin(params.get("server_url"), API_V1_ENDPOINT)
     verify_certificate = not params.get("insecure", True)
