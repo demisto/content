@@ -1544,10 +1544,21 @@ def create_client(params: dict, oauth_client=None) -> Client:
         access_token = oauth_client.get_access_token()
         headers["Authorization"] = f"Bearer {access_token}"
 
-        demisto.debug(f"{LOGGING_INTEGRATION_NAME} OAuth base_url: {base_url}")
+        # Per Atlassian OAuth 2.0 (3LO) docs, the base URL for OAuth apps must use
+        # the API gateway: https://api.atlassian.com/ex/confluence/{cloudId}
+        # See: https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-2-construct-the-request-url
+        cloud_id = oauth_client.cloud_id
+        if cloud_id:
+            oauth_base_url = f"https://api.atlassian.com/ex/confluence/{cloud_id}"
+        else:
+            # Fallback to site URL if cloud_id is not provided (shouldn't happen for OAuth)
+            demisto.debug(f"{LOGGING_INTEGRATION_NAME} Warning: cloud_id not set, falling back to site URL for OAuth")
+            oauth_base_url = base_url
+
+        demisto.debug(f"{LOGGING_INTEGRATION_NAME} OAuth base_url: {oauth_base_url}")
 
         return Client(
-            base_url=base_url,
+            base_url=oauth_base_url,
             verify=verify_certificate,
             proxy=proxy,
             headers=headers,
