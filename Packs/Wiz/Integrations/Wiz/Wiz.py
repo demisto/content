@@ -2739,7 +2739,16 @@ def get_modified_remote_data_command(args):
 
     ctx = demisto.getIntegrationContext() or {}
     saved_cursor = ctx.get(MIRROR_CURSOR_KEY, "") or ""
-    cursor = max(last_update, saved_cursor)
+
+    # Compare via datetime, not lex: XSOAR's lastUpdate is second-precision while
+    # saved_cursor is microsecond-precision (Wiz). Lex-max would pick bare-Z over
+    # the chronologically-later microsecond value (`Z` > `.`), rewinding the cursor.
+    last_update_dt = _parse_iso_timestamp(last_update)
+    saved_cursor_dt = _parse_iso_timestamp(saved_cursor)
+    if saved_cursor_dt and (not last_update_dt or saved_cursor_dt >= last_update_dt):
+        cursor = saved_cursor
+    else:
+        cursor = last_update or saved_cursor
 
     demisto.debug(
         f"get_modified_remote_data: cursor={cursor} "
@@ -2759,10 +2768,13 @@ def get_modified_remote_data_command(args):
 
     if nodes:
         page_max = max((n["statusChangedAt"] for n in nodes if n.get("statusChangedAt")), default="")
-        if page_max and page_max > saved_cursor:
-            ctx[MIRROR_CURSOR_KEY] = page_max
-            demisto.setIntegrationContext(ctx)
-            demisto.debug(f"get_modified_remote_data: cursor advanced to {page_max}")
+        if page_max:
+            page_max_dt = _parse_iso_timestamp(page_max)
+            saved_dt = _parse_iso_timestamp(saved_cursor)
+            if not saved_dt or (page_max_dt and page_max_dt > saved_dt):
+                ctx[MIRROR_CURSOR_KEY] = page_max
+                demisto.setIntegrationContext(ctx)
+                demisto.debug(f"get_modified_remote_data: cursor advanced to {page_max}")
 
     has_next_page = response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage", False)
     demisto.debug(
