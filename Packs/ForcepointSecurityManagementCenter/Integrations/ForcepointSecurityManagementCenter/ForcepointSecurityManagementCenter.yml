@@ -1,4 +1,6 @@
 category: Network Security
+sectionorder:
+- Connect
 provider: Francisco Partners
 commonfields:
   id: Forcepoint Security Management Center
@@ -8,25 +10,30 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
   name: credentials
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - defaultvalue: '8082'
   display: Port
   name: port
   required: true
   type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 description: Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
 display: 'Forcepoint Security Management Center'
 name: Forcepoint Security Management Center
@@ -692,12 +699,31 @@ script:
     - contextPath: ForcepointSMC.Engine.Comment
       description: The comment for the engine.
       type: String
+  - arguments:
+    - description: A comma-separated list of engine names to refresh.
+      isArray: true
+      name: engine_name
+      required: true
+    - description: A comma-separated list of polling refresh task IDs.
+      isArray: true
+      name: task_ids
+      required: false
+      hidden: true
+    - name: interval_in_seconds
+      description: The interval in seconds between polling attempts. To prevent search timeouts, set this value within the 60-90 second range.
+      defaultValue: '60'
+    - name: timeout_in_seconds
+      description: The timeout for polling in seconds.
+      defaultValue: '600'
+    description: Refreshes the specified engines. Use the forcepoint-smc-engine-list command to list the engines in the system.
+    name: forcepoint-smc-engine-refresh
+    polling: true
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.115493
+  dockerimage: demisto/vendors-sdk:1.0.0.7281773
 fromversion: 6.8.0
 tests:
 - ForcepointSecurityManagementCenter_test
