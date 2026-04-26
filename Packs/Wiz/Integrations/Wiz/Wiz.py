@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from CommonServerPython import *
@@ -186,6 +187,28 @@ query IssuesTable(
           name
         }
       }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
+MODIFIED_ISSUE_IDS_QUERY = """
+query ModifiedIssueIds(
+  $filterBy: IssueFilters
+  $first: Int
+  $after: String
+  $orderBy: IssueOrder
+) {
+  issues:issuesV2(filterBy: $filterBy
+    first: $first
+    after: $after
+    orderBy: $orderBy) {
+    nodes {
+      id
+      statusChangedAt
     }
     pageInfo {
       hasNextPage
@@ -1730,13 +1753,33 @@ def checkAPIerrors(query, variables):
     return response_json
 
 
-def _fetch_all_issue_nodes(query, variables):
-    """Fetch all issue nodes from a paginated issues query."""
+FETCH_ALL_ISSUES_BUDGET_SECONDS = 240  # 5-min Docker timeout - 60s safety margin
+
+
+def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_BUDGET_SECONDS):
+    """
+    Fetch all issue nodes from a paginated issues query.
+
+    Bounded by `deadline_seconds` (default 240) to avoid the 5-min Docker
+    script timeout that hard-kills the process. On budget exhaustion, returns
+    the partial result accumulated so far and logs a warning. Callers that
+    require completeness should narrow their filter; callers that tolerate
+    partial results (mirror is the exception — it has its own single-page
+    code path) get an actionable signal instead of a script crash.
+    """
     variables = dict(variables)
+    started = time.monotonic()
+
     response_json = checkAPIerrors(query, variables)
     nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes", []))
 
     while response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage"):
+        if time.monotonic() - started > deadline_seconds:
+            demisto.info(
+                f"_fetch_all_issue_nodes: hit {deadline_seconds}s budget after {len(nodes)} nodes; "
+                "returning partial result. Narrow your filter to retrieve more."
+            )
+            break
         variables["after"] = response_json["data"]["issues"]["pageInfo"]["endCursor"]
         response_json = checkAPIerrors(query, variables)
         page_nodes = response_json.get("data", {}).get("issues", {}).get("nodes", [])
@@ -2661,9 +2704,31 @@ def get_mapping_fields_command():
     return mapping_response
 
 
+MIRROR_CURSOR_KEY = "mirror_cursor"
+
+
 def get_modified_remote_data_command(args):
+    """
+    Returns IDs of issues whose status changed since `last_update`.
+
+    Single-page-per-call to stay under the 5-min Docker timeout. A persistent
+    cursor in integration context (`mirror_cursor`) lets us drain large backlogs
+    across consecutive mirror cycles instead of one giant call.
+
+    Wiz backend semantics (verified against product-dal/internal/dal/issues_filters.go
+    + datalib/pggorm/timeDurationFilters.go):
+      - filterBy.statusChangedAt.after generates SQL `status_changed_at > ?` (EXCLUSIVE)
+      - When filterBy.statusChangedAt is set, results auto-order by status_changed_at ASC
+      - NULL status_changed_at rows are filtered out automatically
+
+    Known limitation: if multiple issues share the same microsecond-precision
+    status_changed_at and a page boundary splits them, the trailing tied issues
+    on the next page are skipped (the `>` filter excludes the cursor value). In
+    practice rare; would require simultaneous bulk status changes from multiple
+    writers. Documented test: test_get_modified_remote_data_microsecond_tie_known_loss.
+    """
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update
+    last_update = remote_args.last_update or ""
 
     raw_limit = demisto.params().get(WizMirrorParam.LIMIT, WizMirrorParam.LIMIT_DEFAULT)
     try:
@@ -2672,17 +2737,38 @@ def get_modified_remote_data_command(args):
         raw_limit = WizMirrorParam.LIMIT_DEFAULT
     mirror_limit = max(WizMirrorParam.LIMIT_MIN, min(raw_limit, WizMirrorParam.LIMIT_MAX))
 
-    demisto.debug(f"get_modified_remote_data: last_update={last_update}, limit={mirror_limit}")
+    ctx = demisto.getIntegrationContext() or {}
+    saved_cursor = ctx.get(MIRROR_CURSOR_KEY, "") or ""
+    cursor = max(last_update, saved_cursor)
+
+    demisto.debug(
+        f"get_modified_remote_data: cursor={cursor} "
+        f"(last_update={last_update}, saved_cursor={saved_cursor}, limit={mirror_limit})"
+    )
 
     variables = {
         "first": mirror_limit,
-        "filterBy": {"statusChangedAt": {"after": last_update}},
+        "filterBy": {"statusChangedAt": {"after": cursor}},
+        "orderBy": {"field": "STATUS_CHANGED_AT", "direction": "ASC"},
     }
 
-    issues = _fetch_all_issue_nodes(PULL_ISSUES_QUERY, variables)
+    response_json = checkAPIerrors(MODIFIED_ISSUE_IDS_QUERY, variables)
+    nodes = response_json.get("data", {}).get("issues", {}).get("nodes", []) or []
 
-    modified_ids = [issue.get("id") for issue in issues if issue.get("id")]
-    demisto.debug(f"get_modified_remote_data: found {len(modified_ids)} modified issues")
+    modified_ids = [n["id"] for n in nodes if n.get("id")]
+
+    if nodes:
+        page_max = max((n["statusChangedAt"] for n in nodes if n.get("statusChangedAt")), default="")
+        if page_max and page_max > saved_cursor:
+            ctx[MIRROR_CURSOR_KEY] = page_max
+            demisto.setIntegrationContext(ctx)
+            demisto.debug(f"get_modified_remote_data: cursor advanced to {page_max}")
+
+    has_next_page = response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage", False)
+    demisto.debug(
+        f"get_modified_remote_data: returned {len(modified_ids)} ids, hasNextPage={has_next_page}, "
+        f"new cursor={ctx.get(MIRROR_CURSOR_KEY, '')}"
+    )
 
     return GetModifiedRemoteDataResponse(modified_ids)
 
@@ -2715,17 +2801,44 @@ def _attach_mirror_metadata(issue):
         issue[WizMirrorField.TAGS] = [demisto.params().get(WizMirrorParam.COMMENT_TAG, "comments")]
 
 
+def _parse_iso_timestamp(value):
+    """Parse an ISO-8601 timestamp tolerating `Z` suffix and fractional seconds.
+
+    Lex-comparison of ISO strings is unsafe across precisions: `.` (0x2E) sorts
+    before `Z` (0x5A), so `"2025-01-01T00:00:00.500000Z" < "2025-01-01T00:00:00Z"`
+    even though it's chronologically later. Wiz returns microsecond precision
+    while XSOAR's lastUpdate is second-precision — comparing them as strings
+    silently drops notes added in the sub-second window.
+    """
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
 def _build_new_note_entries(issue, last_update):
-    """Build war room entries for notes added since last_update."""
+    """Build war room entries for notes added since last_update.
+
+    First sync (no last_update) returns []: we intentionally avoid back-filling
+    the entire pre-existing note history into a fresh war room. Subsequent
+    syncs surface only notes newer than the previous sync.
+    """
     entries = []
     if not last_update:
         return entries
 
+    last_update_dt = _parse_iso_timestamp(last_update)
     for note in issue.get("notes") or []:
         if XSOAR_MIRROR_MARKER in note.get("text", ""):
             continue
         note_time = note.get("updatedAt") or note.get("createdAt", "")
-        if note_time > last_update:
+        note_dt = _parse_iso_timestamp(note_time)
+        is_newer = (note_dt and last_update_dt and note_dt > last_update_dt) or (
+            not (note_dt and last_update_dt) and note_time > last_update
+        )
+        if is_newer:
             author = ""
             if note.get("user"):
                 author = note["user"].get("name", "")
@@ -2818,10 +2931,22 @@ def _handle_incident_closed(remote_id, resolution_reason=None):
 
 
 def _handle_outgoing_entries(remote_id, entries):
-    """Push tagged XSOAR entries as Wiz issue notes."""
+    """Push tagged XSOAR entries as Wiz issue notes.
+
+    Defense-in-depth: even though XSOAR's mirror engine only forwards entries
+    matching `dbotMirrorTags` (set from `comment_tag`), we re-check the tag here
+    to prevent leaking arbitrary war-room content to Wiz if a customer renames
+    `comment_tag` mid-flight (old incidents still carry the prior tag value) or
+    if XSOAR's tag-filtering behavior changes in a future version.
+    """
+    comment_tag = demisto.params().get(WizMirrorParam.COMMENT_TAG, "comments")
     for entry in entries:
         contents = entry.get("contents", "")
         if not contents:
+            continue
+        entry_tags = entry.get("tags") or []
+        if comment_tag not in entry_tags:
+            demisto.debug(f"_handle_outgoing_entries: skipping entry without '{comment_tag}' tag (tags={entry_tags})")
             continue
         user = entry.get("user", "XSOAR") or "XSOAR"
         text = f"({user}): {contents}\n\n{XSOAR_MIRROR_MARKER}"

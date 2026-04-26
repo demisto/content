@@ -1689,8 +1689,10 @@ def test_get_mapping_fields_command():
         assert field in schemes[0].fields
 
 
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
 @patch("Wiz.checkAPIerrors")
-def test_get_modified_remote_data_command(mock_check_api):
+def test_get_modified_remote_data_command(mock_check_api, _mock_get_ctx, _mock_set_ctx):
     """Test get_modified_remote_data_command extracts IDs correctly"""
     from Wiz import get_modified_remote_data_command
 
@@ -1698,8 +1700,8 @@ def test_get_modified_remote_data_command(mock_check_api):
         "data": {
             "issues": {
                 "nodes": [
-                    {"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN"},
-                    {"id": "22222222-2222-2222-2222-222222222222", "status": "RESOLVED"},
+                    {"id": "11111111-1111-1111-1111-111111111111", "statusChangedAt": "2025-01-02T00:00:00Z"},
+                    {"id": "22222222-2222-2222-2222-222222222222", "statusChangedAt": "2025-01-03T00:00:00Z"},
                 ],
                 "pageInfo": {"hasNextPage": False},
             }
@@ -1805,8 +1807,10 @@ def test_get_remote_data_skips_xsoar_mirrored_notes(mock_get_issue, mock_mirror_
         ("invalid", 50),
     ],
 )
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
 @patch("Wiz.checkAPIerrors")
-def test_mirror_limit_validation(mock_check_api, limit_input, expected_first):
+def test_mirror_limit_validation(mock_check_api, _mock_get_ctx, _mock_set_ctx, limit_input, expected_first):
     """Test that mirror_limit is clamped to 1-500 range and handles invalid input"""
     from Wiz import get_modified_remote_data_command
 
@@ -1844,12 +1848,12 @@ def test_handle_field_changes_status_reopen(mock_reopen):
 
 
 @patch("Wiz.set_issue_comment")
-def test_handle_outgoing_entries(mock_set_comment):
+def test_handle_outgoing_entries(mock_set_comment, mock_mirror_params):
     """Test _handle_outgoing_entries pushes notes with marker"""
     from Wiz import _handle_outgoing_entries
 
     mock_set_comment.return_value = {}
-    entries = [{"contents": "Investigation complete", "user": "analyst@corp.com"}]
+    entries = [{"contents": "Investigation complete", "user": "analyst@corp.com", "tags": ["comments"]}]
 
     _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
 
@@ -1857,6 +1861,43 @@ def test_handle_outgoing_entries(mock_set_comment):
     call_args = mock_set_comment.call_args
     assert XSOAR_MIRROR_MARKER in call_args[1]["comment"]
     assert "analyst@corp.com" in call_args[1]["comment"]
+
+
+@patch("Wiz.set_issue_comment")
+def test_handle_outgoing_entries_skips_untagged(mock_set_comment, mock_mirror_params):
+    """Defense-in-depth: entries WITHOUT the configured comment_tag must NOT be pushed
+    to Wiz, even though XSOAR's mirror engine should already filter them upstream.
+    Protects against tag-config drift and future XSOAR behavior changes."""
+    from Wiz import _handle_outgoing_entries
+
+    entries = [
+        {"contents": "internal triage note", "user": "analyst", "tags": ["internal", "private"]},
+        {"contents": "playbook step output", "user": "playbook", "tags": []},
+        {"contents": "no tags at all", "user": "system"},  # tags key missing
+    ]
+
+    _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
+
+    mock_set_comment.assert_not_called()
+
+
+@patch("Wiz.set_issue_comment")
+def test_handle_outgoing_entries_respects_custom_comment_tag(mock_set_comment):
+    """If a customer customizes `comment_tag`, only entries matching the CUSTOM tag
+    should be pushed. An entry with the default 'comments' tag must be skipped if
+    the customer has set comment_tag='wiz-mirror'."""
+    from Wiz import _handle_outgoing_entries
+
+    entries = [
+        {"contents": "should push", "user": "analyst", "tags": ["wiz-mirror"]},
+        {"contents": "should skip - default tag", "user": "analyst", "tags": ["comments"]},
+    ]
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.COMMENT_TAG: "wiz-mirror"}):
+        _handle_outgoing_entries("11111111-1111-1111-1111-111111111111", entries)
+
+    assert mock_set_comment.call_count == 1
+    assert "should push" in mock_set_comment.call_args[1]["comment"]
 
 
 @patch("Wiz.set_issue_due_date")
@@ -2360,6 +2401,59 @@ def test_build_new_note_entries(issue, last_update, expected_count, expected_con
         assert expected_content in result[0]["Contents"]
 
 
+def test_build_new_note_entries_microsecond_vs_second_precision():
+    """Regression: Wiz returns microsecond-precision timestamps; XSOAR's lastUpdate
+    is second-precision. Lex compare flips the order — `.` (0x2E) < `Z` (0x5A) —
+    so `"2025-06-01T10:00:00.500000Z" < "2025-06-01T10:00:00Z"` lexicographically.
+    A note created 0.5s AFTER lastUpdate would be silently dropped from the war room.
+    The fix parses both with `datetime.fromisoformat` before comparing."""
+    from Wiz import _build_new_note_entries
+
+    last_update = "2025-06-01T10:00:00Z"  # second-precision (XSOAR style)
+    issue = {
+        "notes": [
+            # Note created 0.5s AFTER lastUpdate, but with microsecond precision (Wiz style)
+            _NOTE("new_microsecond", "2025-06-01T10:00:00.500000Z", "Alice"),
+            # Note created 1s before lastUpdate — should still be filtered out
+            _NOTE("old", "2025-06-01T09:59:59Z", "Bob"),
+        ]
+    }
+    result = _build_new_note_entries(issue, last_update)
+
+    # Pre-fix: lex compare would treat the microsecond note as OLDER and drop it (0 entries).
+    # Post-fix: parsed datetime compare correctly identifies it as newer.
+    assert len(result) == 1
+    assert "Alice" in result[0]["Contents"]
+    assert "new_microsecond" in result[0]["Contents"]
+
+
+def test_build_new_note_entries_iso_with_offset():
+    """ISO timestamps with explicit offset (`+00:00`) must be parsed correctly,
+    even when the other side uses the `Z` shorthand. Both denote UTC."""
+    from Wiz import _build_new_note_entries
+
+    issue = {
+        "notes": [
+            _NOTE("newer", "2025-06-01T10:00:01+00:00", "Alice"),
+            _NOTE("equal", "2025-06-01T10:00:00+00:00", "Bob"),
+        ]
+    }
+    result = _build_new_note_entries(issue, "2025-06-01T10:00:00Z")
+
+    assert len(result) == 1
+    assert "newer" in result[0]["Contents"]
+
+
+def test_parse_iso_timestamp_handles_bad_input():
+    """Helper must return None for empty/invalid input rather than raising."""
+    from Wiz import _parse_iso_timestamp
+
+    assert _parse_iso_timestamp("") is None
+    assert _parse_iso_timestamp(None) is None
+    assert _parse_iso_timestamp("not-a-date") is None
+    assert _parse_iso_timestamp("2025-06-01T10:00:00Z") is not None
+
+
 # ===== _attach_mirror_metadata tests =====
 
 
@@ -2428,3 +2522,301 @@ def test_outgoing_mapper_includes_resolution_reason():
     assert "resolutionReason" in fields, "outgoing mapper must map resolutionReason"
     assert "status" in fields
     assert "dueAt" in fields
+
+
+# ===== Mirror cursor + slim query tests (5-min Docker timeout fix) =====
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_uses_slim_query(mock_check_api, _get_ctx, _set_ctx):
+    """Mirror MUST use MODIFIED_ISSUE_IDS_QUERY (id + statusChangedAt only), not the
+    heavy PULL_ISSUES_QUERY. Pulling sourceRule/projects/entitySnapshot/notes for
+    every modified issue when we only consume `id` is what made the function time
+    out at the 5-min Docker limit on backlogs."""
+    from Wiz import get_modified_remote_data_command, MODIFIED_ISSUE_IDS_QUERY, PULL_ISSUES_QUERY
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}}
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-01-01T00:00:00Z"})
+
+    query_used = mock_check_api.call_args[0][0]
+    assert query_used == MODIFIED_ISSUE_IDS_QUERY
+    assert query_used != PULL_ISSUES_QUERY
+    # Slim query should NOT request expensive nested fields.
+    for heavy_field in ("sourceRule", "entitySnapshot", "projects", "notes", "serviceTickets"):
+        assert heavy_field not in query_used, f"slim query must not request {heavy_field}"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_single_page_only(mock_check_api, _get_ctx, _set_ctx):
+    """Mirror must do exactly ONE GraphQL call per cycle, even when hasNextPage=True.
+    The unbounded pagination loop in _fetch_all_issue_nodes is what blew the timeout —
+    single-page-per-call ensures bounded latency. Backlog drains across cycles."""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": f"issue-{i}", "statusChangedAt": f"2025-01-02T00:00:0{i}Z"} for i in range(3)],
+                "pageInfo": {"hasNextPage": True, "endCursor": "wiz-cursor-1"},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "500"}):
+        result = get_modified_remote_data_command({"lastUpdate": "2025-01-01T00:00:00Z"})
+
+    # Exactly one call, no pagination follow-up
+    assert mock_check_api.call_count == 1
+    assert result.modified_incident_ids == ["issue-0", "issue-1", "issue-2"]
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_first_call_uses_last_update(mock_check_api, _get_ctx, set_ctx_mock):
+    """First call (no saved cursor) uses XSOAR's lastUpdate as the filter."""
+    from Wiz import get_modified_remote_data_command, MIRROR_CURSOR_KEY
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "issue-1", "statusChangedAt": "2025-01-02T12:00:00Z"}],
+                "pageInfo": {"hasNextPage": False},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-01-01T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-01-01T00:00:00Z"
+    assert call_vars["orderBy"] == {"field": "STATUS_CHANGED_AT", "direction": "ASC"}
+    # Cursor advanced to the page max
+    saved_ctx = set_ctx_mock.call_args[0][0]
+    assert saved_ctx[MIRROR_CURSOR_KEY] == "2025-01-02T12:00:00Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext")
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_cursor_wins_over_stale_last_update(mock_check_api, get_ctx_mock, _set_ctx):
+    """When XSOAR's lastUpdate has raced ahead (because we returned a partial page in
+    the previous cycle), the saved cursor — which points to the actual data we've
+    drained — must take precedence. Otherwise we'd skip undrained issues."""
+    from Wiz import get_modified_remote_data_command
+
+    # XSOAR thinks we're caught up; our cursor knows we're not.
+    get_ctx_mock.return_value = {"mirror_cursor": "2025-01-15T00:00:00Z"}
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {"nodes": [], "pageInfo": {"hasNextPage": False}},
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    # Should pick the LATER of the two — XSOAR's lastUpdate, since it's newer.
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-04-01T00:00:00Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext")
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_saved_cursor_used_when_lastupdate_older(
+    mock_check_api, get_ctx_mock, _set_ctx
+):
+    """The classic backlog-drain case: previous cycle returned a partial page covering
+    up to T1. XSOAR's lastUpdate is still T0 (older). Cursor T1 wins, so we resume
+    from T1 instead of re-fetching the chunk we already drained."""
+    from Wiz import get_modified_remote_data_command
+
+    get_ctx_mock.return_value = {"mirror_cursor": "2025-04-01T12:00:00Z"}
+    mock_check_api.return_value = {
+        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-04-01T12:00:00Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_cursor_advances_to_page_max(mock_check_api, _get_ctx, set_ctx_mock):
+    """After a successful page fetch, cursor must advance to max(statusChangedAt) of
+    returned nodes, not to wall-clock or any other value. Drains the backlog
+    deterministically across cycles."""
+    from Wiz import get_modified_remote_data_command, MIRROR_CURSOR_KEY
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [
+                    {"id": "i1", "statusChangedAt": "2025-04-23T09:00:00.000000Z"},
+                    {"id": "i2", "statusChangedAt": "2025-04-23T09:30:00.000000Z"},
+                    {"id": "i3", "statusChangedAt": "2025-04-23T11:30:00.123456Z"},
+                ],
+                "pageInfo": {"hasNextPage": True, "endCursor": "wiz-c1"},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "500"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
+
+    saved_ctx = set_ctx_mock.call_args[0][0]
+    assert saved_ctx[MIRROR_CURSOR_KEY] == "2025-04-23T11:30:00.123456Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={"mirror_cursor": "2025-04-22T00:00:00Z"})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_empty_page_preserves_cursor(mock_check_api, _get_ctx, set_ctx_mock):
+    """Empty result page must NOT touch the cursor (no setIntegrationContext call).
+    Otherwise an upstream blip that returns no data could rewind state."""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        result = get_modified_remote_data_command({"lastUpdate": "2025-04-01T00:00:00Z"})
+
+    assert result.modified_incident_ids == []
+    set_ctx_mock.assert_not_called()
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={"mirror_cursor": "2025-04-23T12:00:00Z"})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_does_not_rewind_cursor(mock_check_api, _get_ctx, set_ctx_mock):
+    """If the page max is OLDER than the saved cursor (shouldn't happen in practice
+    given ASC ordering, but defend anyway), cursor must NOT rewind."""
+    from Wiz import get_modified_remote_data_command
+
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "i-old", "statusChangedAt": "2025-04-23T10:00:00Z"}],
+                "pageInfo": {"hasNextPage": False},
+            }
+        }
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-23T11:00:00Z"})
+
+    set_ctx_mock.assert_not_called()
+
+
+@patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext", return_value={})
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_microsecond_tie_known_loss(mock_check_api, _get_ctx, set_ctx_mock):
+    """KNOWN LIMITATION (documented, not fixed): if the LAST node in page N and the
+    FIRST node of page N+1 share the same microsecond statusChangedAt, the page N+1
+    issue is silently skipped — Wiz backend uses `status_changed_at > ?` (strict
+    exclusive, verified in datalib/pggorm/timeDurationFilters.go:48).
+
+    To upgrade to lossless: persist Wiz's GraphQL pageInfo.endCursor token across
+    calls (also pin filterBy.statusChangedAt.after to the original value). Deferred
+    pending evidence customers actually hit this in the wild.
+
+    This test pins the current behavior so a future change is forced to revisit."""
+    from Wiz import get_modified_remote_data_command, MIRROR_CURSOR_KEY
+
+    # Cycle 1: page returns 2 issues, both at the SAME microsecond timestamp.
+    tied_ts = "2025-04-23T11:30:00.123456Z"
+    mock_check_api.return_value = {
+        "data": {
+            "issues": {
+                "nodes": [
+                    {"id": "tied-A", "statusChangedAt": tied_ts},
+                    {"id": "tied-B", "statusChangedAt": tied_ts},
+                ],
+                "pageInfo": {"hasNextPage": True, "endCursor": "wiz-c1"},
+            }
+        }
+    }
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "2"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
+
+    saved = set_ctx_mock.call_args[0][0]
+    assert saved[MIRROR_CURSOR_KEY] == tied_ts
+
+    # Cycle 2: a 3rd issue ALSO has tied_ts. Wiz's `status_changed_at > tied_ts`
+    # would EXCLUDE it. We document this by asserting the filter sent.
+    set_ctx_mock.reset_mock()
+    mock_check_api.return_value = {
+        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
+    }
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "2"}), patch(
+        "Wiz.demisto.getIntegrationContext", return_value={MIRROR_CURSOR_KEY: tied_ts}
+    ):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    # The filter sends the tied timestamp; backend's `>` will skip any 3rd tied issue.
+    # If this assertion ever changes, the cursor approach has been upgraded — re-check
+    # whether the documented loss case is still real.
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == tied_ts
+
+
+# ===== Time-budget tests for _fetch_all_issue_nodes (protects fetch_incidents + get_issues) =====
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_respects_deadline(mock_check_api):
+    """When the wall-clock budget is exhausted, the helper must stop paginating and
+    return the partial result. This prevents Docker from killing the script at 5min
+    with 'Command did not run' and losing all accumulated work."""
+    from Wiz import _fetch_all_issue_nodes
+
+    page_with_more = lambda i: {  # noqa: E731
+        "data": {
+            "issues": {
+                "nodes": [{"id": f"issue-{i}"}],
+                "pageInfo": {"hasNextPage": True, "endCursor": f"c-{i}"},
+            }
+        }
+    }
+    # 5 pages all claiming hasNextPage; with deadline_seconds=0 the loop should bail
+    # immediately after the first page.
+    mock_check_api.side_effect = [page_with_more(i) for i in range(5)]
+
+    result = _fetch_all_issue_nodes("q", {"first": 1}, deadline_seconds=0)
+
+    assert len(result) == 1
+    assert result[0]["id"] == "issue-0"
+    # Only the first call was made; the budget breaker fired before the second.
+    assert mock_check_api.call_count == 1
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_completes_within_budget(mock_check_api):
+    """Sanity: when budget is generous, all pages are fetched as before."""
+    from Wiz import _fetch_all_issue_nodes
+
+    pages = [
+        {"data": {"issues": {"nodes": [{"id": "a"}], "pageInfo": {"hasNextPage": True, "endCursor": "c1"}}}},
+        {"data": {"issues": {"nodes": [{"id": "b"}], "pageInfo": {"hasNextPage": False}}}},
+    ]
+    mock_check_api.side_effect = pages
+
+    result = _fetch_all_issue_nodes("q", {"first": 1}, deadline_seconds=300)
+
+    assert [n["id"] for n in result] == ["a", "b"]
+    assert mock_check_api.call_count == 2

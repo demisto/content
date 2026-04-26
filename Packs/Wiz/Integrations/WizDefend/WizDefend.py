@@ -1634,10 +1634,23 @@ def translate_severity(detection):
     return None
 
 
+def _safe_rule_name(detection):
+    """Return ruleMatch.rule.name from a detection payload, tolerating None at any level.
+
+    Wiz API has historically returned null at multiple levels of the ruleMatch chain
+    (`ruleMatch=None`, `ruleMatch={"rule": None}`, `ruleMatch={"rule": {}}`). Each
+    needed its own null-safety fix in separate commits. Centralizing the traversal
+    here so future variations only need one update.
+    """
+    if not detection:
+        return None
+    rule_match = detection.get(WizApiVariables.RULE_MATCH) or {}
+    rule = rule_match.get(WizApiVariables.RULE) or {}
+    return rule.get(WizApiVariables.NAME)
+
+
 def build_fallback_description(detection):
-    rule_name = (
-        (detection.get(WizApiVariables.RULE_MATCH) or {}).get(WizApiVariables.RULE) or {}
-    ).get(WizApiVariables.NAME)
+    rule_name = _safe_rule_name(detection)
     severity = detection.get(WizApiVariables.SEVERITY, "Unknown")
     detection_id = detection.get(WizApiVariables.ID, "Unknown")
     parts = [f"{severity} severity detection"]
@@ -1651,7 +1664,7 @@ def build_incidents(detection):
     if detection is None:
         return {}
 
-    rule_name = ((detection.get(WizApiVariables.RULE_MATCH) or {}).get(WizApiVariables.RULE) or {}).get(WizApiVariables.NAME)
+    rule_name = _safe_rule_name(detection)
 
     incident_name = f"{rule_name or 'Unknown Rule'} - {detection.get(WizApiVariables.ID, '')}"
 
