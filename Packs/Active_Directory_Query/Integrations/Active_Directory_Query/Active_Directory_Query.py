@@ -314,7 +314,7 @@ def base_dn_verified(base_dn: str) -> bool:
         return True
 
     except Exception as e:
-        demisto.error(f"Error during Base DN verification: {str(e)}")
+        demisto.error(f"Error during Base DN verification: {e}\n{traceback.format_exc()}")
         return False
 
 
