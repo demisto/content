@@ -4187,3 +4187,501 @@ def test_nsg_security_rules_list_command_missing_properties(mocker):
 
     assert isinstance(result, CommandResults)
     assert len(result.outputs) == 2
+
+
+def test_create_network_security_group(mocker, client):
+    """
+    Given: An Azure client and a request to create a network security group.
+    When: The create_network_security_group function is called with valid parameters.
+    Then: The function should return the created network security group information in the expected format.
+    """
+    # Prepare mock response
+    nsg_response = {
+        "name": "test-nsg",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        "location": "eastus",
+        "properties": {},
+    }
+
+    mocker.patch.object(client, "http_request", return_value=nsg_response)
+
+    result = client.create_network_security_group(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        security_group_name="test-nsg",
+        location="eastus",
+    )
+
+    assert result == nsg_response
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        params={"api-version": "2025-05-01"},
+        json_data={"location": "eastus"},
+    )
+
+
+def test_create_network_security_group_error(mocker, client):
+    """
+    Given: An Azure client and a request to create a network security group.
+    When: The create_network_security_group function is called and an exception is raised.
+    Then: The function should call handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("test error"))
+    mocker.patch.object(client, "handle_azure_error")
+
+    client.create_network_security_group(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        security_group_name="test-nsg",
+        location="eastus",
+    )
+
+    client.handle_azure_error.assert_called_once()
+
+
+def test_list_vm_request(mocker, client):
+    """
+    Given: An Azure client and a request to list virtual machines.
+    When: The list_vm_request function is called with valid parameters.
+    Then: The function should return the list of virtual machines in the expected format.
+    """
+    # Prepare mock response
+    vm_response = {
+        "value": [
+            {
+                "name": "test-vm",
+                "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm",
+                "location": "eastus",
+                "properties": {},
+            }
+        ]
+    }
+
+    mocker.patch.object(client, "http_request", return_value=vm_response)
+
+    result = client.list_vm_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        next_token="",
+    )
+
+    assert result == vm_response
+    client.http_request.assert_called_once_with(
+        method="GET",
+        full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines",
+        params={"api-version": "2025-04-01"},
+    )
+
+
+def test_list_vm_request_with_next_token(mocker, client):
+    """
+    Given: An Azure client and a request to list virtual machines with a next token.
+    When: The list_vm_request function is called with a next token.
+    Then: The function should return the list of virtual machines using the next token.
+    """
+    # Prepare mock response
+    vm_response = {
+        "value": [
+            {
+                "name": "test-vm2",
+                "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm2",
+                "location": "eastus",
+                "properties": {},
+            }
+        ]
+    }
+
+    mocker.patch.object(client, "http_request", return_value=vm_response)
+
+    result = client.list_vm_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        next_token="https://management.azure.com/next-page-url",
+    )
+
+    assert result == vm_response
+    client.http_request.assert_called_once_with(
+        method="GET",
+        full_url="https://management.azure.com/next-page-url",
+        params={},
+    )
+
+
+def test_list_vm_request_error(mocker, client):
+    """
+    Given: An Azure client and a request to list virtual machines.
+    When: The list_vm_request function is called and an exception is raised.
+    Then: The function should call handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("test error"))
+    mocker.patch.object(client, "handle_azure_error")
+
+    client.list_vm_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        next_token="",
+    )
+
+    client.handle_azure_error.assert_called_once()
+
+
+def test_update_network_interface_request(mocker, client):
+    """
+    Given: An Azure client and a request to update a network interface.
+    When: The update_network_interface_request function is called with valid parameters.
+    Then: The function should return the updated network interface information in the expected format.
+    """
+    # Prepare mock response
+    network_interface_response = {
+        "name": "test-nic",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkInterfaces/test-nic",
+        "properties": {"ipConfigurations": []},
+    }
+
+    mocker.patch.object(client, "http_request", return_value=network_interface_response)
+
+    result = client.update_network_interface_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        interface_name="test-nic",
+        network_interface_data={"properties": {"ipConfigurations": []}},
+    )
+
+    assert result == network_interface_response
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkInterfaces/test-nic",
+        params={"api-version": "2023-05-01"},
+        json_data={"properties": {"ipConfigurations": []}},
+    )
+
+
+def test_update_network_interface_request_error(mocker, client):
+    """
+    Given: An Azure client and a request to update a network interface.
+    When: The update_network_interface_request function is called and an exception is raised.
+    Then: The function should call handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("test error"))
+    mocker.patch.object(client, "handle_azure_error")
+
+    client.update_network_interface_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        interface_name="test-nic",
+        network_interface_data={"properties": {"ipConfigurations": []}},
+    )
+
+    client.handle_azure_error.assert_called_once()
+
+
+def test_nsg_security_group_create_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a network security group.
+    When: The nsg_security_group_create_command function is called with valid parameters.
+    Then: The function should return the created network security group information in the expected format.
+    """
+    from Azure import nsg_security_group_create_command
+
+    # Prepare mock response
+    nsg_response = {
+        "name": "test-nsg",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        "location": "eastus",
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "etag": 'W/"test-etag"',
+        "properties": {},
+    }
+
+    mocker.patch.object(client, "create_network_security_group", return_value=nsg_response)
+
+    args = {
+        "subscription_id": "sub-id",
+        "resource_group_name": "test-rg",
+        "security_group_name": "test-nsg",
+        "location": "eastus",
+    }
+
+    result = nsg_security_group_create_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityGroups"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == {
+        "name": "test-nsg",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        "location": "eastus",
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "etag": "test-etag",
+        "properties": {},
+    }
+    assert "The network security group test-nsg was created successfully" in result.readable_output
+    client.create_network_security_group.assert_called_once_with(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        security_group_name="test-nsg",
+        location="eastus",
+    )
+
+
+def test_list_vm_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for listing virtual machines.
+    When:
+        - Calling list_vm_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the correct outputs.
+    """
+    from Azure import list_vm_command
+
+    client = mocker.MagicMock()
+    client.list_vm_request.return_value = {"value": [{"id": "vm1", "name": "test-vm"}], "nextLink": "next_token_value"}
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+    }
+    params = {}
+
+    result = list_vm_command(client, params, args)
+
+    assert result.outputs == {
+        "Azure.Compute.VirtualMachines(val.id && val.id == obj.id)": [{"id": "vm1", "name": "test-vm"}],
+        "Azure.Compute(true)": {"VirtualMachinesNextToken": "next_token_value"},
+    }
+    client.list_vm_request.assert_called_once_with("sub1", "rg1", "")
+
+
+def test_list_vm_command_no_vms(mocker):
+    """
+    Given:
+        - Valid arguments but no virtual machines are returned.
+    When:
+        - Calling list_vm_command.
+    Then:
+        - Ensure the command returns a CommandResults object with a "No Virtual Machines found." message.
+    """
+    from Azure import list_vm_command
+
+    client = mocker.MagicMock()
+    client.list_vm_request.return_value = {"value": []}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    params = {}
+
+    result = list_vm_command(client, params, args)
+
+    assert result.readable_output == "No Virtual Machines found."
+    client.list_vm_request.assert_called_once_with("sub1", "rg1", "")
+
+
+def test_network_interface_update_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for updating a network interface.
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the correct outputs.
+    """
+    from Azure import network_interface_update_command
+
+    client = mocker.MagicMock()
+    client.get_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "properties": {"enableIPForwarding": False, "enableAcceleratedNetworking": False},
+    }
+    client.update_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": 'W/"etag-value"',
+        "properties": {
+            "enableIPForwarding": True,
+            "enableAcceleratedNetworking": True,
+            "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+        },
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "enable_ip_forwarding": "true",
+        "accelerate_networking": "true",
+        "internal_dns_name_label": "test-label",
+        "dns_servers": "1.1.1.1",
+    }
+    params = {}
+
+    result = network_interface_update_command(client, params, args)
+
+    assert result.outputs == {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": "etag-value",
+        "properties": {
+            "enableIPForwarding": True,
+            "enableAcceleratedNetworking": True,
+            "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+        },
+    }
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        interface_name="test-nic",
+        network_interface_data={
+            "id": "nic1",
+            "name": "test-nic",
+            "location": "eastus",
+            "properties": {
+                "enableIPForwarding": True,
+                "enableAcceleratedNetworking": False,
+                "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+            },
+        },
+    )
+
+
+def test_network_interface_update_command_add_nsg(mocker):
+    """
+    Given:
+        - Valid arguments for updating a network interface, including adding a new NSG.
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command adds the NSG to the properties.
+    """
+    from Azure import network_interface_update_command
+
+    client = mocker.MagicMock()
+    client.get_network_interface_request.return_value = {"id": "nic1", "name": "test-nic", "location": "eastus", "properties": {}}
+    client.update_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": 'W/"etag-value"',
+        "properties": {
+            "networkSecurityGroup": {
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+            }
+        },
+    }
+
+    expected_updated_nic = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "properties": {
+            "networkSecurityGroup": {
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+            }
+        },
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "network_security_group_name": "nsg1",
+    }
+    params = {}
+
+    result = network_interface_update_command(client, params, args)
+
+    assert (
+        result.outputs.get("properties", {}).get("networkSecurityGroup", {}).get("id")
+        == "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+    )
+    client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", interface_name="test-nic", network_interface_data=expected_updated_nic
+    )
+
+
+def test_network_interface_update_command_remove_nsg(mocker):
+    """
+    Given:
+        - Valid arguments for updating a network interface, including removing the NSG.
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command removes the NSG from the properties.
+    """
+    from Azure import network_interface_update_command
+
+    client = mocker.MagicMock()
+    client.get_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "properties": {"networkSecurityGroup": {"id": "nsg1"}},
+    }
+    client.update_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": 'W/"etag-value"',
+        "properties": {},
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "remove_network_security_group": "yes",
+    }
+    params = {}
+
+    result = network_interface_update_command(client, params, args)
+
+    assert "networkSecurityGroup" not in result.outputs.get("properties", {})
+    client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        interface_name="test-nic",
+        network_interface_data={
+            "id": "nic1",
+            "name": "test-nic",
+            "location": "eastus",
+            "properties": {},
+        },
+    )
+
+
+def test_network_interface_update_command_conflict_nsg(mocker):
+    """
+    Given:
+        - Conflicting arguments for updating a network interface (both setting and removing NSG).
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command raises a DemistoException.
+    """
+    from Azure import network_interface_update_command
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = mocker.MagicMock()
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "network_security_group_name": "nsg1",
+        "remove_network_security_group": "yes",
+    }
+    params = {}
+
+    with pytest.raises(
+        DemistoException, match="The remove_network_security_group option cannot be used with network_security_group_name."
+    ):
+        network_interface_update_command(client, params, args)

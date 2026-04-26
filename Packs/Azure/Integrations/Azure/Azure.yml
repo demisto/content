@@ -2192,6 +2192,135 @@ script:
         description: "The resource group name."
         type: String
         required: true
+  - name: azure-vn-security-group-create
+    description: Creates a network security group. Requires the Microsoft.Network/networkSecurityGroups/write permission.
+    arguments:
+      - name: subscription_id
+        description: The subscription ID.
+        required: true
+      - name: resource_group_name
+        description: The resource group name.
+        required: true
+      - name: security_group_name
+        description: The name of the network security group.
+        required: true
+      - name: location
+        description: The location of the network security group.
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - australiacentral
+        - australiacentral2
+        - australiaeast
+        - australiasoutheast
+        - brazilsouth
+        - brazilsoutheast
+        - brazilus
+        - canadacentral
+        - canadaeast
+        - centralindia
+        - centralus
+        - centraluseuap
+        - eastasia
+        - eastus
+        - eastus2
+        - eastus2euap
+        - francecentral
+        - francesouth
+        - germanynorth
+        - germanywestcentral
+        - israelcentral
+        - italynorth
+        - japaneast
+        - japanwest
+        - jioindiacentral
+        - jioindiawest
+        - koreacentral
+        - koreasouth
+        - malaysiasouth
+        - mexicocentral
+        - newzealandnorth
+        - northcentralus
+        - northeurope
+        - norwayeast
+        - norwaywest
+        - polandcentral
+        - qatarcentral
+        - southafricanorth
+        - southafricawest
+        - southcentralus
+        - southeastasia
+        - southindia
+        - spaincentral
+        - swedencentral
+        - swedensouth
+        - switzerlandnorth
+        - switzerlandwest
+        - uaecentral
+        - uaenorth
+        - uksouth
+        - ukwest
+        - westcentralus
+        - westeurope
+        - westindia
+        - westus
+        - westus2
+        - westus3
+        - australiaeastfoundational
+        - austriaeast
+        - chilecentral
+        - eastusslv
+        - indonesiacentral
+        - israelnorthwest
+        - malaysiawest
+        - southcentralus2
+        - southeastus
+        - southeastus3
+        - southwestus
+        - usgovarizona
+        - usgovtexas
+        - usgovvirginia
+    outputs:
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.name
+        description: The security group's name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.id
+        description: The security group's ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.etag
+        description: The security group's ETag.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.location
+        description: The resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.provisioningState
+        description: The provisioning state of the network security group resource.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid
+        description: The resource GUID property of the network security group resource.
+        type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.flushConnection
+        description: When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation.
+        type: Boolean
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.securityRules
+        description: A collection of security rules of the network security group.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules
+        description: A collection of the default security rules of the network security group.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.flowLogs
+        description: A collection of references to flow log resources.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces
+        description: A collection of references to network interfaces.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.subnets
+        description: A collection of references to subnets.
+        type: Unknown
+      
   - name: azure-nsg-security-rule-get
     description: Get a specific rule.
     outputs:
@@ -2636,7 +2765,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+    - description: The name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     outputs:
@@ -2661,7 +2790,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     - auto: PREDEFINED
@@ -2692,7 +2821,7 @@ script:
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
-    - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+    - description: The name of the virtual machine for which you want to view details. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.
       name: virtual_machine_name
       required: true
     - auto: PREDEFINED
@@ -2809,6 +2938,242 @@ script:
     - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
+  - name: azure-vn-network-interface-update
+    description: Updates a network interface.Requires the Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action permissions.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+      type: String
+    - description: The resource group to which the network interface belongs.
+      name: resource_group_name
+      required: true
+      type: String
+    - description: The name of the network interface to update.
+      name: network_interface_name
+      required: true
+      type: String
+    - name: location
+      description: The location of the network security group.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - australiacentral
+        - australiacentral2
+        - australiaeast
+        - australiasoutheast
+        - brazilsouth
+        - brazilsoutheast
+        - brazilus
+        - canadacentral
+        - canadaeast
+        - centralindia
+        - centralus
+        - centraluseuap
+        - eastasia
+        - eastus
+        - eastus2
+        - eastus2euap
+        - francecentral
+        - francesouth
+        - germanynorth
+        - germanywestcentral
+        - israelcentral
+        - italynorth
+        - japaneast
+        - japanwest
+        - jioindiacentral
+        - jioindiawest
+        - koreacentral
+        - koreasouth
+        - malaysiasouth
+        - mexicocentral
+        - newzealandnorth
+        - northcentralus
+        - northeurope
+        - norwayeast
+        - norwaywest
+        - polandcentral
+        - qatarcentral
+        - southafricanorth
+        - southafricawest
+        - southcentralus
+        - southeastasia
+        - southindia
+        - spaincentral
+        - swedencentral
+        - swedensouth
+        - switzerlandnorth
+        - switzerlandwest
+        - uaecentral
+        - uaenorth
+        - uksouth
+        - ukwest
+        - westcentralus
+        - westeurope
+        - westindia
+        - westus
+        - westus2
+        - westus3
+        - australiaeastfoundational
+        - austriaeast
+        - chilecentral
+        - eastusslv
+        - indonesiacentral
+        - israelnorthwest
+        - malaysiawest
+        - southcentralus2
+        - southeastus
+        - southeastus3
+        - southwestus
+        - usgovarizona
+        - usgovtexas
+        - usgovvirginia
+    - description: Whether to enable IP forwarding for the network interface.
+      name: enable_ip_forwarding
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+    - description: Whether the network interface is configured for accelerated networking.
+      name: enable_accelerate_networking
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+    - description: The auxiliary mode of the Network Interface resource.
+      name: auxiliary_mode
+      auto: PREDEFINED
+      predefined:
+        - MaxConnections
+        - Floating
+        - AcceleratedConnections
+      type: String
+    - description: The auxiliary SKU of the Network Interface resource.
+      name: auxiliary_sku
+      auto: PREDEFINED
+      predefined:
+        - A1
+        - A2
+        - A4
+        - A8
+      type: String
+    - description: A comma-separated list of DNS server IP addresses for the network interface.
+      name: dns_servers
+      isArray: true
+    - description: The internal DNS name label for the network interface.
+      name: internal_dns_name_label
+      type: String
+    - description: The name of the network security group.
+      name: network_security_group_name
+      type: String
+    - description: Whether to remove the property networkSecurityGroup from the network interface.
+      name: remove_network_security_group
+      auto: PREDEFINED
+      predefined:
+        - yes
+        - no
+      defaultValue: no
+    - description: The type of Network Interface resource.
+      name: nic_type
+      auto: PREDEFINED
+      predefined:
+        - Standard
+        - Elastic
+    outputs:
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+      description: The network interface ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+      description: The network interface name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+      description: The Azure region where the network interface is deployed.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+      description: A unique read-only string that changes whenever the network interface resource is updated.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
+      description: The resource tags.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.extendedLocation
+      description: The extended location of the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+      description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+      description: The list of IP configurations for the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
+      description: The DNS configuration of the network interface, including DNS servers and domain name.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress
+      description: The MAC address of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding
+      description: Whether IP forwarding is enabled for the network interface.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking
+      description: Whether accelerated networking is enabled for the network interface.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
+      description: The network security group associated with the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.primary
+      description: Whether this is a primary network interface on a virtual machine.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine
+      description: The reference to a virtual machine.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
+      description: The type of network interface (Standard or Elastic).
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode
+      description: The auxiliary mode of the Network Interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku
+      description: The auxiliary SKU of the Network Interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled
+      description: Whether default outbound connectivity for nic was configured.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking
+      description: Whether to disable TCP state tracking.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration
+      description: A reference to the DSCP configuration to which the network interface is linked.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads
+      description: A list of references to linked BareMetal resources.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase
+      description: The migration phase of the Network Interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint
+      description: A reference to the private endpoint to which the network interface is linked.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService
+      description: The privatelinkservice of the network interface resource.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid
+      description: The resource GUID property of the network interface resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations
+      description: A list of TapConfigurations of the network interface.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.vnetEncryptionSupported
+      description: Whether the virtual machine this nic is attached to supports encryption.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType
+      description: The workload type of the NetworkInterface for BareMetal resources.
+      type: String
+
   - name: azure-vm-public-ip-details-get
     description: Gets the properties of a given public IP address.
     arguments:
@@ -6082,6 +6447,627 @@ script:
     quickaction: true
     description: Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
     outputs: [] # have no outputs for these command by response
+
+  - name: azure-sql-db-threat-policy-update-quick-action
+    description: Enables email notifications to account administrators for SQL database threat detection alerts.
+    prettyname: Update Threat Policy for SQL Database
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: String
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: String
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: db_name
+        type: String
+        required: true
+        description: The database name.
+        prettyname: DB Name
+        defaultValue: DB Name
+        prettypredefined:
+          DB Name: ${asset.xdm.asset.raw_fields.Platform Discovery.sqlDatabase.name}
+      - name: server_name
+        type: String
+        required: true
+        description: The server name.
+        prettyname: Server Name
+        defaultValue: Server Name
+        prettypredefined:
+          Server Name: ${asset.xdm.asset.raw_fields.Platform Discovery.serverName}
+      - name: email_account_admins_enabled
+        type: Boolean
+        required: false
+        defaultValue: 'true'
+        description: Send the alert to the account administrators.
+        hidden: true
+    outputs:
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.kind
+        description: The type of threat policy.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.location
+        description: The location of the threat policy.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
+        description: The threat policy ID.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
+        description: The threat policy name.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.type
+        description: The threat policy type.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.state
+        description: The threat policy state.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.creationTime
+        description: The threat policy creation time.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.retentionDays
+        description: The number of days to keep the logs in the threat detection audit logs.
+        type: Number
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey
+        description: The identifier key of the threat detection audit storage account.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.storageEndpoint
+        description: The threat detection audit storage account.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins
+        description: A list of email account administrators the alert is sent to.
+        type: Boolean
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.emailAddresses
+        description: A list of email addresses the alert is sent to.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.disabledAlerts
+        description: A list of disabled alerts. If no alerts are disabled, an empty string is returned.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.useServerDefault
+        description: Whether to use the default server policy.
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.databaseName
+        description: The name of the database that the threat policy is related to.
+        type: String
+      - contextPath: Azure.SqlDB.SecurityAlertPolicies.serverName
+        description: The name of server that the threat policy is related to.
+        type: String
+
+  - name: azure-sql-db-transparent-data-encryption-enable-tde-quick-action
+    description: Enables Transparent Data Encryption (TDE) for the SQL database to encrypt data at rest.
+    prettyname: Enable TDE on SQL
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: String
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: String
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: server_name
+        type: String
+        required: true
+        description: The server name.
+        prettyname: Server Name
+        defaultValue: Server Name
+        prettypredefined:
+          Server Name: ${asset.xdm.asset.raw_fields.Platform Discovery.serverName}
+      - name: db_name
+        type: String
+        required: true
+        description: The database name.
+        prettyname: DB Name
+        defaultValue: DB Name
+        prettypredefined:
+          DB Name: ${asset.xdm.asset.raw_fields.Platform Discovery.sqlDatabase.name}
+      - name: state
+        type: String
+        required: false
+        defaultValue: Enabled
+        description: Enables transparent data encryption.
+        hidden: true
+    outputs: []
+
+  - name: azure-key-vault-purge-and-soft-delete-enable-quick-action
+    description: 'Enables soft delete and purge protection for the Key Vault to prevent the permanent loss of keys and secrets. Note: Once purge-protection and soft-delete is enabled for a key vault, the action is irreversible.'
+    prettyname: Enable KeyVault Purge & Soft-delete features
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: String
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: vault_name
+        type: String
+        required: true
+        description: The key vault name.
+        prettyname: Key Vault Name
+        defaultValue: Key Vault Name
+        prettypredefined:
+          Key Vault Name: ${asset.xdm.asset.name}
+      - name: resource_group_name
+        type: String
+        required: true
+        description: The name of the resource group.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: enable_purge_protection
+        type: Boolean
+        required: false
+        defaultValue: 'true'
+        description: Enabled protection against purge for this vault.
+        hidden: true
+      - name: enable_soft_delete
+        type: Boolean
+        required: false
+        defaultValue: 'true'
+        description: Enabled soft delete for this key vault.
+        hidden: true
+    outputs:
+      - contextPath: Azure.KeyVault.Vault.id
+        description: The resource ID.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.name
+        description: Key Vault name.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.type
+        description: The Azure resource type.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.location
+        description: Key Vault location.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.tags
+        description: The resource tags.
+      - contextPath: Azure.KeyVault.Vault.properties.sku
+        description: The SKU Object.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.properties.tenantId
+        description: The Entra ID tenant ID to use for authenticating requests to the key vault.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.properties.accessPolicies
+        description: A list of up to 16 identities that have access to the key vault. All identities must use the same tenant ID as the key vault.
+      - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.tenantId
+        description: The Entra ID tenant ID to use for authenticating requests to the key vault.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.properties.enabledForDeployment
+        description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.Vault.properties.enabledForDiskEncryption
+        description: Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys.
+        type: Boolean
+      - contextPath: Azure.KeyVault.Vault.properties.enabledForTemplateDeployment
+        description: Whether Azure Resource Manager is allowed to retrieve secrets from the key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.Vault.properties.enableSoftDelete
+        description: Whether soft delete is enabled for this key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.Vault.properties.enablePurgeProtection
+        description: Whether purge protection is enabled for this key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.Vault.properties.enableRbacAuthorization
+        description: Whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions.
+        type: Boolean
+      - contextPath: Azure.KeyVault.Vault.properties.vaultUri
+        description: The URI of the vault for performing operations on keys and secrets.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.properties.provisioningState
+        description: The current provisioning state.
+        type: String
+      - contextPath: Azure.KeyVault.Vault.properties.privateEndpointConnections
+        description: A list of private endpoint connections associated with the key vault.
+      - contextPath: Azure.KeyVault.Vault.properties.networkAcls
+        description: The rules governing the accessibility of the key vault from specific network locations.
+      - contextPath: Azure.KeyVault.Vault.properties.networkAcls
+        description: The network acls config object.
+        type: String
+
+  - name: azure-webapp-set-webapp-to-https-only-quick-action
+    description: Enforces HTTPS-only traffic for the App Service.
+    prettyname: Set Webapp to HTTPS only
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: String
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: String
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: name
+        type: String
+        required: true
+        description: The name of the app.
+        prettyname: AZ App
+        defaultValue: AZ App
+        prettypredefined:
+          AZ App: ${asset.xdm.asset.name}
+      - name: https_only
+        type: Boolean
+        required: false
+        defaultValue: 'true'
+        description: Configures the web site to accept only https requests.
+        hidden: true
+    outputs:
+      - contextPath: Azure.AppService.WebApp.id
+        description: The fully qualified resource ID for the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.name
+        description: The name of the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.type
+        description: The resource type, e.g., Microsoft.Web/sites.
+        type: String
+      - contextPath: Azure.AppService.WebApp.location
+        description: The geographic location of the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.kind
+        description: The type of app, for example app or functionapp.
+        type: String
+      - contextPath: Azure.AppService.WebApp.tags
+        description: The resource tags as key-value pairs.
+      - contextPath: Azure.AppService.WebApp.identity.type
+        description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+        type: String
+      - contextPath: Azure.AppService.WebApp.identity.principalId
+        description: The principal ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.AppService.WebApp.identity.tenantId
+        description: The tenant ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
+        description: The list of user-assigned identities associated with the web app.
+      - contextPath: Azure.AppService.WebApp.properties.state
+        description: The current state of the web app (For example Running or Stopped).
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.enabled
+        description: Whether the web app is enabled.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.defaultHostName
+        description: The default host name of the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.hostNames
+        description: A list of host names associated with the web app.
+      - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
+        description: The name of the repository site.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
+        description: Whether client affinity is enabled.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
+        description: Whether client certificates are enabled.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
+        description: A list of paths to exclude from client certificate authentication.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
+        description: The App Service Environment to use for the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.serverFarmId
+        description: The resource ID of the associated App Service plan.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.reserved
+        description: Whether the web app is on a Linux plan.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.isXenon
+        description: Whether the web app is hosted in Xenon.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.hyperV
+        description: Whether Hyper-V is enabled for the web app.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.siteConfig
+        description: A site config object.
+
+  - name: azure-cosmos-db-disable-key-quick-action
+    description: Disables key-based write access for Cosmos DB metadata to enhance security.
+    prettyname: Disable Key Based Metadata Write on CosmosDB
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: String
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: String
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: account_name
+        type: String
+        required: true
+        description: The Cosmos DB database account name.
+        prettyname: CosmosDB Name
+        defaultValue: CosmosDB Name
+        prettypredefined:
+          CosmosDB Name: ${asset.xdm.asset.name}
+      - name: disable_key_based_metadata_write_access
+        type: Boolean
+        required: false
+        defaultValue: 'true'
+        description: Whether to disable write operations on metadata resources via account keys.
+        hidden: true
+    outputs:
+      - contextPath: Azure.CosmosDB.DBAccounts.id
+        description: The unique resource identifier of the ARM resource.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.name
+        description: The name of the ARM resource.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.location
+        description: The location of the resource group to which the resource belongs.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.kind
+        description: The database account type.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.identity.type
+        description: The type of identity used for the resource.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities
+        description: The list of user identities associated with the resource.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration
+        description: The analytical storage configuration.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.apiProperties
+        description: The API specific properties.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.backupPolicy
+        description: The policy for taking backups on an account.
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.capabilities
+        description: A list of Cosmos DB capabilities for the account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.capacity
+        description: The properties related to capacity enforcement on an account.
+        type: Integer
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.connectorOffer
+        description: The Cassandra connector offer type for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.consistencyPolicy
+        description: The consistency policy for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.cors
+        description: The CORS policy for the Cosmos DB database account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.createMode
+        description: The mode of account creation.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.customerManagedKeyStatus
+        description: The status of the Customer Managed Key feature on the account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.databaseAccountOfferType
+        description: The offer type for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.defaultIdentity
+        description: The default identity for accessing key vault used in features like customer managed keys.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.disableKeyBasedMetadataWriteAccess
+        description: Whether write operations on metadata resources via account keys is disabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.disableLocalAuth
+        description: Whether local authentication is disabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.documentEndpoint
+        description: The connection endpoint for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableAnalyticalStorage
+        description: Whether storage analytics are enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableAutomaticFailover
+        description: Whether automatic failover of the write region is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableBurstCapacity
+        description: Whether Burst Capacity is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableCassandraConnector
+        description: Whether the Cassandra connector on the Cosmos DB account is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableFreeTier
+        description: Whether Free Tier is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enableMultipleWriteLocations
+        description: Whether to enable the account to write in multiple locations.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enablePartitionMerge
+        description: Whether Partition Merge is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.enablePerRegionPerPartitionAutoscale
+        description: Whether PerRegionPerPartitionAutoscale is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.failoverPolicies
+        description: A list of regions ordered by their failover priorities.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.instanceId
+        description: A unique identifier assigned to the database account.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.ipRules
+        description: A list of IP rules.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled
+        description: Whether the Virtual Network ACL rules are enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.keyVaultKeyUri
+        description: The URI of the key vault.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.keysMetadata
+        description: The metadata related to each access key for the given Cosmos DB database account.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.locations
+        description: A list of all the locations enabled for the Cosmos DB account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion
+        description: The minimum allowed TLS version.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypass
+        description: Which services are allowed to bypass firewall checks.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds
+        description: A list of resource IDs that are allowed to bypass firewall checks.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections
+        description: A list of private endpoint connections.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.provisioningState
+        description: The status of the Cosmos DB account at the time the operation was called.
+        type: String
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.readLocations
+        description: A list of read locations enabled for the Cosmos DB account.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules
+        description: A list of Virtual Network ACL rules.
+        type: List
+      - contextPath: Azure.CosmosDB.DBAccounts.properties.writeLocations
+        description: A list of write locations enabled for the Cosmos DB account.
+        type: List
+
+  - name: azure-webapp-enable-client-cert-quick-action
+    description: Enables client certificate authentication for the App Service to secure incoming requests. Only clients that have a valid certificate will be able to reach the app.
+    prettyname: Enable Client Certs on Azure App
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: String
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: String
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: name
+        type: String
+        required: true
+        description: The name of the App.
+        prettyname: AZ App
+        defaultValue: AZ App
+        prettypredefined:
+          AZ App: ${asset.xdm.asset.name}
+      - name: client_cert_enabled
+        type: Boolean
+        required: false
+        defaultValue: 'true'
+        description: Whether to enable client certificate authentication.
+        hidden: true
+    outputs:
+      - contextPath: Azure.AppService.WebApp.id
+        description: The fully qualified resource ID for the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.name
+        description: The name of the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.type
+        description: The resource type, e.g., Microsoft.Web/sites.
+        type: String
+      - contextPath: Azure.AppService.WebApp.location
+        description: The geographic location of the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.kind
+        description: The type of app, for example app or functionapp.
+        type: String
+      - contextPath: Azure.AppService.WebApp.tags
+        description: The resource tags as key-value pairs.
+      - contextPath: Azure.AppService.WebApp.identity.type
+        description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+        type: String
+      - contextPath: Azure.AppService.WebApp.identity.principalId
+        description: The principal ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.AppService.WebApp.identity.tenantId
+        description: The tenant ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
+        description: The list of user-assigned identities associated with the web app.
+      - contextPath: Azure.AppService.WebApp.properties.state
+        description: The current state of the web app (For example Running or Stopped).
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.enabled
+        description: Whether the web app is enabled.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.defaultHostName
+        description: The default host name of the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.hostNames
+        description: A list of host names associated with the web app.
+      - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
+        description: The name of the repository site.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
+        description: Whether client affinity is enabled.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
+        description: Whether client certificates are enabled.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
+        description: A list of paths to exclude from client certificate authentication.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
+        description: The App Service Environment to use for the web app.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.serverFarmId
+        description: The resource ID of the associated App Service plan.
+        type: String
+      - contextPath: Azure.AppService.WebApp.properties.reserved
+        description: Whether the web app is on a Linux plan.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.isXenon
+        description: Whether the web app is hosted in Xenon.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.hyperV
+        description: Whether Hyper-V is enabled for the web app.
+        type: Boolean
+      - contextPath: Azure.AppService.WebApp.properties.siteConfig
+        description: A site config object.
+
   - arguments:
     - name: subscription_id
       type: string
@@ -6253,6 +7239,192 @@ script:
     hidden: true
     quickaction: true
     prettyname: Enable SSL on Postgres Server
+  - name: azure-compute-vm-list
+    description: Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Requires the Microsoft.Compute/virtualMachines/read permission.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID."
+      required: true
+    - name: resource_group_name
+      description: "The name of the resource group."
+      required: true
+    - name: next_token
+      description: "The URI to fetch the next page of results."
+    outputs:
+      - contextPath: Azure.Compute.VirtualMachines.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.location
+        description: The location of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.tags
+        description: The tags of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.id
+        description: The ID of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.etag
+        description: The ETag of the virtual machine, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation
+        description: The extended location of the Virtual Machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity
+        description: The identity of the virtual machine, if configured.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.managedBy
+        description: MThe ARM resource ID of the Virtual Machine Scale Set (VMSS) that manages the virtual machine, if applicable. Used for internal resource group delete optimization.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.placement
+        description: 'The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01.'
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan
+        description: Information about the marketplace image used to create the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.systemData
+        description: Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The availability zones.
+        type: Unknown.
+      - contextPath: Azure.Compute.VirtualMachines.properties.vmId
+        description: The unique ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.availabilitySet
+        description: The availability set that the virtual machine is in.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
+        description: The hardware settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
+        description: The storage settings for the virtual machine disks.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
+        description: The operating system settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
+        description: The network interfaces of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
+        description: Additional capabilities enabled or disabled on the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
+        description: The security settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
+        description: The boot diagnostic settings state.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
+        description: The virtual machine scale set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.proximityPlacementGroup
+        description: The proximity placement group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy
+        description: The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.priority
+        description: The priority for the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.evictionPolicy
+        description: The eviction policy for the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
+        description: The billing related details of a Azure Spot virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.host
+        description: The host that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.hostGroup
+        description: The host group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
+        description: The license type for bringing your own license scenario.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
+        description: The time alloted for all extensions to start.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
+        description: The fault domain that the virtual machine is in.
+        type: Number
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
+        description: The scheduled event related configurations.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.userData
+        description: The user data for the VM, which must be base-64 encoded.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
+        description: The capacity reservation related details of a virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
+        description: The gallery applications that should be made available to the VM/VMSS.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
+        description: The time when the virtual machine was created.
+        type: Date
+      - contextPath: Azure.Compute.VirtualMachines.plan.name
+        description: The plan name.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.publisher
+        description: The publisher of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.product
+        description: The product of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.promotionCode
+        description: The promotion code of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.properties
+        description: The properties of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.resources.id
+        description: The ID of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.location
+        description: The location of the resource.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.resources.tags
+        description: The tags of the resource.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity.principalId
+        description: The principal ID of the identity.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.identity.tenantId
+        description: The tenant ID of the identity.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.identity.type
+        description: The type of the identity.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.identity.userAssignedIdentities
+        description: The list of user assigned identities associated with the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The zones of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation.name
+        description: The name of the extended location.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation.type
+        description: The type of the extended location.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
+        description: The virtual machine instance view.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachinesNextToken
+        description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
+        type: String
   isfetch: false
   runonce: false
   script: '-'

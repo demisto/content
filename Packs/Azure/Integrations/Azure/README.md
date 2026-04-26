@@ -1761,3 +1761,181 @@ Gets all security rules in a network security group.
 | Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-compute-vm-list
+
+***
+Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Requires the Microsoft.Compute/virtualMachines/read permission.
+
+#### Base Command
+
+`azure-compute-vm-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| next_token | The URI to fetch the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.VirtualMachines.type | String | The type of the resource. |
+| Azure.Compute.VirtualMachines.location | String | The location of the resource. |
+| Azure.Compute.VirtualMachines.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.id | String | The ID of the resource. |
+| Azure.Compute.VirtualMachines.name | String | The name of the resource. |
+| Azure.Compute.VirtualMachines.etag | String | The ETag of the virtual machine, used to prevent overwriting concurrent updates. |
+| Azure.Compute.VirtualMachines.extendedLocation | Unknown | The extended location of the Virtual Machine. |
+| Azure.Compute.VirtualMachines.identity | Unknown | The identity of the virtual machine, if configured. |
+| Azure.Compute.VirtualMachines.managedBy | Unknown | MThe ARM resource ID of the Virtual Machine Scale Set \(VMSS\) that manages the virtual machine, if applicable. Used for internal resource group delete optimization. |
+| Azure.Compute.VirtualMachines.placement | Unknown | The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01. |
+| Azure.Compute.VirtualMachines.plan | Unknown | Information about the marketplace image used to create the virtual machine. |
+| Azure.Compute.VirtualMachines.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Compute.VirtualMachines.zones | Unknown. | The availability zones. |
+| Azure.Compute.VirtualMachines.properties.vmId | String | The unique ID of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.availabilitySet | String | The availability set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | The hardware settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.storageProfile | Unknown | The storage settings for the virtual machine disks. |
+| Azure.Compute.VirtualMachines.properties.osProfile | Unknown | The operating system settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.networkProfile | Unknown | The network interfaces of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.provisioningState | String | The provisioning state, which only appears in the response. |
+| Azure.Compute.VirtualMachines.properties.additionalCapabilities | Unknown | Additional capabilities enabled or disabled on the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.securityProfile | Unknown | The security settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | Unknown | The boot diagnostic settings state. |
+| Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet | Unknown | The virtual machine scale set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.proximityPlacementGroup | Unknown | The proximity placement group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy | Unknown | The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.priority | String | The priority for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.evictionPolicy | String | The eviction policy for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.billingProfile | Unknown | The billing related details of a Azure Spot virtual machine. |
+| Azure.Compute.VirtualMachines.properties.host | Unknown | The host that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.hostGroup | Unknown | The host group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.licenseType | String | The license type for bringing your own license scenario. |
+| Azure.Compute.VirtualMachines.properties.extensionsTimeBudget | String | The time alloted for all extensions to start. |
+| Azure.Compute.VirtualMachines.properties.platformFaultDomain | Number | The fault domain that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsProfile | Unknown | The scheduled event related configurations. |
+| Azure.Compute.VirtualMachines.properties.userData | String | The user data for the VM, which must be base-64 encoded. |
+| Azure.Compute.VirtualMachines.properties.capacityReservation | Unknown | The capacity reservation related details of a virtual machine. |
+| Azure.Compute.VirtualMachines.properties.applicationProfile | Unknown | The gallery applications that should be made available to the VM/VMSS. |
+| Azure.Compute.VirtualMachines.properties.timeCreated | Date | The time when the virtual machine was created. |
+| Azure.Compute.VirtualMachines.plan.name | String | The plan name. |
+| Azure.Compute.VirtualMachines.plan.publisher | String | The publisher of the plan. |
+| Azure.Compute.VirtualMachines.plan.product | String | The product of the plan. |
+| Azure.Compute.VirtualMachines.plan.promotionCode | String | The promotion code of the plan. |
+| Azure.Compute.VirtualMachines.resources.properties | Unknown | The properties of the resource. |
+| Azure.Compute.VirtualMachines.resources.id | String | The ID of the resource. |
+| Azure.Compute.VirtualMachines.resources.name | String | The name of the resource. |
+| Azure.Compute.VirtualMachines.resources.type | String | The type of the resource. |
+| Azure.Compute.VirtualMachines.resources.location | String | The location of the resource. |
+| Azure.Compute.VirtualMachines.resources.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.identity.principalId | String | The principal ID of the identity. |
+| Azure.Compute.VirtualMachines.identity.tenantId | String | The tenant ID of the identity. |
+| Azure.Compute.VirtualMachines.identity.type | String | The type of the identity. |
+| Azure.Compute.VirtualMachines.identity.userAssignedIdentities | String | The list of user assigned identities associated with the virtual machine. |
+| Azure.Compute.VirtualMachines.zones | String | The zones of the virtual machine. |
+| Azure.Compute.VirtualMachines.extendedLocation.name | String | The name of the extended location. |
+| Azure.Compute.VirtualMachines.extendedLocation.type | String | The type of the extended location. |
+| Azure.Compute.VirtualMachines.properties.instanceView | Unknown | The virtual machine instance view. |
+| Azure.Compute.VirtualMachinesNextToken | String | The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs. |
+
+### azure-vn-security-group-create
+
+***
+Creates a network security group. Requires the Microsoft.Network/networkSecurityGroups/write permission.
+
+#### Base Command
+
+`azure-vn-security-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| security_group_name | The name of the network security group. | Required |
+| location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityGroups.name | String | The security group's name. |
+| Azure.VirtualNetworks.SecurityGroups.id | String | The security group's ID. |
+| Azure.VirtualNetworks.SecurityGroups.etag | String | The security group's ETag. |
+| Azure.VirtualNetworks.SecurityGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.SecurityGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.SecurityGroups.properties.provisioningState | String | The provisioning state of the network security group resource. |
+| Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid | String | The resource GUID property of the network security group resource. |
+| Azure.VirtualNetworks.SecurityGroups.properties.flushConnection | Boolean | When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation. |
+| Azure.VirtualNetworks.SecurityGroups.properties.securityRules | Unknown | A collection of security rules of the network security group. |
+| Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules | Unknown | A collection of the default security rules of the network security group. |
+| Azure.VirtualNetworks.SecurityGroups.properties.flowLogs | Unknown | A collection of references to flow log resources. |
+| Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces | Unknown | A collection of references to network interfaces. |
+| Azure.VirtualNetworks.SecurityGroups.properties.subnets | Unknown | A collection of references to subnets. |
+
+### azure-vn-network-interface-update
+
+***
+Updates a network interface.Requires the Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action permissions.
+
+#### Base Command
+
+`azure-vn-network-interface-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the network interface belongs. | Required |
+| network_interface_name | The name of the network interface to update. | Required |
+| location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Optional |
+| enable_ip_forwarding | Whether to enable IP forwarding for the network interface. Possible values are: true, false. | Optional |
+| enable_accelerate_networking | Whether the network interface is configured for accelerated networking. Possible values are: true, false. | Optional |
+| auxiliary_mode | The auxiliary mode of the Network Interface resource. Possible values are: MaxConnections, Floating, AcceleratedConnections. | Optional |
+| auxiliary_sku | The auxiliary SKU of the Network Interface resource. Possible values are: A1, A2, A4, A8. | Optional |
+| dns_servers | A comma-separated list of DNS server IP addresses for the network interface. | Optional |
+| internal_dns_name_label | The internal DNS name label for the network interface. | Optional |
+| network_security_group_name | The name of the network security group. | Optional |
+| remove_network_security_group | Whether to remove the property networkSecurityGroup from the network interface. Possible values are: yes, no. Default is no. | Optional |
+| nic_type | The type of Network Interface resource. Possible values are: Standard, Elastic. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface ID. |
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface name. |
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. |
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.VirtualNetworks.NetworkInterfaces.type | String | The resource type. |
+| Azure.VirtualNetworks.NetworkInterfaces.tags | Unknown | The resource tags. |
+| Azure.VirtualNetworks.NetworkInterfaces.extendedLocation | Unknown | The extended location of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The current provisioning state of the network interface \(e.g., Succeeded, Updating, Failed\). |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations | Unknown | The list of IP configurations for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings | Unknown | The DNS configuration of the network interface, including DNS servers and domain name. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress | String | The MAC address of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding | Boolean | Whether IP forwarding is enabled for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking | Boolean | Whether accelerated networking is enabled for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup | Unknown | The network security group associated with the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.primary | Boolean | Whether this is a primary network interface on a virtual machine. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine | Unknown | The reference to a virtual machine. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The type of network interface \(Standard or Elastic\). |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode | Unknown | The auxiliary mode of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku | Unknown | The auxiliary SKU of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled | Boolean | Whether default outbound connectivity for nic was configured. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking | Boolean | Whether to disable TCP state tracking. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration | Unknown | A reference to the DSCP configuration to which the network interface is linked. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads | Unknown | A list of references to linked BareMetal resources. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase | Unknown | The migration phase of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint | Unknown | A reference to the private endpoint to which the network interface is linked. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService | Unknown | The privatelinkservice of the network interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid | String | The resource GUID property of the network interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | Unknown | A list of TapConfigurations of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.vnetEncryptionSupported | Boolean | Whether the virtual machine this nic is attached to supports encryption. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType | String | The workload type of the NetworkInterface for BareMetal resources. |

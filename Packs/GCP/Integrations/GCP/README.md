@@ -1480,3 +1480,61 @@ Returns the specified network.
 | GCP.Compute.Networks.routingConfig | string | The network\-level routing configuration for this network. Used by Cloud Router to determine what type of network\-wide routing behavior to enforce. |
 | GCP.Compute.Networks.routingConfig.routingMode | string | The network\-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
+
+### gcp-bq-dataset-policy-remove
+
+***
+Removes an email from the BigQuery dataset policy. Requires the bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy permissions.
+
+#### Base Command
+
+`gcp-bq-dataset-policy-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. | Required |
+| dataset_id | The dataset ID of the requested dataset. | Required |
+| email | The email address to remove from the dataset access list. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.BigQuery.Datasets.kind | String | The resource type. |
+| GCP.BigQuery.Datasets.etag | String | A hash of the resource. |
+| GCP.BigQuery.Datasets.id | String | The fully-qualified unique name of the dataset in the format projectId:datasetId. |
+| GCP.BigQuery.Datasets.selfLink | String | A URL that can be used to access the resource again. |
+| GCP.BigQuery.Datasets.datasetReference | Unknown | A reference that identifies the dataset. |
+| GCP.BigQuery.Datasets.friendlyName | String | A descriptive name for the dataset. |
+| GCP.BigQuery.Datasets.description | String | A user-friendly description of the dataset. |
+| GCP.BigQuery.Datasets.defaultTableExpirationMs | String | The default lifetime of all tables in the dataset, in milliseconds. |
+| GCP.BigQuery.Datasets.defaultPartitionExpirationMs | String | The default partition expiration, in milliseconds. |
+| GCP.BigQuery.Datasets.labels | String | The labels associated with this dataset. |
+| GCP.BigQuery.Datasets.access.role | String | The role assigned to the entity. |
+| GCP.BigQuery.Datasets.access.userByEmail | String | An email address of a user to grant access to. |
+| GCP.BigQuery.Datasets.access.groupByEmail | String | An email address of a group to grant access to. |
+| GCP.BigQuery.Datasets.access.domain | String | A domain to grant access to. |
+| GCP.BigQuery.Datasets.access.specialGroup | String | A special group to grant access to. |
+| GCP.BigQuery.Datasets.access.iamMember | String | A type of member that appears in the IAM Policy that isn't a user, group, domain, or special group. |
+| GCP.BigQuery.Datasets.access.view | Unknown | A view from a different dataset to grant access to. |
+| GCP.BigQuery.Datasets.access.routine | Unknown | A routine from a different dataset to grant access to. |
+| GCP.BigQuery.Datasets.access.dataset | Unknown | A grant authorizing access to this dataset for all resources of a particular type. |
+| GCP.BigQuery.Datasets.access.condition | Unknown | The binding condition. |
+| GCP.BigQuery.Datasets.creationTime | String | The time since the epoch the dataset was created, in milliseconds. |
+| GCP.BigQuery.Datasets.lastModifiedTime | String | The time since the epoch the dataset was last modified, in milliseconds. |
+| GCP.BigQuery.Datasets.location | String | The geographic location where the dataset resides. |
+| GCP.BigQuery.Datasets.defaultEncryptionConfiguration | String | The default encryption configuration for all tables in the dataset. |
+| GCP.BigQuery.Datasets.type | String | The type of the dataset. |
+| GCP.BigQuery.Datasets.linkedDatasetSource | Unknown | The source dataset reference when the dataset is of type LINKED. |
+| GCP.BigQuery.Datasets.linkedDatasetMetadata | Unknown | Metadata about the LinkedDataset. |
+| GCP.BigQuery.Datasets.externalDatasetReference | Unknown | Reference to a read-only external dataset defined in data catalogs outside of BigQuery. |
+| GCP.BigQuery.Datasets.externalCatalogDatasetOptions | Unknown | Options defining open source compatible datasets in the BigQuery catalog. Contains metadata of the open source database, schema, or namespace of the current dataset. |
+| GCP.BigQuery.Datasets.isCaseInsensitive | String | True if the dataset and its table names are case-insensitive. |
+| GCP.BigQuery.Datasets.defaultCollation | String | The default collation specification of future tables created in the dataset. |
+| GCP.BigQuery.Datasets.defaultRoundingMode | String | The default rounding mode specification of new tables created within this dataset. |
+| GCP.BigQuery.Datasets.maxTimeTravelHours | String | The time travel window in hours. |
+| GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
+| GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
+| GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
