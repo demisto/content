@@ -346,7 +346,7 @@ script:
       name: context
     description: Perform an AI security scan of a request with AIRS.
     name: anyllm-scan-request
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8319994
   runonce: false
   subtype: python3
 fromversion: 6.10.0
