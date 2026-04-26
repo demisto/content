@@ -11,7 +11,9 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Alerts",
+        "Security Analytics"
     ],
     "useCases": [
         "Network Security"

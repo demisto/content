@@ -10,7 +10,9 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Alerts",
+        "Security Analytics"
     ],
     "useCases": [],
     "keywords": [],

@@ -9,7 +9,11 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Alerts",
+        "Network",
+        "Security Analytics"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

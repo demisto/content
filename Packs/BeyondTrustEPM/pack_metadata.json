@@ -12,7 +12,9 @@
     ],
     "tags": [
         "Security",
-        "Incident Response"
+        "Incident Response",
+        "Alerts",
+        "Security Analytics"
     ],
     "useCases": [
         "Incident Response",
