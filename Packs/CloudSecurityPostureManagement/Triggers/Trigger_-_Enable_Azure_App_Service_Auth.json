@@ -1,0 +1,25 @@
+{
+  "trigger_id": "2e9691746960799d9d6c2ee5695b6b84",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating Azure App Service Web app without authentication",
+  "description": "This CLI command requires 'Microsoft.Web/sites/{app_name}/config/authsettings/*' permission. Successful execution will enable app service authentication, that can prevent anonymous HTTP requests from reaching the API app, or authenticate those that have tokens before they reach the API app.",
+  "trigger_name": "Enable Azure App Service Auth",
+  "automation_type": "command",
+  "automation_id": "azure-webapp-auth-update-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "71247168-8fae-45ba-af00-250cbc9dac68"
+        }
+      ]
+    }
+  }
+}
