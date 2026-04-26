@@ -1354,3 +1354,5 @@ script:
 tests:
 - Tenable.io test
 fromversion: 5.0.0
+supportedModules:
+- xsiam

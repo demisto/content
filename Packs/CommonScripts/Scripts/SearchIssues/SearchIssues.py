@@ -35,7 +35,8 @@ SEARCH_SHA256_FIELDS = [
 ]
 
 
-NUMERIC_ARGS = {"issue_id", "page", "page_size"}
+NUMERIC_ARGS = {"page", "page_size"}
+NUMERIC_LIST_ARGS = {"issue_id"}
 
 
 def remove_empty_string_values(args: dict) -> dict:
@@ -43,9 +44,18 @@ def remove_empty_string_values(args: dict) -> dict:
     - Removes keys with empty string values.
     - For numeric args, removes non-numeric values to prevent be3 crashes (e.g. 'n/a', 'invalid_offset').
     """
-    return {
-        key: value for key, value in args.items() if value != "" and (key not in NUMERIC_ARGS or str(value).strip().isdigit())
-    }
+
+    def is_valid(key, value):
+        if value == "":
+            return False
+        if key in NUMERIC_ARGS:
+            return str(value).strip().isdigit()
+        if key in NUMERIC_LIST_ARGS:
+            parts = argToList(value)
+            return bool(parts) and all(str(part).strip().isdigit() for part in parts)
+        return True
+
+    return {key: value for key, value in args.items() if is_valid(key, value)}
 
 
 def create_sha_search_field_query(sha_search_field: str, search_type: str, sha_list: list[str]) -> Optional[dict]:

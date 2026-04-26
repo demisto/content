@@ -36,6 +36,9 @@ from Ignite import (
     product_list_command,
     vulnerability_list_command,
     cve_command,
+    DEFAULT_REPUTATION_CONTEXT_LIMIT,
+    create_relationships_list_for_community_search,
+    ip_lookup_command,
 )
 
 """ CONSTANTS """
@@ -3380,3 +3383,145 @@ def test_product_list_command_with_invalid_ids(requests_mock, mock_client, mocke
     warning_msg = return_warning_mock.call_args[0][0]
     assert invalid_id in warning_msg
     assert len(actual_response) == 1
+def test_community_search_relationships_truncated_when_over_limit(mock_client):
+    """
+    Test that relationships are capped at DEFAULT_REPUTATION_CONTEXT_LIMIT.
+
+    Given:
+        - A community search indicator with url_domains list longer than the limit.
+    When:
+        - Calling `create_relationships_list_for_community_search`.
+    Then:
+        - Relationships are capped at DEFAULT_REPUTATION_CONTEXT_LIMIT.
+    """
+    oversized_domains = [f"domain{i}.com" for i in range(DEFAULT_REPUTATION_CONTEXT_LIMIT + 10)]
+    indicator = {"enrichments": {"url_domains": oversized_domains}}
+    relationships = create_relationships_list_for_community_search(mock_client, indicator, "1.2.3.4")
+    assert len(relationships) == DEFAULT_REPUTATION_CONTEXT_LIMIT
+
+
+def test_community_search_relationships_not_truncated_when_within_limit(mock_client):
+    """
+    Test that enrichment lists within the limit produce all relationships.
+
+    Given:
+        - A community search indicator with url_domains list shorter than the limit.
+    When:
+        - Calling `create_relationships_list_for_community_search`.
+    Then:
+        - All entries produce relationships.
+    """
+    indicator = {"enrichments": {"url_domains": ["example.com", "test.com"]}}
+    relationships = create_relationships_list_for_community_search(mock_client, indicator, "9.9.9.9")
+    assert len(relationships) == 2
+
+
+def test_ip_lookup_enrichments_truncated_to_param_limit(requests_mock, mocker):
+    """
+    Test that community-search enrichment lists are truncated to the configured
+    `reputation_enrichments_limit` parameter value, not the hardcoded constant.
+
+    Given:
+        - A client with reputation_enrichments_limit set to 3.
+        - A community search response containing an enrichment list with 10 entries.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - The outputs stored in context contain at most 3 enrichment entries per list.
+    """
+    custom_limit = 3
+    client = Client(MOCK_URL, {}, False, None, False, reputation_enrichments_limit=custom_limit)
+
+    empty_ioc_response = {"items": []}
+    oversized_enrichments = [f"domain{i}.com" for i in range(10)]
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "enrichments": {
+                    "url_domains": oversized_enrichments,
+                },
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_domains = outputs[0].get("enrichments", {}).get("url_domains", [])
+    assert len(stored_domains) == custom_limit
+
+
+def test_ip_lookup_enrichments_not_truncated_when_within_param_limit(requests_mock, mocker):
+    """
+    Test that enrichment lists within the configured limit are stored in full.
+
+    Given:
+        - A client with reputation_enrichments_limit set to 10.
+        - A community search response containing an enrichment list with 3 entries.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - All 3 enrichment entries are preserved in the outputs.
+    """
+    custom_limit = 10
+    client = Client(MOCK_URL, {}, False, None, False, reputation_enrichments_limit=custom_limit)
+
+    empty_ioc_response = {"items": []}
+    small_enrichments = ["a.com", "b.com", "c.com"]
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "enrichments": {
+                    "url_domains": small_enrichments,
+                },
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_domains = outputs[0].get("enrichments", {}).get("url_domains", [])
+    assert len(stored_domains) == len(small_enrichments)
+
+
+def test_client_default_reputation_enrichments_limit():
+    """
+    Test that Client uses DEFAULT_REPUTATION_CONTEXT_LIMIT as the default when
+    reputation_enrichments_limit is not provided.
+
+    Given:
+        - A Client instantiated without the reputation_enrichments_limit argument.
+    When:
+        - Accessing client.reputation_enrichments_limit.
+    Then:
+        - The value equals DEFAULT_REPUTATION_CONTEXT_LIMIT.
+    """
+    client = Client(MOCK_URL, {}, False, None, False)
+    assert client.reputation_enrichments_limit == DEFAULT_REPUTATION_CONTEXT_LIMIT
