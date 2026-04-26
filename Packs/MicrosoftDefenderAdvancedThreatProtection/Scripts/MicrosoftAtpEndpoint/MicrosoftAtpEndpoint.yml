@@ -118,7 +118,7 @@ outputs:
     type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.13.8428455
 dependson:
   must:
   - "Microsoft Defender Advanced Threat Protection|||endpoint"

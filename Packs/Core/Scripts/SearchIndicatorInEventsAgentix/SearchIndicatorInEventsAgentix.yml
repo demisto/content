@@ -27,7 +27,7 @@ outputs:
   type: List
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4819260
+dockerimage: demisto/python3:3.12.13.8428455
 dependson:
   must:
   - SearchIndicatorInEvents
