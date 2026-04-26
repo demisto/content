@@ -179,31 +179,6 @@ class Client(BaseClient):
         return response
 
     @logger
-    def count_indicators(self, filters: dict[str, Any]) -> int:
-        """
-        Returns count of indicators matching the given filters.
-
-        Args:
-            filters: Filter parameters.
-
-        Returns:
-            Count of matching indicators.
-        """
-        url_suffix = "/ioc-intel/feed-api/v1/feed/count"
-        demisto.debug(f"URL to count premium indicators: {url_suffix}")
-        response = self._http_request(
-            method="POST",
-            url_suffix=url_suffix,
-            json_data=filters,
-            cookies=self._cookies,
-            timeout=120,
-            retries=RETRIES,
-            status_list_to_retry=STATUS_LIST_TO_RETRY,
-            backoff_factor=BACKOFF_FACTOR,
-        )
-        return response.get("count", 0)
-
-    @logger
     def enrich_indicator(self, indicator_type: str, value: str) -> dict[str, Any]:
         """
         Enriches a single IOC via the enrichment API.
@@ -565,32 +540,6 @@ def get_indicators_command(
     )
 
 
-def get_indicators_count_command(
-    client: Client,
-    args: dict[str, Any],
-) -> CommandResults:
-    """
-    Returns count of indicators matching the given filters.
-
-    Args:
-        client: Cyberint API Client.
-        args: Command arguments.
-
-    Returns:
-        Count of matching indicators.
-    """
-    filters = build_filters_from_args(args)
-    count = client.count_indicators(filters)
-
-    return CommandResults(
-        readable_output=f"Total indicators matching filters: {count}",
-        outputs_prefix="CyberintPremium.count",
-        outputs_key_field="count",
-        raw_response={"count": count},
-        outputs={"count": count},
-    )
-
-
 def enrich_command(
     client: Client,
     args: dict[str, Any],
@@ -908,9 +857,6 @@ def main():
 
         elif command == "cyberint-premium-get-indicators":
             return_results(get_indicators_command(client, args))
-
-        elif command == "cyberint-premium-get-indicators-count":
-            return_results(get_indicators_count_command(client, args))
 
         elif command == "cyberint-premium-enrich":
             return_results(enrich_command(client, args))

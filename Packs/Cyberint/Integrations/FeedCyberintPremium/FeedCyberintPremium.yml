@@ -321,42 +321,6 @@ script:
       description: Whether the indicator has an associated campaign.
       type: Boolean
     description: Gets indicators from the premium feed.
-  - name: cyberint-premium-get-indicators-count
-    arguments:
-    - name: indicator_type
-      description: Filter by indicator type. Supports comma-separated values.
-      auto: PREDEFINED
-      predefined:
-      - ipv4
-      - domain
-      - url
-      - sha256
-      - sha1
-      - md5
-      isArray: true
-    - name: activity
-      description: Filter by activity classification. Supports comma-separated values.
-      isArray: true
-    - name: confidence_min
-      description: Minimum confidence score (0-100).
-    - name: severity_min
-      description: Minimum severity level (1-5).
-    - name: malicious
-      description: Filter by malicious classification.
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      - inconclusive
-    - name: added_to_feed_after
-      description: Filter indicators added to the feed after this date-time (ISO 8601).
-    - name: added_to_feed_before
-      description: Filter indicators added to the feed before this date-time (ISO 8601).
-    outputs:
-    - contextPath: CyberintPremium.count.count
-      description: Total count of matching indicators.
-      type: Number
-    description: Returns the count of indicators matching the given filters.
   - name: cyberint-premium-enrich
     arguments:
     - name: type

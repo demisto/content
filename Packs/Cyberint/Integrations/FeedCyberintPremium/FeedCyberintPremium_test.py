@@ -9,7 +9,6 @@ import json
 BASE_URL = "https://feed-example.com"
 TOKEN = "example_token"
 FEED_URL = f"{BASE_URL}/ioc-intel/feed-api/v1/feed/jsonl"
-COUNT_URL = f"{BASE_URL}/ioc-intel/feed-api/v1/feed/count"
 ENRICH_URL = f"{BASE_URL}/ioc-intel/enrichment-api/v1/enrichment"
 
 
@@ -113,27 +112,6 @@ def test_get_indicators_command_with_filters(
     assert body["filters"]["indicator_type"] == ["ipv4"]
     assert body["filters"]["severity_min"] == 3
     assert body["filters"]["malicious"] == "yes"
-
-
-def test_get_indicators_count_command(
-    mock_client,
-    requests_mock,
-):
-    """
-    Scenario: Test counting indicators.
-
-    Given: mock_client.
-    When: Called the get_indicators_count_command.
-    Then: Ensure that the count is returned.
-    """
-    requests_mock.post(COUNT_URL, json={"count": 12345})
-
-    args = {"indicator_type": "ipv4", "severity_min": "3"}
-
-    result = FeedCyberintPremium.get_indicators_count_command(mock_client, args)
-
-    assert result is not None
-    assert result.outputs["count"] == 12345
 
 
 @mock.patch("FeedCyberintPremium.demisto")

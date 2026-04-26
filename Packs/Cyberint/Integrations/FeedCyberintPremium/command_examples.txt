@@ -1,5 +1,4 @@
 !cyberint-premium-get-indicators limit=10 offset=0
-!cyberint-premium-get-indicators-count indicator_type=ipv4 severity_min=3
 !cyberint-premium-enrich type=ipv4 value=1.1.1.1
 !cyberint-premium-enrich type=domain value=example.com
 !cyberint-premium-enrich type=url value=http://example.com/payload
