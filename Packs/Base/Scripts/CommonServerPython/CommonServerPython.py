@@ -14020,6 +14020,15 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
 
     matched = matched.strip() if matched else ''
 
+    # Detect LLM refusal/error responses that should not be treated as valid matches.
+    _LLM_REFUSAL_INDICATOR = "i'm sorry, but i cannot fulfill that request"
+    if matched and _LLM_REFUSAL_INDICATOR in matched.lower():
+        demisto.debug(
+            f'LLM returned a refusal response instead of a match for value "{value}" '
+            f'against valid items: {items}. Full LLM response: "{matched}"'
+        )
+        matched = ''
+
     if not matched:
         msg = f'No confident match found for value "{value}" in the provided list.'
         if not raise_on_error:
