@@ -1904,3 +1904,204 @@ def flatten_context_values(data: dict[str, Any]) -> list[dict]:
             out.extend(item for item in v if isinstance(item, dict))
 
     return out
+
+
+# ---------------------------------------------------------------------------
+# Safe Enrichment Wrapper — shared logic for *EnrichmentSafe scripts
+# ---------------------------------------------------------------------------
+# Design (CRTX-231934 / Lior's suggestion):
+#   - Never raise a hard error for "no valid indicators" — that is a data
+#     condition, not a technical failure.
+#   - Always return HTTP 200 with structured per-indicator context.
+#   - Invalid / whitelisted indicators appear as Status="invalid" so the
+#     agent can handle them without per-item try/catch.
+#   - Technical failures appear as Status="error" with the raw error message.
+
+_ENRICHMENT_STATUS_SUCCESS = "success"
+_ENRICHMENT_STATUS_INVALID = "invalid"
+_ENRICHMENT_STATUS_ERROR = "error"
+
+_NO_VALID_INDICATORS_FRAGMENTS = [
+    "no valid indicators",
+    "no data provided",
+    "no valid ip",
+    "no valid domain",
+    "no valid url",
+    "no valid file",
+    "no valid cve",
+]
+
+
+def _is_no_valid_indicators_error(error_msg: str) -> bool:
+    """Return True if the error indicates a data-validation failure (not a crash)."""
+    lower = error_msg.lower()
+    return any(fragment in lower for fragment in _NO_VALID_INDICATORS_FRAGMENTS)
+
+
+def _enrichment_invalid_result(value: str, reason: str) -> dict[str, Any]:
+    return {"Value": value, "Status": _ENRICHMENT_STATUS_INVALID, "Reason": reason}
+
+
+def _enrichment_error_result(value: str, error_msg: str) -> dict[str, Any]:
+    return {"Value": value, "Status": _ENRICHMENT_STATUS_ERROR, "Reason": error_msg}
+
+
+def _merge_enrichment_with_inputs(
+    inputs: list[str],
+    enrichment_list: list[dict[str, Any]],
+    value_field: str,
+) -> list[dict[str, Any]]:
+    """
+    Merge enrichment results with the original input list.
+
+    For each input, find the matching enrichment result (by value_field,
+    case-insensitive).  If no match is found the indicator was silently
+    dropped (invalid / whitelisted) and is marked accordingly.
+    """
+    enriched_by_value: dict[str, dict[str, Any]] = {
+        str(r.get(value_field, "")).lower(): r
+        for r in enrichment_list
+        if r.get(value_field)
+    }
+    results: list[dict[str, Any]] = []
+    for inp in inputs:
+        match = enriched_by_value.get(inp.lower())
+        if match:
+            enriched = dict(match)
+            enriched["Status"] = _ENRICHMENT_STATUS_SUCCESS
+            results.append(enriched)
+        else:
+            results.append(
+                _enrichment_invalid_result(
+                    inp,
+                    "Indicator was not enriched — may be invalid format or whitelisted.",
+                )
+            )
+    return results
+
+
+def _extract_enrichment_list_from_results(
+    raw_results: Any,
+    context_prefix: str,
+) -> list[dict[str, Any]]:
+    """Extract the list of enrichment dicts from execute_command results."""
+    enrichment_list: list[dict[str, Any]] = []
+    entries = raw_results if isinstance(raw_results, list) else [raw_results]
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        ctx = entry.get("EntryContext") or entry.get("Contents") or {}
+        for key, val in ctx.items():
+            if key.startswith(context_prefix):
+                if isinstance(val, list):
+                    enrichment_list.extend(val)
+                elif isinstance(val, dict):
+                    enrichment_list.append(val)
+    return enrichment_list
+
+
+def _build_enrichment_safe_results(
+    context_prefix: str,
+    value_field: str,
+    outputs: list[dict[str, Any]],
+    total: int,
+) -> CommandResults:
+    """Build the final CommandResults for a safe enrichment call."""
+    count_success = sum(1 for o in outputs if o.get("Status") == _ENRICHMENT_STATUS_SUCCESS)
+    count_invalid = sum(1 for o in outputs if o.get("Status") == _ENRICHMENT_STATUS_INVALID)
+    count_error = sum(1 for o in outputs if o.get("Status") == _ENRICHMENT_STATUS_ERROR)
+
+    hr_parts = [
+        f"**Enrichment Summary**: {count_success} success, "
+        f"{count_invalid} invalid, {count_error} error "
+        f"(total: {total})"
+    ]
+    non_success = [
+        {"Value": o.get("Value", ""), "Status": o.get("Status", ""), "Reason": o.get("Reason", "")}
+        for o in outputs
+        if o.get("Status") != _ENRICHMENT_STATUS_SUCCESS
+    ]
+    if non_success:
+        hr_parts.append(
+            tableToMarkdown(
+                "Non-success indicators",
+                non_success,
+                headers=["Value", "Status", "Reason"],
+            )
+        )
+
+    ctx_key = f"{context_prefix}(val.{value_field} && val.{value_field} == obj.{value_field})"
+    return CommandResults(
+        readable_output="\n".join(hr_parts),
+        outputs={ctx_key: outputs},
+        raw_response=outputs,
+    )
+
+
+def run_enrichment_safe(
+    command: str,
+    input_arg: str,
+    context_prefix: str,
+    value_field: str,
+    inputs: list[str],
+    extra_args: dict[str, Any] | None = None,
+) -> CommandResults:
+    """
+    Call an enrichment command safely, always returning HTTP 200.
+
+    Invalid / whitelisted indicators are returned as Status="invalid" in the
+    context output instead of raising an exception.  Technical failures are
+    returned as Status="error".
+
+    Args:
+        command: The enrichment command name, e.g. "ip-enrichment".
+        input_arg: The argument name for the indicator list, e.g. "ip_list".
+        context_prefix: The context output prefix, e.g. "IPEnrichment".
+        value_field: The field in the enrichment output that holds the indicator
+            value, e.g. "Value" for IP/Domain/URL/CVE, "SHA256" for File.
+        inputs: List of raw indicator values to enrich.
+        extra_args: Additional arguments to pass to the enrichment command.
+
+    Returns:
+        CommandResults with HTTP 200 always.  The outputs list contains one
+        entry per input with a "Status" field:
+          - "success"  — enrichment succeeded
+          - "invalid"  — indicator was rejected (not valid / whitelisted)
+          - "error"    — technical failure during enrichment
+    """
+    extra_args = extra_args or {}
+
+    if not inputs:
+        return CommandResults(
+            readable_output="No indicators provided.",
+            outputs={f"{context_prefix}(val.{value_field} && val.{value_field} == obj.{value_field})": []},
+        )
+
+    cmd_args = {input_arg: inputs, **extra_args}
+    demisto.debug(f"[EnrichmentSafe] Calling !{command} with {len(inputs)} inputs")
+
+    try:
+        raw_results = execute_command(command, cmd_args, fail_on_error=False)
+    except Exception as ex:
+        error_msg = str(ex)
+        demisto.debug(f"[EnrichmentSafe] execute_command raised: {error_msg}")
+        outputs = [_enrichment_error_result(inp, error_msg) for inp in inputs]
+        return _build_enrichment_safe_results(context_prefix, value_field, outputs, len(inputs))
+
+    if is_error(raw_results):
+        error_msg = get_error(raw_results)
+        demisto.debug(f"[EnrichmentSafe] Command returned error: {error_msg}")
+        if _is_no_valid_indicators_error(error_msg):
+            outputs = [
+                _enrichment_invalid_result(
+                    inp, "No valid indicator extracted — may be invalid format or whitelisted."
+                )
+                for inp in inputs
+            ]
+        else:
+            outputs = [_enrichment_error_result(inp, error_msg) for inp in inputs]
+        return _build_enrichment_safe_results(context_prefix, value_field, outputs, len(inputs))
+
+    enrichment_list = _extract_enrichment_list_from_results(raw_results, context_prefix)
+    outputs = _merge_enrichment_with_inputs(inputs, enrichment_list, value_field)
+    return _build_enrichment_safe_results(context_prefix, value_field, outputs, len(inputs))
