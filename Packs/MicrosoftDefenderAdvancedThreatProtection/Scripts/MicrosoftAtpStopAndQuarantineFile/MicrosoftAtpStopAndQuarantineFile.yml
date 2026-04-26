@@ -65,6 +65,9 @@ outputs:
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4508456
+dependson:
+  must:
+  - microsoft-atp-stop-and-quarantine-file
 fromversion: 6.1.0
 isInternal: true
 tests:

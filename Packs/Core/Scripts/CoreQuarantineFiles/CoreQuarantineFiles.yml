@@ -64,6 +64,9 @@ outputs:
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.12.5490952
+dependson:
+  must:
+  - core-quarantine-files
 fromversion: 6.1.0
 isInternal: true
 tests:
