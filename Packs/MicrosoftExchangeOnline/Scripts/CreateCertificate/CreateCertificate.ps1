@@ -1,3 +1,4 @@
+Remove-Item 'Alias:Write-Host' -Force -ErrorAction SilentlyContinue # (XSUP-67362)
 Import-Module SelfSignedCertificate
 
 function CreateCertificate
