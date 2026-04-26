@@ -1,6 +1,7 @@
 import os
 import ssl
 from datetime import datetime
+import tempfile
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -92,7 +93,7 @@ def get_ssl_version(ssl_version):
     return version
 
 
-def get_tls_object(unsecure, ssl_version):
+def get_tls_object(unsecure, ssl_version, custom_ca_certificate):
     """
     Returns a TLS object according to the user's selection of the 'Trust any certificate' checkbox.
     """
@@ -102,14 +103,23 @@ def get_tls_object(unsecure, ssl_version):
         tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, ciphers=CIPHERS_STRING, version=get_ssl_version(ssl_version))
 
     else:  # Trust any certificate is unchecked
+        if custom_ca_certificate:
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                if isinstance(custom_ca_certificate, bytes):
+                    temp_file.write(custom_ca_certificate)
+                else:
+                    temp_file.write(custom_ca_certificate.encode())
+                ca_file = temp_file.name
+        else:
+            ca_file = os.environ.get("SSL_CERT_FILE")  # type: ignore[assignment]
         # Trust any certificate = False means that the LDAP server's certificate must be valid -
         # i.e if the server's certificate is not valid the connection will fail.
-        tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get("SSL_CERT_FILE"), version=get_ssl_version(ssl_version))
+        tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=ca_file, version=get_ssl_version(ssl_version))
 
     return tls
 
 
-def initialize_server(host, port, secure_connection, unsecure, ssl_version):
+def initialize_server(host, port, secure_connection, unsecure, ssl_version, custom_ca_certificate):
     """
     Uses the instance configuration to initialize the LDAP server.
     Supports both encrypted and non encrypted connection.
@@ -143,7 +153,7 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
 
     if secure_connection == SSL:  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        tls = get_tls_object(unsecure, ssl_version)
+        tls = get_tls_object(unsecure, ssl_version, custom_ca_certificate)
         return Server(host=host, port=port, use_ssl=True, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
     elif secure_connection == START_TLS:  # Secure connection (STARTTLS)
@@ -151,7 +161,7 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
             f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
             f" during bind. (unsecure: {unsecure}). port: {port or 'default(389)'}"
         )
-        tls = get_tls_object(unsecure, ssl_version)
+        tls = get_tls_object(unsecure, ssl_version, custom_ca_certificate)
         return Server(host=host, port=port, use_ssl=False, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
     else:  # Unsecure (non encrypted connection initialized) - connection type is None
@@ -1733,7 +1743,7 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
+def test_credentials_command(server_ip, server, ntlm_connection, auto_bind, ntlm_domain):
     args = demisto.args()
     username = args.get("username")
     try:
@@ -1744,6 +1754,7 @@ def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
             password=args.get("password"),
             ntlm_connection=argToBoolean(ntlm_connection),
             auto_bind=auto_bind,
+            ntlm_domain=ntlm_domain,
         )
         connection.unbind()
     except LDAPBindError:
@@ -1756,8 +1767,20 @@ def test_credentials_command(server_ip, server, ntlm_connection, auto_bind):
     )
 
 
-def create_connection(server: Server, server_ip: str, username: str, password: str, ntlm_connection: bool, auto_bind: str | bool):
-    domain_name = server_ip + "\\" + username if "\\" not in username else username
+def create_connection(
+    server: Server,
+    server_ip: str,
+    username: str,
+    password: str,
+    ntlm_connection: bool,
+    auto_bind: str | bool,
+    ntlm_domain: str | None,
+):
+    if "\\" in username:
+        domain_name = username
+    else:
+        domain = ntlm_domain if ntlm_domain else server_ip
+        domain_name = f"{domain}\\{username}"
     # open socket and bind to server
     return (
         Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind)
@@ -1812,6 +1835,8 @@ def main():
     ntlm_auth = params.get("ntlm")
     insecure = params.get("unsecure", False)
     port = params.get("port")
+    ntlm_domain = params.get("ntlm_domain")
+    custom_ca_certificate = params.get("custom_ca_certificate")
 
     disabled_users_group_cn = params.get("group-cn")
     create_if_not_exists = params.get("create-if-not-exists")
@@ -1829,7 +1854,7 @@ def main():
             last_log_detail_level = get_library_log_detail_level()
             set_library_log_detail_level(EXTENDED)
 
-        server = initialize_server(server_ip, port, secure_connection, insecure, ssl_version)
+        server = initialize_server(server_ip, port, secure_connection, insecure, ssl_version, custom_ca_certificate)
 
         global connection
         auto_bind = get_auto_bind_value(secure_connection, insecure)
@@ -1843,6 +1868,7 @@ def main():
                 password=password,
                 ntlm_connection=ntlm_auth,
                 auto_bind=auto_bind,
+                ntlm_domain=ntlm_domain,
             )
         except Exception as e:
             err_msg = str(e)
@@ -1949,7 +1975,11 @@ def main():
             delete_group()
 
         elif command == "ad-test-credentials":
-            return return_results(test_credentials_command(server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind))
+            return return_results(
+                test_credentials_command(
+                    server_ip, server, ntlm_connection=ntlm_auth, auto_bind=auto_bind, ntlm_domain=ntlm_domain
+                )
+            )
 
         # IAM commands
         elif command == "iam-get-user":

@@ -33,10 +33,21 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: NTLM Domain
+  name: ntlm_domain
+  type: 0
+  advanced: true
+  section: Connect
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
   type: 0
   required: true
+  section: Connect
+- display: CA Certificate File as Text
+  name: custom_ca_certificate
+  type: 12
+  required: false
+  advanced: true
   section: Connect
 - display: Page size
   name: page_size

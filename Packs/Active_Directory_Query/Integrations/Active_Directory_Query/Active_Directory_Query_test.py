@@ -909,7 +909,7 @@ def test_test_credentials_command(mocker):
         def unbind(self):
             pass
 
-    def mock_create_connection(server, server_ip, username, password, ntlm_connection, auto_bind):
+    def mock_create_connection(server, server_ip, username, password, ntlm_connection, auto_bind, ntlm_domain):
         return MockConnection()
 
     with (
@@ -917,7 +917,7 @@ def test_test_credentials_command(mocker):
         patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind),
     ):
         command_results = Active_Directory_Query.test_credentials_command(
-            BASE_TEST_PARAMS["server_ip"], "server", ntlm_connection="true", auto_bind="auto_bind"
+            BASE_TEST_PARAMS["server_ip"], "server", ntlm_connection="true", auto_bind="auto_bind", ntlm_domain="ntlm domain"
         )
         assert command_results.readable_output == "Credential test with username username_test_credentials succeeded."
 
