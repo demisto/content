@@ -48,18 +48,28 @@ ALLOWED_EMAIL_TAGS = {
     "caption",
 }
 
+ALLOWED_EMAIL_ATTRIBUTES: dict[str, set[str]] = {
+    "*": {"style", "class", "id", "dir", "align", "width", "height", "bgcolor", "valign"},
+    "a": {"href", "target", "rel"},
+    "img": {"src", "alt", "title"},
+    "td": {"colspan", "rowspan"},
+    "th": {"colspan", "rowspan", "scope"},
+    "font": {"color", "face", "size"},
+    "table": {"border", "cellpadding", "cellspacing"},
+}
+
 
 def sanitize_html_body(html_body: str) -> str:
-    """Sanitize email body HTML using an allowlist of tags.
+    """Sanitize email body HTML using an allowlist of tags and attributes.
 
-    When nh3 is available, strips disallowed tags while preserving safe ones.
+    When nh3 is available, strips disallowed tags and attributes while preserving safe ones.
     When nh3 is not available, returns the HTML as-is since full escaping
     would break legitimate formatting in an HTML rendering context.
     """
     try:
         import nh3
 
-        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS)  # pylint: disable=no-member
+        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS, attributes=ALLOWED_EMAIL_ATTRIBUTES)  # pylint: disable=no-member
     except ImportError:
         demisto.debug("nh3 is not available; HTML sanitization skipped")
         return html_body
