@@ -28,6 +28,7 @@
 <li><a href="#h_d14f7a3e-ee37-439a-918f-8ca79cebb056" target="_self">Add a domain to a response policy: bluecat-am-response-policy-add-domain</a></li>
 <li><a href="#h_489c45fb-a61f-4aef-88d0-6d9f07798955" target="_self">Remove a domain from a response policy: bluecat-am-response-policy-remove-domain</a></li>
 <li><a href="#h_0457fa2f-abac-46f1-9091-f56b52cb50be" target="_self">Get an IPv4 block containing an IPv4 address: bluecat-am-get-range-by-ip</a></li>
+<li><a href="#h_bluecat-am-get-entity-by-name" target="_self">Get an entity by name: bluecat-am-get-entity-by-name</a></li>
 </ol>
 <h3 id="h_ad8eee3b-a87d-41c0-b040-3f294b59e922">1. Enrich an IP address</h3>
 <hr>
@@ -650,3 +651,154 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/37335599/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png" alt="Screen Shot 2019-08-08 at 15 44 51"></a></p>
+<h3 id="h_bluecat-am-get-entity-by-name">7. Get an entity by name</h3>
+<hr>
+<p>Returns an entity object from the database referenced by its name field. If multiple objects match the name, the first result is returned. Returns a not-found message if no matching object exists.</p>
+<h5>Base Command</h5>
+<p><code>bluecat-am-get-entity-by-name</code></p>
+<h5>Input</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 208px;"><strong>Argument Name</strong></th>
+<th style="width: 418px;"><strong>Description</strong></th>
+<th style="width: 114px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 208px;">name</td>
+<td style="width: 418px;">The name of the entity to search for.</td>
+<td style="width: 114px;">Required</td>
+</tr>
+<tr>
+<td style="width: 208px;">parent_id</td>
+<td style="width: 418px;">The ID of the parent entity. If not provided, defaults to the configured root configuration ID.</td>
+<td style="width: 114px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 208px;">type</td>
+<td style="width: 418px;">The type of the object to return. Must be one of the object type constants defined in the BlueCat Address Manager API (e.g., HostRecord, IP4Address).</td>
+<td style="width: 114px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 208px;">include_ha</td>
+<td style="width: 418px;">When set to true, the returned xHA server object includes details for the xHA status of the nodes. When set to false, only basic information is returned without polling xHA status.</td>
+<td style="width: 114px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 372px;"><strong>Path</strong></th>
+<th style="width: 52px;"><strong>Type</strong></th>
+<th style="width: 316px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.ID</td>
+<td style="width: 52px;">Number</td>
+<td style="width: 316px;">The address manager ID of the entity.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.Name</td>
+<td style="width: 52px;">String</td>
+<td style="width: 316px;">The entity name.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.Type</td>
+<td style="width: 52px;">String</td>
+<td style="width: 316px;">The entity type.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.AbsoluteName</td>
+<td style="width: 52px;">String</td>
+<td style="width: 316px;">The absolute (fully qualified) DNS name of the entity.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.Addresses</td>
+<td style="width: 52px;">String</td>
+<td style="width: 316px;">The IP address(es) associated with the entity.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.Parents.ID</td>
+<td style="width: 52px;">Number</td>
+<td style="width: 316px;">The parent entity ID.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.Parents.Type</td>
+<td style="width: 52px;">String</td>
+<td style="width: 316px;">The parent entity type.</td>
+</tr>
+<tr>
+<td style="width: 372px;">BlueCat.AddressManager.Entity.Parents.Name</td>
+<td style="width: 52px;">String</td>
+<td style="width: 316px;">The parent entity name.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<pre>!bluecat-am-get-entity-by-name name="test.example.com" type="HostRecord"</pre>
+<h5>Context Example</h5>
+<pre>{
+    "BlueCat.AddressManager.Entity": {
+        "ID": 100456,
+        "Name": "test.example.com",
+        "Type": "HostRecord",
+        "AbsoluteName": "test.example.com",
+        "Addresses": "1.2.3.4",
+        "Parents": [
+            {
+                "ID": 100123,
+                "Type": "Zone",
+                "Name": "example.com"
+            }
+        ]
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<h3>Entity Result for test.example.com:</h3>
+<table style="width: 749px;" border="2">
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Type</th>
+<th>Absolute Name</th>
+<th>Addresses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100456</td>
+<td>test.example.com</td>
+<td>HostRecord</td>
+<td>test.example.com</td>
+<td>1.2.3.4</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h3>Parents Details:</h3>
+<table style="width: 749px;" border="2">
+<thead>
+<tr>
+<th>ID</th>
+<th>Type</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100123</td>
+<td>Zone</td>
+<td>example.com</td>
+</tr>
+</tbody>
+</table>
