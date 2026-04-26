@@ -2932,6 +2932,7 @@ def get_detections_from_hosts(hosts):
             new_detection = copy.deepcopy(host)
             del new_detection["DETECTION_LIST"]
             new_detection["DETECTION"] = detection
+            new_detection.setdefault("LAST_VM_AUTH_SCANNED_DATE", None)
             fetched_assets.append(new_detection)
             truncate_asset_size(new_detection)
 

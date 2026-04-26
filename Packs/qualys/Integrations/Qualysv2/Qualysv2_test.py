@@ -35,6 +35,7 @@ from Qualysv2 import (
     fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
     fetch_assets_and_vulnerabilities_by_qids,
+    get_detections_from_hosts,
     ASSETS_FETCH_FROM,
     ASSETS_DATE_FORMAT,
     HOST_LIMIT,
@@ -2068,3 +2069,51 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     assert next_run["stage"] == "vulnerabilities"
     assert next_run["total_assets"] == last_total_assets
     assert next_run["snapshot_id"] == SNAPSHOT_ID
+
+
+@pytest.mark.parametrize(
+    "hosts, expected_field_value",
+    [
+        pytest.param(
+            [
+                {
+                    "ID": "1",
+                    "IP": "1.1.1.1",
+                    "DETECTION_LIST": {"DETECTION": {"QID": "123"}},
+                    "LAST_VM_AUTH_SCANNED_DATE": "2025-01-01T00:00:00Z",
+                }
+            ],
+            "2025-01-01T00:00:00Z",
+            id="Host with LAST_VM_AUTH_SCANNED_DATE preserves value",
+        ),
+        pytest.param(
+            [
+                {
+                    "ID": "2",
+                    "IP": "2.2.2.2",
+                    "DETECTION_LIST": {"DETECTION": {"QID": "456"}},
+                }
+            ],
+            None,
+            id="Host without LAST_VM_AUTH_SCANNED_DATE defaults to None",
+        ),
+    ],
+)
+def test_get_detections_from_hosts_last_vm_auth_scanned_date(hosts: list, expected_field_value: Optional[str]):
+    """
+    Given:
+        - A list of hosts, some with and some without the LAST_VM_AUTH_SCANNED_DATE field.
+
+    When:
+        - Calling get_detections_from_hosts.
+
+    Then:
+        - Ensure every resulting asset dict contains the LAST_VM_AUTH_SCANNED_DATE key.
+        - If the host had the field, its value is preserved.
+        - If the host did not have the field, it defaults to None.
+    """
+    assets, _ = get_detections_from_hosts(hosts)
+
+    for asset in assets:
+        assert "LAST_VM_AUTH_SCANNED_DATE" in asset
+        assert asset["LAST_VM_AUTH_SCANNED_DATE"] == expected_field_value
