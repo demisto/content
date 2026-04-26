@@ -96,7 +96,7 @@ tasks:
       entry_id:
         simple: ${lastCompletedTaskEntries}
       execution-timeout:
-        simple: "300"
+        simple: "900"
       retry-count:
         simple: "1"
     separatecontext: false
