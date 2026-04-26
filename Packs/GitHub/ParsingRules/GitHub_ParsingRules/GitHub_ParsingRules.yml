@@ -4,6 +4,5 @@ name: Github Parsing Rule
 rules: ''
 samples: ''
 supportedModules:
-- agentix
 - xsiam
 tags: []
