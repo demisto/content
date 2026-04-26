@@ -11737,3 +11737,229 @@ class TestGetPlatformSpecificProfileDefaults:
         assert result["agent_settings"] == "Default"  # Still defaults
         assert result["restrictions"] == "Default"  # Still defaults
         assert result["exceptions"] == "Default (No Exceptions)"  # Still defaults
+
+
+class TestListBrokersCommand:
+    """Test cases for list_brokers_command function."""
+
+    def test_list_brokers_command_single_broker_success(self, mocker):
+        """
+        Given: Client and single broker_vm_name
+        When: list_brokers_command is called
+        Then: Single broker returned with correct structure and Apps data
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {
+            "reply": {
+                "brokers": [
+                    {
+                        "DEVICE_NAME": "broker-01",
+                        "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
+                    }
+                ]
+            }
+        }
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Brokers Table")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01"})
+
+        assert result.outputs_prefix == "Core.Broker"
+        assert result.outputs_key_field == "DeviceName"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["DeviceName"] == "broker-01"
+        assert len(result.outputs[0]["Apps"]) == 1
+
+    def test_list_brokers_command_multiple_brokers(self, mocker):
+        """
+        Given: Multiple broker names as comma-separated list
+        When: list_brokers_command is called
+        Then: All matching brokers returned
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {
+            "reply": {"brokers": [{"DEVICE_NAME": "broker-01"}, {"DEVICE_NAME": "broker-02"}, {"DEVICE_NAME": "broker-03"}]}
+        }
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01,broker-02,broker-03"})
+
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["DeviceName"] == "broker-01"
+        assert result.outputs[2]["DeviceName"] == "broker-03"
+
+    def test_list_brokers_command_no_filter_default_limit(self, mocker):
+        """
+        Given: No broker filter and no limit specified
+        When: list_brokers_command is called
+        Then: All brokers returned with default limit of 50
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {"reply": {"brokers": [{"DEVICE_NAME": f"broker-{i}"} for i in range(10)]}}
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+        result = list_brokers_command(mock_client, {})
+
+        assert len(result.outputs) == 10
+        call_args = mock_client.get_webapp_data.call_args[0][0]
+        assert call_args["filter_data"]["paging"]["to"] == 50
+
+    def test_list_brokers_command_empty_response(self, mocker):
+        """
+        Given: Broker filter that matches no brokers
+        When: list_brokers_command is called
+        Then: Empty list returned gracefully
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {"reply": {"brokers": []}}
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="No brokers found")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "nonexistent"})
+
+        assert result.outputs == []
+        assert result.readable_output == "No brokers found"
+
+
+def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Valid arguments including the new product_type.
+    WHEN:
+        The core_fill_support_ticket_command function is called.
+    THEN:
+        The response contains the productType and other fields correctly mapped.
+    """
+    from CortexPlatformCore import core_fill_support_ticket_command
+
+    args = {
+        "product_type": "Cortex XSIAM",
+        "description": "This is a detailed description that is at least 25 characters long.",
+        "contact_number": "123456789",
+        "issue_impact": "P4",
+        "issue_category": "Agent",
+        "problem_concentration": "Communication",
+        "issue_frequency": "Yes - Consistent",
+        "most_recent_issue_start_time": "2023-01-01T00:00:00Z",
+    }
+
+    result = core_fill_support_ticket_command(args)
+
+    assert result.outputs["description"] == args["description"]
+    assert result.outputs["contactNumber"] == "123456789"
+    assert result.outputs["IssueImpact"] == "P4"
+    assert result.outputs["smeArea"] == "Agent"
+    assert result.outputs["subGroupName"] == "Communication"
+    assert result.outputs["OngoingIssue"] == "Yes - Consistent"
+    assert result.outputs["DateTimeOfIssue"] is not None
+    assert result.outputs_prefix == "Core.SupportTicket"
+
+
+def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Mock API response with SME areas and their sub-groups.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        It fetches all SME areas and returns the taxonomy mapping each area to its problem concentrations.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Communication", "label": "Communication"},
+                    {"value": "Performance", "label": "Performance"},
+                ],
+            },
+            {
+                "value": "Server",
+                "label": "Server",
+                "suggestedValues": [
+                    {"value": "Automation", "label": "Automation"},
+                ],
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+
+    expected_taxonomy = [
+        {"Agent": ["Communication", "Performance"]},
+        {"Server": ["Automation"]},
+    ]
+    assert result.outputs == str(expected_taxonomy)
+    assert result.raw_response == expected_taxonomy
+
+    assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
+
+
+def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
+    """
+    GIVEN:
+        The SME areas API returns an empty list.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The response contains an empty list.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value={"reply": []})
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs == str([])
+    assert result.raw_response == []
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+
+
+def test_get_support_ticket_taxonomy_command_empty_suggested_values(mocker: MockerFixture):
+    """
+    GIVEN:
+        An SME area with empty suggestedValues.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The area is included with an empty list of problem concentrations.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [],
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    expected_taxonomy = [{"Agent": []}]
+    assert result.outputs == str(expected_taxonomy)
+    assert result.raw_response == expected_taxonomy
