@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v8
+      uses: Gr1N/setup-poetry@15821dc8a61bc630db542ae4baf6a7c19a994844 # v8
 
     - name: Checkout
       uses: actions/checkout@v4

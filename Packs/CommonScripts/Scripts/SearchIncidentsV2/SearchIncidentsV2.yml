@@ -15,9 +15,9 @@ args:
 - description: A comma-separated list of incident close reasons by which to filter the results.
   isArray: true
   name: reason
-- description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
+- description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z). (Low severity issues will only be returned if fromdate is set to less than 30 days ago on platform).
   name: fromdate
-  defaultValue: "30 days ago"
+  defaultValue: "35 days ago"
 - description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
   name: todate
 - description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
