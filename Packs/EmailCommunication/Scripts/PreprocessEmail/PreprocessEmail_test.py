@@ -1130,3 +1130,88 @@ def test_create_email_html_no_image_to_insert(html, entry_id_list, expected_resu
     from PreprocessEmail import create_email_html
 
     assert create_email_html(html, entry_id_list) == expected_result
+
+
+class TestSetEmailReplyXSSPrevention:
+    """Tests for XSS prevention in set_email_reply header fields."""
+
+    def test_xss_in_email_from(self):
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply("<script>alert(1)</script>", "to@test.com", "cc@test.com", "<p>body</p>", None)
+        assert "&lt;script&gt;" in result
+        assert "<script>alert(1)</script>" not in result
+
+    def test_xss_in_email_to(self):
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply("from@test.com", "<img src=x onerror=alert(1)>", "cc@test.com", "<p>body</p>", None)
+        assert "&lt;img src=x" in result
+        assert "<img src=x onerror=" not in result
+
+    def test_xss_in_email_cc(self):
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply("from@test.com", "to@test.com", "<iframe src=evil.com>", "<p>body</p>", None)
+        assert "&lt;iframe" in result
+
+    def test_xss_in_attachment_names(self):
+        from PreprocessEmail import set_email_reply
+
+        attachments = [{"name": "<script>alert(1)</script>"}]
+        result = set_email_reply("from@test.com", "to@test.com", "cc@test.com", "<p>body</p>", attachments)
+        assert "&lt;script&gt;" in result
+        assert "<script>alert(" not in result
+
+    def test_none_fields_render_as_empty(self):
+        from PreprocessEmail import set_email_reply
+
+        result = set_email_reply(None, None, None, "<p>body</p>", None)
+        assert "From:" in result
+        assert "None" not in result
+
+
+class TestCreateEmailHtmlRegexEscape:
+    """Tests for regex injection prevention in create_email_html."""
+
+    def test_filename_with_regex_metacharacters(self):
+        from PreprocessEmail import create_email_html
+
+        malicious_name = "image(1)+[2].png"
+        email_html = '<img src="cid:test" alt="' + malicious_name + '" width="100">'
+        entry_id_list = [(malicious_name, "42@100")]
+        result = create_email_html(email_html, entry_id_list)
+        assert "entry/download/42@100" in result
+
+
+class TestSanitizeHtmlBodyPreprocess:
+    """Tests for HTML body sanitization in PreprocessEmail."""
+
+    def test_strips_script_tags(self):
+        pytest.importorskip("nh3", reason="nh3 not installed in Docker image")
+        from PreprocessEmail import sanitize_html_body
+
+        result = sanitize_html_body("<p>Hello</p><script>alert(1)</script><p>World</p>")
+        assert "<script>" not in result
+        assert "Hello" in result
+
+    def test_strips_onerror_attribute(self):
+        pytest.importorskip("nh3", reason="nh3 not installed in Docker image")
+        from PreprocessEmail import sanitize_html_body
+
+        result = sanitize_html_body('<img src="x" onerror="alert(1)">')
+        assert "onerror" not in result
+
+    def test_empty_input(self):
+        from PreprocessEmail import sanitize_html_body
+
+        assert sanitize_html_body("") == ""
+
+    def test_fallback_when_nh3_unavailable(self, mocker):
+        """Validate graceful fallback when nh3 is not available."""
+        from PreprocessEmail import sanitize_html_body
+
+        mocker.patch.dict("sys.modules", {"nh3": None})
+        malicious_html = "<script>alert(1)</script>"
+        result = sanitize_html_body(malicious_html)
+        assert result == malicious_html
