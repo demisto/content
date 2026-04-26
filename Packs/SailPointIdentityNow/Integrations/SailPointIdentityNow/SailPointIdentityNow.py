@@ -82,7 +82,7 @@ class Client(BaseClient):
 """ HELPER/UTILITY FUNCTIONS """
 
 
-def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: str):
+def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: str, timeout: int):
     """
     Create header with OAuth 2.0 authentication information.
 
@@ -98,6 +98,9 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
     :type grant_type: ``str``
     :param grant_type: Grant Type for OAuth 2.0. Defaulted to 'client_credentials' if not provided.
 
+    :type timeout: ``int``
+    :param timeout: Request timeout.
+
     :return: Header with OAuth 2.0 information if client_id & client_secret are provided, else ConnectionError(message).
     This will return ConnectionError(message) if the client_id & client_secret were not valid (authorized).
     """
@@ -108,7 +111,7 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
         grant_type = "client_credentials"
 
     params = {"grant_type": grant_type, "client_id": client_id, "client_secret": client_secret}
-    oauth_response = requests.request("POST", url=f"{base_url}{IDN_OAUTH_EXT}", params=params)
+    oauth_response = requests.request("POST", url=f"{base_url}{IDN_OAUTH_EXT}", params=params, timeout=timeout)
     if oauth_response is not None and 200 <= oauth_response.status_code < 300:
         return {
             "Authorization": f"Bearer {oauth_response.json().get('access_token', None)}",
@@ -332,7 +335,7 @@ def build_results(prefix: str, key_field: str, response=None):
 """ COMMAND FUNCTIONS """
 
 
-def test_connection(base_url: str, client_id: str, client_secret: str, grant_type: str):
+def test_connection(base_url: str, client_id: str, client_secret: str, grant_type: str, timeout: int):
     """
     Test connectivity to IdentityNow
 
@@ -348,10 +351,13 @@ def test_connection(base_url: str, client_id: str, client_secret: str, grant_typ
     :type grant_type: ``str``
     :param grant_type: Grant Type for OAuth 2.0. Defaulted to 'client_credentials' if not provided.
 
+    :type timeout: ``int``
+    :param timeout: Request timeout.
+
     :return: HTTP connectivity status for test connection.
     """
     try:
-        get_headers(base_url, client_id, client_secret, grant_type)
+        get_headers(base_url, client_id, client_secret, grant_type, timeout)
         return "ok"
     except ConnectionError as error:
         return f"Error Connecting : {error}"
@@ -615,11 +621,11 @@ def main():
     # Other configs
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    request_timeout = 10
+    request_timeout = arg_to_number(params.get("request_timeout")) or 60
 
     headers = {}
     try:
-        headers = get_headers(base_url, client_id, client_secret, grant_type)
+        headers = get_headers(base_url, client_id, client_secret, grant_type, request_timeout)
     except ConnectionError as error:
         demisto.error(f"Error getting header : {error}")
         return_error(f"Error getting header : {error}")
@@ -640,7 +646,7 @@ def main():
         results = None
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            results = test_connection(base_url, client_id, client_secret, grant_type)
+            results = test_connection(base_url, client_id, client_secret, grant_type, request_timeout)
 
         elif command == "identitynow-search-identities":
             query = args.get("query", None)

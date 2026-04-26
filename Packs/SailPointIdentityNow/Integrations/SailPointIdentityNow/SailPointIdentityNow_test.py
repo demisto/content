@@ -200,22 +200,22 @@ def verify_event(event):
 
 
 def test_get_headers_all_none():
-    headers = SailPointIdentityNow.get_headers(None, None, None, None)
+    headers = SailPointIdentityNow.get_headers(None, None, None, None, 10)
     assert headers is None
 
 
 def test_get_headers_base_url_none():
-    headers = SailPointIdentityNow.get_headers(None, "test", "test", "client_credentials")
+    headers = SailPointIdentityNow.get_headers(None, "test", "test", "client_credentials", 10)
     assert headers is None
 
 
 def test_get_headers_client_id_none():
-    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, None, "test", "client_credentials")
+    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, None, "test", "client_credentials", 10)
     assert headers is None
 
 
 def test_get_headers_client_secret_none():
-    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, "test", None, "client_credentials")
+    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, "test", None, "client_credentials", 10)
     assert headers is None
 
 
@@ -225,7 +225,7 @@ def test_get_headers_grant_type(mock_header):
         "Authorization": "Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml",
         "Content-Type": "application/json",
     }
-    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, "test", "test", None)
+    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, "test", "test", None, 10)
     assert headers["Authorization"] == "Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml"
     assert headers["Content-Type"] == "application/json"
 
@@ -236,7 +236,7 @@ def test_get_headers_success(mock_header):
         "Authorization": "Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml",
         "Content-Type": "application/json",
     }
-    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials")
+    headers = SailPointIdentityNow.get_headers(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials", 10)
     assert headers["Authorization"] == "Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml"
     assert headers["Content-Type"] == "application/json"
 
@@ -372,14 +372,14 @@ def test_build_results_2xx_status():
 @patch("SailPointIdentityNow.get_headers")
 def test_connection_fail(mock_header):
     mock_header.side_effect = ConnectionError("Unable to fetch headers from IdentityNow!")
-    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials")
+    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials", 10)
     assert test_connection == "Error Connecting : Unable to fetch headers from IdentityNow!"
 
 
 @patch("SailPointIdentityNow.get_headers")
 def test_connection_unauthorized(mock_header):
     mock_header.side_effect = ConnectionError("Bad client credentials")
-    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials")
+    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials", 10)
     assert test_connection == "Error Connecting : Bad client credentials"
 
 
@@ -389,7 +389,7 @@ def test_connection_success(mock_header):
         "Authorization": "Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml",
         "Content-Type": "application/json",
     }
-    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials")
+    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, "test", "test", "client_credentials", 10)
     assert test_connection == "ok"
 
 
