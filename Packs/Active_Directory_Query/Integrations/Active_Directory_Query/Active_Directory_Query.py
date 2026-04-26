@@ -8,6 +8,7 @@ from ldap3 import (
     ALL_ATTRIBUTES,
     AUTO_BIND_NO_TLS,
     AUTO_BIND_TLS_BEFORE_BIND,
+    BASE,
     NTLM,
     SUBTREE,
     Connection,
@@ -282,14 +283,39 @@ def group_entry(group_object, custom_attributes):
     return group
 
 
-def base_dn_verified(base_dn):
-    # search AD with a simple query to test base DN is configured correctly
+def base_dn_verified(base_dn: str) -> bool:
+    """
+    Verifies the base DN is configured correctly.
+    Uses BASE scope, size limit of 1, and 'no attributes' OID for maximum performance.
+
+    This function performs an optimized LDAP search that only checks if the base DN entry itself exists,
+    rather than searching the entire directory tree. This reduces the complexity from O(n) to O(1).
+
+    Args:
+        base_dn: The base DN to verify (e.g., 'dc=example,dc=com')
+
+    Returns:
+        bool: True if the base DN is valid and accessible, False otherwise
+    """
+    assert connection is not None
     try:
-        search("(objectClass=*)", base_dn, size_limit=1)
+        # Optimized search with three performance improvements:
+        # 1. search_scope=BASE: Only looks at the DN itself (O(1) complexity)
+        # 2. size_limit=1: Safety guard to ensure only one record is processed
+        # 3. attributes=['1.1']: Special OID meaning 'return no attributes' (minimal data transfer)
+        success = connection.search(
+            search_base=base_dn, search_filter="(objectClass=*)", search_scope=BASE, size_limit=1, attributes=["1.1"]
+        )
+
+        if not success:
+            demisto.info(f"Base DN verification failed. Result: {connection.result}")
+            return False
+
+        return True
+
     except Exception as e:
-        demisto.info(str(e))
+        demisto.error(f"Error during Base DN verification: {str(e)}")
         return False
-    return True
 
 
 def generate_unique_cn(default_base_dn, cn):
