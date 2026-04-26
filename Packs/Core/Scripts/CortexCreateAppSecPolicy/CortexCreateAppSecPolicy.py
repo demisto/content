@@ -71,8 +71,7 @@ class FilterBuilder:
 
         if not and_blocks:
             return {}
-        if len(and_blocks) == 1:
-            return and_blocks[0]
+        # Always wrap in AND, even for single blocks
         return {self.AND: and_blocks}
 
 
@@ -175,6 +174,7 @@ def _get_appsec_rule_ids_from_names(rule_names: list[str]) -> list[str]:
 def build_conditions(args: dict) -> dict:
     builder = FilterBuilder()
 
+    # 1. Finding Type
     finding_types = argToList(args.get("conditions_finding_type"))
     if not finding_types:
         finding_types = [ft for ft in POLICY_FINDING_TYPE_MAPPING if ft != "CI/CD Risk"]
@@ -189,20 +189,40 @@ def build_conditions(args: dict) -> dict:
 
     builder.add_field("Finding Type", FilterType.EQ, resolved_finding_types)
 
+    # 2. Severity
     if severities := argToList(args.get("conditions_severity")):
         builder.add_field("Severity", FilterType.EQ, severities)
 
+    # 3. Has A Fix
+    if has_a_fix := arg_to_bool_or_none(args.get("conditions_has_a_fix")):
+        builder.add_field("Has A Fix", FilterType.EQ, has_a_fix)
+
+    # 4. Backlog Status
+    if backlog := args.get("conditions_backlog_status"):
+        builder.add_field("Backlog Status", FilterType.EQ, backlog)
+
+    # 5. Is Kev
+    if is_kev := arg_to_bool_or_none(args.get("conditions_is_kev")):
+        builder.add_field("Is Kev", FilterType.EQ, is_kev)
+
+    # 6. EPSS / CVSS
+    for f, n in [("epss", "EPSS"), ("cvss", "CVSS Score")]:
+        if val := arg_to_number(args.get(f"conditions_{f}")):
+            builder.add_field(n, FilterType.GTE, val)
+
+    # 7. Package Operational Risk
+    if package_risk := args.get("conditions_package_operational_risk"):
+        builder.add_field("Package Operational Risk", FilterType.GTE, package_risk)
+
+    # Additional fields (order less critical)
     if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
-    package_field_map = {
-        "package_name": ("PackageName", FilterType.EQ),
-        "package_version": ("PackageVersion", FilterType.EQ),
-        "package_operational_risk": ("Package Operational Risk", FilterType.EQ),
-    }
-    for field, (api_field_name, op) in package_field_map.items():
-        if val := args.get(f"conditions_{field}"):
-            builder.add_field(api_field_name, op, val)
+    if package_name := args.get("conditions_package_name"):
+        builder.add_field("PackageName", FilterType.EQ, package_name)
+
+    if package_version := args.get("conditions_package_version"):
+        builder.add_field("PackageVersion", FilterType.EQ, package_version)
 
     if rule_names := argToList(args.get("conditions_appsec_rule_names")):
         rule_ids = _get_appsec_rule_ids_from_names(rule_names)
@@ -210,19 +230,6 @@ def build_conditions(args: dict) -> dict:
 
     if rule_categories := argToList(args.get("conditions_appsec_rule_category", [])):
         builder.add_field("AppSec Rule Category", FilterType.EQ, rule_categories)
-
-    if has_a_fix := arg_to_bool_or_none(args.get("conditions_has_a_fix")):
-        builder.add_field("Has A Fix", FilterType.EQ, has_a_fix)
-
-    if backlog := args.get("conditions_backlog_status"):
-        builder.add_field("Backlog Status", FilterType.EQ, backlog)
-
-    if is_kev := arg_to_bool_or_none(args.get("conditions_is_kev")):
-        builder.add_field("Is Kev", FilterType.EQ, is_kev)
-
-    for f, n in [("cvss", "CVSS Score"), ("epss", "EPSS")]:
-        if val := arg_to_number(args.get(f"conditions_{f}")):
-            builder.add_field(n, FilterType.GTE, val)
 
     if cvss_severity := argToList(args.get("conditions_cvss_severity", [])):
         builder.add_field("CVSS Severity", FilterType.EQ, cvss_severity)
