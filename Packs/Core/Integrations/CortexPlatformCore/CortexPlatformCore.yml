@@ -1860,6 +1860,9 @@ script:
         - contextPath: Core.IssueRecommendations.suggested_code_block
           description: Code block fix suggestion.
           type: String
+        - contextPath: Core.IssueRecommendations.network_reachability
+          description: The Network reachability information for the issue.
+          type: Json
     - arguments:
       - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
         name: issue_ids
@@ -1950,7 +1953,7 @@ script:
           isArray: true
         # Condition Filters (Findings Criteria)
         - name: conditions_finding_type
-          description: "Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks."
+          description: "Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks. Also accepts raw API values: CAS_CVE_SCANNER, CAS_IAC_SCANNER, CAS_LICENSE_SCANNER, CAS_OPERATIONAL_RISK_SCANNER, CAS_SECRET_SCANNER, CAS_SAST_SCANNER, CAS_CI_CD_RISK_SCANNER."
           isArray: true
         - name: conditions_severity
           description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
@@ -2108,6 +2111,8 @@ script:
             - High
             - Medium
             - Low
+        - name: suggestion_id
+          description: The ID of a policy suggestion to associate with this policy. When provided, links the created policy to the AI-generated suggestion it was based on.
     - arguments:
         - name: case_id_list
           description: A comma-separated list of case IDs to filter by.
@@ -2353,6 +2358,9 @@ script:
     - name: core-get-appsec-issues
       description: "Retrieves application security issues based on specified filters."
       arguments:
+        - name: issue_category
+          description: "Filter by specific issue categories. Accepts a comma-separated list. Supported values: vulnerabilities, secrets, iac, weaknesses, operational_risk, licenses, cicd. If not specified, all applicable issue categories are queried based on the provided filters."
+          isArray: true
         - name: limit
           description: "The maximum number of issues to return."
           defaultValue: "50"
@@ -2517,6 +2525,12 @@ script:
         - contextPath: Core.AppsecIssue.repository_name
           description: The name of the repository where the issue was found.
           type: String
+        - contextPath: Core.AppsecIssue.package_version
+          description: The version of the vulnerable package.
+          type: String
+        - contextPath: Core.AppsecIssue.fix_version
+          description: The version that fixes the vulnerability.
+          type: String
         - contextPath: Core.AppsecIssue.repository_organization
           description: The organization of the repository where the issue was found.
           type: String
@@ -2532,6 +2546,9 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+        - contextPath: Core.AppsecIssue.repository_is_public
+          description: Whether the repository associated with the issue is public.
+          type: Boolean
     - name: core-get-endpoint-support-file
       description: "Retrieves endpoint support files based on specified endpoint IDs."
       hidden: true
