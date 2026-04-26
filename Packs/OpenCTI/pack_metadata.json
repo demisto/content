@@ -1,8 +1,8 @@
 {
     "name": "OpenCTI",
-    "description": "Manages indicators from OpenCTI.",
+    "description": "OpenCTI is an open-source platform developed by Filigran to help organizations manage their cyber threat intelligence and observables. It enables cybersecurity teams to efficiently organize, store, and operationalize threat information across technical, operational, and strategic levels.",
     "support": "xsoar",
-    "currentVersion": "2.0.6",
+    "currentVersion": "3.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
