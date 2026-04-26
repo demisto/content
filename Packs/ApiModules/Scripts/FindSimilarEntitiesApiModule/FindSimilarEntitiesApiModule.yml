@@ -1,0 +1,18 @@
+commonfields:
+  id: FindSimilarEntitiesApiModule
+  version: -1
+name: FindSimilarEntitiesApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Logic module providing Machine Learning utilities (via Scikit-Learn) to calculate similarity scores between entities. Designed to be imported by scripts performing entity deduplication or related-item discovery.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/sklearn:1.0.0.5898415
+fromversion: 5.0.0
+tests:
+- No tests
