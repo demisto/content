@@ -1,5 +1,6 @@
 import os
 import shutil
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -23,7 +24,8 @@ def read_qr_code(verify=True):
     try:
         try:
             shutil.copy(file_path, file_name)
-        except Exception:
+        except Exception as e:
+            demisto.error(f"Failed to copy file: {e}\n{traceback.format_exc()}")
             raise Exception("Failed to prepare file for upload.")
 
         multipart_file = {"file": open(file_name, "rb")}
