@@ -41,6 +41,10 @@ The Wiz integration supports **bidirectional mirroring** between Wiz Issues and 
 
 Outgoing notes are prefixed with `Mirrored from Cortex XSOAR` and the Wiz integration filters them out on incoming sync, so mirrored notes are not echoed back into the war room.
 
+### First-sync behavior
+
+On the first incoming sync after an incident is created in XSOAR, existing Wiz notes are **not back-filled** into the war room — only notes added after the first sync are mirrored. This avoids dumping the entire pre-existing note history into a fresh investigation.
+
 ### Note truncation
 
 Notes longer than **1400 characters** are truncated and suffixed with `... [truncated]` before being sent to the Wiz API. This applies to all mirrored notes and to the `wiz-set-issue-note`, `wiz-resolve-issue`, `wiz-reject-issue`, and `wiz-defend-set-threat-comment` commands.

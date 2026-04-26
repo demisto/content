@@ -4626,6 +4626,68 @@ def test_fetch_incident_clear_pagination_context_no_reset(mock_set_last_run):
             WizDefend.API_END_CURSOR = original_cursor
 
 
+@freeze_time("2022-01-03T12:00:00Z")
+@patch.object(demisto, "setLastRun")
+def test_fetch_incident_before_locked_across_multipage_fetches(mock_set_last_run):
+    """Regression: `before` (the API window's upper bound) must remain byte-identical
+    across page1 -> page2 -> clear. The original bug was `_save_pagination_context`
+    saving `BEFORE: self.stored_after` instead of `self.stored_before`, which let the
+    upper bound drift mid-pagination — silently widening the fetch window per page.
+
+    Single-call tests would still pass if a future refactor recomputed
+    `stored_before = utcnow()` on each page; this multi-call test locks the
+    contract that `before` is set ONCE (when pagination starts) and rides through
+    every save until the final clear, where it gets promoted to the new `after`."""
+    locked_before = "2022-01-03T11:00:00Z"
+    locked_after = "2022-01-03T08:00:00Z"
+
+    # Page 1 save: pagination just started, locked_before is in last_run.
+    page1_state = {
+        WizApiResponse.END_CURSOR: "page1_cursor",
+        WizApiVariables.AFTER: locked_after,
+        WizApiVariables.BEFORE: locked_before,
+        DemistoParams.TIME: locked_after,
+    }
+
+    original_cursor = WizDefend.API_END_CURSOR
+    try:
+        # --- Page 1 save (still paginating to page 2) ---
+        WizDefend.API_END_CURSOR = "page2_cursor"
+        with patch.object(demisto, "getLastRun", return_value=page1_state):
+            FetchIncident()._save_pagination_context()
+
+        page1_saved = mock_set_last_run.call_args_list[0][0][0]
+        assert page1_saved[WizApiVariables.BEFORE] == locked_before, "page1 save must preserve locked before"
+        assert page1_saved[WizApiVariables.AFTER] == locked_after, "page1 save must preserve after"
+
+        # --- Page 2 save (still paginating to page 3) — getLastRun returns page1's saved state ---
+        WizDefend.API_END_CURSOR = "page3_cursor"
+        with patch.object(demisto, "getLastRun", return_value=page1_saved):
+            FetchIncident()._save_pagination_context()
+
+        page2_saved = mock_set_last_run.call_args_list[1][0][0]
+        assert page2_saved[WizApiVariables.BEFORE] == locked_before, "page2 save must STILL preserve locked before"
+        assert page2_saved[WizApiVariables.AFTER] == locked_after, "page2 save must preserve after"
+
+        # --- Clear (pagination complete) — getLastRun returns page2's state ---
+        WizDefend.API_END_CURSOR = None
+        with patch.object(demisto, "getLastRun", return_value=page2_saved):
+            FetchIncident()._clear_pagination_context()
+
+        cleared = mock_set_last_run.call_args_list[2][0][0]
+        # Window-handoff contract: clear promotes locked_before -> AFTER (next window's lower bound).
+        # If `before` had drifted during pagination, this hand-off would create overlap or gaps.
+        assert cleared[WizApiVariables.AFTER] == locked_before, (
+            "clear must promote the LOCKED before to the new after — proves before never drifted"
+        )
+        assert cleared[WizApiVariables.BEFORE] == "2022-01-03T12:00:00Z", "clear sets new before to api_start_run_time"
+        assert cleared[WizApiResponse.END_CURSOR] is None
+
+        assert mock_set_last_run.call_count == 3
+    finally:
+        WizDefend.API_END_CURSOR = original_cursor
+
+
 @pytest.mark.parametrize(
     "api_end_cursor,expect_save_called,expect_clear_called",
     [
@@ -5357,3 +5419,26 @@ def test_build_incidents_rulematch_rule_null():
     }
     result = build_incidents(detection)
     assert "Unknown Rule" in result[DemistoParams.NAME]
+
+
+@pytest.mark.parametrize(
+    "detection,expected",
+    [
+        pytest.param(None, None, id="detection_None"),
+        pytest.param({}, None, id="detection_empty"),
+        pytest.param({"ruleMatch": None}, None, id="ruleMatch_None"),
+        pytest.param({"ruleMatch": {}}, None, id="ruleMatch_empty"),
+        pytest.param({"ruleMatch": {"rule": None}}, None, id="rule_None"),
+        pytest.param({"ruleMatch": {"rule": {}}}, None, id="rule_empty"),
+        pytest.param({"ruleMatch": {"rule": {"name": None}}}, None, id="name_None"),
+        pytest.param({"ruleMatch": {"rule": {"name": "MyRule"}}}, "MyRule", id="happy_path"),
+    ],
+)
+def test_safe_rule_name(detection, expected):
+    """Helper covers every null position in the ruleMatch.rule.name chain.
+    Two separate hardening commits had to fix successive null paths in this chain
+    (`ruleMatch=None`, then `ruleMatch={"rule":None}`); centralizing means future
+    Wiz-side schema variations only need one update."""
+    from WizDefend import _safe_rule_name
+
+    assert _safe_rule_name(detection) == expected
