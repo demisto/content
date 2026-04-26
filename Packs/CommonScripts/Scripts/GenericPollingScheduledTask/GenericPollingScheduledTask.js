@@ -110,6 +110,7 @@ function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pend
 
     checkCommandSanitized(cmd)
 
+    logDebug("[GenericPollingScheduledTask] Setting NextRun for {0}".format(cmd))
     return executeCommand("ScheduleCommand", {
         'command': cmd,
         'cron': '*/' + interval + ' * * * *',
@@ -147,11 +148,13 @@ function genericPollingScheduled(){
             var currentTime = new Date();
 
             if (currentTime >= endTime) {
+                logDebug("[GenericPollingScheduledTask] Finishing task - current time:{0} endTime:{1}.".format(currentTime, endTime))
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
         else {
             if (args.timeout <= 0) {
+                logDebug("[GenericPollingScheduledTask] Finishing task - reached timeout.")
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
@@ -174,6 +177,8 @@ function genericPollingScheduled(){
         var pendings = dq(invContext, pendingPath);
 
         if (pendings === null) {
+            logDebug("[GenericPollingScheduledTask] Finishing task - dq for path:{0} returned no entries.".format(pendingPath))
+            logDebug("[GenericPollingScheduledTask] invContext: {0}".format(invContext))
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
@@ -181,6 +186,7 @@ function genericPollingScheduled(){
         var pendingsStrArr = listOfStrings(pendings);
         idsToPoll = intersect(idsStrArr, pendingsStrArr);
         if (idsToPoll.length === 0) {
+            logDebug("[GenericPollingScheduledTask] Finishing task - idsToPoll:0")
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
@@ -218,6 +224,7 @@ function genericPollingScheduled(){
         return res;
     }
     catch (err) {
+        logDebug("[ScheduleGenericPolling] Failed to run - {0}".format(err))
         finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
         throw err;
     }
