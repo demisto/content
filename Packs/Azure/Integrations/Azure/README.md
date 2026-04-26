@@ -544,7 +544,6 @@ Updates an Azure Web App.
 | Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. | 
 | Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. | 
 | Azure.WebApp.properties.siteConfig.requestTracingExpirationTime | DateTime | Request tracing expiration time. | 
-| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. | 
 | Azure.WebApp.properties.siteConfig.defaultDocuments | unknown | List of default documents. | 
 | Azure.WebApp.properties.siteConfig.virtualApplications | unknown | List of virtual applications. | 
 | Azure.WebApp.properties.siteConfig.loadBalancing | String | Load balancing settings. | 

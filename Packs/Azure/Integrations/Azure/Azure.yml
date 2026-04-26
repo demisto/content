@@ -5591,9 +5591,6 @@ script:
     - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
       description: Whether remote debugging is enabled.
       type: Boolean
-    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-      description: Remote debugging version.
-      type: String
     - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
       description: List of default documents.
     - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
