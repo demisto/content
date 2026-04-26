@@ -13946,7 +13946,7 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
     """
     if not isinstance(valid_items, list):
         raise DemistoException(
-            'map_input_to_list_item: valid_items must be a list, got {}'.format(type(valid_items).__name__)
+            f'Expected "valid_items" argument to be a list, got {type(valid_items).__name__}'
         )
 
     # --- Extract string values; when key is provided, build a lookup back to original items ---
@@ -13961,9 +13961,7 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
                     items.append(str_val)
                     item_to_original[str_val] = item
                 else:
-                    demisto.debug(
-                        'map_input_to_list_item: key "{}" not found in dict item: {}'.format(key, item)
-                    )
+                    demisto.debug(f'key "{key}" not found in dict item: {item}')
             else:
                 str_val = str(item)
                 items.append(str_val)
@@ -13981,16 +13979,12 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
     value_lower = value.strip().lower()
     exact_matches = [item for item in items if item.strip().lower() == value_lower]
     if len(exact_matches) == 1:
-        demisto.debug('map_input_to_list_item: deterministic exact match found for "{}": "{}"'.format(value, exact_matches[0]))
         return _resolve_return(exact_matches[0])
 
     # --- Ensure no multiple substring matches ---
     substring_matches = [item for item in items if value_lower in item.strip().lower()]
     if len(substring_matches) > 1:
-        msg = (
-            'MapInputToListItem: ambiguous input "{}". '
-            'The value is a substring of multiple valid items: {}'.format(value, substring_matches)
-        )
+        msg = f'Ambiguous input "{value}". The value is a substring of multiple valid items: {substring_matches}'
         if not raise_on_error:
             demisto.debug(msg)
             return ''
@@ -14027,7 +14021,7 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
     matched = matched.strip() if matched else ''
 
     if not matched:
-        msg = 'MapInputToListItem: no confident match found for value "{}" in the provided list.'.format(value)
+        msg = f'No confident match found for value "{value}" in the provided list.'
         if not raise_on_error:
             demisto.debug(msg)
             return ''
