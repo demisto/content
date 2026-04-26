@@ -53,6 +53,34 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
+proxy_cache_lock on;
+proxy_cache_lock_timeout $cache_lock_timeout;
+proxy_cache_lock_age $cache_lock_age;
+
+# Cache validity by status
+proxy_cache_valid 200 301 302 $cache_refresh_rate;
+
+# Optional: cache other responses briefly (helps absorb spikes)
+proxy_cache_valid 404 $cache_404_ttl;
+proxy_cache_valid any $cache_default_ttl;
+
+# Revalidation (use conditional requests when expired)
+proxy_cache_revalidate on;
+
+# Serve stale content in failure/update scenarios
+proxy_cache_use_stale
+    updating
+    error
+    timeout
+    invalid_header
+    http_500
+    http_502
+    http_503
+    http_504;
+
+# Background refresh of expired cache
+proxy_cache_background_update on;
+
     # Static test file
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
@@ -92,7 +120,24 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     template_str = params.get("nginx_server_conf") or NGINX_SERVER_CONF
     certificate: str = params.get("certificate", "")
     private_key: str = params.get("key", "")
-    timeout: str = params.get("timeout") or "3600"
+    timeout_param = str(params.get("timeout") or "3600")
+    cache_refresh_rate_param = str(params.get("cache_refresh_rate") or "300")
+
+    # Ensure cache_refresh_rate is at least as large as timeout
+    timeout_seconds = parse_nginx_time_to_seconds(timeout_param)
+    cache_refresh_seconds = parse_nginx_time_to_seconds(cache_refresh_rate_param)
+
+    if cache_refresh_seconds < timeout_seconds:
+        cache_refresh_rate_param = timeout_param
+
+    timeout = f"{timeout_param}s" if timeout_param.isdigit() else timeout_param
+    cache_refresh_rate = f"{cache_refresh_rate_param}s" if cache_refresh_rate_param.isdigit() else cache_refresh_rate_param
+
+    cache_lock_timeout = params.get("cache_lock_timeout") or "5s"
+    cache_lock_age = params.get("cache_lock_age") or "5s"
+    cache_404_ttl = params.get("cache_404_ttl") or "1m"
+    cache_default_ttl = params.get("cache_default_ttl") or "1m"
+
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
     serverport = port + 1
     extra_cache_keys = []
@@ -126,6 +171,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         extra_cache_key=extra_cache_keys_str,
         proxy_set_range_header=proxy_set_range_header,
         timeout=timeout,
+        cache_refresh_rate=cache_refresh_rate,
+        cache_lock_timeout=cache_lock_timeout,
+        cache_lock_age=cache_lock_age,
+        cache_404_ttl=cache_404_ttl,
+        cache_default_ttl=cache_default_ttl,
         extra_headers=extra_headers,
     )
     with open(file_path, mode="w+") as f:
@@ -265,6 +315,46 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     except (TypeError, ValueError):
         raise DemistoException(err_msg)
     return res
+
+
+def parse_nginx_time_to_seconds(time_str: str) -> int:
+    """Parses an NGINX time string (e.g., '3600', '1h', '30m', '60s') into seconds.
+
+    Args:
+        time_str (str): The NGINX time string to parse.
+
+    Returns:
+        int: The time in seconds. If no unit is provided, seconds are assumed.
+    """
+    if not time_str:
+        return 0
+    time_str = time_str.strip()
+    if not time_str:
+        return 0
+    if time_str.isdigit():
+        return int(time_str)
+
+    units = {
+        "s": 1,
+        "m": 60,
+        "h": 3600,
+        "d": 86400,
+        "w": 604800,
+        "M": 2592000,  # 30 days
+        "y": 31536000,
+    }
+
+    unit = time_str[-1]
+    value_str = time_str[:-1]
+
+    if unit in units and value_str.isdigit():
+        return int(value_str) * units[unit]
+
+    # If it doesn't match expected format, try to return as int or raise error
+    try:
+        return int(time_str)
+    except (ValueError, TypeError):
+        raise DemistoException(f"Invalid NGINX time format: {time_str}")
 
 
 def get_params_port(params: dict = None) -> int:

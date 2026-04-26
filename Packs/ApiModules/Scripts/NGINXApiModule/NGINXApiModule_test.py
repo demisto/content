@@ -217,3 +217,37 @@ def test_lost_connection_engine_to_server(mocker):
     with pytest.raises(SystemExit) as e:
         module.run_long_running()
         assert e.value.code == 1
+
+
+@pytest.mark.parametrize(
+    "time_str, expected_seconds",
+    [
+        ("3600", 3600),
+        ("1s", 1),
+        ("30m", 1800),
+        ("1h", 3600),
+        ("1d", 86400),
+        ("1w", 604800),
+        ("1M", 2592000),
+        ("1y", 31536000),
+    ],
+)
+def test_parse_nginx_time_to_seconds(time_str, expected_seconds):
+    from NGINXApiModule import parse_nginx_time_to_seconds
+
+    assert parse_nginx_time_to_seconds(time_str) == expected_seconds
+
+
+@pytest.mark.parametrize(
+    "time_str",
+    [
+        "",
+        "invalid",
+        None,
+    ],
+)
+def test_parse_nginx_time_to_seconds_fail(time_str):
+    from NGINXApiModule import parse_nginx_time_to_seconds
+
+    with pytest.raises(DemistoException, match="Invalid NGINX time format"):
+        parse_nginx_time_to_seconds(time_str)
