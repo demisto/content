@@ -1,0 +1,31 @@
+args: []
+comment: Prints the current UID, GID, and PWD (working directory) of the running Docker container environment.
+commonfields:
+  id: PrintEnvironmentDetails
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: devdemisto/python3:3.12.13.7577967
+enabled: true
+name: PrintEnvironmentDetails
+outputs:
+- contextPath: EnvDetails.UID
+  description: The User ID of the running process.
+  type: Number
+- contextPath: EnvDetails.GID
+  description: The Group ID of the running process.
+  type: Number
+- contextPath: EnvDetails.PWD
+  description: The current working directory.
+  type: String
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
