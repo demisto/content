@@ -8,7 +8,7 @@ Integrates with the Enterprise DLP service to get details about DLP violations a
 
 The integration includes commands to:
 
-- Fetch DLP incidents from the "NGFW" and "Prisma Browser" channels.
+- Fetch DLP incidents from the "NGFW" and "Prisma Access" channels.
 - Fetch DLP reports with data pattern match details.
 - Fetch DLP reports with data pattern match details and snippets from the file.
 - Update a DLP incident with user feedback and approval process.
