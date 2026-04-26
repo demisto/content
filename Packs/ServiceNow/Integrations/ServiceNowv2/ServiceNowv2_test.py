@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 import demistomock as demisto
 import pytest
 import requests
+import os
 
 import ServiceNowv2
 
@@ -68,6 +69,7 @@ from ServiceNowv2 import (
     split_notes,
     update_record_command,
     update_remote_system_command,
+    update_remote_system_with_entries,
     update_ticket_command,
     upload_file_command,
 )
@@ -4337,3 +4339,74 @@ class TestCreateItemOrderFixes:
         call_kwargs = mock_send.call_args
         body = call_kwargs[1].get("body") or call_kwargs[0][2]
         assert body.get("sysparm_no_validation") == "true"
+
+
+def test_upload_file_command_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components and no explicit file_name arg.
+    When:
+        - Calling upload_file_command.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+
+    mock_client = MagicMock()
+    mock_client.get_table_name.return_value = "incident"
+    mock_client.upload_file.return_value = {
+        "result": {
+            "file_name": "passwd",
+            "download_link": "https://test.com/download",
+            "sys_id": "abc123",
+        }
+    }
+
+    # No file_name arg provided, so it should use basename from getFilePath
+    args = {"id": "sys_id", "file_id": "entry_id", "ticket_type": "incident"}
+    upload_file_command(mock_client, args)
+
+    # Verify upload_file was called with the sanitized basename
+    call_args = mock_client.upload_file.call_args[0]
+    file_name_used = call_args[2]
+    assert file_name_used == "passwd"
+    assert os.path.basename(file_name_used) == file_name_used
+
+
+def test_update_remote_system_with_entries_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components.
+    When:
+        - Calling update_remote_system_with_entries.
+    Then:
+        - Verify that only the basename of the file name is used when uploading.
+    """
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+    mocker.patch.object(demisto, "debug")
+
+    mock_client = MagicMock()
+
+    entries = [{"id": "entry_id", "type": 3, "tags": []}]
+    params = {
+        "file_tag_from_service_now": "FileFromServiceNow",
+        "file_tag": "file",
+    }
+    update_remote_system_with_entries(mock_client, entries, params, "ticket_id", "incident")
+
+    call_args = mock_client.upload_file.call_args[0]
+    # The filename is basename (no path traversal) + "_mirrored_from_xsoar" suffix
+    file_name_used = call_args[2]
+    assert "passwd" in file_name_used
+    assert "/" not in file_name_used
+    assert ".." not in file_name_used
+    assert os.path.basename(file_name_used) == file_name_used
