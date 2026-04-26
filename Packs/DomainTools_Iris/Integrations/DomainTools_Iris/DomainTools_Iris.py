@@ -90,7 +90,7 @@ def get_client(proxy_url: str | None = None):
         API_KEY,
         app_partner="cortex_xsoar",
         app_name="iris-plugin",
-        app_version="2.1",
+        app_version=get_pack_version(),
         proxy_url=proxy_url,
         verify_ssl=VERIFY_CERT,
         always_sign_api_key=True,
@@ -1252,7 +1252,6 @@ def domain_command():
             exit=True,
         )
 
-    logging.info(f"domain_result_type: {domain_result_type}")
     human_readable_output = ""
     if domain_result_type.lower() == "verdict":
         # get the risk score using DT risk endpoint
@@ -1352,6 +1351,63 @@ def domain_enrich_command():
                     readable_output=human_readable_output,
                     raw_response=result,
                     ignore_auto_extract=True,
+                )
+            )
+
+    if not command_results_list:
+        return_warning("No results.", exit=True)
+
+    return command_results_list
+
+
+def domain_iris_investigate_command():
+    """
+    Command to do a total profile of a domain using iris-enrich API endpoint.
+    e.g. !domaintoolsiris-enrich domain=domaintools.com
+    """
+
+    domain = demisto.args()["domain"]
+    domain_list = domain.split(",")
+    domain_chunks = chunks(domain_list, 100)
+    include_context = argToBoolean(demisto.args().get("include_context", True))
+
+    command_results_list: list[CommandResults] = []
+
+    for chunk in domain_chunks:
+        string_chunk = ",".join(chunk)
+        response = domain_investigate(string_chunk)
+
+        missing_domains = response.get("missing_domains", [])
+        results = response.get("results", [])
+
+        if results:
+            for result in results:
+                human_readable_output, indicators = format_investigate_output(result)
+
+                if len(missing_domains) > 0:
+                    human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
+
+                domain_indicator = indicators.get("domain") if include_context else None
+                domaintools_context = indicators.get("domaintools") if include_context else None
+
+                command_results_list.append(
+                    CommandResults(
+                        outputs_prefix="DomainTools",
+                        outputs_key_field="Name",
+                        indicator=domain_indicator,
+                        outputs=domaintools_context,
+                        readable_output=human_readable_output,
+                        raw_response=result,
+                        ignore_auto_extract=True,
+                    )
+                )
+        elif missing_domains:
+            command_results_list.append(
+                CommandResults(
+                    readable_output=f"### DomainTools Enrichment\nNo data found for: {', '.join(missing_domains)}",
+                    outputs_prefix="DomainTools.Missing",
+                    outputs={"MissingDomains": missing_domains},
+                    raw_response=response,
                 )
             )
 
@@ -1917,7 +1973,7 @@ def main():
         "domain": domain_command,
         "domainRdap": parsed_domain_rdap_command,
         "domaintools-whois": parsed_whois_command,
-        "domaintoolsiris-investigate": domain_command,
+        "domaintoolsiris-investigate": domain_iris_investigate_command,
         "domaintoolsiris-analytics": domain_analytics_command,
         "domaintoolsiris-threat-profile": threat_profile_command,
         "domaintoolsiris-pivot": domain_pivot_command,
