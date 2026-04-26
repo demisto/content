@@ -1,5 +1,5 @@
 Retrieve and monitor internal security findings for your organization from the Panorays platform to streamline self-assessment posture and automate internal incident response within Cortex XSOAR.
-This integration was integrated and tested with version xx of PanoraysFindingsAPI.
+This integration was integrated and tested with version v2 of PanoraysFindingsAPI.
 
 ## Configure Panorays Findings API in Cortex
 
