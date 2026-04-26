@@ -98,6 +98,7 @@ def test_read_qr_code_copy_failure_skips_remove(mocker):
     mocker.patch("os.path.exists", return_value=False)
     mock_remove = mocker.patch("os.remove")
     mock_debug = mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
 
     from QRCodeReaderGoqrMe import read_qr_code
 
