@@ -1,5 +1,6 @@
 import contextlib
 import io
+import os
 import shutil
 import tarfile
 from collections.abc import Callable
@@ -380,8 +381,15 @@ def create_relationship(name: str, entities: tuple, types: tuple) -> list[Entity
 
 
 def test_module():
-    if wildfire_upload_url("https://www.demisto.com")[1]:
-        demisto.results("ok")
+    """Test API connectivity by querying a well-known hash via /get/verdict."""
+    test_hash = "dca86121cc7427e375fd24fe5871d727"
+    try:
+        wildfire_get_verdict(file_hash=test_hash)
+    except NotFoundError:
+        # Hash not found is still a valid API response —
+        # connectivity and authentication are working.
+        pass
+    return "ok"
 
 
 @logger
@@ -393,7 +401,7 @@ def wildfire_upload_file(upload):
     body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)["path"]
-    file_name = demisto.getFilePath(upload)["name"]
+    file_name = os.path.basename(demisto.getFilePath(upload)["name"])
 
     try:
         shutil.copy(file_path, file_name)
@@ -405,7 +413,8 @@ def wildfire_upload_file(upload):
         with open(file_name, "rb") as file:
             result = http_request(upload_file_uri, "POST", body=body, files={"file": file})
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(file_name)
 
     upload_file_data = result["wildfire"]["upload-file-info"]
 
@@ -1605,8 +1614,13 @@ def main():  # pragma: no cover
             )
         set_http_params(token, agent_value)
 
+        # Log diagnostic info for troubleshooting credential/agent issues.
+        token_type = type(token).__name__
+        token_length = len(token) if isinstance(token, str) else "N/A"
+        demisto.info(f"WildFire_v2: using agent_value={agent_value}, token_type={token_type}, token_length={token_length}")
+
         if command == "test-module":
-            test_module()
+            return_results(test_module())
 
         elif command == "wildfire-upload":
             if args.get("polling") == "true":
