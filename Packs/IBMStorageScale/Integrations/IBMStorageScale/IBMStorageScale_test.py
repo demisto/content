@@ -13,6 +13,7 @@ from CommonServerPython import DemistoException
 from IBMStorageScale import (
     API_ENDPOINT,
     DEFAULT_FIRST_FETCH_MINUTES,
+    SNAPSHOTS_API_ENDPOINT,
     Client,
     CommandResults,
     _ConcurrentEventFetcher,
@@ -170,6 +171,7 @@ class TestMain:
         """
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={})
         return_results_mock = mocker.patch("IBMStorageScale.return_results")
         with capfd.disabled():
             await main()
@@ -189,6 +191,7 @@ class TestMain:
         mocker.patch.object(
             demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}, "max_fetch": "2500"}
         )
+        mocker.patch.object(demisto, "args", return_value={})
         with capfd.disabled():
             await main()
         client_mock.fetch_events.assert_called_once_with(2500)
@@ -224,6 +227,7 @@ class TestMain:
         """
         mocker.patch.object(demisto, "command", return_value="unknown-command")
         mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={})
         return_error_mock = mocker.patch("IBMStorageScale.return_error")
         with capfd.disabled():
             await main()
@@ -415,7 +419,7 @@ class TestUtilityFunctions:
         start_time = datetime(2025, 8, 10, 10, 15, 30)
         end_time = datetime(2025, 8, 10, 10, 17, 10)
 
-        expected_regex = "2025-08-10T10:15:[0-5][0-9]|" "2025-08-10T10:16:[0-5][0-9]|" "2025-08-10T10:17:[0-5][0-9]"
+        expected_regex = "2025-08-10T10:15:[0-5][0-9]|2025-08-10T10:16:[0-5][0-9]|2025-08-10T10:17:[0-5][0-9]"
         result = generate_time_filter_regex(start_time, end_time)
         assert result == expected_regex
 
@@ -605,3 +609,350 @@ class TestParseTimezoneParam:
         tz, name = parse_timezone_param("Not/AZone")
         assert tz is UTC
         assert name == "UTC"
+
+
+SAMPLE_SNAPSHOTS = [
+    {
+        "snapshotName": "snap1",
+        "filesystemName": "gpfs0",
+        "filesetName": "root",
+        "oid": 1001,
+        "snapID": 1,
+        "status": "Valid",
+        "created": "2025-01-15T10:00:00Z",
+        "quotas": "off",
+        "snapType": "global",
+        "expirationTime": "",
+    },
+    {
+        "snapshotName": "snap2",
+        "filesystemName": "gpfs0",
+        "filesetName": "root",
+        "oid": 1002,
+        "snapID": 2,
+        "status": "Valid",
+        "created": "2025-01-16T10:00:00Z",
+        "quotas": "off",
+        "snapType": "global",
+        "expirationTime": "2025-06-16T10:00:00Z",
+    },
+]
+
+
+class TestListSnapshots:
+    async def test_list_snapshots_all_filesystems(self, mocker: MockerFixture, capfd):
+        """
+        Given:
+            - A client configured with valid credentials.
+        When:
+            - list_snapshots is called with default filesystem ':all:'.
+        Then:
+            - The correct API endpoint is called and snapshots are returned.
+        """
+        params = {
+            "server_url": "https://test.com",
+            "credentials": {"identifier": "user", "password": "pw"},
+            "insecure": True,
+            "proxy": None,
+        }
+        client = mock_client(mocker, params)
+
+        mock_response = MagicMock(spec=httpx.Response)
+        mock_response.status_code = 200
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"snapshots": SAMPLE_SNAPSHOTS, "paging": {}}
+
+        session = AsyncMock()
+        session.get = AsyncMock(return_value=mock_response)
+        session.__aenter__.return_value = session
+
+        mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+        mocker.patch("IBMStorageScale.demisto.debug")
+
+        with capfd.disabled():
+            snapshots = await client.list_snapshots()
+
+        assert len(snapshots) == 2
+        assert snapshots[0]["snapshotName"] == "snap1"
+        assert snapshots[1]["snapshotName"] == "snap2"
+        session.get.assert_called_once_with(f"{SNAPSHOTS_API_ENDPOINT}/:all:/snapshots?fields=:all:")
+
+    async def test_list_snapshots_specific_filesystem(self, mocker: MockerFixture, capfd):
+        """
+        Given:
+            - A client configured with valid credentials.
+        When:
+            - list_snapshots is called with a specific filesystem name.
+        Then:
+            - The correct API endpoint with the filesystem name is called.
+        """
+        params = {
+            "server_url": "https://test.com",
+            "credentials": {"identifier": "user", "password": "pw"},
+            "insecure": True,
+            "proxy": None,
+        }
+        client = mock_client(mocker, params)
+
+        mock_response = MagicMock(spec=httpx.Response)
+        mock_response.status_code = 200
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"snapshots": [SAMPLE_SNAPSHOTS[0]], "paging": {}}
+
+        session = AsyncMock()
+        session.get = AsyncMock(return_value=mock_response)
+        session.__aenter__.return_value = session
+
+        mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+        mocker.patch("IBMStorageScale.demisto.debug")
+
+        with capfd.disabled():
+            snapshots = await client.list_snapshots(filesystem="gpfs0")
+
+        assert len(snapshots) == 1
+        session.get.assert_called_once_with(f"{SNAPSHOTS_API_ENDPOINT}/gpfs0/snapshots?fields=:all:")
+
+    async def test_list_snapshots_specific_snapshot_name(self, mocker: MockerFixture, capfd):
+        """
+        Given:
+            - A client configured with valid credentials.
+        When:
+            - list_snapshots is called with snapshot_name.
+        Then:
+            - The specific snapshot API endpoint is called.
+        """
+        params = {
+            "server_url": "https://test.com",
+            "credentials": {"identifier": "user", "password": "pw"},
+            "insecure": True,
+            "proxy": None,
+        }
+        client = mock_client(mocker, params)
+
+        mock_response = MagicMock(spec=httpx.Response)
+        mock_response.status_code = 200
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"snapshots": [SAMPLE_SNAPSHOTS[0]], "paging": {}}
+
+        session = AsyncMock()
+        session.get = AsyncMock(return_value=mock_response)
+        session.__aenter__.return_value = session
+
+        mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+        mocker.patch("IBMStorageScale.demisto.debug")
+
+        with capfd.disabled():
+            snapshots = await client.list_snapshots(filesystem="gpfs0", snapshot_name="snap1")
+
+        assert len(snapshots) == 1
+        assert snapshots[0]["snapshotName"] == "snap1"
+        session.get.assert_called_once_with(f"{SNAPSHOTS_API_ENDPOINT}/gpfs0/snapshots/snap1?fields=:all:")
+
+    async def test_list_snapshots_with_limit(self, mocker: MockerFixture, capfd):
+        """
+        Given:
+            - A client configured with valid credentials.
+        When:
+            - list_snapshots is called with a limit of 1.
+        Then:
+            - Only 1 snapshot is returned even if the API returns more.
+        """
+        params = {
+            "server_url": "https://test.com",
+            "credentials": {"identifier": "user", "password": "pw"},
+            "insecure": True,
+            "proxy": None,
+        }
+        client = mock_client(mocker, params)
+
+        mock_response = MagicMock(spec=httpx.Response)
+        mock_response.status_code = 200
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"snapshots": SAMPLE_SNAPSHOTS, "paging": {}}
+
+        session = AsyncMock()
+        session.get = AsyncMock(return_value=mock_response)
+        session.__aenter__.return_value = session
+
+        mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+        mocker.patch("IBMStorageScale.demisto.debug")
+
+        with capfd.disabled():
+            snapshots = await client.list_snapshots(limit=1)
+
+        assert len(snapshots) == 1
+
+    async def test_list_snapshots_pagination(self, mocker: MockerFixture, capfd):
+        """
+        Given:
+            - An API that returns paginated results with a 'paging.next' URL.
+        When:
+            - list_snapshots is called with all_results=True.
+        Then:
+            - All pages are fetched and combined.
+        """
+        params = {
+            "server_url": "https://test.com",
+            "credentials": {"identifier": "user", "password": "pw"},
+            "insecure": True,
+            "proxy": None,
+        }
+        client = mock_client(mocker, params)
+
+        page1_response = MagicMock(spec=httpx.Response)
+        page1_response.status_code = 200
+        page1_response.raise_for_status.return_value = None
+        page1_response.json.return_value = {
+            "snapshots": [SAMPLE_SNAPSHOTS[0]],
+            "paging": {"next": "https://test.com/scalemgmt/v2/filesystems/:all:/snapshots?lastId=1001"},
+        }
+
+        page2_response = MagicMock(spec=httpx.Response)
+        page2_response.status_code = 200
+        page2_response.raise_for_status.return_value = None
+        page2_response.json.return_value = {
+            "snapshots": [SAMPLE_SNAPSHOTS[1]],
+            "paging": {},
+        }
+
+        session = AsyncMock()
+        session.get = AsyncMock(side_effect=[page1_response, page2_response])
+        session.__aenter__.return_value = session
+
+        mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+        mocker.patch("IBMStorageScale.demisto.debug")
+
+        with capfd.disabled():
+            snapshots = await client.list_snapshots(all_results=True)
+
+        assert len(snapshots) == 2
+        assert session.get.call_count == 2
+
+    async def test_list_snapshots_auth_error(self, mocker: MockerFixture, capfd):
+        """
+        Given:
+            - A client with invalid credentials.
+        When:
+            - list_snapshots is called and the API returns 401.
+        Then:
+            - A DemistoException with an authorization error message is raised.
+        """
+        params = {
+            "server_url": "https://test.com",
+            "credentials": {"identifier": "user", "password": "pw"},
+            "insecure": True,
+            "proxy": None,
+        }
+        client = mock_client(mocker, params)
+
+        error = httpx.HTTPStatusError(
+            message="Auth failed",
+            request=httpx.Request("GET", "https://test.com"),
+            response=httpx.Response(status_code=401, request=httpx.Request("GET", "https://test.com")),
+        )
+
+        session = AsyncMock()
+        session.get = AsyncMock(side_effect=error)
+        session.__aenter__.return_value = session
+
+        mocker.patch("IBMStorageScale.httpx.AsyncClient", return_value=session)
+
+        with capfd.disabled(), pytest.raises(DemistoException, match="Authorization Error"):
+            await client.list_snapshots()
+
+
+class TestListSnapshotsMain:
+    @pytest.fixture
+    def client_mock(self, mocker: MockerFixture) -> MagicMock:
+        """Fixture to patch the Client constructor and return a mocked instance."""
+        client_constructor_mock = mocker.patch("IBMStorageScale.Client")
+        mock_instance = MagicMock()
+        mock_instance.test_connection = AsyncMock()
+        mock_instance.fetch_events = AsyncMock()
+        mock_instance.get_events = AsyncMock(return_value=([], False))
+        mock_instance.list_snapshots = AsyncMock(return_value=SAMPLE_SNAPSHOTS)
+        client_constructor_mock.return_value = mock_instance
+        return mock_instance
+
+    async def test_main_calls_list_snapshots(self, mocker: MockerFixture, client_mock: MagicMock, capfd):
+        """
+        Given:
+            - The 'ibm-storage-scale-list-snapshots' command is triggered.
+        When:
+            - main() is called with filesystem and limit arguments.
+        Then:
+            - The client's list_snapshots method is called with the correct arguments.
+            - CommandResults is returned via return_results.
+        """
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-list-snapshots")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={"filesystem": "gpfs0", "limit": "10"})
+        return_results_mock = mocker.patch("IBMStorageScale.return_results")
+
+        with capfd.disabled():
+            await main()
+
+        client_mock.list_snapshots.assert_called_once_with(
+            filesystem="gpfs0",
+            snapshot_name=None,
+            limit=10,
+            all_results=False,
+        )
+        return_results_mock.assert_called_once()
+        result = return_results_mock.call_args.args[0]
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "IBMStorageScale.Snapshot"
+
+    async def test_main_calls_list_snapshots_with_snapshot_name(self, mocker: MockerFixture, client_mock: MagicMock, capfd):
+        """
+        Given:
+            - The 'ibm-storage-scale-list-snapshots' command is triggered with snapshot_name.
+        When:
+            - main() is called.
+        Then:
+            - The client's list_snapshots method is called with snapshot_name.
+        """
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-list-snapshots")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={"filesystem": "gpfs0", "snapshot_name": "snap1", "limit": "50"},
+        )
+        return_results_mock = mocker.patch("IBMStorageScale.return_results")
+
+        with capfd.disabled():
+            await main()
+
+        client_mock.list_snapshots.assert_called_once_with(
+            filesystem="gpfs0",
+            snapshot_name="snap1",
+            limit=50,
+            all_results=False,
+        )
+        return_results_mock.assert_called_once()
+
+    async def test_main_defaults_filesystem_to_all(self, mocker: MockerFixture, client_mock: MagicMock, capfd):
+        """
+        Given:
+            - The 'ibm-storage-scale-list-snapshots' command is triggered without a filesystem argument.
+        When:
+            - main() is called.
+        Then:
+            - The filesystem defaults to ':all:' for the API call.
+        """
+        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-list-snapshots")
+        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
+        mocker.patch.object(demisto, "args", return_value={"limit": "50"})
+        return_results_mock = mocker.patch("IBMStorageScale.return_results")
+
+        with capfd.disabled():
+            await main()
+
+        client_mock.list_snapshots.assert_called_once_with(
+            filesystem=":all:",
+            snapshot_name=None,
+            limit=50,
+            all_results=False,
+        )
+        return_results_mock.assert_called_once()

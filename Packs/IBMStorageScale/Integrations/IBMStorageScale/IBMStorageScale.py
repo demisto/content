@@ -12,8 +12,11 @@ from CommonServerPython import *  # noqa: F401
 
 # --- CONSTANTS ---
 API_ENDPOINT = "/scalemgmt/v2/cliauditlog"
+SNAPSHOTS_API_ENDPOINT = "/scalemgmt/v2/filesystems"
 PRODUCT = "StorageScale"
 VENDOR = "IBM"
+
+DEFAULT_SNAPSHOT_LIMIT = 50
 
 DEDUPLICATION_WINDOW_MINUTES = 2
 MAX_STORED_HASHES = 10000  # Cap dedup cache to 10k: handles short high-EPS bursts (1-min window) while bounding memory
@@ -540,6 +543,80 @@ class Client:
 
         return debug_info
 
+    async def list_snapshots(
+        self,
+        filesystem: str = ":all:",
+        snapshot_name: str | None = None,
+        limit: int = DEFAULT_SNAPSHOT_LIMIT,
+        all_results: bool = False,
+    ) -> list[dict[str, Any]]:
+        """
+        Lists snapshots from IBM Storage Scale filesystems.
+
+        When snapshot_name is provided, uses the specific snapshot API:
+            GET /scalemgmt/v2/filesystems/{filesystem}/snapshots/{snapshotName}
+        Otherwise, lists all snapshots:
+            GET /scalemgmt/v2/filesystems/{filesystem}/snapshots?fields=:all:
+
+        Handles pagination by following the 'paging.next' URL until all results are collected
+        or the limit is reached.
+
+        Args:
+            filesystem: The filesystem name. Defaults to ':all:' for all filesystems.
+            snapshot_name: Optional specific snapshot name to retrieve.
+            limit: Maximum number of snapshots to return.
+            all_results: If True, fetch all pages ignoring the limit.
+
+        Returns:
+            A list of snapshot dictionaries.
+        """
+        if snapshot_name:
+            url = f"{SNAPSHOTS_API_ENDPOINT}/{filesystem}/snapshots/{snapshot_name}"
+        else:
+            url = f"{SNAPSHOTS_API_ENDPOINT}/{filesystem}/snapshots"
+
+        snapshots: list[dict[str, Any]] = []
+
+        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
+            next_url: str | None = f"{url}?fields=:all:"
+            while next_url and (all_results or len(snapshots) < limit):
+                try:
+                    response = await client.get(next_url)
+                    response.raise_for_status()
+                    data = response.json()
+                except httpx.HTTPStatusError as e:
+                    if e.response.status_code in (401, 403):
+                        raise DemistoException(
+                            f"Authorization Error: Ensure the credentials are correct and have the required permissions."
+                            f" Response: {e.response.text}"
+                        )
+                    raise DemistoException(
+                        f"HTTP Error: Failed to list snapshots. Status code: {e.response.status_code}."
+                        f" Response: {e.response.text}"
+                    )
+                except httpx.RequestError as e:
+                    raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
+
+                page_snapshots = data.get("snapshots", [])
+                demisto.debug(f"Fetched {len(page_snapshots)} snapshots from {next_url}")
+                snapshots.extend(page_snapshots)
+
+                # Follow pagination via paging.next
+                paging_info = data.get("paging", {})
+                next_full_url = paging_info.get("next")
+                if next_full_url and (all_results or len(snapshots) < limit):
+                    parsed = urlparse(next_full_url)
+                    next_url = f"{parsed.path}?{parsed.query}" if parsed.query else parsed.path
+                else:
+                    next_url = None
+
+        # Trim to limit if not fetching all
+        if not all_results:
+            snapshots = snapshots[:limit]
+
+        demisto.debug(f"Total snapshots collected: {len(snapshots)}")
+        return snapshots
+
 
 class _ConcurrentEventFetcher:
     """
@@ -646,6 +723,7 @@ async def main() -> None:
     """Main function, serves as the orchestra for the integration."""
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
     demisto.debug(f"Command being called is {command}")
 
     # Handle whether integration is in debug mode. If so, set the environment variable
@@ -679,8 +757,8 @@ async def main() -> None:
             max_fetch = arg_to_number(params.get("max_fetch", "10000"))
             await client.fetch_events(max_fetch)
         elif command == "ibm-storage-scale-get-events":
-            limit = arg_to_number(demisto.args().get("limit", 50))
-            should_push_events = argToBoolean(demisto.args().get("should_push_events", False))
+            limit = arg_to_number(args.get("limit", 50))
+            should_push_events = argToBoolean(args.get("should_push_events", False))
             events, _ = await client.get_events(limit=limit)
             if should_push_events:
                 push_events_start_time = time.monotonic()
@@ -718,6 +796,42 @@ async def main() -> None:
                 ),
             )
             return_results(command_results)
+        elif command == "ibm-storage-scale-list-snapshots":
+            filesystem = args.get("filesystem") or ":all:"
+            snapshot_name = args.get("snapshot_name")
+            limit_arg = arg_to_number(args.get("limit"))
+            limit = limit_arg if limit_arg is not None else DEFAULT_SNAPSHOT_LIMIT
+            all_results_flag = argToBoolean(args.get("all_results", False))
+            snapshots = await client.list_snapshots(
+                filesystem=filesystem,
+                snapshot_name=snapshot_name,
+                limit=limit,
+                all_results=all_results_flag,
+            )
+            command_results = CommandResults(
+                outputs_prefix="IBMStorageScale.Snapshot",
+                outputs_key_field="oid",
+                outputs=snapshots,
+                readable_output=tableToMarkdown(
+                    f"IBM Storage Scale Snapshots ({len(snapshots)} results)",
+                    snapshots,
+                    headers=[
+                        "snapshotName",
+                        "filesystemName",
+                        "filesetName",
+                        "oid",
+                        "snapID",
+                        "status",
+                        "created",
+                        "quotas",
+                        "snapType",
+                        "expirationTime",
+                    ],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+            return_results(command_results)
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
 
@@ -738,9 +852,6 @@ if __name__ in ("__main__", "__builtin__", "builtins"):
         tb = traceback.format_exc()
         demisto.error(f"Unhandled exception in entrypoint for command '{cmd}': {exc_type}: {e}\n{tb}")
         pretty_message = (
-            f"IBM Storage Scale: failed to execute command '{cmd}'.\n"
-            f"Exception: {exc_type}\n"
-            f"Message: {e}\n\n"
-            f"Traceback:\n{tb}"
+            f"IBM Storage Scale: failed to execute command '{cmd}'.\nException: {exc_type}\nMessage: {e}\n\nTraceback:\n{tb}"
         )
         return_error(pretty_message)

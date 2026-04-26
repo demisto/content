@@ -1,1 +1,2 @@
-!ibm-storage-scale-get-events limit=2 should_push=false```
+!ibm-storage-scale-get-events limit=2 should_push=false
+!ibm-storage-scale-list-snapshots limit=5

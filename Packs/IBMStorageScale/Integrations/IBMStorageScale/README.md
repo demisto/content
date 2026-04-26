@@ -99,13 +99,13 @@ Gets a limited number of the most recent audit log events for interactive invest
 !ibm-storage-scale-get-events limit=10
 ```
 
-##### Arguments
+#### Input
 
-| Argument | Description | Required |
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to return. The default is 50. The maximum is 1000. | False |
+| limit | The maximum number of events to return. The default is 50. The maximum is 1000. | Optional |
 
-##### Context Output
+#### Context Output
 
 The command returns a list of audit log events. The context data can be found at `IBMStorageScale.AuditLog`.
 
@@ -136,13 +136,13 @@ Provides comprehensive debugging information for troubleshooting the IBM Storage
 !ibm-storage-scale-debug-connection
 ```
 
-##### Arguments
+#### Input
 
 This command has no arguments.
 
-##### Context Output
+#### Context Output
 
-| Path | Type | Description |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IBMStorageScale.Debug.connection_status | String | Status of the connection to IBM Storage Scale API (success/failed). |
 | IBMStorageScale.Debug.server_url | String | The configured server URL. |
@@ -154,6 +154,73 @@ This command has no arguments.
 | IBMStorageScale.Debug.configuration | Unknown | Integration configuration details (without sensitive data). |
 | IBMStorageScale.Debug.sample_api_response | Unknown | Sample API response data for validation. |
 | IBMStorageScale.Debug.error_details | String | Error details if connection failed. |
+
+---
+
+#### 3. ibm-storage-scale-list-snapshots
+
+Lists snapshots from IBM Storage Scale. By default, returns all snapshots across all file systems. Use the `filesystem` argument to filter by a specific file system, and `snapshot_name` to retrieve a specific snapshot.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filesystem | The filesystem name to list snapshots for. If not specified, defaults to all filesystems. | Optional |
+| snapshot_name | The name of a specific snapshot to retrieve. This is the path of the snapshot. | Optional |
+| limit | The maximum number of snapshots to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results. If true, the limit argument is ignored. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IBMStorageScale.Snapshot.snapshotName | String | The snapshot name. This is the path of the snapshot. |
+| IBMStorageScale.Snapshot.filesystemName | String | The file system that is the target of the snapshot. |
+| IBMStorageScale.Snapshot.filesetName | String | For a fileset snapshot, the fileset that is a target of the snapshot. |
+| IBMStorageScale.Snapshot.oid | Number | Internal identifier that is used for paging. |
+| IBMStorageScale.Snapshot.snapID | Number | The snapshot ID. |
+| IBMStorageScale.Snapshot.status | String | The snapshot status. |
+| IBMStorageScale.Snapshot.created | String | The date and time when the snapshot was created. |
+| IBMStorageScale.Snapshot.quotas | String | Any quotas that are applied to the fileset. |
+| IBMStorageScale.Snapshot.snapType | String | The AFM type of the snapshot, including "afm_snap", "afm_recovery", "afm_failover", "afm_rpo", "afm_baserpo", and "Invalid". |
+| IBMStorageScale.Snapshot.expirationTime | String | The date and time after which the snapshot is deleted. |
+
+#### Command Example
+
+```
+!ibm-storage-scale-list-snapshots filesystem=gpfs0 limit=5
+```
+
+#### Context Example
+
+```json
+{
+    "IBMStorageScale": {
+        "Snapshot": [
+            {
+                "snapshotName": "snap1",
+                "filesystemName": "gpfs0",
+                "filesetName": "",
+                "oid": 123,
+                "snapID": 5,
+                "status": "Valid",
+                "created": "2024-01-09 14:55:37",
+                "quotas": "",
+                "snapType": "Invalid",
+                "expirationTime": ""
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IBM Storage Scale Snapshots (1 results)
+>
+>| Snapshot Name | Filesystem Name | Fileset Name | Oid | Snap ID | Status | Created | Quotas | Snap Type | Expiration Time |
+>|---|---|---|---|---|---|---|---|---|---|
+>| snap1 | gpfs0 |  | 123 | 5 | Valid | 2024-01-09 14:55:37 |  | Invalid |  |
 
 ---
 
