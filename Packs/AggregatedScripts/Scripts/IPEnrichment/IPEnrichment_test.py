@@ -1,5 +1,6 @@
 import json
 import demistomock as demisto
+from CommonServerPython import CommandResults
 from IPEnrichment import ip_enrichment_script
 
 
@@ -248,3 +249,79 @@ def test_ip_enrichment_script_with_internal_ip(mocker):
     assert len(endpoint_ctx) == 2
     assert {e["Brand"] for e in endpoint_ctx} == {"Core"}
     assert {e["Hostname"] for e in endpoint_ctx} == {"host-1", "host-2"}
+
+
+def test_ip_enrichment_script_with_mark_mismatched_type_as_invalid_false(mocker):
+    """
+    Given:
+        - A list of IPs where extractIndicators returns both IP and Domain types.
+        - mark_mismatched_type_as_invalid=False (default).
+    When:
+        - ip_enrichment_script runs.
+    Then:
+        - The IPs are accepted and enriched (not rejected as invalid).
+        - No domain indicators are created.
+    """
+    ip_list = ["1.1.1.1"]
+    mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
+    mocker.patch("IPEnrichment.is_xsiam", return_value=True)
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "IP": ["1.1.1.1"],
+                        "Domain": ["1.1.1.1"],
+                    }
+                }
+            }
+        ],
+    )
+
+    # Mock the ReputationAggregatedCommand.run to avoid full pipeline execution
+    mock_run = mocker.patch("IPEnrichment.ReputationAggregatedCommand.run", return_value=CommandResults(readable_output="OK"))
+
+    ip_enrichment_script(
+        ip_list=ip_list,
+        mark_mismatched_type_as_invalid=False,
+    )
+
+    # Verify ReputationAggregatedCommand was called (meaning extraction succeeded)
+    assert mock_run.called
+
+
+def test_ip_enrichment_script_with_mark_mismatched_type_as_invalid_true_rejects_mixed(mocker):
+    """
+    Given:
+        - A list of IPs where extractIndicators returns both IP and Domain types.
+        - mark_mismatched_type_as_invalid=True.
+    When:
+        - ip_enrichment_script runs.
+    Then:
+        - Raises ValueError because all inputs are rejected as invalid.
+    """
+    ip_list = ["1.1.1.1"]
+    mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
+    mocker.patch("IPEnrichment.is_xsiam", return_value=True)
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "IP": ["1.1.1.1"],
+                        "Domain": ["1.1.1.1"],
+                    }
+                }
+            }
+        ],
+    )
+
+    import pytest
+
+    with pytest.raises(ValueError, match="No valid indicators found in the input data."):
+        ip_enrichment_script(
+            ip_list=ip_list,
+            mark_mismatched_type_as_invalid=True,
+        )

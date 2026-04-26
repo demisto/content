@@ -48,6 +48,20 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
+- name: mark_mismatched_type_as_invalid
+  description: |
+    Whether to reject an input when extractIndicators detects both the expected type
+    and additional types from the same input string.
+    - 'true': reject the input entirely (strict mode - treats ambiguous inputs as invalid).
+    - 'false': accept the input and only use the expected type indicators, ignoring other detected types.
+    Setting this to 'false' is safe because the type-filtering layer ensures only
+    IP-type indicators are ever created, regardless of this flag.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'true'
+  required: false
 comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IP and will automatically create the indicator in TIM if it is not already exists. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
 commonfields:
   id: ip-enrichment
