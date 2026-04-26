@@ -30,15 +30,6 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
-- defaultvalue: Alerts v2
-  display: MS graph security alert API Version
-  name: api_version
-  type: 15
-  options:
-  - Legacy Alerts
-  - Alerts v2
-  section: Connect
-  required: false
 - name: creds_auth_id
   type: 9
   section: Connect
@@ -171,15 +162,8 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '10'
-- display: Fetch incidents of the given providers only.
-  additionalinfo: Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provider}". If empty, incidents of all providers will be fetched.
-  name: fetch_providers
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
 - display: Fetch incidents of the given service sources only.
-  additionalinfo: Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity",. If empty, incidents of all providers will be fetched.
+  additionalinfo: Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all providers will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
@@ -230,7 +214,7 @@ script:
     - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'".
       name: filter
     - auto: PREDEFINED
-      description: Relevant only for Alerts v2. Use this field to filter by an alert's classification.
+      description: Use this field to filter by an alert's classification.
       name: classification
       predefined:
       - unknown
@@ -238,7 +222,7 @@ script:
       - falsePositive
       - benignPositive
     - auto: PREDEFINED
-      description: Relevant only for Alerts v2. Use this field to filter the alerts by the service or product that created this alert.
+      description: Use this field to filter the alerts by the service or product that created this alert.
       name: service_source
       predefined:
       - microsoftDefenderForEndpoint
@@ -248,16 +232,16 @@ script:
       - microsoftAppGovernance
       - microsoftDefenderForCloudApps
     - auto: PREDEFINED
-      description: Relevant only for Alerts v2. Use this field to filter by alert's status.
+      description: Use this field to filter by alert's status.
       name: status
       predefined:
       - unknown
       - new
       - inProgress
       - resolved
-    - description: Page number to return, zero indexed. The maximum number of alerts that can be skipped for Legacy Alerts is 500 (i.e., page * page_size must be <= 500).
+    - description: Page number to return, zero indexed.
       name: page
-    - description: Number of results in a page. Default is 50. The limit for Legacy Alerts is 1000. The limit for Alerts v2 is 2000. When using Legacy Alerts, the response will provide <page_size> results for each provider.
+    - description: Number of results in a page. Default is 50. The limit is 2000.
       name: page_size
     - description: Number of total results to return. Default is 50.
       name: limit
@@ -280,149 +264,134 @@ script:
     - contextPath: MsGraph.Alert.CreatedDate
       description: Alert created date.
       type: date
-    - contextPath: MsGraph.Alert.EventDate
-      description: Relevant only for Legacy Alerts. Alert event time.
-      type: date
     - contextPath: MsGraph.Alert.Status
       description: Alert status.
       type: string
-    - contextPath: MsGraph.Alert.Vendor
-      description: Relevant only for Legacy Alerts. Alert vendor.
-      type: string
-    - contextPath: MsGraph.Alert.MalwareStates
-      description: Relevant only for Legacy Alerts. Alert malware states.
-      type: string
-    - contextPath: MsGraph.Alert.Provider
-      description: Relevant only for Legacy Alerts. Alert provider.
-      type: string
     - contextPath: MsGraph.Alert.ActorDisplayName
-      description: Relevant only for Alerts v2. Alert actor name.
+      description: Alert actor name.
       type: Unknown
     - contextPath: MsGraph.Alert.AlertWebUrl
-      description: Relevant only for Alerts v2. Alert web URL.
+      description: Alert web URL.
       type: String
     - contextPath: MsGraph.Alert.AssignedTo
-      description: Relevant only for Alerts v2. Alert assignee.
+      description: Alert assignee.
       type: Unknown
     - contextPath: MsGraph.Alert.Classification
-      description: Relevant only for Alerts v2. Alert classification.
+      description: Alert classification.
       type: Unknown
     - contextPath: MsGraph.Alert.Description
-      description: Relevant only for Alerts v2. Alert description.
+      description: Alert description.
       type: String
     - contextPath: MsGraph.Alert.DetectionSource
-      description: Relevant only for Alerts v2. Alert detection source.
+      description: Alert detection source.
       type: String
     - contextPath: MsGraph.Alert.DetectorId
-      description: Relevant only for Alerts v2. Alert detector ID.
+      description: Alert detector ID.
       type: String
     - contextPath: MsGraph.Alert.Determination
-      description: Relevant only for Alerts v2. Alert determination.
+      description: Alert determination.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.@odata.Type
-      description: Relevant only for Alerts v2. Alert evidence type.
+      description: Alert evidence type.
       type: String
     - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
-      description: Relevant only for Alerts v2. Evidence azure device ID.
+      description: Evidence azure device ID.
       type: String
     - contextPath: MsGraph.Alert.Evidence.CreatedDate
-      description: Relevant only for Alerts v2. Evidence creation time.
+      description: Evidence creation time.
       type: Date
     - contextPath: MsGraph.Alert.Evidence.DefenderAvStatus
-      description: Relevant only for Alerts v2. Evidence Defender AV status.
+      description: Evidence Defender AV status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.DeviceDnsName
-      description: Relevant only for Alerts v2. Evidence device DNS name.
+      description: Evidence device DNS name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FirstSeenDateTime
-      description: Relevant only for Alerts v2. Evidence first seen time.
+      description: Evidence first seen time.
       type: Date
     - contextPath: MsGraph.Alert.Evidence.HealthStatus
-      description: Relevant only for Alerts v2. Evidence health status.
+      description: Evidence health status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.MdeDeviceId
-      description: Relevant only for Alerts v2. Evidence MDE device ID.
+      description: Evidence MDE device ID.
       type: String
     - contextPath: MsGraph.Alert.Evidence.OnboardingStatus
-      description: Relevant only for Alerts v2. Evidence onboarding status.
+      description: Evidence onboarding status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.OsBuild
-      description: Relevant only for Alerts v2. Evidence OS build.
+      description: Evidence OS build.
       type: Number
     - contextPath: MsGraph.Alert.Evidence.OsPlatform
-      description: Relevant only for Alerts v2. Evidence OS platform.
+      description: Evidence OS platform.
       type: String
     - contextPath: MsGraph.Alert.Evidence.RbacGroupId
-      description: Relevant only for Alerts v2. Evidence RBAC group ID.
+      description: Evidence RBAC group ID.
       type: Number
     - contextPath: MsGraph.Alert.Evidence.RbacGroupName
-      description: Relevant only for Alerts v2. Evidence RBAC group name.
+      description: Evidence RBAC group name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.RemediationStatus
-      description: Relevant only for Alerts v2. Evidence remediation status.
+      description: Evidence remediation status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.RemediationStatusDetails
-      description: Relevant only for Alerts v2. Evidence remediation status details.
+      description: Evidence remediation status details.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.RiskScore
-      description: Relevant only for Alerts v2. Evidence risk score.
+      description: Evidence risk score.
       type: String
     - contextPath: MsGraph.Alert.Evidence.Tags
-      description: Relevant only for Alerts v2. Evidence tags.
+      description: Evidence tags.
       type: String
     - contextPath: MsGraph.Alert.Evidence.Verdict
-      description: Relevant only for Alerts v2. Evidence verdict.
+      description: Evidence verdict.
       type: String
     - contextPath: MsGraph.Alert.Evidence.Version
-      description: Relevant only for Alerts v2. Evidence version.
+      description: Evidence version.
       type: String
     - contextPath: MsGraph.Alert.Evidence.VmMetadata
-      description: Relevant only for Alerts v2. Evidence VM metadata.
+      description: Evidence VM metadata.
       type: Unknown
     - contextPath: MsGraph.Alert.FirstActivityDateTime
-      description: Relevant only for Alerts v2. Evidence first activity time.
+      description: Evidence first activity time.
       type: Date
     - contextPath: MsGraph.Alert.IncidentId
-      description: Relevant only for Alerts v2. Alert incident ID.
+      description: Alert incident ID.
       type: String
     - contextPath: MsGraph.Alert.IncidentWebUrl
-      description: Relevant only for Alerts v2. Alert incident URL.
+      description: Alert incident URL.
       type: String
     - contextPath: MsGraph.Alert.LastActivityDateTime
-      description: Relevant only for Alerts v2. Alert last activity time.
+      description: Alert last activity time.
       type: Date
     - contextPath: MsGraph.Alert.LastUpdateDateTime
-      description: Relevant only for Alerts v2. Alert last update time.
+      description: Alert last update time.
       type: Date
     - contextPath: MsGraph.Alert.ProviderAlertId
-      description: Relevant only for Alerts v2. Alert provider ID.
+      description: Alert provider ID.
       type: String
     - contextPath: MsGraph.Alert.RecommendedActions
-      description: Relevant only for Alerts v2. Alert recommended action.
+      description: Alert recommended action.
       type: String
     - contextPath: MsGraph.Alert.ResolvedDateTime
-      description: Relevant only for Alerts v2. Alert closing time.
+      description: Alert closing time.
       type: Date
     - contextPath: MsGraph.Alert.ServiceSource
-      description: Relevant only for Alerts v2. Alert service source.
+      description: Alert service source.
       type: String
     - contextPath: MsGraph.Alert.TenantId
-      description: Relevant only for Alerts v2. Alert tenant ID.
+      description: Alert tenant ID.
       type: String
     - contextPath: MsGraph.Alert.ThreatDisplayName
-      description: Relevant only for Alerts v2. Alert threat display name.
+      description: Alert threat display name.
       type: Unknown
     - contextPath: MsGraph.Alert.ThreatFamilyName
-      description: Relevant only for Alerts v2. Alert threat family name.
+      description: Alert threat family name.
       type: Unknown
   - arguments:
     - default: true
       description: The Alert ID - Provider-generated GUID/unique identifier.
       name: alert_id
       required: true
-    - defaultValue: All
-      description: 'Relevant only for Legacy Alerts. Fields to fetch for a specified alert apart from the basic properties, given as comma separated values, e.g., NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All.'
-      name: fields_to_include
     description: Get details for a specific alert.
     name: msg-get-alert-details
     outputs:
@@ -441,239 +410,230 @@ script:
     - contextPath: MsGraph.Alert.CreatedDate
       description: Alert created date.
       type: date
-    - contextPath: MsGraph.Alert.EventDate
-      description: Relevant only for Legacy Alerts. Alert event time.
-      type: date
     - contextPath: MsGraph.Alert.Status
       description: Alert status.
       type: string
-    - contextPath: MsGraph.Alert.Vendor
-      description: Relevant only for Legacy Alerts. Alert vendor/provider.
-      type: string
-    - contextPath: MsGraph.Alert.Provider
-      description: Relevant only for Legacy Alerts. Alert provider.
-      type: string
     - contextPath: MsGraph.Alert.@odata.Context
-      description: Relevant only for Alerts v2. Alert odata context.
+      description: Alert odata context.
       type: String
     - contextPath: MsGraph.Alert.ActorDisplayName
-      description: Relevant only for Alerts v2. Alert actor name.
+      description: Alert actor name.
       type: Unknown
     - contextPath: MsGraph.Alert.AlertWebUrl
-      description: Relevant only for Alerts v2. Alert web URL.
+      description: Alert web URL.
       type: String
     - contextPath: MsGraph.Alert.AssignedTo
-      description: Relevant only for Alerts v2. Alert assignee.
+      description: Alert assignee.
       type: Unknown
     - contextPath: MsGraph.Alert.Classification
-      description: Relevant only for Alerts v2. Alert classification.
+      description: Alert classification.
       type: Unknown
     - contextPath: MsGraph.Alert.Comments.Comment
-      description: Relevant only for Alerts v2. Alert comment.
+      description: Alert comment.
       type: String
     - contextPath: MsGraph.Alert.Comments.CreatedByDisplayName
-      description: Relevant only for Alerts v2. Alert comment creator name.
+      description: Alert comment creator name.
       type: String
     - contextPath: MsGraph.Alert.Comments.CreatedDate
-      description: Relevant only for Alerts v2. Alert comment creation time.
+      description: Alert comment creation time.
       type: Date
     - contextPath: MsGraph.Alert.Description
-      description: Relevant only for Alerts v2. Alert description.
+      description: Alert description.
       type: String
     - contextPath: MsGraph.Alert.DetectionSource
-      description: Relevant only for Alerts v2. Alert detection source.
+      description: Alert detection source.
       type: String
     - contextPath: MsGraph.Alert.DetectorId
-      description: Relevant only for Alerts v2. Alert detector ID.
+      description: Alert detector ID.
       type: String
     - contextPath: MsGraph.Alert.Determination
-      description: Relevant only for Alerts v2. Alert determination.
+      description: Alert determination.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.@odata.Type
-      description: Relevant only for Alerts v2. Alert evidence.
+      description: Alert evidence.
       type: String
     - contextPath: MsGraph.Alert.Evidence.CreatedDate
-      description: Relevant only for Alerts v2. Evidence creation time.
+      description: Evidence creation time.
       type: Date
     - contextPath: MsGraph.Alert.Evidence.DetectionStatus
-      description: Relevant only for Alerts v2. Evidence detection status.
+      description: Evidence detection status.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.ImageFile.FileName
-      description: Relevant only for Alerts v2. Evidence image file name.
+      description: Evidence image file name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.ImageFile.FilePath
-      description: Relevant only for Alerts v2. Evidence image file path.
+      description: Evidence image file path.
       type: String
     - contextPath: MsGraph.Alert.Evidence.ImageFile.FilePublisher
-      description: Relevant only for Alerts v2. Evidence image file publisher.
+      description: Evidence image file publisher.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.ImageFile.FileSize
-      description: Relevant only for Alerts v2. Evidence image file size.
+      description: Evidence image file size.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.ImageFile.Issuer
-      description: Relevant only for Alerts v2. Evidence image file issuer.
+      description: Evidence image file issuer.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.ImageFile.Sha1
-      description: Relevant only for Alerts v2. Evidence image file SHA1 hash.
+      description: Evidence image file SHA1 hash.
       type: String
     - contextPath: MsGraph.Alert.Evidence.ImageFile.Sha256
-      description: Relevant only for Alerts v2. Evidence image file SHA256 hash.
+      description: Evidence image file SHA256 hash.
       type: String
     - contextPath: MsGraph.Alert.Evidence.ImageFile.Signer
-      description: Relevant only for Alerts v2. Evidence image file signer.
+      description: Evidence image file signer.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.MdeDeviceId
-      description: Relevant only for Alerts v2. Evidence MDE device ID.
+      description: Evidence MDE device ID.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.ParentProcessCreationDateTime
-      description: Relevant only for Alerts v2. Evidence parent process creation time.
+      description: Evidence parent process creation time.
       type: Date
     - contextPath: MsGraph.Alert.Evidence.ParentProcessId
-      description: Relevant only for Alerts v2. Evidence parent process process ID.
+      description: Evidence parent process process ID.
       type: Number
     - contextPath: MsGraph.Alert.Evidence.ParentProcessImageFile
-      description: Relevant only for Alerts v2. Evidence parent process image file.
+      description: Evidence parent process image file.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.ProcessCommandLine
-      description: Relevant only for Alerts v2. Evidence process command line.
+      description: Evidence process command line.
       type: String
     - contextPath: MsGraph.Alert.Evidence.ProcessCreationDateTime
-      description: Relevant only for Alerts v2.  Evidence process creation time.
+      description:  Evidence process creation time.
       type: Date
     - contextPath: MsGraph.Alert.Evidence.ProcessId
-      description: Relevant only for Alerts v2.  Evidence process ID.
+      description:  Evidence process ID.
       type: Number
     - contextPath: MsGraph.Alert.Evidence.RemediationStatus
-      description: Relevant only for Alerts v2. Evidence remediation status.
+      description: Evidence remediation status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.RemediationStatusDetails
-      description: Relevant only for Alerts v2. Evidence remediation status details.
+      description: Evidence remediation status details.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.UserAccount.AccountName
-      description: Relevant only for Alerts v2. Evidence user account name.
+      description: Evidence user account name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.UserAccount.AzureAdUserId
-      description: Relevant only for Alerts v2. Evidence user account Azure AD user ID.
+      description: Evidence user account Azure AD user ID.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.UserAccount.DisplayName
-      description: Relevant only for Alerts v2. Evidence user account display name.
+      description: Evidence user account display name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.UserAccount.DomainName
-      description: Relevant only for Alerts v2. Evidence user account domain name.
+      description: Evidence user account domain name.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.UserAccount.UserPrincipalName
-      description: Relevant only for Alerts v2. Evidence user account user principal name.
+      description: Evidence user account user principal name.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.UserAccount.UserSid
-      description: Relevant only for Alerts v2. Evidence user account user SID.
+      description: Evidence user account user SID.
       type: String
     - contextPath: MsGraph.Alert.Evidence.Verdict
-      description: Relevant only for Alerts v2. Evidence verdict.
+      description: Evidence verdict.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FileDetails.FileName
-      description: Relevant only for Alerts v2. Evidence file details file name.
+      description: Evidence file details file name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FileDetails.FilePath
-      description: Relevant only for Alerts v2. Evidence file details file path.
+      description: Evidence file details file path.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FileDetails.FilePublisher
-      description: Relevant only for Alerts v2. Evidence file details file publisher.
+      description: Evidence file details file publisher.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.FileDetails.FileSize
-      description: Relevant only for Alerts v2. Evidence file details file size.
+      description: Evidence file details file size.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.FileDetails.Issuer
-      description: Relevant only for Alerts v2. Evidence file details file issuer.
+      description: Evidence file details file issuer.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.FileDetails.Sha1
-      description: Relevant only for Alerts v2. Evidence file details SHA1 hash.
+      description: Evidence file details SHA1 hash.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FileDetails.Sha256
-      description: Relevant only for Alerts v2. Evidence file details SHA256 hash.
+      description: Evidence file details SHA256 hash.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FileDetails.Signer
-      description: Relevant only for Alerts v2. Evidence file details file signer.
+      description: Evidence file details file signer.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.CֹountryLetterCode
-      description: Relevant only for Alerts v2. Evidence country letter code.
+      description: Evidence country letter code.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.IpAddress
-      description: Relevant only for Alerts v2. Evidence IP address.
+      description: Evidence IP address.
       type: String
     - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
-      description: Relevant only for Alerts v2. Evidence Azure AD device ID.
+      description: Evidence Azure AD device ID.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.DefenderAvStatus
-      description: Relevant only for Alerts v2. Evidence Defender AV status.
+      description: Evidence Defender AV status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.DeviceDnsName
-      description: Relevant only for Alerts v2. Evidence device DNS name.
+      description: Evidence device DNS name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.FirstSeenDateTime
-      description: Relevant only for Alerts v2. Evidence first seen time.
+      description: Evidence first seen time.
       type: Date
     - contextPath: MsGraph.Alert.Evidence.HealthStatus
-      description: Relevant only for Alerts v2. Evidence health status.
+      description: Evidence health status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.OnboardingStatus
-      description: Relevant only for Alerts v2. Evidence onboarding status.
+      description: Evidence onboarding status.
       type: String
     - contextPath: MsGraph.Alert.Evidence.OsBuild
-      description: Relevant only for Alerts v2. Evidence OS build.
+      description: Evidence OS build.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.OsPlatform
-      description: Relevant only for Alerts v2. Evidence OS platform.
+      description: Evidence OS platform.
       type: String
     - contextPath: MsGraph.Alert.Evidence.RbacGroupId
-      description: Relevant only for Alerts v2. Evidence RBAC group ID.
+      description: Evidence RBAC group ID.
       type: Number
     - contextPath: MsGraph.Alert.Evidence.RbacGroupName
-      description: Relevant only for Alerts v2. Evidence RBAC group name.
+      description: Evidence RBAC group name.
       type: String
     - contextPath: MsGraph.Alert.Evidence.RiskScore
-      description: Relevant only for Alerts v2. Evidence risk score.
+      description: Evidence risk score.
       type: String
     - contextPath: MsGraph.Alert.Evidence.Version
-      description: Relevant only for Alerts v2. Evidence version.
+      description: Evidence version.
       type: String
     - contextPath: MsGraph.Alert.Evidence.VmMetadata
-      description: Relevant only for Alerts v2. Evidence VM metadata.
+      description: Evidence VM metadata.
       type: Unknown
     - contextPath: MsGraph.Alert.FirstActivityDateTime
-      description: Relevant only for Alerts v2. Evidence first activity time.
+      description: Evidence first activity time.
       type: Date
     - contextPath: MsGraph.Alert.IncidentId
-      description: Relevant only for Alerts v2. Alert incident ID.
+      description: Alert incident ID.
       type: String
     - contextPath: MsGraph.Alert.IncidentWebUrl
-      description: Relevant only for Alerts v2. Alert incident URL.
+      description: Alert incident URL.
       type: String
     - contextPath: MsGraph.Alert.LastActivityDateTime
-      description: Relevant only for Alerts v2. Alert last activity time.
+      description: Alert last activity time.
       type: Date
     - contextPath: MsGraph.Alert.LastUpdateDateTime
-      description: Relevant only for Alerts v2. Alert last update time.
+      description: Alert last update time.
       type: Date
     - contextPath: MsGraph.Alert.ProviderAlertId
-      description: Relevant only for Alerts v2. Alert provider ID.
+      description: Alert provider ID.
       type: String
     - contextPath: MsGraph.Alert.RecommendedActions
-      description: Relevant only for Alerts v2. Alert recommended action.
+      description: Alert recommended action.
       type: String
     - contextPath: MsGraph.Alert.ResolvedDateTime
-      description: Relevant only for Alerts v2. Alert closing time.
+      description: Alert closing time.
       type: Date
     - contextPath: MsGraph.Alert.ServiceSource
-      description: Relevant only for Alerts v2. Alert service source.
+      description: Alert service source.
       type: String
     - contextPath: MsGraph.Alert.TenantId
-      description: Relevant only for Alerts v2. Alert tenant ID.
+      description: Alert tenant ID.
       type: String
     - contextPath: MsGraph.Alert.ThreatDisplayName
-      description: Relevant only for Alerts v2. Alert threat display name.
+      description: Alert threat display name.
       type: Unknown
     - contextPath: MsGraph.Alert.ThreatFamilyName
-      description: Relevant only for Alerts v2. Alert threat family name.
+      description: Alert threat family name.
       type: Unknown
   - arguments:
     - description: The Alert ID. Provider-generated GUID/unique identifier.
@@ -681,18 +641,6 @@ script:
       required: true
     - description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
       name: assigned_to
-    - description: Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.
-      name: closed_date_time
-    - description: Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).
-      name: comments
-    - auto: PREDEFINED
-      description: Relevant only for Legacy Alerts. Analyst feedback on the alert.
-      name: feedback
-      predefined:
-      - unknown
-      - truePositive
-      - falsePositive
-      - benignPositive
     - auto: PREDEFINED
       description: Alert lifecycle status (stage).
       name: status
@@ -701,14 +649,8 @@ script:
       - newAlert
       - inProgress
       - resolved
-    - description: Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
-      name: tags
-    - description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.
-      name: vendor_information
-    - description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.
-      name: provider_information
     - auto: PREDEFINED
-      description: Relevant only for Alerts v2. Use this field to update the alert's classification.
+      description: Use this field to update the alert's classification.
       name: classification
       predefined:
       - unknown
@@ -716,7 +658,7 @@ script:
       - falsePositive
       - informationalExpectedActivity
     - auto: PREDEFINED
-      description: Relevant only for Alerts v2. Use this field to update the alert's determination.
+      description: Use this field to update the alert's determination.
       name: determination
       predefined:
       - unknown
@@ -747,7 +689,7 @@ script:
       name: comment
       required: true
       type: string
-    description: Relevant only for Alerts v2. create a comment for an existing alert.
+    description: Create a comment for an existing alert.
     name: msg-create-alert-comment
     outputs:
     - contextPath: MsGraph.AlertComment.ID
