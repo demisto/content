@@ -134,8 +134,10 @@ class Client(BaseClient):
             demisto.debug(msg)
             raise Exception(msg)
         finally:
-            if os.path.isfile(file_name):
+            try:
                 os.remove(file_name)
+            except OSError:
+                pass
 
         return response  # pylint: disable=E0601
 

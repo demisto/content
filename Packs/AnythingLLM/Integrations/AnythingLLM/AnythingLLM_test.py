@@ -44,7 +44,6 @@ def test_document_upload_file_sanitizes_filename(malicious_name: str, expected_b
     )
 
     mock_copy = mocker.patch("AnythingLLM.shutil.copy")
-    mocker.patch("AnythingLLM.os.path.isfile", return_value=True)
     mock_remove = mocker.patch("AnythingLLM.os.remove")
 
     client = Client(base_url="https://example.com/api", verify=False, headers={"Content-Type": "application/json"})
@@ -60,11 +59,11 @@ def test_document_upload_file_sanitizes_filename(malicious_name: str, expected_b
     mock_remove.assert_called_once_with(expected_basename)
 
 
-def test_document_upload_file_cleanup_skipped_when_no_file(mocker):
+def test_document_upload_file_cleanup_handles_missing_file(mocker):
     """
     Given: A file entry where the copied file does not exist at cleanup time.
-    When: document_upload_file() completes.
-    Then: os.remove is not called (guarded by os.path.isfile check).
+    When: document_upload_file() completes and os.remove raises FileNotFoundError.
+    Then: The exception is suppressed and the function completes without error.
     """
     from AnythingLLM import Client
 
@@ -78,8 +77,7 @@ def test_document_upload_file_cleanup_skipped_when_no_file(mocker):
     )
 
     mocker.patch("AnythingLLM.shutil.copy")
-    mocker.patch("AnythingLLM.os.path.isfile", return_value=False)
-    mock_remove = mocker.patch("AnythingLLM.os.remove")
+    mock_remove = mocker.patch("AnythingLLM.os.remove", side_effect=FileNotFoundError)
 
     client = Client(base_url="https://example.com/api", verify=False, headers={"Content-Type": "application/json"})
     mocker.patch.object(client, "document_list", return_value={"localFiles": {"items": []}})
@@ -88,7 +86,7 @@ def test_document_upload_file_cleanup_skipped_when_no_file(mocker):
 
     client.document_upload_file("entry123")
 
-    mock_remove.assert_not_called()
+    mock_remove.assert_called_once_with("test_file.txt")
 
 
 def test_document_upload_file_absolute_path_write_prevented(mocker):
@@ -109,7 +107,6 @@ def test_document_upload_file_absolute_path_write_prevented(mocker):
     )
 
     mock_copy = mocker.patch("AnythingLLM.shutil.copy")
-    mocker.patch("AnythingLLM.os.path.isfile", return_value=True)
     mocker.patch("AnythingLLM.os.remove")
 
     client = Client(base_url="https://example.com/api", verify=False, headers={"Content-Type": "application/json"})
@@ -142,7 +139,6 @@ def test_document_upload_file_relative_traversal_prevented(mocker):
     )
 
     mock_copy = mocker.patch("AnythingLLM.shutil.copy")
-    mocker.patch("AnythingLLM.os.path.isfile", return_value=True)
     mocker.patch("AnythingLLM.os.remove")
 
     client = Client(base_url="https://example.com/api", verify=False, headers={"Content-Type": "application/json"})
