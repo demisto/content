@@ -658,3 +658,761 @@ def test_create_override_data():
         {"profile": "profile1", "action": "action1", "track": "track1", "capture-packets": None},
         {"profile": " profile2", "action": "action1", "track": "track1", "capture-packets": None},
     ]
+
+
+# ==================== Service Group Commands ====================
+
+
+def test_checkpoint_service_group_add_command(mocker):
+    """
+    Given
+        a client and service group parameters
+    When
+        calling checkpoint_service_group_add_command
+    Then
+        validate the result contains the expected service group data
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_service_group.json")
+    mocked_client.add_service_group.return_value = mock_response
+
+    result = checkpoint_service_group_add_command(mocked_client, name="test-service-group", members="http")
+    assert result.outputs.get("name") == "test-service-group"
+    assert result.outputs.get("uid") == "sg-1234"
+    assert result.outputs.get("type") == "service-group"
+    mocked_client.add_service_group.assert_called_once_with(
+        name="test-service-group",
+        members=["http"],
+        color=None,
+        comments=None,
+        details_level=None,
+        groups=None,
+        tags=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_service_group_add_command_with_optional_args(mocker):
+    """
+    Given
+        a client and service group parameters including optional args
+    When
+        calling checkpoint_service_group_add_command with color, comments, ignore_warnings
+    Then
+        validate the client method is called with the correct parsed arguments
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_service_group.json")
+    mocked_client.add_service_group.return_value = mock_response
+
+    result = checkpoint_service_group_add_command(
+        mocked_client,
+        name="test-service-group",
+        members="http,https",
+        color="blue",
+        comments="test comment",
+        ignore_warnings="true",
+        ignore_errors="false",
+        tags="tag1,tag2",
+        groups="group1",
+    )
+    assert result.outputs.get("name") == "test-service-group"
+    mocked_client.add_service_group.assert_called_once_with(
+        name="test-service-group",
+        members=["http", "https"],
+        color="blue",
+        comments="test comment",
+        details_level=None,
+        groups=["group1"],
+        tags=["tag1", "tag2"],
+        ignore_warnings=True,
+        ignore_errors=False,
+    )
+
+
+def test_checkpoint_service_group_get_command(mocker):
+    """
+    Given
+        a client and a service group identifier
+    When
+        calling checkpoint_service_group_get_command
+    Then
+        validate the result contains the expected service group data with members
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/get_service_group.json")
+    mocked_client.get_service_group.return_value = mock_response
+
+    result = checkpoint_service_group_get_command(mocked_client, identifier="test-service-group")
+    assert result.outputs.get("name") == "test-service-group"
+    assert result.outputs.get("uid") == "sg-1234"
+    assert result.outputs.get("type") == "service-group"
+    assert len(result.outputs.get("members")) == 2
+    mocked_client.get_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        show_as_ranges=None,
+        details_level=None,
+    )
+
+
+def test_checkpoint_service_group_get_command_with_show_as_ranges(mocker):
+    """
+    Given
+        a client and a service group identifier with show_as_ranges=true
+    When
+        calling checkpoint_service_group_get_command
+    Then
+        validate show_as_ranges is parsed as boolean
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/get_service_group.json")
+    mocked_client.get_service_group.return_value = mock_response
+
+    checkpoint_service_group_get_command(
+        mocked_client, identifier="test-service-group", show_as_ranges="true", details_level="full"
+    )
+    mocked_client.get_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        show_as_ranges=True,
+        details_level="full",
+    )
+
+
+def test_checkpoint_service_group_list_command(mocker):
+    """
+    Given
+        a client
+    When
+        calling checkpoint_service_group_list_command
+    Then
+        validate the result contains the expected list of service groups
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_list_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/list_service_groups.json")
+    mocked_client.list_service_groups.return_value = mock_response
+
+    result = checkpoint_service_group_list_command(mocked_client)
+    assert len(result.outputs) == 2
+    assert result.outputs[0].get("name") == "service-group-1"
+    assert result.outputs[0].get("uid") == "sg-1234"
+    assert result.outputs[1].get("name") == "service-group-2"
+
+
+def test_checkpoint_service_group_list_command_empty(mocker):
+    """
+    Given
+        a client
+    When
+        calling checkpoint_service_group_list_command with no results
+    Then
+        validate the readable output indicates no results
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_list_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.list_service_groups.return_value = {"objects": []}
+
+    result = checkpoint_service_group_list_command(mocked_client)
+    assert result.readable_output == "No service group objects were found."
+
+
+def test_checkpoint_service_group_list_command_domains_to_process_with_full_details(mocker):
+    """
+    Given
+        a client with domains_to_process and details_level=full
+    When
+        calling checkpoint_service_group_list_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_list_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="cannot be used with details_level set to 'full'"):
+        checkpoint_service_group_list_command(mocked_client, domains_to_process="CURRENT_DOMAIN", details_level="full")
+
+
+def test_checkpoint_service_group_update_command(mocker):
+    """
+    Given
+        a client and update parameters
+    When
+        calling checkpoint_service_group_update_command
+    Then
+        validate the result contains the updated service group data
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_service_group.json")
+    mocked_client.update_service_group.return_value = mock_response
+
+    result = checkpoint_service_group_update_command(
+        mocked_client, identifier="test-service-group", new_name="updated-service-group"
+    )
+    assert result.outputs.get("name") == "updated-service-group"
+    assert result.outputs.get("uid") == "sg-1234"
+    mocked_client.update_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        members=None,
+        new_name="updated-service-group",
+        color=None,
+        comments=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+        details_level=None,
+        groups=None,
+        tags=None,
+    )
+
+
+def test_checkpoint_service_group_update_command_with_members_action(mocker):
+    """
+    Given
+        a client and update parameters with members_action=add
+    When
+        calling checkpoint_service_group_update_command
+    Then
+        validate members are wrapped with the action key
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_service_group.json")
+    mocked_client.update_service_group.return_value = mock_response
+
+    checkpoint_service_group_update_command(
+        mocked_client,
+        identifier="test-service-group",
+        members_action="add",
+        members="http,https",
+        groups_action="remove",
+        groups="old-group",
+        tags_action="add",
+        tags="new-tag",
+    )
+    mocked_client.update_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        members={"add": ["http", "https"]},
+        new_name=None,
+        color=None,
+        comments=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+        details_level=None,
+        groups={"remove": ["old-group"]},
+        tags={"add": ["new-tag"]},
+    )
+
+
+def test_checkpoint_service_group_update_command_members_without_action(mocker):
+    """
+    Given
+        a client and update parameters with members but no members_action
+    When
+        calling checkpoint_service_group_update_command
+    Then
+        validate members are passed as a plain list (no action wrapping)
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_service_group.json")
+    mocked_client.update_service_group.return_value = mock_response
+
+    checkpoint_service_group_update_command(
+        mocked_client,
+        identifier="test-service-group",
+        members="http,https",
+    )
+    mocked_client.update_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        members=["http", "https"],
+        new_name=None,
+        color=None,
+        comments=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+        details_level=None,
+        groups=None,
+        tags=None,
+    )
+
+
+def test_checkpoint_service_group_clone_command(mocker):
+    """
+    Given
+        a client and clone parameters
+    When
+        calling checkpoint_service_group_clone_command
+    Then
+        validate the result contains the cloned service group data
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_clone_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/clone_service_group.json")
+    mocked_client.clone_service_group.return_value = mock_response
+
+    result = checkpoint_service_group_clone_command(
+        mocked_client, identifier="test-service-group", new_name="cloned-service-group"
+    )
+    assert result.outputs.get("name") == "cloned-service-group"
+    assert result.outputs.get("uid") == "sg-9999"
+    assert result.outputs.get("type") == "service-group"
+
+
+def test_checkpoint_service_group_clone_command_with_action(mocker):
+    """
+    Given
+        a client and clone parameters with members_action
+    When
+        calling checkpoint_service_group_clone_command
+    Then
+        validate members are wrapped with the action key
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_clone_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/clone_service_group.json")
+    mocked_client.clone_service_group.return_value = mock_response
+
+    checkpoint_service_group_clone_command(
+        mocked_client,
+        identifier="test-service-group",
+        members_action="add",
+        members="ftp",
+    )
+    mocked_client.clone_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        members={"add": ["ftp"]},
+        new_name=None,
+        color=None,
+        comments=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+        details_level=None,
+        groups=None,
+        tags=None,
+    )
+
+
+def test_checkpoint_service_group_delete_command(mocker):
+    """
+    Given
+        a client and a service group identifier
+    When
+        calling checkpoint_service_group_delete_command
+    Then
+        validate the result indicates successful deletion
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_service_group.return_value = {"message": "OK"}
+
+    result = checkpoint_service_group_delete_command(mocked_client, identifier="test-service-group")
+    assert result.readable_output == "Service group deleted successfully"
+    mocked_client.delete_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        details_level=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_service_group_delete_command_with_optional_args(mocker):
+    """
+    Given
+        a client and a service group identifier with optional args
+    When
+        calling checkpoint_service_group_delete_command
+    Then
+        validate optional args are parsed correctly
+    """
+    from CheckPointFirewallV2 import checkpoint_service_group_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_service_group.return_value = {"message": "OK"}
+
+    checkpoint_service_group_delete_command(
+        mocked_client,
+        identifier="test-service-group",
+        details_level="standard",
+        ignore_warnings="true",
+        ignore_errors="false",
+    )
+    mocked_client.delete_service_group.assert_called_once_with(
+        identifier="test-service-group",
+        details_level="standard",
+        ignore_warnings=True,
+        ignore_errors=False,
+    )
+
+
+# ==================== Access Section Commands ====================
+
+
+def test_checkpoint_access_section_add_command(mocker):
+    """
+    Given
+        a client and access section parameters with position=top
+    When
+        calling checkpoint_access_section_add_command
+    Then
+        validate the result contains the expected access section data
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_section.json")
+    mocked_client.add_access_section.return_value = mock_response
+
+    result = checkpoint_access_section_add_command(mocked_client, layer="Network", position="top", name="test-section")
+    assert result.outputs.get("name") == "test-section"
+    assert result.outputs.get("uid") == "as-1234"
+    assert result.outputs.get("type") == "access-section"
+    mocked_client.add_access_section.assert_called_once_with(
+        layer="Network",
+        position="top",
+        details_level=None,
+        name="test-section",
+        tags=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_access_section_add_command_with_position_rule(mocker):
+    """
+    Given
+        a client and access section parameters with position=above and position_rule
+    When
+        calling checkpoint_access_section_add_command
+    Then
+        validate position is constructed as a dict {position: position_rule}
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_section.json")
+    mocked_client.add_access_section.return_value = mock_response
+
+    checkpoint_access_section_add_command(
+        mocked_client, layer="Network", position="above", position_rule="rule-1", name="test-section"
+    )
+    mocked_client.add_access_section.assert_called_once_with(
+        layer="Network",
+        position={"above": "rule-1"},
+        details_level=None,
+        name="test-section",
+        tags=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_access_section_add_command_with_integer_position(mocker):
+    """
+    Given
+        a client and access section parameters with a numeric position
+    When
+        calling checkpoint_access_section_add_command
+    Then
+        validate position is converted to an integer
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_access_section.json")
+    mocked_client.add_access_section.return_value = mock_response
+
+    checkpoint_access_section_add_command(mocked_client, layer="Network", position="3", name="test-section")
+    mocked_client.add_access_section.assert_called_once_with(
+        layer="Network",
+        position=3,
+        details_level=None,
+        name="test-section",
+        tags=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_access_section_add_command_above_without_position_rule(mocker):
+    """
+    Given
+        a client with position=above but no position_rule
+    When
+        calling checkpoint_access_section_add_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_add_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'position_rule' argument is required"):
+        checkpoint_access_section_add_command(mocked_client, layer="Network", position="above", name="test-section")
+
+
+def test_checkpoint_access_section_add_command_below_without_position_rule(mocker):
+    """
+    Given
+        a client with position=below but no position_rule
+    When
+        calling checkpoint_access_section_add_command
+    Then
+        validate a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_add_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(CheckPointFirewallV2.DemistoException, match="'position_rule' argument is required"):
+        checkpoint_access_section_add_command(mocked_client, layer="Network", position="below", name="test-section")
+
+
+def test_checkpoint_access_section_get_command(mocker):
+    """
+    Given
+        a client and access section parameters
+    When
+        calling checkpoint_access_section_get_command
+    Then
+        validate the result contains the expected access section data
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/get_access_section.json")
+    mocked_client.get_access_section.return_value = mock_response
+
+    result = checkpoint_access_section_get_command(mocked_client, layer="Network", identifier="test-section")
+    assert result.outputs.get("name") == "test-section"
+    assert result.outputs.get("uid") == "as-1234"
+    assert result.outputs.get("type") == "access-section"
+    mocked_client.get_access_section.assert_called_once_with(
+        layer="Network",
+        identifier="test-section",
+        details_level=None,
+    )
+
+
+def test_checkpoint_access_section_get_command_with_details_level(mocker):
+    """
+    Given
+        a client and access section parameters with details_level
+    When
+        calling checkpoint_access_section_get_command
+    Then
+        validate details_level is passed through
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/get_access_section.json")
+    mocked_client.get_access_section.return_value = mock_response
+
+    checkpoint_access_section_get_command(mocked_client, layer="Network", identifier="test-section", details_level="full")
+    mocked_client.get_access_section.assert_called_once_with(
+        layer="Network",
+        identifier="test-section",
+        details_level="full",
+    )
+
+
+def test_checkpoint_access_section_update_command(mocker):
+    """
+    Given
+        a client and update parameters
+    When
+        calling checkpoint_access_section_update_command
+    Then
+        validate the result contains the updated access section data
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_access_section.json")
+    mocked_client.update_access_section.return_value = mock_response
+
+    result = checkpoint_access_section_update_command(
+        mocked_client, identifier="test-section", layer="Network", new_name="updated-section"
+    )
+    assert result.outputs.get("name") == "updated-section"
+    assert result.outputs.get("uid") == "as-1234"
+    mocked_client.update_access_section.assert_called_once_with(
+        identifier="test-section",
+        layer="Network",
+        new_name="updated-section",
+        details_level=None,
+        tags=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_access_section_update_command_with_tags_action(mocker):
+    """
+    Given
+        a client and update parameters with tags_action=add
+    When
+        calling checkpoint_access_section_update_command
+    Then
+        validate tags are wrapped with the action key
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_access_section.json")
+    mocked_client.update_access_section.return_value = mock_response
+
+    checkpoint_access_section_update_command(
+        mocked_client,
+        identifier="test-section",
+        layer="Network",
+        tags_action="add",
+        tags="tag1,tag2",
+    )
+    mocked_client.update_access_section.assert_called_once_with(
+        identifier="test-section",
+        layer="Network",
+        new_name=None,
+        details_level=None,
+        tags={"add": ["tag1", "tag2"]},
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_access_section_update_command_tags_without_action(mocker):
+    """
+    Given
+        a client and update parameters with tags but no tags_action
+    When
+        calling checkpoint_access_section_update_command
+    Then
+        validate tags are passed as a plain list
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_access_section.json")
+    mocked_client.update_access_section.return_value = mock_response
+
+    checkpoint_access_section_update_command(
+        mocked_client,
+        identifier="test-section",
+        layer="Network",
+        tags="tag1,tag2",
+    )
+    mocked_client.update_access_section.assert_called_once_with(
+        identifier="test-section",
+        layer="Network",
+        new_name=None,
+        details_level=None,
+        tags=["tag1", "tag2"],
+        ignore_warnings=None,
+        ignore_errors=None,
+    )
+
+
+def test_checkpoint_access_section_delete_command(mocker):
+    """
+    Given
+        a client and access section parameters
+    When
+        calling checkpoint_access_section_delete_command
+    Then
+        validate the result indicates successful deletion
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_access_section.return_value = {"message": "OK"}
+
+    result = checkpoint_access_section_delete_command(mocked_client, identifier="test-section", layer="Network")
+    assert result.readable_output == "Access section deleted successfully."
+    mocked_client.delete_access_section.assert_called_once_with(
+        identifier="test-section",
+        layer="Network",
+        details_level=None,
+    )
+
+
+def test_checkpoint_access_section_delete_command_with_details_level(mocker):
+    """
+    Given
+        a client and access section parameters with details_level
+    When
+        calling checkpoint_access_section_delete_command
+    Then
+        validate details_level is passed through
+    """
+    from CheckPointFirewallV2 import checkpoint_access_section_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_access_section.return_value = {"message": "OK"}
+
+    checkpoint_access_section_delete_command(mocked_client, identifier="test-section", layer="Network", details_level="standard")
+    mocked_client.delete_access_section.assert_called_once_with(
+        identifier="test-section",
+        layer="Network",
+        details_level="standard",
+    )
+
+
+# ==================== Helper Function Tests ====================
+
+
+class TestParseOrderArgument:
+    """Tests for the parse_order_argument helper function."""
+
+    def test_single_order(self):
+        from CheckPointFirewallV2 import parse_order_argument
+
+        result = parse_order_argument("ASC:name")
+        assert result == [{"ASC": "name"}]
+
+    def test_multiple_orders(self):
+        from CheckPointFirewallV2 import parse_order_argument
+
+        result = parse_order_argument("ASC:type,ASC:name,DESC:uid")
+        assert result == [{"ASC": "type"}, {"ASC": "name"}, {"DESC": "uid"}]
+
+    def test_lowercase_direction_normalized(self):
+        from CheckPointFirewallV2 import parse_order_argument
+
+        result = parse_order_argument("asc:name")
+        assert result == [{"ASC": "name"}]
+
+    def test_whitespace_handling(self):
+        from CheckPointFirewallV2 import parse_order_argument
+
+        result = parse_order_argument(" ASC : name , DESC : uid ")
+        assert result == [{"ASC": "name"}, {"DESC": "uid"}]
+
+    def test_invalid_format_no_colon(self):
+        from CheckPointFirewallV2 import parse_order_argument
+
+        with pytest.raises(CheckPointFirewallV2.DemistoException, match="Invalid order format"):
+            parse_order_argument("ASCname")
+
+    def test_invalid_direction(self):
+        from CheckPointFirewallV2 import parse_order_argument
+
+        with pytest.raises(CheckPointFirewallV2.DemistoException, match="Invalid order direction"):
+            parse_order_argument("INVALID:name")
