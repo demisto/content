@@ -4,3 +4,5 @@ name: Microsoft Entra ID Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft Entra ID
+supportedModules:
+- xsiam

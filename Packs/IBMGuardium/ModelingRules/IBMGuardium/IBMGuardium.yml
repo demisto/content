@@ -4,3 +4,5 @@ name: IBM Guardium Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

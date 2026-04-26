@@ -2,7 +2,7 @@
     "name": "NVIDIA DOCA Argus",
     "description": "This pack provides Modeling Rules to parse and map NVIDIA DOCA Argus logs to the Cortex Data Model (XDM)",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

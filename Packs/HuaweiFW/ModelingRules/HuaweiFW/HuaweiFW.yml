@@ -4,3 +4,5 @@ name: Huawei FW Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

@@ -4,3 +4,5 @@ name: Dragos Platform Modeling Rule
 rules: ''
 schema: ''
 tags: Dragos
+supportedModules:
+- xsiam

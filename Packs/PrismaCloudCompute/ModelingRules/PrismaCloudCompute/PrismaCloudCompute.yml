@@ -4,3 +4,5 @@ name: Prisma Cloud Compute Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

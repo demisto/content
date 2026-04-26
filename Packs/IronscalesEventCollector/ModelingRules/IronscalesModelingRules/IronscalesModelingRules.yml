@@ -4,3 +4,5 @@ name: IRONSCALES Modeling Rule
 rules: ''
 schema: ''
 tags: ironscales
+supportedModules:
+- xsiam

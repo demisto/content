@@ -4,3 +4,5 @@ name: Microsoft Defender Cloud Apps Modeling Rule
 rules: ''
 schema: ''
 tags: microsoft
+supportedModules:
+- xsiam

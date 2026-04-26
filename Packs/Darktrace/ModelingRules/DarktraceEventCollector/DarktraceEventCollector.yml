@@ -4,3 +4,5 @@ name: Darktrace Modeling Rule
 rules: ''
 schema: ''
 tags: darktrace
+supportedModules:
+- xsiam

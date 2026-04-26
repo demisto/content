@@ -4,3 +4,5 @@ name: F5 ASM
 rules: ''
 schema: ''
 tags: F5 ASM
+supportedModules:
+- xsiam

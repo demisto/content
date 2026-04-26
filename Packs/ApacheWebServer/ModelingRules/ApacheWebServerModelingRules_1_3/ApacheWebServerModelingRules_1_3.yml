@@ -4,3 +4,5 @@ name: Apache Web Server
 rules: ''
 schema: ''
 tags: Apache Web Server
+supportedModules:
+- xsiam

@@ -4,3 +4,5 @@ name: Watchguard Firebox Private Access Modeling Rule
 rules: ''
 schema: ''
 tags: Watchguard Firebox
+supportedModules:
+- xsiam

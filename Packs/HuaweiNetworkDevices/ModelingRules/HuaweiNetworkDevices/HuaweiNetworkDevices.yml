@@ -5,3 +5,5 @@ name: Huawei Network Devices Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
