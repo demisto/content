@@ -461,6 +461,247 @@ class Client(BaseClient):
     def set_threat_protection(self, args):
         return self._http_request(method="POST", url_suffix="set-threat-protection", headers=self.headers, json_data=args)
 
+    def add_service_group(
+        self,
+        name: str,
+        members: Optional[list] = None,
+        color: Optional[str] = None,
+        comments: Optional[str] = None,
+        details_level: Optional[str] = None,
+        groups: Optional[list] = None,
+        tags: Optional[list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+    ) -> dict:
+        body: dict = {"name": name}
+        if members is not None:
+            body["members"] = members
+        if color is not None:
+            body["color"] = color
+        if comments is not None:
+            body["comments"] = comments
+        if details_level is not None:
+            body["details-level"] = details_level
+        if groups is not None:
+            body["groups"] = groups
+        if tags is not None:
+            body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        demisto.debug(f"add-service-group request body: {body}")
+        return self._http_request(method="POST", url_suffix="add-service-group", headers=self.headers, json_data=body)
+
+    def get_service_group(
+        self,
+        identifier: str,
+        show_as_ranges: Optional[bool] = None,
+        details_level: Optional[str] = None,
+    ) -> dict:
+        body: dict = {"name": identifier}
+        if show_as_ranges is not None:
+            body["show-as-ranges"] = show_as_ranges
+        if details_level is not None:
+            body["details-level"] = details_level
+        demisto.debug(f"show-service-group request body: {body}")
+        return self._http_request(method="POST", url_suffix="show-service-group", headers=self.headers, json_data=body)
+
+    def list_service_groups(
+        self,
+        filter_search: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        order: Optional[list] = None,
+        show_as_ranges: Optional[bool] = None,
+        dereference_group_members: Optional[bool] = None,
+        show_membership: Optional[bool] = None,
+        details_level: Optional[str] = None,
+        domains_to_process: Optional[list] = None,
+    ) -> dict:
+        body: dict = {}
+        if filter_search is not None:
+            body["filter"] = filter_search
+        if limit is not None:
+            body["limit"] = limit
+        if offset is not None:
+            body["offset"] = offset
+        if order is not None:
+            body["order"] = order
+        if show_as_ranges is not None:
+            body["show-as-ranges"] = show_as_ranges
+        if dereference_group_members is not None:
+            body["dereference-group-members"] = dereference_group_members
+        if show_membership is not None:
+            body["show-membership"] = show_membership
+        if details_level is not None:
+            body["details-level"] = details_level
+        if domains_to_process is not None:
+            body["domains-to-process"] = domains_to_process
+            # The API requires ignore-warnings=true when querying multiple domains
+            body["ignore-warnings"] = True
+        demisto.debug(f"show-service-groups request body: {body}")
+        return self._http_request(method="POST", url_suffix="show-service-groups", headers=self.headers, json_data=body)
+
+    def update_service_group(
+        self,
+        identifier: str,
+        members: Optional[dict | list] = None,
+        new_name: Optional[str] = None,
+        color: Optional[str] = None,
+        comments: Optional[str] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        details_level: Optional[str] = None,
+        groups: Optional[dict | list] = None,
+        tags: Optional[dict | list] = None,
+    ) -> dict:
+        body: dict = {"name": identifier}
+        if members is not None:
+            body["members"] = members
+        if new_name is not None:
+            body["new-name"] = new_name
+        if color is not None:
+            body["color"] = color
+        if comments is not None:
+            body["comments"] = comments
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        if details_level is not None:
+            body["details-level"] = details_level
+        if groups is not None:
+            body["groups"] = groups
+        if tags is not None:
+            body["tags"] = tags
+        demisto.debug(f"set-service-group request body: {body}")
+        return self._http_request(method="POST", url_suffix="set-service-group", headers=self.headers, json_data=body)
+
+    def clone_service_group(
+        self,
+        identifier: str,
+        members: Optional[dict | list] = None,
+        new_name: Optional[str] = None,
+        color: Optional[str] = None,
+        comments: Optional[str] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        details_level: Optional[str] = None,
+        groups: Optional[dict | list] = None,
+        tags: Optional[dict | list] = None,
+    ) -> dict:
+        body: dict = {"name": identifier}
+        if members is not None:
+            body["members"] = members
+        if new_name is not None:
+            body["new-name"] = new_name
+        if color is not None:
+            body["color"] = color
+        if comments is not None:
+            body["comments"] = comments
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        if details_level is not None:
+            body["details-level"] = details_level
+        if groups is not None:
+            body["groups"] = groups
+        if tags is not None:
+            body["tags"] = tags
+        demisto.debug(f"clone-service-group request body: {body}")
+        return self._http_request(method="POST", url_suffix="clone-service-group", headers=self.headers, json_data=body)
+
+    def delete_service_group(
+        self,
+        identifier: str,
+        details_level: Optional[str] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+    ) -> dict:
+        body: dict = {"name": identifier}
+        if details_level is not None:
+            body["details-level"] = details_level
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        demisto.debug(f"delete-service-group request body: {body}")
+        return self._http_request(method="POST", url_suffix="delete-service-group", headers=self.headers, json_data=body)
+
+    def add_access_section(
+        self,
+        layer: str,
+        position: str | dict | int,
+        details_level: Optional[str] = None,
+        name: Optional[str] = None,
+        tags: Optional[list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+    ) -> dict:
+        body: dict = {"layer": layer, "position": position}
+        if details_level is not None:
+            body["details-level"] = details_level
+        if name is not None:
+            body["name"] = name
+        if tags is not None:
+            body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        demisto.debug(f"add-access-section request body: {body}")
+        return self._http_request(method="POST", url_suffix="add-access-section", headers=self.headers, json_data=body)
+
+    def get_access_section(
+        self,
+        layer: str,
+        identifier: str,
+        details_level: Optional[str] = None,
+    ) -> dict:
+        body: dict = {"layer": layer, "name": identifier}
+        if details_level is not None:
+            body["details-level"] = details_level
+        demisto.debug(f"show-access-section request body: {body}")
+        return self._http_request(method="POST", url_suffix="show-access-section", headers=self.headers, json_data=body)
+
+    def update_access_section(
+        self,
+        identifier: str,
+        layer: str,
+        new_name: Optional[str] = None,
+        details_level: Optional[str] = None,
+        tags: Optional[dict | list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+    ) -> dict:
+        body: dict = {"name": identifier, "layer": layer}
+        if new_name is not None:
+            body["new-name"] = new_name
+        if details_level is not None:
+            body["details-level"] = details_level
+        if tags is not None:
+            body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        demisto.debug(f"set-access-section request body: {body}")
+        return self._http_request(method="POST", url_suffix="set-access-section", headers=self.headers, json_data=body)
+
+    def delete_access_section(
+        self,
+        identifier: str,
+        layer: str,
+        details_level: Optional[str] = None,
+    ) -> dict:
+        body: dict = {"name": identifier, "layer": layer}
+        if details_level is not None:
+            body["details-level"] = details_level
+        demisto.debug(f"delete-access-section request body: {body}")
+        return self._http_request(method="POST", url_suffix="delete-access-section", headers=self.headers, json_data=body)
+
 
 def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> CommandResults:
     """
@@ -2231,7 +2472,7 @@ def build_printable_result(headers: list, result: dict) -> dict:
                 {
                     "domain-name": domain_data.get("name"),
                     "domain-uid": domain_data.get("uid"),
-                    "domain-type": domain_data.get("type"),
+                    "domain-type": domain_data.get("type") or domain_data.get("domain-type"),
                 }
             )
 
@@ -2270,6 +2511,559 @@ def build_group_data(result: dict, readable_output: str, printable_result: dict)
         readable_output = readable_output + groups_readable_output
 
     return readable_output, printable_result
+
+
+def parse_order_argument(order: str) -> list[dict]:
+    """Parse a comma-separated order string into the API's expected format.
+
+    Args:
+        order: Comma-separated direction:field pairs (e.g., "ASC:name" or "ASC:type,DESC:uid").
+
+    Returns:
+        list[dict]: List of order objects (e.g., [{"ASC": "name"}, {"DESC": "uid"}]).
+
+    Raises:
+        DemistoException: If the order format is invalid or direction is not ASC/DESC.
+    """
+    order_list: list[dict] = []
+    for pair in argToList(order):
+        if ":" not in pair:
+            raise DemistoException(
+                f"Invalid order format: '{pair}'. Expected 'direction:field' format "
+                f"(e.g., 'ASC:name'). Direction must be ASC or DESC."
+            )
+        direction, field = pair.split(":", 1)
+        direction = direction.strip().upper()
+        if direction not in ("ASC", "DESC"):
+            raise DemistoException(f"Invalid order direction: '{direction}'. Must be 'ASC' or 'DESC'.")
+        order_list.append({direction: field.strip()})
+    return order_list
+
+
+def checkpoint_service_group_add_command(
+    client: Client,
+    name: str,
+    members=None,
+    color: str = None,
+    comments: str = None,
+    details_level: str = None,
+    groups=None,
+    tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
+    """Add a new service group object.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-service-group-add command called with args: {demisto.args()}")
+
+    members_list = argToList(members) or None
+    groups_list = argToList(groups) or None
+    tags_list = argToList(tags) or None
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
+
+    result = client.add_service_group(
+        name=name,
+        members=members_list,
+        color=color,
+        comments=comments,
+        details_level=details_level,
+        groups=groups_list,
+        tags=tags_list,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding a service group:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_member_data(result, readable_output, printable_result)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    demisto.debug("checkpoint-service-group-add command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.ServiceGroup",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_group_get_command(
+    client: Client,
+    identifier: str,
+    show_as_ranges: str = None,
+    details_level: str = None,
+) -> CommandResults:
+    """Show existing service group object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-service-group-get command called with args: {demisto.args()}")
+
+    show_as_ranges_bool = argToBoolean(show_as_ranges) if show_as_ranges is not None else None
+
+    result = client.get_service_group(
+        identifier=identifier,
+        show_as_ranges=show_as_ranges_bool,
+        details_level=details_level,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for service group {identifier}:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_member_data(result, readable_output, printable_result)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    demisto.debug("checkpoint-service-group-get command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.ServiceGroup",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_group_list_command(
+    client: Client,
+    filter: str = None,
+    limit: str = None,
+    offset: str = None,
+    order: str = None,
+    show_as_ranges: str = None,
+    dereference_group_members: str = None,
+    show_membership: str = None,
+    details_level: str = None,
+    domains_to_process: str = None,
+) -> CommandResults:
+    """Retrieve all service group objects.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-service-group-list command called with args: {demisto.args()}")
+
+    limit_int = arg_to_number(limit)
+    offset_int = arg_to_number(offset)
+    show_as_ranges_bool = argToBoolean(show_as_ranges) if show_as_ranges is not None else None
+    dereference_group_members_bool = argToBoolean(dereference_group_members) if dereference_group_members is not None else None
+    show_membership_bool = argToBoolean(show_membership) if show_membership is not None else None
+    domains_to_process_list = argToList(domains_to_process) or None
+
+    # domains_to_process cannot be used with details-level full
+    if domains_to_process_list is not None and details_level == "full":
+        raise DemistoException("The 'domains_to_process' argument cannot be used with details_level set to 'full'.")
+    order_list = parse_order_argument(order) if order else None
+
+    result = client.list_service_groups(
+        filter_search=filter,
+        limit=limit_int,
+        offset=offset_int,
+        order=order_list,
+        show_as_ranges=show_as_ranges_bool,
+        dereference_group_members=dereference_group_members_bool,
+        show_membership=show_membership_bool,
+        details_level=details_level,
+        domains_to_process=domains_to_process_list,
+    )
+
+    printable_result = []
+    readable_output = ""
+
+    objects = result.get("objects")
+    headers = ["name", "uid", "type"]
+    if objects:
+        for element in objects:
+            current_printable_result = {}
+            for endpoint in headers:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown("CheckPoint data for all service groups:", printable_result, headers, removeNull=True)
+    else:
+        readable_output = "No service group objects were found."
+
+    demisto.debug("checkpoint-service-group-list command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.ServiceGroup",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=objects,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_group_update_command(
+    client: Client,
+    identifier: str,
+    members_action: str = None,
+    members=None,
+    new_name: str = None,
+    color: str = None,
+    comments: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    details_level: str = None,
+    groups_action: str = None,
+    groups=None,
+    tags_action: str = None,
+    tags=None,
+) -> CommandResults:
+    """Edit existing service group using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-service-group-update command called with args: {demisto.args()}")
+
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
+
+    members_raw = argToList(members) or None
+    members_parsed = {members_action: members_raw} if members_raw and members_action else members_raw
+
+    groups_raw = argToList(groups) or None
+    groups_parsed = {groups_action: groups_raw} if groups_raw and groups_action else groups_raw
+
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
+
+    result = client.update_service_group(
+        identifier=identifier,
+        members=members_parsed,
+        new_name=new_name,
+        color=color,
+        comments=comments,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
+        details_level=details_level,
+        groups=groups_parsed,
+        tags=tags_parsed,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating a service group:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_member_data(result, readable_output, printable_result)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    demisto.debug("checkpoint-service-group-update command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.ServiceGroup",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_group_clone_command(
+    client: Client,
+    identifier: str,
+    members_action: str = None,
+    members=None,
+    new_name: str = None,
+    color: str = None,
+    comments: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    details_level: str = None,
+    groups_action: str = None,
+    groups=None,
+    tags_action: str = None,
+    tags=None,
+) -> CommandResults:
+    """Clone existing service group object.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-service-group-clone command called with args: {demisto.args()}")
+
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
+
+    members_raw = argToList(members) or None
+    members_parsed = {members_action: members_raw} if members_raw and members_action else members_raw
+
+    groups_raw = argToList(groups) or None
+    groups_parsed = {groups_action: groups_raw} if groups_raw and groups_action else groups_raw
+
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
+
+    result = client.clone_service_group(
+        identifier=identifier,
+        members=members_parsed,
+        new_name=new_name,
+        color=color,
+        comments=comments,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
+        details_level=details_level,
+        groups=groups_parsed,
+        tags=tags_parsed,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier", "read-only"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for cloning a service group:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_member_data(result, readable_output, printable_result)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    demisto.debug("checkpoint-service-group-clone command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.ServiceGroup",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_group_delete_command(
+    client: Client,
+    identifier: str,
+    details_level: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
+    """Delete service group object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-service-group-delete command called with args: {demisto.args()}")
+
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
+
+    result = client.delete_service_group(
+        identifier=identifier,
+        details_level=details_level,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
+    )
+
+    demisto.debug("checkpoint-service-group-delete command completed successfully")
+    return CommandResults(readable_output="Service group deleted successfully", raw_response=result)
+
+
+def checkpoint_access_section_add_command(
+    client: Client,
+    layer: str,
+    position: str,
+    position_rule: str = None,
+    details_level: str = None,
+    name: str = None,
+    tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
+    """Add a new access section.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-access-section-add command called with args: {demisto.args()}")
+
+    """
+    According to API docs:
+    - "above"/"below" require position_rule (reference rule/section name)
+    - "top"/"bottom" can optionally use position_rule (reference section name)
+    - integer position is sent as-is (no position_rule needed)
+    """
+    if position in ("above", "below") and not position_rule:
+        raise DemistoException(
+            f"The 'position_rule' argument is required when position is '{position}'. "
+            f"Provide the name of the rule or section to position relative to."
+        )
+    if position_rule:
+        position_obj: str | int | dict = {position: position_rule}
+    elif position.isdigit():
+        position_obj = int(position)
+    else:
+        position_obj = position
+    tags_list = argToList(tags) or None
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
+
+    result = client.add_access_section(
+        layer=layer,
+        position=position_obj,
+        details_level=details_level,
+        name=name,
+        tags=tags_list,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding an access section:", printable_result, headers=headers, removeNull=True
+    )
+
+    demisto.debug("checkpoint-access-section-add command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.AccessSection",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_access_section_get_command(
+    client: Client,
+    layer: str,
+    identifier: str,
+    details_level: str = None,
+) -> CommandResults:
+    """Show existing access section using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-access-section-get command called with args: {demisto.args()}")
+
+    result = client.get_access_section(
+        layer=layer,
+        identifier=identifier,
+        details_level=details_level,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for access section {identifier}:", printable_result, headers=headers, removeNull=True
+    )
+
+    demisto.debug("checkpoint-access-section-get command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.AccessSection",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_access_section_update_command(
+    client: Client,
+    identifier: str,
+    layer: str,
+    new_name: str = None,
+    details_level: str = None,
+    tags_action: str = None,
+    tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
+    """Edit existing access section using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-access-section-update command called with args: {demisto.args()}")
+
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
+
+    ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
+    ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
+
+    result = client.update_access_section(
+        identifier=identifier,
+        layer=layer,
+        new_name=new_name,
+        details_level=details_level,
+        tags=tags_parsed,
+        ignore_warnings=ignore_warnings_bool,
+        ignore_errors=ignore_errors_bool,
+    )
+
+    headers = ["name", "uid", "type", "domain-name", "domain-uid", "domain-type", "creator", "last-modifier"]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating an access section:", printable_result, headers=headers, removeNull=True
+    )
+
+    demisto.debug("checkpoint-access-section-update command completed successfully")
+    return CommandResults(
+        outputs_prefix="CheckPoint.AccessSection",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_access_section_delete_command(
+    client: Client,
+    identifier: str,
+    layer: str,
+    details_level: str = None,
+) -> CommandResults:
+    """Delete access section using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    demisto.debug(f"checkpoint-access-section-delete command called with args: {demisto.args()}")
+
+    result = client.delete_access_section(
+        identifier=identifier,
+        layer=layer,
+        details_level=details_level,
+    )
+
+    demisto.debug("checkpoint-access-section-delete command completed successfully")
+    return CommandResults(readable_output="Access section deleted successfully.", raw_response=result)
 
 
 def checkpoint_logout_command(client: Client, sid: str = None) -> str:
@@ -2474,6 +3268,37 @@ def main():  # pragma: no cover
 
         elif command == "checkpoint-set-threat-protection":
             return_results(checkpoint_set_threat_protections_command(client, args))
+
+        elif command == "checkpoint-service-group-add":
+            return_results(checkpoint_service_group_add_command(client, **args))
+
+        elif command == "checkpoint-service-group-get":
+            return_results(checkpoint_service_group_get_command(client, **args))
+
+        elif command == "checkpoint-service-group-list":
+            return_results(checkpoint_service_group_list_command(client, **args))
+
+        elif command == "checkpoint-service-group-update":
+            return_results(checkpoint_service_group_update_command(client, **args))
+
+        elif command == "checkpoint-service-group-clone":
+            return_results(checkpoint_service_group_clone_command(client, **args))
+
+        elif command == "checkpoint-service-group-delete":
+            return_results(checkpoint_service_group_delete_command(client, **args))
+
+        elif command == "checkpoint-access-section-add":
+            return_results(checkpoint_access_section_add_command(client, **args))
+
+        elif command == "checkpoint-access-section-get":
+            return_results(checkpoint_access_section_get_command(client, **args))
+
+        elif command == "checkpoint-access-section-update":
+            return_results(checkpoint_access_section_update_command(client, **args))
+
+        elif command == "checkpoint-access-section-delete":
+            return_results(checkpoint_access_section_delete_command(client, **args))
+
         else:
             raise NotImplementedError(f"Unknown command {command}.")
 
