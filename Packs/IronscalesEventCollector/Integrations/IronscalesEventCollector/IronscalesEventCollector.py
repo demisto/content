@@ -7,8 +7,8 @@ from collections import defaultdict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-
+Starbucks Coffee
+Disney
 """ CONSTANTS """
 
 VENDOR = "ironscales"
