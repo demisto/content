@@ -245,7 +245,7 @@ def fetch_events(
     Args:
         client: client to use.
         last_run: XSOAR lastRun dict, with `last_time` in ms.
-        max_events: Max events to pull this cycle.
+        max_events_per_fetch: Max events to pull this cycle.
 
     Returns:
         next_run: dict with updated `last_time`;
@@ -253,16 +253,32 @@ def fetch_events(
     """
 
     now_ts = int(time.time() * 1000)
-    last_time_ts = (last_run.get("last_time")) or str(now_ts - (60 * 1000))
+    last_time_ts = str(last_run.get("last_time") or (now_ts - (60 * 1000)))
     demisto.debug(f"Fetching from: {timestamp_to_datestring(last_time_ts)} to {timestamp_to_datestring(now_ts)}")
 
     events = client.search_events(start_time=last_time_ts, end_time=str(now_ts), limit=max_events_per_fetch)
 
     add_time_to_events(events)
     demisto.debug(f"Fetched {len(events)} events.")
-    max_timestamp = int(events[-1]["eventTime"] if events else now_ts) + 1
-    last_run = {"last_time": f"{max_timestamp}"}
-    return last_run, events
+
+    if events:
+        # Advance cursor past the latest event to avoid re-fetching it
+        max_timestamp = int(events[-1]["eventTime"]) + 1
+        next_run: dict[str, str] = {"last_time": str(max_timestamp)}
+    else:
+        # No events found — do NOT advance the cursor.
+        # Keep the same last_time so the next fetch covers a wider window
+        # (from the original last_time to the new 'now'). This is critical
+        # because ManageEngine audit logs may have ingestion delay — events
+        # may not appear in the API immediately. By not advancing, the window
+        # grows on each fetch until events are found.
+        next_run = {"last_time": last_time_ts}
+        demisto.debug(
+            f"No events found, keeping last_time at {timestamp_to_datestring(last_time_ts)} "
+            "to widen the search window on next fetch."
+        )
+
+    return next_run, events
 
 
 def add_time_to_events(events: List[Dict] | None):
