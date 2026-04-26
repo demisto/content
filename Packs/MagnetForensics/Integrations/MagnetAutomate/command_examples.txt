@@ -1,0 +1,19 @@
+!ma-forensics-custom-fields-list limit=10
+!ma-forensics-case-create case_number="CASE-2024-001" custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}"
+!ma-forensics-cases-list limit=5
+!ma-forensics-cases-list case_id=10
+!ma-forensics-case-delete case_id=10
+!ma-forensics-case-cancel case_id=10
+!ma-forensics-workflow-run-start case_id=10 evidence_number="ExhibitA" type="{\"ImageSource\": {\"path\": \"C:\\\\testdata\\\\image\\\\image123.001\"}}" workflow_id=3 output_path="C:\\testdata\\output" platform="windows" decryption_type="password" decryption_value="MySecretPassword" continue_on_decryption_fail=false custom_field_values="{\"5\": \"Evidence Value A\", \"7\": \"Evidence Value B\"}" assigned_node_name="AGENT1"
+!ma-forensics-workflow-run-list case_id=10
+!ma-forensics-workflow-run-list case_id=10 run_id=11
+!ma-forensics-workflow-run-delete case_id=10 run_id=11
+!ma-forensics-workflow-run-cancel case_id=10 run_id=11
+!ma-forensics-merge-workflow-run-start case_id=10 run_ids="1,2,3" workflow_id=3 output_path="C:\\testdata\\output" assigned_node_name="AGENT1"
+!ma-forensics-workflow-list limit=10
+!ma-forensics-workflow-delete workflow_id=5
+!ma-forensics-workflow-get workflow_id=5
+!ma-forensics-node-create name="NODE-002" address="automate-node-2" working_directory="C:\\automate\\temp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.0.0\", \"applicationPath\": \"C:\\\\Program Files\\\\Magnet Forensics\\\\Magnet AUTOMATE\\\\agent\\\\AXIOM Process\\\\AXIOMProcess.CLI.exe\"}]"
+!ma-forensics-nodes-list limit=10
+!ma-forensics-node-update node_id=1 address="automate-node-updated" working_directory="C:\\automate\\updatedTemp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.1.0\"}]"
+!ma-forensics-node-delete node_id=1

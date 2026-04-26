@@ -1,0 +1,507 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: MagnetAutomate
+  version: -1
+provider: Magnet Forensics
+configuration:
+- defaultvalue: https://127.0.0.1:8080/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  additionalinfo: "Format: `https://{hostName}:{port}`"
+  section: Connect
+- name: credentials
+  displaypassword: API Key
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Magnet Automate is an orchestration and automation platform that accelerates your digital forensics investigations by automating workflows and integrating with various forensic tools.
+display: Magnet Automate
+name: MagnetAutomate
+script:
+  commands:
+
+  - name: mf-automate-custom-fields-list
+    description: Retrieves a list of custom fields for cases and evidence sources.
+    execution: false
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used.
+    outputs:
+    - contextPath: MagnetAutomate.CustomFields.id
+      description: The unique identifier of the custom field.
+      type: Number
+    - contextPath: MagnetAutomate.CustomFields.name
+      description: The name of the custom field.
+      type: String
+    - contextPath: MagnetAutomate.CustomFields.type
+      description: The data type of the custom field.
+      type: String
+    - contextPath: MagnetAutomate.CustomFields.elementType
+      description: The element type of the custom field.
+      type: Unknown
+    - contextPath: MagnetAutomate.CustomFields.description
+      description: A description of the custom field.
+      type: String
+    - contextPath: MagnetAutomate.CustomFields.required
+      description: Whether the custom field is required.
+      type: Boolean
+    - contextPath: MagnetAutomate.CustomFields.exposeInWorkflow
+      description: Whether the custom field is exposed in workflows.
+      type: Boolean
+    - contextPath: MagnetAutomate.CustomFields.variableName
+      description: The variable name associated with the custom field.
+      type: String
+
+  - name: mf-automate-case-create
+    description: Creates a new case in Magnet Automate. Use mf-automate-custom-fields-list to get all available custom fields.
+    execution: false
+    arguments:
+    - name: case_number
+      required: true
+      description: The unique case number to assign to the new case.
+    - name: custom_field_values
+      required: false
+      description: 'A JSON object containing custom field values for the case. For example, custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}".'
+    outputs:
+    - contextPath: MagnetAutomate.Case.id
+      description: The unique identifier of the created case.
+      type: Number
+    - contextPath: MagnetAutomate.Case.caseNumber
+      description: The case number assigned to the case.
+      type: String
+    - contextPath: MagnetAutomate.Case.customFieldValues
+      description: The custom field values associated with the case.
+      type: Unknown
+
+  - name: mf-automate-cases-list
+    description: Retrieves a list of all cases or information about a specific case.
+    execution: false
+    arguments:
+    - name: case_id
+      required: false
+      description: The unique identifier of the case to retrieve.
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used.
+    outputs:
+    - contextPath: MagnetAutomate.Case.id
+      description: The unique identifier of the case.
+      type: Number
+    - contextPath: MagnetAutomate.Case.caseNumber
+      description: The case number.
+      type: String
+
+  - name: mf-automate-case-delete
+    description: Deletes a specific case from Magnet Automate.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case to delete.
+
+  - name: mf-automate-case-cancel
+    description: Cancels an ongoing case in Magnet Automate.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case to cancel.
+
+  - name: mf-automate-workflow-run-start
+    description: Starts a new workflow run and associates it with a specific case.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case to associate the workflow run with.
+    - name: evidence_number
+      required: true
+      description: An evidence number to apply to the evidence source.
+    - name: type
+      required: true
+      description: A JSON object defining the evidence type and its parameters (e.g., ImageSource path).
+    - name: workflow_id
+      required: true
+      description: The unique identifier of the workflow to run.
+    - name: output_path
+      required: false
+      description: The directory path where the workflow output will be stored.
+    - name: platform
+      required: false
+      description: The platform associated with the evidence.
+    - name: decryption_type
+      required: false
+      description: The type of decryption to use (e.g., Password, RecoveryKey).
+    - name: decryption_value
+      required: false
+      secret: true
+      description: The decryption key or password.
+    - name: continue_on_decryption_fail
+      required: false
+      description: Whether to continue the workflow if decryption fails.
+    - name: custom_field_values
+      required: false
+      description: 'A JSON object containing custom field values for the workflow run. For example, custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}".'
+    - name: assigned_node_name
+      required: false
+      description: The name of the specific node to assign the workflow run to.
+    outputs:
+    - contextPath: MagnetAutomate.WorkflowRun.id
+      description: The unique identifier of the started workflow run.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.path
+      description: The path to the workflow run data.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.version
+      description: The version of the workflow run.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.caseId
+      description: The identifier of the associated case.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.caseTypeId
+      description: The identifier of the case type.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.basePath
+      description: The base path for the workflow run.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.automateVersion
+      description: The version of Magnet Automate used for the run.
+      type: String
+
+  - name: mf-automate-workflow-run-list
+    description: Retrieves a list of all workflow runs for a specific case or details of a specific run.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case to retrieve workflow runs for.
+    - name: run_id
+      required: false
+      description: The unique identifier of a specific workflow run to retrieve.
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used.
+    outputs:
+    - contextPath: MagnetAutomate.WorkflowRun.id
+      description: The unique identifier of the workflow run.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.evidence
+      description: Details about the evidence associated with the run.
+      type: Unknown
+    - contextPath: MagnetAutomate.WorkflowRun.status
+      description: The current status of the workflow run.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.workflowId
+      description: The identifier of the workflow being run.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.currentStage
+      description: Information about the current stage of the workflow run.
+      type: Unknown
+    - contextPath: MagnetAutomate.WorkflowRun.outputPath
+      description: The output path for the workflow run.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.startDateTime
+      description: The date and time the workflow run started.
+      type: Date
+    - contextPath: MagnetAutomate.WorkflowRun.endDateTime
+      description: The date and time the workflow run ended.
+      type: Date
+    - contextPath: MagnetAutomate.WorkflowRun.automateVersion
+      description: The version of Magnet Automate used.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.createdBy
+      description: Information about the user who created the workflow run.
+      type: Unknown
+    - contextPath: MagnetAutomate.WorkflowRun.duration
+      description: The duration of the workflow run in seconds.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.completedStages
+      description: A list of completed stages in the workflow run.
+      type: Unknown
+
+  - name: mf-automate-workflow-run-delete
+    description: Deletes a specific workflow run from a case.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case.
+    - name: run_id
+      required: true
+      description: The unique identifier of the workflow run to delete.
+
+  - name: mf-automate-workflow-run-cancel
+    description: Cancels a specific workflow run.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case.
+    - name: run_id
+      required: true
+      description: The unique identifier of the workflow run to cancel.
+
+  - name: mf-automate-merge-workflow-run-start
+    description: Starts a merge workflow run for multiple existing workflow runs.
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: The unique identifier of the case.
+    - name: run_ids
+      required: true
+      isArray: true
+      description: A list of workflow run identifiers to merge.
+    - name: workflow_id
+      required: true
+      description: The unique identifier of the merge workflow to run.
+    - name: output_path
+      required: false
+      description: The directory path where the merged output will be stored.
+    - name: assigned_node_name
+      required: false
+      description: The name of the specific node to assign the merge workflow run to.
+    outputs:
+    - contextPath: MagnetAutomate.WorkflowRun.id
+      description: The unique identifier of the started merge workflow run.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.path
+      description: The path to the merge workflow run data.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.version
+      description: The version of the workflow run.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.caseId
+      description: The identifier of the associated case.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.caseTypeId
+      description: The identifier of the case type.
+      type: Number
+    - contextPath: MagnetAutomate.WorkflowRun.basePath
+      description: The base path for the workflow run.
+      type: String
+    - contextPath: MagnetAutomate.WorkflowRun.automateVersion
+      description: The version of Magnet Automate used.
+      type: String
+
+  - name: mf-automate-workflow-list
+    description: Retrieves a list of all available workflows.
+    execution: false
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used.
+    outputs:
+    - contextPath: MagnetAutomate.Workflow.id
+      description: The unique identifier of the workflow.
+      type: Number
+    - contextPath: MagnetAutomate.Workflow.name
+      description: The name of the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.type.name
+      description: The name of the workflow type.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.description
+      description: A description of the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.outputPath
+      description: The default output path for the workflow.
+      type: String
+
+  - name: mf-automate-workflow-delete
+    description: Deletes a specific workflow from Magnet Automate.
+    execution: false
+    arguments:
+    - name: workflow_id
+      required: true
+      description: The unique identifier of the workflow to delete.
+
+  - name: mf-automate-workflow-get
+    description: Retrieves detailed information and export data for a specific workflow. Use mf-automate-workflow-list to get all available workflows.
+    execution: false
+    arguments:
+    - name: workflow_id
+      required: true
+      description: The unique identifier of the workflow to retrieve.
+    outputs:
+    - contextPath: MagnetAutomate.Workflow.id
+      description: The unique identifier of the workflow.
+      type: Number
+    - contextPath: MagnetAutomate.Workflow.automateVersion
+      description: The version of Magnet Automate the workflow was created in.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.name
+      description: The name of the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.description
+      description: A description of the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.sourceType
+      description: The type of evidence source the workflow accepts.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.sourceConfig
+      description: Configuration details for the evidence source.
+      type: Unknown
+    - contextPath: MagnetAutomate.Workflow.outputPath
+      description: The output path for the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.keylistPath
+      description: The path to the keylist used by the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.passwordListPath
+      description: The path to the password list used by the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.continueOnDecryptionFail
+      description: Whether the workflow continues if decryption fails.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.distribution
+      description: The distribution settings for the workflow.
+      type: String
+    - contextPath: MagnetAutomate.Workflow.localMode
+      description: Whether the workflow runs in local mode.
+      type: Boolean
+    - contextPath: MagnetAutomate.Workflow.timeExported
+      description: The date and time the workflow was exported.
+      type: Date
+
+  - name: mf-automate-node-create
+    description: Creates a new node (agent) in Magnet Automate.
+    execution: false
+    arguments:
+    - name: name
+      required: false
+      description: The name of the node.
+    - name: address
+      required: false
+      description: The network address or hostname of the node.
+    - name: working_directory
+      required: false
+      description: The working directory for the node.
+    - name: applications_json
+      required: false
+      description: A JSON array of applications installed on the node.
+    outputs:
+    - contextPath: MagnetAutomate.Node.id
+      description: The unique identifier of the created node.
+      type: Number
+    - contextPath: MagnetAutomate.Node.name
+      description: The name of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.status
+      description: The current status of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.workingDirectory
+      description: The working directory of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.address
+      description: The network address of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.applications
+      description: A list of applications installed on the node.
+      type: Unknown
+
+  - name: mf-automate-nodes-list
+    description: Retrieves a list of all available nodes (agents).
+    execution: false
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used.
+    outputs:
+    - contextPath: MagnetAutomate.Node.id
+      description: The unique identifier of the node.
+      type: Number
+    - contextPath: MagnetAutomate.Node.name
+      description: The name of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.status
+      description: The current status of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.workingDirectory
+      description: The working directory of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.address
+      description: The network address of the node.
+      type: String
+    - contextPath: MagnetAutomate.Node.applications
+      description: A list of applications installed on the node.
+      type: Unknown
+
+  - name: mf-automate-node-update
+    description: Updates the configuration of an existing node.
+    execution: false
+    arguments:
+    - name: node_id
+      required: true
+      description: The unique identifier of the node to update.
+    - name: address
+      required: false
+      description: The new network address or hostname of the node.
+    - name: working_directory
+      required: false
+      description: The new working directory for the node.
+    - name: applications_json
+      required: false
+      description: A JSON array of applications installed on the node.
+
+  - name: mf-automate-node-delete
+    description: Deletes a specific node from Magnet Automate.
+    execution: false
+    arguments:
+    - name: node_id
+      required: true
+      description: The unique identifier of the node to delete.
+
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.7704170
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests
+sectionorder:
+- Connect
