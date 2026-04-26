@@ -2526,8 +2526,7 @@ def parse_order_argument(order: str) -> list[dict]:
         DemistoException: If the order format is invalid or direction is not ASC/DESC.
     """
     order_list: list[dict] = []
-    for pair in order.split(","):
-        pair = pair.strip()
+    for pair in argToList(order):
         if ":" not in pair:
             raise DemistoException(
                 f"Invalid order format: '{pair}'. Expected 'direction:field' format "
