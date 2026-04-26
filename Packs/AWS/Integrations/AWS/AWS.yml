@@ -3368,7 +3368,7 @@ script:
         name: hsm_client_certificate_identifier
       - description: The name of the HSM configuration that contains the information the Amazon Redshift cluster can use to retrieve and store keys in an HSM.
         name: hsm_configuration_identifier
-      - description: The new identifier for the cluster
+      - description: The new identifier for the cluster.
         name: new_cluster_identifier
       - description: Whether the cluster can be accessed from a public network. Only clusters in VPCs can be set to be publicly available.
         name: publicly_accessible
@@ -5995,7 +5995,7 @@ script:
       description: "The launch template version number, $Latest, or $Default."
       required: false
     - name: tags
-      description: One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456"
+      description: One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
       required: false
     - name: host_id
       description: "The Dedicated Host ID."
