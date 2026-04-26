@@ -1,0 +1,140 @@
+commonfields:
+  id: SOCFWPackManager
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SOCFWPackManager
+display: SOC Framework Pack Manager
+category: Utilities
+description: Credential store + pack installer for the SOC Framework Pack Manager script. Exposes socfw-install-pack which
+  posts directly to /xsoar/content/bundle — no core-api-* required. Credentials stored masked in integration params.
+detaileddescription: '### Setup
+
+  1. Go to **Settings → API Keys**, create a Standard key.
+
+  2. Copy the Key and Key ID.
+
+  3. Go to **Settings → API Keys → Copy URL** for the Server URL.
+
+  4. Configure this integration instance with those values.
+
+
+  ### Usage
+
+  This integration is called automatically by the `SOCFWPackManager` script.
+
+  Run `!SOCFWPackManager action=apply pack_id=soc-optimization-unified` from the playground — credentials are read from this
+  integration instance automatically.
+
+
+  Do not call `socfw-install-pack` directly.'
+configuration:
+- section: Connect
+  display: Server URL (API URL https://api-tenant.xdr... or Tenant URL https://tenant.xdr...)
+  name: url
+  defaultvalue: ''
+  type: 0
+  required: true
+- section: Connect
+  display: API Key ID
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: "\nimport json\nimport os\nimport shutil\nimport tempfile\nimport zipfile\n\n\nINTEGRATION_NAME = \"SOCFWPackManager\"\
+    \n\n\ndef _set_sdk_env(base_url: str, api_key: str, api_id: str):\n    \"\"\"Set env vars required by demisto-sdk upload_content_entity.\"\
+    \"\"\n    api_base = base_url.rstrip('/')\n    if '://api-' not in api_base:\n        api_base = api_base.replace('://',\
+    \ '://api-', 1)\n    os.environ[\"DEMISTO_API_KEY\"]  = api_key\n    os.environ[\"XSIAM_AUTH_ID\"]    = str(api_id)\n\
+    \    os.environ[\"DEMISTO_BASE_URL\"] = api_base\n    os.environ[\"DEMISTO_SDK_IGNORE_CONTENT_WARNING\"] = \"1\"\n   \
+    \ os.environ[\"DEMISTO_SDK_SKIP_LOGGER_SETUP\"] = \"yes\"\n    os.environ[\"DEMISTO_SDK_OFFLINE_ENV\"] = \"False\"\n \
+    \   os.environ[\"ARTIFACTS_FOLDER\"] = \"/tmp/artifacts\"\n    os.environ[\"DEMISTO_SDK_LOG_NO_COLORS\"] = \"true\"\n\n\
+    \ndef unzip_and_flatten(zip_path: str, filename: str) -> str:\n    \"\"\"\n    Extract zip to Packs/<packname>/ and flatten\
+    \ one level of nesting.\n    Mirrors unzip_files_to_verify_compression() from POV_XSIAM_Content_Management.\n    Creates\
+    \ Tests/Marketplace/landingPage_sections.json to suppress SDK logs.\n    \"\"\"\n    pack_name = filename.replace(\".zip\"\
+    , \"\")\n    packs_path = os.path.join(os.getcwd(), \"Packs\")\n    pack_path  = os.path.join(packs_path, pack_name)\n\
+    \    os.makedirs(packs_path, exist_ok=True)\n\n    if not zipfile.is_zipfile(zip_path):\n        raise Exception(\"Downloaded\
+    \ file is not a valid zip.\")\n\n    test_path = os.path.join(os.getcwd(), \"Tests\", \"Marketplace\")\n    os.makedirs(test_path,\
+    \ exist_ok=True)\n    with open(os.path.join(test_path, \"landingPage_sections.json\"), \"w\") as f:\n        json.dump({\"\
+    sections\": []}, f)\n\n    with zipfile.ZipFile(zip_path, \"r\") as zf:\n        names = [x.filename for x in zf.infolist()]\n\
+    \n    meta_files = [n for n in names if \"pack_metadata.json\" in n]\n    if not meta_files:\n        raise Exception(\"\
+    Zip missing pack_metadata.json — not a valid pack.\")\n\n    parts = meta_files[0].split(\"/\")\n    if len(parts) > 2:\n\
+    \        raise Exception(f\"Zip packed too deep: {parts}\")\n\n    with zipfile.ZipFile(zip_path, \"r\") as zf:\n    \
+    \    zf.extractall(pack_path)\n\n    if len(parts) == 2:\n        root_dir = os.path.join(pack_path, parts[0])\n     \
+    \   for item in os.listdir(root_dir):\n            shutil.move(os.path.join(root_dir, item), os.path.join(pack_path, item))\n\
+    \        os.rmdir(root_dir)\n\n    return pack_path\n\n\ndef post_system_content_bundle(base_url: str, api_key: str, api_id:\
+    \ str,\n                                pack_path: str) -> dict:\n    \"\"\"\n    Upload pack directory via demisto-sdk\
+    \ upload_content_entity(xsiam=True).\n    Mirrors Client.post_system_content_bundle() from POV_XSIAM_Content_Management.\n\
+    \    Requires docker image demisto/xsoar-tools (has demisto-sdk pre-installed).\n    \"\"\"\n    _set_sdk_env(base_url,\
+    \ api_key, api_id)\n\n    from demisto_sdk.commands.common.logger import logging_setup\n    logging_setup(\"SOCFWPackManager\"\
+    , console_threshold=\"CRITICAL\", propagate=True)\n    from demisto_sdk.commands.upload.upload import upload_content_entity\n\
+    \n    try:\n        upload_content_entity(input=pack_path, zip=True, xsiam=True, insecure=True)\n        return {\"success\"\
+    : True, \"message\": f\"Uploaded {pack_path}\"}\n    except BaseException as e:\n        # demisto-sdk raises either SystemExit\
+    \ or its own Exit class on completion.\n        # Exit code 0 = success. Anything else is a real failure.\n        code\
+    \ = getattr(e, \"code\", getattr(e, \"exit_code\", None))\n        if code is None:\n            raise\n        if str(code)\
+    \ not in (\"0\", \"None\"):\n            raise Exception(f\"demisto-sdk upload failed with exit code {code}: {e}\")\n\
+    \        return {\"success\": True, \"message\": f\"Uploaded {pack_path}\"}\n\n\ndef command_install_pack(params: dict,\
+    \ args: dict) -> None:\n    \"\"\"\n    socfw-install-pack: download zip, extract, upload via demisto-sdk system path.\n\
+    \    Mirrors the XSIAM Starter save_as_system=yes path exactly.\n    Credentials come from integration instance params\
+    \ — never exposed.\n    \"\"\"\n    base_url = (params.get(\"url\") or \"\").rstrip(\"/\")\n    creds    = params.get(\"\
+    credentials\") or {}\n    api_id   = str(creds.get(\"identifier\") or \"\")\n    api_key  = creds.get(\"password\") or\
+    \ \"\"\n\n    url      = (args.get(\"url\") or \"\").strip()\n    filename = (args.get(\"filename\") or \"\").strip()\n\
+    \n    if not url:\n        raise ValueError(\"url argument is required\")\n    if not filename:\n        filename = url.rstrip(\"\
+    /\").split(\"/\")[-1]\n    if not filename.endswith(\".zip\"):\n        filename += \".zip\"\n\n    dl = requests.get(url,\
+    \ timeout=300, verify=False)\n    if dl.status_code != 200:\n        raise Exception(f\"Download failed HTTP {dl.status_code}:\
+    \ {url}\")\n\n    tmp_dir  = tempfile.mkdtemp()\n    zip_path = os.path.join(tmp_dir, filename)\n    try:\n        with\
+    \ open(zip_path, \"wb\") as fh:\n            fh.write(dl.content)\n\n        pack_path = unzip_and_flatten(zip_path, filename)\n\
+    \n        result = post_system_content_bundle(\n            base_url=base_url,\n            api_key=api_key,\n       \
+    \     api_id=api_id,\n            pack_path=pack_path,\n        )\n\n        return_results(CommandResults(\n        \
+    \    outputs_prefix=\"SOCFramework.PackInstall\",\n            outputs={\"filename\": filename, \"url\": url, \"status\"\
+    : \"success\", \"response\": result},\n            readable_output=f\"Pack **{filename}** installed successfully.\",\n\
+    \        ))\n    finally:\n        if os.path.exists(zip_path):\n            os.unlink(zip_path)\n\n\ndef command_test_module(params:\
+    \ dict) -> None:\n    base_url = (params.get(\"url\") or \"\").rstrip(\"/\")\n    creds    = params.get(\"credentials\"\
+    ) or {}\n    api_id   = str(creds.get(\"identifier\") or \"\")\n    api_key  = creds.get(\"password\") or \"\"\n    verify\
+    \   = not params.get(\"insecure\", False)\n\n    if not base_url:\n        raise Exception(\"Server URL is required.\"\
+    )\n    if not api_key or not api_id:\n        raise Exception(\"API Key and API Key ID are required.\")\n\n    # Light\
+    \ check — hit the tenant API keys endpoint\n    # public_api endpoints need the api- prefix URL\n    api_base = base_url.rstrip('/')\n\
+    \    if '://api-' not in api_base:\n        api_base = api_base.replace('://', '://api-', 1)\n    url = f\"{api_base}/public_api/v1/xql/get_datasets\"\
+    \n    headers = {\"x-xdr-auth-id\": api_id, \"Authorization\": api_key}\n    resp = requests.post(url, headers=headers,\
+    \ json={\"request_data\": {}},\n                         verify=verify, timeout=15)\n    if resp.status_code not in (200,\
+    \ 207):\n        raise Exception(f\"Connection test failed HTTP {resp.status_code}\")\n    return_results(\"ok\")\n\n\n\
+    def main():\n    params  = demisto.params()\n    args    = demisto.args()\n    command = demisto.command()\n\n    try:\n\
+    \        if command == \"test-module\":\n            command_test_module(params)\n        elif command == \"socfw-install-pack\"\
+    :\n            command_install_pack(params, args)\n        else:\n            raise NotImplementedError(f\"Command not\
+    \ implemented: {command}\")\n    except Exception as e:\n        return_error(f\"{INTEGRATION_NAME}: {e}\")\n\n\nif __name__\
+    \ in (\"__main__\", \"__builtin__\", \"builtins\"):\n    main()\n"
+  type: python
+  commands:
+  - name: socfw-install-pack
+    description: Download and install a custom pack ZIP via /xsoar/content/bundle. Called by the SOCFWPackManager script —
+      do not invoke directly.
+    arguments:
+    - name: url
+      required: true
+      description: GitHub Releases URL of the pack ZIP to install.
+    - name: filename
+      required: false
+      description: Asset filename including .zip. Derived from URL if omitted.
+    outputs:
+    - contextPath: SOCFramework.PackInstall.filename
+      description: Installed pack filename.
+      type: String
+    - contextPath: SOCFramework.PackInstall.status
+      description: Install status.
+      type: String
+  dockerimage: demisto/xsoar-tools:1.0.0.4887903
+  runonce: false
+  subtype: python3
+fromversion: 8.0.0
+system: true
