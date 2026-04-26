@@ -1,0 +1,44 @@
+[
+    {
+        "Type": 1,
+        "Contents": {
+            "SecurityGroups": [
+                {
+                    "Description": "test sg with default all-traffic egress plus IPv6",
+                    "GroupId": "sg-00000000000000001",
+                    "GroupName": "demo-sg",
+                    "IpPermissions": [
+                        {
+                            "FromPort": 0,
+                            "IpProtocol": "tcp",
+                            "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                            "Ipv6Ranges": [],
+                            "PrefixListIds": [],
+                            "ToPort": 65535,
+                            "UserIdGroupPairs": []
+                        }
+                    ],
+                    "IpPermissionsEgress": [
+                        {
+                            "IpProtocol": "-1",
+                            "PrefixListIds": [],
+                            "IpRanges": [
+                                {"CidrIp": "0.0.0.0/0"}
+                            ],
+                            "UserIdGroupPairs": [],
+                            "Ipv6Ranges": [
+                                {"CidrIpv6": "::/0"}
+                            ]
+                        }
+                    ],
+                    "OwnerId": "123456789012",
+                    "Region": "us-east-1",
+                    "VpcId": "vpc-0123456789abcdef0",
+                    "Tags": [
+                        {"Key": "Environment", "Value": "test"}
+                    ]
+                }
+            ]
+        }
+    }
+]
