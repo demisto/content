@@ -9096,8 +9096,8 @@ def panorama_upload_content_update_file_command(args: dict):
     file_info = demisto.getFilePath(entry_id)
     file_path = file_info["path"]
     file_name = os.path.basename(file_info["name"])
-    shutil.copy(file_path, file_name)
     try:
+        shutil.copy(file_path, file_name)
         with open(file_name, "rb") as file:
             params = {"type": "import", "category": category, "key": API_KEY}
             response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
