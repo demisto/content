@@ -1,0 +1,35 @@
+{
+    "name": "Menlo Security",
+    "description": "The cloud-based Menlo Security Isolation Platform (MSIP) eliminates the possibility of malware reaching user devices via compromised or malicious Web sites, Email or documents.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "tags": [
+        "Network Security",
+        "Web Security"
+    ],
+    "categories": [
+        "Network Security"
+    ],
+    "useCases": [
+        "Malware",
+        "Phishing"
+    ],
+    "keywords": [
+        "Menlo",
+        "MSIP",
+        "Isolation",
+        "Web Security",
+        "Email Security"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "defaultDataSource": "Menlo Security",
+    "supportedModules": [
+        "xsiam"
+    ]
+}
