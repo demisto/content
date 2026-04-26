@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
@@ -14,7 +14,7 @@ VALID_PAYLOAD = {
     "Timestamp": "2024-02-13T18:03:27.239Z",
     "SignatureVersion": "1",
     "Signature": b"sign",
-    "SigningCertURL": "https://sns.link.amazonaws.com",
+    "SigningCertURL": "https://sns.example.amazonaws.com",
 }
 
 
