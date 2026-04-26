@@ -62,7 +62,7 @@ BIOC_AND_CR_SEVERITY_MAPPING = {
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
         return None
-    if 9 < len(str(timestamp)) < 13:
+    if 10 < len(str(timestamp)) < 13:
         timestamp = int(timestamp) * 1000
     return int(timestamp)
 
