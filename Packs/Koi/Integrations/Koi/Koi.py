@@ -47,12 +47,12 @@ class Config:
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
     # Pagination
-    DEFAULT_PAGE_SIZE = 100
+    DEFAULT_PAGE_SIZE = 50
     MAX_PAGE_SIZE = 500
     DEFAULT_VERSION = "1.0.0"
     MAX_PAGES_PER_FETCH = 10
     DEFAULT_PAGE = 1
-    DEFAULT_LIMIT = 500
+    DEFAULT_LIMIT = 50
     MAX_LIMIT = 1000
 
     # Fetch defaults
@@ -603,7 +603,7 @@ class Client(ContentClient):
         """
         params: dict[str, Any] = {
             "page": page,
-            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "page_size": page_size,
         }
 
         demisto.debug(f"[API] Fetching policies | Params: {params}")
@@ -819,7 +819,7 @@ class Client(ContentClient):
         """
         params: dict[str, Any] = assign_params(
             page=page,
-            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            page_size=page_size,
             brew_category_koi=brew_category_koi,
             browser_category_koi=browser_category_koi,
             chocolatey_category_koi=chocolatey_category_koi,
@@ -908,7 +908,7 @@ class Client(ContentClient):
             "marketplace": marketplace,
             "version": version,
             "page": page,
-            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "page_size": page_size,
         }
 
         url_suffix = f"{API_INVENTORY}/{item_id}/endpoints"
@@ -945,7 +945,7 @@ class Client(ContentClient):
         """
         body: dict[str, Any] = {
             "page": page,
-            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "page_size": page_size,
             "filter": filter_obj,
         }
 
@@ -1373,6 +1373,11 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
     if page_arg:
         # Single-page mode: fetch the requested page
         demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
@@ -1390,7 +1395,6 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
         f"{INTEGRATION_NAME} Policies",
         policies,
         headers=["id", "name", "description", "action", "enabled", "group_ids", "creator_fullname", "created_at", "updated_at"],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -1477,7 +1481,6 @@ def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
             "created_by",
             "created_at",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -1582,7 +1585,6 @@ def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
             "created_by",
             "created_at",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -1690,7 +1692,6 @@ def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> Co
             "created_at",
             "updated_at",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -1725,6 +1726,11 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
     # Extract filter arguments
     filter_kwargs: dict[str, Any] = assign_params(
         brew_category_koi=args.get("brew_category_koi"),
@@ -1756,7 +1762,7 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
         demisto.debug(f"[Command Result] Retrieved {len(items)} inventory items (total_count={total_count})")
     else:
         # Auto-paginate mode: fetch pages until limit is reached
-        limit = min(limit_arg or Config.DEFAULT_LIMIT, Config.MAX_LIMIT)
+        limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
         items = _fetch_inventory_with_pagination(client, limit=limit, filter_kwargs=filter_kwargs)
 
@@ -1767,18 +1773,31 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
             "item_id",
             "item_display_name",
             "marketplace",
-            "platform",
+            "platforms",
             "publisher_name",
-            "risk_level",
             "risk",
+            "risk_level",
             "version",
             "status",
             "endpoint_count",
             "installs_count",
+            "installation_method",
+            "is_first_party",
+            "is_signed",
             "first_seen",
             "last_seen",
+            "last_used",
+            "released_at",
+            "short_description",
+            "categories",
+            "findings",
+            "brew_category_koi",
+            "browser_category_koi",
+            "chocolatey_category_koi",
+            "ide_category_koi",
+            "software_category_koi",
+            "governed_details",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -1892,7 +1911,6 @@ def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> Comm
             "software_category_koi",
             "governed_details",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -1927,6 +1945,11 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
     filter_obj: dict[str, Any] = parse_filter_from_args(args)
     sort_by: str | None = args.get("sort_by")
     sort_direction: str | None = args.get("sort_direction")
@@ -1946,7 +1969,7 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
         demisto.debug(f"[Command Result] Retrieved {len(items)} items (total_count={total_count})")
     else:
         # Auto-paginate mode
-        limit = min(limit_arg or Config.DEFAULT_LIMIT, Config.MAX_LIMIT)
+        limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
         items = _search_inventory_with_pagination(
             client,
@@ -1988,7 +2011,6 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
             "software_category_koi",
             "governed_details",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 
@@ -2083,6 +2105,11 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
     if page_arg:
         # Single-page mode
         demisto.debug(f"[Command] Single-page mode: page={page_arg}, page_size={page_size}")
@@ -2098,7 +2125,7 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
         demisto.debug(f"[Command Result] Retrieved {len(endpoints)} endpoints (total_count={total_count})")
     else:
         # Auto-paginate mode
-        limit = min(limit_arg or Config.DEFAULT_LIMIT, Config.MAX_LIMIT)
+        limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
         endpoints = _fetch_item_endpoints_with_pagination(
             client,
@@ -2123,7 +2150,6 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
             "first_seen",
             "last_seen",
         ],
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
 

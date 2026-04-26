@@ -131,11 +131,10 @@ script:
     - name: page
       description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: Number of results per page. Used in single-page mode with the page argument.
-      defaultValue: '100'
+      description: 'Number of results per page (default: 50, max: 500). Used only in single-page mode together with the page argument.'
     - name: limit
-      description: 'Maximum total number of policies to return. When provided without page, auto-paginates to collect up to this many policies (max 1000).'
-      defaultValue: '500'
+      description: 'Maximum total number of policies to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many policies.'
+      defaultValue: '50'
     outputs:
     - contextPath: Koi.Policy.id
       description: The unique identifier of the policy.
@@ -427,11 +426,10 @@ script:
     - name: page
       description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: Number of results per page (max 500). Used in single-page mode with the page argument.
-      defaultValue: '100'
+      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
     - name: limit
-      description: 'Maximum total number of inventory items to return. When provided without page, auto-paginates to collect up to this many items (max 1000).'
-      defaultValue: '500'
+      description: 'Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
+      defaultValue: '50'
     - name: brew_category_koi
       description: Filter by Homebrew package category (Koi classification).
     - name: browser_category_koi
@@ -790,11 +788,10 @@ script:
     - name: page
       description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: Number of results per page (max 500). Used in single-page mode with the page argument.
-      defaultValue: '100'
+      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
     - name: limit
-      description: 'Maximum total number of inventory items to return. When provided without page, auto-paginates to collect up to this many items (max 1000).'
-      defaultValue: '500'
+      description: 'Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
+      defaultValue: '50'
     - name: sort_by
       description: Column to sort by.
       auto: PREDEFINED
@@ -941,11 +938,10 @@ script:
     - name: page
       description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: Number of results per page (max 500). Used in single-page mode with the page argument.
-      defaultValue: '100'
+      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
     - name: limit
-      description: 'Maximum total number of endpoints to return. When provided without page, auto-paginates to collect up to this many endpoints (max 1000).'
-      defaultValue: '500'
+      description: 'Maximum total number of endpoints to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many endpoints.'
+      defaultValue: '50'
     outputs:
     - contextPath: Koi.Inventory.Endpoint.id
       description: The unique identifier of the endpoint device.
