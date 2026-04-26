@@ -2061,7 +2061,7 @@ script:
       - standard
       - full
     - auto: PREDEFINED
-      description: Indicates which domains to process the commands on. It cannot be used with details_level set to 'full'. Must be run from the System Domain
+      description: Indicates which domains to process the commands on. It cannot be used with details_level set to 'full'. Must be run from the System Domain.
       name: domains_to_process
       predefined:
       - CURRENT_DOMAIN
@@ -2608,7 +2608,7 @@ script:
     description: Deletes the specified access section.
     name: checkpoint-access-section-delete
     outputs: []
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3
