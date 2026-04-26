@@ -1,0 +1,60 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Forcepoint DLP
+  version: -1
+configuration:
+- display: Server URL (https://10.210.91.21:9443)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: username
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Forcepoint DLP 10.2 REST API Cortex XSOAR Entegrasyonu.
+display: Forcepoint DLP
+name: Forcepoint DLP
+script:
+  commands:
+  - arguments:
+    - name: incident_ids
+    - description: DD/MM/YYYY HH:mm:ss.
+      name: from_date
+    - description: DD/MM/YYYY HH:mm:ss.
+      name: to_date
+    name: forcepoint-dlp-get-incidents
+  - arguments:
+    - description: Software Source Code.
+      name: policy_name
+    name: forcepoint-dlp-get-policy-rules
+  - arguments:
+    - description: DLP, DISCOVERY.
+      name: type
+    name: forcepoint-dlp-list-policies
+  - arguments:
+    - description: Forcepoint DLP ID.
+      name: incident_ids
+    - name: status
+    name: forcepoint-dlp-update-incident
+  dockerimage: xsoar-registry.pan.dev/demisto/python3:3.10.12.68714
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

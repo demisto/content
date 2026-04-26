@@ -1,0 +1,21 @@
+{
+    "name": "Forcepoint DLP",
+    "description": "Forcepoint DLP XSoar Integration\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ceyhun CAMLI",
+    "url": "",
+    "email": "",
+    "created": "2026-03-16T12:38:52Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "c3-h2"
+    ]
+}
