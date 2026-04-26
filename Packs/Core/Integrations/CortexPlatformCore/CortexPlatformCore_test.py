@@ -3849,45 +3849,108 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
 
 
-def test_add_cases_extra_data_single_case(mocker):
+def test_add_cases_extra_data_single_case(mocker: MockerFixture):
     """
     Given:
         A mock client and a list containing a single case.
     When:
         The add_cases_extra_data function is called.
     Then:
-        A list with one case containing extra data should be returned and get_case_extra_data should be called once.
+        A list with one case containing CaseExtraData parsed from the bulk API response.
     """
     from CortexPlatformCore import add_cases_extra_data
 
     mock_client = mocker.Mock()
-    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
-    mock_get_case_extra_data.return_value = {"extra_field": "extra_value"}
+    mock_client.get_multiple_cases_extra_data.return_value = {
+        "reply": {
+            "incidents": [
+                {
+                    "incident": {"incident_id": "123", "notes": None, "xdr_url": "https://example.com"},
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                }
+            ]
+        }
+    }
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=["a1"])
+    mocker.patch(
+        "CortexPlatformCore.preprocess_get_case_extra_data_outputs",
+        return_value={
+            "case": {
+                "notes": None,
+                "xdr_url": "https://example.com",
+                "detection_time": None,
+                "starred_manually": False,
+                "manual_description": None,
+            },
+            "issues": {"data": [{"issue_id": "a1"}]},
+            "network_artifacts": {"total_count": 0, "data": []},
+            "file_artifacts": {"total_count": 0, "data": []},
+        },
+    )
 
     case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
     result = add_cases_extra_data(mock_client, case_data)
 
     assert len(result) == 1
     assert result[0]["case_id"] == "123"
-    assert result[0]["CaseExtraData"] == {"extra_field": "extra_value"}
-    mock_get_case_extra_data.assert_called_once_with(mock_client, {"case_id": "123", "limit": 1000})
+    assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
+    mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123"])
 
 
-def test_add_cases_extra_data_multiple_cases(mocker):
+def test_add_cases_extra_data_multiple_cases(mocker: MockerFixture):
     """
     Given:
         A mock client and a list containing multiple cases.
     When:
         The add_cases_extra_data function is called.
     Then:
-        A list with all cases containing their respective extra data should be
-        returned and get_case_extra_data should be called for each case.
+        A list with all cases containing their respective CaseExtraData from the single bulk API call.
     """
     from CortexPlatformCore import add_cases_extra_data
 
     mock_client = mocker.Mock()
-    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
-    mock_get_case_extra_data.side_effect = [{"extra_field1": "value1"}, {"extra_field2": "value2"}, {"extra_field3": "value3"}]
+    mock_client.get_multiple_cases_extra_data.return_value = {
+        "reply": {
+            "incidents": [
+                {
+                    "incident": {"incident_id": "123"},
+                    "alerts": {"total_count": 0, "data": []},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+                {
+                    "incident": {"incident_id": "456"},
+                    "alerts": {"total_count": 0, "data": []},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+                {
+                    "incident": {"incident_id": "789"},
+                    "alerts": {"total_count": 0, "data": []},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+            ]
+        }
+    }
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
+    mocker.patch(
+        "CortexPlatformCore.preprocess_get_case_extra_data_outputs",
+        return_value={
+            "case": {
+                "notes": None,
+                "xdr_url": None,
+                "detection_time": None,
+                "starred_manually": None,
+                "manual_description": None,
+            },
+            "issues": {"data": []},
+            "network_artifacts": None,
+            "file_artifacts": None,
+        },
+    )
 
     case_data = [
         {"case_id": "123", "title": "Case 1"},
@@ -3897,31 +3960,50 @@ def test_add_cases_extra_data_multiple_cases(mocker):
     result = add_cases_extra_data(mock_client, case_data)
 
     assert len(result) == 3
-    assert result[0]["CaseExtraData"] == {"extra_field1": "value1"}
-    assert result[1]["CaseExtraData"] == {"extra_field2": "value2"}
-    assert result[2]["CaseExtraData"] == {"extra_field3": "value3"}
-    assert mock_get_case_extra_data.call_count == 3
+    for case in result:
+        assert "CaseExtraData" in case
+    mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123", "456", "789"])
 
 
-def test_add_cases_extra_data_empty_list(mocker):
+def test_add_cases_extra_data_empty_list(mocker: MockerFixture):
     """
     Given:
         A mock client and an empty case list.
     When:
         The add_cases_extra_data function is called.
     Then:
-        An empty list should be returned and get_case_extra_data should not be called.
+        An empty list should be returned and the bulk API should still be called with an empty list.
     """
     from CortexPlatformCore import add_cases_extra_data
 
     mock_client = mocker.Mock()
-    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_client.get_multiple_cases_extra_data.return_value = {"reply": {"incidents": []}}
 
-    case_data = []
+    case_data: list[dict] = []
     result = add_cases_extra_data(mock_client, case_data)
 
     assert result == []
-    mock_get_case_extra_data.assert_not_called()
+
+
+def test_add_cases_extra_data_api_failure(mocker: MockerFixture):
+    """
+    Given:
+        A mock client that raises an exception when calling the bulk API.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        Each case should have an empty CaseExtraData dict as fallback.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client.get_multiple_cases_extra_data.side_effect = Exception("API error")
+
+    case_data = [{"case_id": "123", "title": "Test Case"}]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 1
+    assert result[0]["CaseExtraData"] == {}
 
     def test_determine_assignee_filter_field_none(self):
         from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
@@ -9955,41 +10037,35 @@ def test_get_extra_data_for_case_id_command_invalid_case_id(mocker: MockerFixtur
         get_extra_data_for_case_id_command(mock_client, args)
 
 
-def test_get_cases_command_enrichment_fallback_over_10_cases(mocker: MockerFixture):
+def test_get_cases_command_enrichment_with_many_cases(mocker: MockerFixture):
     """
-    GIVEN:
+    Given:
         get_enriched_case_data=true and more than 10 cases are returned.
-    WHEN:
+    When:
         The get_cases_command function is called.
-    THEN:
-        - A warning entry (entry_type=1) is returned instead of an error (entry_type=4).
-        - Standard case data is still returned in the output.
+    Then:
+        All cases should be enriched via the bulk endpoint (no 10-case limit).
     """
     from CortexPlatformCore import get_cases_command
 
     mock_client = mocker.Mock()
-    # Return 11 cases to exceed the enrichment limit
     cases_data = [{"CASE_ID": i} for i in range(1, 12)]
     mock_client.get_webapp_data.return_value = {"reply": {"DATA": cases_data, "FILTER_COUNT": "11"}}
     mapped_cases = [{"case_id": str(i)} for i in range(1, 12)]
     mocker.patch("CortexPlatformCore.map_case_format", return_value=mapped_cases)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    mocker.patch("CortexPlatformCore.demisto.info")
+    enriched_cases = [{"case_id": str(i), "CaseExtraData": {}} for i in range(1, 12)]
+    mocker.patch("CortexPlatformCore.add_cases_extra_data", return_value=enriched_cases)
 
     args = {"get_enriched_case_data": "true"}
     result = get_cases_command(mock_client, args)
 
-    # Should have 3 results: metadata + warning entry + standard case data
-    assert len(result) == 3
-    # result[0] is CasesMetadata
+    # Should have 2 results: metadata + enriched case data (no warning)
+    assert len(result) == 2
     assert result[0].outputs_prefix == "Core.CasesMetadata"
-    # result[1] is the warning (entry_type=1, not error entry_type=4)
-    assert result[1].entry_type == 1
-    assert "Note:" in result[1].readable_output
-    assert "standard case data" in result[1].readable_output
-    # result[2] contains the actual case data
-    assert result[2].outputs is not None
-    assert len(result[2].outputs) == 11
+    assert result[1].outputs_prefix == "Core.Case"
+    assert result[1].outputs is not None
+    assert len(result[1].outputs) == 11
 
 
 class TestProfileCommands:

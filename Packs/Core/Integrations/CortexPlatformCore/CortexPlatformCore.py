@@ -1133,6 +1133,43 @@ class Client(CoreClient):
             json_data={"update_data": update_data},
         )
 
+    def get_multiple_cases_extra_data(self, case_ids: list[str]) -> dict:
+        """
+        Retrieve extra data for multiple cases in a single bulk API call.
+
+        Uses the /public_api/v1/incidents/get_multiple_incidents_extra_data/ endpoint
+        to fetch enriched data (alerts, network/file artifacts) for all provided case IDs at once.
+
+        Args:
+            case_ids: List of case ID strings to retrieve extra data for.
+
+        Returns:
+            dict: The raw API response containing enriched data for all requested cases.
+        """
+        payload = {
+            "request_data": {
+                "filters": [
+                    {
+                        "field": "incident_id_list",
+                        "operator": "in",
+                        "value": case_ids,
+                    },
+                ],
+                "full_alert_fields": True,
+                "fields_to_exclude": ["network_artifacts", "file_artifacts"],
+            }
+        }
+        demisto.debug(f"Calling get_multiple_incidents_extra_data with case_ids={case_ids}")
+        response = self._http_request(
+            method="POST",
+            url_suffix="/public_api/v1/incidents/get_multiple_incidents_extra_data/",
+            json_data=payload,
+            headers=self._headers,
+            timeout=self.timeout,
+        )
+        demisto.debug(f"get_multiple_incidents_extra_data response received for {len(case_ids)} cases")
+        return response
+
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
@@ -1733,12 +1770,78 @@ def get_case_extra_data(client, args):
     return extra_data
 
 
-def add_cases_extra_data(client, cases_list):
-    # for each case id in the entry context, get the case extra data
+def parse_single_case_extra_data(case_incident_data: dict) -> dict:
+    """
+    Parse a single case's extra data from the bulk API response into the standard CaseExtraData format.
+
+    The bulk endpoint returns each case as:
+        {"incident": {...}, "alerts": {"total_count": N, "data": [...]}, "network_artifacts": ..., "file_artifacts": ...}
+
+    This function transforms it into the same output structure as the old per-case enrichment:
+        {"issue_ids": [...], "network_artifacts": ..., "file_artifacts": ..., "notes": ..., ...}
+
+    Args:
+        case_incident_data: A single case entry from the bulk response's 'incidents' list.
+
+    Returns:
+        dict: Parsed extra data in the standard CaseExtraData format.
+    """
+    processed = preprocess_get_case_extra_data_outputs(case_incident_data)
+    case_data = processed.get("case", {})
+    issue_ids = extract_ids(processed)
+
+    return {
+        "issue_ids": issue_ids,
+        "network_artifacts": processed.get("network_artifacts"),
+        "file_artifacts": processed.get("file_artifacts"),
+        "notes": case_data.get("notes"),
+        "detection_time": case_data.get("detection_time"),
+        "xdr_url": case_data.get("xdr_url"),
+        "starred_manually": case_data.get("starred_manually"),
+        "manual_description": processed.get("manual_description") or case_data.get("manual_description"),
+    }
+
+
+def add_cases_extra_data(client: Client, cases_list: list) -> list:
+    """
+    Enrich a list of cases with extra data using a single bulk API call.
+
+    Calls the /public_api/v1/incidents/get_multiple_incidents_extra_data/ endpoint once
+    for all case IDs, then maps the response back to each case.
+
+    Args:
+        client: The Cortex platform client instance.
+        cases_list: List of case dictionaries, each containing a 'case_id' key.
+
+    Returns:
+        list: The same cases_list with 'CaseExtraData' added to each case.
+    """
+    case_ids = [case.get("case_id") for case in cases_list]
+    demisto.debug(f"Fetching bulk extra data for case_ids={case_ids}")
+
+    try:
+        response = client.get_multiple_cases_extra_data(case_ids)
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve bulk extra data for case IDs {case_ids}: {e}")
+        for case in cases_list:
+            case["CaseExtraData"] = {}
+        return cases_list
+
+    reply = response.get("reply", {})
+    incidents_data = reply.get("incidents", [])
+
+    # Build a lookup from case_id (incident_id) to its extra data
+    extra_data_by_case_id: dict[str, dict] = {}
+    for incident_entry in incidents_data:
+        case_id = str(incident_entry.get("incident", {}).get("incident_id", ""))
+        if case_id:
+            extra_data_by_case_id[case_id] = parse_single_case_extra_data(incident_entry)
+
+    demisto.debug(f"Bulk extra data parsed for {len(extra_data_by_case_id)} cases")
+
     for case in cases_list:
         case_id = case.get("case_id")
-        extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
-        case.update({"CaseExtraData": extra_data})
+        case["CaseExtraData"] = extra_data_by_case_id.get(str(case_id), {})
 
     return cases_list
 
@@ -1906,7 +2009,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     return filter_builder
 
 
-def get_cases_command(client, args):
+def get_cases_command(client: Client, args):
     """
     Retrieves cases from Cortex platform based on provided filtering criteria.
 
@@ -1968,37 +2071,21 @@ def get_cases_command(client, args):
             demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
-    # In case enriched case data was requested
     if isinstance(data, dict):
         data = [data] if data else []
-    if get_enriched_case_data and 0 < len(data) <= 10:
-        case_extra_data = add_cases_extra_data(client, data)
 
+    if get_enriched_case_data and data:
+        enriched_data = add_cases_extra_data(client, data)
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
+                readable_output=tableToMarkdown("Cases", enriched_data, headerTransform=string_to_table_header),
                 outputs_prefix="Core.Case",
                 outputs_key_field="case_id",
-                outputs=case_extra_data,
-                raw_response=case_extra_data,
+                outputs=enriched_data,
+                raw_response=enriched_data,
             )
         )
-
     else:
-        if get_enriched_case_data:
-            demisto.info(
-                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
-                "Falling back to standard case data."
-            )
-            command_results.append(
-                CommandResults(
-                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
-                    "Returning standard case data instead. "
-                    "Try using a more specific query, "
-                    "for example specific case IDs you want to get enriched data for.",
-                )
-            )
-
         command_results.append(
             CommandResults(
                 readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
