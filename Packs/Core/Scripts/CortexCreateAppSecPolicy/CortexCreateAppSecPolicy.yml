@@ -50,7 +50,7 @@ args:
   description: Comma-separated list of AppSec rule names to include in policy evaluation. Rule names will be automatically resolved to their corresponding IDs.
   isArray: true
 - name: conditions_appsec_rule_category
-  description: Filter findings by AppSec rule category. Applies to SECRETS and IAC_MISCONFIGURATION finding types.
+  description: Filter findings by AppSec rule category. Applies to SECRETS and IAC_MISCONFIGURATION and CI/CD Risk and Drift finding types.
   isArray: true
 - name: conditions_cvss
   description: CVSS base score threshold for vulnerability findings (0.0-10.0). Only vulnerabilities meeting or exceeding this score will trigger the policy.
