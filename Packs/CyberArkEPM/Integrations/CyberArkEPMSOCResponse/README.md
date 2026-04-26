@@ -32,6 +32,7 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 | risk_plan | The name of the risk plan to activate. | Required |
 | endpoint_name | The name of the endpoint to target. | Required |
 | logged_in_user | The logged-in username of the endpoint. | Optional |
+| external_ip | (Deprecated) The external IP address of the endpoint. This argument is deprecated and no longer used. | Optional |
 
 #### Context Output
 
@@ -57,6 +58,7 @@ Deactivates a CyberArk EPM risk plan for a specified endpoint.
 | risk_plan | The name of the risk plan to deactivate. | Required |
 | endpoint_name | The name of the endpoint to target. | Required |
 | logged_in_user | The logged-in username of the endpoint. | Optional |
+| external_ip | (Deprecated) The external IP address of the endpoint. This argument is deprecated and no longer used. | Optional |
 
 #### Context Output
 

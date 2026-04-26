@@ -41,6 +41,13 @@ configuration:
   section: Connect
   hiddenusername: true
   additionalinfo: Service user password for OAuth2 authentication.
+- name: application_id
+  display: Application ID
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: (Deprecated) Required for local(EPM) authentication only. This parameter is deprecated and no longer used.
+  hidden: true
 description: Use the CyberArk EPM integration to activate and deactivate CyberArk EPM risk plans for specific endpoints.
 display: CyberArk EPM SOC Response
 name: CyberArkEPMSOCResponse
@@ -56,6 +63,10 @@ script:
     - description: Logged in user name.
       name: logged_in_user
       required: false
+    - description: (Deprecated) The external IP address of the endpoint. This argument is deprecated and no longer used.
+      name: external_ip
+      required: false
+      deprecated: true
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
@@ -78,6 +89,10 @@ script:
     - description: Logged in user name.
       name: logged_in_user
       required: false
+    - description: (Deprecated) The external IP address of the endpoint. This argument is deprecated and no longer used.
+      name: external_ip
+      required: false
+      deprecated: true
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:
