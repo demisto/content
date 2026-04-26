@@ -1,0 +1,1 @@
+Use the Cyberint Premium Feed integration to get IOC indicators from the premium feed.

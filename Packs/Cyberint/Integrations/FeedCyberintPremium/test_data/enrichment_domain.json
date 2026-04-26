@@ -1,0 +1,43 @@
+{
+  "indicator_type": "domain",
+  "indicator_value": "malicious-example.com",
+  "activity": "Phishing",
+  "confidence": 85,
+  "severity": 3,
+  "malicious": "yes",
+  "first_seen": "2025-01-02T08:00:00Z",
+  "last_seen": "2025-01-06T10:30:00Z",
+  "valid_until": "2025-07-06T11:00:00Z",
+  "kill_chain_stage": "initial-access",
+  "malware_types": [],
+  "malware_family": null,
+  "origin_countries": [],
+  "targeted_countries": ["US"],
+  "targeted_sectors": ["Finance"],
+  "targeted_brands": ["BankCorp"],
+  "threat_actors": [],
+  "campaigns": [],
+  "cves": [],
+  "ttps": [],
+  "tags": ["phishing"],
+  "enrichment": {
+    "ips": ["2.2.2.2", "3.3.3.3"],
+    "whois": {
+      "registrant_name": "John Doe",
+      "registrant_email": "john@example.com",
+      "registrant_organization": "Example Org",
+      "registrant_country": "US",
+      "registrant_telephone": null,
+      "technical_contact_email": null,
+      "technical_contact_name": null,
+      "technical_contact_organization": null,
+      "registrar_name": "Example Registrar",
+      "admin_contact_name": null,
+      "admin_contact_organization": null,
+      "admin_contact_email": null,
+      "created_date": "2024-01-01T00:00:00Z",
+      "updated_date": "2025-01-01T00:00:00Z",
+      "expiration_date": "2026-01-01T00:00:00Z"
+    }
+  }
+}

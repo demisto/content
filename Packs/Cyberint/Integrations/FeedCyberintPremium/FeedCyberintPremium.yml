@@ -1,0 +1,412 @@
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Cyberint Premium Feed
+  version: -1
+fromversion: 6.9.0
+name: Cyberint Premium Feed
+display: Check Point EM Premium Feed
+category: Data Enrichment & Threat Intelligence
+provider: Check Point Software Technologies
+description: Use the Cyberint Premium Feed integration to get IOC indicators from the premium feed.
+configuration:
+- display: Cyberint API URL
+  additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Company Name
+  additionalinfo: Company (client) name associated with Cyberint instance.
+  name: client_name
+  required: true
+  type: 0
+  section: Connect
+- display: API Key (Leave empty. Fill in the API Key in the password field.)
+  displaypassword: API access token
+  name: access_token
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: "true"
+  type: 8
+  required: false
+  section: Collect
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Good
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
+  section: Collect
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Which indicator types to fetch
+  defaultvalue: All
+  display: Indicator Type
+  name: indicator_type
+  options:
+  - All
+  - IP
+  - Domain
+  - URL
+  - File
+  required: true
+  type: 16
+  section: Collect
+- additionalinfo: Filter by activity classification
+  defaultvalue: All
+  display: Activity
+  name: activity
+  options:
+  - All
+  - Unknown
+  - Unclassified
+  - N/A
+  - Benign
+  - Adware
+  - Volatile Website
+  - CnC Server
+  - Compromised Website
+  - Phishing
+  - Infecting Website
+  - Infecting URL
+  - Web Hosting
+  - File Hosting
+  - Parked
+  - Spam
+  - Cryptominer
+  - Web Service
+  - Malicious
+  - Riskware
+  - Malware
+  - Volatile
+  - Compromised Server
+  - Infection Source
+  - Scanner
+  - Anonymiser
+  - Anonymizer
+  - Compromised Host
+  - Spyware
+  - Botnet
+  required: false
+  type: 16
+  section: Collect
+- additionalinfo: Minimum confidence score (0-100) to fetch indicators from.
+  display: Confidence Min
+  name: confidence_min
+  defaultvalue: "0"
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum confidence score (0-100) to fetch indicators from.
+  display: Confidence Max
+  name: confidence_max
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Minimum severity level (1-5) to fetch indicators from.
+  display: Severity Min
+  name: severity_min
+  defaultvalue: "1"
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum severity level (1-5) to fetch indicators from.
+  display: Severity Max
+  name: severity_max
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Filter by malicious classification.
+  display: Malicious
+  name: malicious
+  options:
+  - yes
+  - no
+  - inconclusive
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: How far back to fetch indicators on the first run. Subsequent runs fetch only new indicators since the last successful fetch. Supports relative expressions like "3 days", "7 days", "24 hours".
+  display: First Fetch Time
+  name: first_fetch
+  defaultvalue: "3 days"
+  type: 0
+  required: false
+  section: Collect
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: suddenDeath
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  section: Collect
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+  section: Collect
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  section: Collect
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: "true"
+  type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+script:
+  script: ''
+  type: python
+  commands:
+  - name: cyberint-premium-get-indicators
+    arguments:
+    - name: limit
+      description: The maximum number of results to return. The default value is 50.
+      defaultValue: "50"
+    - name: offset
+      description: Specifies the starting position from which data retrieval should begin.
+      defaultValue: "0"
+    - name: indicator_type
+      description: Filter by indicator type. Supports comma-separated values.
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - domain
+      - url
+      - sha256
+      - sha1
+      - md5
+      isArray: true
+    - name: activity
+      description: Filter by activity classification. Supports comma-separated values.
+      isArray: true
+    - name: confidence_min
+      description: Minimum confidence score (0-100).
+    - name: severity_min
+      description: Minimum severity level (1-5).
+    - name: malicious
+      description: Filter by malicious classification.
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      - inconclusive
+    - name: added_to_feed_after
+      description: Filter indicators added to the feed after this date-time (ISO 8601).
+    - name: added_to_feed_before
+      description: Filter indicators added to the feed before this date-time (ISO 8601).
+    - name: sort_field
+      description: Field to sort by.
+      defaultValue: last_seen
+      auto: PREDEFINED
+      predefined:
+      - confidence
+      - severity
+      - first_seen
+      - last_seen
+      - added_to_feed
+    - name: sort_direction
+      description: Sort direction.
+      defaultValue: desc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    outputs:
+    - contextPath: CyberintPremium.indicator.indicator_type
+      description: The indicator type.
+      type: String
+    - contextPath: CyberintPremium.indicator.indicator_value
+      description: The indicator value.
+      type: String
+    - contextPath: CyberintPremium.indicator.activity
+      description: Activity classification.
+      type: String
+    - contextPath: CyberintPremium.indicator.confidence
+      description: Confidence score (0-100).
+      type: Number
+    - contextPath: CyberintPremium.indicator.severity
+      description: Severity level (1-5).
+      type: Number
+    - contextPath: CyberintPremium.indicator.malicious
+      description: Malicious classification (yes/no/inconclusive).
+      type: String
+    - contextPath: CyberintPremium.indicator.kill_chain_stage
+      description: Kill chain stage.
+      type: String
+    - contextPath: CyberintPremium.indicator.first_seen
+      description: First seen date-time.
+      type: Date
+    - contextPath: CyberintPremium.indicator.last_seen
+      description: Last seen date-time.
+      type: Date
+    - contextPath: CyberintPremium.indicator.added_to_feed
+      description: Date-time when added to the feed.
+      type: Date
+    - contextPath: CyberintPremium.indicator.valid_until
+      description: Valid until date-time.
+      type: Date
+    - contextPath: CyberintPremium.indicator.is_blocking
+      description: Whether the indicator is blocking.
+      type: Boolean
+    - contextPath: CyberintPremium.indicator.is_unique
+      description: Whether the indicator is unique.
+      type: Boolean
+    - contextPath: CyberintPremium.indicator.malware_types
+      description: List of malware types.
+      type: Unknown
+    - contextPath: CyberintPremium.indicator.has_cve
+      description: Whether the indicator has associated CVEs.
+      type: Boolean
+    - contextPath: CyberintPremium.indicator.has_campaign
+      description: Whether the indicator has an associated campaign.
+      type: Boolean
+    description: Gets indicators from the premium feed.
+  - name: cyberint-premium-enrich
+    arguments:
+    - name: type
+      description: The IOC type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - domain
+      - url
+      - sha256
+      - sha1
+      - md5
+    - name: value
+      description: The indicator value (e.g. IP address, domain name, URL, or file hash).
+      required: true
+    outputs:
+    - contextPath: CyberintPremium.enrichment.indicator_type
+      description: The indicator type.
+      type: String
+    - contextPath: CyberintPremium.enrichment.indicator_value
+      description: The indicator value.
+      type: String
+    - contextPath: CyberintPremium.enrichment.activity
+      description: Activity classification.
+      type: String
+    - contextPath: CyberintPremium.enrichment.confidence
+      description: Confidence score (0-100).
+      type: Number
+    - contextPath: CyberintPremium.enrichment.severity
+      description: Severity level (0-5).
+      type: Number
+    - contextPath: CyberintPremium.enrichment.malicious
+      description: Malicious classification (yes/no/inconclusive).
+      type: String
+    - contextPath: CyberintPremium.enrichment.kill_chain_stage
+      description: Kill chain stage.
+      type: String
+    - contextPath: CyberintPremium.enrichment.first_seen
+      description: First seen date-time.
+      type: Date
+    - contextPath: CyberintPremium.enrichment.last_seen
+      description: Last seen date-time.
+      type: Date
+    - contextPath: CyberintPremium.enrichment.valid_until
+      description: Valid until date-time.
+      type: Date
+    - contextPath: CyberintPremium.enrichment.malware_types
+      description: List of malware types.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.malware_family
+      description: Malware family name.
+      type: String
+    - contextPath: CyberintPremium.enrichment.origin_countries
+      description: Origin countries.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.targeted_countries
+      description: Targeted countries.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.targeted_sectors
+      description: Targeted sectors.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.targeted_brands
+      description: Targeted brands.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.threat_actors
+      description: Associated threat actors.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.campaigns
+      description: Associated campaigns.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.cves
+      description: Associated CVEs.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.ttps
+      description: Associated TTPs with MITRE IDs.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.tags
+      description: Tags.
+      type: Unknown
+    - contextPath: CyberintPremium.enrichment.enrichment
+      description: Type-specific enrichment data (geo, whois, file info, etc.).
+      type: Unknown
+    description: Enriches a single IOC indicator with reputation, threat intelligence, and type-specific enrichment data.
+  dockerimage: demisto/python3:3.12.13.8428455
+  feed: true
+  subtype: python3
+tests:
+- No tests
