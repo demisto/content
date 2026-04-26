@@ -6,8 +6,13 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | For Example: https://localhost:8008 | True |
-| User Name |  | True |
-| Password |  | True |
+| OpenID Issuer URL | The RSSO server URL. For example https://<rsso_server_name>:8443/rsso. Required when 'Use OAuth' is selected. | False |
+| Use OAuth | Select this option to use OAuth 2.0 Authorization Code flow for authentication instead of username/password. | False |
+| User Name | Required when 'Use OAuth' is not selected. | False |
+| Password | Required when 'Use OAuth' is not selected. | False |
+| Client ID | Required when 'Use OAuth' is selected. | False |
+| Redirect URI | Required when 'Use OAuth' is selected. | False |
+| Authorization Code | Obtained by running the !bmc-itsm-generate-login-url command and following the URL. Required when 'Use OAuth' is selected.| False |
 | Maximum Number of Incidents per Fetch | Default is 50. Maximum is 200. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
 | Ticket Type | The type of the tickets to fetch. | False |
@@ -22,6 +27,52 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 | Trust any certificate (not secure) |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
+
+## Prerequisites: Register the Client
+
+### Register Non-Native (Standard) Clients
+
+For an official BMC registration demo, watch this [video](https://www.youtube.com/watch?v=9DVAvO-Zs_w&list=PLLwZptFDIb_texh1fnPprXOB5-pq3ZiO5&index=13) between minutes 28:30 and 31:10.
+
+1. Log in to the RSSO Administration Console and navigate to the **OAuth2** section.  
+2. Ensure general settings such as access token timeout, refresh token timeout, and the RSSO server URL are correctly configured.  
+3. From the **OAuth2** section, navigate to **Clients** > **Register Client**.
+4. Configure the following fields.  
+  | Field | Description |
+  |------|------------|
+  | **Client Name & Enabled** | Name the client and check **Enabled** to allow authentication. |
+  | **Token Exchange** | (Optional) Allows the client to request security tokens. |
+  | **Redirect URIs** | URIs for the auth code. Max 2000 chars. For BMC SSO agents, use: `http(s)://<domain>:[port]/[path]/_rsso/oauth/callback` |
+  | **Trusted Clients** | (Optional) List IDs eligible to validate this client’s tokens. |
+  | **OpenID** | (Optional) Required for OIDC or authenticating across different domains. |
+  | **Token Timeouts** | (Optional) Define custom access/refresh token limits (overrides tenant settings). |
+  | **Multi-Tenant** | (SaaS only) Select and then add specific **Redirect URIs** per tenant. |
+
+  **Note:**  
+  The **Client Secret** is generated only after clicking **Save**; copy it immediately as it cannot be retrieved later and is required to sign the JSON Web Token (JWT).
+
+### Manage Client Secrets (Non-Native Only)
+
+If you lose a secret or need a specific secret length (36–256 ASCII characters), you can manually generate up to three keys:
+
+1. Navigate to **Additional secrets** > **Add secret**.
+2. Enter the new key and copy it before clicking **Confirm** (it will be obfuscated after).
+3. Click **Save** on the main registration page.
+
+## Register Native (Public) Clients
+
+1. From the **OAuth2** section, navigate to **Clients** > **Register Client**.
+2. Configure the following fields.  
+
+    | Field | Description |
+    | :--- | :--- |
+    | **Native (Public) Client** | **Must be selected** for native applications. |
+    | **Redirect Path(s)** | Enter the callback path. Typing `callback` auto-generates loopback interfaces for IPv4 (`127.0.0.1`) and IPv6 (`[::1]`). |
+    | **Client Realm** | Select the specific Realm for this registration. |
+    | **Trusted Clients** | (Optional) Add Auth Proxy to validate external access tokens. |
+    | **OpenID/Timeouts** | Same as Non-Native (Required for multi-domain authentication). |
+
+For more information, see [Registering OAuth clients](https://docs.bmc.com/xwiki/bin/view/Helix-Common-Services/Single-Sign-On/BMC-Helix-Single-Sign-On/hsso243/Administering/Configuring-OAuth-2-0/Registering-OAuth-clients/).
 
 ## Commands
 
@@ -1670,7 +1721,7 @@ Creates a relationship between two tickets.
 | second_form_name | Second Form Name. Possible values are: incident, task, change request, problem investigation, known error, work order. | Required |
 | request_type | Request Type. Possible values are: Incident, Asset, Work order. | Required |
 | request_description | Request Description. | Required |
-| association_type | Association Type. Possible values are: Caused, Caused by, Duplicate of, Original of, Resolved, Resolved by. | Required |
+| association_type | Association Type. Possible values are: Caused, Caused by, Duplicate of, Original of, Related to, Resolved, Resolved by. | Required |
 | bidirectional | Bidirectionality. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
@@ -1697,3 +1748,67 @@ Retrieves a list of service request definitions. The records are retrieved by th
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | BmcITSM.Attachment.ID | String | The Work Log ID. |
+
+### bmc-itsm-add-attachment
+
+***
+Adds attachments to an existing BMC Helix ITSM ticket. Supports adding attachments to incident, change request, service request, task, problem investigation, known error, and work order forms.
+
+#### Base Command
+
+`bmc-itsm-add-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_ids | A comma-separated list of Cortex XSOAR War Room entry IDs for the files to attach (for example, "12@34,56@78"). | Required |
+| entry_type | The type of the BMC Helix ITSM ticket to add the attachment to. Possible values are: incident, change request, service request, task, problem investigation, known error, work order. | Required |
+| request_id | The request ID of the ticket to add the attachment to. | Required |
+| field_names | A comma-separated list of BMC attachment field names corresponding to each entry ID (e.g., "z2AF_Attachment1,z2AF_Attachment2"). Must have the same number of items as entry_ids. | Required |
+| entry | An optional JSON dictionary of additional field values to update on the entry (e.g., {"Status": "In Progress", "Description": "Evidence from XSOAR"}). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example (single attachment)
+
+```!bmc-itsm-add-attachment entry_ids="12@34" field_names="z2AF_Attachment1" entry_type="incident" request_id="INC000000000123"```
+
+#### Human Readable Output
+
+>Attachment was successfully added to incident INC000000000123.
+
+#### Command example (multiple attachments)
+
+```!bmc-itsm-add-attachment entry_ids="12@34,56@78" field_names="z2AF_Attachment1,z2AF_Attachment2" entry_type="change request" request_id="CRQ000000000456"```
+
+#### Human Readable Output
+
+>Attachments were successfully added to change request CRQ000000000456.
+
+#### Command example (with additional field updates)
+
+```!bmc-itsm-add-attachment entry_ids="12@34" field_names="z2AF_Attachment1" entry_type="incident" request_id="INC000000000789" entry="{\"Status\": \"In Progress\", \"Description\": \"Evidence from XSOAR\"}"```
+
+#### Human Readable Output
+
+>Attachment was successfully added to incident INC000000000789.
+
+### bmc-itsm-generate-login-url
+
+***
+Generate the login URL used for the OAuth 2.0 Authorization Code flow. Follow the URL to obtain an authorization code, then paste it into the instance configuration 'Authorization Code' field.
+
+#### Base Command
+
+`bmc-itsm-generate-login-url`
+
+#### Input
+
+There is no inputs for this command.
+
+#### Context Output
+
+There is no context output for this command.

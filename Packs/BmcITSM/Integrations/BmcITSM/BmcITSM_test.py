@@ -1,6 +1,7 @@
 import json
 import os
-from unittest.mock import patch
+from datetime import datetime, timedelta, UTC
+from unittest.mock import MagicMock, patch
 
 import pytest
 from CommonServerPython import *
@@ -11,6 +12,7 @@ ACCOUNT_ID = "account_id"
 ZONE_ID = "zone_id"
 """CONSTANTS"""
 BASE_URL = "https://example.com:443"
+RSSO_URL = "https://rsso-server.example.com:8443/rsso"
 USERNAME = "MOCK_USER"
 PASSWORD = "XXX"
 TOKEN = "XXX-XXXX"
@@ -29,19 +31,21 @@ def load_mock_response(file_name: str) -> str:
         return json.loads(mock_file.read())
 
 
-def mock_access_token(client, username: str, password: str):
+def mock_jwt_token(self):
     return TOKEN
 
 
 @pytest.fixture(autouse=True)
-@patch("BmcITSM.Client.retrieve_access_token", mock_access_token)
+@patch("BmcITSM.AuthClient.retrieve_jwt_token", mock_jwt_token)
 def mock_client():
     """
     Mock client
     """
-    from BmcITSM import Client
+    from BmcITSM import AuthClient, Client
 
-    return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False)
+    auth_client = AuthClient(server_url=BASE_URL, verify=False, proxy=False, username=USERNAME, password=PASSWORD)
+    auth_header = auth_client.get_authorization_header()
+    return Client(server_url=BASE_URL, auth_header=auth_header, verify=False, proxy=False)
 
 
 """ TESTING INTEGRATION COMMANDS"""
@@ -1590,3 +1594,855 @@ def test_worklog_attachment_get(
 
     result = worklog_attachment_get_command(mock_client, command_arguments)
     assert result[0].get("File") == file_name
+
+
+""" TESTING OAUTH FUNCTIONS """
+
+
+class TestGenerateLoginUrlCommand:
+    """Tests for the generate_login_url_command function."""
+
+    def test_generate_login_url_command_success(self):
+        """
+        Given:
+            - A valid RSSO URL, client ID, and redirect URI.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - The returned CommandResults contains the correct authorization URL.
+        """
+        from BmcITSM import generate_login_url_command
+
+        result = generate_login_url_command(
+            rsso_url="https://rsso-server.example.com:8443/rsso",
+            client_id="my-client-id",
+            redirect_uri="https://oauth.pstmn.io/v1/callback",
+        )
+
+        assert "oauth2/authorize" in result.readable_output
+        assert "client_id=my-client-id" in result.readable_output
+        assert "redirect_uri=https://oauth.pstmn.io/v1/callback" in result.readable_output
+        assert "response_type=code" in result.readable_output
+
+    def test_generate_login_url_command_missing_client_id(self):
+        """
+        Given:
+            - No client ID is provided.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - A DemistoException is raised.
+        """
+        from BmcITSM import generate_login_url_command
+
+        with pytest.raises(DemistoException, match="Client ID"):
+            generate_login_url_command(
+                rsso_url="https://rsso-server.example.com:8443/rsso",
+                client_id="",
+                redirect_uri="https://oauth.pstmn.io/v1/callback",
+            )
+
+    def test_generate_login_url_command_missing_redirect_uri(self):
+        """
+        Given:
+            - No redirect URI is provided.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - A DemistoException is raised.
+        """
+        from BmcITSM import generate_login_url_command
+
+        with pytest.raises(DemistoException, match="Redirect URI"):
+            generate_login_url_command(
+                rsso_url="https://rsso-server.example.com:8443/rsso",
+                client_id="my-client-id",
+                redirect_uri="",
+            )
+
+    def test_generate_login_url_command_invalid_rsso_url(self):
+        """
+        Given:
+            - An RSSO URL that doesn't end with /rsso.
+        When:
+            - generate_login_url_command is called.
+        Then:
+            - A DemistoException is raised about invalid URL format.
+        """
+        from BmcITSM import generate_login_url_command
+
+        with pytest.raises(DemistoException, match="must end with"):
+            generate_login_url_command(
+                rsso_url="https://rsso-server.example.com:8443/invalid",
+                client_id="my-client-id",
+                redirect_uri="https://oauth.pstmn.io/v1/callback",
+            )
+
+
+class TestIsTokenExpired:
+    """Tests for the AuthClient.is_token_expired static method."""
+
+    def test_token_not_expired(self):
+        """
+        Given:
+            - A token expiration time 10 minutes in the future.
+        When:
+            - AuthClient.is_token_expired is called.
+        Then:
+            - Returns False (token is still valid).
+        """
+        from BmcITSM import AuthClient
+
+        future_time = (datetime.now(UTC) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert AuthClient.is_token_expired(future_time) is False
+
+    def test_token_expired(self):
+        """
+        Given:
+            - A token expiration time 10 minutes in the past.
+        When:
+            - AuthClient.is_token_expired is called.
+        Then:
+            - Returns True (token is expired).
+        """
+        from BmcITSM import AuthClient
+
+        past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert AuthClient.is_token_expired(past_time) is True
+
+    def test_token_expires_within_buffer(self):
+        """
+        Given:
+            - A token expiration time 30 seconds in the future (within 1-minute buffer).
+        When:
+            - AuthClient.is_token_expired is called.
+        Then:
+            - Returns True (token is considered expired due to buffer).
+        """
+        from BmcITSM import AuthClient
+
+        near_future = (datetime.now(UTC) + timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert AuthClient.is_token_expired(near_future) is True
+
+    def test_token_empty_string(self):
+        """
+        Given:
+            - An empty string for expiration time.
+        When:
+            - AuthClient.is_token_expired is called.
+        Then:
+            - Returns True (treated as expired).
+        """
+        from BmcITSM import AuthClient
+
+        assert AuthClient.is_token_expired("") is True
+
+    def test_token_malformed_date(self):
+        """
+        Given:
+            - A malformed date string.
+        When:
+            - AuthClient.is_token_expired is called.
+        Then:
+            - Returns True (treated as expired).
+        """
+        from BmcITSM import AuthClient
+
+        assert AuthClient.is_token_expired("not-a-date") is True
+
+
+class TestGetOAuthToken:
+    """Tests for the Client.get_oauth_token method."""
+
+    @staticmethod
+    def _create_oauth_auth_client_instance():
+        """Helper to create a bare AuthClient instance for OAuth testing."""
+        from BmcITSM import AuthClient
+
+        auth_client = AuthClient.__new__(AuthClient)
+        auth_client._use_oauth = True
+        auth_client._rsso_url = RSSO_URL
+        auth_client._client_id = "test-client-id"
+        auth_client._redirect_uri = "https://oauth.pstmn.io/v1/callback"
+        auth_client._auth_code = "test-auth-code"
+        auth_client._verify = False
+        return auth_client
+
+    def test_get_oauth_token_uses_cached_token(self):
+        """
+        Given:
+            - A valid, non-expired access token in integration context.
+        When:
+            - get_oauth_token is called.
+        Then:
+            - Returns the cached access token without making API calls.
+        """
+        future_time = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        mock_context = {
+            "oauth_access_token": "cached-access-token",
+            "oauth_access_token_expires_in": future_time,
+            "oauth_refresh_token": "cached-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        auth_client = self._create_oauth_auth_client_instance()
+
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), patch("BmcITSM.set_integration_context"):
+            token = auth_client.get_oauth_token()
+
+        assert token == "cached-access-token"
+
+    def test_get_oauth_token_refresh_flow(self):
+        """
+        Given:
+            - An expired access token but a valid refresh token in integration context.
+        When:
+            - get_oauth_token is called.
+        Then:
+            - Uses the refresh token to get a new access token.
+        """
+        past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        mock_context = {
+            "oauth_access_token": "expired-access-token",
+            "oauth_access_token_expires_in": past_time,
+            "oauth_refresh_token": "valid-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        token_response = {
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+
+        auth_client = self._create_oauth_auth_client_instance()
+        auth_client._auth_code = ""
+
+        mock_set_ctx = MagicMock()
+        with (
+            patch("BmcITSM.get_integration_context", return_value=mock_context),
+            patch("BmcITSM.set_integration_context", mock_set_ctx),
+            patch.object(auth_client, "_http_request", return_value=token_response),
+        ):
+            token = auth_client.get_oauth_token()
+
+        assert token == "new-access-token"
+        # Verify the context was updated
+        stored_ctx = mock_set_ctx.call_args[0][0]
+        assert stored_ctx["oauth_access_token"] == "new-access-token"
+        assert stored_ctx["oauth_refresh_token"] == "new-refresh-token"
+
+    def test_get_oauth_token_auth_code_exchange(self):
+        """
+        Given:
+            - No valid tokens in integration context, but an authorization code is provided.
+        When:
+            - get_oauth_token is called.
+        Then:
+            - Exchanges the authorization code for tokens.
+        """
+        token_response = {
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+
+        auth_client = self._create_oauth_auth_client_instance()
+
+        mock_http = MagicMock(return_value=token_response)
+        with (
+            patch("BmcITSM.get_integration_context", return_value={}),
+            patch("BmcITSM.set_integration_context"),
+            patch.object(auth_client, "_http_request", mock_http),
+        ):
+            token = auth_client.get_oauth_token()
+
+        assert token == "new-access-token"
+
+        # Verify the _http_request was called with correct data
+        call_kwargs = mock_http.call_args
+        post_data = call_kwargs[1].get("data")
+        assert post_data["grant_type"] == "authorization_code"
+        assert post_data["code"] == "test-auth-code"
+        assert post_data["client_id"] == "test-client-id"
+
+    def test_get_oauth_token_no_tokens_no_code(self):
+        """
+        Given:
+            - No valid tokens in integration context and no authorization code.
+        When:
+            - get_oauth_token is called.
+        Then:
+            - Raises DemistoException with instructions to run generate-login-url.
+        """
+        auth_client = self._create_oauth_auth_client_instance()
+        auth_client._auth_code = ""
+
+        with (
+            patch("BmcITSM.get_integration_context", return_value={}),
+            patch("BmcITSM.set_integration_context"),
+            pytest.raises(DemistoException, match="bmc-itsm-generate-login-url"),
+        ):
+            auth_client.get_oauth_token()
+
+    def test_get_oauth_token_auth_code_exchange_failure(self):
+        """
+        Given:
+            - No valid tokens and an authorization code that fails to exchange.
+        When:
+            - get_oauth_token is called.
+        Then:
+            - Raises DemistoException with the error details.
+        """
+        auth_client = self._create_oauth_auth_client_instance()
+        auth_client._auth_code = "expired-auth-code"
+
+        with (
+            patch("BmcITSM.get_integration_context", return_value={}),
+            patch("BmcITSM.set_integration_context"),
+            patch.object(auth_client, "_http_request", side_effect=DemistoException("invalid_grant")),
+            pytest.raises(DemistoException, match="Failed to exchange authorization code"),
+        ):
+            auth_client.get_oauth_token()
+
+
+class TestClientOAuthInit:
+    """Tests for Client initialization with OAuth."""
+
+    def test_auth_client_oauth_sets_bearer_header(self):
+        """
+        Given:
+            - OAuth is enabled with valid tokens in integration context.
+        When:
+            - AuthClient.get_authorization_header() is called.
+        Then:
+            - The returned header uses Bearer token format.
+        """
+        from BmcITSM import AuthClient
+
+        future_time = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        mock_context = {
+            "oauth_access_token": "my-oauth-token",
+            "oauth_access_token_expires_in": future_time,
+            "oauth_refresh_token": "my-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), patch("BmcITSM.set_integration_context"):
+            auth_client = AuthClient(
+                server_url=BASE_URL,
+                verify=False,
+                proxy=False,
+                use_oauth=True,
+                client_id="test-client-id",
+                redirect_uri="https://oauth.pstmn.io/v1/callback",
+                auth_code="test-auth-code",
+                rsso_url=RSSO_URL,
+            )
+            auth_header = auth_client.get_authorization_header()
+
+        assert auth_header["Authorization"] == "Bearer my-oauth-token"
+
+    @patch("BmcITSM.AuthClient.retrieve_jwt_token", mock_jwt_token)
+    def test_auth_client_jwt_sets_arjwt_header(self):
+        """
+        Given:
+            - OAuth is not enabled (default behavior).
+        When:
+            - AuthClient.get_authorization_header() is called.
+        Then:
+            - The returned header uses AR-JWT token format.
+        """
+        from BmcITSM import AuthClient
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            username=USERNAME,
+            password=PASSWORD,
+        )
+        auth_header = auth_client.get_authorization_header()
+
+        assert auth_header["Authorization"] == f"AR-JWT {TOKEN}"
+
+
+class TestFullUrlFix:
+    """Tests that AuthClient uses full_url (not url_suffix) to avoid the leading '/' bug.
+
+    The custom urljoin in CommonServerPython concatenates base_url + suffix.
+    When base_url="" (as in AuthClient), it becomes "/" + suffix = "/https://..."
+    which causes: 'No connection adapters were found for /https://...'
+    Using full_url= bypasses base_url concatenation entirely.
+    """
+
+    def test_retrieve_jwt_token_uses_full_url(self, requests_mock):
+        """
+        Given:
+            - An AuthClient configured with a server URL (JWT mode, use_oauth=False).
+        When:
+            - retrieve_jwt_token is called.
+        Then:
+            - The HTTP request is made to the correct full URL (https://example.com:443/api/jwt/login)
+              without a leading '/' prefix that would cause InvalidSchema.
+        """
+        from BmcITSM import AuthClient
+
+        expected_url = f"{BASE_URL}/api/jwt/login"
+        requests_mock.post(expected_url, text="mock-jwt-token-123")
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            username=USERNAME,
+            password=PASSWORD,
+        )
+
+        with patch("BmcITSM.get_integration_context", return_value={}), patch("BmcITSM.set_integration_context"):
+            token = auth_client.retrieve_jwt_token()
+
+        assert token == "mock-jwt-token-123"
+        assert requests_mock.called
+        # Verify the actual URL does NOT start with '/' (the original bug)
+        actual_url = requests_mock.last_request.url
+        assert not actual_url.startswith("/"), f"URL should not start with '/': {actual_url}"
+        assert actual_url == expected_url
+
+    def test_get_oauth_token_uses_full_url_for_auth_code_exchange(self, requests_mock):
+        """
+        Given:
+            - An AuthClient configured for OAuth with an authorization code.
+        When:
+            - get_oauth_token is called and exchanges the auth code.
+        Then:
+            - The HTTP request is made to the correct full URL (rsso_url/oauth2/token)
+              without a leading '/' prefix.
+        """
+        from BmcITSM import AuthClient
+
+        expected_url = f"{RSSO_URL}/oauth2/token"
+        token_response = {
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+        requests_mock.post(expected_url, json=token_response)
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            use_oauth=True,
+            client_id="test-client-id",
+            redirect_uri="https://oauth.pstmn.io/v1/callback",
+            auth_code="test-auth-code",
+            rsso_url=RSSO_URL,
+        )
+
+        with patch("BmcITSM.get_integration_context", return_value={}), patch("BmcITSM.set_integration_context"):
+            token = auth_client.get_oauth_token()
+
+        assert token == "new-access-token"
+        assert requests_mock.called
+        actual_url = requests_mock.last_request.url
+        assert not actual_url.startswith("/"), f"URL should not start with '/': {actual_url}"
+        assert actual_url == expected_url
+
+    def test_get_oauth_token_uses_full_url_for_refresh_flow(self, requests_mock):
+        """
+        Given:
+            - An AuthClient configured for OAuth with an expired access token but valid refresh token.
+        When:
+            - get_oauth_token is called and uses the refresh token.
+        Then:
+            - The HTTP request is made to the correct full URL (rsso_url/oauth2/token)
+              without a leading '/' prefix.
+        """
+        from BmcITSM import AuthClient
+
+        expected_url = f"{RSSO_URL}/oauth2/token"
+        token_response = {
+            "access_token": "refreshed-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+        requests_mock.post(expected_url, json=token_response)
+
+        past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        mock_context = {
+            "oauth_access_token": "expired-access-token",
+            "oauth_access_token_expires_in": past_time,
+            "oauth_refresh_token": "valid-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            use_oauth=True,
+            client_id="test-client-id",
+            redirect_uri="https://oauth.pstmn.io/v1/callback",
+            auth_code="",
+            rsso_url=RSSO_URL,
+        )
+
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), patch("BmcITSM.set_integration_context"):
+            token = auth_client.get_oauth_token()
+
+        assert token == "refreshed-access-token"
+        assert requests_mock.called
+        actual_url = requests_mock.last_request.url
+        assert not actual_url.startswith("/"), f"URL should not start with '/': {actual_url}"
+        assert actual_url == expected_url
+
+
+class TestAddAttachmentCommand:
+    """Tests for the bmc-itsm-add-attachment command (add_attachment_command)."""
+
+    @pytest.mark.parametrize(
+        "entry_type",
+        [
+            "incident",
+            "change request",
+            "service request",
+            "task",
+            "problem investigation",
+            "known error",
+            "work order",
+        ],
+    )
+    def test_add_single_attachment_success(self, entry_type, requests_mock, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - A valid entry_id pointing to a file in the War Room.
+            - A valid field_name for the attachment field.
+            - A valid entry_type and request_id.
+        When:
+            - add_attachment_command is called with a single attachment.
+        Then:
+            - The command sends a PUT request to the correct form endpoint.
+            - The readable output confirms the attachment was added.
+        """
+        from BmcITSM import TICKET_TYPE_TO_ATTACHMENT_FORM, add_attachment_command
+
+        form_name = TICKET_TYPE_TO_ATTACHMENT_FORM[entry_type]
+        request_id = "INC000000000123"
+        # Create a temporary file to simulate a War Room file
+        test_file = tmp_path / "test_report.txt"
+        test_file.write_text("test file content")
+
+        url = f"{BASE_URL}/api/arsys/v1/entry/{form_name}/{request_id}"
+        requests_mock.put(url=url, status_code=204)
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "test_report.txt"})
+
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "z2AF_Attachment1",
+                "entry_type": entry_type,
+                "request_id": request_id,
+            },
+        )
+
+        assert result.readable_output == f"Attachment was successfully added to {entry_type} {request_id}."
+
+    def test_add_multiple_attachments_success(self, requests_mock, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - Two valid entry_ids pointing to files in the War Room.
+            - Two corresponding field_names for the attachment fields.
+        When:
+            - add_attachment_command is called with multiple attachments.
+        Then:
+            - The command sends a PUT request with all attachments.
+            - The readable output uses plural form ("Attachments were").
+        """
+        from BmcITSM import add_attachment_command
+
+        request_id = "INC000000000456"
+        # Create temporary files
+        file1 = tmp_path / "report.pdf"
+        file1.write_bytes(b"pdf content")
+        file2 = tmp_path / "screenshot.png"
+        file2.write_bytes(b"png content")
+
+        url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
+        requests_mock.put(url=url, status_code=204)
+
+        mocker.patch.object(
+            demisto,
+            "getFilePath",
+            side_effect=[
+                {"path": str(file1), "name": "report.pdf"},
+                {"path": str(file2), "name": "screenshot.png"},
+            ],
+        )
+
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34,56@78",
+                "field_names": "z2AF_Attachment1,z2AF_Attachment2",
+                "entry_type": "incident",
+                "request_id": request_id,
+            },
+        )
+
+        assert result.readable_output == f"Attachments were successfully added to incident {request_id}."
+
+    def test_add_attachment_with_entry_json(self, requests_mock, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - A valid attachment and an optional entry JSON with additional field values.
+        When:
+            - add_attachment_command is called with the entry argument.
+        Then:
+            - The command succeeds and includes the additional fields in the request.
+        """
+        from BmcITSM import add_attachment_command
+
+        request_id = "INC000000000789"
+        test_file = tmp_path / "evidence.txt"
+        test_file.write_text("evidence content")
+
+        url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
+        requests_mock.put(url=url, status_code=204)
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "evidence.txt"})
+
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "z2AF_Attachment1",
+                "entry_type": "incident",
+                "request_id": request_id,
+                "entry": '{"Status": "In Progress", "Description": "Evidence from XSOAR"}',
+            },
+        )
+
+        assert result.readable_output == f"Attachment was successfully added to incident {request_id}."
+        # Verify the request body contains the entry JSON with both additional fields and attachment mapping
+        request_body = requests_mock.last_request.body
+        assert b"evidence.txt" in request_body
+        assert b"In Progress" in request_body
+
+    def test_add_attachment_mismatched_ids_and_fields(self, mock_client):
+        """
+        Given:
+            - entry_ids has 2 items but field_names has 3 items.
+        When:
+            - add_attachment_command is called.
+        Then:
+            - A ValueError is raised indicating the mismatch.
+        """
+        from BmcITSM import add_attachment_command
+
+        with pytest.raises(ValueError, match="Number of entry_ids .* must match number of field_names"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "12@34,56@78",
+                    "field_names": "z2AF_Attachment1,z2AF_Attachment2,z2AF_Attachment3",
+                    "entry_type": "incident",
+                    "request_id": "INC000000000123",
+                },
+            )
+
+    def test_add_attachment_invalid_entry_json(self, mock_client):
+        """
+        Given:
+            - The entry argument contains invalid JSON.
+        When:
+            - add_attachment_command is called.
+        Then:
+            - A ValueError is raised indicating invalid JSON format.
+        """
+        from BmcITSM import add_attachment_command
+
+        with pytest.raises(ValueError, match="Invalid JSON format provided in the 'entry' argument"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "12@34",
+                    "field_names": "z2AF_Attachment1",
+                    "entry_type": "incident",
+                    "request_id": "INC000000000123",
+                    "entry": "{invalid json}",
+                },
+            )
+
+    def test_add_attachment_strips_attach_prefix(self, requests_mock, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - The user accidentally includes the 'attach-' prefix in field_names.
+        When:
+            - add_attachment_command is called.
+        Then:
+            - The prefix is stripped to prevent double-prefixing (attach-attach-).
+            - The command succeeds.
+        """
+        from BmcITSM import add_attachment_command
+
+        request_id = "INC000000000321"
+        test_file = tmp_path / "log.txt"
+        test_file.write_text("log content")
+
+        url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
+        requests_mock.put(url=url, status_code=204)
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "log.txt"})
+
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "attach-z2AF_Attachment1",
+                "entry_type": "incident",
+                "request_id": request_id,
+            },
+        )
+
+        assert result.readable_output == f"Attachment was successfully added to incident {request_id}."
+        # Verify the multipart body uses 'attach-z2AF_Attachment1' (not 'attach-attach-z2AF_Attachment1')
+        request_body = requests_mock.last_request.body
+        assert b"attach-z2AF_Attachment1" in request_body
+        assert b"attach-attach-" not in request_body
+
+    def test_add_attachment_invalid_entry_id(self, mock_client, mocker):
+        """
+        Given:
+            - An entry_id that does not exist in the War Room.
+        When:
+            - add_attachment_command is called.
+        Then:
+            - A DemistoException is raised indicating the failure.
+        """
+        from BmcITSM import add_attachment_command
+
+        mocker.patch.object(demisto, "getFilePath", side_effect=Exception("Entry not found"))
+
+        with pytest.raises(DemistoException, match="Could not find file for entry ID"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "invalid@id",
+                    "field_names": "z2AF_Attachment1",
+                    "entry_type": "incident",
+                    "request_id": "INC000000000123",
+                },
+            )
+
+    def test_add_attachment_api_failure(self, requests_mock, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - A valid attachment but the API returns a non-204 status code.
+        When:
+            - add_attachment_command is called.
+        Then:
+            - A DemistoException is raised with the error details.
+        """
+        from BmcITSM import add_attachment_command
+
+        request_id = "INC000000000999"
+        test_file = tmp_path / "data.csv"
+        test_file.write_text("csv content")
+
+        url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
+        requests_mock.put(url=url, status_code=400, text="Bad Request: Invalid field name")
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "data.csv"})
+
+        with pytest.raises(DemistoException, match="Failed to add attachment"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "12@34",
+                    "field_names": "z2AF_Attachment1",
+                    "entry_type": "incident",
+                    "request_id": request_id,
+                },
+            )
+
+    def test_add_attachment_files_closed_on_success(self, requests_mock, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - A valid attachment file.
+        When:
+            - add_attachment_command completes successfully.
+        Then:
+            - All opened file handles are properly closed.
+        """
+        from BmcITSM import add_attachment_command
+
+        request_id = "INC000000000111"
+        test_file = tmp_path / "cleanup_test.txt"
+        test_file.write_text("cleanup test content")
+
+        url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
+        requests_mock.put(url=url, status_code=204)
+
+        mock_file = MagicMock()
+        mock_file.read.return_value = b"file content"
+
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "cleanup_test.txt"})
+        mocker.patch("builtins.open", return_value=mock_file)
+
+        add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "z2AF_Attachment1",
+                "entry_type": "incident",
+                "request_id": request_id,
+            },
+        )
+
+        mock_file.close.assert_called_once()
+
+    def test_add_attachment_files_closed_on_failure(self, mock_client, tmp_path, mocker):
+        """
+        Given:
+            - Two entry_ids where the second one is invalid.
+        When:
+            - add_attachment_command fails during file processing.
+        Then:
+            - All previously opened file handles are properly closed.
+        """
+        from BmcITSM import add_attachment_command
+
+        test_file = tmp_path / "valid_file.txt"
+        test_file.write_text("valid content")
+
+        mock_file = MagicMock()
+
+        mocker.patch.object(
+            demisto,
+            "getFilePath",
+            side_effect=[
+                {"path": str(test_file), "name": "valid_file.txt"},
+                Exception("Second file not found"),
+            ],
+        )
+        mocker.patch("builtins.open", return_value=mock_file)
+
+        with pytest.raises(DemistoException, match="Could not find file for entry ID"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "12@34,56@78",
+                    "field_names": "z2AF_Attachment1,z2AF_Attachment2",
+                    "entry_type": "incident",
+                    "request_id": "INC000000000123",
+                },
+            )
+
+        # The first file was opened and should be closed even though the second failed
+        mock_file.close.assert_called_once()
