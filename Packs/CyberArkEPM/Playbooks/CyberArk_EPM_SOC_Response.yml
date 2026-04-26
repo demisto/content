@@ -115,10 +115,10 @@ tasks:
     scriptarguments:
       endpoint_name:
         simple: ${inputs.endpoint_name}
-      external_ip:
-        simple: ${inputs.endpoint_external_ip}
+      logged_in_user:
+        simple: ${inputs.logged_in_user}
       risk_plan:
-        simple: Medium_Risk_Plan
+        simple: Medium_Risk_Endpoint
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -154,10 +154,10 @@ tasks:
     scriptarguments:
       endpoint_name:
         simple: ${inputs.endpoint_name}
-      external_ip:
-        simple: ${inputs.endpoint_external_ip}
+      logged_in_user:
+        simple: ${inputs.logged_in_user}
       risk_plan:
-        simple: High_Risk_Plan
+        simple: High_Risk_Endpoint
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -256,17 +256,17 @@ inputs:
 - key: endpoint_name
   value: {}
   required: false
-  description: "FQDN of target endpoint"
+  description: "Hostname of target endpoint"
   playbookInputQuery: null
-- key: endpoint_external_ip
+- key: logged_in_user
   value: {}
   required: false
-  description: "External IP of target endpoint"
+  description: "Logged-in user of target endpoint"
   playbookInputQuery: null
 inputSections:
 - inputs:
   - endpoint_name
-  - endpoint_external_ip
+  - logged_in_user
   name: General (Inputs group)
   description: Generic group for inputs
 outputSections:
