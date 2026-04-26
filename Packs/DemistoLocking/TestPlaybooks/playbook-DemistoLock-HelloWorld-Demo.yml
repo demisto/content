@@ -1,0 +1,245 @@
+id: DemistoLock-HelloWorld-Demo
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: DemistoLock - Hello World Demo
+description: |-
+  Demo playbook showing how the Demisto Lock works.
+  Run this playbook from two different incidents at the same time.
+  The second incident will wait at the lock-get step until the first incident releases the lock.
+
+  Flow:
+  1. Acquire lock "hello-world-lock"
+  2. Print "Hello from incident <id>" to War Room
+  3. Sleep 10 seconds (so you can see the second incident waiting)
+  4. Release the lock
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a1000000-0000-0000-0000-000000000001
+    type: start
+    task:
+      id: a1000000-0000-0000-0000-000000000001
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "1":
+    id: "1"
+    taskid: a1000000-0000-0000-0000-000000000002
+    type: regular
+    task:
+      id: a1000000-0000-0000-0000-000000000002
+      version: -1
+      name: Acquire lock
+      description: |-
+        Acquire the shared lock "hello-world-lock".
+        If another incident already holds it, this task will poll every 20 seconds until the lock is released.
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        simple: hello-world-lock
+      info:
+        simple: Held by incident ${incident.id}
+      timeout:
+        simple: "300"
+      polling_interval:
+        simple: "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "2":
+    id: "2"
+    taskid: a1000000-0000-0000-0000-000000000003
+    type: regular
+    task:
+      id: a1000000-0000-0000-0000-000000000003
+      version: -1
+      name: Print Hello to War Room
+      description: Print a message to the War Room. Only one incident can be here at a time.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      value:
+        simple: "Hello from incident ${incident.id}! I hold the lock right now."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "3":
+    id: "3"
+    taskid: a1000000-0000-0000-0000-000000000004
+    type: regular
+    task:
+      id: a1000000-0000-0000-0000-000000000004
+      version: -1
+      name: Sleep 10 seconds
+      description: |-
+        Sleep 10 seconds so you can observe the second incident waiting at the lock-get step.
+        While this task runs, open the second incident and watch it polling.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "4":
+    id: "4"
+    taskid: a1000000-0000-0000-0000-000000000005
+    type: regular
+    task:
+      id: a1000000-0000-0000-0000-000000000005
+      version: -1
+      name: Release lock
+      description: Release the lock so the next waiting incident can proceed.
+      script: Demisto Lock|||demisto-lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        simple: hello-world-lock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "5":
+    id: "5"
+    taskid: a1000000-0000-0000-0000-000000000006
+    type: title
+    task:
+      id: a1000000-0000-0000-0000-000000000006
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#': []
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 260,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
