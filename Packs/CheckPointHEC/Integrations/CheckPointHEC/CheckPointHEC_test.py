@@ -45,6 +45,7 @@ from CheckPointHEC import (
     checkpointhec_update_ctp_list_item,
     fetch_incidents,
     fetch_restore_requests,
+    checkpointhec_download_large_email,
 )
 from CheckPointHEC import test_module as check_module
 from CommonServerPython import DemistoException
@@ -641,6 +642,51 @@ def test_checkpointhec_download_email(mocker):
 
     checkpointhec_download_email(client, {"entity_id": entity_id})
     call_api.assert_called()
+    file_result.assert_called_once_with(filename=f"{entity_id}.eml", data=content)
+
+
+def test_checkpointhec_download_large_email(mocker):
+    client = Client(
+        base_url="https://smart-api-example-1-us.avanan-example.net",
+        client_id="****",
+        client_secret="****",
+        verify=False,
+        proxy=False,
+    )
+
+    content = b"abc123"
+    entity_id = "0" * 32
+
+    import CheckPointHEC
+    import requests
+
+    file_result = mocker.patch.object(CheckPointHEC, "fileResult")
+    mock_response = util_load_json("./test_data/checkpointhec-presignurl.json")
+    call_api = mocker.patch.object(
+        Client,
+        "_call_api",
+        return_value=mock_response,
+    )
+
+    presign_url = mock_response["responseData"]["url"]
+
+    mock_eml_response = mocker.Mock()
+    mock_eml_response.status_code = 200
+    mock_eml_response.content = content
+
+    def _mock_get(url, *args, **kwargs):
+        if url == presign_url:
+            return mock_eml_response
+        raise requests.exceptions.RequestException(f"Unexpected URL: {url}")
+
+    requests_get_mock = mocker.patch(
+        "CheckPointHEC.requests.get",
+        side_effect=_mock_get,
+    )
+
+    checkpointhec_download_large_email(client, {"entity_id": entity_id})
+    call_api.assert_called()
+    requests_get_mock.assert_called_once_with(presign_url)
     file_result.assert_called_once_with(filename=f"{entity_id}.eml", data=content)
 
 

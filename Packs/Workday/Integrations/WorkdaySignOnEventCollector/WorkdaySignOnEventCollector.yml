@@ -119,5 +119,4 @@ marketplaces:
 - marketplacev2
 - platform
 supportedModules:
-- agentix
 - xsiam
