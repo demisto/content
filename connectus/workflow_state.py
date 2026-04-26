@@ -10,22 +10,21 @@ Data columns (not managed by this script):
   2. Integration Name
   3. Support Level
   4. Provider
-  5. Auth Class
-  6. Auth Detail
+  5. Auth Detail
 
 Workflow columns (in order):
-  7.  auth params set      - ✅ when Auth Class and Auth Detail are verified correct
-  8.  script inputs        - Free text: the inputs/args for the script
-  9.  params required for test - Free text: params needed for testing
-  10. generated manifest   - ✅ when manifest is generated
-  11. wrote code           - ✅ when code is written
-  12. validations passed   - ✅ when demisto-sdk validate passes
-  13. unit tests passed    - ✅ when unit tests pass
-  14. param parity test passes - ✅ when param parity test passes
-  15. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
-  16. auth parity test passes   - ✅ when auth parity test passes (or N/A)
-  17. code reviewed        - ✅ when code review is done
-  18. code merged          - ✅ when code is merged
+  6.  auth params set      - ✅ when Auth Detail is verified correct
+  7.  script inputs        - Free text: the inputs/args for the script
+  8.  params required for test - Free text: params needed for testing
+  9.  generated manifest   - ✅ when manifest is generated
+  10. wrote code           - ✅ when code is written
+  11. validations passed   - ✅ when demisto-sdk validate passes
+  12. unit tests passed    - ✅ when unit tests pass
+  13. param parity test passes - ✅ when param parity test passes
+  14. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
+  15. auth parity test passes   - ✅ when auth parity test passes (or N/A)
+  16. code reviewed        - ✅ when code review is done
+  17. code merged          - ✅ when code is merged
 
 Rules:
   - You must explicitly name the step you are marking as passed.
@@ -99,7 +98,6 @@ DATA_COLUMNS = [
     "Integration Name",
     "Support Level",
     "Provider",
-    "Auth Class",
     "Auth Detail",
 ]
 
@@ -335,10 +333,6 @@ def format_status(row: dict[str, str]) -> str:
     lines.append(f"  Assignee:      {assignee if assignee else '(unassigned)'}")
     lines.append(f"  Support Level: {row.get('Support Level', '')}")
     lines.append(f"  Provider:      {row.get('Provider', '')}")
-
-    # Show Auth Class
-    auth_class = row.get("Auth Class", "").strip()
-    lines.append(f"  Auth Class:    {auth_class if auth_class else '(not set)'}")
     lines.append("")
 
     # Workflow columns
