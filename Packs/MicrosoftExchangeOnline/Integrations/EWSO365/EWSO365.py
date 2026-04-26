@@ -26,6 +26,7 @@ from exchangelib.errors import (
     ErrorFolderNotFound,
     ErrorMailboxMoveInProgress,
     ErrorMailboxStoreUnavailable,
+    ErrorServerBusy,
     MalformedResponseError,
     RateLimitError,
 )
@@ -79,6 +80,7 @@ LAST_RUN_IDS = "ids"
 LAST_RUN_IDS_DICT_REPRESENTATION = "ids_dict"
 LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
+MAX_IDS_CACHE_SIZE = 5000
 
 # Types of filter
 MODIFIED_FILTER = "modified-time"
@@ -1701,12 +1703,38 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             f"last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####"
         )
 
-        # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
-        # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
-        if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
-            ids = current_fetch_ids
-        else:
-            ids = excluded_ids | current_fetch_ids
+        # Always merge current fetch IDs with excluded IDs to prevent re-ingestion of previously fetched emails.
+        # Then prune IDs that are outside the current query window to prevent unbounded growth.
+        excluded_ids_count = len(excluded_ids) if excluded_ids else 0
+        ids = (excluded_ids or {}) | current_fetch_ids
+        demisto.debug(f"IDs merge: {excluded_ids_count} excluded + {len(current_fetch_ids)} current = {len(ids)} merged")
+
+        # Prune IDs that are outside the query window to prevent unbounded growth.
+        # Only prune when time actually progresses (last_incident_run_time > last_fetch_time).
+        # We prune against last_fetch_time (the previous cycle's time), not last_incident_run_time,
+        # because ids_dict stores datetime_created which can be slightly earlier than datetime_received
+        # (used for lastRunTime via incident["occurred"]). Pruning against last_fetch_time is safe
+        # because the EWS query uses datetime_received__gte=lastRunTime, so any email with
+        # datetime_created < last_fetch_time won't appear in future queries.
+        # Legacy entries (empty/None timestamps from old list-based format) are preserved.
+        if last_incident_run_time and last_fetch_time and last_incident_run_time > last_fetch_time:
+            pre_prune_count = len(ids)
+            ids = {msg_id: ts for msg_id, ts in ids.items() if not ts or ts >= last_fetch_time}
+            pruned_count = pre_prune_count - len(ids)
+            if pruned_count > 0:
+                demisto.debug(
+                    f"IDs pruned: removed {pruned_count} entries older than {last_fetch_time}. "
+                    f"Remaining: {len(ids)}"
+                )
+
+        # Hard cap to prevent extreme edge cases from causing unbounded growth.
+        if len(ids) > MAX_IDS_CACHE_SIZE:
+            demisto.info(
+                f"IDs cache size ({len(ids)}) exceeds {MAX_IDS_CACHE_SIZE}. "
+                f"Pruning to most recent {MAX_IDS_CACHE_SIZE} entries."
+            )
+            sorted_ids = sorted(ids.items(), key=lambda x: x[1] or "", reverse=True)
+            ids = dict(sorted_ids[:MAX_IDS_CACHE_SIZE])
 
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
@@ -1723,7 +1751,8 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
         return incidents
 
-    except RateLimitError:
+    except (RateLimitError, ErrorServerBusy) as e:
+        demisto.info(f"Fetch encountered a transient error: {type(e).__name__}: {e}. Preserving last run state and retrying.")
         if LAST_RUN_TIME in last_run:
             last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
         if ERROR_COUNTER not in last_run:
