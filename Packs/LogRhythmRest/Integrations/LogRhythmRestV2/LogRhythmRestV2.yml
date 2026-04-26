@@ -5,7 +5,6 @@ name: LogRhythmRest V2
 display: LogRhythmRest v2
 fromversion: 5.5.0
 category: Analytics & SIEM
-provider: Exabeam
 description: LogRhythm security intelligence.
 configuration:
 - name: url
@@ -17,6 +16,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  display: ''
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -71,12 +71,10 @@ configuration:
   required: false
 - display: Alarm rule name filter
   name: alarm_rule_name_filter
-  defaultvalue: ''
   type: 0
   required: false
 - display: Case tags filter
   name: case_tags_filter
-  defaultvalue: ''
   type: 0
   required: false
 - display: Case status filter
@@ -115,7 +113,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8160132
   isfetch: true
   commands:
   - name: lr-alarms-list
@@ -193,7 +191,6 @@ script:
       - Closed_Monitor
     - name: rbp
       description: 'The alarm rbp.'
-    outputs: []
   - name: lr-alarm-add-comment
     description: 'Updates the Alarm History table with comments in the Comments column based on the alarm ID supplied.'
     arguments:
@@ -203,7 +200,6 @@ script:
     - name: alarm_comment
       description: 'The alarm comment.'
       required: true
-    outputs: []
   - name: lr-alarm-history-list
     description: 'Gets the alarm history details by ID and filter criteria.'
     arguments:
@@ -3637,19 +3633,35 @@ script:
       description: 'Log object.'
     - name: ip_address
       description: 'IP address of the endpoint.'
-    - name: max_message
-      description: 'Maximum number of log messages to query.'
-      defaultValue: "100"
-    - name: query_timeout
-      description: 'The query timeout in seconds.'
-      defaultValue: "60"
-    - name: entity_id
-      description: 'Entity ID.'
-    - description: 'Interval in seconds between each poll.'
+    - name: action
+      description: 'Action taken.'
+    - name: vendor_message_id
+      description: 'Vendor message ID in the log.'
+    - name: status
+      description: 'Log status.'
+    - description: 'Log result.'
+      name: result
+    - name: classification
+      description: 'Log classification.'
+    - description: Destination NAT IP.
+      name: destination_nat_ip
+    - description: NAT IP address of the endpoint.
+      name: nat_ip
+    - description: Source NAT IP.
+      name: source_nat_ip
+    - defaultValue: '100'
+      description: Maximum number of log messages to query.
+      name: max_message
+    - defaultValue: '60'
+      description: The query timeout in seconds.
+      name: query_timeout
+    - description: Entity ID.
+      name: entity_id
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-    - name: page_size
-      description: 'Page size.'
-      defaultValue: "50"
+    - defaultValue: '50'
+      description: Page size.
+      name: page_size
     outputs:
     - type: String
       contextPath: LogRhythm.Search.TaskId
@@ -3949,7 +3961,6 @@ script:
       predefined:
       - Retired
       - Active
-    outputs: []
   - name: lr-networks-list
     description: 'Returns all networks that match the specified criteria.'
     arguments:
@@ -4023,7 +4034,6 @@ script:
     - contextPath: LogRhythm.Network.id
       description: 'The network ID.'
       type: Number
-defaultclassifier: LogRhythm Classifier
-defaultmapperin: LogRhythm Mapper
+  runonce: false
 tests:
 - LogRhythmRestV2-test
