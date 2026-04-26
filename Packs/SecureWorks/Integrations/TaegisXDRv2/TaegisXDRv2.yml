@@ -532,6 +532,36 @@ script:
     - contextPath: TaegisXDR.ShareLink
       description: Results from creating the ShareLink.
     description: Create a ShareLink to a Taegis element, such as an alert or investigation.
+  - name: taegis-fetch-events
+    arguments:
+    - name: ids
+      description: A list of event IDs or string of comma-separated event IDs to return.
+      isArray: true
+    - name: cql_query
+      description: The Taegis CQL query string to use for searching events (e.g. "FROM process EARLIEST=-1d | head 10"). If not defined, defaults to "FROM * EARLIEST=-1m | head 50".
+    - name: limit
+      description: Maximum number of events to return. The limit is injected into the CQL query via "head N". Default is 50.
+      defaultValue: "50"
+    - name: offset
+      description: The number of events to skip before returning results.
+      defaultValue: "0"
+    - name: next
+      description: Pagination cursor token returned from a previous taegis-fetch-events call. Use this to retrieve the next page of results.
+    - name: fields
+      description: The fields to return from the query.
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant provided, the tenant of the generated credentials is used.
+    outputs:
+    - contextPath: TaegisXDR.Events.query
+      description: The CQL query that was executed.
+      type: String
+    - contextPath: TaegisXDR.Events.next
+      description: Pagination cursor token for retrieving the next page of results.
+      type: String
+    - contextPath: TaegisXDR.Events.events
+      description: List of events returned by the query.
+      type: Unknown
+    description: Fetch Taegis events using a CQL query string or a list of event IDs. Supports pagination via the next cursor token returned in results. If no cql_query is provided, defaults to "FROM * EARLIEST=-1m | head 50".
   - name: taegis-add-evidence-to-investigation
     arguments:
     - name: id

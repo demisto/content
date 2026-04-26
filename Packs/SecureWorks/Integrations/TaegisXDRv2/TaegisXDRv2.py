@@ -1732,6 +1732,142 @@ def unarchive_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_events_command(client: Client, env: str, args=None):
+    """
+    Fetch Taegis events using a CQL query string with optional pagination support.
+    Mirrors the Taegis SDK event_query / event_page functionality.
+
+    The limit is injected into the CQL query via 'head N' to control result size.
+    Pagination is handled via the 'next' cursor token returned in each event object.
+    """
+    limit = arg_to_number(args.get("limit", 50))
+    offset = arg_to_number(args.get("offset", 0))
+    cql_query: str = args.get("cql_query") or f"FROM * EARLIEST=-1m | head {limit}"
+
+    fields: str = (
+        args.get("fields")
+        or """
+        id
+        metadata
+        next
+        """
+    )
+
+    if args.get("ids"):
+        # Fetch events by IDs
+        variables: dict[str, Any] = {
+            "ids": argToList(args.get("ids")),
+        }
+        query = f"""
+        query eventsServiceRetrieveEventsById($ids: [String!]) {{
+            eventsServiceRetrieveEventsById(
+                in: {{
+                    iDs: $ids
+                }}
+            ) {{
+                {fields}
+            }}
+        }}
+        """
+        result = client.graphql_run(query=query, variables=variables)
+        try:
+            events = result["data"]["eventsServiceRetrieveEventsById"]
+        except (KeyError, TypeError):
+            raise ValueError(f"Failed to fetch events by ID: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
+    elif args.get("next"):
+        # Fetch next page using pagination cursor
+        variables = {"next": args.get("next")}
+        query = f"""
+        query eventsServiceEventPage($next: String!) {{
+            eventsServiceEventPage(next: $next) {{
+                {fields}
+            }}
+        }}
+        """
+        result = client.graphql_run(query=query, variables=variables)
+        try:
+            events = result["data"]["eventsServiceEventPage"]
+        except (KeyError, TypeError):
+            raise ValueError(f"Failed to fetch events page: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
+    else:
+        # Standard CQL query
+        variables = {
+            "cql_query": cql_query,
+            "limit": limit,
+            "offset": offset,
+        }
+        query = f"""
+        query eventsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {{
+            eventsServiceSearch(
+                in: {{
+                    cql_query: $cql_query,
+                    limit: $limit,
+                    offset: $offset
+                }}
+            ) {{
+                {fields}
+            }}
+        }}
+        """
+        result = client.graphql_run(query=query, variables=variables)
+        try:
+            events = result["data"]["eventsServiceSearch"]
+        except (KeyError, TypeError):
+            raise ValueError(f"Failed to fetch events: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
+
+    if not events:
+        events = []
+
+    # Extract next page cursor from any event that has it
+    next_page = next((e.get("next") for e in events if isinstance(e, dict) and e.get("next")), None)
+
+    readable_events = [
+        {
+            "id": e.get("id"),
+            "Event type": (e.get("metadata") or {}).get("event_type"),
+            "Event time": (e.get("metadata") or {}).get("event_time"),
+            "Tenant id": (e.get("metadata") or {}).get("tenant_id"),
+            "Sensor id": (e.get("metadata") or {}).get("sensor_id"),
+            "Parent process id": e.get("parent_process_id"),
+            "Image path": e.get("image_path"),
+            "command line": e.get("commandline"),
+            "username": e.get("username"),
+        }
+        for e in events
+    ]
+
+    outputs = {
+        "events": events,
+        "next": next_page,
+        "query": cql_query,
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Events",
+        outputs_key_field="query",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            "Taegis Events",
+            readable_events,
+            headers=[
+                "id",
+                "Event type",
+                "Event time",
+                "Tenant id",
+                "Sensor id",
+                "Parent process id",
+                "Image path",
+                "command line",
+                "username",
+            ],
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def test_module(client: Client) -> str:
     """
     Returns success if authentication was successful
@@ -1775,6 +1911,7 @@ def main():
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
         "taegis-fetch-users": fetch_users_command,
         "taegis-isolate-asset": isolate_asset_command,
+        "taegis-fetch-events": fetch_events_command,
         "taegis-update-alert-status": update_alert_status_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
