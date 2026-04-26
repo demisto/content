@@ -132,14 +132,10 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
         # For establishing a secure connection via SSL/TLS protocol - use the 'SSL' option.
         # For establishing a secure connection via Start TLS - use the 'Start TLS' option.
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        if unsecure:
-            # Add support for all CIPHERS_STRING
-            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING, version=get_ssl_version(ssl_version))
-        else:
-            tls = Tls(validate=ssl.CERT_NONE, version=get_ssl_version(ssl_version))
+        tls = get_tls_object(unsecure, ssl_version)
         if port:
-            return Server(host, port=port, use_ssl=unsecure, tls=tls)
-        return Server(host, use_ssl=unsecure, tls=tls)
+            return Server(host, port=port, use_ssl=True, tls=tls)
+        return Server(host, use_ssl=True, tls=tls)
 
     if secure_connection == SSL:  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
