@@ -1,0 +1,40 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: HelloWorld
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: 'https://example.com'
+  section: Connect
+- display: Trust any certificate (not secure)
+  section: Connect
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  section: Connect
+  name: proxy
+  type: 8
+  required: false
+description: Hello World integration for testing purposes.
+display: Hello World
+name: HelloWorld
+script:
+  commands:
+  - name: helloworld-get-events
+    description: Retrieves events from Hello World. (Not implemented)
+    arguments: []
+  dockerimage: demisto/python3:3.12.12.5490952
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
