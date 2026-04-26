@@ -1,6 +1,5 @@
 import email
 import hashlib
-import subprocess
 from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
@@ -196,7 +195,6 @@ def get_client_from_params(params: dict) -> EWSClient:
         azure_cloud=azure_cloud,
         tenant_id=tenant_id,
         self_deployed=self_deployed,
-        log_memory=is_debug_mode(),
         app_name=APP_NAME,
         insecure=insecure,
         proxy=proxy,
@@ -331,13 +329,13 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     """
     Checks if an item is a duplicate based on ID and Timestamp.
 
-    Note:
-    According to RFC 5322, Message-IDs should be enclosed in angle brackets (e.g., <id@domain>).
-    However, EWS search might return id@domain first, while subsequent fetches might add them.
-    This function normalizes both forms to prevent duplication caused by this inconsistency.
+    RFC 5322 defines Message-ID values as ``<id@domain>``, but in practice the same
+    message may appear in different forms across fetches — such as ``id@domain``,
+    ``<id@domain>``, ``id@domain>``, or ``<id@domain`` — and they might change between fetches.
+    To avoid duplicate incidents, we verify all possible forms in exclude_ids.
 
     Features:
-    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>).
+    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>, <abc, abc>).
     2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
     3. Timestamp Logic: Compares stored time vs item time.
 
@@ -352,14 +350,14 @@ def is_item_duplicate(item, exclude_ids, incident_filter):
     clean_id = item.message_id.strip().strip("<>")
 
     found_key = None
-    if clean_id in exclude_ids:
-        found_key = clean_id
-    elif f"<{clean_id}>" in exclude_ids:
-        found_key = f"<{clean_id}>"
+    for candidate in (clean_id, f"<{clean_id}>", f"{clean_id}>", f"<{clean_id}"):
+        if candidate in exclude_ids:
+            found_key = candidate
+            break
 
     if found_key is None:
         return False, None
-
+    demisto.debug(f"Dedup match: {item.message_id=}, {found_key=}, {clean_id=}")
     stored_time = exclude_ids[found_key]
 
     # If stored_time is "" or None, it means it was from an old fetch (List format).
@@ -404,7 +402,6 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
             raw_dict[field] = value
     raw_dict["id"] = item.id
     demisto.debug(f"checking for attachments in email with id {item.id}")
-    log_memory()
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
 
@@ -1402,7 +1399,6 @@ def parse_incident_from_item(item):  # pragma: no cover
     incident = {}
     labels = []
     demisto.debug(f"starting to parse the email with id {item.id} into an incident")
-    log_memory()
     try:
         incident["details"] = item.text_body or item.body
     except AttributeError:
@@ -1608,9 +1604,7 @@ def parse_incident_from_item(item):  # pragma: no cover
 
     incident["labels"] = labels
     demisto.debug(f"Starting to generate rawJSON for incident, from email with id {item.id}")
-    log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
-    log_memory()
     demisto.debug(f"Finished generating rawJSON from email with id {item.id}")
 
     return incident
@@ -1623,7 +1617,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
     :param last_run: last run dict
     :return:
     """
-    log_memory()
     last_run = get_last_run(client, last_run)
     demisto.debug(f"get_last_run: {last_run=}")
     last_fetch_time = last_run.get(LAST_RUN_TIME)
@@ -1748,7 +1741,6 @@ def fetch_last_emails(
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
-    log_memory()
     if since_datetime:
         if incident_filter == RECEIVED_FILTER:
             qs = qs.filter(datetime_received__gte=since_datetime)
@@ -1791,12 +1783,11 @@ def fetch_last_emails(
                     f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
                 )
                 continue
-            demisto.debug(f"Appending {item.subject=}")
+            demisto.debug(f"Appending {item.subject=} with {item.message_id=}")
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
     demisto.debug(f"{APP_NAME} - Got total of {len(result)} from ews query.")
-    log_memory()
     return result
 
 
@@ -2035,11 +2026,6 @@ def main():  # pragma: no cover
             demisto.error(f"Failed starting Process: {ex}")
     else:
         sub_main()
-
-
-def log_memory():
-    if is_debug_mode():
-        demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss,vsz"])!s}')
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
