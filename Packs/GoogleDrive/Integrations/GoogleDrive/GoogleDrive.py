@@ -125,6 +125,8 @@ URL_SUFFIX: dict[str, str] = {
     "FILE_MODIFY_LABEL": "drive/v3/files/{}/modifyLabels",
     "FILE_GET_LABELS": "drive/v3/files/{}/listLabels",
     "FILE_GET_PARENTS": "drive/v2/files/{}/parents",
+    "FILE_MOVE": "drive/v3/files/{}",
+    "FILE_CREATE": "drive/v3/files",
 }
 
 OUTPUT_PREFIX: dict[str, str] = {
@@ -1937,6 +1939,102 @@ def fetch_incidents(
     return incidents, {"last_fetch": last_fetch}
 
 
+@logger
+def file_move_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-file-move
+    Move a file to a different folder by modifying its parent folder references.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    file_id = args.get("file_id", "")
+    add_parent_id = args.get("add_parent_id", "")
+    remove_parent_id = args.get("remove_parent_id", "")
+
+    # user_id can be overridden in the args
+    user_id = args.get("user_id") or client.user_id
+    client.set_authorized_http(scopes=COMMAND_SCOPES["FILES"], subject=user_id)
+
+    url_suffix = URL_SUFFIX["FILE_MOVE"].format(file_id)
+    params = {
+        "addParents": add_parent_id,
+        "removeParents": remove_parent_id,
+        "fields": args.get("fields", "*"),
+        "supportsAllDrives": True,
+    }
+    response = client.http_request(url_suffix=url_suffix, method="PATCH", params=params)
+
+    readable_output = tableToMarkdown(
+        f'File "{file_id}" moved successfully.',
+        response,
+        headers=["id", "name", "mimeType", "parents"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="GoogleDrive.File",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+@logger
+def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-file-create
+    Create a metadata-only file or folder (no content upload).
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    name = args.get("name", "")
+    mime_type = args.get("mime_type", "application/vnd.google-apps.folder")
+    parent_id = args.get("parent_id", "")
+    description = args.get("description", "")
+
+    # user_id can be overridden in the args
+    user_id = args.get("user_id") or client.user_id
+    client.set_authorized_http(scopes=COMMAND_SCOPES["FILES"], subject=user_id)
+
+    url_suffix = URL_SUFFIX["FILE_CREATE"]
+    params = {
+        "fields": args.get("fields", "*"),
+        "supportsAllDrives": True,
+    }
+    body: dict[str, Any] = {
+        "name": name,
+        "mimeType": mime_type,
+    }
+    if parent_id:
+        body["parents"] = [parent_id]
+    if description:
+        body["description"] = description
+
+    response = client.http_request(url_suffix=url_suffix, method="POST", params=params, body=body)
+
+    readable_output = tableToMarkdown(
+        f'Created "{name}" successfully.',
+        response,
+        headers=["id", "name", "mimeType", "parents"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="GoogleDrive.File",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1966,6 +2064,8 @@ def main() -> None:  # pragma: no cover
         "google-drive-get-labels": get_labels_command,
         "google-drive-get-file-labels": get_file_labels_command,
         "google-drive-file-get-parents": file_get_parents,
+        "google-drive-file-move": file_move_command,
+        "google-drive-file-create": file_create_command,
     }
     command = demisto.command()
 

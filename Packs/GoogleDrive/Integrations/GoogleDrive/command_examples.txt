@@ -1,1 +1,3 @@
 !google-drive-file-copy file_id="1O8Gx7DslVpbd-HN7lp4MIN1DDakpw-bHVHCwir2wUlo" copy_title="New Copy"
+!google-drive-file-move file_id="1234567890abcdef" add_parent_id="quarantine_folder_id" remove_parent_id="original_folder_id" user_id="admin@example.com"
+!google-drive-file-create name="Quarantine Folder" mime_type="application/vnd.google-apps.folder" user_id="admin@example.com" parent_id="root"
