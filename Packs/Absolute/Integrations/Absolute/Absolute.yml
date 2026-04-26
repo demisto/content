@@ -817,3 +817,5 @@ script:
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook
+supportedModules:
+- xsiam

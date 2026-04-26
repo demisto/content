@@ -1,0 +1,27 @@
+commonfields:
+  id: XMCyberDashboard
+  version: -1
+name: XMCyberDashboard
+script: ''
+type: python
+tags:
+- widget
+comment: Return the specific data for the XM Cyber Dashboard.
+enabled: true
+args:
+- name: return_type
+  auto: PREDEFINED
+  predefined:
+  - security_score
+  - compromising_exposure
+  - critical_assets
+  - choke_points
+  description: Select the return type to have specific output context for widget.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.12.6922358
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

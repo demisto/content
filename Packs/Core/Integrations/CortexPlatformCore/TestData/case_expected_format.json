@@ -21,7 +21,7 @@
     "creation_time": "2023-01-01T00:00:00Z",
     "critical_severity_issue_count": 2,
     "custom_fields": {
-        "custom_field1": "value1"
+        "field1": "value1"
     },
     "description": "Test Description",
     "high_severity_issue_count": 3,
@@ -55,6 +55,7 @@
     ],
     "predicted_score": 92,
     "resolve_comment": "Issue resolved successfully",
+    "resolve_reason": "false_positive",
     "resolved_timestamp": "2023-01-03T00:00:00Z",
     "rule_based_score": 85,
     "severity": "high",

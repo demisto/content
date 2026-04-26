@@ -87,3 +87,5 @@ tests:
 sectionorder:
 - Connect
 - Collect
+supportedModules:
+- xsiam
