@@ -140,11 +140,13 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-appservice-webapp-update",
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-appservice-webapp-update",
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
@@ -187,12 +189,18 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
     ],
-    "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
-    "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": ["azure-sql-db-threat-policy-update"],
-    "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update"],
-    "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
+    "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update", "azure-keyvault-vault-update"],
+    "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update", "azure-keyvault-vault-update"],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
+        "azure-sql-db-threat-policy-update",
+        "azure-sqldb-security-alert-policy-update",
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
+        "azure-sql-db-threat-policy-update",
+        "azure-sqldb-security-alert-policy-update",
+    ],
+    "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update", "azure-cosmosdb-db-account-update"],
+    "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update", "azure-cosmosdb-db-account-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
@@ -3467,8 +3475,17 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Identity", "Https Only", "Client Cert Enabled"],
         removeNull=True,
     )
+
+    if demisto.command() == "azure-webapp-update":
+        return CommandResults(
+            outputs_prefix="Azure.WebApp",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=md,
+            raw_response=outputs,
+        )
     return CommandResults(
-        outputs_prefix="Azure.WebApp",
+        outputs_prefix="Azure.AppService.WebApp",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -3595,8 +3612,19 @@ def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: 
         headerTransform=string_to_table_header,
     )
 
+    if demisto.command() == "azure-key-vault-update":
+        demisto.debug("The old command name is being used, use the old context.")
+        return CommandResults(
+            outputs_prefix="Azure.KeyVault",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+            readable_output=readable_output,
+            ignore_auto_extract=True,
+        )
+
     return CommandResults(
-        outputs_prefix="Azure.KeyVault",
+        outputs_prefix="Azure.KeyVault.Vault",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -3652,9 +3680,18 @@ def sql_db_threat_policy_update_command(client: AzureClient, params: dict[str, A
         headerTransform=string_to_table_header,
     )
 
+    if demisto.command() == "azure-sql-db-threat-policy-update":
+        demisto.debug("Using the old command name, use old context.")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="Azure.SqlDBThreatPolicy",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.SqlDBThreatPolicy",
+        outputs_prefix="Azure.SqlDB.SecurityAlertPolicies",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -3710,9 +3747,17 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
         subscription_id, resource_group_name, account_name, disable_key_based_metadata_write_access
     )
 
+    if demisto.command() == "azure-cosmos-db-update":
+        return CommandResults(
+            readable_output=f"Updated Cosmos DB {account_name}.",
+            outputs_prefix="Azure.CosmosDB",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        )
     return CommandResults(
         readable_output=f"Updated Cosmos DB {account_name}.",
-        outputs_prefix="Azure.CosmosDB",
+        outputs_prefix="Azure.CosmosDB.DBAccounts",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -4834,11 +4879,15 @@ def main():  # pragma: no cover
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
+            "azure-appservice-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
+            "azure-keyvault-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
+            "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
+            "azure-cosmosdb-db-account-update": cosmosdb_update_command,
             "azure-nsg-security-groups-list": nsg_security_groups_list_command,
             "azure-nsg-security-rule-get": nsg_security_rule_get_command,
             "azure-nsg-security-rules-list": nsg_security_rules_list_command,
