@@ -152,7 +152,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         ssl = "ssl"  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
         if argToBoolean(params.get("hsts_header", False)):
-            extra_headers = 'add_header Strict-Transport-Security "max-age=315f0; includeSubDomains" always;'
+            extra_headers = 'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;'
     credentials = params.get("credentials") or {}
     if credentials.get("identifier"):
         extra_cache_keys.append("$http_authorization")
@@ -329,6 +329,8 @@ def parse_nginx_time_to_seconds(time_str: str) -> int:
     if not time_str:
         return 0
     time_str = time_str.strip()
+    if not time_str:
+        return 0
     if time_str.isdigit():
         return int(time_str)
 
