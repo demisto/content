@@ -1,0 +1,27 @@
+{
+    "Name": "Adobe",
+    "Title": "Adobe",
+    "Domain": "adobe.com",
+    "BreachDate": "2013-10-04",
+    "AddedDate": "2013-12-04T00:00:00Z",
+    "ModifiedDate": "2022-05-15T23:52:49Z",
+    "PwnCount": 152445165,
+    "Description": "In October 2013, 153 million Adobe accounts were breached.",
+    "LogoPath": "https://logos.haveibeenpwned.com/Adobe.png",
+    "Attribution": null,
+    "DisclosureUrl": null,
+    "DataClasses": [
+        "Email addresses",
+        "Password hints",
+        "Passwords",
+        "Usernames"
+    ],
+    "IsVerified": true,
+    "IsFabricated": false,
+    "IsSensitive": false,
+    "IsRetired": false,
+    "IsSpamList": false,
+    "IsMalware": false,
+    "IsSubscriptionFree": false,
+    "IsStealerLog": false
+}

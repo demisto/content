@@ -1,10 +1,21 @@
+import json
+import os
 import sys
 from unittest.mock import MagicMock
 
 import demistomock as demisto
 import PwnedV2
 import pytest
-from PwnedV2 import error_handler, pwned_domain_command, pwned_email_command, pwned_username_command
+from PwnedV2 import (
+    error_handler,
+    pwned_domain_command,
+    pwned_email_command,
+    pwned_username_command,
+    pwned_breaches_for_domain_list_command,
+    pwned_subscribed_domains_list_command,
+    pwned_latest_breach_get_command,
+    pwned_breach_get_command,
+)
 
 RETURN_ERROR_TARGET = "PwnedV2.return_error"
 
@@ -266,3 +277,328 @@ def test_error_handler_other_status_code(mocker):
     error_handler(res)
 
     assert expected_message in demisto.results.call_args.args[0].get("Contents")
+
+
+def load_test_data(filename: str) -> dict | list:
+    """Load a JSON test data file from the test_data directory."""
+    test_data_dir = os.path.join(os.path.dirname(__file__), "test_data")
+    with open(os.path.join(test_data_dir, filename)) as f:
+        return json.load(f)
+
+
+def test_pwned_breaches_for_domain_list_command_no_results(mocker):
+    """Unit test
+    Given
+    - A domain to check for breaches
+    When
+    - The API returns no results (404 / None) for the domain
+    Then
+    - Verify the command returns the expected "no email addresses" markdown and empty context
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mocker.patch("PwnedV2.http_request", return_value=None)
+
+    md_list, ec_list, api_res_list = pwned_breaches_for_domain_list_command({"domain": "example.com"})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    assert "The domain does not have any email addresses" in md_list[0]
+    assert ec_list[0] == {}
+    assert api_res_list[0] is None
+
+
+def test_pwned_breaches_for_domain_list_command_with_results(mocker):
+    """Unit test
+    Given
+    - A domain to check for breaches
+    When
+    - The API returns breached email addresses for the domain
+    Then
+    - Verify the command returns a markdown table with Domain, Account, and Breaches columns
+    - Verify the entry context contains the breached domain data under Domain.Pwned-V2.Breaches
+    - Verify the raw response matches the API response
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mock_response = load_test_data("breached_domain_response.json")
+    mocker.patch("PwnedV2.http_request", return_value=mock_response)
+
+    md_list, ec_list, api_res_list = pwned_breaches_for_domain_list_command({"domain": "example.com"})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    # Verify the raw API response is returned
+    assert api_res_list[0] == mock_response
+    # Verify the markdown contains breach information
+    assert "Breaches for domain" in md_list[0]
+    assert "alias1" in md_list[0]
+    assert "Adobe" in md_list[0]
+    # Verify the entry context contains the breached domain data
+    assert ec_list[0] == {"Domain.Pwned-V2.Breaches": mock_response}
+
+
+def test_pwned_subscribed_domains_list_command_no_results(mocker):
+    """Unit test
+    Given
+    - A request to list subscribed domains
+    When
+    - The API returns no results (None)
+    Then
+    - Verify the command returns the expected "no subscribed domains" message
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mocker.patch("PwnedV2.http_request", return_value=None)
+
+    md_list, ec_list, api_res_list = pwned_subscribed_domains_list_command({})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    assert "No subscribed domains found." in md_list[0]
+    assert ec_list[0] == {}
+    assert api_res_list[0] is None
+
+
+def test_pwned_subscribed_domains_list_command_with_results(mocker):
+    """Unit test
+    Given
+    - A request to list subscribed domains
+    When
+    - The API returns a list of subscribed domain objects
+    Then
+    - Verify the command returns a markdown table with domain information
+    - Verify the entry context contains the subscribed domain data under Pwned-V2.SubscribedDomain
+    - Verify the raw response matches the API response
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mock_response = load_test_data("subscribed_domains_response.json")
+    mocker.patch("PwnedV2.http_request", return_value=mock_response)
+
+    md_list, ec_list, api_res_list = pwned_subscribed_domains_list_command({})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    # Verify the raw API response is returned
+    assert api_res_list[0] == mock_response
+    # Verify the markdown contains domain information
+    assert "Subscribed Domains" in md_list[0]
+    assert "example.com" in md_list[0]
+    assert "test.org" in md_list[0]
+    # Verify the entry context contains the subscribed domain data
+    assert ec_list[0] == {"Pwned-V2.SubscribedDomain": mock_response}
+
+
+def test_pwned_latest_breach_get_command_no_results(mocker):
+    """Unit test
+    Given
+    - A request to get the latest breach
+    When
+    - The API returns no results (None)
+    Then
+    - Verify the command returns the expected "no latest breach" message
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mocker.patch("PwnedV2.http_request", return_value=None)
+
+    md_list, ec_list, api_res_list = pwned_latest_breach_get_command({})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    assert "No latest breach found." in md_list[0]
+    assert ec_list[0] == {}
+    assert api_res_list[0] is None
+
+
+def test_pwned_latest_breach_get_command_with_results(mocker):
+    """Unit test
+    Given
+    - A request to get the latest breach
+    When
+    - The API returns a breach object
+    Then
+    - Verify the command returns a markdown table with breach details
+    - Verify the entry context is built using domain_to_entry_context
+    - Verify the raw response matches the API response
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mock_response = load_test_data("latest_breach_response.json")
+    mocker.patch("PwnedV2.http_request", return_value=mock_response)
+
+    md_list, ec_list, api_res_list = pwned_latest_breach_get_command({})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    # Verify the raw API response is returned
+    assert api_res_list[0] == mock_response
+    # Verify the markdown contains breach details
+    assert "Latest Breach" in md_list[0]
+    assert "latestbreach.com" in md_list[0]
+    # Verify the entry context is built with domain_to_entry_context
+    expected_ec = {
+        "Domain(val.Name && val.Name == obj.Name)": {
+            "Name": "latestbreach.com",
+            "Pwned-V2": {
+                "Compromised": {"Vendor": "Have I Been Pwned? V2", "Reporters": "Latest Breach"},
+                "Name": "LatestBreach",
+                "Title": "Latest Breach",
+                "Domain": "latestbreach.com",
+                "BreachDate": "2024-12-01",
+                "AddedDate": "2025-01-15T00:00:00Z",
+                "ModifiedDate": "2025-01-15T00:00:00Z",
+                "PwnCount": 50000,
+                "Description": "A recent breach affecting 50,000 accounts.",
+                "LogoPath": "https://logos.haveibeenpwned.com/LatestBreach.png",
+                "Attribution": None,
+                "DisclosureUrl": None,
+                "DataClasses": ["Email addresses", "Passwords"],
+                "IsVerified": True,
+                "IsFabricated": False,
+                "IsSensitive": False,
+                "IsRetired": False,
+                "IsSpamList": False,
+                "IsMalware": False,
+                "IsSubscriptionFree": False,
+                "IsStealerLog": False,
+            },
+            "Malicious": {"Vendor": "Have I Been Pwned? V2", "Description": "The domain has been compromised"},
+        },
+        "DBotScore": {
+            "Indicator": "latestbreach.com",
+            "Type": "domain",
+            "Vendor": "Have I Been Pwned? V2",
+            "Score": 3,
+            "Reliability": "A - Completely reliable",
+        },
+    }
+    assert ec_list[0] == expected_ec
+
+
+def test_pwned_breach_get_command_no_results(mocker):
+    """Unit test
+    Given
+    - A breach name to look up
+    When
+    - The API returns no results (404 / None)
+    Then
+    - Verify the command returns the expected "no breach found" message
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mocker.patch("PwnedV2.http_request", return_value=None)
+
+    md_list, ec_list, api_res_list = pwned_breach_get_command({"breach_name": "NonExistent"})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    assert "No breach found for name: NonExistent" in md_list[0]
+    assert ec_list[0] == {}
+    assert api_res_list[0] is None
+
+
+def test_pwned_breach_get_command_with_results(mocker):
+    """Unit test
+    Given
+    - A breach name to look up
+    When
+    - The API returns a breach object for the given name
+    Then
+    - Verify the command returns a markdown table with breach details
+    - Verify the entry context is built using domain_to_entry_context
+    - Verify the raw response matches the API response
+    """
+    PwnedV2.API_KEY = "test"
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"integrationReliability": "A - Completely reliable", "credentials_api_key": {"password": "test"}},
+    )
+    mock_response = load_test_data("single_breach_response.json")
+    mocker.patch("PwnedV2.http_request", return_value=mock_response)
+
+    md_list, ec_list, api_res_list = pwned_breach_get_command({"breach_name": "Adobe"})
+
+    assert len(md_list) == 1
+    assert len(ec_list) == 1
+    assert len(api_res_list) == 1
+    # Verify the raw API response is returned
+    assert api_res_list[0] == mock_response
+    # Verify the markdown contains breach details
+    assert "Adobe" in md_list[0]
+    assert "adobe.com" in md_list[0]
+    # Verify the entry context is built with domain_to_entry_context
+    expected_ec = {
+        "Domain(val.Name && val.Name == obj.Name)": {
+            "Name": "adobe.com",
+            "Pwned-V2": {
+                "Compromised": {"Vendor": "Have I Been Pwned? V2", "Reporters": "Adobe"},
+                "Name": "Adobe",
+                "Title": "Adobe",
+                "Domain": "adobe.com",
+                "BreachDate": "2013-10-04",
+                "AddedDate": "2013-12-04T00:00:00Z",
+                "ModifiedDate": "2022-05-15T23:52:49Z",
+                "PwnCount": 152445165,
+                "Description": "In October 2013, 153 million Adobe accounts were breached.",
+                "LogoPath": "https://logos.haveibeenpwned.com/Adobe.png",
+                "Attribution": None,
+                "DisclosureUrl": None,
+                "DataClasses": ["Email addresses", "Password hints", "Passwords", "Usernames"],
+                "IsVerified": True,
+                "IsFabricated": False,
+                "IsSensitive": False,
+                "IsRetired": False,
+                "IsSpamList": False,
+                "IsMalware": False,
+                "IsSubscriptionFree": False,
+                "IsStealerLog": False,
+            },
+            "Malicious": {"Vendor": "Have I Been Pwned? V2", "Description": "The domain has been compromised"},
+        },
+        "DBotScore": {
+            "Indicator": "adobe.com",
+            "Type": "domain",
+            "Vendor": "Have I Been Pwned? V2",
+            "Score": 3,
+            "Reliability": "A - Completely reliable",
+        },
+    }
+    assert ec_list[0] == expected_ec

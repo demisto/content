@@ -1,5 +1,9 @@
-pwned-username username="jondon"
-domain domain="adobe.com"
-pwned-domain domain="adobe.com"
-email email="michaljordan@gmail.com"
-pwned-email email="michaljordan@gmail.com"
+!pwned-username username="jondon"
+!domain domain="adobe.com"
+!pwned-domain domain="adobe.com"
+!email email="michaljordan@gmail.com"
+!pwned-email email="michaljordan@gmail.com"
+!pwned-breaches-for-domain-list domain="adobe.com"
+!pwned-subscribed-domains-list
+!pwned-latest-breach-get
+!pwned-breach-get breach_name="Adobe"

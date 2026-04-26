@@ -1,0 +1,25 @@
+{
+    "Name": "LatestBreach",
+    "Title": "Latest Breach",
+    "Domain": "latestbreach.com",
+    "BreachDate": "2024-12-01",
+    "AddedDate": "2025-01-15T00:00:00Z",
+    "ModifiedDate": "2025-01-15T00:00:00Z",
+    "PwnCount": 50000,
+    "Description": "A recent breach affecting 50,000 accounts.",
+    "LogoPath": "https://logos.haveibeenpwned.com/LatestBreach.png",
+    "Attribution": null,
+    "DisclosureUrl": null,
+    "DataClasses": [
+        "Email addresses",
+        "Passwords"
+    ],
+    "IsVerified": true,
+    "IsFabricated": false,
+    "IsSensitive": false,
+    "IsRetired": false,
+    "IsSpamList": false,
+    "IsMalware": false,
+    "IsSubscriptionFree": false,
+    "IsStealerLog": false
+}
