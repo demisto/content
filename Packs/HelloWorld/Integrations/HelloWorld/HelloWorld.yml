@@ -1,4 +1,4 @@
-category: Utilities
+category: NonStandardCategory
 provider: Open Source
 sectionorder:
 - Connect
@@ -87,6 +87,10 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- name: api_token_insecure
+  type: 0
+  required: true
+  section: Connect
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
