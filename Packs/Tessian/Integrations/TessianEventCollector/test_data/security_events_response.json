@@ -1,0 +1,36 @@
+{
+    "checkpoint": "test_checkpoint_abc123",
+    "additional_results": true,
+    "results": [
+        {
+            "id": "event-001",
+            "type": "inbound_email_security",
+            "created_at": "2024-06-15T10:30:00Z",
+            "updated_at": "2024-06-15T10:30:00Z",
+            "portal_link": "https://example.tessian-platform.com/events/event-001",
+            "from": "attacker@example.com",
+            "to": "user@example.com",
+            "subject": "Urgent: Account Verification Required"
+        },
+        {
+            "id": "event-002",
+            "type": "outbound_data_loss",
+            "created_at": "2024-06-15T11:00:00Z",
+            "updated_at": "2024-06-15T12:00:00Z",
+            "portal_link": "https://example.tessian-platform.com/events/event-002",
+            "from": "employee@example.com",
+            "to": "external@example.com",
+            "subject": "FW: Confidential Report"
+        },
+        {
+            "id": "event-003",
+            "type": "account_takeover",
+            "created_at": "2024-06-15T12:30:00Z",
+            "updated_at": "2024-06-15T12:30:00Z",
+            "portal_link": "https://example.tessian-platform.com/events/event-003",
+            "from": "sender@example.com",
+            "to": "target@example.com",
+            "subject": "Wire Transfer Request"
+        }
+    ]
+}

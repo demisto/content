@@ -1,0 +1,86 @@
+category: Analytics & SIEM
+provider: Proofpoint
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: TessianEventCollector
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  additionalinfo: 'Proofpoint Tessian portal URL (e.g., https://{subdomain}.tessian-platform.com or https://{subdomain}.tessian-app.com).'
+  section: Connect
+- displaypassword: API Token
+  additionalinfo: 'API Token generated in the Proofpoint Portal under Integrations > Security Integrations > Proofpoint API.'
+  name: api_key
+  type: 9
+  hiddenusername: true
+  required: true
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  section: Collect
+  required: false
+- name: max_fetch
+  display: Maximum number of security events per fetch
+  type: 0
+  defaultvalue: '1000'
+  additionalinfo: 'Maximum number of security events to fetch per cycle. Each cycle makes up to 10 API calls of 100 events each (max 1000).'
+  section: Collect
+  required: false
+- defaultvalue: 1
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Collects security events from Proofpoint Tessian for XSIAM ingestion.
+display: Tessian Event Collector
+name: TessianEventCollector
+script:
+  commands:
+  - name: tessian-get-events
+    description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and API request limitation exceeding.
+    arguments:
+    - name: limit
+      description: The maximum number of events to return. Default is 100. Maximum is 1000.
+      defaultValue: '100'
+    - name: created_after
+      description: 'Only include events created after this time. ISO 8601 format (e.g., 2024-01-01T00:00:00Z).'
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command creates events in XSIAM; otherwise, it only displays them.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/fastapi:0.125.0.7178097
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
