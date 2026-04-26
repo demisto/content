@@ -4,6 +4,5 @@ name: Jira Parsing Rule
 rules: ''
 samples: ''
 supportedModules:
-- agentix
 - xsiam
 tags: []
