@@ -2896,6 +2896,34 @@ script:
       description: The mailbox that you want to modify.
       required: true
     description: Disable mail forwarding for a given user.
+  - name: ews-check-connection
+    arguments: []
+    description: Diagnostic command that tests the connection to Exchange Online by independently validating Azure AD token acquisition and Exchange Online REST endpoint connectivity. Unlike test-module, this command captures the real error from Azure AD or Exchange Online before Connect-ExchangeOnline has a chance to swallow it inside a JSON parsing error.
+  - name: ews-get-token
+    arguments: []
+    outputs:
+    - contextPath: EWS.Token.access_token
+      description: The OAuth2 access token for Exchange Online.
+      type: String
+    - contextPath: EWS.Token.token_type
+      description: The token type (Bearer).
+      type: String
+    - contextPath: EWS.Token.expires_in
+      description: Token lifetime in seconds.
+      type: Number
+    - contextPath: EWS.Token.audience
+      description: The token audience (resource the token is valid for).
+      type: String
+    - contextPath: EWS.Token.app_id
+      description: The application ID from the token claims.
+      type: String
+    - contextPath: EWS.Token.tenant_id
+      description: The Azure AD tenant ID from the token claims.
+      type: String
+    - contextPath: EWS.Token.roles
+      description: The Exchange roles granted to the application.
+      type: String
+    description: Acquires an OAuth2 access token from Azure AD using the configured certificate and returns it along with decoded token claims (audience, roles, tenant ID, expiry). Useful for testing token acquisition independently or for manual REST API calls outside of XSOAR.
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.6863931

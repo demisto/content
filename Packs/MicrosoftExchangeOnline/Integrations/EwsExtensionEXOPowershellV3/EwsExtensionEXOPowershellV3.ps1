@@ -101,6 +101,9 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
 }
 
 function ParseRawResponse([PSObject]$response) {
+    if ($null -eq $response) {
+        return @()
+    }
     $items = @()
     ForEach ($item in $response){
         if ($item -Is [HashTable])
@@ -2663,6 +2666,841 @@ function TestModuleCommand($client)
     }
 
 }
+
+function CheckConnectionCommand($client)
+{
+    <#
+        .DESCRIPTION
+        Diagnostic command that tests the connection to Exchange Online by independently validating
+        Azure AD token acquisition and Exchange Online REST endpoint connectivity.
+        Unlike test-module, this command captures the real error from Azure AD / Exchange Online
+        before Connect-ExchangeOnline has a chance to swallow it inside a Newtonsoft.Json.JsonReaderException.
+
+        .PARAMETER client
+        ExchangeOnlinePowershellV3Client instance with certificate, app_id, and organization.
+    #>
+    $results = @()
+    $results += "=== EWS Extension Connection Check ==="
+    $results += "Timestamp: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+    $results += "Organization: $($client.organization)"
+    $results += "AppID: $($client.app_id)"
+
+    # --- Egress IP ---
+    $results += ""
+    $results += "=== Egress IP ==="
+    try {
+        $egressIP = Invoke-RestMethod -Uri "https://api.ipify.org" -TimeoutSec 5 -ErrorAction Stop
+        $results += "Public IP: $egressIP"
+    } catch {
+        try {
+            $egressIP = Invoke-RestMethod -Uri "https://checkip.amazonaws.com" -TimeoutSec 5 -ErrorAction Stop
+            $results += "Public IP: $($egressIP.Trim())"
+        } catch {
+            $results += "Public IP: Unable to determine ($($_.Exception.Message))"
+        }
+    }
+
+    # --- Environment Info ---
+    $results += ""
+    $results += "=== Environment ==="
+    $results += "PowerShell Version: $($PSVersionTable.PSVersion)"
+    $results += "PowerShell Edition: $($PSVersionTable.PSEdition)"
+    $results += ".NET Runtime: $([System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription)"
+    $results += "OS: $([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)"
+    try {
+        $exoModule = Get-Module ExchangeOnlineManagement -ListAvailable -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($exoModule) {
+            $results += "ExchangeOnlineManagement Module Version: $($exoModule.Version)"
+        } else {
+            $results += "ExchangeOnlineManagement Module: NOT FOUND"
+        }
+    } catch {
+        $results += "ExchangeOnlineManagement Module: Unable to determine ($($_.Exception.Message))"
+    }
+
+    # --- Certificate Info ---
+    $results += ""
+    $results += "=== Certificate ==="
+    $results += "Thumbprint: $($client.certificate.Thumbprint)"
+    $results += "Subject: $($client.certificate.Subject)"
+    $results += "Issuer: $($client.certificate.Issuer)"
+    $results += "Serial Number: $($client.certificate.SerialNumber)"
+    $results += "Not Before: $($client.certificate.NotBefore)"
+    $results += "Not After: $($client.certificate.NotAfter)"
+    $results += "Has Private Key: $($client.certificate.HasPrivateKey)"
+    $results += "Key Algorithm: $($client.certificate.PublicKey.Oid.FriendlyName)"
+    try {
+        $keySize = $client.certificate.PublicKey.Key.KeySize
+        $results += "Key Size: $keySize bits"
+    } catch {
+        $results += "Key Size: Unable to determine"
+    }
+
+    if (-not $client.certificate.HasPrivateKey) {
+        $results += "WARNING: Certificate does not have a private key!"
+    }
+    if ($client.certificate.NotAfter -lt (Get-Date)) {
+        $results += "WARNING: Certificate has expired on $($client.certificate.NotAfter)!"
+    }
+    $daysUntilExpiry = ($client.certificate.NotAfter - (Get-Date)).Days
+    if ($daysUntilExpiry -ge 0 -and $daysUntilExpiry -le 30) {
+        $results += "WARNING: Certificate expires in $daysUntilExpiry days!"
+    }
+
+    # --- DNS Resolution ---
+    $results += ""
+    $results += "=== DNS Resolution ==="
+    foreach ($hostname in @("login.microsoftonline.com", "outlook.office365.com")) {
+        try {
+            $addresses = [System.Net.Dns]::GetHostAddresses($hostname)
+            $ipList = ($addresses | ForEach-Object { $_.IPAddressToString }) -join ", "
+            $results += "${hostname}: $ipList"
+        } catch {
+            $results += "${hostname}: FAILED - $($_.Exception.Message)"
+        }
+    }
+
+    # --- TLS Handshake Validation ---
+    $results += ""
+    $results += "=== TLS Handshake ==="
+    foreach ($hostname in @("login.microsoftonline.com", "outlook.office365.com")) {
+        try {
+            $tcpClient = [System.Net.Sockets.TcpClient]::new()
+            $tcpClient.Connect($hostname, 443)
+            $sslStream = [System.Net.Security.SslStream]::new(
+                $tcpClient.GetStream(),
+                $false,
+                { param($sender, $cert, $chain, $errors) $true }  # Accept all certs for diagnostic purposes
+            )
+            $sslStream.AuthenticateAsClient($hostname)
+            $results += "${hostname}:"
+            $results += "  TLS Version: $($sslStream.SslProtocol)"
+            $results += "  Cipher: $($sslStream.CipherAlgorithm) ($($sslStream.CipherStrength)-bit)"
+            $remoteCert = $sslStream.RemoteCertificate
+            if ($remoteCert) {
+                $x509 = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($remoteCert)
+                $results += "  Remote Cert Subject: $($x509.Subject)"
+                $results += "  Remote Cert Issuer: $($x509.Issuer)"
+                $results += "  Remote Cert Expires: $($x509.NotAfter)"
+                # Check if the certificate is issued by Microsoft
+                if ($x509.Issuer -notmatch "Microsoft|DigiCert|Baltimore") {
+                    $results += "  WARNING: Remote certificate issuer is NOT Microsoft - a proxy may be intercepting traffic!"
+                }
+            }
+            $sslStream.Close()
+            $tcpClient.Close()
+        } catch {
+            $results += "${hostname}: TLS handshake FAILED - $($_.Exception.Message)"
+        }
+    }
+
+    # --- Proxy Detection ---
+    $results += ""
+    $results += "=== Proxy Configuration ==="
+    try {
+        $defaultProxy = [System.Net.WebRequest]::DefaultWebProxy
+        if ($defaultProxy) {
+            foreach ($testUrl in @("https://login.microsoftonline.com", "https://outlook.office365.com")) {
+                $proxyUri = $defaultProxy.GetProxy([Uri]$testUrl)
+                if ($proxyUri.AbsoluteUri -eq $testUrl -or $proxyUri.AbsoluteUri -eq "$testUrl/") {
+                    $results += "${testUrl}: Direct (no proxy)"
+                } else {
+                    $results += "${testUrl}: Via proxy $($proxyUri.AbsoluteUri)"
+                    $results += "  WARNING: Traffic is routed through a proxy - this may cause connection issues"
+                }
+            }
+            if ($defaultProxy.Credentials) {
+                $results += "Proxy Authentication: Configured"
+            } else {
+                $results += "Proxy Authentication: None"
+            }
+        } else {
+            $results += "No system proxy configured"
+        }
+    } catch {
+        $results += "Proxy detection failed: $($_.Exception.Message)"
+    }
+
+    # --- OpenID Configuration Discovery (validates tenant) ---
+    $results += ""
+    $results += "=== Tenant Validation ==="
+    $openIdUrl = "https://login.microsoftonline.com/$($client.organization)/.well-known/openid-configuration"
+    $results += "OpenID Config URL: $openIdUrl"
+    try {
+        $openIdConfig = Invoke-RestMethod -Uri $openIdUrl -Method GET -ErrorAction Stop
+        $results += "Result: SUCCESS - Tenant is valid"
+        $results += "Token Endpoint: $($openIdConfig.token_endpoint)"
+        $results += "Tenant Region Scope: $($openIdConfig.tenant_region_scope)"
+        if ($openIdConfig.cloud_instance_name) {
+            $results += "Cloud Instance: $($openIdConfig.cloud_instance_name)"
+        }
+    } catch {
+        $results += "Result: FAILED - Tenant may not exist or is unreachable"
+        $results += "Error: $($_.Exception.Message)"
+    }
+
+    # --- Time Sync Check ---
+    $results += ""
+    $results += "=== Time Sync ==="
+    try {
+        $timeCheckResponse = Invoke-WebRequest -Uri "https://login.microsoftonline.com" -Method HEAD -ErrorAction Stop -UseBasicParsing
+        $serverDateHeader = $timeCheckResponse.Headers["Date"]
+        if ($serverDateHeader) {
+            $serverTime = [DateTime]::Parse($serverDateHeader).ToUniversalTime()
+            $localTime = (Get-Date).ToUniversalTime()
+            $skew = [Math]::Abs(($localTime - $serverTime).TotalSeconds)
+            $results += "Local Time (UTC): $($localTime.ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+            $results += "Server Time (UTC): $($serverTime.ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+            $results += "Clock Skew: $([Math]::Round($skew, 1)) seconds"
+            if ($skew -gt 300) {
+                $results += "WARNING: Clock skew exceeds 5 minutes! JWT validation will fail. Sync the system clock."
+            } elseif ($skew -gt 60) {
+                $results += "WARNING: Clock skew exceeds 1 minute. This may cause intermittent authentication failures."
+            } else {
+                $results += "Clock skew is within acceptable range."
+            }
+        } else {
+            $results += "Unable to determine server time (no Date header in response)"
+        }
+    } catch {
+        $results += "Time sync check failed: $($_.Exception.Message)"
+    }
+
+    # Build JWT client assertion signed with the certificate
+    $tokenEndpoint = "https://login.microsoftonline.com/$($client.organization)/oauth2/v2.0/token"
+    $results += ""
+    $results += "=== Step 1: Azure AD Token Acquisition ==="
+    $results += "Token endpoint: $tokenEndpoint"
+
+    $thumbprint = $client.certificate.Thumbprint
+    $thumbprintBytes = for ($i = 0; $i -lt $thumbprint.Length; $i += 2) {
+        [Convert]::ToByte($thumbprint.Substring($i, 2), 16)
+    }
+    $x5t = [System.Convert]::ToBase64String([byte[]]$thumbprintBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $jwtHeader = @{ alg = "RS256"; typ = "JWT"; x5t = $x5t } | ConvertTo-Json -Compress
+    $headerB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtHeader)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $now = [int][double]::Parse((Get-Date -Date ((Get-Date).ToUniversalTime()) -UFormat %s))
+    $jwtPayload = @{
+        aud = $tokenEndpoint
+        exp = $now + 600
+        iss = $client.app_id
+        jti = [guid]::NewGuid().ToString()
+        nbf = $now
+        sub = $client.app_id
+    } | ConvertTo-Json -Compress
+    $payloadB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtPayload)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $dataToSign = "$headerB64.$payloadB64"
+    $rsaKey = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($client.certificate)
+    $sigBytes = $rsaKey.SignData(
+        [System.Text.Encoding]::UTF8.GetBytes($dataToSign),
+        [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+        [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+    )
+    $sigB64 = [System.Convert]::ToBase64String($sigBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $tokenRequestBody = @{
+        client_id             = $client.app_id
+        scope                 = "https://outlook.office365.com/.default"
+        client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        client_assertion      = "$dataToSign.$sigB64"
+        grant_type            = "client_credentials"
+    }
+
+    # Step 1: Test Azure AD token acquisition
+    $token = $null
+    $tokenSuccess = $false
+    try {
+        $tokenResponse = Invoke-RestMethod -Uri $tokenEndpoint -Method POST -Body $tokenRequestBody `
+            -ContentType "application/x-www-form-urlencoded" -ErrorAction Stop
+        $token = $tokenResponse.access_token
+        $tokenSuccess = $true
+        $results += "Result: SUCCESS - Token acquired from Azure AD"
+        $results += "Token type: $($tokenResponse.token_type)"
+        $results += "Expires in: $($tokenResponse.expires_in) seconds"
+
+        # Decode and inspect token claims
+        try {
+            $tokenParts = $token.Split('.')
+            if ($tokenParts.Count -ge 2) {
+                $claimsB64 = $tokenParts[1]
+                # Add padding if needed
+                switch ($claimsB64.Length % 4) {
+                    2 { $claimsB64 += "==" }
+                    3 { $claimsB64 += "=" }
+                }
+                $claimsB64 = $claimsB64.Replace('-', '+').Replace('_', '/')
+                $claimsJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($claimsB64))
+                $claims = $claimsJson | ConvertFrom-Json
+
+                $results += ""
+                $results += "--- Token Claims ---"
+                $results += "Audience (aud): $($claims.aud)"
+                $results += "Issuer (iss): $($claims.iss)"
+                $results += "App ID (appid): $($claims.appid)"
+                if ($claims.roles) {
+                    $results += "Roles: $($claims.roles -join ', ')"
+                } else {
+                    $results += "Roles: NONE - The app may not have Exchange permissions assigned"
+                }
+                if ($claims.scp) {
+                    $results += "Scopes (scp): $($claims.scp)"
+                }
+                $tokenExpiry = [DateTimeOffset]::FromUnixTimeSeconds($claims.exp).UtcDateTime
+                $results += "Token Expiry: $($tokenExpiry.ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+                if ($claims.tid) {
+                    $results += "Tenant ID (tid): $($claims.tid)"
+                }
+            }
+        } catch {
+            $results += "Token claims inspection: Unable to decode ($($_.Exception.Message))"
+        }
+    }
+    catch {
+        $realError = $_.ErrorDetails.Message
+        $results += "Result: FAILED"
+        if ($realError) {
+            try {
+                $parsed = $realError | ConvertFrom-Json
+                $results += "Error: $($parsed.error)"
+                $results += "Error Description: $($parsed.error_description)"
+                if ($parsed.error_codes) {
+                    $results += "Error Codes: $($parsed.error_codes -join ', ')"
+                }
+                if ($parsed.trace_id) {
+                    $results += "Trace ID: $($parsed.trace_id)"
+                }
+                if ($parsed.correlation_id) {
+                    $results += "Correlation ID: $($parsed.correlation_id)"
+                }
+            } catch {
+                $results += "Raw error response: $realError"
+            }
+        } else {
+            $results += "Exception: $($_.Exception.Message)"
+        }
+    }
+
+    # --- Certificate Thumbprint Match via Microsoft Graph ---
+    $results += ""
+    $results += "=== Certificate Registration Check (Microsoft Graph) ==="
+    if ($tokenSuccess -and $token) {
+        try {
+            # Request a Graph token using the same certificate
+            $graphTokenEndpoint = "https://login.microsoftonline.com/$($client.organization)/oauth2/v2.0/token"
+
+            # Reuse the JWT signing infrastructure but with Graph scope
+            $graphNow = [int][double]::Parse((Get-Date -Date ((Get-Date).ToUniversalTime()) -UFormat %s))
+            $graphPayload = @{
+                aud = $graphTokenEndpoint
+                exp = $graphNow + 600
+                iss = $client.app_id
+                jti = [guid]::NewGuid().ToString()
+                nbf = $graphNow
+                sub = $client.app_id
+            } | ConvertTo-Json -Compress
+            $graphPayloadB64 = [System.Convert]::ToBase64String(
+                [System.Text.Encoding]::UTF8.GetBytes($graphPayload)
+            ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+            $graphDataToSign = "$headerB64.$graphPayloadB64"
+            $graphSigBytes = $rsaKey.SignData(
+                [System.Text.Encoding]::UTF8.GetBytes($graphDataToSign),
+                [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+                [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+            )
+            $graphSigB64 = [System.Convert]::ToBase64String($graphSigBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+            $graphTokenBody = @{
+                client_id             = $client.app_id
+                scope                 = "https://graph.microsoft.com/.default"
+                client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                client_assertion      = "$graphDataToSign.$graphSigB64"
+                grant_type            = "client_credentials"
+            }
+
+            $graphTokenResponse = Invoke-RestMethod -Uri $graphTokenEndpoint -Method POST -Body $graphTokenBody `
+                -ContentType "application/x-www-form-urlencoded" -ErrorAction Stop
+            $graphToken = $graphTokenResponse.access_token
+
+            # Query the app registration for its key credentials
+            $graphHeaders = @{ "Authorization" = "Bearer $graphToken" }
+            $appUrl = "https://graph.microsoft.com/v1.0/applications?`$filter=appId eq '$($client.app_id)'&`$select=id,appId,displayName,keyCredentials"
+            $appResponse = Invoke-RestMethod -Uri $appUrl -Method GET -Headers $graphHeaders -ErrorAction Stop
+
+            if ($appResponse.value -and $appResponse.value.Count -gt 0) {
+                $app = $appResponse.value[0]
+                $results += "App Display Name: $($app.displayName)"
+                $results += "App Object ID: $($app.id)"
+
+                $localThumbprint = $client.certificate.Thumbprint.ToUpper()
+                $registeredCerts = $app.keyCredentials | Where-Object { $_.type -eq "AsymmetricX509Cert" -and $_.usage -eq "Verify" }
+
+                if ($registeredCerts) {
+                    $results += "Registered certificates: $($registeredCerts.Count)"
+                    $thumbprintFound = $false
+                    foreach ($cert in $registeredCerts) {
+                        $certThumbprint = $cert.customKeyIdentifier
+                        if ($certThumbprint) {
+                            # customKeyIdentifier is base64-encoded thumbprint bytes
+                            $certThumbprintHex = ([System.Convert]::FromBase64String($certThumbprint) | ForEach-Object { $_.ToString("X2") }) -join ""
+                            $certExpiry = $cert.endDateTime
+                            $matchStatus = if ($certThumbprintHex -eq $localThumbprint) { "MATCH" } else { "no match" }
+                            $results += "  - Thumbprint: $certThumbprintHex | Expires: $certExpiry | $matchStatus"
+                            if ($certThumbprintHex -eq $localThumbprint) {
+                                $thumbprintFound = $true
+                            }
+                        }
+                    }
+                    if ($thumbprintFound) {
+                        $results += "Result: SUCCESS - Certificate thumbprint is registered on the application"
+                    } else {
+                        $results += "Result: FAILED - Certificate thumbprint $localThumbprint is NOT registered on the application!"
+                        $results += "WARNING: Upload this certificate to the Azure App Registration's 'Certificates & secrets' section"
+                    }
+                } else {
+                    $results += "Result: WARNING - No certificates registered on the application"
+                }
+            } else {
+                $results += "Result: WARNING - Application with AppID $($client.app_id) not found via Graph API"
+                $results += "This may be a permissions issue - the app needs Application.Read.All permission to query itself"
+            }
+        } catch {
+            $realError = $_.ErrorDetails.Message
+            if ($realError) {
+                $results += "Result: SKIPPED - Unable to query Microsoft Graph"
+                try {
+                    $parsed = $realError | ConvertFrom-Json
+                    $results += "Error: $($parsed.error.message)"
+                    $results += "Note: The app may need 'Application.Read.All' permission in Microsoft Graph to perform this check"
+                } catch {
+                    $results += "Error: $realError"
+                }
+            } else {
+                $results += "Result: SKIPPED - $($_.Exception.Message)"
+                $results += "Note: The app may need 'Application.Read.All' permission in Microsoft Graph to perform this check"
+            }
+        }
+    } else {
+        $results += "SKIPPED - Token acquisition failed in Step 1"
+    }
+
+    # Step 2: Test Exchange Online REST endpoint
+    $results += ""
+    $results += "=== Step 2: Exchange Online REST Endpoint ==="
+    if ($tokenSuccess -and $token) {
+        $exoEndpoint = "https://outlook.office365.com/adminapi/beta/$($client.organization)/InvokeCommand"
+        $exoHeaders = @{ "Authorization" = "Bearer $token" }
+        $exoBody = '{"CmdletInput":{"CmdletName":"Get-Mailbox","Parameters":{"ResultSize":"1"}}}'
+
+        # Log request details
+        $results += ""
+        $results += "--- Request ---"
+        $results += "  Method: POST"
+        $results += "  URL: $exoEndpoint"
+        $results += "  Headers:"
+        $results += "    Authorization: Bearer $($token.Substring(0, [Math]::Min(20, $token.Length)))...[truncated]"
+        $results += "    Content-Type: application/json"
+        $results += "  Body: $exoBody"
+
+        try {
+            $exoResponse = Invoke-WebRequest -Uri $exoEndpoint `
+                -Method POST -Headers $exoHeaders `
+                -ContentType "application/json" `
+                -Body $exoBody `
+                -UseBasicParsing `
+                -ErrorAction Stop
+            $results += "Result: SUCCESS - Exchange Online endpoint responded"
+            $results += "HTTP Status Code: $($exoResponse.StatusCode)"
+            $results += "Content Length: $($exoResponse.Content.Length) bytes"
+
+            # Show response headers
+            $results += ""
+            $results += "--- Response Headers ---"
+            foreach ($headerName in $exoResponse.Headers.Keys) {
+                $headerValue = $exoResponse.Headers[$headerName]
+                if ($headerValue -is [System.Collections.IEnumerable] -and $headerValue -isnot [string]) {
+                    $headerValue = $headerValue -join ", "
+                }
+                $results += "  ${headerName}: $headerValue"
+            }
+
+            # Show response body preview
+            $responseBody = $exoResponse.Content
+            if ($responseBody.Length -gt 0) {
+                $results += ""
+                $results += "--- Response Body (first 500 chars) ---"
+                $results += $responseBody.Substring(0, [Math]::Min(500, $responseBody.Length))
+            }
+        }
+        catch {
+            $realError = $_.ErrorDetails.Message
+            $statusCode = $null
+            $responseHeaders = $null
+            if ($_.Exception.Response) {
+                $statusCode = $_.Exception.Response.StatusCode.value__
+                # Capture response headers from the error response
+                try {
+                    $responseHeaders = $_.Exception.Response.Headers
+                } catch {
+                    # Headers may not be available
+                }
+                # Try to read the response body from the stream
+                try {
+                    $responseStream = $_.Exception.Response.GetResponseStream()
+                    if ($responseStream) {
+                        $reader = [System.IO.StreamReader]::new($responseStream)
+                        $streamBody = $reader.ReadToEnd()
+                        $reader.Close()
+                        if ($streamBody -and -not $realError) {
+                            $realError = $streamBody
+                        }
+                    }
+                } catch {
+                    # Stream may not be available
+                }
+            }
+            $results += "Result: FAILED"
+            $results += "HTTP Status Code: $statusCode"
+
+            # Show response headers from error response
+            if ($responseHeaders) {
+                $results += ""
+                $results += "--- Response Headers ---"
+                foreach ($headerName in $responseHeaders.AllKeys) {
+                    $headerValue = $responseHeaders[$headerName]
+                    $results += "  ${headerName}: $headerValue"
+                }
+            }
+
+            if ($realError) {
+                # Check for null bytes (proxy corruption indicator)
+                $nullByteCount = ($realError.ToCharArray() | Where-Object { $_ -eq [char]0 }).Count
+                if ($nullByteCount -gt 0) {
+                    $results += ""
+                    $results += "WARNING: Response contains $nullByteCount null bytes - proxy is corrupting the response"
+                    $results += "Response length: $($realError.Length) characters"
+                    $hexBytes = [System.Text.Encoding]::UTF8.GetBytes($realError.Substring(0, [Math]::Min(64, $realError.Length)))
+                    $hexDump = ($hexBytes | ForEach-Object { $_.ToString("X2") }) -join " "
+                    $results += "Hex dump (first 64 bytes): $hexDump"
+                } else {
+                    $results += ""
+                    $results += "--- Error Response Body ---"
+                    $results += $realError.Substring(0, [Math]::Min(1000, $realError.Length))
+                }
+            } else {
+                $results += "Exception: $($_.Exception.Message)"
+            }
+        }
+    } else {
+        $results += "SKIPPED - Token acquisition failed in Step 1"
+    }
+
+    # Step 3: Test Connect-ExchangeOnline (with verbose/debug output)
+    $results += ""
+    $results += "=== Step 3: Connect-ExchangeOnline ==="
+    try {
+        $cmd_params = @{
+            "AppID" = $client.app_id
+            "Organization" = $client.organization
+            "Certificate" = $client.certificate
+        }
+
+        # Enable verbose and debug preferences to capture internal module output
+        $previousVerbose = $VerbosePreference
+        $previousDebug = $DebugPreference
+        $VerbosePreference = "Continue"
+        $DebugPreference = "Continue"
+
+        # Capture all output streams: 1=stdout, 2=stderr, 3=warning, 4=verbose, 5=debug, 6=information
+        $allOutput = $null
+        try {
+            $allOutput = Connect-ExchangeOnline @cmd_params -ShowBanner:$false `
+                -CommandName Get-Mailbox `
+                -Verbose `
+                -ErrorAction Stop *>&1
+        } finally {
+            # Restore preferences regardless of success/failure
+            $VerbosePreference = $previousVerbose
+            $DebugPreference = $previousDebug
+        }
+
+        $results += "Result: SUCCESS - Connect-ExchangeOnline completed"
+
+        # Parse and display captured output by stream type
+        if ($allOutput) {
+            $verboseMessages = @()
+            $debugMessages = @()
+            $warningMessages = @()
+            $errorMessages = @()
+            $infoMessages = @()
+
+            foreach ($msg in $allOutput) {
+                switch ($msg.GetType().Name) {
+                    "VerboseRecord" { $verboseMessages += $msg.Message }
+                    "DebugRecord" { $debugMessages += $msg.Message }
+                    "WarningRecord" { $warningMessages += $msg.Message }
+                    "ErrorRecord" { $errorMessages += $msg.Exception.Message }
+                    "InformationRecord" { $infoMessages += $msg.MessageData.ToString() }
+                    default { $infoMessages += $msg.ToString() }
+                }
+            }
+
+            if ($verboseMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Verbose Output ($($verboseMessages.Count) messages) ---"
+                foreach ($msg in $verboseMessages) {
+                    $results += "  VERBOSE: $msg"
+                }
+            }
+
+            if ($debugMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Debug Output ($($debugMessages.Count) messages) ---"
+                foreach ($msg in $debugMessages) {
+                    $results += "  DEBUG: $msg"
+                }
+            }
+
+            if ($warningMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Warnings ($($warningMessages.Count) messages) ---"
+                foreach ($msg in $warningMessages) {
+                    $results += "  WARNING: $msg"
+                }
+            }
+
+            if ($errorMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Non-Terminating Errors ($($errorMessages.Count) messages) ---"
+                foreach ($msg in $errorMessages) {
+                    $results += "  ERROR: $msg"
+                }
+            }
+
+            if ($infoMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Information ($($infoMessages.Count) messages) ---"
+                foreach ($msg in $infoMessages) {
+                    $results += "  INFO: $msg"
+                }
+            }
+        } else {
+            $results += "No verbose/debug output captured"
+        }
+
+        # Verify the session is actually working by running a command
+        try {
+            $testMailbox = Get-Mailbox -ResultSize 1 -ErrorAction Stop
+            $results += ""
+            $results += "Verification: Get-Mailbox executed successfully"
+        } catch {
+            $results += ""
+            $results += "Verification: Get-Mailbox FAILED - $($_.Exception.Message)"
+            $results += "The session was established but commands may not work"
+        }
+
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+        $results += "Session disconnected."
+    }
+    catch {
+        # Restore preferences on failure
+        $VerbosePreference = $previousVerbose
+        $DebugPreference = $previousDebug
+
+        $results += "Result: FAILED"
+        $results += "Exception Type: $($_.Exception.GetType().FullName)"
+        $results += "Exception Message: $($_.Exception.Message)"
+
+        # Walk inner exceptions to find the real error
+        $inner = $_.Exception.InnerException
+        $depth = 1
+        while ($inner) {
+            $results += "Inner Exception ($depth): [$($inner.GetType().FullName)] $($inner.Message)"
+            $inner = $inner.InnerException
+            $depth++
+        }
+
+        # Check if the captured output has any useful info before the failure
+        if ($allOutput) {
+            $results += ""
+            $results += "--- Output captured before failure ---"
+            foreach ($msg in $allOutput) {
+                $msgType = $msg.GetType().Name
+                switch ($msgType) {
+                    "VerboseRecord" { $results += "  VERBOSE: $($msg.Message)" }
+                    "DebugRecord" { $results += "  DEBUG: $($msg.Message)" }
+                    "WarningRecord" { $results += "  WARNING: $($msg.Message)" }
+                    "ErrorRecord" { $results += "  ERROR: $($msg.Exception.Message)" }
+                    "InformationRecord" { $results += "  INFO: $($msg.MessageData.ToString())" }
+                    default { $results += "  OUTPUT: $($msg.ToString())" }
+                }
+            }
+        }
+
+        # Try to disconnect even on failure
+        try {
+            Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+        } catch {
+            # Ignore disconnect errors
+        }
+    }
+
+    $results += ""
+    $results += "=== Connection Check Complete ==="
+
+    $human_readable = $results -join "`n"
+    $entry_context = @{}
+    $raw_response = @{ "results" = $results }
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
+
+function GetTokenCommand($client)
+{
+    <#
+        .DESCRIPTION
+        Acquires an OAuth2 access token from Azure AD using the configured certificate
+        and returns it. This allows testing token acquisition independently and using
+        the token for manual REST API calls outside of XSOAR.
+
+        .PARAMETER client
+        ExchangeOnlinePowershellV3Client instance with certificate, app_id, and organization.
+    #>
+
+    # Build JWT client assertion
+    $tokenEndpoint = "https://login.microsoftonline.com/$($client.organization)/oauth2/v2.0/token"
+
+    $thumbprint = $client.certificate.Thumbprint
+    $thumbprintBytes = for ($i = 0; $i -lt $thumbprint.Length; $i += 2) {
+        [Convert]::ToByte($thumbprint.Substring($i, 2), 16)
+    }
+    $x5t = [System.Convert]::ToBase64String([byte[]]$thumbprintBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $jwtHeader = @{ alg = "RS256"; typ = "JWT"; x5t = $x5t } | ConvertTo-Json -Compress
+    $headerB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtHeader)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $now = [int][double]::Parse((Get-Date -Date ((Get-Date).ToUniversalTime()) -UFormat %s))
+    $jwtPayload = @{
+        aud = $tokenEndpoint
+        exp = $now + 600
+        iss = $client.app_id
+        jti = [guid]::NewGuid().ToString()
+        nbf = $now
+        sub = $client.app_id
+    } | ConvertTo-Json -Compress
+    $payloadB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtPayload)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $dataToSign = "$headerB64.$payloadB64"
+    $rsaKey = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($client.certificate)
+    $sigBytes = $rsaKey.SignData(
+        [System.Text.Encoding]::UTF8.GetBytes($dataToSign),
+        [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+        [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+    )
+    $sigB64 = [System.Convert]::ToBase64String($sigBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $tokenRequestBody = @{
+        client_id             = $client.app_id
+        scope                 = "https://outlook.office365.com/.default"
+        client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        client_assertion      = "$dataToSign.$sigB64"
+        grant_type            = "client_credentials"
+    }
+
+    try {
+        $tokenResponse = Invoke-RestMethod -Uri $tokenEndpoint -Method POST -Body $tokenRequestBody `
+            -ContentType "application/x-www-form-urlencoded" -ErrorAction Stop
+        $token = $tokenResponse.access_token
+
+        # Decode token claims
+        $claimsInfo = @{}
+        try {
+            $tokenParts = $token.Split('.')
+            if ($tokenParts.Count -ge 2) {
+                $claimsB64 = $tokenParts[1]
+                switch ($claimsB64.Length % 4) {
+                    2 { $claimsB64 += "==" }
+                    3 { $claimsB64 += "=" }
+                }
+                $claimsB64 = $claimsB64.Replace('-', '+').Replace('_', '/')
+                $claimsJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($claimsB64))
+                $claims = $claimsJson | ConvertFrom-Json
+                $claimsInfo = @{
+                    audience  = $claims.aud
+                    issuer    = $claims.iss
+                    app_id    = $claims.appid
+                    tenant_id = $claims.tid
+                    roles     = if ($claims.roles) { $claims.roles -join ", " } else { "NONE" }
+                    expiry    = [DateTimeOffset]::FromUnixTimeSeconds($claims.exp).UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ')
+                }
+            }
+        } catch {
+            # Token claims decoding is best-effort
+        }
+
+        $results = @(
+            "Token acquired successfully.",
+            "",
+            "Token type: $($tokenResponse.token_type)",
+            "Expires in: $($tokenResponse.expires_in) seconds",
+            "Audience: $($claimsInfo.audience)",
+            "App ID: $($claimsInfo.app_id)",
+            "Tenant ID: $($claimsInfo.tenant_id)",
+            "Roles: $($claimsInfo.roles)",
+            "Expiry: $($claimsInfo.expiry)",
+            "",
+            "Access Token:",
+            $token
+        )
+        $human_readable = $results -join "`n"
+        $entry_context = @{
+            "EWS.Token(true)" = @{
+                access_token = $token
+                token_type   = $tokenResponse.token_type
+                expires_in   = $tokenResponse.expires_in
+                audience     = $claimsInfo.audience
+                app_id       = $claimsInfo.app_id
+                tenant_id    = $claimsInfo.tenant_id
+                roles        = $claimsInfo.roles
+            }
+        }
+        $raw_response = @{
+            access_token = $token
+            token_type   = $tokenResponse.token_type
+            expires_in   = $tokenResponse.expires_in
+            claims       = $claimsInfo
+        }
+    }
+    catch {
+        $realError = $_.ErrorDetails.Message
+        $errorMsg = ""
+        if ($realError) {
+            try {
+                $parsed = $realError | ConvertFrom-Json
+                $errorMsg = "Token acquisition failed: $($parsed.error) - $($parsed.error_description)"
+            } catch {
+                $errorMsg = "Token acquisition failed: $realError"
+            }
+        } else {
+            $errorMsg = "Token acquisition failed: $($_.Exception.Message)"
+        }
+        throw $errorMsg
+    }
+
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
 function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
@@ -2799,6 +3637,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-mail-forwarding-disable" {
                 ($human_readable, $entry_context, $raw_response) = DisableMailForwardingCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-check-connection" {
+                ($human_readable, $entry_context, $raw_response) = CheckConnectionCommand $exo_client
+            }
+            "$script:COMMAND_PREFIX-get-token" {
+                ($human_readable, $entry_context, $raw_response) = GetTokenCommand $exo_client
             }
             default {
                 ReturnError "Could not recognize $command"
