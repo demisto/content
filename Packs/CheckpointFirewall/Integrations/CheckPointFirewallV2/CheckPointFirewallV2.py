@@ -2536,9 +2536,7 @@ def parse_order_argument(order: str) -> list[dict]:
         direction, field = pair.split(":", 1)
         direction = direction.strip().upper()
         if direction not in ("ASC", "DESC"):
-            raise DemistoException(
-                f"Invalid order direction: '{direction}'. Must be 'ASC' or 'DESC'."
-            )
+            raise DemistoException(f"Invalid order direction: '{direction}'. Must be 'ASC' or 'DESC'.")
         order_list.append({direction: field.strip()})
     return order_list
 
@@ -2881,10 +2879,7 @@ def checkpoint_service_group_delete_command(
     )
 
     demisto.debug("checkpoint-service-group-delete command completed successfully")
-    return CommandResults(
-        readable_output="Service group deleted successfully",
-        raw_response=result
-    )
+    return CommandResults(readable_output="Service group deleted successfully", raw_response=result)
 
 
 def checkpoint_access_section_add_command(
@@ -2908,12 +2903,12 @@ def checkpoint_access_section_add_command(
     """
     demisto.debug(f"checkpoint-access-section-add command called with args: {demisto.args()}")
 
-    '''
+    """
     According to API docs:
     - "above"/"below" require position_rule (reference rule/section name)
     - "top"/"bottom" can optionally use position_rule (reference section name)
     - integer position is sent as-is (no position_rule needed)
-    '''
+    """
     if position in ("above", "below") and not position_rule:
         raise DemistoException(
             f"The 'position_rule' argument is required when position is '{position}'. "
@@ -3069,10 +3064,7 @@ def checkpoint_access_section_delete_command(
     )
 
     demisto.debug("checkpoint-access-section-delete command completed successfully")
-    return CommandResults(
-        readable_output="Access section deleted successfully.",
-        raw_response=result
-    )
+    return CommandResults(readable_output="Access section deleted successfully.", raw_response=result)
 
 
 def checkpoint_logout_command(client: Client, sid: str = None) -> str:
