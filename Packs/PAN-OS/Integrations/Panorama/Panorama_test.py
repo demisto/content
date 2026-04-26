@@ -9494,3 +9494,165 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
         if no_new_hits_since is not None:
             last_hit_dt = datetime.strptime(r.last_hit_timestamp, "%Y-%m-%dT%H:%M:%SZ")
             assert last_hit_dt <= no_new_hits_since
+
+
+def test_get_hitcounts_vsys_specific_enrichment(mocker):
+    """
+    Test that get_hitcounts performs per-vsys enrichment and uses the updated XPath logic.
+
+    Given:
+        - A topology with one firewall and two vsys (vsys1, vsys2).
+        - Each vsys has different Panorama-pushed rules (vsys1 has "PanoramaRule_v1", vsys2 has "PanoramaRule_v2").
+        - Each vsys also has a local rule that is NOT in the pushed policy data.
+
+    When:
+        - Calling get_hitcounts with vsys_arg="all".
+
+    Then:
+        - get_pushed_shared_policy_rules is called once per vsys (2 times total), each with the correct vsys_name.
+        - The pushed-shared-policy command includes the vsys name in the XML.
+        - Rules from vsys1 are enriched only with vsys1's pushed policy data (and vice versa).
+        - The new XPath './/panorama/{position}/...' correctly finds rules in the XML response.
+        - Local rules (not in pushed policy) have is_from_panorama=False.
+    """
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand
+
+    # Mock topology and firewall
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+    mock_firewall.serial = "111111111111111"
+    mock_firewall.hostname = None
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=["vsys1", "vsys2"])
+
+    # Build per-vsys pushed policy XML responses (new format with .//panorama/ XPath)
+    def build_pushed_policy_xml(vsys_name: str) -> ET.Element:
+        root = ET.Element("response", status="success")
+        result_elem = ET.SubElement(root, "result")
+        policy = ET.SubElement(result_elem, "policy")
+        panorama_elem = ET.SubElement(policy, "panorama")
+
+        # Pre-rulebase with a vsys-specific rule
+        pre_rb = ET.SubElement(panorama_elem, "pre-rulebase")
+        security = ET.SubElement(pre_rb, "security")
+        rules = ET.SubElement(security, "rules")
+        rule_name = f"PanoramaRule_{vsys_name.replace('vsys', 'v')}"
+        dg_name = f"DG-{vsys_name}"
+        entry = ET.SubElement(rules, "entry", name=rule_name, loc=dg_name)
+        # Add a child element so the entry is not considered "empty" by ElementTree
+        # (bool(element) returns False for elements with no children, causing dataclass_from_element to return None)
+        ET.SubElement(entry, "action", loc=dg_name).text = "allow"
+
+        return root
+
+    pushed_policy_vsys1 = build_pushed_policy_xml("vsys1")
+    pushed_policy_vsys2 = build_pushed_policy_xml("vsys2")
+
+    # Build a hitcount response XML containing both a Panorama rule and a local rule
+    def build_hitcount_xml(vsys_name: str) -> ET.Element:
+        root = ET.Element("response", status="success")
+        result_elem = ET.SubElement(root, "result")
+        rhc = ET.SubElement(result_elem, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name=vsys_name)
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        panorama_rule_name = f"PanoramaRule_{vsys_name.replace('vsys', 'v')}"
+        local_rule_name = f"LocalRule_{vsys_name}"
+
+        for rule_name in [panorama_rule_name, local_rule_name]:
+            rule = ET.SubElement(rules_elem, "entry", name=rule_name)
+            ET.SubElement(rule, "hit_count").text = "10"
+            ET.SubElement(rule, "last_hit_timestamp").text = "1742482324"
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        return root
+
+    hitcount_vsys1 = build_hitcount_xml("vsys1")
+    hitcount_vsys2 = build_hitcount_xml("vsys2")
+    """
+    Mock run_op_command to return vsys-specific responses
+    The new code calls run_op_command in this order per vsys:
+        1. pushed-shared-policy (enrichment)
+        2. hitcount query
+    So we need to mock 4 responses for 2 vsys: pushed1, hitcount1, pushed2, hitcount2
+    """
+    run_op_responses = [pushed_policy_vsys1, hitcount_vsys1, pushed_policy_vsys2, hitcount_vsys2]
+    run_op_mock = mocker.patch("Panorama.run_op_command", side_effect=run_op_responses)
+
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    results = FirewallCommand.get_hitcounts(
+        topology=mock_topology,
+        rulebase_type="security",
+        vsys_arg="all",
+        rules_arg="all",
+        no_new_hits_since=None,
+        device_filter_string=None,
+        target=None,
+        unused_only="false",
+    )
+
+    # Total of 4 rules returned (2 per vsys)
+    assert len(results) == 4
+
+    # run_op_command called 4 times total (pushed + hitcount per vsys)
+    assert run_op_mock.call_count == 4
+
+    # Verify the pushed-shared-policy commands include vsys name
+    # Call 0: pushed policy for vsys1
+    pushed_call_1_cmd = run_op_mock.call_args_list[0]
+    assert "vsys1" in pushed_call_1_cmd.kwargs.get("cmd", pushed_call_1_cmd[1].get("cmd", ""))
+    # Call 2: pushed policy for vsys2
+    pushed_call_2_cmd = run_op_mock.call_args_list[2]
+    assert "vsys2" in pushed_call_2_cmd.kwargs.get("cmd", pushed_call_2_cmd[1].get("cmd", ""))
+
+    # Verify per-vsys enrichment: Panorama rules are correctly enriched
+    vsys1_results = [r for r in results if r.vsys == "vsys1"]
+    vsys2_results = [r for r in results if r.vsys == "vsys2"]
+
+    assert len(vsys1_results) == 2
+    assert len(vsys2_results) == 2
+
+    # vsys1's Panorama rule should be enriched with vsys1's DG
+    vsys1_panorama_rule = next(r for r in vsys1_results if r.name == "PanoramaRule_v1")
+    assert vsys1_panorama_rule.is_from_panorama is True
+    assert vsys1_panorama_rule.from_dg_name == "DG-vsys1"
+    assert vsys1_panorama_rule.position == "pre_rulebase"
+
+    # vsys1's local rule should NOT be enriched
+    vsys1_local_rule = next(r for r in vsys1_results if r.name == "LocalRule_vsys1")
+    assert vsys1_local_rule.is_from_panorama is False
+    assert vsys1_local_rule.from_dg_name == ""
+
+    # vsys2's Panorama rule should be enriched with vsys2's DG (not vsys1's)
+    vsys2_panorama_rule = next(r for r in vsys2_results if r.name == "PanoramaRule_v2")
+    assert vsys2_panorama_rule.is_from_panorama is True
+    assert vsys2_panorama_rule.from_dg_name == "DG-vsys2"
+    assert vsys2_panorama_rule.position == "pre_rulebase"
+
+    # vsys2's local rule should NOT be enriched
+    vsys2_local_rule = next(r for r in vsys2_results if r.name == "LocalRule_vsys2")
+    assert vsys2_local_rule.is_from_panorama is False
+    assert vsys2_local_rule.from_dg_name == ""
+
+    # Verify no cross-vsys enrichment leakage
+    # PanoramaRule_v1 should NOT appear in vsys2 results
+    vsys2_rule_names = {r.name for r in vsys2_results}
+    assert "PanoramaRule_v1" not in vsys2_rule_names
+    # PanoramaRule_v2 should NOT appear in vsys1 results
+    vsys1_rule_names = {r.name for r in vsys1_results}
+    assert "PanoramaRule_v2" not in vsys1_rule_names

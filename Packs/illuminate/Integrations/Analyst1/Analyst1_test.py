@@ -1,5 +1,9 @@
+import json
+import time
+
 import demistomock as demisto  # noqa: F401
 import pytest
+import requests
 from Analyst1 import *
 
 MOCK_SERVER: str = "mock.com"
@@ -1625,3 +1629,772 @@ def test_generate_reputation_context_with_extra_context(mocker):
     # Should have extra context
     domain_key = "Domain(val.Name && val.Name === obj.Name)"
     assert enrichment.reputation_context[domain_key]["DNS"] == "192.0.2.1"
+
+
+# ============================================================
+# OAuth2 Tests
+# ============================================================
+
+MOCK_CLIENT_ID = "test_client_id"
+MOCK_CLIENT_SECRET = "test_client_secret"
+MOCK_OAUTH_CREDENTIALS = {"identifier": MOCK_CLIENT_ID, "password": MOCK_CLIENT_SECRET}
+MOCK_BASIC_CREDENTIALS = {"identifier": MOCK_USER, "password": MOCK_PASS}
+
+MOCK_OAUTH_PARAMS = {
+    "server": MOCK_SERVER,
+    "proxy": "false",
+    "insecure": "true",
+    "auth_method": "OAuth2 Client Credentials",
+    "credentials": MOCK_OAUTH_CREDENTIALS,
+}
+
+
+@pytest.fixture
+def oauth_client():
+    return Client(MOCK_SERVER, "oauth2", MOCK_OAUTH_CREDENTIALS, insecure=True, proxy=False)
+
+
+# --- Client Construction Tests ---
+
+
+def test_client_construction_basic_default():
+    """build_client defaults to basic auth when auth_method is not specified"""
+    params = {
+        "server": MOCK_SERVER,
+        "proxy": "false",
+        "insecure": "true",
+        "credentials": MOCK_BASIC_CREDENTIALS,
+    }
+    client = build_client(params)
+    assert client._auth_method == "basic"
+
+
+def test_client_construction_basic_explicit():
+    """build_client selects basic auth when explicitly specified"""
+    params = {
+        "server": MOCK_SERVER,
+        "proxy": "false",
+        "insecure": "true",
+        "auth_method": "Basic Authentication",
+        "credentials": MOCK_BASIC_CREDENTIALS,
+    }
+    client = build_client(params)
+    assert client._auth_method == "basic"
+
+
+def test_client_construction_oauth2():
+    """build_client selects oauth2 when specified"""
+    client = build_client(MOCK_OAUTH_PARAMS)
+    assert client._auth_method == "oauth2"
+
+
+def test_client_construction_missing_creds():
+    """build_client raises when credentials are missing"""
+    params = {
+        "server": MOCK_SERVER,
+        "proxy": "false",
+        "insecure": "true",
+        "credentials": {},
+    }
+    with pytest.raises(DemistoException, match="API credentials are required"):
+        build_client(params)
+
+
+def test_client_basic_base_url():
+    """Basic auth client uses api/1_0 base URL"""
+    client = Client(MOCK_SERVER, "basic", MOCK_BASIC_CREDENTIALS, insecure=True, proxy=False)
+    assert "/api/1_0/" in client._base_url
+
+
+def test_client_oauth2_base_url():
+    """OAuth2 client uses api/1_1 base URL"""
+    client = Client(MOCK_SERVER, "oauth2", MOCK_OAUTH_CREDENTIALS, insecure=True, proxy=False)
+    assert "/api/1_1/" in client._base_url
+
+
+# --- Token Lifecycle Tests ---
+
+
+def test_obtain_token_success(requests_mock, oauth_client):
+    """Successful token acquisition"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_abc123", "expires_in": 3600},
+    )
+    oauth_client._obtain_token()
+    assert oauth_client._token == "tok_abc123"
+    assert oauth_client._token_expiry > 0
+
+
+def test_obtain_token_invalid_creds(requests_mock, oauth_client):
+    """Token request with invalid credentials returns error"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        status_code=401,
+        json={"error": "invalid_client", "error_description": "Bad credentials"},
+    )
+    with pytest.raises(DemistoException, match="invalid_client"):
+        oauth_client._obtain_token()
+
+
+def test_obtain_token_server_error_non_json(requests_mock, oauth_client):
+    """Token request with non-JSON error response"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        status_code=500,
+        text="Internal Server Error",
+    )
+    with pytest.raises(DemistoException, match="Verify client_id and client_secret are correct"):
+        oauth_client._obtain_token()
+
+
+def test_obtain_token_missing_access_token(requests_mock, oauth_client):
+    """Token response missing access_token field"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"token_type": "bearer", "expires_in": 3600},
+    )
+    with pytest.raises(DemistoException, match="missing 'access_token' field"):
+        oauth_client._obtain_token()
+
+
+def test_obtain_token_connection_error(oauth_client, mocker):
+    """Token request with connection error"""
+    mocker.patch.object(
+        oauth_client._session,
+        "post",
+        side_effect=requests.exceptions.ConnectionError("Connection refused"),
+    )
+    with pytest.raises(DemistoException, match="Failed to connect to OAuth2 token endpoint"):
+        oauth_client._obtain_token()
+
+
+def test_ensure_token_lazy_acquisition(requests_mock, oauth_client, mocker):
+    """_ensure_token acquires a token when none exists"""
+    mocker.patch("Analyst1.get_integration_context", return_value={})
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_lazy", "expires_in": 3600},
+    )
+    assert oauth_client._token is None
+    oauth_client._ensure_token()
+    assert oauth_client._token == "tok_lazy"
+
+
+def test_ensure_token_proactive_refresh(requests_mock, oauth_client, mocker):
+    """_ensure_token refreshes token within 30s of expiry"""
+    mocker.patch("Analyst1.get_integration_context", return_value={})
+    # Set token that expires in 20 seconds (within the 30s buffer)
+    oauth_client._token = "tok_old"
+    oauth_client._token_expiry = time.time() + 20
+
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_refreshed", "expires_in": 3600},
+    )
+    oauth_client._ensure_token()
+    assert oauth_client._token == "tok_refreshed"
+
+
+def test_ensure_token_reuse(oauth_client):
+    """_ensure_token reuses valid cached token"""
+    oauth_client._token = "tok_valid"
+    oauth_client._token_expiry = time.time() + 3600
+
+    # Should not call _obtain_token since token is still valid
+    oauth_client._ensure_token()
+    assert oauth_client._token == "tok_valid"
+
+
+# --- 401 Retry Tests ---
+
+
+def test_http_request_oauth2_401_retry_success(requests_mock, oauth_client):
+    """OAuth2 _http_request retries on 401 after refreshing token"""
+    # Initial token
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_new", "expires_in": 3600},
+    )
+    oauth_client._token = "tok_expired"
+    oauth_client._token_expiry = time.time() + 3600
+
+    # First call returns 401, second succeeds
+    responses = [
+        {"status_code": 401, "json": {"error": "unauthorized"}},
+        {"status_code": 200, "json": {"links": [{"rel": "self", "href": "test"}]}},
+    ]
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_1/", responses)
+
+    result = oauth_client._http_request("GET", url_suffix="")
+    assert result["links"] is not None
+
+
+def test_http_request_oauth2_401_retry_failure(requests_mock, oauth_client):
+    """OAuth2 _http_request raises after failed retry"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_still_bad", "expires_in": 3600},
+    )
+    oauth_client._token = "tok_expired"
+    oauth_client._token_expiry = time.time() + 3600
+
+    # Both calls return 401
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_1/", status_code=401, json={"error": "unauthorized"})
+
+    with pytest.raises(DemistoException):
+        oauth_client._http_request("GET", url_suffix="")
+
+
+def test_http_request_basic_no_retry(requests_mock, mock_client):
+    """Basic auth _http_request does not retry on 401"""
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_0/", status_code=401, json={"error": "unauthorized"})
+
+    with pytest.raises(DemistoException):
+        mock_client._http_request("GET", url_suffix="")
+
+
+# --- Direct Request Methods Under OAuth2 ---
+
+
+def test_post_evidence_oauth2(requests_mock, oauth_client):
+    """post_evidence works under OAuth2 via _make_raw_request"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_evidence", "expires_in": 3600},
+    )
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/api/1_1/evidence",
+        json={"uuid": "uuid_oauth"},
+    )
+    result = oauth_client.post_evidence("test.txt", "file content", "", "u", "clear", "1")
+    assert result["uuid"] == "uuid_oauth"
+
+
+def test_get_evidence_status_oauth2(requests_mock, oauth_client):
+    """get_evidence_status works under OAuth2 via _make_raw_request"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_status", "expires_in": 3600},
+    )
+    requests_mock.get(
+        f"https://{MOCK_SERVER}/api/1_1/evidence/uploadStatus/uuid_test",
+        json={"id": 42},
+    )
+    result = oauth_client.get_evidence_status("uuid_test")
+    assert result["id"] == 42
+
+
+def test_post_batch_search_oauth2(requests_mock, oauth_client):
+    """post_batch_search works under OAuth2 via _make_raw_request"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_batch", "expires_in": 3600},
+    )
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/api/1_1/batchCheck",
+        json=MOCK_BATCH_RESPONSE,
+    )
+    result = oauth_client.post_batch_search("ioc1\nioc2")
+    assert "results" in result
+
+
+def test_get_evidence_file_oauth2(requests_mock, oauth_client):
+    """get_evidence_file works under OAuth2 via _make_raw_request"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_file", "expires_in": 3600},
+    )
+    requests_mock.get(
+        f"https://{MOCK_SERVER}/api/1_1/evidence/123/file",
+        content=b"binary-content",
+        headers={"Content-Disposition": 'attachment; filename="report.pdf"'},
+    )
+    content, filename = oauth_client.get_evidence_file(123)
+    assert content == b"binary-content"
+    assert filename == "report.pdf"
+
+
+# --- test-module Under OAuth2 ---
+
+
+def test_perform_test_module_oauth2(requests_mock, oauth_client):
+    """test-module works under OAuth2"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_test", "expires_in": 3600},
+    )
+    requests_mock.get(
+        f"https://{MOCK_SERVER}/api/1_1/",
+        json={"links": [{"rel": "self", "href": f"https://{MOCK_SERVER}/api/1_1/"}]},
+    )
+    perform_test_module(oauth_client)
+
+
+# --- Link Rewriting with v1.1 Paths ---
+
+
+def test_link_rewriting_v1_1():
+    """Link rewriting handles api/1_1/indicator/ paths"""
+    data = {
+        "id": 1,
+        "value": {"name": "example.com"},
+        "links": [
+            {"rel": "self", "href": f"https://{MOCK_SERVER}/api/1_1/indicator/1"},
+        ],
+    }
+    result = Client.get_context_from_response(data)
+    assert result["Analyst1Link"] == f"https://{MOCK_SERVER}/indicators/1"
+
+
+def test_link_rewriting_v1_0():
+    """Link rewriting still handles api/1_0/indicator/ paths"""
+    data = {
+        "id": 1,
+        "value": {"name": "example.com"},
+        "links": [
+            {"rel": "self", "href": f"https://{MOCK_SERVER}/api/1_0/indicator/1"},
+        ],
+    }
+    result = Client.get_context_from_response(data)
+    assert result["Analyst1Link"] == f"https://{MOCK_SERVER}/indicators/1"
+
+
+# --- _make_raw_request 401 Retry ---
+
+
+def test_make_raw_request_oauth2_401_retry(requests_mock, oauth_client):
+    """_make_raw_request retries on 401 under OAuth2"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_retry", "expires_in": 3600},
+    )
+    responses = [
+        {"status_code": 401, "json": {"error": "expired"}},
+        {"status_code": 200, "json": {"ok": True}},
+    ]
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_1/test-endpoint", responses)
+    resp = oauth_client._make_raw_request("GET", "test-endpoint")
+    assert resp.status_code == 200
+
+
+def test_make_raw_request_oauth2_401_permanent(requests_mock, oauth_client):
+    """_make_raw_request raises after permanent 401 under OAuth2"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_bad", "expires_in": 3600},
+    )
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_1/test-endpoint", status_code=401, json={"error": "denied"})
+    with pytest.raises(DemistoException, match="OAuth2 authentication failed after token refresh"):
+        oauth_client._make_raw_request("GET", "test-endpoint")
+
+
+# --- Integration Context Token Caching Tests ---
+
+
+def test_ensure_token_loads_from_context(oauth_client, mocker):
+    """_ensure_token loads a valid cached token from integration context"""
+    future_expiry = time.time() + 600
+    mocker.patch(
+        "Analyst1.get_integration_context",
+        return_value={
+            "oauth2_token": json.dumps("cached_tok"),
+            "oauth2_token_expiry": json.dumps(future_expiry),
+        },
+    )
+    mock_obtain = mocker.patch.object(oauth_client, "_obtain_token")
+
+    oauth_client._ensure_token()
+
+    mock_obtain.assert_not_called()
+    assert oauth_client._token == "cached_tok"
+    assert oauth_client._token_expiry == future_expiry
+
+
+def test_ensure_token_ignores_expired_context(oauth_client, mocker):
+    """_ensure_token ignores an expired cached token from integration context"""
+    past_expiry = time.time() - 100
+    mocker.patch(
+        "Analyst1.get_integration_context",
+        return_value={
+            "oauth2_token": json.dumps("expired_tok"),
+            "oauth2_token_expiry": json.dumps(past_expiry),
+        },
+    )
+    mock_obtain = mocker.patch.object(oauth_client, "_obtain_token")
+
+    oauth_client._ensure_token()
+
+    mock_obtain.assert_called_once()
+
+
+def test_ensure_token_ignores_empty_context(oauth_client, mocker):
+    """_ensure_token falls through to _obtain_token when context is empty"""
+    mocker.patch("Analyst1.get_integration_context", return_value={})
+    mock_obtain = mocker.patch.object(oauth_client, "_obtain_token")
+
+    oauth_client._ensure_token()
+
+    mock_obtain.assert_called_once()
+
+
+def test_ensure_token_ignores_partial_context(oauth_client, mocker):
+    """_ensure_token falls through to _obtain_token when context has token but no expiry"""
+    mocker.patch(
+        "Analyst1.get_integration_context",
+        return_value={
+            "oauth2_token": json.dumps("tok"),
+        },
+    )
+    mock_obtain = mocker.patch.object(oauth_client, "_obtain_token")
+
+    oauth_client._ensure_token()
+
+    mock_obtain.assert_called_once()
+
+
+def test_obtain_token_persists_to_context(requests_mock, oauth_client, mocker):
+    """_obtain_token persists the token and expiry to integration context"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_persist", "expires_in": 3600},
+    )
+    mock_set_ctx = mocker.patch("Analyst1.set_to_integration_context_with_retries")
+
+    oauth_client._obtain_token()
+
+    mock_set_ctx.assert_called_once()
+    call_args = mock_set_ctx.call_args[0][0]
+    assert call_args["oauth2_token"] == "tok_persist"
+    assert isinstance(call_args["oauth2_token_expiry"], float)
+    assert call_args["oauth2_token_expiry"] > time.time()
+
+
+def test_obtain_token_failure_does_not_persist(requests_mock, oauth_client, mocker):
+    """_obtain_token does not persist to context when token acquisition fails"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        status_code=400,
+        json={"error": "invalid_grant", "error_description": "Bad request"},
+    )
+    mock_set_ctx = mocker.patch("Analyst1.set_to_integration_context_with_retries")
+
+    with pytest.raises(DemistoException):
+        oauth_client._obtain_token()
+
+    mock_set_ctx.assert_not_called()
+
+
+def test_401_retry_updates_context(requests_mock, oauth_client, mocker):
+    """401 retry path persists the new token to integration context"""
+    requests_mock.post(
+        f"https://{MOCK_SERVER}/oauth2/token",
+        json={"access_token": "tok_retried", "expires_in": 3600},
+    )
+    # Set an existing valid token so _ensure_token doesn't call _obtain_token
+    oauth_client._token = "tok_stale"
+    oauth_client._token_expiry = time.time() + 3600
+
+    # First call returns 401, second succeeds
+    responses = [
+        {"status_code": 401, "json": {"error": "expired"}},
+        {"status_code": 200, "json": {"ok": True}},
+    ]
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_1/test-endpoint", responses)
+
+    mock_set_ctx = mocker.patch("Analyst1.set_to_integration_context_with_retries")
+    # Also mock get_integration_context so _ensure_token fast path works
+    mocker.patch("Analyst1.get_integration_context", return_value={})
+
+    oauth_client._make_raw_request("GET", "test-endpoint")
+
+    # _obtain_token was called during the 401 retry, which persists the token
+    mock_set_ctx.assert_called_once()
+    call_args = mock_set_ctx.call_args[0][0]
+    assert call_args["oauth2_token"] == "tok_retried"
+
+
+def test_basic_auth_no_context_usage(requests_mock, mock_client, mocker):
+    """Basic auth client does not use integration context for token caching"""
+    mock_get_ctx = mocker.patch("Analyst1.get_integration_context")
+    mock_set_ctx = mocker.patch("Analyst1.set_to_integration_context_with_retries")
+
+    requests_mock.get(
+        f"https://{MOCK_SERVER}/api/1_0/",
+        json={"links": [{"rel": "self", "href": f"https://{MOCK_SERVER}/api/1_0/"}]},
+    )
+    mock_client._http_request("GET", url_suffix="")
+
+    mock_get_ctx.assert_not_called()
+    mock_set_ctx.assert_not_called()
+
+
+def test_ensure_token_prefers_inmemory(oauth_client, mocker):
+    """_ensure_token uses valid in-memory token without checking integration context"""
+    oauth_client._token = "tok_inmemory"
+    oauth_client._token_expiry = time.time() + 3600
+
+    mock_get_ctx = mocker.patch("Analyst1.get_integration_context")
+
+    oauth_client._ensure_token()
+
+    mock_get_ctx.assert_not_called()
+    assert oauth_client._token == "tok_inmemory"
+
+
+# ============================================================
+# Evidence Search & File Fetch Tests
+# ============================================================
+
+MOCK_EVIDENCE_SEARCH_RESPONSE: dict = {
+    "results": [
+        {
+            "id": 100,
+            "title": "Malware Report Q1",
+            "type": "report",
+            "tlp": "amber",
+            "analyzed": True,
+            "indicatorsStatus": "complete",
+            "activityDate": "2026-01-15",
+            "reportedDate": "2026-01-20",
+        },
+        {
+            "id": 101,
+            "title": "Threat Brief",
+            "type": "brief",
+            "tlp": "green",
+            "analyzed": False,
+            "indicatorsStatus": "pending",
+            "activityDate": "2026-02-10",
+            "reportedDate": "2026-02-12",
+        },
+    ],
+    "totalResults": 2,
+}
+
+MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY: dict = {
+    "results": [],
+    "totalResults": 0,
+}
+
+
+# --- Client.search_evidence tests ---
+
+
+def test_search_evidence_minimal_params(requests_mock, mock_client):
+    """search_evidence sends required params with defaults"""
+    requests_mock.get(
+        f"https://{MOCK_SERVER}/api/1_0/evidence",
+        json=MOCK_EVIDENCE_SEARCH_RESPONSE,
+    )
+    result = mock_client.search_evidence()
+    assert result["totalResults"] == 2
+    assert len(result["results"]) == 2
+    # Verify default query params were sent
+    history = requests_mock.last_request
+    assert history.qs["page"] == ["1"]
+    assert history.qs["pagesize"] == ["50"]
+    assert history.qs["sortby"] == ["id"]
+    assert history.qs["descsort"] == ["true"]
+
+
+def test_search_evidence_all_optional_params(requests_mock, mock_client):
+    """search_evidence sends all optional params when provided"""
+    requests_mock.get(
+        f"https://{MOCK_SERVER}/api/1_0/evidence",
+        json=MOCK_EVIDENCE_SEARCH_RESPONSE,
+    )
+    result = mock_client.search_evidence(
+        search_term="malware",
+        page=2,
+        page_size=25,
+        evidence_type="report",
+        tlp="amber",
+        actor_id=42,
+        source_id="7",
+        analyzed_state="r",
+        analyzed_date_from="2026-01-01",
+        analyzed_date_to="2026-03-01",
+        sort_by="title",
+        desc_sort=False,
+    )
+    assert result["totalResults"] == 2
+    history = requests_mock.last_request
+    assert history.qs["searchterm"] == ["malware"]
+    assert history.qs["page"] == ["2"]
+    assert history.qs["pagesize"] == ["25"]
+    assert history.qs["type"] == ["report"]
+    assert history.qs["tlp"] == ["amber"]
+    assert history.qs["actorid"] == ["42"]
+    assert history.qs["sourceid"] == ["7"]
+    assert history.qs["analysedstate"] == ["r"]
+    assert history.qs["analyzeddatefrom"] == ["2026-01-01"]
+    assert history.qs["analyzeddateto"] == ["2026-03-01"]
+    assert history.qs["sortby"] == ["title"]
+    assert history.qs["descsort"] == ["false"]
+
+
+# --- analyst1_evidence_search_command tests ---
+
+
+def test_analyst1_evidence_search_command_with_results(mocker, mock_client):
+    """analyst1_evidence_search_command returns results when evidence found"""
+    mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE,
+    )
+    args = {"search_term": "malware", "page": "1", "page_size": "50"}
+    command_results = analyst1_evidence_search_command(mock_client, args)
+
+    assert command_results.outputs_prefix == "Analyst1.Evidence"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["id"] == 100
+    assert command_results.outputs[1]["id"] == 101
+    assert "Malware Report Q1" in command_results.readable_output or command_results.readable_output != ""
+    assert command_results.raw_response == MOCK_EVIDENCE_SEARCH_RESPONSE
+
+
+def test_analyst1_evidence_search_command_no_results(mocker, mock_client):
+    """analyst1_evidence_search_command returns empty message when no evidence found"""
+    mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"search_term": "nonexistent"}
+    command_results = analyst1_evidence_search_command(mock_client, args)
+
+    assert command_results.outputs_prefix == "Analyst1.Evidence"
+    assert command_results.outputs == []
+    assert command_results.readable_output == "No evidence found matching the search criteria."
+
+
+def test_analyst1_evidence_search_command_with_optional_filters(mocker, mock_client):
+    """analyst1_evidence_search_command passes all optional args to client"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {
+        "search_term": "test",
+        "page": "3",
+        "page_size": "10",
+        "evidence_type": "report",
+        "tlp": "green",
+        "actor_id": "42",
+        "source_id": "7",
+        "analyzed_state": "r",
+        "analyzed_date_from": "2026-01-01",
+        "analyzed_date_to": "2026-03-01",
+        "sort_by": "title",
+        "desc_sort": "false",
+    }
+    analyst1_evidence_search_command(mock_client, args)
+
+    mock_search.assert_called_once_with(
+        search_term="test",
+        page=3,
+        page_size=10,
+        evidence_type="report",
+        tlp="green",
+        actor_id=42,
+        source_id="7",
+        analyzed_state="r",
+        analyzed_date_from="2026-01-01",
+        analyzed_date_to="2026-03-01",
+        sort_by="title",
+        desc_sort=False,
+    )
+
+
+def test_analyst1_evidence_search_command_tlp_single_value(mocker, mock_client):
+    """Single TLP string value is passed through to API unchanged"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"tlp": "AMBER"}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] == "AMBER"
+
+
+def test_analyst1_evidence_search_command_tlp_csv_string(mocker, mock_client):
+    """CSV TLP string is passed through to API as comma-separated string"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"tlp": "AMBER,GREEN"}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] == "AMBER,GREEN"
+
+
+def test_analyst1_evidence_search_command_tlp_list_input(mocker, mock_client):
+    """List TLP input (from XSOAR isArray) is joined into comma-separated string"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"tlp": ["AMBER", "GREEN"]}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] == "AMBER,GREEN"
+
+
+def test_analyst1_evidence_search_command_source_id_list_input(mocker, mock_client):
+    """List source_id input (from XSOAR isArray) is joined into comma-separated string"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"source_id": ["1", "2", "3"]}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["source_id"] == "1,2,3"
+
+
+def test_analyst1_evidence_search_command_tlp_none(mocker, mock_client):
+    """When tlp arg is absent, None is passed to search_evidence"""
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_evidence",
+        return_value=MOCK_EVIDENCE_SEARCH_RESPONSE_EMPTY,
+    )
+    args = {"search_term": "test"}
+    analyst1_evidence_search_command(mock_client, args)
+    assert mock_search.call_args.kwargs["tlp"] is None
+
+
+# --- analyst1_evidence_file_fetch_command tests ---
+
+
+def test_analyst1_evidence_file_fetch_command_success(mocker, mock_client):
+    """analyst1_evidence_file_fetch_command returns file result on success"""
+    mocker.patch.object(
+        mock_client,
+        "get_evidence_file",
+        return_value=(b"pdf-binary-content", "report.pdf"),
+    )
+    mock_file_result = mocker.patch(
+        "Analyst1.fileResult",
+        return_value={"File": "report.pdf", "FileID": "entry-id", "Type": 9},
+    )
+
+    args = {"evidence_id": "123"}
+    result = analyst1_evidence_file_fetch_command(mock_client, args)
+
+    mock_client.get_evidence_file.assert_called_once_with(123)
+    mock_file_result.assert_called_once_with("report.pdf", b"pdf-binary-content", file_type=EntryType.ENTRY_INFO_FILE)
+    assert result["File"] == "report.pdf"
+
+
+def test_analyst1_evidence_file_fetch_command_missing_id(mock_client):
+    """analyst1_evidence_file_fetch_command raises when evidence_id is missing"""
+    args = {}
+    with pytest.raises(ValueError, match="evidence_id is required"):
+        analyst1_evidence_file_fetch_command(mock_client, args)
