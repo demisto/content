@@ -140,85 +140,6 @@ def test_alert_to_issue():
     assert result["timestamp"] == "2023-01-01"
 
 
-def test_core_get_issues_command(mocker: MockerFixture):
-    """
-    GIVEN:
-        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data.
-    WHEN:
-        The core-get-issues command is executed through the main function.
-    THEN:
-        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
-        outputs are transformed back from alert to issue format, and results are returned.
-    """
-    from CortexPlatformCore import main
-    from CommonServerPython import CommandResults
-
-    # Mock demisto functions
-    mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(demisto, "args", return_value={"issue_id": "12345", "issue_status": "open", "issue_priority": "high"})
-    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
-
-    # Create mock CommandResults with alert data that should be converted to issue data
-    mock_command_results = CommandResults(
-        outputs_prefix="Core.Alert",
-        outputs=[
-            {
-                "alert_id": "12345",
-                "alert_status": "open",
-                "alert_priority": "high",
-                "alert_description": "Test alert",
-                "user_name": "john",
-            }
-        ],
-        readable_output="Test alert output",
-        raw_response={"alert_id": "12345"},
-    )
-
-    # Mock get_alerts_by_filter_command to return our mock CommandResults
-    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
-    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
-    # Execute the main function
-    main()
-
-    # Verify that get_alerts_by_filter_command was called with transformed arguments
-    mock_get_alerts.assert_called_once()
-    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
-
-    # Verify the arguments were transformed from issue to alert format
-    assert "alert_id" in called_args
-    assert "alert_status" in called_args
-    assert "alert_priority" in called_args
-    assert called_args["alert_id"] == "12345"
-    assert called_args["alert_status"] == "open"
-    assert called_args["alert_priority"] == "high"
-
-    # Verify issue keys are not present in the transformed args
-    assert "issue_id" not in called_args
-    assert "issue_status" not in called_args
-    assert "issue_priority" not in called_args
-
-    # Get the CommandResults object that was passed to return_results
-    returned_command_results = mock_return_results.call_args[0][0]
-
-    # Verify the outputs were transformed back from alert to issue format
-    assert "issue_id" in returned_command_results.outputs[0]
-    assert "issue_status" in returned_command_results.outputs[0]
-    assert "issue_priority" in returned_command_results.outputs[0]
-    assert "issue_description" in returned_command_results.outputs[0]
-    assert returned_command_results.outputs[0]["issue_id"] == "12345"
-    assert returned_command_results.outputs[0]["issue_status"] == "open"
-    assert returned_command_results.outputs[0]["issue_priority"] == "high"
-    assert returned_command_results.outputs[0]["issue_description"] == "Test alert"
-
-    # Verify alert keys are not present in the final outputs
-    assert "alert_id" not in returned_command_results.outputs[0]
-    assert "alert_priority" not in returned_command_results.outputs[0]
-    assert "alert_description" not in returned_command_results.outputs[0]
-
-    # Verify non-alert/issue keys are preserved
-    assert returned_command_results.outputs[0]["user_name"] == "john"
-
-
 def test_filter_context_fields():
     from CortexPlatformCore import filter_context_fields
 
@@ -260,125 +181,166 @@ def test_filter_context_fields():
     assert expected_result == filtered_data
 
 
-def test_core_get_issues_command_with_output_keys(mocker: MockerFixture):
+def test_get_issues_command_with_empty_response_outputs(mocker):
     """
-    GIVEN:
-        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data
-        and output_keys argument is provided to filter specific fields.
-    WHEN:
-        The core-get-issues command is executed with output_keys parameter.
-    THEN:
-        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
-        outputs are transformed back from alert to issue format, filtered by output_keys, and results are returned.
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with None outputs
+    Then: get_issues_command should return a result with None outputs
     """
-    from CortexPlatformCore import main
-    from CommonServerPython import CommandResults
+    from CortexPlatformCore import get_issues_command
 
-    # Mock demisto functions with output_keys parameter
-    mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "issue_id": "12345",
-            "issue_status": "open",
-            "issue_priority": "high",
-            "output_keys": "issue_id,issue_status,issue_description",
-        },
-    )
-    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+    mock_response = [
+        CommandResults(outputs=None, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
-    # Create mock CommandResults with alert data that should be converted to issue data
-    mock_command_results = CommandResults(
-        outputs_prefix="Core.Issue",
-        outputs=[
-            {
-                "alert_id": "12345",
-                "alert_status": "open",
-                "alert_priority": "high",
-                "alert_description": "Test alert",
-                "alert_severity": "critical",
-                "alert_timestamp": "2023-10-01T10:00:00Z",
-                "user_name": "john",
-                "internal_field": "should_be_filtered_out",
-            },
-            {
-                "alert_id": "67890",
-                "alert_status": "closed",
-                "alert_priority": "medium",
-                "alert_description": "Another test alert",
-                "alert_severity": "low",
-                "alert_timestamp": "2023-10-01T11:00:00Z",
-                "user_name": "jane",
-                "internal_field": "should_be_filtered_out",
-            },
-        ],
-        readable_output="Test alert output",
-        raw_response={"alert_id": "12345"},
-    )
+    result = get_issues_command(client, args)
 
-    # Mock get_alerts_by_filter_command to return our mock CommandResults
-    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
-    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
+    assert result[0].outputs is None
 
-    # Execute the main function
-    main()
 
-    # Verify that get_alerts_by_filter_command was called with transformed arguments
-    mock_get_alerts.assert_called_once()
-    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
+def test_get_issues_command_with_single_alert_output(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with a single alert output
+    Then: get_issues_command should return a result with the corresponding issue output
+    """
+    from CortexPlatformCore import get_issues_command
 
-    # Verify the arguments were transformed from issue to alert format and output_keys was removed
-    assert "alert_id" in called_args
-    assert "alert_status" in called_args
-    assert "alert_priority" in called_args
-    assert "output_keys" not in called_args  # Should be removed from args passed to get_alerts_by_filter_command
-    assert called_args["alert_id"] == "12345"
-    assert called_args["alert_status"] == "open"
-    assert called_args["alert_priority"] == "high"
+    client = mocker.Mock()
+    args = {"issue_id": "456"}
+    alert_output = {"alert_id": "alert_123", "status": "open"}
+    issue_output = {"issue_id": "issue_456", "status": "open"}
+    mock_response = [
+        CommandResults(outputs=[alert_output], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
 
-    # Get the CommandResults object that was passed to return_results
-    returned_command_results = mock_return_results.call_args[0][0]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+    mocker.patch("CortexPlatformCore.alert_to_issue", return_value=issue_output)
 
-    # Verify the outputs were transformed back from alert to issue format
-    assert len(returned_command_results.outputs) == 2
+    result = get_issues_command(client, args)
 
-    # Check first alert/issue
-    first_issue = returned_command_results.outputs[0]
-    assert "issue_id" in first_issue
-    assert "issue_status" in first_issue
-    assert "issue_description" in first_issue
-    assert first_issue["issue_id"] == "12345"
-    assert first_issue["issue_status"] == "open"
-    assert first_issue["issue_description"] == "Test alert"
+    assert result[0].outputs == [issue_output]
 
-    # Verify that only the specified output_keys are present (after transformation to issue format)
-    expected_keys = {"issue_id", "issue_status", "issue_description"}
-    assert set(first_issue.keys()) == expected_keys
 
-    # Verify fields that should be filtered out are not present
-    assert "issue_priority" not in first_issue
-    assert "issue_severity" not in first_issue
-    assert "issue_timestamp" not in first_issue
-    assert "user_name" not in first_issue
-    assert "internal_field" not in first_issue
+def test_get_issues_command_with_output_keys_empty_list_does_not_filter(mocker):
+    from CortexPlatformCore import get_issues_command
 
-    # Check second alert/issue
-    second_issue = returned_command_results.outputs[1]
-    assert "issue_id" in second_issue
-    assert "issue_status" in second_issue
-    assert "issue_description" in second_issue
-    assert second_issue["issue_id"] == "67890"
-    assert second_issue["issue_status"] == "closed"
-    assert second_issue["issue_description"] == "Another test alert"
+    client = mocker.Mock()
+    args = {"issue_id": "789", "output_keys": []}
 
-    # Verify that only the specified output_keys are present
-    assert set(second_issue.keys()) == expected_keys
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "a1"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
 
-    # Verify alert keys are not present in the final outputs
-    assert "alert_id" not in first_issue
-    assert "alert_status" not in first_issue
-    assert "alert_description" not in first_issue
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue", return_value={"issue_id": "i1"})
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result[0].outputs == [{"issue_id": "i1"}]
+    alert_to_issue_mock.assert_called_once()
+    filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_multiple_alert_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with multiple alert outputs
+    Then: get_issues_command should return a result with corresponding issue outputs
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"status": "open"}
+
+    # Create multiple alert outputs
+    alert_outputs = [
+        {"alert_id": "alert_123", "status": "open", "severity": "high"},
+        {"alert_id": "alert_456", "status": "open", "severity": "low"},
+        {"alert_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    # Corresponding issue outputs
+    issue_outputs = [
+        {"issue_id": "alert_123", "status": "open", "severity": "high"},
+        {"issue_id": "alert_456", "status": "open", "severity": "low"},
+        {"issue_id": "alert_789", "status": "open", "severity": "medium"},
+    ]
+
+    mock_response = [
+        CommandResults(outputs=alert_outputs, outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 3, "returned_count": 3}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
+    # Mock the get_issues_by_filter_command to return multiple outputs
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+
+    result = get_issues_command(client, args)
+
+    # Assert that the result contains all the expected issue outputs
+    assert len(result[0].outputs) == 3
+    assert result[0].outputs == issue_outputs
+
+
+def test_get_issues_command_with_empty_list_outputs(mocker):
+    """
+    Given: A client and args with issue_id
+    When: get_issues_by_filter_command returns a response with empty outputs list
+    Then: get_issues_command should return a result with empty outputs and not call alert_to_issue or filter_context_fields
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123"}
+
+    mock_response = [
+        CommandResults(outputs=[], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 0, "returned_count": 0}], outputs_prefix="Core.IssueMetadata"),
+    ]
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    alert_to_issue_mock = mocker.patch("CortexPlatformCore.alert_to_issue")
+    filter_mock = mocker.patch("CortexPlatformCore.filter_context_fields")
+
+    result = get_issues_command(client, args)
+
+    assert result[0].outputs == []
+    alert_to_issue_mock.assert_not_called()
+    filter_mock.assert_not_called()
+
+
+def test_get_issues_command_with_partial_output_keys(mocker):
+    """
+    Given: A client and args with some missing output keys
+    When: get_issues_command is called
+    Then: Returns partial outputs for available keys
+    """
+    from CortexPlatformCore import get_issues_command
+
+    client = mocker.Mock()
+    args = {"issue_id": "123", "output_keys": ["status", "non_existent_key"]}
+
+    mock_response = [
+        CommandResults(outputs=[{"alert_id": "alert_123", "status": "open", "severity": "high"}], outputs_prefix="Core.Issue"),
+        CommandResults(outputs=[{"filtered_count": 1, "returned_count": 1}], outputs_prefix="Core.IssueMetadata"),
+    ]
+
+    mocker.patch("CortexPlatformCore.get_issues_by_filter_command", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.issue_to_alert", return_value=args)
+
+    result = get_issues_command(client, args)
+    assert result[0].outputs == [{"status": "open"}]
 
 
 def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
@@ -3720,6 +3682,11 @@ def test_normalize_and_filter_appsec_issue():
             "xdm.repository.name": "my-app",
             "xdm.repository.organization": "my-org",
             "xdm.vulnerability.cvss_score": 9.5,
+            "xdm.vulnerability.fix_versions": ["1.2.3.4"],
+        },
+        "cas_issues_extended_fields": {
+            "package_version": "2.4.0",
+            "repository_is_public": True,
         },
         "cas_sla_status": "IN_SLA",
         "extra_field": "should be removed",
@@ -3736,6 +3703,9 @@ def test_normalize_and_filter_appsec_issue():
     assert normalized_issue["cvss_score"] == 9.5
     assert normalized_issue["is_fixable"] is True
     assert normalized_issue["sla_status"] == "On Track"
+    assert normalized_issue["package_version"] == "2.4.0"
+    assert normalized_issue["fix_versions"] == ["1.2.3.4"]
+    assert normalized_issue["repository_is_public"] is True
     assert "extra_field" not in normalized_issue
 
 
@@ -3975,6 +3945,7 @@ def test_add_cases_extra_data_empty_list(mocker):
 @pytest.mark.parametrize(
     "custom_fields_json,expected",
     [
+        # --- Legacy list-of-objects format ---
         (
             '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
             {"field1": "value1", "field2": "value2", "field3": "value3"},
@@ -3988,16 +3959,38 @@ def test_add_cases_extra_data_empty_list(mocker):
         ('[{"---": "value1", "@#$": "value2"}]', {}),
         ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
         ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+        # multiSelect field in legacy format: list value preserved as-is
+        ('[{"multifield": ["opt1", "opt2"]}]', {"multifield": ["opt1", "opt2"]}),
+        # mixed legacy: string field and multiSelect list field
+        (
+            '[{"textfield": "hello"}, {"multifield": ["opt1", "opt2"]}]',
+            {"textfield": "hello", "multifield": ["opt1", "opt2"]},
+        ),
+        # --- New preferred dict format ---
+        # Simple dict with string values
+        ('{"field1": "value1", "field2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with multiSelect list value
+        ('{"textfield": "hello", "multifield": ["opt1", "opt2"]}', {"textfield": "hello", "multifield": ["opt1", "opt2"]}),
+        # Dict with special chars in keys (sanitized)
+        ('{"field-1": "value1", "field_2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with numeric value (not stringified)
+        ('{"numfield": 42}', {"numfield": 42}),
+        # Dict with boolean value (not stringified)
+        ('{"boolfield": true}', {"boolfield": True}),
+        # Empty dict
+        ("{}", {}),
     ],
 )
 def test_parse_custom_fields(custom_fields_json, expected):
     """
     Given:
-        A JSON string containing custom fields and expected parsed result.
+        A JSON string containing custom fields in either dict or list-of-objects format.
     When:
         The parse_custom_fields function is called with the JSON string.
     Then:
-        The function should return a dictionary with normalized field names matching the expected result.
+        The function should return a dictionary with sanitized alphanumeric keys.
+        Values are passed as-is (no stringification): lists, booleans, and numbers are preserved.
+        Both the new dict format and the legacy list-of-objects format are supported.
     """
     from CortexPlatformCore import parse_custom_fields
 
@@ -5439,7 +5432,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
         assert len(call_args[0][1]) == 2  # readable_recommendations
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5478,6 +5478,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
             "severity",
             "description",
             "remediation",
+            "network_reachability",
             "existing_code_block",
             "suggested_code_block",
             "playbook_suggestions",
@@ -5538,7 +5539,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         # Should only have base headers
         call_args = mock_table_to_markdown.call_args
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5621,7 +5629,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         # Should include headers for the types that exist
         call_args = mock_table_to_markdown.call_args
         headers = call_args[1]["headers"]
-        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation", "network_reachability"]
 
         assert all(h in headers for h in base_headers)
         assert "existing_code_block" in headers
@@ -6613,28 +6621,27 @@ def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "First script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": False,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    },
-                    {
-                        "script_uid": "uid2",
-                        "description": "Second script",
-                        "name": "test_script",
-                        "windows_supported": False,
-                        "linux_supported": True,
-                        "macos_supported": False,
-                        "script_inputs": [],
-                    },
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "First script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": False,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                },
+                {
+                    "script_uid": "uid2",
+                    "description": "Second script",
+                    "name": "test_script",
+                    "windows_supported": False,
+                    "linux_supported": True,
+                    "macos_supported": False,
+                    "script_inputs": [],
+                },
+            ],
         ),
         CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
     ]
@@ -6669,8 +6676,8 @@ def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
 
     mock_scripts_result = Mock()
     mock_scripts_result = [
-        CommandResults(outputs={"Scripts": []}),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs_prefix="Core.Scripts", outputs=[]),
+        CommandResults(outputs={"filtered_count": "0", "returned_count": "0"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6696,21 +6703,20 @@ def test_run_script_agentix_command_script_requires_parameters_but_none_provided
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6762,21 +6768,20 @@ def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -6813,21 +6818,20 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -8775,8 +8779,18 @@ def test_validate_custom_fields_success(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
-                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {
+                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
+                {
+                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
             ]
         }
     }
@@ -8805,11 +8819,17 @@ def test_validate_custom_fields_system_field(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "System Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": True,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
                 {
                     "CUSTOM_FIELD_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8845,6 +8865,7 @@ def test_validate_custom_fields_non_existent_field(mocker):
                     "CUSTOM_FIELD_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8858,6 +8879,164 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a string value instead of a list.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a list value.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": "single_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "multi_field" not in valid_fields
+    assert "multiSelect" in error_messages
+    assert "list" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted as valid and no error messages are returned.
+        validate_custom_fields does not enforce type — the list is passed through as-is.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"multi_field": ["value1", "value2"]}
+    assert not error_messages
+
+
+def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
+    """
+    GIVEN:
+        A shortText custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a single value.
+        (shortText is an enum field that does not accept arrays, per be3 validation logic.)
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"single_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "single_field" not in valid_fields
+    assert "does not accept a list value" in error_messages
+
+
+@pytest.mark.parametrize(
+    "field_type",
+    [
+        "shortText",
+        "longText",
+        "number",
+        "boolean",
+        "date",
+        "markdown",
+        "html",
+        "url",
+        "user",
+        "role",
+        "grid",
+        "tagsSelect",
+        "json",
+    ],
+)
+def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field_type):
+    """
+    GIVEN:
+        A non-enum custom field (e.g. shortText, boolean, date, etc.) provided with a string value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted — non-enum types have no list restriction at the content layer
+        (the backend handles further type validation).
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "My Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": field_type,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"my_field": "some_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "my_field" in valid_fields
+    assert not error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#
@@ -10207,3 +10386,1354 @@ def test_send_endpoint_heartbeat_command_missing_id(mocker):
 
     with pytest.raises(ValueError, match="endpoint_id is required"):
         send_endpoint_heartbeat_command(mock_client, args)
+
+
+class TestListBrokersCommand:
+    """Test cases for list_brokers_command function."""
+
+    def test_list_brokers_command_single_broker_success(self, mocker):
+        """
+        Given: Client and single broker_vm_name
+        When: list_brokers_command is called
+        Then: Single broker returned with correct structure and APPS data
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {
+            "reply": {
+                "brokers": [
+                    {
+                        "DEVICE_NAME": "broker-01",
+                        "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
+                    }
+                ]
+            }
+        }
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Brokers Table")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01"})
+
+        assert result.outputs_prefix == "Core.Broker"
+        assert result.outputs_key_field == "DEVICE_NAME"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["DEVICE_NAME"] == "broker-01"
+        assert len(result.outputs[0]["APPS"]) == 1
+
+    def test_list_brokers_command_multiple_brokers(self, mocker):
+        """
+        Given: Multiple broker names as comma-separated list
+        When: list_brokers_command is called
+        Then: All matching brokers returned
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {
+            "reply": {"brokers": [{"DEVICE_NAME": "broker-01"}, {"DEVICE_NAME": "broker-02"}, {"DEVICE_NAME": "broker-03"}]}
+        }
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01,broker-02,broker-03"})
+
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["DEVICE_NAME"] == "broker-01"
+        assert result.outputs[2]["DEVICE_NAME"] == "broker-03"
+
+    def test_list_brokers_command_no_filter_default_limit(self, mocker):
+        """
+        Given: No broker filter and no limit specified
+        When: list_brokers_command is called
+        Then: All brokers returned with default limit of 50
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {"reply": {"brokers": [{"DEVICE_NAME": f"broker-{i}"} for i in range(10)]}}
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+        result = list_brokers_command(mock_client, {})
+
+        assert len(result.outputs) == 10
+        call_args = mock_client.get_webapp_data.call_args[0][0]
+        assert call_args["filter_data"]["paging"]["to"] == 50
+
+    def test_list_brokers_command_empty_response(self, mocker):
+        """
+        Given: Broker filter that matches no brokers
+        When: list_brokers_command is called
+        Then: Empty list returned gracefully
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {"reply": {"brokers": []}}
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="No brokers found")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "nonexistent"})
+
+        assert result.outputs == []
+        assert result.readable_output == "No brokers found"
+
+
+class TestFetchPolicyTable:
+    """Test cases for fetch_policy_table helper function."""
+
+    def test_fetch_policy_table_success(self, mocker):
+        """
+        Given: A client that returns valid policy table data with hash.
+        When: fetch_policy_table is called.
+        Then: Returns policies list and policy hash.
+        """
+        from CortexPlatformCore import fetch_policy_table, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {
+            "reply": {
+                "DATA": [
+                    {"ID": 1, "NAME": "Policy 1", "PRIORITY": 1},
+                    {"ID": 2, "NAME": "Policy 2", "PRIORITY": 2},
+                ],
+                "POLICY_HASH": "test_hash_123",
+            }
+        }
+        mock_client.get_agent_policy_table.return_value = mock_response
+
+        policies, policy_hash = fetch_policy_table(mock_client)
+
+        assert len(policies) == 2
+        assert policy_hash == "test_hash_123"
+        assert policies[0]["NAME"] == "Policy 1"
+        mock_client.get_agent_policy_table.assert_called_once()
+
+    def test_fetch_policy_table_missing_hash(self, mocker):
+        """
+        Given: A client that returns policy data without POLICY_HASH.
+        When: fetch_policy_table is called.
+        Then: Raises DemistoException about missing policy hash.
+        """
+        from CortexPlatformCore import fetch_policy_table, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {"reply": {"DATA": [], "POLICY_HASH": ""}}
+        mock_client.get_agent_policy_table.return_value = mock_response
+
+        with pytest.raises(DemistoException, match="Failed to retrieve policy hash"):
+            fetch_policy_table(mock_client)
+
+
+class TestResolvePlatformName:
+    """Test cases for resolve_platform_name helper function."""
+
+    @pytest.mark.parametrize(
+        "platform,expected",
+        [
+            ("windows", "AGENT_OS_WINDOWS"),
+            ("linux", "AGENT_OS_LINUX"),
+            ("mac", "AGENT_OS_MAC"),
+            ("android", "AGENT_OS_ANDROID"),
+            ("ios", "AGENT_OS_IOS"),
+            ("serverless", "AGENT_OS_SERVERLESS"),
+        ],
+    )
+    def test_resolve_platform_name_valid(self, platform, expected):
+        """
+        Given: Valid platform names.
+        When: resolve_platform_name is called.
+        Then: Returns correct platform value.
+        """
+        from CortexPlatformCore import resolve_platform_name
+
+        result = resolve_platform_name(platform)
+        assert result == expected
+
+    def test_resolve_platform_name_invalid(self):
+        """
+        Given: Invalid platform name.
+        When: resolve_platform_name is called.
+        Then: Raises DemistoException with valid platforms list.
+        """
+        from CortexPlatformCore import resolve_platform_name, DemistoException
+
+        with pytest.raises(DemistoException, match="Invalid platform 'invalid'"):
+            resolve_platform_name("invalid")
+
+
+class TestBuildTargetFilterFromEndpointIds:
+    """Test cases for build_target_filter_from_endpoint_ids helper function."""
+
+    def test_build_target_filter_single_endpoint(self):
+        """
+        Given: A list with a single endpoint ID.
+        When: build_target_filter_from_endpoint_ids is called.
+        Then: Returns filter with single AND condition.
+        """
+        from CortexPlatformCore import build_target_filter_from_endpoint_ids
+
+        endpoint_ids = ["endpoint-123"]
+        result = build_target_filter_from_endpoint_ids(endpoint_ids)
+
+        expected = {"filter": {"AND": [{"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint-123"}]}}
+        assert result == expected
+
+    def test_build_target_filter_multiple_endpoints(self):
+        """
+        Given: A list with multiple endpoint IDs.
+        When: build_target_filter_from_endpoint_ids is called.
+        Then: Returns filter with OR conditions wrapped in AND.
+        """
+        from CortexPlatformCore import build_target_filter_from_endpoint_ids
+
+        endpoint_ids = ["endpoint-1", "endpoint-2", "endpoint-3"]
+        result = build_target_filter_from_endpoint_ids(endpoint_ids)
+
+        expected = {
+            "filter": {
+                "AND": [
+                    {
+                        "OR": [
+                            {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint-1"},
+                            {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint-2"},
+                            {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint-3"},
+                        ]
+                    }
+                ]
+            }
+        }
+        assert result == expected
+
+
+class TestValidateProfilePlatformCompatibility:
+    """Test cases for validate_profile_platform_compatibility helper function."""
+
+    @pytest.mark.parametrize(
+        "platform,profile_args",
+        [
+            ("serverless", {"restrictions": "Default"}),
+            ("android", {"malware": "Default", "agent_settings": "Default"}),
+            ("ios", {"malware": "Default"}),
+            ("linux", {"exploit": "Default", "malware": "Default", "agent_settings": "Default"}),
+            ("mac", {"exploit": "Default", "malware": "Default", "restrictions": "Default", "exceptions": "Default"}),
+            ("windows", {"exploit": "Default", "malware": "Default", "agent_settings": "Default", "restrictions": "Default"}),
+        ],
+    )
+    def test_validate_profile_platform_compatibility_valid(self, platform, profile_args):
+        """
+        Given: Valid platform and profile combinations.
+        When: validate_profile_platform_compatibility is called.
+        Then: No exception is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        # Should not raise
+        validate_profile_platform_compatibility(platform, profile_args)
+
+    @pytest.mark.parametrize(
+        "platform,profile_args,unsupported_profile",
+        [
+            ("serverless", {"exploit": "Default"}, "exploit"),
+            ("serverless", {"malware": "Default"}, "malware"),
+            ("android", {"exploit": "Default"}, "exploit"),
+            ("android", {"restrictions": "Default"}, "restrictions"),
+            ("ios", {"exploit": "Default"}, "exploit"),
+            ("ios", {"exceptions": "Default"}, "exceptions"),
+        ],
+    )
+    def test_validate_profile_platform_compatibility_invalid(self, platform, profile_args, unsupported_profile):
+        """
+        Given: Invalid platform and profile combinations.
+        When: validate_profile_platform_compatibility is called.
+        Then: Raises DemistoException with unsupported profile details.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility, DemistoException
+
+        with pytest.raises(DemistoException) as exc_info:
+            validate_profile_platform_compatibility(platform, profile_args)
+
+        assert f"not supported for platform '{platform}'" in str(exc_info.value)
+        assert unsupported_profile in str(exc_info.value)
+
+    def test_validate_profile_platform_compatibility_none_values_ignored(self):
+        """
+        Given: Profile args with None values.
+        When: validate_profile_platform_compatibility is called.
+        Then: None values are ignored and no exception is raised.
+        """
+        from CortexPlatformCore import validate_profile_platform_compatibility
+
+        profile_args = {"exploit": "Default", "malware": None, "agent_settings": None}
+        # Should not raise for linux platform
+        validate_profile_platform_compatibility("linux", profile_args)
+
+
+class TestGetProfileIds:
+    """Test cases for get_profile_ids helper function."""
+
+    def test_get_profile_ids_success(self, mocker):
+        """
+        Given: Valid platform and profile names that exist in the system.
+        When: get_profile_ids is called.
+        Then: Returns mapping of profile types to their IDs and names.
+        """
+        from CortexPlatformCore import get_profile_ids, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {
+            "reply": [
+                {"PROFILE_TYPE": "EXPLOIT", "PROFILE_ID": 10, "PROFILE_NAME": "Default"},
+                {"PROFILE_TYPE": "MALWARE", "PROFILE_ID": 20, "PROFILE_NAME": "Default"},
+            ]
+        }
+        mock_client.get_webapp_data.return_value = mock_response
+
+        profile_args = {"exploit": "Default", "malware": "Default"}
+        result = get_profile_ids(mock_client, "windows", profile_args)
+
+        assert result == {
+            "EXPLOIT": {"id": 10, "name": "Default"},
+            "MALWARE": {"id": 20, "name": "Default"},
+        }
+
+    def test_get_profile_ids_profile_not_found(self, mocker):
+        """
+        Given: Profile name that doesn't exist in the system.
+        When: get_profile_ids is called.
+        Then: Raises DemistoException indicating profile not found.
+        """
+        from CortexPlatformCore import get_profile_ids, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {"reply": []}
+        mock_client.get_webapp_data.return_value = mock_response
+
+        profile_args = {"exploit": "NonExistent"}
+
+        with pytest.raises(DemistoException, match="Profile 'NonExistent' of type 'EXPLOIT' not found"):
+            get_profile_ids(mock_client, "windows", profile_args)
+
+    def test_get_profile_ids_multiple_profiles_same_name(self, mocker):
+        """
+        Given: Multiple profiles with the same name for a profile type.
+        When: get_profile_ids is called.
+        Then: Raises DemistoException with details of all matching profiles.
+        """
+        from CortexPlatformCore import get_profile_ids, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {
+            "reply": [
+                {"PROFILE_TYPE": "EXPLOIT", "PROFILE_ID": 10, "PROFILE_NAME": "Custom"},
+                {"PROFILE_TYPE": "EXPLOIT", "PROFILE_ID": 11, "PROFILE_NAME": "Custom"},
+            ]
+        }
+        mock_client.get_webapp_data.return_value = mock_response
+
+        profile_args = {"exploit": "Custom"}
+
+        with pytest.raises(DemistoException) as exc_info:
+            get_profile_ids(mock_client, "windows", profile_args)
+
+        assert "Multiple profiles found" in str(exc_info.value)
+        assert "ID: 10" in str(exc_info.value)
+        assert "ID: 11" in str(exc_info.value)
+
+    def test_get_profile_ids_by_id(self, mocker):
+        """
+        Given: Profile ID instead of name.
+        When: get_profile_ids is called.
+        Then: Returns profile mapping using the ID.
+        """
+        from CortexPlatformCore import get_profile_ids, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {"reply": [{"PROFILE_TYPE": "EXPLOIT", "PROFILE_ID": 10, "PROFILE_NAME": "Default"}]}
+        mock_client.get_webapp_data.return_value = mock_response
+
+        profile_args = {"exploit": "10"}
+        result = get_profile_ids(mock_client, "windows", profile_args)
+
+        assert result == {"EXPLOIT": {"id": 10, "name": "Default"}}
+
+    def test_get_profile_ids_skip_none_values(self, mocker):
+        """
+        Given: Profile args with some None values.
+        When: get_profile_ids is called.
+        Then: Only non-None profiles are queried and returned.
+        """
+        from CortexPlatformCore import get_profile_ids, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_response = {"reply": [{"PROFILE_TYPE": "EXPLOIT", "PROFILE_ID": 10, "PROFILE_NAME": "Default"}]}
+        mock_client.get_webapp_data.return_value = mock_response
+
+        profile_args = {"exploit": "Default", "malware": None, "agent_settings": None}
+        result = get_profile_ids(mock_client, "windows", profile_args)
+
+        assert result == {"EXPLOIT": {"id": 10, "name": "Default"}}
+
+
+class TestResolveEndpointNamesToIds:
+    """Test cases for resolve_endpoint_names_to_ids helper function."""
+
+    def test_resolve_endpoint_names_to_ids_success(self, mocker):
+        """
+        Given: Valid endpoint names that exist in the system.
+        When: resolve_endpoint_names_to_ids is called.
+        Then: Returns list of endpoint IDs.
+        """
+        from CortexPlatformCore import resolve_endpoint_names_to_ids, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_webapp_data.return_value = {"reply": {"DATA": [{"HOST_NAME": "endpoint-1", "AGENT_ID": "id-1"}]}}
+        mocker.patch(
+            "CortexPlatformCore.map_endpoint_format", return_value=[{"endpoint_name": "endpoint-1", "endpoint_id": "id-1"}]
+        )
+
+        endpoint_names = ["endpoint-1"]
+        result = resolve_endpoint_names_to_ids(mock_client, endpoint_names)
+
+        assert result == ["id-1"]
+
+    def test_resolve_endpoint_names_to_ids_no_endpoints_found(self, mocker):
+        """
+        Given: Endpoint names that don't exist in the system.
+        When: resolve_endpoint_names_to_ids is called.
+        Then: Raises DemistoException indicating no endpoints found.
+        """
+        from CortexPlatformCore import resolve_endpoint_names_to_ids, DemistoException, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_webapp_data.return_value = {"reply": {"DATA": []}}
+
+        endpoint_names = ["nonexistent"]
+
+        with pytest.raises(DemistoException, match="No endpoints found with the specified names"):
+            resolve_endpoint_names_to_ids(mock_client, endpoint_names)
+
+    def test_resolve_endpoint_names_to_ids_duplicate_names(self, mocker):
+        """
+        Given: Multiple endpoints with the same name.
+        When: resolve_endpoint_names_to_ids is called.
+        Then: Raises DemistoException with details of duplicate endpoints.
+        """
+        from CortexPlatformCore import resolve_endpoint_names_to_ids, DemistoException, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mock_client.get_webapp_data.return_value = {
+            "reply": {"DATA": [{"HOST_NAME": "dup", "AGENT_ID": "id-1"}, {"HOST_NAME": "dup", "AGENT_ID": "id-2"}]}
+        }
+        mocker.patch(
+            "CortexPlatformCore.map_endpoint_format",
+            return_value=[{"endpoint_name": "dup", "endpoint_id": "id-1"}, {"endpoint_name": "dup", "endpoint_id": "id-2"}],
+        )
+
+        endpoint_names = ["dup"]
+
+        with pytest.raises(DemistoException) as exc_info:
+            resolve_endpoint_names_to_ids(mock_client, endpoint_names)
+
+        assert "Multiple endpoints found with the same name" in str(exc_info.value)
+        assert "use target_endpoint_ids instead" in str(exc_info.value)
+
+
+class TestCreateEndpointPolicyCommand:
+    """Test cases for create_endpoint_policy_command function."""
+
+    def test_create_endpoint_policy_command_success_with_endpoint_ids(self, mocker):
+        """
+        Given: Valid arguments with target_endpoint_ids and all required parameters.
+        When: create_endpoint_policy_command is called.
+        Then: Policy is created successfully with correct priority and profiles.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [{"ID": 1, "NAME": "Existing", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1}]
+        policy_hash = "hash123"
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mocker.patch(
+            "CortexPlatformCore.get_profile_ids",
+            return_value={
+                "EXPLOIT": {"id": 10, "name": "Default"},
+                "MALWARE": {"id": 20, "name": "Default"},
+                "AGENT_SETTINGS": {"id": 30, "name": "Default"},
+                "RESTRICTIONS": {"id": 40, "name": "Default"},
+                "EXCEPTIONS": {"id": 50, "name": "Default (No Exceptions)"},
+            },
+        )
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mock_update_policy = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Policy",
+            "target_endpoint_ids": "endpoint-1,endpoint-2",
+            "platform": "windows",
+            "description": "Test description",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully created endpoint policy 'Test Policy'" in result.readable_output
+        assert result.outputs["PolicyName"] == "Test Policy"
+        assert result.outputs["Platform"] == "windows"
+        assert result.outputs["Priority"] == 2  # Next priority after existing priority 1
+        assert result.outputs["TargetEndpointIds"] == ["endpoint-1", "endpoint-2"]
+        mock_update_policy.assert_called_once()
+
+    def test_create_endpoint_policy_command_success_with_endpoint_names(self, mocker):
+        """
+        Given: Valid arguments with target_endpoint_names.
+        When: create_endpoint_policy_command is called.
+        Then: Endpoint names are resolved to IDs and policy is created.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=([], "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_LINUX")
+        mocker.patch("CortexPlatformCore.resolve_endpoint_names_to_ids", return_value=["id-1", "id-2"])
+        mocker.patch(
+            "CortexPlatformCore.get_profile_ids",
+            return_value={
+                "EXPLOIT": {"id": 10, "name": "Default"},
+                "MALWARE": {"id": 20, "name": "Default"},
+                "AGENT_SETTINGS": {"id": 30, "name": "Default"},
+                "RESTRICTIONS": {"id": 40, "name": "Default"},
+                "EXCEPTIONS": {"id": 50, "name": "Default (No Exceptions)"},
+            },
+        )
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Policy",
+            "target_endpoint_names": "endpoint-1,endpoint-2",
+            "platform": "linux",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully created endpoint policy 'Test Policy'" in result.readable_output
+        assert result.outputs["TargetEndpointIds"] == ["id-1", "id-2"]
+
+    def test_create_endpoint_policy_command_both_names_and_ids_raises_error(self, mocker):
+        """
+        Given: Arguments with both target_endpoint_names and target_endpoint_ids.
+        When: create_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating only one should be provided.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {
+            "policy_name": "Test Policy",
+            "target_endpoint_names": "endpoint-1",
+            "target_endpoint_ids": "id-1",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Cannot provide both target_endpoint_names and target_endpoint_ids"):
+            create_endpoint_policy_command(mock_client, args)
+
+    def test_create_endpoint_policy_command_no_targets_raises_error(self, mocker):
+        """
+        Given: Arguments without target_endpoint_names or target_endpoint_ids.
+        When: create_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating one must be provided.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {
+            "policy_name": "Test Policy",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Either target_endpoint_names or target_endpoint_ids must be provided"):
+            create_endpoint_policy_command(mock_client, args)
+
+    def test_create_endpoint_policy_command_priority_shifting(self, mocker):
+        """
+        Given: Requested priority that conflicts with existing policy.
+        When: create_endpoint_policy_command is called.
+        Then: Existing policies are shifted and new policy gets requested priority.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 1, "NAME": "Policy 1", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+            {"ID": 2, "NAME": "Policy 2", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2},
+        ]
+        policy_hash = "hash123"
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, policy_hash))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={"EXPLOIT": {"id": 10, "name": "Default"}})
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mock_update_policy = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "New Policy",
+            "target_endpoint_ids": "endpoint-1",
+            "platform": "windows",
+            "priority": "1",  # Conflicts with existing
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        # Verify priority shifting occurred
+        call_args = mock_update_policy.call_args[0][0]
+        updated_policies = call_args["DATA"]
+
+        # Original Policy 1 should be shifted to priority 2
+        policy_1 = next(p for p in updated_policies if p["ID"] == 1)
+        assert policy_1["PRIORITY"] == 2
+
+        # Original Policy 2 should be shifted to priority 3
+        policy_2 = next(p for p in updated_policies if p["ID"] == 2)
+        assert policy_2["PRIORITY"] == 3
+
+        # New policy should have priority 1
+        assert result.outputs["Priority"] == 1
+
+    @pytest.mark.parametrize(
+        "platform,expected_profiles",
+        [
+            ("serverless", {"restrictions": "Default"}),
+            ("android", {"malware": "Default", "agent_settings": "Default"}),
+            ("ios", {"malware": "Default", "agent_settings": "Default"}),
+            (
+                "linux",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            (
+                "mac",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            (
+                "windows",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+        ],
+    )
+    def test_create_endpoint_policy_command_platform_specific_defaults(self, mocker, platform, expected_profiles):
+        """
+        Given: Different platforms with no profile arguments specified.
+        When: create_endpoint_policy_command is called.
+        Then: Platform-specific default profiles are applied.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=([], "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value=f"AGENT_OS_{platform.upper()}")
+
+        # Mock get_profile_ids to capture what profiles are requested
+        captured_profile_args = {}
+
+        def capture_profiles(client, plat, profile_args):
+            captured_profile_args.update(profile_args)
+            return {k.upper(): {"id": i, "name": v} for i, (k, v) in enumerate(profile_args.items(), 1) if v}
+
+        mocker.patch("CortexPlatformCore.get_profile_ids", side_effect=capture_profiles)
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Test Policy",
+            "target_endpoint_ids": "endpoint-1",
+            "platform": platform,
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        # Verify platform-specific defaults were applied
+        for profile_type, expected_value in expected_profiles.items():
+            assert captured_profile_args.get(profile_type) == expected_value
+
+        assert result.outputs["PolicyName"] == "Test Policy"
+
+    def test_create_endpoint_policy_command_custom_profiles_override_defaults(self, mocker):
+        """
+        Given: Arguments with custom profile values.
+        When: create_endpoint_policy_command is called.
+        Then: Custom profiles override platform defaults.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=([], "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+
+        captured_profile_args = {}
+
+        def capture_profiles(client, plat, profile_args):
+            captured_profile_args.update(profile_args)
+            return {k.upper(): {"id": i, "name": v} for i, (k, v) in enumerate(profile_args.items(), 1) if v}
+
+        mocker.patch("CortexPlatformCore.get_profile_ids", side_effect=capture_profiles)
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Custom Policy",
+            "target_endpoint_ids": "endpoint-1",
+            "platform": "windows",
+            "exploit_profile": "Custom Exploit",
+            "malware_profile": "Custom Malware",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert captured_profile_args["exploit"] == "Custom Exploit"
+        assert captured_profile_args["malware"] == "Custom Malware"
+        assert result.outputs["ExploitProfile"] == "Custom Exploit"
+        assert result.outputs["MalwareProfile"] == "Custom Malware"
+
+    def test_create_endpoint_policy_command_auto_priority_assignment(self, mocker):
+        """
+        Given: No priority specified in arguments.
+        When: create_endpoint_policy_command is called.
+        Then: Priority is auto-assigned as max_existing + 1.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 1, "NAME": "Policy 1", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+            {"ID": 2, "NAME": "Policy 2", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 5},
+        ]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={"EXPLOIT": {"id": 10, "name": "Default"}})
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Auto Priority Policy",
+            "target_endpoint_ids": "endpoint-1",
+            "platform": "windows",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs["Priority"] == 6  # max(1, 5) + 1
+
+    def test_create_endpoint_policy_command_first_policy_for_platform(self, mocker):
+        """
+        Given: No existing policies for the specified platform.
+        When: create_endpoint_policy_command is called.
+        Then: Policy is created with priority 1.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [{"ID": 1, "NAME": "Other Platform", "PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 5}]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={"EXPLOIT": {"id": 10, "name": "Default"}})
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "First Windows Policy",
+            "target_endpoint_ids": "endpoint-1",
+            "platform": "windows",
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs["Priority"] == 1
+
+    def test_create_endpoint_policy_command_priority_higher_than_max(self, mocker):
+        """
+        Given: Requested priority higher than max existing priority.
+        When: create_endpoint_policy_command is called.
+        Then: Priority is adjusted to max + 1.
+        """
+        from CortexPlatformCore import create_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [{"ID": 1, "NAME": "Policy 1", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3}]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mocker.patch("CortexPlatformCore.get_profile_ids", return_value={"EXPLOIT": {"id": 10, "name": "Default"}})
+        mocker.patch("CortexPlatformCore.validate_profile_platform_compatibility")
+        mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "High Priority Policy",
+            "target_endpoint_ids": "endpoint-1",
+            "platform": "windows",
+            "priority": "10",  # Higher than max (3)
+        }
+
+        result = create_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs["Priority"] == 4  # Adjusted to max + 1
+
+
+class TestDeleteEndpointPolicyCommand:
+    """Test cases for delete_endpoint_policy_command function."""
+
+    def test_delete_endpoint_policy_command_success_by_name(self, mocker):
+        """
+        Given: Valid policy name and platform.
+        When: delete_endpoint_policy_command is called.
+        Then: Policy is deleted successfully.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 1, "NAME": "Policy to Delete", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+            {"ID": 2, "NAME": "Keep This", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2},
+        ]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mock_update_policy = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Policy to Delete",
+            "platform": "windows",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert "Successfully deleted the following endpoint policies" in result.readable_output
+        assert "Policy to Delete" in result.readable_output
+        assert result.outputs[0]["PolicyName"] == "Policy to Delete"
+        assert result.outputs[0]["Deleted"] is True
+
+        # Verify only one policy remains
+        call_args = mock_update_policy.call_args[0][0]
+        assert len(call_args["DATA"]) == 1
+        assert call_args["DATA"][0]["NAME"] == "Keep This"
+
+    def test_delete_endpoint_policy_command_success_by_id(self, mocker):
+        """
+        Given: Valid policy ID and platform.
+        When: delete_endpoint_policy_command is called.
+        Then: Policy is deleted successfully.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 100, "NAME": "Policy 1", "PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 1},
+            {"ID": 200, "NAME": "Policy 2", "PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 2},
+        ]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_LINUX")
+        mock_update_policy = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_id": "100",
+            "platform": "linux",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert result.outputs[0]["PolicyID"] == 100
+        assert result.outputs[0]["Deleted"] is True
+
+        # Verify only one policy remains
+        call_args = mock_update_policy.call_args[0][0]
+        assert len(call_args["DATA"]) == 1
+        assert call_args["DATA"][0]["ID"] == 200
+
+    def test_delete_endpoint_policy_command_multiple_policies(self, mocker):
+        """
+        Given: Multiple policy names to delete.
+        When: delete_endpoint_policy_command is called.
+        Then: All specified policies are deleted.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 1, "NAME": "Policy 1", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+            {"ID": 2, "NAME": "Policy 2", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2},
+            {"ID": 3, "NAME": "Policy 3", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3},
+        ]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+        mock_update_policy = mocker.patch.object(mock_client, "update_agent_policy", return_value={"success": True})
+
+        args = {
+            "policy_name": "Policy 1,Policy 3",
+            "platform": "windows",
+        }
+
+        result = delete_endpoint_policy_command(mock_client, args)
+
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["PolicyName"] == "Policy 1"
+        assert result.outputs[1]["PolicyName"] == "Policy 3"
+
+        # Verify only Policy 2 remains
+        call_args = mock_update_policy.call_args[0][0]
+        assert len(call_args["DATA"]) == 1
+        assert call_args["DATA"][0]["NAME"] == "Policy 2"
+
+    def test_delete_endpoint_policy_command_both_name_and_id_raises_error(self, mocker):
+        """
+        Given: Arguments with both policy_name and policy_id.
+        When: delete_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating only one should be provided.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {
+            "policy_name": "Test Policy",
+            "policy_id": "123",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="Cannot provide both policy_name and policy_id"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_command_no_identifier_raises_error(self, mocker):
+        """
+        Given: Arguments without policy_name or policy_id.
+        When: delete_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating one must be provided.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+
+        args = {"platform": "windows"}
+
+        with pytest.raises(DemistoException, match="Either policy_name or policy_id must be provided"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_command_policy_not_found_by_name(self, mocker):
+        """
+        Given: Policy name that doesn't exist for the platform.
+        When: delete_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating policy not found.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [{"ID": 1, "NAME": "Existing Policy", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1}]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "NonExistent",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="No policy found with name 'NonExistent'"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_command_policy_not_found_by_id(self, mocker):
+        """
+        Given: Policy ID that doesn't exist for the platform.
+        When: delete_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating policy not found.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [{"ID": 1, "NAME": "Existing Policy", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1}]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_id": "999",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="No policy found with ID '999'"):
+            delete_endpoint_policy_command(mock_client, args)
+
+    def test_delete_endpoint_policy_command_multiple_policies_same_name(self, mocker):
+        """
+        Given: Multiple policies with the same name for a platform.
+        When: delete_endpoint_policy_command is called with policy_name.
+        Then: Raises DemistoException with details of all matching policies.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 1, "NAME": "Duplicate", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+            {"ID": 2, "NAME": "Duplicate", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2},
+        ]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "Duplicate",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException) as exc_info:
+            delete_endpoint_policy_command(mock_client, args)
+
+        assert "Multiple policies found" in str(exc_info.value)
+        assert "use policy_id to specify" in str(exc_info.value)
+        assert "ID: 1" in str(exc_info.value)
+        assert "ID: 2" in str(exc_info.value)
+
+    def test_delete_endpoint_policy_command_default_policy_raises_error(self, mocker):
+        """
+        Given: Attempt to delete a default policy (priority 0).
+        When: delete_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating default policies cannot be deleted.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [
+            {"ID": 0, "NAME": "Windows Default", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 0},
+            {"ID": 1, "NAME": "Custom Policy", "PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+        ]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "Windows Default",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException) as exc_info:
+            delete_endpoint_policy_command(mock_client, args)
+
+        assert "Cannot delete the default policy" in str(exc_info.value)
+        assert "priority 0" in str(exc_info.value)
+
+    def test_delete_endpoint_policy_command_no_policies_for_platform(self, mocker):
+        """
+        Given: Platform with no policies.
+        When: delete_endpoint_policy_command is called.
+        Then: Raises DemistoException indicating no policies found.
+        """
+        from CortexPlatformCore import delete_endpoint_policy_command, Client, DemistoException
+
+        mock_client = mocker.Mock(spec=Client)
+        current_policies = [{"ID": 1, "NAME": "Linux Policy", "PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 1}]
+
+        mocker.patch("CortexPlatformCore.fetch_policy_table", return_value=(current_policies, "hash123"))
+        mocker.patch("CortexPlatformCore.resolve_platform_name", return_value="AGENT_OS_WINDOWS")
+
+        args = {
+            "policy_name": "Any Policy",
+            "platform": "windows",
+        }
+
+        with pytest.raises(DemistoException, match="No policies found for platform 'windows'"):
+            delete_endpoint_policy_command(mock_client, args)
+
+
+class TestFindPoliciesToDelete:
+    """Test cases for find_policies_to_delete helper function."""
+
+    def test_find_policies_to_delete_by_names(self):
+        """
+        Given: Policy names to delete.
+        When: find_policies_to_delete is called.
+        Then: Returns matching policies.
+        """
+        from CortexPlatformCore import find_policies_to_delete
+
+        platform_policies = [
+            {"ID": 1, "NAME": "Policy 1", "PRIORITY": 1},
+            {"ID": 2, "NAME": "Policy 2", "PRIORITY": 2},
+        ]
+
+        result = find_policies_to_delete(platform_policies, ["Policy 1"], [], "windows")
+
+        assert len(result) == 1
+        assert result[0]["NAME"] == "Policy 1"
+
+    def test_find_policies_to_delete_by_ids(self):
+        """
+        Given: Policy IDs to delete.
+        When: find_policies_to_delete is called.
+        Then: Returns matching policies.
+        """
+        from CortexPlatformCore import find_policies_to_delete
+
+        platform_policies = [
+            {"ID": 100, "NAME": "Policy 1", "PRIORITY": 1},
+            {"ID": 200, "NAME": "Policy 2", "PRIORITY": 2},
+        ]
+
+        result = find_policies_to_delete(platform_policies, [], ["100"], "windows")
+
+        assert len(result) == 1
+        assert result[0]["ID"] == 100
+
+    def test_find_policies_to_delete_name_not_found(self):
+        """
+        Given: Policy name that doesn't exist.
+        When: find_policies_to_delete is called.
+        Then: Raises DemistoException.
+        """
+        from CortexPlatformCore import find_policies_to_delete, DemistoException
+
+        platform_policies = [{"ID": 1, "NAME": "Existing", "PRIORITY": 1}]
+
+        with pytest.raises(DemistoException, match="No policy found with name 'NonExistent'"):
+            find_policies_to_delete(platform_policies, ["NonExistent"], [], "windows")
+
+
+class TestValidatePolicyDeletable:
+    """Test cases for validate_policy_deletable helper function."""
+
+    def test_validate_policy_deletable_success(self):
+        """
+        Given: Policy with priority > 0.
+        When: validate_policy_deletable is called.
+        Then: No exception is raised.
+        """
+        from CortexPlatformCore import validate_policy_deletable
+
+        policy = {"ID": 1, "NAME": "Custom Policy", "PRIORITY": 1}
+        # Should not raise
+        validate_policy_deletable(policy, "windows")
+
+    def test_validate_policy_deletable_default_policy_raises_error(self):
+        """
+        Given: Default policy with priority 0.
+        When: validate_policy_deletable is called.
+        Then: Raises DemistoException.
+        """
+        from CortexPlatformCore import validate_policy_deletable, DemistoException
+
+        policy = {"ID": 0, "NAME": "Windows Default", "PRIORITY": 0}
+
+        with pytest.raises(DemistoException, match="Cannot delete the default policy"):
+            validate_policy_deletable(policy, "windows")
+
+
+class TestCalculatePolicyPriority:
+    """Direct unit tests for calculate_policy_priority."""
+
+    @pytest.mark.parametrize(
+        "current_policies, platform, requested_priority, expected",
+        [
+            # No existing policies → MIN_USER_POLICY_PRIORITY = 1
+            ([], "AGENT_OS_WINDOWS", None, 1),
+            # Auto-assign: max existing is 5 → returns 6
+            (
+                [
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 5},
+                    {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 99},  # Different platform, ignored
+                ],
+                "AGENT_OS_WINDOWS",
+                None,
+                6,
+            ),
+            # Requested priority higher than max (3) → capped to max + 1 = 4
+            (
+                [{"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3}],
+                "AGENT_OS_WINDOWS",
+                10,
+                4,
+            ),
+            # Requested priority within range → honored as-is
+            (
+                [
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 5},
+                ],
+                "AGENT_OS_WINDOWS",
+                2,
+                2,
+            ),
+        ],
+    )
+    def test_calculate_policy_priority(self, current_policies, platform, requested_priority, expected):
+        """
+        Given: Various combinations of existing policies and requested priorities.
+        When: calculate_policy_priority is called.
+        Then: Returns the correct priority value.
+        """
+        from CortexPlatformCore import calculate_policy_priority
+
+        result = calculate_policy_priority(current_policies, platform, requested_priority)
+        assert result == expected
+
+
+class TestShiftPolicyPriorities:
+    """Direct unit tests for shift_policy_priorities."""
+
+    def test_no_conflict_does_nothing(self):
+        """
+        Given: No existing policy has the requested priority.
+        When: shift_policy_priorities is called.
+        Then: Policies are unchanged.
+        """
+        from CortexPlatformCore import shift_policy_priorities
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "P1"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3, "NAME": "P3"},
+        ]
+        shift_policy_priorities(current_policies, "AGENT_OS_WINDOWS", 2)
+
+        assert current_policies[0]["PRIORITY"] == 1
+        assert current_policies[1]["PRIORITY"] == 3
+
+    def test_conflict_shifts_all_policies_at_or_above_new_priority(self):
+        """
+        Given: Policies at priorities 1, 2, 3 for the platform; new priority = 2.
+        When: shift_policy_priorities is called.
+        Then: Policies at 2 and 3 are shifted to 3 and 4; policy at 1 and other platforms unchanged.
+        """
+        from CortexPlatformCore import shift_policy_priorities
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "P1"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2, "NAME": "P2"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3, "NAME": "P3"},
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 2, "NAME": "Linux-P2"},  # Different platform, not shifted
+        ]
+        shift_policy_priorities(current_policies, "AGENT_OS_WINDOWS", 2)
+
+        priorities = {p["NAME"]: p["PRIORITY"] for p in current_policies}
+        assert priorities["P1"] == 1  # Unchanged (below new priority)
+        assert priorities["P2"] == 3  # Shifted 2 → 3
+        assert priorities["P3"] == 4  # Shifted 3 → 4
+        assert priorities["Linux-P2"] == 2  # Different platform, unchanged
+
+    def test_shift_is_in_place_and_returns_none(self):
+        """
+        Given: A conflict at priority 1.
+        When: shift_policy_priorities is called.
+        Then: The original list is modified in-place and None is returned.
+        """
+        from CortexPlatformCore import shift_policy_priorities
+
+        current_policies = [{"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "P1"}]
+        result = shift_policy_priorities(current_policies, "AGENT_OS_WINDOWS", 1)
+
+        assert result is None
+        assert current_policies[0]["PRIORITY"] == 2
+
+
+class TestGetPlatformSpecificProfileDefaults:
+    """Direct unit tests for get_platform_specific_profile_defaults."""
+
+    @pytest.mark.parametrize(
+        "platform, expected",
+        [
+            # linux/mac/windows: all 'Default' except exceptions = 'Default (No Exceptions)'
+            (
+                "windows",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            (
+                "linux",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            (
+                "mac",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            # serverless: only restrictions defaults
+            (
+                "serverless",
+                {"exploit": None, "malware": None, "agent_settings": None, "restrictions": "Default", "exceptions": None},
+            ),
+            # android/ios: only malware + agent_settings default
+            (
+                "android",
+                {"exploit": None, "malware": "Default", "agent_settings": "Default", "restrictions": None, "exceptions": None},
+            ),
+            (
+                "ios",
+                {"exploit": None, "malware": "Default", "agent_settings": "Default", "restrictions": None, "exceptions": None},
+            ),
+        ],
+    )
+    def test_platform_defaults_no_user_args(self, platform, expected):
+        """
+        Given: A platform with no user-provided profile arguments.
+        When: get_platform_specific_profile_defaults is called.
+        Then: Returns the correct platform-specific defaults for all profile types.
+        """
+        from CortexPlatformCore import get_platform_specific_profile_defaults
+
+        result = get_platform_specific_profile_defaults(platform, {})
+        assert result == expected
+
+    def test_user_provided_values_override_defaults(self):
+        """
+        Given: Windows platform with user-provided exploit and malware profiles.
+        When: get_platform_specific_profile_defaults is called.
+        Then: User values override defaults; unspecified fields still get platform defaults.
+        """
+        from CortexPlatformCore import get_platform_specific_profile_defaults
+
+        args = {"exploit_profile": "Custom Exploit", "malware_profile": "Custom Malware"}
+        result = get_platform_specific_profile_defaults("windows", args)
+
+        assert result["exploit"] == "Custom Exploit"
+        assert result["malware"] == "Custom Malware"
+        assert result["agent_settings"] == "Default"  # Still defaults
+        assert result["restrictions"] == "Default"  # Still defaults
+        assert result["exceptions"] == "Default (No Exceptions)"  # Still defaults

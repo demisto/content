@@ -2,7 +2,7 @@
     "name": "Atlassian Jira",
     "description": "Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects.",
     "support": "xsoar",
-    "currentVersion": "3.3.25",
+    "currentVersion": "3.3.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -27,20 +27,9 @@
         "JiraDataCenter": {
             "mandatory": false,
             "display_name": "Atlassian Jira Data Center"
-        },
-        "ApiModules": {
-            "mandatory": false,
-            "display_name": "API Modules"
         }
     },
     "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "cloud",
         "cloud_runtime_security",

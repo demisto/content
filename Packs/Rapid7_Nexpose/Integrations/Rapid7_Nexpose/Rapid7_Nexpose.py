@@ -350,9 +350,6 @@ PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"
 XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10**6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
 
-# 24 hours converted to seconds
-TWENTYFOUR_HOURS_AS_SECONDS = 24 * 60 * 60
-
 
 def log(event_type: str, log_line: str):
     full_log_line = f"[{event_type}] {log_line}"
@@ -7980,38 +7977,22 @@ async def run_all_collectors(
     demisto.debug("All collector workflows finished successfully.")
 
 
-async def fetch_assets_long_running_command(params: dict, token: str):
+async def fetch_assets_command(params: dict, token: str) -> None:
+    """Fetch assets command - replaces long-running-execution.
+
+    The platform's fetch-assets scheduler handles re-invocation at the configured interval.
+    Each invocation runs the full collector pipeline once.
     """
-    Performs the long running execution loop.
-    Args:
-        client (Client): The client.
-        fetch_interval (int): Fetch time for this fetching events cycle.
-    """
-    while True:
-        demisto.debug("Started long running execution")
-        start_time = time.time()
-        try:
-            async with InsightVMClient(
-                base_url=params["server"],
-                username=params["credentials"].get("identifier"),
-                password=params["credentials"].get("password"),
-                token=token,
-                verify=not params.get("unsecure"),
-            ) as client:
-                await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
-            demisto.debug("Finished running all collectors")
-
-        except Exception as e:
-            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
-
-        finally:
-            end_time = time.time()
-            duration_seconds = end_time - start_time
-            demisto.debug(f"The whole run took {duration_seconds} seconds")
-            remaining_time_seconds = TWENTYFOUR_HOURS_AS_SECONDS - duration_seconds
-            demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
-
-            await asyncio.sleep(remaining_time_seconds)
+    demisto.debug("Starting fetch-assets execution")
+    async with InsightVMClient(
+        base_url=params["server"],
+        username=params["credentials"].get("identifier"),
+        password=params["credentials"].get("password"),
+        token=token,
+        verify=not params.get("unsecure"),
+    ) as client:
+        await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
+    demisto.debug("Finished fetch-assets execution")
 
 
 def main():  # pragma: no cover
@@ -8046,9 +8027,9 @@ def main():  # pragma: no cover
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
             results = "ok"
-        elif command == "long-running-execution":
-            demisto.info("Starting long-running execution.")
-            asyncio.run(fetch_assets_long_running_command(params, token))
+        elif command == "fetch-assets":
+            asyncio.run(fetch_assets_command(params, token))
+            return
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
         elif command == "nexpose-create-assets-report":

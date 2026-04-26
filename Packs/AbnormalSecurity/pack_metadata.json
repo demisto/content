@@ -2,7 +2,7 @@
     "name": "Abnormal Security",
     "description": "Abnormal Security detects and protects against the whole spectrum of email attacks",
     "support": "partner",
-    "currentVersion": "2.4.2",
+    "currentVersion": "2.4.4",
     "created": "2021-07-11T00:00:00Z",
     "author": "Abnormal Security",
     "url": "",
@@ -31,10 +31,6 @@
     ],
     "defaultDataSource": "Abnormal Security Event Collector",
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

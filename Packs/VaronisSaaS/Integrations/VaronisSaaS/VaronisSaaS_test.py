@@ -223,6 +223,26 @@ def test_varonis_authenticate(requests_mock: MockerFixture):
     assert client.headers["authorization"] == "bearer token_here"
 
 
+def test_varonis_authenticate_content_type_header(requests_mock: MockerFixture):
+    """Verify that the authenticate request includes a content-type header."""
+    fetch_output = {"access_token": "token_here", "token_type": "bearer", "expires_in": 599}
+    auth_url = "https://test.com/api/authentication/api_keys/token"
+
+    requests_mock.post(auth_url, json=fetch_output)
+
+    client = Client(base_url="https://test.com", verify=False, proxy=False)
+    client.varonis_authenticate("mock_api_key")
+
+    last_request = requests_mock.last_request
+    assert "content-type" in {k.lower() for k in last_request.headers}, "authenticate request must include a Content-Type header"
+
+
+def test_all_client_requests_have_content_type_header():
+    """Verify that the default client headers include content-type."""
+    client = Client(base_url="https://test.com", verify=False, proxy=False)
+    assert "content-type" in client.headers, "Client default headers must include content-type"
+
+
 def test_enrich_with_url():
     from VaronisSaaS import enrich_with_url
 

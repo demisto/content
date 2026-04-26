@@ -1,2 +1,5 @@
 [file:PingOne_image.png]
 ignore=IM111
+
+[file:PingOne.yml]
+ignore=BA129

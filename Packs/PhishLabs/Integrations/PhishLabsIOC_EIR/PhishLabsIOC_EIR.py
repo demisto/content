@@ -438,17 +438,28 @@ def fetch_incidents_command(
 
 
 @logger
-def get_incidents_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
+def get_incidents_command(client: Client, args: dict) -> tuple[object, dict, list | dict]:
     """Lists all incidents and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        kwargs: Usually demisto.args()
+        args: demisto.args() dictionary
 
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: dict = client.get_incidents(**kwargs)  # type: ignore
+    raw_response: dict = client.get_incidents(
+        status=args.get("status"),
+        created_after=args.get("created_after"),
+        created_before=args.get("created_before"),
+        closed_before=args.get("closed_before"),
+        closed_after=args.get("closed_after"),
+        sort=args.get("sort"),
+        direction=args.get("direction"),
+        limit=args.get("limit", 25),
+        offset=args.get("offset", 0),
+        period=args.get("period"),
+    )
     if raw_response:
         title = f"{INTEGRATION_NAME} - incidents"
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(client, raw_response.get("incidents"))
@@ -473,16 +484,17 @@ def get_incidents_command(client: Client, **kwargs: dict) -> tuple[object, dict,
 
 
 @logger
-def get_incident_by_id_command(client: Client, incident_id: str) -> tuple[object, dict, dict]:
+def get_incident_by_id_command(client: Client, args: dict) -> tuple[object, dict, dict]:
     """Lists all events and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        incident_id: ID of Incident
+        args: demisto.args() dictionary
 
     Returns:
         human readable (markdown format), raw response and entry context
     """
+    incident_id = args.get("incident_id", "")
     raw_response: dict = client.get_incident_by_id(incident_id)
     if raw_response:
         title = f"{INTEGRATION_NAME} - incidents"
@@ -552,7 +564,7 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         else:
-            readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
+            readable_output, outputs, raw_response = commands[command](client=client, args=demisto.args())
             return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:

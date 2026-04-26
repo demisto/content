@@ -1,6 +1,8 @@
 commonfields:
   id: PingOne
   version: -1
+sectionorder:
+- Connect
 name: PingOne
 display: PingOne
 category: Authentication & Identity Management
@@ -12,6 +14,7 @@ configuration:
   type: 0
   required: true
   additionalinfo: Environment ID is available under the PingOne Dashboard->Environment Properties.
+  section: Connect
 - display: PingOne Region
   name: region
   defaultvalue: US
@@ -22,19 +25,25 @@ configuration:
   - EU
   - Asia
   additionalinfo: PingOne has 3 regions, US, EU and Asia.
+  section: Connect
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  advanced: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  advanced: true
+  section: Connect
 script:
   script: ''
   type: python
@@ -70,6 +79,20 @@ script:
       required: true
       description: The new password.
     description: "Sets a user's password. Further password details available here: https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
+  - name: pingone-password-force-change
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to force a password change for.
+    description: Force a user's password change on next login.
+  - name: pingone-read-password-state
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to read password state for.
+    description: Read a user's password state.
   - name: pingone-add-to-group
     arguments:
     - name: username
@@ -221,7 +244,7 @@ script:
     - name: userId
       description: User id.
     description: Delete a PingOne user. One of the following has to be given username or userId.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   subtype: python3
 fromversion: 6.0.0

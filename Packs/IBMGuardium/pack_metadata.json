@@ -2,29 +2,32 @@
     "name": "IBM Guardium",
     "description": "IBM Guardiam is a family of data security software that uncovers vulnerabilities and protects sensitive on-premises and cloud data.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
+    "useCases": [
+        "Compliance"
+    ],
     "keywords": [
         "DB",
         "Database",
-        "DBF"
+        "DBF",
+        "Dsc",
+        "Data Security Center"
     ],
     "marketplaces": [
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

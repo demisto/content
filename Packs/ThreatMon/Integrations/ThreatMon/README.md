@@ -52,6 +52,7 @@ This integration is designed to help security teams streamline incident enrichme
 |--------|-------------|
 | `fetch-incidents` | Retrieves threat intelligence data for a specified indicator or time range. |
 | `threatmon_update_incident_status` | Updates the current incident with contextual threat intelligence. |
+| `threatmon_request_takedown` | Submits a takedown request for a specific Threatmon finding. Eligible finding types include Phishing Domain Detected, Rogue Mobile App Detected, Fake SM Account Detected, and similar alarm types. |
 
 > **Note:** Full command usage details and argument structures are available within the integration settings in XSOAR.
 

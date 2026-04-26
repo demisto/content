@@ -11,6 +11,7 @@ from collections.abc import Callable
 from enum import Enum, IntEnum
 from threading import Timer
 from typing import Any
+import urllib.parse
 
 import requests
 import asyncio
@@ -41,6 +42,7 @@ NGSIEM_INCIDENT = "ngsiem_incident"
 NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
 NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
+RECON_NOTIFICATION = "Recon notifications"
 
 # Fetch type names as they appear in the .yml instance configurations
 DETECTION_FETCH_TYPES = ["Detections", "Endpoint Detection"]
@@ -55,6 +57,8 @@ NGSIEM_INCIDENT_FETCH_TYPE = "NGSIEM Incident (XDR Alert)"
 NGSIEM_AUTOMATED_LEADS_FETCH_TYPE = "NGSIEM Automated Lead"
 NGSIEM_CASES_FETCH_TYPE = "NGSIEM Case"
 THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
+RECON_FETCH_TYPE = "Recon notifications"
+
 ENDPOINT_DETECTION = "detection"
 
 SUPPORTED_DETECTIONS_TYPES = [
@@ -86,6 +90,8 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+RECON_API_LIMIT = 100
+MAX_FETCH_RECON = 100
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -100,7 +106,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = RECON_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
 
 DEFAULT_INTERVAL = 60
@@ -333,6 +339,7 @@ CS_FALCON_DETECTION_INCOMING_ARGS = [
 ]
 CS_FALCON_DETECTION_INCOMING_ARGS_IDP = ["status", "id", "tags", "comments", "assigned_to_uid"]
 NGSIEM_MIRRORING_FIELDS = ["status", "state"]
+CS_FALCON_RECON_INCOMING_ARGS = ["notification.status"]
 
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
@@ -377,7 +384,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 13  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSOAR = 14  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
 TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 
@@ -406,6 +413,7 @@ class LastRunIndex(IntEnum):
     NGSIEM_INCIDENTS = 10
     NGSIEM_AUTOMATED_LEADS = 11
     NGSIEM_CASES = 12
+    RECON_NOTIFICATIONS = 13
 
 
 class IncidentType(Enum):
@@ -416,6 +424,7 @@ class IncidentType(Enum):
     ON_DEMAND = "ods"
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
+    RECON = ":recon:"
     NGSIEM_DETECTION = ":ngsiem:"
     NGSIEM_AUTOMATED_LEAD = ":automated-lead:"
     NGSIEM_CASE = ":case"
@@ -2562,7 +2571,11 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
-
+        elif incident_type == IncidentType.RECON:
+            mirrored_data, updated_object, incident_type = get_remote_recon_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f"Recon-Log Update {incident_type} incident {remote_incident_id} with fields: {updated_object}")
+                set_xsoar_entries(updated_object, entries, remote_incident_id, incident_type, reopen_statuses_list)
         elif incident_type is None and remote_incident_id.startswith("inc:"):
             demisto.debug(
                 f"Skipping get-remote-data for deprecated Endpoint Incident {remote_incident_id}. "
@@ -2601,6 +2614,8 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.NGSIEM_DETECTION
     if IncidentType.THIRD_PARTY.value in remote_incident_id:
         return IncidentType.THIRD_PARTY
+    if IncidentType.RECON.value in remote_incident_id:
+        return IncidentType.RECON
     if IncidentType.NGSIEM_AUTOMATED_LEAD.value in remote_incident_id:
         return IncidentType.NGSIEM_AUTOMATED_LEAD
     if IncidentType.NGSIEM_CASE.value in remote_incident_id:
@@ -2714,6 +2729,93 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     return mirrored_data, updated_object, detection_type
 
 
+def get_remote_recon_data(remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on a Recon notification.
+    Gets the relevant Recon notification entity from the remote system (CrowdStrike Falcon).
+    We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+
+    :param remote_incident_id: The remote incident ID.
+    :return: The mirrored data, the updated object, and the incident type.
+    """
+    demisto.debug(f"Recon-Log in get_remote_recon_data {remote_incident_id=}")
+    remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
+    mirrored_data_list = get_recon_notifications_detailed([remote_id])
+    if not mirrored_data_list:
+        raise DemistoException(f"No Recon notification found for ID: {remote_incident_id}")
+    mirrored_data = mirrored_data_list[0]
+    demisto.debug(f"Recon-Log in get_remote_recon_data {mirrored_data=}")
+    updated_object = {"incident_type": RECON_NOTIFICATION}
+    set_updated_object(updated_object, mirrored_data, CS_FALCON_RECON_INCOMING_ARGS)
+    if "notification.status" in updated_object:
+        updated_object["status"] = updated_object["notification.status"]
+    demisto.debug(f"Recon-Log in get_remote_recon_data {mirrored_data=} {CS_FALCON_RECON_INCOMING_ARGS=} {updated_object=}")
+    return mirrored_data, updated_object, RECON_NOTIFICATION
+
+
+def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, remote_incident_id: str) -> str:
+    """
+    Updates the status of a CrowdStrike Falcon Recon Notification via PATCH API call (Mirror Out)
+    using the generic http_request function.
+
+    :type delta: ``dict``
+    :param delta: Dictionary of fields changed in the local XSOAR incident.
+    :type inc_status: ``int``
+    :param inc_status: The current status of the local XSOAR incident (0=Closed, 1=Active).
+    :type remote_incident_id: ``str``
+    :param remote_incident_id: The ID of the Recon Notification in CrowdStrike.
+    :return: The API response payload on success, or empty string if no relevant change found.
+    :type: ``str``
+    """
+    demisto.debug(f"Recon-Log in update_remote_recon_notification {delta=} {inc_status=} {remote_incident_id=}")
+    remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
+        demisto.debug(f"Recon-Log Closing Recon Notification: {remote_id} in remote system.")
+        close_reason = delta.get("closeReason")
+        status = "closed-true-positive" if close_reason in ("True Positive", "Resolved") else "closed-false-positive"
+        result = str(patch_remote_entity(remote_id, status=status, is_recon_type=True))
+        demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
+        return result
+    elif "status" in delta:
+        demisto.debug(f"Recon-Log Updating Recon Notification: {remote_id} with status: {delta.get('status')} in remote system.")
+        result = str(patch_remote_entity(remote_id, status=delta.get("status"), is_recon_type=True))
+        demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
+        return result
+    demisto.debug(f"Recon-Log No relevant change found for Recon Notification: {remote_id}")
+    return ""
+
+
+def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
+    """
+    Fetches the IDs of Recon notifications that have been modified (status update)
+    since the last synchronization timestamp.
+
+    :param last_update_timestamp: The last update timestamp.
+    :return: A list of modified Recon notification IDs.
+    """
+    mirror_status_filter = (
+        f"status:['in-progress','closed-false-positive','closed-true-positive']+updated_date:>'{last_update_timestamp}'"
+    )
+    demisto.debug(f"Recon-Log get_modified_recon_ids filter: {mirror_status_filter=}")
+
+    try:
+        ids, _, _ = recon_notifications_pagination(
+            filter=mirror_status_filter,
+            api_limit=RECON_API_LIMIT,
+            recon_offset=0,
+            fetch_limit=MAX_FETCH_RECON,
+            is_fetch=False,
+        )
+        prefixed_incident_ids = [f"{IncidentType.RECON.value}{id}" for id in ids]
+        demisto.debug(f"Recon-Log get_modified_recon_ids return: {prefixed_incident_ids}")
+        return prefixed_incident_ids
+
+    except Exception as e:
+        error_msg = f"Failed to fetch modified Recon IDs. Filter: {mirror_status_filter}. Error: {str(e)}"
+        demisto.error(error_msg)
+        return []
+
+
 def set_xsoar_entries(
     updated_object: dict[str, Any], entries: list, remote_detection_id: str, incident_type_name: str, reopen_statuses_list: list
 ):
@@ -2732,12 +2834,13 @@ def set_xsoar_entries(
     :return: The response.
     :rtype ``dict``
     """
-    reopen_statuses_set = {str(status).lower().strip().replace(" ", "_") for status in reopen_statuses_list}
+    reopen_statuses_set = {str(status).lower().strip().replace(" ", "_").replace("-", "_") for status in reopen_statuses_list}
     demisto.debug(f"In set_xsoar_entries {reopen_statuses_set=} {remote_detection_id=}")
     if demisto.params().get("close_incident"):
-        if updated_object.get("status", "").lower() == "closed":
+        status = updated_object.get("status", "").lower()
+        if status.startswith("closed"):
             close_in_xsoar(entries, remote_detection_id, incident_type_name)
-        elif updated_object.get("status", "").lower() in reopen_statuses_set:
+        elif updated_object.get("status", "").lower().replace("-", "_") in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, incident_type_name)
         else:
             demisto.debug(
@@ -2851,6 +2954,8 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
         ).get("resources", [])
+    if RECON_FETCH_TYPE in fetch_types:
+        raw_ids += get_modified_recon_ids(last_update_timestamp=last_update_timestamp)
     if NGSIEM_CASES_FETCH_TYPE in fetch_types:
         _, case_ids = get_cases_data(
             url_filter=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'",
@@ -2903,6 +3008,10 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_ngsiem_case(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"NGSIEM case updated successfully. Result: {result}")
+            elif incident_type == IncidentType.RECON:
+                result = update_remote_recon_notification(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f"Recon-Log Recon notification updated successfully. Result: {result}")
             elif incident_type is None and remote_incident_id.startswith("inc:"):
                 demisto.debug(
                     f"Skipping update-remote-system for deprecated Endpoint Incident {remote_incident_id}. "
@@ -2964,25 +3073,27 @@ def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id:
     remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
-        return str(resolve_case(remote_id, status="closed"))
+        return str(patch_remote_entity(remote_id, status="closed"))
     elif "status" in delta:
-        return str(resolve_case(remote_id, status=delta.get("status")))
+        return str(patch_remote_entity(remote_id, status=delta.get("status")))
     return ""
 
 
 def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     """
-    Sends the request to update the relevant IDP/Mobile/NGSIEM/Third Party detection entity.
+    Sends the request to update the relevant IDP/Mobile/NGSIEM/Third Party/Recon Notifications entity.
 
     :type delta: ``dict``
     :param delta: The modified fields.
     :type inc_status: ``IncidentStatus``
-    :param inc_status: The IDP/Mobile/NGSIEM/Third Party detection status.
+    :param inc_status: The IDP/Mobile/NGSIEM/Third Party/Recon Notifications status.
     :type detection_id: ``str``
-    :param detection_id: The IDP/Mobile/NGSIEM/Third Party detection ID to update.
+    :param detection_id: The IDP/Mobile/NGSIEM/Third Party/Recon Notifications ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f"Closing IDP/Mobile/NGSIEM/Third Party detection with remote ID {detection_id} in remote system.")
+        demisto.debug(
+            f"Closing IDP/Mobile/NGSIEM/Third Party/Recon Notifications with remote ID {detection_id} in remote system."
+        )
         return str(update_request_for_multiple_detection_types([detection_id], "closed"))
 
     # status field in CS Falcon is mapped to State field in XSOAR
@@ -3305,6 +3416,7 @@ def fetch_items(command="fetch-incidents"):
     ioa_last_run: dict[str, Any] = {}
     third_party_detection_last_run: dict[str, Any] = {}
     ngsiem_detection_last_run: dict[str, Any] = {}
+    recon_last_run: dict[str, Any] = {}
     ngsiem_incident_last_run: dict[str, Any] = {}
     ngsiem_automated_lead_last_run: dict[str, Any] = {}
     ngsiem_case_last_run: dict[str, Any] = {}
@@ -3321,6 +3433,7 @@ def fetch_items(command="fetch-incidents"):
         ioa_last_run = get_last_run_per_type(last_run, LastRunIndex.IOA)
         third_party_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.THIRD_PARTY_DETECTIONS)
         ngsiem_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_DETECTIONS)
+        recon_last_run = get_last_run_per_type(last_run, LastRunIndex.RECON_NOTIFICATIONS)
         ngsiem_incident_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_INCIDENTS)
         ngsiem_automated_lead_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_AUTOMATED_LEADS)
         ngsiem_case_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_CASES)
@@ -3494,6 +3607,14 @@ def fetch_items(command="fetch-incidents"):
         )
         items.extend(fetched_third_party_detections)
 
+    if not is_fetch_events and RECON_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("Recon-Log CrowdStrikeFalconMsg: Start fetch Recon Notifications")
+        demisto.debug(f"Recon-Log CrowdStrikeFalconMsg: Current Recon Notifications last_run object: {recon_last_run}")
+
+        fetched_recon_notifications, recon_last_run = fetch_recon_incidents(recon_last_run)
+        demisto.debug(f"Recon-Log Recon updated_run: {recon_last_run}")
+        items.extend(fetched_recon_notifications)
+
     # Assign each sub last_run info per type at its proper index
     set_last_run_per_type(last_run, index=LastRunIndex.DETECTIONS, data=detections_last_run, is_fetch_events=is_fetch_events)
     set_last_run_per_type(
@@ -3520,6 +3641,9 @@ def fetch_items(command="fetch-incidents"):
         )
         set_last_run_per_type(
             last_run, index=LastRunIndex.NGSIEM_DETECTIONS, data=ngsiem_detection_last_run, is_fetch_events=is_fetch_events
+        )
+        set_last_run_per_type(
+            last_run, index=LastRunIndex.RECON_NOTIFICATIONS, data=recon_last_run, is_fetch_events=is_fetch_events
         )
         set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False)
         set_last_run_per_type(
@@ -4790,7 +4914,7 @@ def parse_ioa_iom_incidents(
             fetched_ids.append(data_id)
             incident_context = to_incident_context(data, incident_type)
             incidents.append(incident_context)
-            event_created = reformat_timestamp(data.get(date_key, ""), date_format)
+            event_created = reformat_timestamp(demisto.get(data, date_key, ""), date_format)  # type: ignore
             fetched_dates.append(safe_strptime(event_created, date_format))
         else:
             demisto.debug(f"Ignoring CSPM incident with {data_id=} - was already fetched in the previous run")
@@ -4801,6 +4925,248 @@ def parse_ioa_iom_incidents(
         # until progress is made, so we exclude them in the next fetch.
         fetched_ids.extend(last_fetched_ids)
     return incidents, fetched_ids, new_last_date
+
+
+def get_recon_notification_ids_for_fetch(
+    filter: str, recon_offset: Optional[int], limit: int = INCIDENTS_PER_FETCH, sort: str = "created_date|asc", query: str = ""
+) -> tuple[list[str], int, int]:
+    """
+    Get the Recon notification IDs for fetch.
+
+    :param filter: The filter to use.
+    :param recon_offset: The offset to start from.
+    :param limit: The limit of the results.
+    :param sort: The sort order.
+    :param query: The query to use.
+    :return: A tuple containing the IDs, the offset, and the total number of results.
+    """
+    params = assign_params(filter=filter, limit=limit, offset=recon_offset, sort=sort, q=query)
+    demisto.debug(f"Recon-Log Recon notifications query params: {params=}")
+    # The API limit of this request(limit + offset) is 10K
+    raw = http_request("GET", "/recon/queries/notifications/v1", params=params)
+
+    ids = raw.get("resources", [])
+    pagination = dict_safe_get(raw, ["meta", "pagination"]) or {}
+
+    total = pagination.get("total", 0)
+    offset = pagination.get("offset", 0)
+
+    demisto.debug(f"Recon-Log Recon notifications pagination object: {pagination=}")
+
+    return ids, offset, total
+
+
+def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[str, Any]]:
+    """
+    Get the Recon notification entities with pagination support.
+
+    Args:
+        notification_ids (list[str]): The Recon notification IDs.
+
+    Returns:
+        list[dict[str, Any]]: A list of the Recon notification entities.
+    """
+    if not notification_ids:
+        return []
+    demisto.debug(f"Recon-Log get_recon_notifications_detailed: {notification_ids=}")
+    all_resources: list[dict[str, Any]] = []
+    offset = 0
+    total = offset + 1
+    while offset < total:
+        query_params = {"ids": notification_ids, "offset": offset}
+        demisto.debug(f"Recon-Log Recon notifications detailed request params: {query_params=}")
+        raw = http_request(method="GET", url_suffix="/recon/entities/notifications-detailed/v1", params=query_params)
+
+        all_resources.extend(raw.get("resources", []))
+
+        pagination = dict_safe_get(raw, ["meta", "pagination"], {})
+        total = pagination.get("total", 0)
+        limit = pagination.get("limit", 1)
+        offset = pagination.get("offset", 0) + limit
+
+        demisto.debug(f"Recon-Log pagination info: {offset=}, {total=}, {limit=} for detailed notifications")
+    return all_resources
+
+
+def recon_notifications_pagination(
+    filter: str,
+    recon_offset: Optional[int],
+    api_limit: int = MAX_FETCH_SIZE,
+    fetch_limit: int = INCIDENTS_PER_FETCH,
+    is_fetch: bool = True,
+) -> tuple[list[str], list[dict[str, Any]], int | None]:
+    """
+    Paginates through Recon notifications based on a filter and fetch limits.
+
+    It first fetches notification IDs using pagination, and optionally retrieves
+    the detailed notification data for incident creation.
+
+    Args:
+        filter: The query filter string to apply to the notifications API.
+        api_limit: The maximum number of items to request per single API call.
+        recon_offset: The offset (page token) for the current pagination request.
+        fetch_limit: The maximum number of total incidents to collect in this run.
+                     Defaults to INCIDENTS_PER_FETCH.
+        is_fetch: If True, detailed notification data is fetched. If False, only IDs are collected.
+                  Defaults to True (used during incident fetching).
+
+    Returns:
+        A tuple containing:
+        1. collected_ids: A list of all fetched notification IDs (str).
+        2. collected_notifications_detailed: A list of dictionaries containing detailed
+           notification information (only if is_fetch is True).
+        3. next_offset: The offset for the next pagination request (int) or None if
+           all results were fetched in this iteration or if is_fetch is False.
+    """
+
+    fetch_query = demisto.params().get("recon_fetch_query", "")
+    demisto.debug(f"Recon-Log Doing Recon pagination with: {filter=}, {recon_offset=}, {api_limit=}, {fetch_limit=}")
+
+    ids, offset, remote_total = get_recon_notification_ids_for_fetch(
+        filter=filter, recon_offset=recon_offset, limit=min(api_limit, fetch_limit), query=fetch_query
+    )
+    demisto.debug(f"Recon-Log Pagination results: {len(ids)=}, {offset=}")
+    full_notifications_deta = []
+    if is_fetch:
+        full_notifications_deta = get_recon_notifications_detailed(notification_ids=ids)
+
+    next_offset = offset + len(ids) if offset + len(ids) < remote_total else 0
+
+    if not is_fetch:
+        return ids, [], None
+    return ids, full_notifications_deta, next_offset
+
+
+def recon_notification_to_incident(recon_notification: dict[str, Any], incident_type: str) -> dict[str, Any]:
+    """Create an incident from a Recon notification entity.
+
+    Args:
+        recon_notification (dict[str, Any]): A Recon notification entity.
+        incident_type (str): The incident type.
+
+    Returns:
+        dict[str, Any]: An incident from a Recon notification entity.
+    """
+    incident_metadata = assign_params(
+        mirror_direction=MIRROR_DIRECTION, mirror_instance=INTEGRATION_INSTANCE, incident_type=incident_type
+    )
+    severity_map = {
+        "low": IncidentSeverity.LOW,
+        "medium": IncidentSeverity.MEDIUM,
+        "high": IncidentSeverity.HIGH,
+        "critical": IncidentSeverity.CRITICAL,
+        "unknown": IncidentSeverity.UNKNOWN,
+    }
+    raw_severity = dict_safe_get(recon_notification, ["notification", "rule_priority"], "unknown")
+
+    incident_context = {
+        "name": recon_notification.get("id"),
+        "occurred": dict_safe_get(recon_notification, ["notification", "created_date"], ""),
+        "severity": severity_map.get(str(raw_severity).lower()),
+        "rawJSON": json.dumps(recon_notification | incident_metadata),
+    }
+    return incident_context
+
+
+def create_recon_filter(is_paginating: bool, last_fetch_filter: str, last_created_date: str, first_fetch_timestamp: str) -> str:
+    """Retrieve the Recon filter that will be used in the current fetch round.
+    Args:
+        is_paginating (bool): Whether we are doing pagination or not.
+        last_fetch_filter (str): The last fetch filter that was used in the previous round.
+        last_created_date (str): The last created timestamp.
+        first_fetch_timestamp (str): The first fetch timestamp.
+
+    Raises:
+        DemistoException: If paginating and last filter is an empty string.
+
+    Returns:
+        str: The Recon filter that will be used in the current fetch.
+    """
+    filter = "created_date:"
+    if is_paginating:
+        if not last_fetch_filter:
+            raise DemistoException("Last fetch filter must not be empty when doing pagination")
+        # Doing pagination, we need to use the same fetch query as the previous round
+        filter = last_fetch_filter
+        demisto.debug(f"Recon-Log Doing pagination, using the same query as the previous round. Filter is {filter}")
+    else:
+        if last_created_date == first_fetch_timestamp:
+            # First fetch,
+            filter = f"{filter}>='{last_created_date}'"
+            demisto.debug(f"Recon-Log First fetch, looking for created_date >= {last_created_date=}. Filter is {filter}")
+        else:
+            # Not first fetch,
+            filter = f"{filter}>'{last_created_date}'"
+            demisto.debug(f"Recon-Log Not first fetch, looking for created_date > {last_created_date=}. Filter is {filter}")
+    return filter
+
+
+def fetch_recon_incidents(recon_last_run: Dict[str, Any]) -> tuple[List[Dict], Dict[str, Any]]:
+    """
+    Fetches Recon notifications and converts them into XSOAR incidents.
+
+    Args:
+        recon_last_run: A dictionary containing the last run object for Recon,
+                        including offset, last fetched timestamp, and IDs.
+
+    Returns:
+        A tuple containing:
+        1. A list of incident dictionaries to be created in XSOAR.
+        2. A dictionary representing the updated last run object for the next fetch.
+    """
+    demisto.debug(f"Recon-Log {recon_last_run=}")
+
+    last_ids, recon_offset, last_created, first_fetch_ts = get_current_fetch_data(
+        last_run_object=recon_last_run,
+        date_format=DATE_FORMAT,
+        last_date_key="last_created_date",
+        next_token_key="recon_offset",
+        last_fetched_ids_key="last_resource_ids",
+    )
+    demisto.debug(f"Recon-Log Recon fetch current last run: {last_ids=},{recon_offset=},{last_created=},{first_fetch_ts=}")
+
+    # Validate if offset + limit exceeds the 10,000 record limit
+    offset_int = arg_to_number(recon_offset) or 0
+    if offset_int + min(MAX_FETCH_SIZE, INCIDENTS_PER_FETCH) > 10000:
+        demisto.debug(f"Recon-Log: Offset {offset_int} exceeds limit. Resetting offset.")
+        return [], {
+            "recon_offset": 0,
+            "last_created_date": last_created,
+            "last_resource_ids": last_ids,
+        }
+
+    filter = create_recon_filter(
+        is_paginating=bool(recon_offset),
+        last_fetch_filter=recon_last_run.get("last_fetch_filter", ""),
+        last_created_date=last_created,
+        first_fetch_timestamp=first_fetch_ts,
+    )
+    demisto.debug(f"Recon-Log Recon fetch filter: {filter=}")
+
+    ids, notifications_detailed, new_offset = recon_notifications_pagination(
+        filter=filter, recon_offset=arg_to_number(recon_offset)
+    )
+    demisto.debug(f"Recon-Log Fetched the following Recon notification IDs: [{', '.join(ids)}]")
+
+    recon_incidents, fetched_ids, new_created_ts = parse_ioa_iom_incidents(
+        fetched_data=notifications_detailed,
+        last_date=last_created,
+        last_fetched_ids=last_ids,
+        date_key="notification.created_date",
+        id_key="id",
+        date_format=RECON_DATE_FORMAT,
+        is_paginating=bool(new_offset),
+        to_incident_context=recon_notification_to_incident,
+        incident_type=RECON_NOTIFICATION,
+    )
+
+    updated_run = {
+        "recon_offset": new_offset,
+        "last_created_date": new_created_ts,
+        "last_fetch_filter": filter,
+        "last_resource_ids": fetched_ids or last_ids,
+    }
+    return recon_incidents, updated_run
 
 
 def get_current_fetch_data(
@@ -4822,7 +5188,7 @@ def get_current_fetch_data(
         last run object.
 
     Returns:
-        tuple[list[str], str | None, str, str]: The last fetched IDs, the next token that will be used
+        tuple[list[str], str | None | int, str, str]: The last fetched IDs, the next token/offset that will be used
         in the current fetch round, the last date saved in the last run object, and the first
         fetch timestamp.
     """
@@ -6727,7 +7093,7 @@ def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output="Tags were deleted successfully.")
 
 
-def resolve_case(
+def patch_remote_entity(
     case_id: str,
     status: str | None = None,
     name: str | None = None,
@@ -6736,18 +7102,20 @@ def resolve_case(
     remove_user_assignment: bool | None = None,
     severity: int | None = None,
     template_id: str | None = None,
+    is_recon_type: bool | None = None,
 ) -> dict:
     """
-    Updates a specific case object using PATCH /cases/entities/cases/v2.
+    Updates an incident (Case or Recon Notification) in the remote system via PATCH request.
 
     Args:
-        case_id (str): The ID of the case to patch.
-        status (str | None): The status to set for the case.
-        assigned_to_uuid (str | None): A UUID of a user to assign the case to.
-        description (str | None): A new description for the case.
-        remove_user_assignment (bool): Whether to remove case assignment from current user.
-        severity (int | None): The new case severity rating (10-100).
-        template_id (str | None): The unique ID of the template to apply to the case.
+        case_id (str): The unique identifier of the incident/case.
+        status (str | None): The status to set for the incident/case.
+        assigned_to_uuid (str | None): A UUID of a user to assign the incident/case to.
+        description (str | None): A new description for the incident/case.
+        remove_user_assignment (bool): Whether to remove incident/case assignment from current user.
+        severity (int | None): The new incident/case severity rating (10-100).
+        template_id (str | None): The unique ID of the template to apply to the incident/case.
+        is_recon_type (bool | None): Whether the incident is a recon type.
 
     Returns:
         dict: The response from the API.
@@ -6762,10 +7130,16 @@ def resolve_case(
         "template": {"id": template_id} if template_id else None,
         "remove_user_assignment": remove_user_assignment if remove_user_assignment else None,
     }
-    fields = {k: v for k, v in fields.items() if v is not None}
+    remove_nulls_from_dictionary(fields)
 
-    payload = {"id": case_id, "fields": fields}
-    return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
+    if is_recon_type:
+        url_suffix = "/recon/entities/notifications/v1"
+        payload: dict | list = [{"id": case_id, **fields}]
+    else:
+        payload = {"id": case_id, "fields": fields}
+        url_suffix = "/cases/entities/cases/v2"
+    demisto.debug(f"Sending PATCH request to {url_suffix} for ID: {case_id}. Payload: {payload}")
+    return http_request("PATCH", url_suffix, json=payload)
 
 
 def resolve_case_command(args: dict[str, Any]) -> CommandResults:
@@ -6794,7 +7168,7 @@ def resolve_case_command(args: dict[str, Any]) -> CommandResults:
         "template_id": args.get("template_id"),
     }
 
-    resolve_case(
+    patch_remote_entity(
         case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields
     )
 
@@ -8500,6 +8874,18 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     resource = ods_create_scan(args, is_scheduled=False)
     scan_id = resource.get("id")
 
+    polling = argToBoolean(args.get("polling", True))
+
+    if not polling:
+        human_readable = f"Successfully created scan with ID: {scan_id}"
+        return CommandResults(
+            raw_response=resource,
+            outputs_prefix="CrowdStrike.ODSScan",
+            outputs_key_field="id",
+            outputs=resource,
+            readable_output=human_readable,
+        )
+
     query_scan_args = {
         "ids": scan_id,
         "wait_for_result": True,
@@ -9082,6 +9468,21 @@ def main():  # pragma: no cover
             last_run, events = fetch_items(command=command)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(last_run)
+        # Mirroring commands
+        elif command == "get-remote-data":
+            disable_for_xsiam()
+            return_results(get_remote_data_command(args))
+        elif command == "get-modified-remote-data":
+            disable_for_xsiam()
+            return_results(get_modified_remote_data_command(args))
+        elif command == "update-remote-system":
+            disable_for_xsiam()
+            return_results(update_remote_system_command(args))
+        elif command == "get-mapping-fields":
+            disable_for_xsiam()
+            return_results(get_mapping_fields_command())
+        # ------- End Mirroring commands ----------
+
         elif command in ("cs-device-ran-on", "cs-falcon-device-ran-on"):
             return_results(get_indicator_device_id())
         elif demisto.command() == "cs-falcon-search-device":
@@ -9229,19 +9630,6 @@ def main():  # pragma: no cover
             )
         elif command == "cs-falcon-rtr-retrieve-file":
             return_results(rtr_polling_retrieve_file_command(args))
-        # Mirroring commands
-        elif command == "get-remote-data":
-            disable_for_xsiam()
-            return_results(get_remote_data_command(args))
-        elif command == "get-modified-remote-data":
-            disable_for_xsiam()
-            return_results(get_modified_remote_data_command(args))
-        elif command == "update-remote-system":
-            disable_for_xsiam()
-            return_results(update_remote_system_command(args))
-        elif command == "get-mapping-fields":
-            disable_for_xsiam()
-            return_results(get_mapping_fields_command())
         elif command == "cs-falcon-spotlight-search-vulnerability":
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
         elif command == "cs-falcon-spotlight-list-host-by-vulnerability":

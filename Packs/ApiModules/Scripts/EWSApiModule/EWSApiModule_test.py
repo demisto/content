@@ -1021,7 +1021,7 @@ def test_delete_attachments_for_message(mocker, client):
         {"attachmentId": "attach2", "action": "deleted"},
     ]
 
-    result = delete_attachments_for_message(client, "itemid_1")
+    result = delete_attachments_for_message(client, {"item_id": "itemid_1"})
 
     assert result[0].outputs == expected_output
     assert attachment_detach_mock.call_count == len(expected_output)
@@ -1092,7 +1092,7 @@ def test_get_searchable_mailboxes(mocker, client):
 
     mocker.patch.object(GetSearchableMailboxes, "_get_elements", return_value=mock_elements)
 
-    results = get_searchable_mailboxes(client)
+    results = get_searchable_mailboxes(client, {})
 
     assert results.outputs == expected_output
 
@@ -1114,7 +1114,7 @@ def test_move_item_between_mailboxes(mocker, client, mock_account):
     bulk_delete_mock = mocker.patch.object(MockAccount, "bulk_delete")
 
     move_item_between_mailboxes(
-        src_client=client, item_id="item_id", destination_mailbox="dest_mailbox", destination_folder_path="dest_folder"
+        client, {"item_id": "item_id", "destination_mailbox": "dest_mailbox", "destination_folder_path": "dest_folder"}
     )
 
     export_mock.assert_called_once_with(["item_to_move"])
@@ -1135,7 +1135,7 @@ def test_move_item(mocker, client, mock_account):
     get_item_mock = mocker.patch.object(EWSClient, "get_item_from_mailbox", return_value=message_mock)
     mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, is_public: f"folder-{path}")
 
-    move_item(client, "item1", "dest_folder")
+    move_item(client, {"item_id": "item1", "target_folder_path": "dest_folder"})
 
     assert get_item_mock.call_args[0][1] == "item1"
     message_mock.move.assert_called_once_with("folder-dest_folder")
@@ -1170,7 +1170,7 @@ def test_delete_items(mocker, client, delete_type):
         "hard": "delete",
     }
 
-    delete_items(client, item_ids, delete_type)
+    delete_items(client, {"item_ids": item_ids, "delete_type": delete_type})
 
     # Ensure only the expected delete function was called and the others were not
     for item_id, item in mock_items.items():
@@ -1202,7 +1202,7 @@ def test_get_out_of_office_state(client, mock_account):
         "mailbox": "test@default_target_mailbox.com",
     }
 
-    result = get_out_of_office_state(client)
+    result = get_out_of_office_state(client, {})
 
     assert result.outputs == expected_output
 
@@ -1219,7 +1219,7 @@ def test_recover_soft_delete_item(client, mock_account):
     ids_to_recover = "message1, message3"
     target_folder = "target"
     expected_recovered_ids = {"message1", "message3"}
-    result = recover_soft_delete_item(client, ids_to_recover, target_folder)
+    result = recover_soft_delete_item(client, {"message_ids": ids_to_recover, "target_folder_path": target_folder})
 
     assert isinstance(result.outputs, list)
     assert {entry["messageId"] for entry in result.outputs} == expected_recovered_ids
@@ -1256,7 +1256,7 @@ def test_create_folder(mocker, client, mock_account):
     mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, _account: mock_folders[path])
     mocker.patch("EWSApiModule.Folder", MockFolder)
 
-    create_folder(client, folder_name, parent_folder_name)
+    create_folder(client, {"new_folder_name": folder_name, "folder_path": parent_folder_name})
 
     assert full_path in mock_folders
 
@@ -1285,7 +1285,7 @@ def test_get_folder(mocker, client, mock_account):
         "unreadCount": 5,
     }
 
-    result = get_folder(client, "target_folder")
+    result = get_folder(client, {"folder_path": "target_folder"})
 
     assert result.outputs == expected_output
 
@@ -1337,7 +1337,7 @@ def test_get_expanded_group(mocker, client):
 
     mocker.patch.object(EWSApiModule.ExpandGroup, "_get_elements", return_value=mock_elements)
 
-    results = get_expanded_group(client, "group@example.com")
+    results = get_expanded_group(client, {"email_address": "group@example.com"})
 
     assert isinstance(results.outputs, dict)
     assert results.outputs["members"] == expected_output
@@ -1364,7 +1364,7 @@ def test_mark_item_as_read(mocker, client):
 
     item_ids = "item1, item3"
 
-    result = mark_item_as_read(client, item_ids, "read")
+    result = mark_item_as_read(client, {"item_ids": item_ids, "operation": "read"})
 
     expected_read_items = ["item1", "item3"]
     expected_output = [

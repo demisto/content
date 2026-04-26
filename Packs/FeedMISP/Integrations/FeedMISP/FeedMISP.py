@@ -1,9 +1,22 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
+import os
+import tempfile
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+
+class TempFile:
+    def __init__(self, data):
+        _, self.path = tempfile.mkstemp()
+        with open(self.path, "w") as temp_file:
+            temp_file.write(data)
+
+    def __del__(self):
+        os.remove(self.path)
+
 
 INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
@@ -125,9 +138,11 @@ class Client(BaseClient):
         proxy: bool,
         performance: bool,
         max_indicator_to_fetch: Optional[int],
+        client_cert: Optional[tuple] = None,
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
+        self.client_cert = client_cert
 
         self._headers = {
             "Authorization": authorization,
@@ -150,6 +165,7 @@ class Client(BaseClient):
             resp_type="json",
             data=json.dumps(body),
             timeout=self.timeout,
+            cert=self.client_cert,
         )
 
 
@@ -257,13 +273,12 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
         query: User's query string
     Returns: Dict which has only needed arguments to be sent to MISP
     """
-    global LIMIT
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
         if "page" not in params:
             params["page"] = page
-        params["limit"] = params.get("limit") or LIMIT
+        params["limit"] = params.get("limit") or limit
         if params.get("timestamp"):
             params["attribute_timestamp"] = params.pop("timestamp")
         if from_timestamp:
@@ -486,7 +501,7 @@ def test_module(client: Client) -> str:
     Returns:
         ok if feed is accessible
     """
-    client.search_query(body={"limit": 1})
+    client.search_query(body={"returnFormat": "json", "limit": 1})
     return "ok"
 
 
@@ -570,7 +585,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get("attribute_tags", ""))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get("attribute_types", ""))
-    fetch_limit = client.max_indicator_to_fetch
+    fetch_limit = client.max_indicator_to_fetch or LIMIT
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
     query = params.get("query", None)
@@ -578,10 +593,10 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run_page = last_run.get("page") or 1
     last_run_value = last_run.get("last_indicator_value") or ""
     params_dict = (
-        parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp, page=last_run_page)
+        parsing_user_query(query, fetch_limit, from_timestamp=last_run_timestamp, page=last_run_page)
         if query
         else build_params_dict(
-            tags=tags, attribute_type=attribute_types, limit=LIMIT, page=last_run_page, from_timestamp=last_run_timestamp
+            tags=tags, attribute_type=attribute_types, limit=fetch_limit, page=last_run_page, from_timestamp=last_run_timestamp
         )
     )
 
@@ -639,6 +654,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     if params.get("feedExpirationPolicy") == "suddenDeath":
         raise DemistoException("The feed is incremental, so a sudden-death policy is not applicable.")
+
+    # Handle client certificate
+    certificate = replace_spaces_in_credential(params.get("certificate", {}).get("identifier"))
+    private_key = replace_spaces_in_credential(params.get("certificate", {}).get("password"))
+    cert = TempFile(certificate) if certificate else None
+    key = TempFile(private_key) if private_key else None
+    client_cert = (cert.path, key.path) if cert and key else None
+
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
@@ -649,6 +672,7 @@ def main():  # pragma: no cover
             timeout=timeout,
             performance=performance,
             max_indicator_to_fetch=max_indicator_to_fetch,
+            client_cert=client_cert,
         )
 
         if command == "test-module":

@@ -86,13 +86,13 @@ class OrcaClient:
 
     def get_alerts(
         self, time_from: str | None, page: int | None = 1, limit: int = ORCA_API_LIMIT
-    ) -> tuple[List[dict[str, Any]], bool]:
+    ) -> tuple[List[dict[str, Any]], bool, bool]:
         """
         Fetch alerts
         :param time_from: datetime
         :param page: int
         :param limit: int
-        :return: dict
+        :return: (alerts, is_last_page, had_error)
         """
         demisto.info(f"Get alerts start, {time_from=} {page=} {limit=}")
         alerts: List[dict[str, Any]] = []
@@ -112,6 +112,7 @@ class OrcaClient:
         }
 
         is_last_page = False
+        had_error = False
         try:
             response = self.client._http_request(
                 method="POST",
@@ -121,19 +122,19 @@ class OrcaClient:
             )
             if response.get("status") != "success":
                 demisto.info(f"got bad response, {response.get('error')}")
-                return [], True
+                return [], True, True  # Error occurred, don't advance pagination
             else:
                 alerts = response.get("data")
                 if not isinstance(alerts, list):
                     demisto.info(f"Unexpected data type for alerts: {type(alerts)}")
-                    return [], True
+                    return [], True, False  # Error occurred
 
             total_items = response.get("total_items", 0)
             demisto.info(f"Total items to fetch: {total_items}")
 
             if total_items == 0:
                 is_last_page = True
-                return alerts, is_last_page
+                return alerts, is_last_page, had_error
 
             if limit > 0:
                 total_pages = (total_items + limit - 1) // limit
@@ -141,13 +142,13 @@ class OrcaClient:
 
         except requests.exceptions.ReadTimeout as e:
             demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
-            return [], True
+            return [], True, True  # Error occurred, don't advance
         except DemistoException as e:
             demisto.info(f"Alerts Request Error: {str(e)}")
-            return [], True
+            return [], True, True  # Error occurred, don't advance
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts.")
-        return alerts, is_last_page
+        return alerts, is_last_page, had_error
 
     def set_alert_score(self, alert_id: str, orca_score: float) -> dict[str, Any]:
         demisto.debug("Set alert score.")
@@ -299,7 +300,6 @@ def fetch_incidents(
             demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
             # Pull only new alerts from now
             time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
-
         next_run["step"] = STEP_FETCH
     else:
         # Not first run, continue exporting alerts from last run time
@@ -311,19 +311,25 @@ def fetch_incidents(
         time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
 
     # Fetch alerts
-    alerts, is_last_page = orca_client.get_alerts(
+    alerts, is_last_page, had_error = orca_client.get_alerts(
         time_from=time_from,
         limit=max_fetch,
         page=fetch_page,
     )
 
-    # Update next_run based on whether it's the last page
-    if is_last_page:
-        # reset page count and update last run time
+    # Only update next_run if no error occurred
+    if had_error:
+        # Preserve the current state for retry
+        next_run["fetch_page"] = fetch_page
+        next_run["lastRun"] = last_run_time
+        next_run["step"] = step
+        demisto.info("API error occurred, preserving current fetch state for retry")
+    elif is_last_page:
+        # Success: reset page count and update last run time
         next_run["fetch_page"] = 1
         next_run["lastRun"] = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
     else:
-        # increment page count
+        # Success: increment page count
         # Keep the lastRun datetime as is
         next_run["fetch_page"] = fetch_page + 1
         next_run["lastRun"] = time_from

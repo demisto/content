@@ -18,6 +18,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 | retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
+| Bucket | Bucket used for network connectivity testing. | False |
 
 ## Commands
 

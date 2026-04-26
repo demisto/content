@@ -31,6 +31,16 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - "xsiam"
 - name: threshold_ip
   display: Score threshold for IP reputation command
   defaultvalue: '65'
@@ -113,6 +123,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - "xsiam"
 - name: max_events_fetch
   display: Maximum number of events per fetch
   defaultvalue: '1000'
@@ -121,6 +133,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - "xsiam"
   # Fetch Assets (and Vulnerabilities)
   # Not supported in Cortex XSOAR
 - display: Fetch assets and vulnerabilities
@@ -432,3 +446,5 @@ defaultmapperin: HelloWorld-mapper  # Incident field mapper (if "fetch-incidents
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

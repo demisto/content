@@ -12,15 +12,21 @@ def set_indicator_if_exist(args: dict):
     Returns:
         str: The result of setting the indicator or an error message.
     """
-    if not any(key in args for key in ["type", "verdict", "tags", "related_issues"]):
-        return_error("Please provide at lease one argument to update: type, verdict, tags, or related_issues.")
-
     # Check if indicator exists
     indicator_value = args.get("value")
+
+    if not any(key in args for key in ["type", "verdict", "tags", "related_issues"]):
+        outputs = {
+            "Value": indicator_value,
+            "Result": "Please provide at least one argument to update: type, verdict, tags, or related_issues.",
+        }
+        return CommandResults(outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator")
+
     demisto.debug(f"Checking if {indicator_value} exists by running findIndicators.")
     exists = execute_command("findIndicators", {"value": indicator_value})
     if not exists:
-        return_error("Indicator does not exist.")
+        outputs = {"Value": indicator_value, "Result": "Indicator does not exist."}
+        return CommandResults(outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator")
 
     success_results = ""
     error_result = ""
