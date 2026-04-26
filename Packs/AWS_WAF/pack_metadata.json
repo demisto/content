@@ -20,7 +20,7 @@
         "xsoar",
         "marketplacev2",
         "platform"
-    ],
+    ],#testt
     "supportedModules": [
         "agentix",
         "xsiam"

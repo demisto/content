@@ -3,4 +3,4 @@ id: AWS_WAF_ModelingRule
 name: AWS WAF Modeling Rule
 rules: ''
 schema: ''
-tags: AWS_WAF
+tags: AWS_WAF#testt

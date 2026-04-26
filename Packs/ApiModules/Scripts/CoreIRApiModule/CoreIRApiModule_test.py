@@ -114,7 +114,7 @@ def return_extra_data_result(*args):
         incident_from_extra_data_command = load_test_data("./test_data/incident_example_from_extra_data_command.json")
         return {}, {}, {"incident": incident_from_extra_data_command}
 
-
+#test
 def test_retrieve_all_endpoints(mocker):
     """
     Given:
