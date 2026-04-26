@@ -28,6 +28,9 @@ outputs:
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4819260
+dependson:
+  must:
+  - SearchIndicatorInEvents
 fromversion: 6.1.0
 isInternal: true
 tests:
