@@ -538,6 +538,8 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if domains_to_process is not None:
             body["domains-to-process"] = domains_to_process
+            # The API requires ignore-warnings=true when querying multiple domains
+            body["ignore-warnings"] = True
         demisto.debug(f"show-service-groups request body: {body}")
         return self._http_request(method="POST", url_suffix="show-service-groups", headers=self.headers, json_data=body)
 
@@ -631,7 +633,7 @@ class Client(BaseClient):
     def add_access_section(
         self,
         layer: str,
-        position: str | dict,
+        position: str | dict | int,
         details_level: Optional[str] = None,
         name: Optional[str] = None,
         tags: Optional[list] = None,
@@ -2511,6 +2513,36 @@ def build_group_data(result: dict, readable_output: str, printable_result: dict)
     return readable_output, printable_result
 
 
+def parse_order_argument(order: str) -> list[dict]:
+    """Parse a comma-separated order string into the API's expected format.
+
+    Args:
+        order: Comma-separated direction:field pairs (e.g., "ASC:name" or "ASC:type,DESC:uid").
+
+    Returns:
+        list[dict]: List of order objects (e.g., [{"ASC": "name"}, {"DESC": "uid"}]).
+
+    Raises:
+        DemistoException: If the order format is invalid or direction is not ASC/DESC.
+    """
+    order_list: list[dict] = []
+    for pair in order.split(","):
+        pair = pair.strip()
+        if ":" not in pair:
+            raise DemistoException(
+                f"Invalid order format: '{pair}'. Expected 'direction:field' format "
+                f"(e.g., 'ASC:name'). Direction must be ASC or DESC."
+            )
+        direction, field = pair.split(":", 1)
+        direction = direction.strip().upper()
+        if direction not in ("ASC", "DESC"):
+            raise DemistoException(
+                f"Invalid order direction: '{direction}'. Must be 'ASC' or 'DESC'."
+            )
+        order_list.append({direction: field.strip()})
+    return order_list
+
+
 def checkpoint_service_group_add_command(
     client: Client,
     name: str,
@@ -2621,7 +2653,7 @@ def checkpoint_service_group_list_command(
     dereference_group_members: str = None,
     show_membership: str = None,
     details_level: str = None,
-    domains_to_process=None,
+    domains_to_process: str = None,
 ) -> CommandResults:
     """Retrieve all service group objects.
 
@@ -2640,22 +2672,10 @@ def checkpoint_service_group_list_command(
     show_membership_bool = argToBoolean(show_membership) if show_membership is not None else None
     domains_to_process_list = argToList(domains_to_process) or None
 
-    # domains_to_process cannot be used with details-level full, and must be used with ignore-warnings true.
+    # domains_to_process cannot be used with details-level full
     if domains_to_process_list is not None and details_level == "full":
         raise DemistoException("The 'domains_to_process' argument cannot be used with details_level set to 'full'.")
-    """
-    Build order object: parse comma-separated direction:field pairs
-    "ASC:name" -> [{"ASC": "name"}]
-    "ASC:type,ASC:name,DESC:uid" -> [{"ASC": "type"}, {"ASC": "name"}, {"DESC": "uid"}]
-    """
-    order_list = None
-    if order:
-        order_list = []
-        for pair in order.split(","):
-            pair = pair.strip()
-            if ":" in pair:
-                direction, field = pair.split(":", 1)
-                order_list.append({direction.strip().upper(): field.strip()})
+    order_list = parse_order_argument(order) if order else None
 
     result = client.list_service_groups(
         filter_search=filter,
@@ -2690,7 +2710,7 @@ def checkpoint_service_group_list_command(
         outputs_prefix="CheckPoint.ServiceGroup",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=result,
+        outputs=objects,
         raw_response=result,
     )
 
@@ -2853,20 +2873,17 @@ def checkpoint_service_group_delete_command(
     ignore_warnings_bool = argToBoolean(ignore_warnings) if ignore_warnings is not None else None
     ignore_errors_bool = argToBoolean(ignore_errors) if ignore_errors is not None else None
 
-    client.delete_service_group(
+    result = client.delete_service_group(
         identifier=identifier,
         details_level=details_level,
         ignore_warnings=ignore_warnings_bool,
         ignore_errors=ignore_errors_bool,
     )
 
-    readable_output = tableToMarkdown(
-        "CheckPoint data for deleting a service group:", {"message": "Service group deleted successfully."}
-    )
-
     demisto.debug("checkpoint-service-group-delete command completed successfully")
     return CommandResults(
-        readable_output=readable_output,
+        readable_output="Service group deleted successfully",
+        raw_response=result
     )
 
 
@@ -2891,8 +2908,21 @@ def checkpoint_access_section_add_command(
     """
     demisto.debug(f"checkpoint-access-section-add command called with args: {demisto.args()}")
 
+    '''
+    According to API docs:
+    - "above"/"below" require position_rule (reference rule/section name)
+    - "top"/"bottom" can optionally use position_rule (reference section name)
+    - integer position is sent as-is (no position_rule needed)
+    '''
+    if position in ("above", "below") and not position_rule:
+        raise DemistoException(
+            f"The 'position_rule' argument is required when position is '{position}'. "
+            f"Provide the name of the rule or section to position relative to."
+        )
     if position_rule:
-        position_obj: str | dict = {position: position_rule}
+        position_obj: str | int | dict = {position: position_rule}
+    elif position.isdigit():
+        position_obj = int(position)
     else:
         position_obj = position
     tags_list = argToList(tags) or None
@@ -3032,19 +3062,16 @@ def checkpoint_access_section_delete_command(
     """
     demisto.debug(f"checkpoint-access-section-delete command called with args: {demisto.args()}")
 
-    client.delete_access_section(
+    result = client.delete_access_section(
         identifier=identifier,
         layer=layer,
         details_level=details_level,
     )
 
-    readable_output = tableToMarkdown(
-        "CheckPoint data for deleting an access section:", {"message": "Access section deleted successfully."}
-    )
-
     demisto.debug("checkpoint-access-section-delete command completed successfully")
     return CommandResults(
-        readable_output=readable_output,
+        readable_output="Access section deleted successfully.",
+        raw_response=result
     )
 
 

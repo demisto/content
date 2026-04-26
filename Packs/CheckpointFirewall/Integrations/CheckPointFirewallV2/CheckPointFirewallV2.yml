@@ -2060,9 +2060,12 @@ script:
       - uid
       - standard
       - full
-    - description: List of the next values:CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER. Indicates which domains to process the commands on. It cannot be used with details_level set to 'full', must be run from the System Domain only and with ignore_warnings set to true.
-      isArray: true
+    - auto: PREDEFINED
+      description: Indicates which domains to process the commands on. It cannot be used with details_level set to 'full'. Must be run from the System Domain
       name: domains_to_process
+      predefined:
+      - CURRENT_DOMAIN
+      - ALL_DOMAINS_ON_THIS_SERVER
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
@@ -2417,7 +2420,6 @@ script:
       required: true
     - description: Rule name. Add rule relatively to another rule or section.
       name: position_rule
-      required: true
     - auto: PREDEFINED
       description: The position of the rule.
       name: position
