@@ -2652,6 +2652,28 @@ def test_get_modified_remote_data_saved_cursor_used_when_lastupdate_older(
 
 
 @patch("Wiz.demisto.setIntegrationContext")
+@patch("Wiz.demisto.getIntegrationContext")
+@patch("Wiz.checkAPIerrors")
+def test_get_modified_remote_data_mixed_precision_cursor_wins(mock_check_api, get_ctx_mock, _set_ctx):
+    """Mixed-precision cursor compare: saved_cursor is microsecond (Wiz), lastUpdate
+    is bare-Z second-precision (XSOAR). Lex `max` would pick `:00Z` over `:00.500000Z`
+    because `Z` (0x5A) > `.` (0x2E), rewinding the cursor by up to 999ms and triggering
+    re-fetch of the half-second window. Datetime compare must keep the microsecond cursor."""
+    from Wiz import get_modified_remote_data_command
+
+    get_ctx_mock.return_value = {"mirror_cursor": "2025-04-01T10:00:00.500000Z"}
+    mock_check_api.return_value = {
+        "data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False}}}
+    }
+
+    with patch.object(demisto, "params", return_value={WizMirrorParam.LIMIT: "50"}):
+        get_modified_remote_data_command({"lastUpdate": "2025-04-01T10:00:00Z"})
+
+    call_vars = mock_check_api.call_args[0][1]
+    assert call_vars["filterBy"]["statusChangedAt"]["after"] == "2025-04-01T10:00:00.500000Z"
+
+
+@patch("Wiz.demisto.setIntegrationContext")
 @patch("Wiz.demisto.getIntegrationContext", return_value={})
 @patch("Wiz.checkAPIerrors")
 def test_get_modified_remote_data_cursor_advances_to_page_max(mock_check_api, _get_ctx, set_ctx_mock):
