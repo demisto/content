@@ -1,8 +1,10 @@
 import base64
+import re
 from collections import deque
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
+from urllib.parse import urlparse
 
 import uvicorn
 from CommonServerPython import *  # noqa: F401
@@ -40,6 +42,23 @@ class AWS_SNS_CLIENT(BaseClient):  # pragma: no cover
 client = AWS_SNS_CLIENT()
 
 
+def _validate_sns_url(url: str, field_name: str) -> None:
+    """Validate that a URL points to a legitimate AWS SNS endpoint.
+
+    Args:
+        url: The URL to validate.
+        field_name: Name of the field (for error messages).
+
+    Raises:
+        DemistoException: If the URL is not a valid AWS SNS endpoint.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme != "https":
+        raise DemistoException(f"{field_name} must use HTTPS, got: {parsed.scheme}")
+    if not parsed.hostname or not re.fullmatch(r"sns\.[a-z0-9-]+\.amazonaws\.com(\.cn)?", parsed.hostname):
+        raise DemistoException(f"{field_name} host not an AWS SNS endpoint: {parsed.hostname}")
+
+
 class ServerConfig:  # pragma: no cover
     def __init__(self, certificate_path, private_key_path, log_config, ssl_args):
         self.certificate_path = certificate_path
@@ -50,7 +69,8 @@ class ServerConfig:  # pragma: no cover
 
 class SNSCertificateManager:
     def __init__(self):
-        self.cached_cert_url = None
+        self.cached_cert_url: str | None = None
+        self.cached_cert: X509.X509 | None = None
 
     def is_valid_sns_message(self, sns_payload):
         """
@@ -88,25 +108,51 @@ class SNSCertificateManager:
 
         # Verify the signature
         decoded_signature = base64.b64decode(sns_payload["Signature"])
-        if sns_payload["SigningCertURL"] == self.cached_cert_url:
-            demisto.debug(f'Current SigningCertURL: {sns_payload["SigningCertURL"]} was verified already.')
-            return True
-        try:
-            demisto.debug(f'sns_payload["SigningCertURL"] = {sns_payload["SigningCertURL"]}')
-            response: requests.models.Response = client.get(full_url=sns_payload["SigningCertURL"], resp_type="response")
-            response.raise_for_status()
-            certificate = X509.load_cert_string(response.text)
-        except Exception as e:
-            demisto.error(f"Exception validating sign cert url: {e}")
-            if "502" in str(e):
-                demisto.error(f'SigningCertURL: {sns_payload["SigningCertURL"]}')
-            elif "Verify that the server URL parameter" in str(e):
-                demisto.error(f"client base url: {client._base_url}")
-            elif "Proxy Error" in str(e):
-                demisto.error(f"PROXIES = {PROXIES}")
-            demisto.debug("SigningCertURL failed. Deleting the saved SigningCertURL.")
-            self.cached_cert_url = None
-            return False
+
+        # Cache the certificate object, not the validation decision.
+        # Always verify the signature even on cache hit.
+        if self.cached_cert_url == sns_payload["SigningCertURL"] and self.cached_cert:
+            demisto.debug(f'Using cached certificate for SigningCertURL: {sns_payload["SigningCertURL"]}')
+            certificate = self.cached_cert
+        else:
+            try:
+                # Validate SigningCertURL before fetching
+                _validate_sns_url(sns_payload["SigningCertURL"], "SigningCertURL")
+
+                demisto.debug(f'sns_payload["SigningCertURL"] = {sns_payload["SigningCertURL"]}')
+                response: requests.models.Response = client.get(full_url=sns_payload["SigningCertURL"], resp_type="response")
+                response.raise_for_status()
+                certificate = X509.load_cert_string(response.text)
+            except DemistoException:
+                raise
+            except Exception as e:
+                demisto.error(f"Exception validating sign cert url: {e}")
+                if "502" in str(e):
+                    demisto.error(f'SigningCertURL: {sns_payload["SigningCertURL"]}')
+                elif "Verify that the server URL parameter" in str(e):
+                    demisto.error(f"client base url: {client._base_url}")
+                elif "Proxy Error" in str(e):
+                    demisto.error(f"PROXIES = {PROXIES}")
+                demisto.debug("SigningCertURL failed. Clearing cached certificate.")
+                self.cached_cert_url = None
+                self.cached_cert = None
+                return False
+
+            # Validate certificate subject CN contains amazonaws.com
+            subject_cn = ""
+            try:
+                subject = certificate.get_subject()
+                subject_cn = subject.CN or ""
+            except Exception:
+                pass
+
+            if "amazonaws.com" not in subject_cn.lower():
+                demisto.error(f"Certificate subject CN not AWS: {subject_cn}")
+                return False
+
+            # Cache the certificate object for future use
+            self.cached_cert = certificate
+            self.cached_cert_url = sns_payload["SigningCertURL"]
 
         public_key = certificate.get_pubkey()
         # Verify the signature based on SignatureVersion
@@ -120,12 +166,12 @@ class SNSCertificateManager:
         verification_result = public_key.verify_final(decoded_signature)
 
         if verification_result != 1:
-            demisto.debug("SigningCertURL failed. Deleting the saved SigningCertURL.")
+            demisto.debug("Signature verification failed. Clearing cached certificate.")
             self.cached_cert_url = None
+            self.cached_cert = None
             return False
 
         demisto.debug("Signature verification succeeded.")
-        self.cached_cert_url = sns_payload["SigningCertURL"]
         return True
 
 
@@ -160,6 +206,8 @@ def is_valid_integration_credentials(credentials, request_headers, token):
 
 def handle_subscription_confirmation(subscribe_url) -> requests.Response:  # pragma: no cover
     demisto.debug("SubscriptionConfirmation request")
+    # Validate SubscribeURL before following it
+    _validate_sns_url(subscribe_url, "SubscribeURL")
     response: requests.models.Response = client.get(full_url=subscribe_url, resp_type="response")
     response.raise_for_status()
     return response
