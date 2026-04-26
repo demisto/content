@@ -63,6 +63,15 @@ configuration:
   required: false
   type: 19
   section: Collect
+- defaultvalue: '720'
+  display: Assets fetch interval in minutes
+  name: assetsFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
@@ -2485,6 +2494,7 @@ script:
     description: Requires administrator role. Command to get a list of organizations' information, depending on the comma-separated list of fields provided.
     name: tenable-sc-get-organization
   isfetch: true
+  isfetchassets: true
   script: ''
   type: python
   subtype: python3

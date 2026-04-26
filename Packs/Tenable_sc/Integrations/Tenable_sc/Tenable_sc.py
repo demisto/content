@@ -1,6 +1,8 @@
 import functools
 import json
 import re
+import sys
+import time
 from datetime import datetime
 from typing import Any
 
@@ -37,6 +39,19 @@ ROLE_ID_DICT = {
     "Auditor": "7",
 }
 
+# Asset and vulnerability fetch constants
+VENDOR = "tenable"
+PRODUCT = "sc"
+ASSETS_PAGE_SIZE = 500
+VULNS_PAGE_SIZE = 500
+MIN_ASSETS_INTERVAL = 60  # Minimum minutes between full fetch cycles
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
+HOST_FIELDS = (
+    "id,uuid,tenableUUID,name,ipAddress,os,firstSeen,lastSeen,"
+    "macAddress,source,netBios,dns,acr,aes,repository,systemType,"
+    "createdTime,modifiedTime"
+)
+
 
 class Client(BaseClient):
     def __init__(
@@ -51,9 +66,10 @@ class Client(BaseClient):
     ):
         if not proxy:
             try:
-                # Remove proxy environment variables if they exist
-                for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-                    os.environ.pop(proxy_var, None)
+                del os.environ["HTTP_PROXY"]
+                del os.environ["HTTPS_PROXY"]
+                del os.environ["http_proxy"]
+                del os.environ["https_proxy"]
             except Exception as e:
                 demisto.debug(f"encountered the following issue: {e}")
 
@@ -821,6 +837,67 @@ class Client(BaseClient):
 
         return self.send_request(path="policy", method="POST", body=body)
 
+    def fetch_vulnerabilities_analysis(
+        self,
+        start_offset: int = 0,
+        end_offset: int = 500,
+    ) -> dict:
+        """
+        Fetch cumulative vulnerabilities via the analysis API for XSIAM ingestion.
+
+        Uses sourceType=cumulative to get all known vulnerabilities across all scans.
+
+        Args:
+            start_offset: Starting offset for pagination.
+            end_offset: Ending offset for pagination.
+
+        Returns:
+            Dict: The API response containing vulnerability analysis results.
+        """
+        body = {
+            "type": "vuln",
+            "sourceType": "cumulative",
+            "view": "all",
+            "wasVuln": "excludeWas",
+            "startOffset": start_offset,
+            "endOffset": end_offset,
+            "sortField": "severity",
+            "sortDir": "DESC",
+            "tool": "vulndetails",
+            "query": {
+                "type": "vuln",
+                "tool": "vulndetails",
+                "filters": [],
+            },
+        }
+        return self.send_request(path="analysis", method="POST", body=body)
+
+    def search_hosts(
+        self,
+        fields: str,
+        start_offset: int = 0,
+        end_offset: int = 500,
+        filters: dict | None = None,
+    ) -> dict:
+        """
+        Search hosts using the /hosts/search endpoint with pagination.
+        Args:
+            fields: Comma-separated list of fields to return.
+            start_offset: Starting offset for pagination.
+            end_offset: Ending offset for pagination.
+            filters: Optional filter payload for the request body.
+        Returns:
+            Dict: The API response containing totalRecords, returnedRecords, and results.
+        """
+        params = {
+            "fields": fields,
+            "startOffset": str(start_offset),
+            "endOffset": str(end_offset),
+            "pagination": "true",
+        }
+        body = filters or {}
+        return self.send_request(path="hosts/search", method="POST", body=body, params=params)
+
 
 """ HELPER FUNCTIONS """
 
@@ -998,6 +1075,49 @@ def timestamp_to_utc(timestamp_str, default_returned_value=""):
     if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
         return datetime.utcfromtimestamp(int(timestamp_str)).strftime("%Y-%m-%dT%H:%M:%SZ")
     return default_returned_value
+
+
+def convert_unix_to_iso(timestamp_str: str | None) -> str | None:
+    """
+    Convert a unix timestamp string to ISO 8601 format with milliseconds.
+
+    Args:
+        timestamp_str: Unix timestamp as a string (e.g., "1709654400").
+
+    Returns:
+        ISO 8601 formatted string (e.g., "2024-03-05T16:00:00.000Z"), or None if input is invalid.
+    """
+    if not timestamp_str or int(timestamp_str) <= 0:
+        return None
+    return datetime.utcfromtimestamp(int(timestamp_str)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
+# Mapping of Tenable.sc API field names to the timestamp fields that should be converted.
+TIMESTAMP_FIELDS = ("firstSeen", "lastSeen", "createdTime", "modifiedTime")
+
+
+def transform_record_timestamps(record: dict[str, Any]) -> dict[str, Any]:
+    """
+    Transform unix timestamp fields in a record to ISO 8601 format.
+
+    Converts the following fields (if present) from unix timestamps to ISO 8601:
+    - firstSeen  (first_seen)
+    - lastSeen   (last_seen)
+    - createdTime (created_at)
+    - modifiedTime (modified_at)
+
+    Args:
+        record: A single asset or vulnerability record dict.
+
+    Returns:
+        The record with timestamp fields converted to ISO 8601 format.
+    """
+    for field in TIMESTAMP_FIELDS:
+        if field in record and record[field]:
+            converted = convert_unix_to_iso(record[field])
+            if converted:
+                record[field] = converted
+    return record
 
 
 def scan_duration_to_demisto_format(duration, default_returned_value=""):
@@ -2865,20 +2985,330 @@ def list_queries(client: Client, type):
     return res, hr, queries
 
 
+""" FETCH ASSETS FUNCTIONS """
+
+
+def generate_snapshot_id() -> str:
+    """
+    Generate a unique snapshot ID for XSIAM dataset snapshots.
+
+    Uses current timestamp in milliseconds to ensure uniqueness across fetch cycles.
+    This ID is used to group assets that belong to the same snapshot,
+    allowing XSIAM to properly track complete vs incomplete snapshots.
+
+    Returns:
+        str: A unique snapshot ID based on current timestamp in milliseconds.
+    """
+    return str(round(time.time() * 1000))
+
+
+def skip_fetch_assets(last_run: dict) -> bool:
+    """
+    Check if enough time has passed since the last completed fetch cycle.
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if the fetch should be skipped (not enough time has passed).
+    """
+    time_to_check = last_run.get("assets_last_fetch")
+    if not time_to_check:
+        return False
+    # If there's an ongoing fetch (assets or vulns), don't skip
+    if is_assets_fetch_in_progress(last_run) or is_vulns_fetch_in_progress(last_run):
+        return False
+    passed_minutes = (time.time() - time_to_check) / 60
+    to_skip = passed_minutes < MIN_ASSETS_INTERVAL
+    if to_skip:
+        demisto.info(
+            f"Skipping fetch-assets command. Only {passed_minutes:.1f} minutes have passed since the last fetch. "
+            f"Minimum interval is {MIN_ASSETS_INTERVAL} minutes."
+        )
+    return to_skip
+
+
+def is_assets_fetch_in_progress(last_run: dict) -> bool:
+    """
+    Check if an assets fetch is still in progress (has more pages to fetch).
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if there is an ongoing paginated fetch.
+    """
+    return "current_offset" in last_run
+
+
+def fetch_assets_page(client: Client, last_run: dict) -> list:
+    """
+    Fetch a single page of host assets from the Tenable.sc API.
+
+    Args:
+        client: Client class object.
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        list: List of host asset records from this page.
+    """
+    current_offset = last_run.get("current_offset", 0)
+    end_offset = current_offset + ASSETS_PAGE_SIZE
+
+    demisto.debug(f"Fetching assets page: offset {current_offset} to {end_offset}")
+
+    response = client.search_hosts(
+        fields=HOST_FIELDS,
+        start_offset=current_offset,
+        end_offset=end_offset,
+    )
+
+    if not response or "response" not in response:
+        demisto.debug("No response received from hosts/search endpoint.")
+        # Clear fetch state on error
+        last_run.pop("current_offset", None)
+        last_run.pop("total_records", None)
+        return []
+
+    response_data = response["response"]
+
+    # Handle both list response (simple) and dict response (paginated)
+    if isinstance(response_data, list):
+        results = response_data
+        total_records = len(results)
+    else:
+        results = response_data.get("results", [])
+        total_records = int(response_data.get("totalRecords", 0))
+
+    demisto.info(f"Received {len(results)} assets (offset {current_offset}, total {total_records})")
+
+    # Update cumulative count
+    cumulative = last_run.get("total_assets_fetched", 0) + len(results)
+    last_run["total_assets_fetched"] = cumulative
+
+    # Determine if there are more pages
+    next_offset = current_offset + len(results)
+    if next_offset < total_records and len(results) > 0:
+        # More pages to fetch
+        last_run["current_offset"] = next_offset
+        last_run["total_records"] = total_records
+        last_run["nextTrigger"] = "30"
+        demisto.debug(f"More assets to fetch. Next offset: {next_offset}, total: {total_records}")
+    else:
+        # All pages fetched - clear pagination state
+        last_run.pop("current_offset", None)
+        last_run.pop("total_records", None)
+        demisto.info(f"Asset fetch complete. Total assets fetched: {cumulative}")
+
+    # Convert unix timestamp fields to ISO 8601 format
+    for record in results:
+        transform_record_timestamps(record)
+
+    return results
+
+
+def fetch_assets_command(client: Client, last_run: dict) -> list:
+    """
+    Fetch assets from the Tenable.sc API, handling pagination state.
+
+    Args:
+        client: Client class object.
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        list: Assets fetched from the API for this page.
+    """
+    return fetch_assets_page(client, last_run)
+
+
+def run_assets_fetch(client: Client, last_run: dict) -> list:  # pragma: no cover
+    """
+    Entry point for running the assets fetch.
+
+    Initializes fetch state if starting a new cycle, then fetches one page.
+
+    Args:
+        client: Client class object.
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        list: Assets fetched from the API.
+    """
+    demisto.info("fetch assets from the API")
+
+    # Starting new fetch cycle - initialize state
+    if not is_assets_fetch_in_progress(last_run):
+        snapshot_id = generate_snapshot_id()
+        demisto.debug(f"Starting new asset fetch cycle with snapshot_id: {snapshot_id}")
+        last_run.update(
+            {
+                "current_offset": 0,
+                "total_assets_fetched": 0,
+                "snapshot_id": snapshot_id,
+            }
+        )
+
+    return fetch_assets_command(client, last_run)
+
+
+""" FETCH VULNERABILITIES FUNCTIONS """
+
+
+def is_vulns_fetch_in_progress(last_run: dict) -> bool:
+    """
+    Check if a vulnerabilities fetch is still in progress (has more pages to fetch).
+
+    Args:
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        bool: True if there is an ongoing paginated vulnerability fetch.
+    """
+    return "vuln_current_offset" in last_run
+
+
+def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
+    """
+    Fetch a single page of cumulative vulnerabilities from the Tenable.sc Analysis API.
+
+    Args:
+        client: Client class object.
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        list: List of vulnerability records from this page.
+    """
+    current_offset = last_run.get("vuln_current_offset", 0)
+    end_offset = current_offset + VULNS_PAGE_SIZE
+
+    demisto.debug(f"Fetching vulnerabilities page: offset {current_offset} to {end_offset}")
+
+    response = client.fetch_vulnerabilities_analysis(
+        start_offset=current_offset,
+        end_offset=end_offset,
+    )
+
+    if not response or "response" not in response:
+        demisto.debug("No response received from analysis endpoint for vulnerabilities.")
+        # Clear vuln fetch state on error
+        last_run.pop("vuln_current_offset", None)
+        last_run.pop("total_vulns_fetched", None)
+        return []
+
+    response_data = response["response"]
+
+    results = response_data.get("results", [])
+    total_records = int(response_data.get("totalRecords", 0))
+
+    demisto.info(f"Received {len(results)} vulnerabilities (offset {current_offset}, total {total_records})")
+
+    # Update cumulative count
+    cumulative = last_run.get("total_vulns_fetched", 0) + len(results)
+    last_run["total_vulns_fetched"] = cumulative
+
+    # Determine if there are more pages
+    next_offset = current_offset + len(results)
+    if next_offset < total_records and len(results) > 0:
+        # More pages to fetch
+        last_run["vuln_current_offset"] = next_offset
+        last_run["nextTrigger"] = "30"
+        demisto.debug(f"More vulnerabilities to fetch. Next offset: {next_offset}, total: {total_records}")
+    else:
+        # All pages fetched - clear vuln pagination state
+        last_run.pop("vuln_current_offset", None)
+        demisto.info(f"Vulnerability fetch complete. Total vulnerabilities fetched: {cumulative}")
+
+    return results
+
+
+def parse_vulnerabilities(vulns: list) -> list:
+    """
+    Parse and prepare vulnerabilities for XSIAM ingestion.
+
+    Adds _time field, truncates oversized entries, and marks truncation status.
+    Mirrors the Tenable_io parse_vulnerabilities pattern.
+
+    Args:
+        vulns: List of raw vulnerability records from the analysis API.
+
+    Returns:
+        list: Parsed vulnerability records ready for XSIAM.
+    """
+    demisto.debug("Parse the vulnerabilities...")
+    if not isinstance(vulns, list):
+        demisto.debug(f"result is of type: {type(vulns)}")
+        vulns = list(vulns)
+    for vuln in vulns:
+        # Convert unix timestamp fields to ISO 8601 format
+        transform_record_timestamps(vuln)
+        # Set _time from lastSeen or firstSeen (Tenable.sc uses these fields)
+        vuln["_time"] = vuln.get("lastSeen") or vuln.get("firstSeen")
+        vuln_str = json.dumps(vuln)
+        if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug(f"found oversized vulnerability object: {sys.getsizeof(vuln_str)} bytes")
+            if vuln.get("pluginText"):
+                demisto.debug("truncating pluginText field")
+                vuln["pluginText"] = ""
+                vuln["isTruncated"] = True
+            elif vuln.get("pluginDescription"):
+                demisto.debug("truncating pluginDescription field")
+                vuln["pluginDescription"] = ""
+                vuln["isTruncated"] = True
+            else:
+                demisto.debug("skipping oversized object...")
+                continue
+        else:
+            vuln["isTruncated"] = False
+    return vulns
+
+
+def run_vulns_fetch(client: Client, last_run: dict) -> list:  # pragma: no cover
+    """
+    Entry point for running the vulnerabilities fetch.
+
+    Initializes vuln fetch state if starting a new cycle, then fetches one page.
+
+    Args:
+        client: Client class object.
+        last_run: The last run object containing fetch state.
+
+    Returns:
+        list: Vulnerabilities fetched from the API.
+    """
+    demisto.info("fetch vulnerabilities from the API")
+
+    # Starting new vuln fetch cycle - initialize state
+    if not is_vulns_fetch_in_progress(last_run):
+        demisto.debug("Starting new vulnerability fetch cycle")
+        last_run.update(
+            {
+                "vuln_current_offset": 0,
+                "total_vulns_fetched": 0,
+            }
+        )
+
+    return fetch_vulnerabilities_page(client, last_run)
+
+
 def test_module(client: Client, args: dict[str, Any]):
     """
-    Lists queries and return the processed results.
+    Test the connection to the Tenable.sc server.
     Args:
         client (Client): The tenable.sc client object.
-        type (str): query time to filter by.
+        args (Dict): demisto.args() object.
     Returns:
-        Dict: The response from the server.
-        str: The processed human readable.
-        Dict: The relevant section from the response.
+        str: 'ok' if the connection is successful.
     """
     try:
+        # Validate assets fetch interval if configured
+        params = demisto.params()
+        assets_fetch_interval = params.get("assetsFetchInterval") or MIN_ASSETS_INTERVAL
+        if int(assets_fetch_interval) < MIN_ASSETS_INTERVAL:
+            raise DemistoException(f"Assets fetch interval must be at least {MIN_ASSETS_INTERVAL} minutes (1 hour).")
         client.get_users()
         return "ok"
+    except DemistoException:
+        raise
     except Exception:
         raise Exception("Authorization Error: make sure your API Key and Secret Key are correctly set")
 
@@ -2946,6 +3376,107 @@ def main():  # pragma: no cover
             if command == "fetch-incidents":
                 first_fetch = params.get("fetch_time").strip()
                 fetch_incidents(client, first_fetch)
+            elif command == "fetch-assets":
+                assets_last_run = demisto.getAssetsLastRun()
+                demisto.debug(f"saved lastrun assets: {assets_last_run}")
+
+                if skip_fetch_assets(assets_last_run):
+                    return
+
+                # Mark the start of a new fetch cycle if not resuming
+                if not is_assets_fetch_in_progress(assets_last_run) and not is_vulns_fetch_in_progress(assets_last_run):
+                    assets_last_run["assets_last_fetch"] = time.time()
+
+                assets_last_run_copy = assets_last_run.copy()
+                assets: list = []
+                vulnerabilities: list = []
+
+                # Fetch Assets: Run if assets fetch is in progress or starting new cycle (vulns not yet started)
+                if is_assets_fetch_in_progress(assets_last_run_copy) or not is_vulns_fetch_in_progress(assets_last_run_copy):
+                    assets = run_assets_fetch(client, assets_last_run)
+
+                # Fetch Vulnerabilities: Run if vulns fetch is in progress or assets fetch is complete
+                if is_vulns_fetch_in_progress(assets_last_run_copy) or not is_assets_fetch_in_progress(assets_last_run):
+                    vulnerabilities = run_vulns_fetch(client, assets_last_run)
+
+                demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
+                demisto.setAssetsLastRun(assets_last_run)
+
+                # Get snapshot_id for this fetch cycle
+                snapshot_id = assets_last_run.get("snapshot_id")
+                if not snapshot_id:
+                    snapshot_id = generate_snapshot_id()
+                    assets_last_run["snapshot_id"] = snapshot_id
+                    demisto.setAssetsLastRun(assets_last_run)
+
+                assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
+
+                if assets:
+                    cumulative_total = assets_last_run.get("total_assets_fetched", 0)
+                    # Per XSIAM spec: items_count=1 if not finished, else total count
+                    items_count = 1 if assets_fetch_in_progress else cumulative_total
+
+                    demisto.debug(
+                        f"Sending {len(assets)} assets to XSIAM with snapshot_id={snapshot_id}, "
+                        f"items_count={items_count}, cumulative_total={cumulative_total}, "
+                        f"assets_fetch_in_progress={assets_fetch_in_progress}"
+                    )
+                    send_data_to_xsiam(
+                        data=assets,
+                        vendor=VENDOR,
+                        product=f"{PRODUCT}_assets",
+                        data_type="assets",
+                        snapshot_id=snapshot_id,
+                        items_count=str(items_count),
+                        should_update_health_module=False,
+                    )
+
+                elif not assets_fetch_in_progress:
+                    # Seal empty snapshot if we had previously sent data
+                    cumulative_total = assets_last_run.get("total_assets_fetched", 0)
+                    if cumulative_total > 0:
+                        demisto.debug(
+                            f"Asset fetch completed with empty assets list. Sealing snapshot with "
+                            f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
+                        )
+                        send_data_to_xsiam(
+                            data=[],
+                            vendor=VENDOR,
+                            product=f"{PRODUCT}_assets",
+                            data_type="assets",
+                            snapshot_id=snapshot_id,
+                            items_count=str(cumulative_total),
+                            should_update_health_module=False,
+                        )
+
+                # Send vulnerabilities to XSIAM
+                if vulnerabilities:
+                    vulnerabilities = parse_vulnerabilities(vulnerabilities)
+                    demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
+                    send_data_to_xsiam(
+                        data=vulnerabilities,
+                        vendor=VENDOR,
+                        product=f"{PRODUCT}_vulnerabilities",
+                    )
+
+                # Update module health
+                if (
+                    assets
+                    or vulnerabilities
+                    or (not assets_fetch_in_progress and not is_vulns_fetch_in_progress(assets_last_run))
+                ):
+                    cumulative_total = assets_last_run.get("total_assets_fetched", 0)
+                    demisto.updateModuleHealth({"assetsPulled": cumulative_total})
+
+                # Clean up snapshot state when BOTH assets and vulns fetch are complete
+                if not assets_fetch_in_progress and not is_vulns_fetch_in_progress(assets_last_run):
+                    assets_last_run.pop("snapshot_id", None)
+                    assets_last_run.pop("total_assets_fetched", None)
+                    assets_last_run.pop("total_vulns_fetched", None)
+                    demisto.setAssetsLastRun(assets_last_run)
+
+                demisto.info("Done sending asset and vulnerability data to XSIAM.")
+
             elif command == "tenable-sc-launch-scan":
                 return_results(launch_scan_command(args, client))
             else:

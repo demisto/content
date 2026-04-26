@@ -1,8 +1,10 @@
 import json
+import time
 
 import pytest
 from Tenable_sc import (
     Client,
+    convert_unix_to_iso,
     create_asset_command,
     create_get_device_request_params_and_path,
     create_policy_request_body,
@@ -11,6 +13,9 @@ from Tenable_sc import (
     delete_asset_command,
     delete_scan_command,
     delete_user_command,
+    fetch_assets_page,
+    fetch_vulnerabilities_page,
+    generate_snapshot_id,
     get_alert_command,
     get_all_scan_results_command,
     get_asset_command,
@@ -21,6 +26,8 @@ from Tenable_sc import (
     get_scan_status_command,
     get_system_information_command,
     get_system_licensing_command,
+    is_assets_fetch_in_progress,
+    is_vulns_fetch_in_progress,
     launch_scan,
     list_alerts_command,
     list_assets_command,
@@ -35,6 +42,9 @@ from Tenable_sc import (
     list_scans_command,
     list_users_command,
     list_zones_command,
+    parse_vulnerabilities,
+    skip_fetch_assets,
+    transform_record_timestamps,
     update_asset_command,
     validate_create_scan_inputs,
     validate_user_body_params,
@@ -990,3 +1000,654 @@ def test_get_organization_command(mocker, test_case):
     command_results = get_organization_command(client_mocker, args)
     assert test_data.get("expected_hr") == command_results.readable_output
     assert test_data.get("expected_ec") == command_results.outputs
+
+
+""" FETCH ASSETS TESTS """
+
+
+def test_generate_snapshot_id():
+    """
+    Given:
+    - Nothing.
+
+    When:
+    - Calling generate_snapshot_id.
+
+    Then:
+    - Ensure a string of digits is returned representing milliseconds timestamp.
+    """
+    snapshot_id = generate_snapshot_id()
+    assert isinstance(snapshot_id, str)
+    assert snapshot_id.isdigit()
+    assert len(snapshot_id) >= 13  # millisecond timestamp
+
+
+def test_is_assets_fetch_in_progress_true():
+    """
+    Given:
+    - A last_run dict with current_offset set.
+
+    When:
+    - Calling is_assets_fetch_in_progress.
+
+    Then:
+    - Should return True.
+    """
+    last_run = {"current_offset": 500, "snapshot_id": "123456"}
+    assert is_assets_fetch_in_progress(last_run) is True
+
+
+def test_is_assets_fetch_in_progress_false():
+    """
+    Given:
+    - A last_run dict without current_offset.
+
+    When:
+    - Calling is_assets_fetch_in_progress.
+
+    Then:
+    - Should return False.
+    """
+    last_run = {"assets_last_fetch": 1709500000.0}
+    assert is_assets_fetch_in_progress(last_run) is False
+
+
+def test_skip_fetch_assets_no_previous_fetch():
+    """
+    Given:
+    - A last_run dict with no assets_last_fetch timestamp.
+
+    When:
+    - Calling skip_fetch_assets.
+
+    Then:
+    - Should return False (don't skip, this is the first fetch).
+    """
+    last_run = {}
+    assert skip_fetch_assets(last_run) is False
+
+
+def test_skip_fetch_assets_too_soon():
+    """
+    Given:
+    - A last_run dict with assets_last_fetch set to 10 minutes ago.
+
+    When:
+    - Calling skip_fetch_assets.
+
+    Then:
+    - Should return True (skip, not enough time has passed).
+    """
+    last_run = {"assets_last_fetch": time.time() - (10 * 60)}  # 10 minutes ago
+    assert skip_fetch_assets(last_run) is True
+
+
+def test_skip_fetch_assets_enough_time():
+    """
+    Given:
+    - A last_run dict with assets_last_fetch set to 2 hours ago.
+
+    When:
+    - Calling skip_fetch_assets.
+
+    Then:
+    - Should return False (don't skip, enough time has passed).
+    """
+    last_run = {"assets_last_fetch": time.time() - (120 * 60)}  # 2 hours ago
+    assert skip_fetch_assets(last_run) is False
+
+
+def test_skip_fetch_assets_in_progress():
+    """
+    Given:
+    - A last_run dict with assets_last_fetch set to 10 minutes ago but fetch is in progress.
+
+    When:
+    - Calling skip_fetch_assets.
+
+    Then:
+    - Should return False (don't skip, there's an ongoing fetch).
+    """
+    last_run = {
+        "assets_last_fetch": time.time() - (10 * 60),
+        "current_offset": 500,
+    }
+    assert skip_fetch_assets(last_run) is False
+
+
+def test_fetch_assets_page_first_page(mocker):
+    """
+    Given:
+    - A mock response with 2 results out of 3 total (first page).
+
+    When:
+    - Calling fetch_assets_page with offset 0.
+
+    Then:
+    - Should return 2 assets.
+    - Should set current_offset to 2 in last_run (more pages to fetch).
+    - Should set nextTrigger to "30".
+    """
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mocker.patch.object(client_mocker, "send_request", return_value=test_data["first_page"])
+
+    last_run = {"current_offset": 0, "total_assets_fetched": 0, "snapshot_id": "123456"}
+    assets = fetch_assets_page(client_mocker, last_run)
+
+    assert len(assets) == 2
+    assert last_run["current_offset"] == 2
+    assert last_run["total_assets_fetched"] == 2
+    assert last_run["nextTrigger"] == "30"
+    assert assets[0]["name"] == "TestHost1"
+    assert assets[1]["name"] == "TestHost2"
+
+
+def test_fetch_assets_page_last_page(mocker):
+    """
+    Given:
+    - A mock response with 1 result out of 3 total (last page, offset=2).
+
+    When:
+    - Calling fetch_assets_page with offset 2.
+
+    Then:
+    - Should return 1 asset.
+    - Should clear current_offset from last_run (no more pages).
+    - Should clear total_records from last_run.
+    """
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mocker.patch.object(client_mocker, "send_request", return_value=test_data["last_page"])
+
+    last_run = {"current_offset": 2, "total_assets_fetched": 2, "snapshot_id": "123456"}
+    assets = fetch_assets_page(client_mocker, last_run)
+
+    assert len(assets) == 1
+    assert "current_offset" not in last_run
+    assert "total_records" not in last_run
+    assert last_run["total_assets_fetched"] == 3
+    assert assets[0]["name"] == "TestHost3"
+
+
+def test_fetch_assets_page_empty_response(mocker):
+    """
+    Given:
+    - A mock response with 0 results.
+
+    When:
+    - Calling fetch_assets_page.
+
+    Then:
+    - Should return empty list.
+    - Should clear pagination state from last_run.
+    """
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mocker.patch.object(client_mocker, "send_request", return_value=test_data["empty_response"])
+
+    last_run = {"current_offset": 0, "total_assets_fetched": 0, "snapshot_id": "123456"}
+    assets = fetch_assets_page(client_mocker, last_run)
+
+    assert len(assets) == 0
+    assert "current_offset" not in last_run
+    assert "total_records" not in last_run
+
+
+def test_fetch_assets_page_no_response(mocker):
+    """
+    Given:
+    - A None response from the API.
+
+    When:
+    - Calling fetch_assets_page.
+
+    Then:
+    - Should return empty list.
+    - Should clear pagination state from last_run.
+    """
+    mocker.patch.object(client_mocker, "send_request", return_value=None)
+
+    last_run = {"current_offset": 0, "total_assets_fetched": 0, "snapshot_id": "123456"}
+    assets = fetch_assets_page(client_mocker, last_run)
+
+    assert len(assets) == 0
+    assert "current_offset" not in last_run
+
+
+def test_search_hosts_client_method(mocker):
+    """
+    Given:
+    - A client with search_hosts method.
+
+    When:
+    - Calling search_hosts with fields, offsets, and no filters.
+
+    Then:
+    - Should call send_request with correct path, method, params, and body.
+    """
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mock_send = mocker.patch.object(client_mocker, "send_request", return_value=test_data["first_page"])
+
+    result = client_mocker.search_hosts(
+        fields="id,uuid,name",
+        start_offset=0,
+        end_offset=500,
+    )
+
+    mock_send.assert_called_once_with(
+        path="hosts/search",
+        method="POST",
+        body={},
+        params={
+            "fields": "id,uuid,name",
+            "startOffset": "0",
+            "endOffset": "500",
+            "pagination": "true",
+        },
+    )
+    assert result == test_data["first_page"]
+
+
+""" VULNERABILITY FETCH TESTS """
+
+
+def test_is_vulns_fetch_in_progress_true():
+    """
+    Given:
+    - A last_run dict with vuln_current_offset set.
+
+    When:
+    - Calling is_vulns_fetch_in_progress.
+
+    Then:
+    - Should return True (vulnerability fetch is in progress).
+    """
+    last_run = {"vuln_current_offset": 500}
+    assert is_vulns_fetch_in_progress(last_run) is True
+
+
+def test_is_vulns_fetch_in_progress_false():
+    """
+    Given:
+    - A last_run dict without vuln_current_offset.
+
+    When:
+    - Calling is_vulns_fetch_in_progress.
+
+    Then:
+    - Should return False (no vulnerability fetch in progress).
+    """
+    last_run = {"assets_last_fetch": time.time()}
+    assert is_vulns_fetch_in_progress(last_run) is False
+
+
+def test_skip_fetch_assets_vulns_in_progress():
+    """
+    Given:
+    - A last_run dict with assets_last_fetch set to 10 minutes ago and vulns fetch in progress.
+
+    When:
+    - Calling skip_fetch_assets.
+
+    Then:
+    - Should return False (don't skip, there's an ongoing vulnerability fetch).
+    """
+    last_run = {
+        "assets_last_fetch": time.time() - (10 * 60),
+        "vuln_current_offset": 500,
+    }
+    assert skip_fetch_assets(last_run) is False
+
+
+def test_fetch_vulnerabilities_page_first_page(mocker):
+    """
+    Given:
+    - A mock response with 2 vulnerability results out of 3 total (first page).
+
+    When:
+    - Calling fetch_vulnerabilities_page with offset 0.
+
+    Then:
+    - Should return 2 vulnerabilities.
+    - Should set vuln_current_offset to 2 in last_run (more pages to fetch).
+    - Should set nextTrigger to "30".
+    """
+    mock_response = {
+        "response": {
+            "totalRecords": "3",
+            "returnedRecords": 2,
+            "results": [
+                {
+                    "pluginID": "10001",
+                    "name": "Test Vuln 1",
+                    "severity": {"id": "3", "name": "High"},
+                    "family": {"name": "General"},
+                    "lastSeen": "1709654400",
+                    "firstSeen": "1709568000",
+                    "pluginDescription": "Test description 1",
+                },
+                {
+                    "pluginID": "10002",
+                    "name": "Test Vuln 2",
+                    "severity": {"id": "2", "name": "Medium"},
+                    "family": {"name": "Web Servers"},
+                    "lastSeen": "1709654400",
+                    "firstSeen": "1709568000",
+                    "pluginDescription": "Test description 2",
+                },
+            ],
+        }
+    }
+    mocker.patch.object(client_mocker, "send_request", return_value=mock_response)
+
+    last_run = {"vuln_current_offset": 0, "total_vulns_fetched": 0}
+    vulns = fetch_vulnerabilities_page(client_mocker, last_run)
+
+    assert len(vulns) == 2
+    assert last_run["vuln_current_offset"] == 2
+    assert last_run["total_vulns_fetched"] == 2
+    assert last_run["nextTrigger"] == "30"
+    assert vulns[0]["pluginID"] == "10001"
+    assert vulns[1]["pluginID"] == "10002"
+
+
+def test_fetch_vulnerabilities_page_last_page(mocker):
+    """
+    Given:
+    - A mock response with 1 vulnerability result out of 3 total (last page, offset=2).
+
+    When:
+    - Calling fetch_vulnerabilities_page with offset 2.
+
+    Then:
+    - Should return 1 vulnerability.
+    - Should clear vuln_current_offset from last_run (no more pages).
+    """
+    mock_response = {
+        "response": {
+            "totalRecords": "3",
+            "returnedRecords": 1,
+            "results": [
+                {
+                    "pluginID": "10003",
+                    "name": "Test Vuln 3",
+                    "severity": {"id": "1", "name": "Low"},
+                    "family": {"name": "DNS"},
+                    "lastSeen": "1709654400",
+                    "firstSeen": "1709568000",
+                    "pluginDescription": "Test description 3",
+                },
+            ],
+        }
+    }
+    mocker.patch.object(client_mocker, "send_request", return_value=mock_response)
+
+    last_run = {"vuln_current_offset": 2, "total_vulns_fetched": 2}
+    vulns = fetch_vulnerabilities_page(client_mocker, last_run)
+
+    assert len(vulns) == 1
+    assert "vuln_current_offset" not in last_run
+    assert last_run["total_vulns_fetched"] == 3
+    assert vulns[0]["pluginID"] == "10003"
+
+
+def test_fetch_vulnerabilities_page_empty_response(mocker):
+    """
+    Given:
+    - A mock response with 0 vulnerability results.
+
+    When:
+    - Calling fetch_vulnerabilities_page.
+
+    Then:
+    - Should return empty list.
+    - Should clear vuln pagination state from last_run.
+    """
+    mock_response = {
+        "response": {
+            "totalRecords": "0",
+            "returnedRecords": 0,
+            "results": [],
+        }
+    }
+    mocker.patch.object(client_mocker, "send_request", return_value=mock_response)
+
+    last_run = {"vuln_current_offset": 0, "total_vulns_fetched": 0}
+    vulns = fetch_vulnerabilities_page(client_mocker, last_run)
+
+    assert len(vulns) == 0
+    assert "vuln_current_offset" not in last_run
+
+
+def test_fetch_vulnerabilities_page_no_response(mocker):
+    """
+    Given:
+    - A None response from the API.
+
+    When:
+    - Calling fetch_vulnerabilities_page.
+
+    Then:
+    - Should return empty list.
+    - Should clear vuln pagination state from last_run.
+    """
+    mocker.patch.object(client_mocker, "send_request", return_value=None)
+
+    last_run = {"vuln_current_offset": 0, "total_vulns_fetched": 0}
+    vulns = fetch_vulnerabilities_page(client_mocker, last_run)
+
+    assert len(vulns) == 0
+    assert "vuln_current_offset" not in last_run
+    assert "total_vulns_fetched" not in last_run
+
+
+def test_parse_vulnerabilities_normal():
+    """
+    Given:
+    - A list of vulnerability records with lastSeen and firstSeen fields.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - Should add _time field from lastSeen (converted to ISO 8601).
+    - Should convert firstSeen and lastSeen to ISO 8601 format.
+    - Should set isTruncated to False for normal-sized entries.
+    """
+    vulns = [
+        {
+            "pluginID": "10001",
+            "name": "Test Vuln",
+            "lastSeen": "1709654400",
+            "firstSeen": "1709568000",
+            "pluginDescription": "Short description",
+        },
+        {
+            "pluginID": "10002",
+            "name": "Test Vuln 2",
+            "lastSeen": "1709654400",
+            "firstSeen": "1709568000",
+            "pluginDescription": "Another description",
+        },
+    ]
+    result = parse_vulnerabilities(vulns)
+
+    assert len(result) == 2
+    assert result[0]["_time"] == "2024-03-05T16:00:00.000Z"
+    assert result[0]["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert result[0]["firstSeen"] == "2024-03-04T16:00:00.000Z"
+    assert result[0]["isTruncated"] is False
+    assert result[1]["_time"] == "2024-03-05T16:00:00.000Z"
+    assert result[1]["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert result[1]["firstSeen"] == "2024-03-04T16:00:00.000Z"
+    assert result[1]["isTruncated"] is False
+
+
+def test_parse_vulnerabilities_uses_firstseen_fallback():
+    """
+    Given:
+    - A vulnerability record without lastSeen but with firstSeen.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - Should use firstSeen (converted to ISO 8601) as the _time field.
+    """
+    vulns = [
+        {
+            "pluginID": "10001",
+            "name": "Test Vuln",
+            "firstSeen": "1709568000",
+            "pluginDescription": "Description",
+        },
+    ]
+    result = parse_vulnerabilities(vulns)
+
+    assert result[0]["_time"] == "2024-03-04T16:00:00.000Z"
+    assert result[0]["firstSeen"] == "2024-03-04T16:00:00.000Z"
+
+
+def test_fetch_vulnerabilities_analysis_client_method(mocker):
+    """
+    Given:
+    - A client with fetch_vulnerabilities_analysis method.
+
+    When:
+    - Calling fetch_vulnerabilities_analysis with start_offset and end_offset.
+
+    Then:
+    - Should call send_request with correct path, method, and body.
+    """
+    mock_response = {
+        "response": {
+            "totalRecords": "0",
+            "returnedRecords": 0,
+            "results": [],
+        }
+    }
+    mock_send = mocker.patch.object(client_mocker, "send_request", return_value=mock_response)
+
+    result = client_mocker.fetch_vulnerabilities_analysis(
+        start_offset=0,
+        end_offset=500,
+    )
+
+    mock_send.assert_called_once_with(
+        path="analysis",
+        method="POST",
+        body={
+            "type": "vuln",
+            "sourceType": "cumulative",
+            "view": "all",
+            "wasVuln": "excludeWas",
+            "startOffset": 0,
+            "endOffset": 500,
+            "sortField": "severity",
+            "sortDir": "DESC",
+            "tool": "vulndetails",
+            "query": {
+                "type": "vuln",
+                "tool": "vulndetails",
+                "filters": [],
+            },
+        },
+    )
+    assert result == mock_response
+
+
+def test_convert_unix_to_iso_valid():
+    """
+    Given:
+    - A valid unix timestamp string.
+
+    When:
+    - Calling convert_unix_to_iso.
+
+    Then:
+    - Should return the timestamp in ISO 8601 format with milliseconds.
+    """
+    assert convert_unix_to_iso("1709654400") == "2024-03-05T16:00:00.000Z"
+    assert convert_unix_to_iso("1709568000") == "2024-03-04T16:00:00.000Z"
+    assert convert_unix_to_iso("0") is None
+    assert convert_unix_to_iso("-1") is None
+    assert convert_unix_to_iso(None) is None
+    assert convert_unix_to_iso("") is None
+
+
+def test_transform_record_timestamps():
+    """
+    Given:
+    - A record dict with unix timestamp fields (firstSeen, lastSeen, createdTime, modifiedTime).
+
+    When:
+    - Calling transform_record_timestamps.
+
+    Then:
+    - Should convert all timestamp fields to ISO 8601 format.
+    - Should leave non-timestamp fields unchanged.
+    """
+    record = {
+        "id": "12345",
+        "name": "Test Host",
+        "firstSeen": "1709568000",
+        "lastSeen": "1709654400",
+        "createdTime": "1709568000",
+        "modifiedTime": "1709654400",
+        "ipAddress": "10.0.0.1",
+    }
+    result = transform_record_timestamps(record)
+
+    assert result["firstSeen"] == "2024-03-04T16:00:00.000Z"
+    assert result["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert result["createdTime"] == "2024-03-04T16:00:00.000Z"
+    assert result["modifiedTime"] == "2024-03-05T16:00:00.000Z"
+    assert result["id"] == "12345"
+    assert result["name"] == "Test Host"
+    assert result["ipAddress"] == "10.0.0.1"
+
+
+def test_transform_record_timestamps_partial_fields():
+    """
+    Given:
+    - A record dict with only some timestamp fields present.
+
+    When:
+    - Calling transform_record_timestamps.
+
+    Then:
+    - Should convert only the present timestamp fields.
+    - Should not add missing fields.
+    """
+    record = {
+        "id": "12345",
+        "firstSeen": "1709568000",
+        "lastSeen": "1709654400",
+    }
+    result = transform_record_timestamps(record)
+
+    assert result["firstSeen"] == "2024-03-04T16:00:00.000Z"
+    assert result["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert "createdTime" not in result
+    assert "modifiedTime" not in result
+
+
+def test_transform_record_timestamps_empty_values():
+    """
+    Given:
+    - A record dict with empty or zero timestamp values.
+
+    When:
+    - Calling transform_record_timestamps.
+
+    Then:
+    - Should not convert empty or zero values.
+    """
+    record = {
+        "firstSeen": "",
+        "lastSeen": "0",
+        "createdTime": "-1",
+    }
+    result = transform_record_timestamps(record)
+
+    assert result["firstSeen"] == ""
+    assert result["lastSeen"] == "0"
+    assert result["createdTime"] == "-1"
