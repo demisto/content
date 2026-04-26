@@ -658,3 +658,852 @@ def test_create_override_data():
         {"profile": "profile1", "action": "action1", "track": "track1", "capture-packets": None},
         {"profile": " profile2", "action": "action1", "track": "track1", "capture-packets": None},
     ]
+
+
+# ==================== Network Commands Tests ====================
+
+
+def test_checkpoint_network_get_command(mocker):
+    """
+    Given
+        a mocked client with a show_network response
+    When
+        calling checkpoint_network_get_command
+    Then
+        validate the outputs contain the expected network data
+    """
+    from CheckPointFirewallV2 import checkpoint_network_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_network.json")
+    mocked_client.show_network.return_value = mock_response
+    result = checkpoint_network_get_command(mocked_client, "test-network")
+    assert result.outputs.get("name") == "test-network"
+    assert result.outputs.get("uid") == "net-uid-1234"
+    assert result.outputs.get("type") == "network"
+    assert result.outputs_prefix == "CheckPoint.Network"
+
+
+def test_checkpoint_network_get_command_with_details_level(mocker):
+    """
+    Given
+        a mocked client with a show_network response and details_level argument
+    When
+        calling checkpoint_network_get_command with details_level='full'
+    Then
+        validate show_network is called with the correct details_level
+    """
+    from CheckPointFirewallV2 import checkpoint_network_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_network.json")
+    mocked_client.show_network.return_value = mock_response
+    checkpoint_network_get_command(mocked_client, "test-network", details_level="full")
+    mocked_client.show_network.assert_called_once_with("test-network", "full")
+
+
+def test_checkpoint_network_list_command(mocker):
+    """
+    Given
+        a mocked client with a list_networks response
+    When
+        calling checkpoint_network_list_command
+    Then
+        validate the outputs contain the expected list of networks
+    """
+    from CheckPointFirewallV2 import checkpoint_network_list_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/list_networks.json")
+    mocked_client.list_networks.return_value = mock_response
+    result = checkpoint_network_list_command(mocked_client, limit=50, offset=0)
+    assert len(result.outputs) == 2
+    assert result.outputs[0].get("name") == "test-network-1"
+    assert result.outputs[1].get("name") == "test-network-2"
+    assert result.outputs_prefix == "CheckPoint.Network"
+
+
+def test_checkpoint_network_list_command_empty(mocker):
+    """
+    Given
+        a mocked client with an empty list_networks response
+    When
+        calling checkpoint_network_list_command
+    Then
+        validate the readable output indicates no networks found
+    """
+    from CheckPointFirewallV2 import checkpoint_network_list_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.list_networks.return_value = {"total": 0, "objects": []}
+    result = checkpoint_network_list_command(mocked_client, limit=50, offset=0)
+    assert result.readable_output == "No network objects were found."
+    assert result.outputs == []
+
+
+def test_checkpoint_network_add_command(mocker):
+    """
+    Given
+        a mocked client with an add_network response
+    When
+        calling checkpoint_network_add_command
+    Then
+        validate the outputs contain the expected network data
+    """
+    from CheckPointFirewallV2 import checkpoint_network_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_network.json")
+    mocked_client.add_network.return_value = mock_response
+    result = checkpoint_network_add_command(mocked_client, identifier="new-network", subnet="172.16.0.0", mask_length="24")
+    assert result.outputs.get("name") == "new-network"
+    assert result.outputs.get("uid") == "net-uid-new-1234"
+    assert result.outputs.get("type") == "network"
+    assert result.outputs_prefix == "CheckPoint.Network"
+
+
+def test_checkpoint_network_add_command_with_nat(mocker):
+    """
+    Given
+        a mocked client with an add_network response and NAT settings
+    When
+        calling checkpoint_network_add_command with NAT arguments
+    Then
+        validate add_network is called with the correct nat_settings
+    """
+    from CheckPointFirewallV2 import checkpoint_network_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_network.json")
+    mocked_client.add_network.return_value = mock_response
+    checkpoint_network_add_command(
+        mocked_client,
+        identifier="new-network",
+        subnet="172.16.0.0",
+        mask_length="24",
+        nat_settings_auto_rule="true",
+        nat_method="hide",
+        nat_hide_behind="gateway",
+    )
+    call_kwargs = mocked_client.add_network.call_args[1]
+    assert call_kwargs["nat_settings"]["auto-rule"] is True
+    assert call_kwargs["nat_settings"]["method"] == "hide"
+    assert call_kwargs["nat_settings"]["hide-behind"] == "gateway"
+
+
+def test_checkpoint_network_update_command(mocker):
+    """
+    Given
+        a mocked client with an update_network response
+    When
+        calling checkpoint_network_update_command
+    Then
+        validate the outputs contain the expected updated network data
+    """
+    from CheckPointFirewallV2 import checkpoint_network_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/update_network.json")
+    mocked_client.update_network.return_value = mock_response
+    result = checkpoint_network_update_command(mocked_client, identifier="test-network", new_identifier="updated-network")
+    assert result.outputs.get("name") == "updated-network"
+    assert result.outputs.get("uid") == "net-uid-1234"
+    assert result.outputs_prefix == "CheckPoint.Network"
+
+
+def test_checkpoint_network_delete_command(mocker):
+    """
+    Given
+        a mocked client
+    When
+        calling checkpoint_network_delete_command
+    Then
+        validate the readable output indicates successful deletion
+    """
+    from CheckPointFirewallV2 import checkpoint_network_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_network.return_value = {"message": "OK"}
+    result = checkpoint_network_delete_command(mocked_client, identifier="test-network")
+    assert result.readable_output == "Object deleted successfully."
+    mocked_client.delete_network.assert_called_once_with("test-network", True)
+
+
+def test_checkpoint_network_delete_command_ignore_warnings_false(mocker):
+    """
+    Given
+        a mocked client with ignore_warnings=False
+    When
+        calling checkpoint_network_delete_command
+    Then
+        validate delete_network is called with ignore_warnings=False
+    """
+    from CheckPointFirewallV2 import checkpoint_network_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_network.return_value = {"message": "OK"}
+    checkpoint_network_delete_command(mocked_client, identifier="test-network", ignore_warnings="false")
+    mocked_client.delete_network.assert_called_once_with("test-network", False)
+
+
+# ==================== Service Commands Tests ====================
+
+
+def test_checkpoint_service_get_command(mocker):
+    """
+    Given
+        a mocked client with a show_service response
+    When
+        calling checkpoint_service_get_command with service_type='tcp'
+    Then
+        validate the outputs contain the expected service data
+    """
+    from CheckPointFirewallV2 import checkpoint_service_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_service_tcp.json")
+    mocked_client.show_service.return_value = mock_response
+    result = checkpoint_service_get_command(mocked_client, identifier="test-tcp-service", service_type="tcp")
+    assert result.outputs.get("name") == "test-tcp-service"
+    assert result.outputs.get("uid") == "svc-tcp-uid-1234"
+    assert result.outputs.get("type") == "service-tcp"
+    assert result.outputs_prefix == "CheckPoint.TCPService"
+
+
+@pytest.mark.parametrize(
+    "service_type,expected_prefix",
+    [
+        ("tcp", "CheckPoint.TCPService"),
+        ("udp", "CheckPoint.UDPService"),
+        ("icmp", "CheckPoint.ICMPService"),
+    ],
+)
+def test_checkpoint_service_get_command_types(mocker, service_type, expected_prefix):
+    """
+    Given
+        a mocked client with a show_service response
+    When
+        calling checkpoint_service_get_command with different service types
+    Then
+        validate the correct outputs_prefix is used for each type
+    """
+    from CheckPointFirewallV2 import checkpoint_service_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {"uid": "svc-uid", "name": "test-svc", "type": f"service-{service_type}", "groups": []}
+    mocked_client.show_service.return_value = mock_response
+    result = checkpoint_service_get_command(mocked_client, identifier="test-svc", service_type=service_type)
+    assert result.outputs_prefix == expected_prefix
+    mocked_client.show_service.assert_called_once_with("test-svc", service_type)
+
+
+def test_checkpoint_service_list_command(mocker):
+    """
+    Given
+        a mocked client with a list_services response
+    When
+        calling checkpoint_service_list_command with service_type='tcp'
+    Then
+        validate the outputs contain the expected list of services
+    """
+    from CheckPointFirewallV2 import checkpoint_service_list_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/list_services_tcp.json")
+    mocked_client.list_services.return_value = mock_response
+    result = checkpoint_service_list_command(mocked_client, service_type="tcp", limit=50, offset=0)
+    assert len(result.outputs) == 2
+    assert result.outputs[0].get("name") == "test-tcp-service-1"
+    assert result.outputs[1].get("name") == "test-tcp-service-2"
+    assert result.outputs_prefix == "CheckPoint.TCPService"
+
+
+def test_checkpoint_service_list_command_with_identifier(mocker):
+    """
+    Given
+        a mocked client with a show_service response
+    When
+        calling checkpoint_service_list_command with an identifier
+    Then
+        validate show_service is called instead of list_services
+    """
+    from CheckPointFirewallV2 import checkpoint_service_list_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_service_tcp.json")
+    mocked_client.show_service.return_value = mock_response
+    result = checkpoint_service_list_command(mocked_client, service_type="tcp", identifier="test-tcp-service")
+    assert result.outputs.get("name") == "test-tcp-service"
+    mocked_client.show_service.assert_called_once_with("test-tcp-service", "tcp")
+    mocked_client.list_services.assert_not_called()
+
+
+def test_checkpoint_service_list_command_empty(mocker):
+    """
+    Given
+        a mocked client with an empty list_services response
+    When
+        calling checkpoint_service_list_command
+    Then
+        validate the readable output indicates no services found
+    """
+    from CheckPointFirewallV2 import checkpoint_service_list_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.list_services.return_value = {"total": 0, "objects": []}
+    result = checkpoint_service_list_command(mocked_client, service_type="tcp", limit=50, offset=0)
+    assert result.readable_output == "No tcp service objects were found."
+    assert result.outputs == []
+
+
+def test_checkpoint_tcp_service_add_command(mocker):
+    """
+    Given
+        a mocked client with an add_service_tcp response
+    When
+        calling checkpoint_tcp_service_add_command
+    Then
+        validate the outputs contain the expected TCP service data
+    """
+    from CheckPointFirewallV2 import checkpoint_tcp_service_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_service_tcp.json")
+    mocked_client.add_service_tcp.return_value = mock_response
+    result = checkpoint_tcp_service_add_command(mocked_client, identifier="test-tcp-service", port="8080")
+    assert result.outputs.get("name") == "test-tcp-service"
+    assert result.outputs.get("uid") == "svc-tcp-uid-1234"
+    assert result.outputs_prefix == "CheckPoint.TCPService"
+    mocked_client.add_service_tcp.assert_called_once_with(
+        identifier="test-tcp-service",
+        port="8080",
+        comments=None,
+        color=None,
+        session_timeout=None,
+        tags=None,
+    )
+
+
+def test_checkpoint_udp_service_add_command(mocker):
+    """
+    Given
+        a mocked client with an add_service_udp response
+    When
+        calling checkpoint_udp_service_add_command
+    Then
+        validate the outputs contain the expected UDP service data
+    """
+    from CheckPointFirewallV2 import checkpoint_udp_service_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {
+        "uid": "svc-udp-uid-1234",
+        "name": "test-udp-service",
+        "type": "service-udp",
+        "port": "53",
+        "groups": [],
+        "domain": {"uid": "domain-uid", "name": "SMC User", "domain-type": "domain"},
+        "meta-info": {"creator": "admin", "last-modifier": "admin"},
+        "read-only": False,
+    }
+    mocked_client.add_service_udp.return_value = mock_response
+    result = checkpoint_udp_service_add_command(mocked_client, identifier="test-udp-service", port="53")
+    assert result.outputs.get("name") == "test-udp-service"
+    assert result.outputs.get("uid") == "svc-udp-uid-1234"
+    assert result.outputs_prefix == "CheckPoint.UDPService"
+
+
+def test_checkpoint_icmp_service_add_command(mocker):
+    """
+    Given
+        a mocked client with an add_service_icmp response
+    When
+        calling checkpoint_icmp_service_add_command
+    Then
+        validate the outputs contain the expected ICMP service data
+    """
+    from CheckPointFirewallV2 import checkpoint_icmp_service_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {
+        "uid": "svc-icmp-uid-1234",
+        "name": "test-icmp-service",
+        "type": "service-icmp",
+        "icmp-type": 8,
+        "icmp-code": 0,
+        "groups": [],
+        "domain": {"uid": "domain-uid", "name": "SMC User", "domain-type": "domain"},
+        "meta-info": {"creator": "admin", "last-modifier": "admin"},
+        "read-only": False,
+    }
+    mocked_client.add_service_icmp.return_value = mock_response
+    result = checkpoint_icmp_service_add_command(mocked_client, identifier="test-icmp-service", icmp_type="8", icmp_code="0")
+    assert result.outputs.get("name") == "test-icmp-service"
+    assert result.outputs.get("uid") == "svc-icmp-uid-1234"
+    assert result.outputs_prefix == "CheckPoint.ICMPService"
+    mocked_client.add_service_icmp.assert_called_once_with(
+        identifier="test-icmp-service",
+        icmp_type=8,
+        icmp_code=0,
+        comments=None,
+        color=None,
+        tags=None,
+    )
+
+
+def test_checkpoint_tcp_service_update_command(mocker):
+    """
+    Given
+        a mocked client with an update_service_tcp response
+    When
+        calling checkpoint_tcp_service_update_command
+    Then
+        validate the outputs contain the expected updated TCP service data
+    """
+    from CheckPointFirewallV2 import checkpoint_tcp_service_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {
+        "uid": "svc-tcp-uid-1234",
+        "name": "updated-tcp-service",
+        "type": "service-tcp",
+        "port": "9090",
+        "groups": [],
+        "comments": "updated",
+        "domain": {"uid": "domain-uid", "name": "SMC User", "domain-type": "domain"},
+        "meta-info": {"creator": "admin", "last-modifier": "admin"},
+        "read-only": False,
+    }
+    mocked_client.update_service_tcp.return_value = mock_response
+    result = checkpoint_tcp_service_update_command(
+        mocked_client, identifier="test-tcp-service", new_identifier="updated-tcp-service", port="9090"
+    )
+    assert result.outputs.get("name") == "updated-tcp-service"
+    assert result.outputs.get("uid") == "svc-tcp-uid-1234"
+    assert result.outputs_prefix == "CheckPoint.TCPService"
+
+
+def test_checkpoint_udp_service_update_command(mocker):
+    """
+    Given
+        a mocked client with an update_service_udp response
+    When
+        calling checkpoint_udp_service_update_command
+    Then
+        validate the outputs contain the expected updated UDP service data
+    """
+    from CheckPointFirewallV2 import checkpoint_udp_service_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {
+        "uid": "svc-udp-uid-1234",
+        "name": "updated-udp-service",
+        "type": "service-udp",
+        "port": "5353",
+        "groups": [],
+        "domain": {"uid": "domain-uid", "name": "SMC User", "domain-type": "domain"},
+        "meta-info": {"creator": "admin", "last-modifier": "admin"},
+        "read-only": False,
+    }
+    mocked_client.update_service_udp.return_value = mock_response
+    result = checkpoint_udp_service_update_command(
+        mocked_client, identifier="test-udp-service", new_identifier="updated-udp-service", port="5353"
+    )
+    assert result.outputs.get("name") == "updated-udp-service"
+    assert result.outputs_prefix == "CheckPoint.UDPService"
+
+
+def test_checkpoint_icmp_service_update_command(mocker):
+    """
+    Given
+        a mocked client with an update_service_icmp response
+    When
+        calling checkpoint_icmp_service_update_command
+    Then
+        validate the outputs contain the expected updated ICMP service data
+    """
+    from CheckPointFirewallV2 import checkpoint_icmp_service_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {
+        "uid": "svc-icmp-uid-1234",
+        "name": "updated-icmp-service",
+        "type": "service-icmp",
+        "icmp-type": 0,
+        "icmp-code": 0,
+        "groups": [],
+        "domain": {"uid": "domain-uid", "name": "SMC User", "domain-type": "domain"},
+        "meta-info": {"creator": "admin", "last-modifier": "admin"},
+        "read-only": False,
+    }
+    mocked_client.update_service_icmp.return_value = mock_response
+    result = checkpoint_icmp_service_update_command(
+        mocked_client, identifier="test-icmp-service", new_identifier="updated-icmp-service", icmp_type="0", icmp_code="0"
+    )
+    assert result.outputs.get("name") == "updated-icmp-service"
+    assert result.outputs_prefix == "CheckPoint.ICMPService"
+    mocked_client.update_service_icmp.assert_called_once_with(
+        identifier="test-icmp-service",
+        new_identifier="updated-icmp-service",
+        icmp_type=0,
+        icmp_code=0,
+        comments=None,
+        color=None,
+        tags=None,
+    )
+
+
+def test_checkpoint_service_delete_command(mocker):
+    """
+    Given
+        a mocked client
+    When
+        calling checkpoint_service_delete_command
+    Then
+        validate the readable output indicates successful deletion
+    """
+    from CheckPointFirewallV2 import checkpoint_service_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_service.return_value = {"message": "OK"}
+    result = checkpoint_service_delete_command(mocked_client, identifier="test-tcp-service", service_type="tcp")
+    assert result.readable_output == "Service deleted successfully."
+    mocked_client.delete_service.assert_called_once_with("test-tcp-service", "tcp", False)
+
+
+def test_checkpoint_service_delete_command_with_ignore_warnings(mocker):
+    """
+    Given
+        a mocked client with ignore_warnings=True
+    When
+        calling checkpoint_service_delete_command
+    Then
+        validate delete_service is called with ignore_warnings=True
+    """
+    from CheckPointFirewallV2 import checkpoint_service_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_service.return_value = {"message": "OK"}
+    checkpoint_service_delete_command(mocked_client, identifier="test-tcp-service", service_type="udp", ignore_warnings="true")
+    mocked_client.delete_service.assert_called_once_with("test-tcp-service", "udp", True)
+
+
+# ==================== NAT Rule Commands Tests ====================
+
+
+def test_checkpoint_nat_rule_get_command(mocker):
+    """
+    Given
+        a mocked client with a show_nat_rule response
+    When
+        calling checkpoint_nat_rule_get_command
+    Then
+        validate the outputs contain the expected NAT rule data
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_get_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_nat_rule.json")
+    mocked_client.show_nat_rule.return_value = mock_response
+    result = checkpoint_nat_rule_get_command(mocked_client, identifier="test-nat-rule", package="Standard")
+    assert result.outputs.get("name") == "test-nat-rule"
+    assert result.outputs.get("uid") == "nat-rule-uid-1234"
+    assert result.outputs.get("type") == "nat-rule"
+    assert result.outputs_prefix == "CheckPoint.NatRule"
+    mocked_client.show_nat_rule.assert_called_once_with("test-nat-rule", "Standard")
+
+
+def test_checkpoint_nat_rule_list_command(mocker):
+    """
+    Given
+        a mocked client with a list_nat_rulebase response
+    When
+        calling checkpoint_nat_rule_list_command
+    Then
+        validate the outputs contain the expected list of NAT rules
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_list_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/list_nat_rulebase.json")
+    mocked_client.list_nat_rulebase.return_value = mock_response
+    result = checkpoint_nat_rule_list_command(mocked_client, package="Standard")
+    assert len(result.outputs) == 2
+    assert result.outputs[0].get("name") == "nat-rule-1"
+    assert result.outputs[1].get("name") == "nat-rule-2"
+    assert result.outputs_prefix == "CheckPoint.NatRule"
+
+
+def test_checkpoint_nat_rule_list_command_empty(mocker):
+    """
+    Given
+        a mocked client with an empty list_nat_rulebase response
+    When
+        calling checkpoint_nat_rule_list_command
+    Then
+        validate the readable output indicates no NAT rules found
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_list_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.list_nat_rulebase.return_value = {"total": 0, "rulebase": []}
+    result = checkpoint_nat_rule_list_command(mocked_client, package="Standard")
+    assert result.readable_output == "No NAT rules were found."
+    assert result.outputs == []
+
+
+def test_checkpoint_nat_rule_list_command_with_sections(mocker):
+    """
+    Given
+        a mocked client with a list_nat_rulebase response containing nested sections
+    When
+        calling checkpoint_nat_rule_list_command
+    Then
+        validate the outputs correctly extract nat-rule entries from nested sections
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_list_command
+
+    mocked_client = mocker.Mock()
+    mock_response = {
+        "total": 2,
+        "rulebase": [
+            {
+                "uid": "section-uid",
+                "type": "nat-section",
+                "name": "test-section",
+                "rulebase": [
+                    {"uid": "nested-nat-uid-1", "name": "nested-nat-1", "type": "nat-rule", "enabled": True},
+                    {"uid": "nested-nat-uid-2", "name": "nested-nat-2", "type": "nat-rule", "enabled": False},
+                ],
+            }
+        ],
+    }
+    mocked_client.list_nat_rulebase.return_value = mock_response
+    result = checkpoint_nat_rule_list_command(mocked_client, package="Standard")
+    assert len(result.outputs) == 2
+    assert result.outputs[0].get("name") == "nested-nat-1"
+    assert result.outputs[1].get("name") == "nested-nat-2"
+
+
+def test_checkpoint_nat_rule_add_command(mocker):
+    """
+    Given
+        a mocked client with an add_nat_rule response
+    When
+        calling checkpoint_nat_rule_add_command
+    Then
+        validate the outputs contain the expected NAT rule data
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/add_nat_rule.json")
+    mocked_client.add_nat_rule.return_value = mock_response
+    result = checkpoint_nat_rule_add_command(
+        mocked_client,
+        package="Standard",
+        position="top",
+        name="new-nat-rule",
+        original_source="Any",
+        translated_destination="internal-server",
+    )
+    assert result.outputs.get("name") == "new-nat-rule"
+    assert result.outputs.get("uid") == "nat-rule-uid-new-1234"
+    assert result.outputs_prefix == "CheckPoint.NatRule"
+
+
+def test_checkpoint_nat_rule_add_command_args(mocker):
+    """
+    Given
+        a mocked client
+    When
+        calling checkpoint_nat_rule_add_command with various arguments
+    Then
+        validate add_nat_rule is called with the correct arguments
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_nat_rule.return_value = {"uid": "test-uid", "type": "nat-rule"}
+    checkpoint_nat_rule_add_command(
+        mocked_client,
+        package="Standard",
+        position="bottom",
+        name="test-rule",
+        original_source="src-obj",
+        original_destination="dst-obj",
+        original_service="svc-obj",
+        translated_source="tsrc-obj",
+        translated_destination="tdst-obj",
+        translated_service="tsvc-obj",
+        enabled="true",
+        nat_method="static",
+    )
+    mocked_client.add_nat_rule.assert_called_once_with(
+        package="Standard",
+        position="bottom",
+        name="test-rule",
+        original_source="src-obj",
+        original_destination="dst-obj",
+        original_service="svc-obj",
+        translated_source="tsrc-obj",
+        translated_destination="tdst-obj",
+        translated_service="tsvc-obj",
+        install_on=None,
+        comments=None,
+        enabled=True,
+        method="static",
+        tags=None,
+    )
+
+
+def test_checkpoint_nat_rule_update_command(mocker):
+    """
+    Given
+        a mocked client with an update_nat_rule response
+    When
+        calling checkpoint_nat_rule_update_command
+    Then
+        validate the outputs contain the expected updated NAT rule data
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_update_command
+
+    mocked_client = mocker.Mock()
+    mock_response = util_load_json("test_data/show_nat_rule.json")
+    mocked_client.update_nat_rule.return_value = mock_response
+    result = checkpoint_nat_rule_update_command(
+        mocked_client,
+        identifier="test-nat-rule",
+        package="Standard",
+        original_source="new-source",
+        comments="updated rule",
+    )
+    assert result.outputs.get("name") == "test-nat-rule"
+    assert result.outputs.get("uid") == "nat-rule-uid-1234"
+    assert result.outputs_prefix == "CheckPoint.NatRule"
+
+
+def test_checkpoint_nat_rule_delete_command(mocker):
+    """
+    Given
+        a mocked client
+    When
+        calling checkpoint_nat_rule_delete_command
+    Then
+        validate the readable output indicates successful deletion
+    """
+    from CheckPointFirewallV2 import checkpoint_nat_rule_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_nat_rule.return_value = {"message": "OK"}
+    result = checkpoint_nat_rule_delete_command(mocked_client, identifier="test-nat-rule", package="Standard")
+    assert result.readable_output == "Nat Rule deleted successfully."
+    mocked_client.delete_nat_rule.assert_called_once_with(identifier="test-nat-rule", package="Standard")
+
+
+# ==================== Helper Function Tests ====================
+
+
+def test_build_nat_settings_all_none():
+    """
+    Given
+        all None arguments
+    When
+        calling build_nat_settings
+    Then
+        validate None is returned
+    """
+    from CheckPointFirewallV2 import build_nat_settings
+
+    result = build_nat_settings(
+        nat_settings_auto_rule=None,
+        nat_method=None,
+        nat_hide_behind=None,
+        nat_install_on=None,
+        nat_settings_ip=None,
+    )
+    assert result is None
+
+
+def test_build_nat_settings_hide_method():
+    """
+    Given
+        nat_method='hide' and nat_hide_behind='gateway'
+    When
+        calling build_nat_settings
+    Then
+        validate the correct nat-settings dict is returned
+    """
+    from CheckPointFirewallV2 import build_nat_settings
+
+    result = build_nat_settings(
+        nat_settings_auto_rule=True,
+        nat_method="hide",
+        nat_hide_behind="gateway",
+        nat_install_on=None,
+        nat_settings_ip=None,
+    )
+    assert result == {"auto-rule": True, "method": "hide", "hide-behind": "gateway"}
+
+
+def test_build_nat_settings_static_method():
+    """
+    Given
+        nat_method='static' with an IP address
+    When
+        calling build_nat_settings
+    Then
+        validate the correct nat-settings dict is returned
+    """
+    from CheckPointFirewallV2 import build_nat_settings
+
+    result = build_nat_settings(
+        nat_settings_auto_rule=True,
+        nat_method="static",
+        nat_hide_behind=None,
+        nat_install_on="gw-1",
+        nat_settings_ip="10.0.0.1",
+    )
+    assert result == {"auto-rule": True, "method": "static", "install-on": "gw-1", "ipv4-address": "10.0.0.1"}
+
+
+def test_build_nat_settings_static_with_hide_behind_raises():
+    """
+    Given
+        nat_method='static' and nat_hide_behind='gateway'
+    When
+        calling build_nat_settings
+    Then
+        validate a ValueError is raised
+    """
+    from CheckPointFirewallV2 import build_nat_settings
+
+    with pytest.raises(ValueError, match="forbidden"):
+        build_nat_settings(
+            nat_settings_auto_rule=True,
+            nat_method="static",
+            nat_hide_behind="gateway",
+            nat_install_on=None,
+            nat_settings_ip=None,
+        )
+
+
+def test_build_nat_settings_hide_gateway_with_ip_raises():
+    """
+    Given
+        nat_method='hide', nat_hide_behind='gateway', and nat_settings_ip provided
+    When
+        calling build_nat_settings
+    Then
+        validate a ValueError is raised
+    """
+    from CheckPointFirewallV2 import build_nat_settings
+
+    with pytest.raises(ValueError, match="must not be provided"):
+        build_nat_settings(
+            nat_settings_auto_rule=True,
+            nat_method="hide",
+            nat_hide_behind="gateway",
+            nat_install_on=None,
+            nat_settings_ip="10.0.0.1",
+        )
