@@ -1722,14 +1722,17 @@ class TestClientGetPolicies:
         assert "limit" not in call_kwargs["params"]
         assert result == policies_response
 
-    def test_get_policies_max_page_size_cap(self, mock_client, policies_response, mocker):
-        """Test that page_size is capped at MAX_PAGE_SIZE."""
-        mocker.patch.object(mock_client, "_http_request", return_value=policies_response)
+    def test_policy_list_page_size_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
+        args = {"page": "1", "page_size": "501"}
+        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+            koi_policy_list_command(mock_client, args)
 
-        mock_client.get_policies(page=1, page_size=1000)
-
-        call_kwargs = mock_client._http_request.call_args[1]
-        assert call_kwargs["params"]["page_size"] == Config.MAX_PAGE_SIZE
+    def test_policy_list_limit_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that limit exceeding MAX_LIMIT raises ValueError."""
+        args = {"limit": "1001"}
+        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+            koi_policy_list_command(mock_client, args)
 
 
 # endregion
@@ -2570,14 +2573,12 @@ class TestKoiInventoryListCommand:
             ("500", 0, 0),
             ("500", 50, 50),
             ("10", Config.MAX_PAGE_SIZE, 10),
-            ("9999", Config.MAX_LIMIT + 100, Config.MAX_LIMIT),
         ],
         ids=[
             "full_page_satisfies_limit",
             "empty_response",
             "partial_page_stops_pagination",
             "trims_to_limit",
-            "limit_capped_at_max",
         ],
     )
     def test_inventory_list_auto_paginate_behavior(self, mock_client, mocker, limit_arg, api_item_count, expected_output_count):
@@ -2682,6 +2683,10 @@ class TestKoiInventoryListCommand:
         assert "React Developer Tools" in result.readable_output
         assert "Meta" in result.readable_output
         assert "chrome_web_store" in result.readable_output
+        assert "marketplace" in result.readable_output
+        assert "React debugging tools" in result.readable_output
+        assert "2025-06-15T10:00:00Z" in result.readable_output
+        assert "2023-01-15" in result.readable_output
 
         # Verify all fields in outputs
         item = result.outputs[0]
@@ -2698,12 +2703,20 @@ class TestKoiInventoryListCommand:
         assert item["installs_count"] == 1000000
         assert item["first_seen"] == "2024-01-01T10:00:00Z"
         assert item["last_seen"] == "2024-10-15T10:00:00Z"
+        assert item["last_used"] == "2025-06-15T10:00:00Z"
         assert item["installation_method"] == "marketplace"
         assert item["is_first_party"] is False
         assert item["is_signed"] is True
         assert item["short_description"] == "React debugging tools"
         assert item["categories"] == ["Developer Tools"]
         assert item["findings"] == ["malware", "permissions"]
+        assert item["released_at"] == "2023-01-15"
+        assert item["governed_details"] == {"group-uuid-123": {"policy_id": "policy-uuid-456", "action": "allow"}}
+        assert item["brew_category_koi"] == "Command Line Tools & Utilities"
+        assert item["browser_category_koi"] == "Developer Tools"
+        assert item["chocolatey_category_koi"] == "Command Line Tools & Utilities"
+        assert item["ide_category_koi"] == "Language Support & Tooling"
+        assert item["software_category_koi"] == "Docs tools"
 
     def test_inventory_list_auto_paginate_passes_filters(self, mock_client, mocker):
         """Test that auto-paginate mode passes filter arguments to each page request."""
@@ -2737,14 +2750,17 @@ class TestClientGetInventory:
         assert call_kwargs["params"]["risk_level"] == "high"
         assert result == inventory_response
 
-    def test_get_inventory_max_page_size_cap(self, mock_client, inventory_response, mocker):
-        """Test that page_size is capped at MAX_PAGE_SIZE."""
-        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+    def test_inventory_list_page_size_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
+        args = {"page": "1", "page_size": "501"}
+        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+            koi_inventory_list_command(mock_client, args)
 
-        mock_client.get_inventory(page=1, page_size=1000)
-
-        call_kwargs = mock_client._http_request.call_args[1]
-        assert call_kwargs["params"]["page_size"] == Config.MAX_PAGE_SIZE
+    def test_inventory_list_limit_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that limit exceeding MAX_LIMIT raises ValueError."""
+        args = {"limit": "1001"}
+        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+            koi_inventory_list_command(mock_client, args)
 
     def test_get_inventory_no_optional_params(self, mock_client, inventory_response, mocker):
         """Test that None optional params are excluded from the request (assign_params behavior)."""
@@ -3072,14 +3088,12 @@ class TestKoiInventorySearchCommand:
             ("500", 0, 0),
             ("500", 50, 50),
             ("10", Config.MAX_PAGE_SIZE, 10),
-            ("9999", Config.MAX_LIMIT + 100, Config.MAX_LIMIT),
         ],
         ids=[
             "full_page_satisfies_limit",
             "empty_response",
             "partial_page_stops_pagination",
             "trims_to_limit",
-            "limit_capped_at_max",
         ],
     )
     def test_inventory_search_auto_paginate_behavior(self, mock_client, mocker, limit_arg, api_item_count, expected_output_count):
@@ -3209,14 +3223,17 @@ class TestClientSearchInventory:
             assert "sort_direction" not in body
         assert result == inventory_response
 
-    def test_search_inventory_max_page_size_cap(self, mock_client, inventory_response, mocker):
-        """Test that page_size is capped at MAX_PAGE_SIZE."""
-        mocker.patch.object(mock_client, "_http_request", return_value=inventory_response)
+    def test_inventory_search_page_size_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
+        args = {"page": "1", "page_size": "501", "filter_json": '{"field": "test"}'}
+        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+            koi_inventory_search_command(mock_client, args)
 
-        mock_client.search_inventory(page=1, page_size=1000, filter_obj={"field": "test"})
-
-        call_kwargs = mock_client._http_request.call_args[1]
-        assert call_kwargs["json_data"]["page_size"] == Config.MAX_PAGE_SIZE
+    def test_inventory_search_limit_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that limit exceeding MAX_LIMIT raises ValueError."""
+        args = {"limit": "1001", "filter_json": '{"field": "test"}'}
+        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+            koi_inventory_search_command(mock_client, args)
 
     def test_search_inventory_api_error(self, mock_client, mocker):
         """Test that search_inventory propagates API errors."""
@@ -3295,14 +3312,12 @@ class TestKoiInventoryItemEndpointsListCommand:
             ("500", 0, 0),
             ("500", 50, 50),
             ("10", Config.MAX_PAGE_SIZE, 10),
-            ("9999", Config.MAX_LIMIT + 100, Config.MAX_LIMIT),
         ],
         ids=[
             "full_page_satisfies_limit",
             "empty_response",
             "partial_page_stops_pagination",
             "trims_to_limit",
-            "limit_capped_at_max",
         ],
     )
     def test_endpoints_list_auto_paginate_behavior(
@@ -3364,22 +3379,12 @@ class TestKoiInventoryItemEndpointsListCommand:
 class TestClientGetInventoryItemEndpoints:
     """Tests for the Client.get_inventory_item_endpoints method."""
 
-    @pytest.mark.parametrize(
-        "page_size_input, expected_page_size",
-        [
-            (100, 100),
-            (1000, Config.MAX_PAGE_SIZE),
-        ],
-        ids=["normal_page_size", "page_size_capped_at_max"],
-    )
-    def test_get_inventory_item_endpoints_request(
-        self, mock_client, inventory_item_endpoints_response, mocker, page_size_input, expected_page_size
-    ):
-        """Test that get_inventory_item_endpoints sends correct GET request with page_size capping."""
+    def test_get_inventory_item_endpoints_request(self, mock_client, inventory_item_endpoints_response, mocker):
+        """Test that get_inventory_item_endpoints sends correct GET request."""
         mocker.patch.object(mock_client, "_http_request", return_value=inventory_item_endpoints_response)
 
         result = mock_client.get_inventory_item_endpoints(
-            item_id="abc123", marketplace="chrome_web_store", version="1.0.0", page=1, page_size=page_size_input
+            item_id="abc123", marketplace="chrome_web_store", version="1.0.0", page=1, page_size=100
         )
 
         call_kwargs = mock_client._http_request.call_args[1]
@@ -3388,8 +3393,20 @@ class TestClientGetInventoryItemEndpoints:
         assert call_kwargs["params"]["marketplace"] == "chrome_web_store"
         assert call_kwargs["params"]["version"] == "1.0.0"
         assert call_kwargs["params"]["page"] == 1
-        assert call_kwargs["params"]["page_size"] == expected_page_size
+        assert call_kwargs["params"]["page_size"] == 100
         assert result == inventory_item_endpoints_response
+
+    def test_inventory_item_endpoints_page_size_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "1", "page_size": "501"}
+        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+            koi_inventory_item_endpoints_list_command(mock_client, args)
+
+    def test_inventory_item_endpoints_limit_exceeds_max_raises_error(self, mock_client, mocker):
+        """Test that limit exceeding MAX_LIMIT raises ValueError."""
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "limit": "1001"}
+        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+            koi_inventory_item_endpoints_list_command(mock_client, args)
 
     def test_get_inventory_item_endpoints_api_error(self, mock_client, mocker):
         """Test that get_inventory_item_endpoints propagates API errors."""
