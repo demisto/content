@@ -304,10 +304,8 @@ def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
     except Exception as e:
         raise DemistoException(f"Could not find file for entry ID '{entry_id}': {e}")
 
-    if not filepath_result or "path" not in filepath_result:
+    if not filepath_result or not (file_path := filepath_result.get("path")):
         raise DemistoException(f"Entry ID '{entry_id}' is not a valid file entry.")
-
-    file_path = filepath_result["path"]
     demisto.debug(f"[File Parse] Reading items from file: {file_path}")
 
     try:
@@ -2252,7 +2250,9 @@ def main() -> None:
         if command not in COMMAND_MAP:
             raise DemistoException(f"Command '{command}' is not implemented")
 
-        config = parse_integration_params(demisto.params())
+        params = demisto.params()
+        args = demisto.args()
+        config = parse_integration_params(params)
 
         client = Client(
             base_url=config["base_url"],
@@ -2269,10 +2269,10 @@ def main() -> None:
         elif command == "fetch-events":
             command_func(client)
         elif command == "koi-get-events":
-            result = command_func(client, demisto.args(), demisto.params())
+            result = command_func(client, args, params)
             return_results(result)
         else:
-            result = command_func(client, demisto.args())
+            result = command_func(client, args)
             return_results(result)
 
     except Exception as error:

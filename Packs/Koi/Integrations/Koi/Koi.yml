@@ -235,6 +235,7 @@ script:
     outputs: []
   - name: koi-allowlist-items-add
     description: Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+    execution: true
     arguments:
     - name: item_id
       description: The ID of the item to add to the allowlist. Required when not using items_list_raw_json_entry_id.
@@ -343,6 +344,7 @@ script:
     outputs: []
   - name: koi-blocklist-items-add
     description: Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+    execution: true
     arguments:
     - name: item_id
       description: The ID of the item to add to the blocklist. Required when not using items_list_raw_json_entry_id.
@@ -381,6 +383,7 @@ script:
     outputs: []
   - name: koi-policy-status-update
     description: Enables or disables a policy by ID.
+    execution: true
     arguments:
     - name: policy_id
       description: The ID of the policy to update.
@@ -643,7 +646,7 @@ script:
       description: Governance policy details for the item.
       type: Unknown
     - contextPath: Koi.Inventory.released_at
-      description: The release date of the item.
+      description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
       type: Date
     - contextPath: Koi.Inventory.brew_category_koi
       description: The Homebrew package category (Koi classification).
@@ -749,7 +752,7 @@ script:
       description: The date the item was last used in ISO 8601 format.
       type: Date
     - contextPath: Koi.Inventory.released_at
-      description: The release date of the item.
+      description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
       type: Date
     - contextPath: Koi.Inventory.short_description
       description: A short description of the item.
@@ -882,7 +885,7 @@ script:
       description: Governance policy details for the item.
       type: Unknown
     - contextPath: Koi.Inventory.released_at
-      description: The release date of the item.
+      description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
       type: Date
     - contextPath: Koi.Inventory.brew_category_koi
       description: The Homebrew package category (Koi classification).
