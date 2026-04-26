@@ -4372,24 +4372,32 @@ def handle_spotlight_fetch_error(
         unique_aids: Set of unique AIDs
         processed_aids: Set of processed AIDs
     """
-    # Log error with diagnostics if ContentClientError
-    if isinstance(error, ContentClientError):
-        log_falcon_assets(f"ContentClient error during Spotlight fetch: {str(error)}", "error")
-        diagnosis = client.diagnose_error(error)
-        log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
+    # Check if this is an expired cursor error - if so, don't save state (already cleared)
+    error_str = str(error)
+    is_expired_cursor = "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str)
+    
+    if is_expired_cursor:
+        # Expired cursor - context already cleared, don't save state
+        log_falcon_assets("Expired cursor detected in error handler. Skipping state save (context already cleared).", "info")
     else:
-        log_falcon_assets(f"Unexpected error during Spotlight fetch: {str(error)}", "error")
+        # Other error - log and save state for retry
+        if isinstance(error, ContentClientError):
+            log_falcon_assets(f"ContentClient error during Spotlight fetch: {str(error)}", "error")
+            diagnosis = client.diagnose_error(error)
+            log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
+        else:
+            log_falcon_assets(f"Unexpected error during Spotlight fetch: {str(error)}", "error")
 
-    # Save current state for retry (including processed_aids from handler)
-    update_spotlight_state_and_metadata(
-        spotlight_state=spotlight_state,
-        cursor=after_token,
-        snapshot_id=snapshot_id,
-        total_fetched=total_fetched,
-        unique_aids=unique_aids,
-        processed_aids=processed_aids,
-    )
-    save_spotlight_state(context_store, spotlight_state)
+        # Save current state for retry (including processed_aids from handler)
+        update_spotlight_state_and_metadata(
+            spotlight_state=spotlight_state,
+            cursor=after_token,
+            snapshot_id=snapshot_id,
+            total_fetched=total_fetched,
+            unique_aids=unique_aids,
+            processed_aids=processed_aids,
+        )
+        save_spotlight_state(context_store, spotlight_state)
 
     # Re-raise the exception
     raise error
@@ -4463,7 +4471,30 @@ async def process_vulnerability_batches(
 
     while True:
         # Fetch one batch (SEQUENTIAL - must wait for pagination token)
-        vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+        try:
+            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+        except ContentClientError as e:
+            # Check if this is an expired cursor error by parsing the API response
+            error_str = str(e)
+            if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
+                log_falcon_assets(
+                    f"Pagination cursor expired. Saved cursor from previous fetch is no longer valid. "
+                    f"Clearing state and starting fresh. Previous progress ({total_fetched} vulnerabilities) will be discarded.",
+                    "warning"
+                )
+                # Clear only Spotlight-specific data from integration context
+                current_context = context_store.read()
+                if "spotlight_assets" in current_context:
+                    del current_context["spotlight_assets"]
+                    context_store.write(current_context)
+                    log_falcon_assets("Spotlight state cleared from integration context. Next fetch will start from beginning.", "info")
+                else:
+                    log_falcon_assets("No Spotlight state found in context (already clear).", "info")
+                # Re-raise to abort this fetch - next cycle will start fresh
+                raise
+            else:
+                # Different error - re-raise without clearing state
+                raise
 
         # Extract unique AIDs from this batch
         extract_unique_aids(vulnerabilities, unique_aids)
