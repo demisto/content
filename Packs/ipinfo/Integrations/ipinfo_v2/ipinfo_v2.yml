@@ -47,7 +47,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the IPinfo.io API to get data about an IP address.
+description: "Use the IPinfo.io API to get data about an IP address. The integration supports all subscription tiers (Lite, Core, Plus, Max, and Enterprise) with context outputs adapting to match your specific plan's data fields."
 display: IPinfo v2
 name: ipinfo_v2
 script:
@@ -124,19 +124,19 @@ script:
       type: String
     - contextPath: IP.Relationships.EntityA
       description: The source of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.EntityB
       description: The destination of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.Relationship
       description: The name of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.EntityAType
       description: The type of the source of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
-      type: string
+      type: String
     - contextPath: IP.Geo.Location
       description: The IP geographic location (coordinates as lat:lon).
       type: String
@@ -167,7 +167,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: '-'
   subtype: python3
