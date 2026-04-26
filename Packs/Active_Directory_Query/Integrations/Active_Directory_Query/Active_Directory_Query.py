@@ -1827,7 +1827,7 @@ def main():
     server_ip = params.get("server_ip")
     username = params.get("credentials")["identifier"]
     password = params.get("credentials")["password"]
-    default_base_dn = params.get("base_dn")
+    default_base_dn = params.get("base_dn", "")
     secure_connection = params.get("secure_connection")
     ssl_version = params.get("ssl_version", "None")
     default_page_size = int(params.get("page_size"))
@@ -1839,6 +1839,7 @@ def main():
     create_if_not_exists = params.get("create-if-not-exists")
     mapper_in = params.get("mapper-in", DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get("mapper-out", DEFAULT_OUTGOING_MAPPER)
+    verify_base_dn = params.get("verify_base_dn", True) or command == "test-module"
 
     if port:
         # port was configured, cast to int
@@ -1885,16 +1886,17 @@ def main():
 
         demisto.info(f"Established connection with AD LDAP server.\nLDAP Connection Details: {connection}")
 
-        if not base_dn_verified(default_base_dn):
-            message = (
-                f"Failed to verify the base DN configured for the instance.\n"
-                f"Last connection result: {json.dumps(connection.result)}\n"
-                f"Last error from LDAP server: {json.dumps(connection.last_error)}"
-            )
-            return_error(message)
-            return None
-
-        demisto.info(f'Verified base DN "{default_base_dn}"')
+        if verify_base_dn:
+            demisto.info(f'Starting to verify base DN "{default_base_dn}"')
+            if not base_dn_verified(default_base_dn):
+                message = (
+                    f"Failed to verify the base DN configured for the instance.\n"
+                    f"Last connection result: {json.dumps(connection.result)}\n"
+                    f"Last error from LDAP server: {json.dumps(connection.last_error)}"
+                )
+                return_error(message)
+                return None
+            demisto.info(f'Verified base DN "{default_base_dn}"')
 
         """ COMMAND EXECUTION """
 
