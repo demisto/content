@@ -3,6 +3,7 @@ from CommonServerUserPython import *
 from ContentClientApiModule import *
 
 """ IMPORTS """
+import traceback
 from typing import Any
 import urllib3
 
@@ -236,7 +237,7 @@ def is_valid_pass(api_response: dict[str, Any]):
 
 @polling_function(
     name=demisto.command(),
-    timeout=TIMEOUT,
+    timeout=arg_to_number(demisto.args().get("timeout")) or TIMEOUT,
     interval=5,
     poll_message="Polling result",
     requires_polling_arg=False,
@@ -283,8 +284,6 @@ def test_module_command(client: Client, *_) -> str:
 
 
 def scan_command(client: Client, args: dict[str, Any]):
-    global TIMEOUT
-    TIMEOUT = arg_to_number(args.get("timeout")) or TIMEOUT
     return polling_submit_command(args=args, client=client)
 
 

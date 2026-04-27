@@ -408,29 +408,39 @@ def test_search_query_command_auto_pagination(mocker, client):
 
 
 def test_scan_command_timeout_argument(mocker, client):
-    """Test scan_command respects a custom timeout argument."""
+    """Test scan_command passes custom timeout to the ScheduledCommand."""
     from CommonServerPython import ScheduledCommand
+    import demistomock as demisto
 
+    mocker.patch.object(demisto, "command", return_value="metadefender-aether-scan-url")
+    mocker.patch.object(demisto, "args", return_value={"url": "https://example.com", "timeout": "120"})
     mocker.patch.object(client, "_http_request", return_value={"flow_id": "t-1234"})
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
-    MD_Aether.scan_command(client, {"url": "https://example.com", "timeout": "120"})
-    assert MD_Aether.TIMEOUT == 120
+    # Re-apply the decorator with the patched demisto.args()
+    reimported = importlib.reload(MD_Aether)
+    new_client = reimported.Client(base_url="https://test.com", api_key="mockkey", proxy=False, verify=False)
+    mocker.patch.object(new_client, "_http_request", return_value={"flow_id": "t-1234"})
 
-    # Reset global
-    MD_Aether.TIMEOUT = 600
+    response = reimported.scan_command(new_client, {"url": "https://example.com", "timeout": "120"})
+    assert response.scheduled_command._timeout == "120"
 
 
 def test_scan_command_timeout_none_keeps_default(mocker, client):
-    """Test scan_command keeps default timeout when not provided."""
+    """Test scan_command uses default timeout (600) when not provided."""
     from CommonServerPython import ScheduledCommand
+    import demistomock as demisto
 
-    MD_Aether.TIMEOUT = 600
-    mocker.patch.object(client, "_http_request", return_value={"flow_id": "t-5678"})
+    mocker.patch.object(demisto, "command", return_value="metadefender-aether-scan-url")
+    mocker.patch.object(demisto, "args", return_value={"url": "https://example.com"})
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
-    MD_Aether.scan_command(client, {"url": "https://example.com"})
-    assert MD_Aether.TIMEOUT == 600
+    reimported = importlib.reload(MD_Aether)
+    new_client = reimported.Client(base_url="https://test.com", api_key="mockkey", proxy=False, verify=False)
+    mocker.patch.object(new_client, "_http_request", return_value={"flow_id": "t-5678"})
+
+    response = reimported.scan_command(new_client, {"url": "https://example.com"})
+    assert response.scheduled_command._timeout == "600"
 
 
 def test_polling_still_in_progress(mocker, client):
