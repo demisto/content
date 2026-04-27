@@ -85,6 +85,24 @@ SHARELINK_TYPES = {
     "playbookInstanceId",
     "playbookExecutionId",
 }
+DEFAULT_EVENT_FIELDS = """
+    id
+    metadata {
+        event_type
+        event_time
+        tenant_id
+        sensor_id
+    }
+    parent_process_id
+    image_path
+    commandline
+    username
+    source_ip
+    destination_ip
+    destination_port
+    protocol
+    next
+"""
 
 DEFAULT_FIRST_FETCH_INTERVAL = "1 day"
 
@@ -1745,27 +1763,7 @@ def fetch_events_command(client: Client, env: str, args=None):
     offset = arg_to_number(args.get("offset", 0))
     cql_query: str | None = args.get("cql_query")
 
-    fields: str = (
-        args.get("fields")
-        or """
-        id
-        metadata {
-            event_type
-            event_time
-            tenant_id
-            sensor_id
-        }
-        parent_process_id
-        image_path
-        commandline
-        username
-        source_ip
-        destination_ip
-        destination_port
-        protocol
-        next
-        """
-    )
+    fields: str = args.get("fields") or DEFAULT_EVENT_FIELDS
 
     if args.get("ids"):
         # Fetch events by IDs — no CQL query involved
@@ -1835,7 +1833,6 @@ def fetch_events_command(client: Client, env: str, args=None):
         except (KeyError, TypeError) as e:
             demisto.debug(f"fetch_events_command (cql_query) exception: {e}\nFull result: {result}")
             raise ValueError(f"Failed to fetch events: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
-        output_query = cql_query
 
     if not events:
         events = []
