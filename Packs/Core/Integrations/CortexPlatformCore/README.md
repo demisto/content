@@ -720,6 +720,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
+| Core.IssueRecommendations.network_reachability | Json | The Network reachability information for the issue. |
 
 ### core-enable-scanners
 

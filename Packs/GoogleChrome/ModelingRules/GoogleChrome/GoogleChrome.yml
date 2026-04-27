@@ -4,3 +4,5 @@ name: Google Chrome Modeling Rule
 rules: ''
 schema: ''
 tags: Google Chrome
+supportedModules:
+- xsiam
