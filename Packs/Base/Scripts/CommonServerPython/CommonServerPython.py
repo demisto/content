@@ -13900,7 +13900,7 @@ def invalidate_ucp_credentials(method_unique_id):
 ###########################################
 
 
-def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='medium', context=None, raise_on_error=True):
+def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='high', context=None, raise_on_error=True):
     """Resolve a loosely-written user input to the closest matching item from a canonical list.
 
     The function first attempts deterministic matching (exact case-insensitive match).
@@ -13926,7 +13926,7 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
 
     :type confidence_threshold: ``str``
     :param confidence_threshold: Controls how strict the matching must be.
-        Allowed values: ``low``, ``medium``, ``high``. Default is ``medium``.
+        Allowed values: ``low``, ``medium``, ``high``.
 
     :type context: ``str``
     :param context: Free-text domain hint to help disambiguate between multiple
@@ -13988,7 +13988,7 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
         if not raise_on_error:
             demisto.debug(msg)
             return ''
-        raise DemistoException(msg)
+        raise ValueError(msg)
 
     # --- AI Task semantic matching ---
     list_arg = json.dumps(items)
@@ -14034,7 +14034,7 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='m
         if not raise_on_error:
             demisto.debug(msg)
             return ''
-        raise DemistoException(msg)
+        raise ValueError(msg)
 
     return _resolve_return(matched)
 
