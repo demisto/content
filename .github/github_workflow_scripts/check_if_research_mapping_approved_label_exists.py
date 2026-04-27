@@ -53,7 +53,10 @@ def main():
     folder_changed = any(file.split("/")[1].lower() in watched_folders for file in changed_files)
     # Validation logic
     if folder_changed and not research_mapping_approved:
-        print(f"❌ Missing {RESEARCH_MAPPING_APPROVED_LABEL} label: This pack has XSIAM content that requires research mapping approval, please verify.")
+        print(
+            f"❌ Missing {RESEARCH_MAPPING_APPROVED_LABEL} label: This pack has XSIAM content that requires research mapping "
+            f"approval, please verify."
+        )
         sys.exit(1)
 
     if not folder_changed and research_mapping_approved:
