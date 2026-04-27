@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v9
+      uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -57,8 +57,9 @@ jobs:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
+        PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels) }}
       run: |
-        LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        LABEL_NAMES=$(echo "$PR_LABELS_JSON" | jq -r '.[].name')
         if echo "$LABEL_NAMES" | grep -q "Contribution"; then
             echo "Label 'Contribution' found!"
             export DEMISTO_SDK_XSOAR_LINTER_WARNING_ANNOTATIONS=true
@@ -89,14 +90,14 @@ jobs:
     - name: "Check coverage.xml exists"
       if: always()
       id: check-coverage-xml-exists
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
       with:
         files: "coverage_report/coverage.xml"
 
     - name: "Check pytest report exists"
       if: always()
       id: check-pytest-junit-exists
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
       with:
         files: "report_pytest.xml"
 
@@ -108,7 +109,7 @@ jobs:
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.6
+      uses: PaloAltoNetworks/upload-secure-artifact@63ccdaa66407a7684b429eac22cd0e773308d2a9 # v1.0.6
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -126,7 +127,7 @@ jobs:
         steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
         ! github.event.pull_request.head.repo.fork
-      uses: MishaKav/pytest-coverage-comment@main
+      uses: MishaKav/pytest-coverage-comment@ef975f05ff4ca5a053e7d42ceb31000a085d17e4 # main
       continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml

@@ -1126,7 +1126,7 @@ script:
     description: Download a message in RFC822 EML format for forensic analysis. For quarantine messages, both quarantine_identity and recipient_mailbox parameters are required.
     name: abnormal-security-download-message-eml
 
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   script: ""
   subtype: python3
   type: python

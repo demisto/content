@@ -38,7 +38,7 @@ def test_domain_extract_and_enrich_output(mocker):
                 "Org": {"value": "Palo Alto Networks, Inc.", "count": 645},
             },
             "Registrar": {"value": "MarkMonitor, Inc.", "count": 867819},
-            "SOAEmail": [{"value": "it-staff-sysadmin@paloaltonetworks.com", "count": 34}],
+            "SOAEmail": [{"value": "it-staff-sysadmin@example.com", "count": 34}],
             "SSLCertificateEmail": [],
             "AdminContact": {
                 "Country": {"value": "us", "count": 275572451},

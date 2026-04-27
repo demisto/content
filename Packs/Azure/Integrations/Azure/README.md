@@ -1728,3 +1728,36 @@ Block public access to a container.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-nsg-security-rules-list
+
+***
+Gets all security rules in a network security group.
+
+#### Base Command
+
+`azure-nsg-security-rules-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| network_security_group_name | The name of the network security group. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. |
+| Azure.NSGRule.id | String | The rule's ID. |
+| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
+| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. |
+| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. |
+| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
+| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
+| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
+| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |

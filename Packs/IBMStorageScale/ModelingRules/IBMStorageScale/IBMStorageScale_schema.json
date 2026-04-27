@@ -1,5 +1,5 @@
 {
-  "storage_scale_raw": {
+  "ibm_storagescale_raw": {
     "command": {
       "type": "string",
       "is_array": false

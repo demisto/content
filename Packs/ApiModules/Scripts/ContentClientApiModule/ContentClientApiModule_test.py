@@ -1518,6 +1518,103 @@ def test_oauth2_timeout_error():
 
 
 @respx.mock
+def test_oauth2_follows_redirects():
+    """Test OAuth2 handler follows HTTP redirects (301, 302, 307, 308) during token refresh.
+
+    This test verifies the fix for XSUP-66416 where HTTP 308 redirects from CrowdStrike's
+    OAuth endpoint caused authentication failures because httpx.AsyncClient doesn't follow
+    redirects by default.
+    """
+    # Mock redirect from original token URL to final token URL
+    redirect_route = respx.post("https://auth.example.com/token").mock(
+        return_value=Response(308, headers={"Location": "https://auth.example.com/oauth/token"})
+    )
+
+    final_route = respx.post("https://auth.example.com/oauth/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+
+    # Mock API endpoint
+    api_route = respx.get("https://api.example.com/v1/data").mock(return_value=Response(200, json={"result": "success"}))
+
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token", client_id="client", client_secret="secret"
+    )
+
+    client = ContentClient(base_url="https://api.example.com", auth_handler=handler)
+
+    # Should successfully follow redirect and get token
+    response = client.get("/v1/data")
+
+    assert response.status_code == 200
+    assert response.json() == {"result": "success"}
+    assert redirect_route.called
+    assert final_route.called
+    assert api_route.called
+
+    client.close()
+
+
+@respx.mock
+def test_oauth2_follows_multiple_redirect_types():
+    """Test OAuth2 handler follows different HTTP redirect status codes (301, 302, 307, 308)."""
+    # Test with HTTP 301 (Moved Permanently)
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(301, headers={"Location": "https://auth.example.com/v2/token"})
+    )
+
+    # HTTP 301 changes POST to GET (standard redirect behavior)
+    respx.get("https://auth.example.com/v2/token").mock(
+        return_value=Response(200, json={"access_token": "token_301", "expires_in": 3600})
+    )
+
+    respx.get("https://api.example.com/v1/data").mock(return_value=Response(200, json={"result": "success"}))
+
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token", client_id="client", client_secret="secret"
+    )
+
+    client = ContentClient(base_url="https://api.example.com", auth_handler=handler)
+    response = client.get("/v1/data")
+
+    assert response.status_code == 200
+    assert response.json() == {"result": "success"}
+    client.close()
+
+
+@respx.mock
+def test_content_client_follows_api_redirects():
+    """Test ContentClient follows redirects for regular API requests (not just OAuth)."""
+    # Mock OAuth token endpoint
+    respx.post("https://auth.example.com/token").mock(
+        return_value=Response(200, json={"access_token": "test_token", "expires_in": 3600})
+    )
+
+    # Mock API endpoint with redirect
+    redirect_route = respx.get("https://api.example.com/v1/data").mock(
+        return_value=Response(307, headers={"Location": "https://api.example.com/v2/data"})
+    )
+
+    final_route = respx.get("https://api.example.com/v2/data").mock(
+        return_value=Response(200, json={"result": "redirected_success"})
+    )
+
+    handler = OAuth2ClientCredentialsHandler(
+        token_url="https://auth.example.com/token", client_id="client", client_secret="secret"
+    )
+
+    client = ContentClient(base_url="https://api.example.com", auth_handler=handler)
+    response = client.get("/v1/data")
+
+    assert response.status_code == 200
+    assert response.json() == {"result": "redirected_success"}
+    assert redirect_route.called
+    assert final_route.called
+
+    client.close()
+
+
+@respx.mock
 def test_api_key_auth_query_param():
     """Test APIKeyAuthHandler adds key to query parameter."""
     route = respx.get("https://api.example.com/v1/data").mock(return_value=Response(200, json={"result": "success"}))

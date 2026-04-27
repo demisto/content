@@ -3,6 +3,9 @@ commonfields:
   version: -1
 name: Gurucul-GRA
 display: Gurucul-GRA
+sectionorder:
+- Connect
+- Collect
 category: Data Enrichment & Threat Intelligence
 provider: Gurucul
 description: Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics platform.
@@ -11,38 +14,48 @@ configuration:
   name: url
   defaultvalue: https://example.net
   type: 0
+  section: Connect
   required: true
 - display: Authorization Key
   name: apikey
   type: 4
+  section: Connect
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  section: Connect
+  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
+  section: Connect
+  advanced: true
   required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
   required: false
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
   required: false
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
+  section: Collect
   required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "25"
   type: 0
+  section: Collect
   required: false
 script:
   script: ''
@@ -981,7 +994,7 @@ script:
     description: Retrieve anomalies for specified case id.
   - name: gra-validate-api
     description: Verifies the Gurucul platform's operational status by assessing system health, reviewing logs, and checking key performance indicators for any errors.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

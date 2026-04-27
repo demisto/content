@@ -1,21 +1,21 @@
-# Integration Author: Trend Micro
+# Integration Author: TrendAI™
 
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
 
 - **Email**: [integrations@trendmicro.com](mailto:integrations@trendmicro.com)
 
 ***
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
+TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 
-## Configure Trend Micro Vision One on Cortex XSOAR
+## Configure TrendAI Vision One™ on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Vision One.
+2. Search for Trend.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                                   | **Description**                                 | **Required** |
     | ----------------------------------------------- | ----------------------------------------------- | ------------ |
-    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API | True         |
+    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the TrendAI Vision One™ API | True         |
     | API Key                                         | The API token to access data                    | True         |
     | Fetch incidents                                 |                                                 | False        |
     | Incidents Fetch Interval                        |                                                 | False        |
@@ -99,7 +99,7 @@ Moves a message from a mailbox to the quarantine folder
 
 | **Argument Name**     | **Description**                                                     | **Required** |
 | --------------------- | ------------------------------------------------------------------- | ------------ |
-| message_id            | Email Message ID from Trend Micro Vision One message activity data. | Required     |
+| message_id            | Email Message ID from TrendAI Vision One™ message activity data. | Required     |
 | mailbox               | Email mailbox where the message will be quarantined from.           | Required     |
 | message_delivery_time | Email message's original delivery time.                             | Required     |
 | product_id            | Target product. Default is sca.                                     | Optional     |
@@ -127,7 +127,7 @@ Deletes a message from a mailbox
 
 | **Argument Name**     | **Description**                                                     | **Required** |
 | --------------------- | ------------------------------------------------------------------- | ------------ |
-| message_id            | Email Message ID from Trend Micro Vision One message activity data. | Required     |
+| message_id            | Email Message ID from TrendAI Vision One™ One message activity data. | Required     |
 | mailbox               | Email mailbox where the message will be quarantined from.           | Required     |
 | message_delivery_time | Email message's delivery time.                                      | Required     |
 | product_id            | Target product. Default is sca.                                     | Optional     |
@@ -145,7 +145,7 @@ Note: To get the complete task status run polling command `trendmicro-visionone-
 ### trendmicro-visionone-isolate-endpoint
 
 ***
-Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product)
+Disconnects an endpoint from the network (but allows communication with the managing TrendAI™ product)
 
 #### Base Command
 
@@ -326,7 +326,7 @@ Retrieves information about a specific endpoint
 | VisionOne.Endpoint_Info.osName        | string   | Operating System name                                           |
 | VisionOne.Endpoint_Info.osVersion     | string   | Operating System nersion                                        |
 | VisionOne.Endpoint_Info.osDescription | string   | Description of the Operating System                             |
-| VisionOne.Endpoint_Info.productCode   | string   | Product code of the Trend Micro product running on the endpoint |
+| VisionOne.Endpoint_Info.productCode   | string   | Product code of the TrendAI™ product running on the endpoint |
 
 ### trendmicro-visionone-terminate-process
 
@@ -479,7 +479,7 @@ Note: The URL received from the `trendmicro-visionone-download-information-for-c
 ### trendmicro-visionone-submit-file-to-sandbox
 
 ***
-Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the TrendAI Vision One™ Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
 
 #### Base Command
 
@@ -506,7 +506,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 ### trendmicro-visionone-submit-file-entry-to-sandbox
 
 ***
-Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see [the TrendAI Vision One™ One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
 
 #### Base Command
 

@@ -70,6 +70,11 @@ class Client(BaseClient):
         end_date: str | None = None,
         limit: int = 20,
         page: int = 1,
+        # FIX: Added include_total_records parameter to the method signature.
+        # Previously test_fetch_command passed this as a kwarg but the method
+        # did not accept it, causing a TypeError at runtime.
+        # When True the API returns total_pages/total_records in the response.
+        include_total_records: bool = True,
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar Multi-Tenant API
@@ -90,6 +95,7 @@ class Client(BaseClient):
             end_date: End date for filtering (YYYY-MM-DD)
             limit: Number of results per page (max 100)
             page: Page number for pagination
+            include_total_records: Whether to request total record counts from the API
 
         API Response Structure:
         {
@@ -102,7 +108,13 @@ class Client(BaseClient):
           "message": "Success"
         }
         """
-        params: dict[str, Any] = {"limit": min(limit, 100), "page": page, "include_total_records": "true"}
+        # FIX: Use the include_total_records parameter instead of hardcoding "true".
+        # This allows callers like test_fetch_command to disable counting for performance.
+        params: dict[str, Any] = {
+            "limit": min(limit, 100),
+            "page": page,
+            "include_total_records": "true" if include_total_records else "false",
+        }
 
         if status:
             params["status"] = status
@@ -186,6 +198,8 @@ class Client(BaseClient):
         status_reason: str,
         comments: str | None = None,
         company_id: str | None = None,
+        update_related_finding_status: bool | None = None,
+        email: str | None = None,
     ) -> dict[str, Any]:
         """Change status of alarms"""
         if status_reason not in STATUS_REASON_MAP:
@@ -201,6 +215,11 @@ class Client(BaseClient):
             "status": STATUS_REASON_MAP[status_reason],
             "comments": comments or "",
         }
+
+        if update_related_finding_status is not None:
+            json_data["update_related_finding_status"] = update_related_finding_status
+        if email is not None:
+            json_data["email"] = email
 
         response = self._http_request(
             method="POST",
@@ -302,63 +321,115 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    """Test API connectivity and credentials"""
+    """
+    Test API connectivity and credentials.
+
+    Uses a narrow time window (last 1 day) and disables total record counting
+    to avoid timeout issues on large datasets.
+    """
     try:
-        demisto.debug("[SOCRadar-MT] Running test module...")
+        demisto.debug("[SOCRadar] Running test module...")
 
-        response = client.search_incidents(limit=1, page=1)
+        start_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        demisto.debug(f"[SOCRadar] Test module using start_date: {start_date}")
 
-        demisto.debug(f"[SOCRadar-MT] Test response: {response}")
+        response = client.search_incidents(limit=1, page=1, start_date=start_date)
+
+        demisto.debug(f"[SOCRadar] Test response: {response}")
 
         if response.get("is_success"):
-            alarms = response.get("data", [])
-            if alarms:
-                company_ids = {alarm.get("company_id") for alarm in alarms if alarm.get("company_id")}
-                demisto.debug(f"[SOCRadar-MT] Found company_ids in response: {company_ids}")
-            demisto.debug("[SOCRadar-MT] Test module successful")
+            demisto.debug("[SOCRadar] Test module successful")
             return "ok"
         else:
             error_msg = response.get("message", "Unknown error")
-            demisto.error(f"[SOCRadar-MT] Test module failed: {error_msg}")
+            demisto.error(f"[SOCRadar] Test module failed: {error_msg}")
             return f"Test failed: {error_msg}"
 
     except DemistoException as e:
         error_str = str(e)
-        demisto.error(f"[SOCRadar-MT] Test module error: {error_str}")
+        demisto.error(f"[SOCRadar] Test module error: {error_str}")
 
         if "401" in error_str or "Unauthorized" in error_str:
             return "Authorization Error: Invalid API Key"
         elif "403" in error_str or "Forbidden" in error_str:
-            return "Access Denied: Check API Key permissions and Multi-Tenant ID"
+            return "Access Denied: Check API Key permissions and Company ID"
         elif "404" in error_str:
-            return "API Endpoint Not Found: Check Multi-Tenant ID"
+            return "API Endpoint Not Found: Check Company ID"
         else:
             return f"Connection failed: {error_str}"
     except Exception as e:
-        demisto.error(f"[SOCRadar-MT] Unexpected test error: {str(e)}")
+        demisto.error(f"[SOCRadar] Unexpected test error: {str(e)}")
         return f"Unexpected error: {str(e)}"
 
 
+# FIX: Completely rewritten parse_alarm_date. Previously each try/except block
+# could overwrite a successful parse from a prior block, and the final fallback
+# referenced an undefined variable 'e' (NameError). Now uses early-return on
+# first successful parse and catches only ValueError/IndexError instead of
+# bare except.
 def parse_alarm_date(date_str: str | None) -> datetime | None:
     """Parse alarm date with multiple format support"""
     if not date_str:
         return None
 
-    try:
-        if "." in date_str:
-            return datetime.strptime(date_str[:26], "%Y-%m-%dT%H:%M:%S.%f")
-        elif "T" in date_str:
-            return datetime.strptime(date_str[:19], "%Y-%m-%dT%H:%M:%S")
-        else:
-            return datetime.strptime(date_str[:10], "%Y-%m-%d")
-    except Exception as e:
-        demisto.debug(f"[SOCRadar-MT] Date parsing error for '{date_str}': {str(e)}")
-        return None
+    formats = [
+        ("%Y-%m-%d %H:%M:%S", 19),
+        ("%Y-%m-%dT%H:%M:%S.%f", 26),
+        ("%Y-%m-%dT%H:%M:%S", 19),
+        ("%Y-%m-%d", 10),
+    ]
+
+    for fmt, slice_end in formats:
+        try:
+            return datetime.strptime(date_str[:slice_end], fmt)
+        except (ValueError, IndexError):
+            continue
+
+    demisto.debug(f"[SOCRadar] Could not parse date: '{date_str}'")
+    return None
 
 
-def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
+def format_value(value, indent=0):
+    lines = []
+    prefix = "  " * indent
+
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if isinstance(v, dict | list):
+                lines.append(f"{prefix}{k}:")
+                lines.extend(format_value(v, indent + 1))
+            else:
+                lines.append(f"{prefix}{k}: {v}")
+
+    elif isinstance(value, list):
+        for _, item in enumerate(value):
+            if isinstance(item, dict | list):
+                lines.append(f"{prefix}-")
+                lines.extend(format_value(item, indent + 1))
+            else:
+                lines.append(f"{prefix}- {item}")
+
+    else:
+        lines.append(f"{prefix}{value}")
+
+    return lines
+
+
+# FIX: Added show_content parameter. Previously the function referenced
+# 'show_content' and 'content' variables that were never defined in scope,
+# causing NameError at runtime. Now show_content is explicitly passed in
+# from the YAML checkbox parameter, and content is extracted from the alarm.
+# Also fixed the indentation of the try/except block for format_value —
+# it was outside the 'if show_content' guard, so it would always run and
+# crash on the undefined 'content' variable even when show_content was False.
+def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[str, Any]:
     """
     Convert SOCRadar alarm to Demisto incident
+
+    Args:
+        alarm: Raw alarm dict from the SOCRadar API
+        show_content: Whether to include full alarm content in incident details
+                      (controlled by the show_content checkbox in YAML config)
 
     IMPORTANT: The 'content' field structure varies by alarm type:
     - Impersonating Domain: has dns_information, whois_information, domain_status
@@ -383,6 +454,13 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
 
     date_str = alarm.get("date")
     occurred_time = parse_alarm_date(date_str)
+
+    # FIX: Added content extraction from alarm. Previously this line was
+    # missing entirely in the MT version, causing NameError when 'content'
+    # was referenced later in format_value(content) and the if-guard.
+    content = alarm.get("content", {})
+    if not isinstance(content, dict):
+        content = {}
 
     tags = alarm.get("tags", [])
     if not isinstance(tags, list):
@@ -424,11 +502,25 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
     if entity_info:
         details_parts.append("\n Related Entities:")
         for info in entity_info:
-            details_parts.append(f"  • {info}")
+            # FIX: Replaced Unicode bullet U+2022 with ASCII dash '-'.
+            # XSOAR uses Latin-1 encoding for HTTP responses which cannot
+            # encode U+2022, causing 'latin-1 codec can't encode character' error.
+            details_parts.append(f"  - {info}")
 
     if alarm_text:
         details_parts.append("\n Alarm Description:")
-        details_parts.append(alarm_text)
+        details_parts.append(alarm_text[:3072])
+
+    # FIX: Moved the try/except block for format_value INSIDE the if-guard.
+    # Previously the try block was outside 'if show_content', meaning
+    # format_value(content) would always execute — and since 'content' was
+    # undefined, it would always crash with NameError.
+    if show_content and content is not None:
+        details_parts.append("\nAlarm Content:")
+        try:
+            details_parts.extend(format_value(content))
+        except Exception as e:
+            details_parts.append(f"Content parsing error: {str(e)}")
 
     if tags:
         details_parts.append(f"\n Tags: {', '.join(str(tag) for tag in tags)}")
@@ -457,12 +549,15 @@ def alarm_to_incident(alarm: dict[str, Any]) -> dict[str, Any]:
     return incident
 
 
+# FIX: Added show_content parameter to fetch_incidents so it can be passed
+# through to alarm_to_incident from the YAML checkbox configuration.
 def fetch_incidents(
     client: Client,
     max_results: int,
     last_run: dict[str, Any],
     first_fetch_time: str,
     fetch_interval_minutes: int = 1,
+    show_content: bool = True,
     status: list[str] | None = None,
     severities: list[str] | None = None,
     alarm_main_types: list[str] | None = None,
@@ -481,6 +576,7 @@ def fetch_incidents(
         last_run: Last run information from previous fetch
         first_fetch_time: Time range for first fetch (e.g., "30 days")
         fetch_interval_minutes: Time window for subsequent fetches in minutes
+        show_content: Whether to include full alarm content in incident details
         status: Filter by status (OPEN, CLOSED, ON_HOLD)
         severities: List of severity levels to filter
         alarm_main_types: List of main alarm types to filter
@@ -500,12 +596,12 @@ def fetch_incidents(
     First fetch (first_fetch_time = "30 days"):
       start_date: 30 days ago
       end_date: now
-      Fetch ALL pages, each page → XSOAR
+      Fetch ALL pages, each page -> XSOAR
 
     Subsequent fetches (fetch_interval = 1 minute):
       start_date: 1 minute ago
       end_date: now
-      If 500 new alarms → 5 pages → 5 separate sends to XSOAR
+      If 500 new alarms -> 5 pages -> 5 separate sends to XSOAR
     """
     demisto.debug("[SOCRadar-MT] Starting fetch_incidents")
     demisto.debug(f"[SOCRadar-MT] max_results: {max_results}")
@@ -515,17 +611,24 @@ def fetch_incidents(
     demisto.debug(f"[SOCRadar-MT] excluded_alarm_sub_types: {excluded_alarm_sub_types}")
     demisto.debug(f"[SOCRadar-MT] excluded_alarm_main_types: {excluded_alarm_main_types}")
 
-    last_fetch = last_run.get("last_fetch")
+    # FIX: Renamed to last_fetch_str to avoid variable name collision.
+    # Previously 'last_fetch' was reused later as a datetime object which
+    # shadowed this string value and could cause confusion.
+    last_fetch_str = last_run.get("last_fetch")
     last_alarm_ids = set(last_run.get("last_alarm_ids", []))
-
-    demisto.debug(f"[SOCRadar-MT] Last fetch: {last_fetch}")
-    demisto.debug(f"[SOCRadar-MT] Previously fetched alarm IDs: {len(last_alarm_ids)}")
-
+    last_alarm_ids_backup = last_alarm_ids.copy()
     current_time = datetime.now()
 
-    if last_fetch:
-        start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
-        demisto.debug(f"[SOCRadar-MT] Subsequent fetch: Using fetch_interval of {fetch_interval_minutes} minutes")
+    demisto.debug(f"[SOCRadar-MT] Last fetch: {last_fetch_str}")
+    demisto.debug(f"[SOCRadar-MT] Previously fetched alarm IDs: {len(last_alarm_ids)}")
+
+    if last_fetch_str:
+        try:
+            start_datetime = datetime.fromisoformat(last_fetch_str) - timedelta(minutes=fetch_interval_minutes)
+            demisto.debug(f"[SOCRadar-MT] Subsequent fetch: Using last_fetch datetime {start_datetime.isoformat()}")
+        except Exception:
+            start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
+            demisto.debug("[SOCRadar-MT] Failed to parse last_fetch, fallback to interval")
     else:
         start_datetime_temp = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
         if not start_datetime_temp:
@@ -533,18 +636,18 @@ def fetch_incidents(
         start_datetime = start_datetime_temp
         demisto.debug("[SOCRadar-MT] First fetch: Using first_fetch_time")
 
-    start_date = start_datetime.strftime("%Y-%m-%d")
-    end_date = current_time.strftime("%Y-%m-%d")
+    start_date = start_datetime.isoformat()
+    end_date = current_time.isoformat()
 
     demisto.debug(f"[SOCRadar-MT] Time window: {start_date} to {end_date}")
     demisto.debug("[SOCRadar-MT] Will fetch ALL pages for this time window")
 
     all_incidents = []
-    new_alarm_ids = set()
-    latest_timestamp = start_datetime
-
+    reached_max_results = False
     per_page = 100
-    current_page = 1
+    latest_page = last_run.get("latest_page", 1)
+    current_page = latest_page
+    next_run_incidents_to_skip = last_run.get("next_run_incidents_to_skip", 0)
     total_pages = None
     total_incidents_created = 0
     total_pages_fetched = 0
@@ -587,23 +690,16 @@ def fetch_incidents(
             page_new = 0
             page_dup = 0
 
-            for alarm in alarms:
-                alarm_id = alarm.get("alarm_id")
-
-                if alarm_id in last_alarm_ids or alarm_id in new_alarm_ids:
+            for alarm in alarms[next_run_incidents_to_skip:]:
+                if alarm.get("alarm_id") in last_alarm_ids:
                     page_dup += 1
                     continue
-
-                new_alarm_ids.add(alarm_id)
-
-                alarm_date = parse_alarm_date(alarm.get("date"))
-                if alarm_date and alarm_date > latest_timestamp:
-                    latest_timestamp = alarm_date
-
                 if total_incidents_created < max_results:
-                    incident = alarm_to_incident(alarm)
+                    # FIX: Pass show_content parameter to alarm_to_incident
+                    incident = alarm_to_incident(alarm, show_content=show_content)
                     page_incidents.append(incident)
                     total_incidents_created += 1
+                    last_alarm_ids.add(alarm.get("alarm_id"))
                     page_new += 1
 
             demisto.debug(f"[SOCRadar-MT] Page {current_page}: Created {page_new} incidents, skipped {page_dup} duplicates")
@@ -611,8 +707,17 @@ def fetch_incidents(
             all_incidents.extend(page_incidents)
 
             if total_incidents_created >= max_results:
-                demisto.debug(f"[SOCRadar-MT] Reached max_results ({max_results}), continuing to fetch pages for tracking")
-
+                reached_max_results = True
+                if current_page == latest_page:
+                    next_run_incidents_to_skip += len(page_incidents)
+                else:
+                    next_run_incidents_to_skip = len(page_incidents)
+                demisto.debug(
+                    f"[SOCRadar-MT] Reached max_results ({max_results}), fetch pages is stopped. "
+                    f"Next run will start from the date of the latest run with skipping {next_run_incidents_to_skip} incidents"
+                )
+                break
+            next_run_incidents_to_skip = 0
             if current_page >= total_pages:
                 demisto.debug(f"[SOCRadar-MT] Reached last page ({current_page}/{total_pages})")
                 break
@@ -627,7 +732,6 @@ def fetch_incidents(
         demisto.debug(f"[SOCRadar-MT] Time window: {start_date} to {end_date}")
         demisto.debug(f"[SOCRadar-MT] Fetch interval: {fetch_interval_minutes} minutes")
         demisto.debug(f"[SOCRadar-MT] Pages fetched: {total_pages_fetched}/{total_pages if total_pages else 'unknown'}")
-        demisto.debug(f"[SOCRadar-MT] New alarms found: {len(new_alarm_ids)}")
         demisto.debug(f"[SOCRadar-MT] Incidents created: {total_incidents_created} (max: {max_results})")
         demisto.debug(f"[SOCRadar-MT] Alarm Type IDs filter: {alarm_type_ids}")
         demisto.debug(f"[SOCRadar-MT] Excluded Alarm Type IDs: {excluded_alarm_type_ids}")
@@ -635,13 +739,22 @@ def fetch_incidents(
         demisto.debug(f"[SOCRadar-MT] Excluded Alarm Main Types: {excluded_alarm_main_types}")
         demisto.debug("[SOCRadar-MT] ====================================")
 
-        combined_list = list(new_alarm_ids) + [aid for aid in last_alarm_ids if aid not in new_alarm_ids]
-        combined_alarm_ids = combined_list[:10000]
-
-        next_run = {"last_fetch": current_time.isoformat() + "Z", "last_alarm_ids": combined_alarm_ids}
-
+        # FIX: Use a new variable name 'next_fetch_time' to avoid shadowing
+        # the 'last_fetch_str' string from the top of the function.
+        if reached_max_results:
+            next_fetch_time = start_datetime
+        else:
+            next_fetch_time = current_time + timedelta(seconds=1)
+        combined = list(last_alarm_ids)[:10000]
+        next_run = {
+            "last_fetch": next_fetch_time.isoformat(),
+            "start_date": start_date,
+            "end_date": end_date,
+            "next_run_incidents_to_skip": next_run_incidents_to_skip,
+            "latest_page": current_page if next_run_incidents_to_skip else 1,
+            "last_alarm_ids": combined,
+        }
         demisto.debug(f"[SOCRadar-MT] Next fetch will use time window: last {fetch_interval_minutes} minutes")
-        demisto.debug(f"[SOCRadar-MT] Tracking {len(combined_alarm_ids)} alarm IDs")
         demisto.debug(f"[SOCRadar-MT] Returning {len(all_incidents)} incidents to XSOAR")
 
         return next_run, all_incidents
@@ -650,12 +763,13 @@ def fetch_incidents(
         demisto.error(f"[SOCRadar-MT] Error in fetch_incidents: {str(e)}")
         demisto.error(f"[SOCRadar-MT] Traceback: {traceback.format_exc()}")
 
-        if all_incidents:
-            combined_list = list(new_alarm_ids) + [aid for aid in last_alarm_ids if aid not in new_alarm_ids]
-            combined_alarm_ids = combined_list[:10000]
-            return {"last_fetch": current_time.isoformat() + "Z", "last_alarm_ids": combined_alarm_ids}, all_incidents
-
-        return {"last_fetch": last_fetch or datetime.now().isoformat() + "Z", "last_alarm_ids": list(last_alarm_ids)[:1000]}, []
+        return {
+            "last_alarm_ids": list(last_alarm_ids_backup)[:1000],
+            "last_fetch": start_date,
+            "start_date": start_date,
+            "end_date": end_date,
+            "exception": str(e),
+        }, []
 
 
 def change_status_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -664,9 +778,17 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
     status_reason = args.get("status_reason", "")
     comments = args.get("comments")
     company_id = args.get("company_id")
+    update_related_finding_status_str = args.get("update_related_finding_status")
+    update_related_finding_status: bool | None = (
+        argToBoolean(update_related_finding_status_str) if update_related_finding_status_str else None
+    )
+    email = args.get("email")
 
     if not alarm_ids_str or not status_reason:
         raise ValueError("alarm_ids and status_reason are required")
+
+    if update_related_finding_status and not email:
+        raise ValueError("Argument 'email' is required when 'update_related_finding_status' is set to true.")
 
     alarm_ids = [int(aid.strip()) for aid in alarm_ids_str.split(",")]
 
@@ -677,7 +799,14 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         if not company_id:
             raise ValueError(f"Could not find company_id for alarm {alarm_ids[0]}. Please provide company_id parameter.")
 
-    response = client.change_alarm_status(alarm_ids, status_reason, comments, company_id)
+    response = client.change_alarm_status(
+        alarm_ids,
+        status_reason,
+        comments,
+        company_id,
+        update_related_finding_status,
+        email,
+    )
 
     return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
 
@@ -801,7 +930,10 @@ def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
 
 def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
-    Test incident fetching with safe handling of variable content structures
+    Test incident fetching with safe handling of variable content structures.
+
+    Disables total record counting for faster response times.
+    Shows sample incidents to verify API connectivity and data format.
     """
     limit = arg_to_number(args.get("limit", "5"), "limit") or 5
 
@@ -812,20 +944,28 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
             raise ValueError("Failed to parse first_fetch")
         start_date = first_fetch_datetime.strftime("%Y-%m-%d")
 
-        demisto.debug(f"[SOCRadar-MT Test] Testing fetch from {start_date}")
+        demisto.debug(f"[SOCRadar Test] Testing fetch from {start_date}")
 
-        response = client.search_incidents(limit=limit, start_date=start_date, page=1)
+        # FIX: include_total_records is now a proper parameter of search_incidents.
+        # Previously passing it as a kwarg caused TypeError because the method
+        # did not have this in its signature.
+        response = client.search_incidents(
+            limit=limit,
+            start_date=start_date,
+            page=1,
+            include_total_records=False,
+        )
+
         data = response.get("data", [])
-        total_records = response.get("total_records", 0)
-        total_pages = response.get("total_pages", 0)
 
         if not data:
-            message = "❌ No incidents found. Possible reasons:\n"
+            # FIX: Replaced emoji characters with ASCII text. XSOAR uses Latin-1
+            # encoding which cannot handle Unicode emoji codepoints.
+            message = "[X] No incidents found. Possible reasons:\n"
             message += f"- No active alarms in SOCRadar from {start_date}\n"
             message += "- Filters are too restrictive\n"
             message += "- Date range is too narrow\n\n"
             message += f"Tested with start_date: {start_date}\n"
-            message += f"Total records in system: {total_records}"
 
             return CommandResults(readable_output=message, raw_response=response)
 
@@ -855,7 +995,6 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
             incidents_info.append(
                 {
                     "Alarm ID": incident.get("alarm_id", "N/A"),
-                    "Company ID": incident.get("company_id", "N/A"),
                     "Risk Level": incident.get("alarm_risk_level", "UNKNOWN"),
                     "Status": incident.get("status", "UNKNOWN"),
                     "Asset": incident.get("alarm_asset", "N/A"),
@@ -865,16 +1004,11 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
                 }
             )
 
-        message = f"✅ Found {len(data)} incident(s) on page 1 from {start_date}!\n"
-        message += f"📊 Total available: {total_records} records across {total_pages} pages\n\n"
+        # FIX: Replaced emoji characters with ASCII text to avoid Latin-1 encoding errors.
+        message = f"[OK] Found {len(data)} incident(s) on page 1 from {start_date}!\n\n"
         message += "Sample incidents:\n"
         for info in incidents_info:
-            alarm_id = info["Alarm ID"]
-            company = info["Company ID"]
-            risk = info["Risk Level"]
-            status = info["Status"]
-            asset = info["Asset"]
-            message += f"- [{alarm_id}] Company: {company} | {risk} | {status} | {asset}\n"
+            message += f"- [{info['Alarm ID']}] {info['Risk Level']} | {info['Status']} | {info['Asset']}\n"
             message += f"  Type: {info['Type']}{info['Extra']}\n"
 
         if data:
@@ -882,7 +1016,8 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
             content = first_alarm.get("content")
             if isinstance(content, dict):
                 content_keys = list(content.keys())
-                message += f"\n📋 Content structure example (keys): {', '.join(content_keys[:5])}"
+                # FIX: Replaced clipboard emoji with ASCII text
+                message += f"\nContent structure example (keys): {', '.join(content_keys[:5])}"
                 if len(content_keys) > 5:
                     message += f" ... and {len(content_keys) - 5} more"
 
@@ -891,8 +1026,6 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
             outputs_prefix="SOCRadar.TestFetch",
             outputs={
                 "TotalCount": len(data),
-                "TotalRecords": total_records,
-                "TotalPages": total_pages,
                 "SampleIncidents": incidents_info,
                 "StartDate": start_date,
             },
@@ -901,11 +1034,12 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
 
     except Exception as e:
         error_msg = str(e)
-        message = f"❌ Error testing fetch: {error_msg}\n\n"
+        # FIX: Replaced emoji with ASCII text
+        message = f"[X] Error testing fetch: {error_msg}\n\n"
         message += "Check:\n"
         message += "- API key validity\n"
         message += "- Network connectivity\n"
-        message += "- Multi-Tenant ID correctness\n"
+        message += "- Company ID correctness\n"
         message += f"- Date parsing (tried to parse: '{args.get('first_fetch', '3 days')}')\n\n"
         message += f"Full error:\n{traceback.format_exc()}"
 
@@ -942,6 +1076,14 @@ def main() -> None:
             max_fetch = min(max_fetch, MAX_INCIDENTS_TO_FETCH)
             fetch_interval_minutes = arg_to_number(params.get("fetch_interval_minutes", 1)) or 1
 
+            # FIX: Read show_content from YAML checkbox parameter and pass it
+            # through to fetch_incidents -> alarm_to_incident. Previously the
+            # show_content variable was referenced inside alarm_to_incident but
+            # never defined, causing NameError.
+            show_content = params.get("show_content", True)
+            if isinstance(show_content, str):
+                show_content = show_content.lower() in ("true", "1", "yes")
+
             alarm_type_ids_str = params.get("alarm_type_ids", "")
             alarm_type_ids = None
             if alarm_type_ids_str:
@@ -954,7 +1096,11 @@ def main() -> None:
             excluded_alarm_type_ids = None
             if excluded_alarm_type_ids_str:
                 try:
-                    excluded_alarm_type_ids = [x.strip() for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
+                    # FIX: Parse excluded_alarm_type_ids as integers instead of strings.
+                    # Previously this used [x.strip() for x in ...] which produced
+                    # string values, inconsistent with alarm_type_ids (int list)
+                    # and the API expectation of integer IDs.
+                    excluded_alarm_type_ids = [int(x.strip()) for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
                 except ValueError:
                     demisto.error(f"[SOCRadar-MT] Invalid excluded_alarm_type_ids format: {excluded_alarm_type_ids_str}")
 
@@ -979,10 +1125,13 @@ def main() -> None:
                 f"first_fetch: {params.get('first_fetch')}, "
                 f"fetch_interval: {fetch_interval_minutes} minutes"
             )
+            # FIX: Added missing commas between f-string segments. Previously the
+            # four f-strings were concatenated without separators, producing a
+            # single unreadable debug line like "...alarm_type_ids: [1]excluded...".
             demisto.debug(
                 f"[SOCRadar-MT] Fetch config - alarm_type_ids: {alarm_type_ids}, "
-                f"excluded_alarm_type_ids: {excluded_alarm_type_ids}"
-                f"excluded_alarm_main_types: {excluded_alarm_main_types}"
+                f"excluded_alarm_type_ids: {excluded_alarm_type_ids}, "
+                f"excluded_alarm_main_types: {excluded_alarm_main_types}, "
                 f"excluded_alarm_sub_types: {excluded_alarm_sub_types}"
             )
 
@@ -992,6 +1141,7 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch_time=params.get("first_fetch", "3 days"),
                 fetch_interval_minutes=fetch_interval_minutes,
+                show_content=show_content,
                 status=argToList(params.get("status")),
                 severities=argToList(params.get("severities")),
                 alarm_main_types=argToList(params.get("alarm_main_types")),

@@ -25,6 +25,18 @@ configuration:
   hidden: true
   section: Connect
   required: false
+- display: Abuse.ch Hunting API URL
+  name: abusech_hunting_url
+  type: 0
+  defaultvalue: https://hunting-api.abuse.ch/api/v1/
+  required: false
+  section: Connect
+- name: hunting_credentials
+  type: 9
+  displaypassword: Abuse.ch Hunting API Key
+  hiddenusername: true
+  section: Connect
+  required: false
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
@@ -337,6 +349,44 @@ script:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
+  - arguments:
+    - defaultValue: json
+      description: The output format (JSON or CSV). Use "csv" to download the response as a file or "json" to insert it into the incident context.
+      name: format
+      auto: PREDEFINED
+      predefined:
+      - json
+      - csv
+    - defaultValue: '50'
+      description: The maximum number of results to return. This is ignored when all_results is set to true or format is set to csv.
+      name: limit
+    - defaultValue: false
+      description: whether to return all results. This is ignored when format is set to csv.
+      name: all_results
+    description: Returns the False Positive List (FPL) from abuse.ch, including IP and domain indicators removed from their blocklists.
+    name: abuseipdb-get-fplist
+    outputs:
+    - contextPath: AbuseIPDB.FPL.id
+      description: The unique identifier for the False Positive List entry.
+      type: String
+    - contextPath: AbuseIPDB.FPL.time_stamp
+      description: The date and time (UTC) the entry was added to the False Positive List.
+      type: String
+    - contextPath: AbuseIPDB.FPL.platform
+      description: The platform or service associated with the entry.
+      type: String
+    - contextPath: AbuseIPDB.FPL.entry_type
+      description: The indicator type (for example, IPv4, domain).
+      type: String
+    - contextPath: AbuseIPDB.FPL.entry_value
+      description: The actual indicator value (IP address or domain) that was marked as a false positive.
+      type: String
+    - contextPath: AbuseIPDB.FPL.removed_by
+      description: The entity or user who requested the removal of the indicator from the blocklist.
+      type: String
+    - contextPath: AbuseIPDB.FPL.removal_notes
+      description: Additional context or justification for why the indicator was removed.
+      type: String
   script: ''
   subtype: python3
   type: python

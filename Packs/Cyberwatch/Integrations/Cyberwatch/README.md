@@ -242,7 +242,7 @@ Get a list of CVEs from Cyberwatch.
 >|---|---|---|---|---|---|---|---|
 >| CVE-2014-7552 | The Zombie Diary (aka com.ezjoy.feelingtouch.zombiediary)... | 2014-10-20T08:55:10 | 2014-11-14T13:13:46 | level_medium | 5.4 | 0.00049 |  |
 >| CVE-2014-5669 | The 9GAG - Funny pics and videos (aka com.ninegag.android.app)... | 2014-09-08T23:55:36 | 2014-09-10T23:33:44 | level_medium | 5.4 | 0.00049 |  |
->| CVE-2013-5021 | Multiple absolute path traversal vulnerabilities in National Instruments... | 2013-08-06T18:55:05 | 2023-11-07T01:16:25 | level_critical | 9.3 | 0.89796 |  |
+>| CVE-2013-5021 | Multiple absolute path traversal vulnerabilities in Test Instruments... | 2013-08-06T18:55:05 | 2023-11-07T01:16:25 | level_critical | 9.3 | 0.89796 |  |
 >| CVE-2014-7387 | The ACC Advocacy Action (aka com.acc.app.android.ui) application 2.0... | 2014-10-19T08:55:15 | 2014-11-14T13:10:30 | level_medium | 5.4 | 0.00049 |  |
 >| CVE-2013-4319 | pbs_mom in Terascale Open-Source Resource and Queue Manager (aka TORQUE Resource Manager)... | 2013-10-11T20:55:40 | 2013-10-15T14:05:34 | level_critical | 9.0 | 0.0026 |  |
 

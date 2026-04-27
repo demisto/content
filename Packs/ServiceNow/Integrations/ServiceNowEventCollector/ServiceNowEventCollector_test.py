@@ -33,7 +33,8 @@ class TestFetchActivity:
     def create_client(self):
         self.client = Client(
             use_oauth=True,
-            credentials={"username": "test", "password": "test"},
+            username="test",
+            password="test",
             client_id="test_id",
             client_secret="test_secret",
             server_url="https://test.com",
@@ -694,7 +695,8 @@ def test_get_limit_uses_arg_limit_when_provided():
     args = {"limit": "200"}
     client = Client(
         use_oauth=True,
-        credentials={"username": "test", "password": "test"},
+        username="test",
+        password="test",
         client_id="test_id",
         client_secret="test_secret",
         server_url="https://test.com",
@@ -724,7 +726,8 @@ def test_get_limit_no_arg_given_uses_client_default():
     args = {}
     client = Client(
         use_oauth=True,
-        credentials={"username": "test", "password": "test"},
+        username="test",
+        password="test",
         client_id="test_id",
         client_secret="test_secret",
         server_url="https://test.com",
@@ -758,7 +761,8 @@ def test_get_limit_with_no_args_or_client_default_uses_fall_back():
     args = {}
     client = Client(
         use_oauth=True,
-        credentials={"username": "test", "password": "test"},
+        username="test",
+        password="test",
         client_id="test_id",
         client_secret="test_secret",
         server_url="https://test.com",
@@ -962,7 +966,8 @@ def test_search_events_outbound_http_log(mocker):
     """
     client = Client(
         use_oauth=False,
-        credentials={"username": "test", "password": "test"},
+        username="test",
+        password="test",
         client_id="",
         client_secret="",
         server_url="https://test.com",
@@ -1248,7 +1253,8 @@ def test_module_of_testing_success_and_failure(mocker):
     """
     client = Client(
         use_oauth=True,
-        credentials={"username": "test", "password": "test"},
+        username="test",
+        password="test",
         client_id="id",
         client_secret="secret",
         server_url="https://example.com",

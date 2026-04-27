@@ -13,7 +13,8 @@ OAUTH_URL = "/oauth_token.do"
 class ServiceNowClient(BaseClient):
     def __init__(
         self,
-        credentials: dict,
+        username: str = "",
+        password: str = "",
         use_oauth: bool = False,
         client_id: str = "",
         client_secret: str = "",
@@ -26,7 +27,8 @@ class ServiceNowClient(BaseClient):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
-            - credentials: the username and password given by the user.
+            - username: the username for authentication.
+            - password: the password for authentication.
             - client_id: the client id of the application of the user.
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
@@ -39,8 +41,8 @@ class ServiceNowClient(BaseClient):
         """
         self.auth = None
         self.use_oauth = use_oauth
-        self.username = credentials.get("identifier")
-        self.password = credentials.get("password")
+        self.username = username
+        self.password = password
 
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
@@ -227,8 +229,15 @@ class ServiceNowClient(BaseClient):
 
     def get_access_token(self, retry_attempted: bool = False):
         """
-        Get an access token that was previously created if it is still valid, else, generate a new access token from
-        the client id, client secret and refresh token.
+        Get an access token that was previously created if it is still valid, else, generate a new access token using
+        one of the following methods (in order of precedence):
+        1. Refresh token - if a refresh token exists in the integration context.
+        2. JWT assertion - if JWT parameters were configured.
+        3. Auto-login - if OAuth is enabled and username/password credentials are available,
+           automatically performs a login to obtain a new refresh token.
+
+        If the refresh token has expired and credentials are available, the method will automatically
+        re-login and retry once.
 
         Args:
             retry_attempted: Internal flag to prevent infinite retry loops. Should not be set by callers.
@@ -247,8 +256,14 @@ class ServiceNowClient(BaseClient):
                 data["refresh_token"] = previous_token.get("refresh_token")
                 data["grant_type"] = "refresh_token"
             elif not self.jwt:
+                if self.use_oauth and self.username and self.password and not retry_attempted:
+                    self.login(username=self.username, password=self.password)
+                    return self.get_access_token(retry_attempted=True)
+
                 raise Exception(
-                    "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
+                    "Could not create an access token. The user may not be logged in. "
+                    "Please run the oauth-login command, or ensure that username and password "
+                    "parameters are set in your instance configuration to enable auto-login."
                 )
 
             try:
@@ -271,7 +286,7 @@ class ServiceNowClient(BaseClient):
                     # Other inherited integrations require modification to function here
                     if self.use_oauth and self.username and self.password and not retry_attempted:
                         demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
-                        self.login(self.username, self.password)
+                        self.login(username=self.username, password=self.password)
                         return self.get_access_token(retry_attempted=True)
 
                     # If retry was already attempted or credentials not available, raise the error

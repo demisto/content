@@ -31,14 +31,18 @@ INDICATOR_TYPE_MAPPING = {
     "file": FeedIndicatorType.File,
     "filehash_sha256": FeedIndicatorType.File,
     "exploit": FeedIndicatorType.CVE,
+    "vulnerability": FeedIndicatorType.CVE,
     "malware_family": ThreatIntel.ObjectsNames.MALWARE,
+    "grayware": ThreatIntel.ObjectsNames.MALWARE,
     "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "attack_pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "technique": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malicious_behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malicious behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malicious_tool": ThreatIntel.ObjectsNames.TOOL,
 }
 
 VERDICT_TO_SCORE = {
@@ -312,7 +316,12 @@ def create_vulnerabilities_relationships(threat_obj: dict[str, Any], threat_acto
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
+
+    if threat_class not in INDICATOR_TYPE_MAPPING:
+        demisto.debug(f"Skipping create_vulnerabilities_relationships for unknown threat_class {threat_class!r}")
+        return relationships
+
     vulnerabilities = demisto.get(threat_obj, "battlecard_details.threat_actor_details.vulnerability_associations", [])
 
     for vulnerability in vulnerabilities:
@@ -345,7 +354,12 @@ def create_actor_relationships(threat_obj: dict[str, Any], malware_family_name: 
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
+
+    if threat_class not in INDICATOR_TYPE_MAPPING:
+        demisto.debug(f"Skipping create_actor_relationships for unknown threat_class {threat_class!r}")
+        return relationships
+
     actor_associations = demisto.get(threat_obj, "battlecard_details.malware_family_details.actor_associations", [])
 
     for relationship in actor_associations:
@@ -393,7 +407,12 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
+
+    if threat_class not in INDICATOR_TYPE_MAPPING:
+        demisto.debug(f"Skipping create_tools_relationships for unknown threat_class {threat_class!r}")
+        return relationships
+
     tools_associations = demisto.get(threat_obj, "battlecard_details.threat_actor_details.tools", [])
 
     for tool in tools_associations:
@@ -427,7 +446,12 @@ def create_malware_relationships(threat_obj: dict[str, Any], threat_actor_name: 
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
+
+    if threat_class not in INDICATOR_TYPE_MAPPING:
+        demisto.debug(f"Skipping create_malware_relationships for unknown threat_class {threat_class!r}")
+        return relationships
+
     malware_associations = demisto.get(threat_obj, "battlecard_details.threat_actor_details.malware_associations", [])
 
     for relationship in malware_associations:
@@ -475,7 +499,12 @@ def create_attack_patterns_relationships(threat_obj: dict[str, Any], threat_acto
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
+
+    if threat_class not in INDICATOR_TYPE_MAPPING:
+        demisto.debug(f"Skipping create_attack_patterns_relationships for unknown threat_class {threat_class!r}")
+        return relationships
+
     attack_patterns = demisto.get(threat_obj, "battlecard_details.attack_patterns", [])
 
     for pattern in attack_patterns:
@@ -517,7 +546,12 @@ def create_campaigns_relationships(threat_obj: dict[str, Any], threat_object_nam
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
+
+    if threat_class not in INDICATOR_TYPE_MAPPING:
+        demisto.debug(f"Skipping create_campaigns_relationships for unknown threat_class {threat_class!r}")
+        return relationships
+
     campaigns = demisto.get(threat_obj, "battlecard_details.campaigns", [])
 
     for campaign in campaigns:

@@ -1,4 +1,4 @@
-[MODEL: dataset="storage_scale_raw"]
+[MODEL: dataset="ibm_storagescale_raw"]
 alter
     // Map to XDM fields - direct mappings
     xdm.event.original_event_type = "CLI Audit Logs", // Integration API Endpoint - https://www.ibm.com/docs/en/storage-scale/5.2.2?topic=endpoints-cliauditlog-get
