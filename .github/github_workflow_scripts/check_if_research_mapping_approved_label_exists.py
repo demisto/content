@@ -13,6 +13,15 @@ RESEARCH_MAPPING_APPROVED_LABEL = "research-mapping-approve"
 RESEARCH_MAPPING_PACKS = {
     "VMwareVCenter",
     "VMwareESXi",
+    "CiscoASA",
+    "CorelightZeek",
+    "Okta",
+    "FortiGate",
+    "DuoAdminApi",
+    "MicrosoftWindowsEvents",
+    "Slack",
+    "SalesForce",
+    "CyberArkIdentity"
 }
 
 
