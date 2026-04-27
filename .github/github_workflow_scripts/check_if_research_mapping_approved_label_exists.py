@@ -40,17 +40,20 @@ def main():
     github_token = options.github_token
     changed_files = options.changed_files
 
-    github_client: Github = Github(github_token, verify=False)
-    content_repo: Repository = github_client.get_repo(f"{org_name}/{repo_name}")
-    pr: PullRequest = content_repo.get_pull(int(pr_number))
+    try:
+        github_client: Github = Github(github_token, verify=False)
+        content_repo: Repository = github_client.get_repo(f"{org_name}/{repo_name}")
+        pr: PullRequest = content_repo.get_pull(int(pr_number))
+    except Exception as e:
+        print(f"❌ Failed to access GitHub API: {e}")
+        sys.exit(1)
 
     pr_label_names = [label.name for label in pr.labels]
     research_mapping_approved = RESEARCH_MAPPING_APPROVED_LABEL in pr_label_names
 
-    watched_folders = RESEARCH_MAPPING_PACKS
-    watched_folders = {folder.lower() for folder in watched_folders if folder}
+    watched_folders = {folder.lower() for folder in RESEARCH_MAPPING_PACKS if folder}
     # Detect if watched folder changed
-    folder_changed = any(file.split("/")[1].lower() in watched_folders for file in changed_files)
+    folder_changed = any(file.split("/")[1].lower() in watched_folders for file in (changed_files or []))
     # Validation logic
     if folder_changed and not research_mapping_approved:
         print(
