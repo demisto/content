@@ -2178,11 +2178,11 @@ def test_build_nat_settings_all_none():
     from CheckPointFirewallV2 import build_nat_settings
 
     result = build_nat_settings(
-        nat_settings_auto_rule=None,
+        nat_auto_rule=None,
         nat_method=None,
         nat_hide_behind=None,
         nat_install_on=None,
-        nat_settings_ip=None,
+        nat_ip=None,
     )
     assert result is None
 
@@ -2199,16 +2199,16 @@ def test_build_nat_settings_hide_method():
     from CheckPointFirewallV2 import build_nat_settings
 
     result = build_nat_settings(
-        nat_settings_auto_rule=True,
+        nat_auto_rule="true",
         nat_method="hide",
         nat_hide_behind="gateway",
         nat_install_on=None,
-        nat_settings_ip=None,
+        nat_ip=None,
     )
     assert result == {"auto-rule": True, "method": "hide", "hide-behind": "gateway"}
 
 
-def test_build_nat_settings_static_method():
+def test_build_nat_settings_static_method_network():
     """
     Given
         nat_method='static' with an IP address
@@ -2220,11 +2220,11 @@ def test_build_nat_settings_static_method():
     from CheckPointFirewallV2 import build_nat_settings
 
     result = build_nat_settings(
-        nat_settings_auto_rule=True,
+        nat_auto_rule="true",
         nat_method="static",
         nat_hide_behind=None,
         nat_install_on="gw-1",
-        nat_settings_ip="10.0.0.1",
+        nat_ip="10.0.0.1",
     )
     assert result == {"auto-rule": True, "method": "static", "install-on": "gw-1", "ipv4-address": "10.0.0.1"}
 
@@ -2242,18 +2242,18 @@ def test_build_nat_settings_static_with_hide_behind_raises():
 
     with pytest.raises(ValueError, match="forbidden"):
         build_nat_settings(
-            nat_settings_auto_rule=True,
+            nat_auto_rule="true",
             nat_method="static",
             nat_hide_behind="gateway",
             nat_install_on=None,
-            nat_settings_ip=None,
+            nat_ip=None,
         )
 
 
 def test_build_nat_settings_hide_gateway_with_ip_raises():
     """
     Given
-        nat_method='hide', nat_hide_behind='gateway', and nat_settings_ip provided
+        nat_method='hide', nat_hide_behind='gateway', and nat_ip provided
     When
         calling build_nat_settings
     Then
@@ -2263,12 +2263,13 @@ def test_build_nat_settings_hide_gateway_with_ip_raises():
 
     with pytest.raises(ValueError, match="must not be provided"):
         build_nat_settings(
-            nat_settings_auto_rule=True,
+            nat_auto_rule="true",
             nat_method="hide",
             nat_hide_behind="gateway",
             nat_install_on=None,
-            nat_settings_ip="10.0.0.1",
+            nat_ip="10.0.0.1",
         )
+
 
 # =====================================================================
 # Tests for new helper functions and enhanced command arguments

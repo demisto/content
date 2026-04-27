@@ -3716,45 +3716,6 @@ def checkpoint_verify_policy_command(client: Client, policy_package: str) -> Com
     return command_results
 
 
-def build_nat_settings(
-    nat_settings_auto_rule: Optional[bool],
-    nat_method: Optional[str],
-    nat_hide_behind: Optional[str],
-    nat_install_on: Optional[str],
-    nat_settings_ip: Optional[str],
-) -> Optional[dict]:
-    """Helper function. Builds the nat-settings dict from individual arguments."""
-    if all(v is None for v in [nat_settings_auto_rule, nat_method, nat_hide_behind, nat_install_on, nat_settings_ip]):
-        return None
-
-    # nat_hide_behind is forbidden when nat_method is 'static'
-    if nat_hide_behind and nat_method == "static":
-        raise ValueError(
-            "The 'nat_hide_behind' argument is forbidden when 'nat_method' is 'static'. "
-            "Please remove 'nat_hide_behind' or change 'nat_method'."
-        )
-    # When nat_method is 'hide' and nat_hide_behind is 'gateway', nat_ip must not be provided
-    if nat_method == "hide" and nat_hide_behind == "gateway" and nat_settings_ip:
-        raise ValueError(
-            "The 'nat_settings_ip' argument must not be provided when 'nat_method' is 'hide' and "
-            "'nat_hide_behind' is 'gateway'. Please remove 'nat_settings_ip' or change 'nat_hide_behind'."
-            " This prevents ambiguity and matches SmartConsole behavior."
-        )
-
-    nat_settings: dict = {}
-    if nat_settings_auto_rule is not None:
-        nat_settings["auto-rule"] = nat_settings_auto_rule
-    if nat_method:
-        nat_settings["method"] = nat_method
-    if nat_hide_behind:
-        nat_settings["hide-behind"] = nat_hide_behind
-    if nat_install_on:
-        nat_settings["install-on"] = nat_install_on
-    if nat_settings_ip:
-        nat_settings["ipv4-address"] = nat_settings_ip
-    return nat_settings
-
-
 def checkpoint_network_get_command(client: Client, identifier: str, details_level: str = None) -> CommandResults:
     """
     Show existing network object using object name or uid.
@@ -3867,11 +3828,11 @@ def checkpoint_network_add_command(
     tags = argToList(tags)
 
     nat_settings = build_nat_settings(
-        nat_settings_auto_rule=argToBoolean(nat_settings_auto_rule) if nat_settings_auto_rule else None,
+        nat_auto_rule=nat_settings_auto_rule,
         nat_method=nat_method,
-        nat_hide_behind=nat_hide_behind,
+        nat_ip=nat_settings_ip,
         nat_install_on=nat_install_on,
-        nat_settings_ip=nat_settings_ip,
+        nat_hide_behind=nat_hide_behind,
     )
 
     result = client.add_network(
@@ -3951,11 +3912,11 @@ def checkpoint_network_update_command(
     tags = argToList(tags)
 
     nat_settings = build_nat_settings(
-        nat_settings_auto_rule=argToBoolean(nat_settings_auto_rule) if nat_settings_auto_rule else None,
+        nat_auto_rule=nat_settings_auto_rule,
         nat_method=nat_method,
-        nat_hide_behind=nat_hide_behind,
+        nat_ip=nat_settings_ip,
         nat_install_on=nat_install_on,
-        nat_settings_ip=nat_settings_ip,
+        nat_hide_behind=nat_hide_behind,
     )
 
     result = client.update_network(
