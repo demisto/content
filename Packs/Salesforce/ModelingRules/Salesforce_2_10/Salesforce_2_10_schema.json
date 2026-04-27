@@ -316,6 +316,10 @@
         "LoginType":{
             "type": "string",
             "is_array": false
+        },
+        "LoginSubtype": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
