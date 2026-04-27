@@ -8,6 +8,7 @@ filter
 	xdm.event.description = operation_detail,
 	xdm.event.outcome_reason = action;
 
+
 filter
     event_type = "activity_log"
 | alter

@@ -350,6 +350,7 @@ call esxi_event_classification
     xdm.source.port = to_integer(source_port),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
     xdm.event.outcome_reason = msg,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
     xdm.event.operation_sub_type = "remote socket connection";
 
 // Log format 9#: "Accepted keyboard-interactive/pam for <user_name> from <source_ip> port <source_port> <protocol>"
