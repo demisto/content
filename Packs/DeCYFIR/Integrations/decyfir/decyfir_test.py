@@ -446,3 +446,45 @@ def test_fetch_incidents(mocker):
             "type": "Attack Surface",
         },
     ]
+
+
+
+def test_get_take_down_list(mocker):
+    from decyfir import Client, get_take_down_list
+
+    mock_response = util_load_json("test_data/take_down_list.json")
+    client = Client(
+        base_url="test_url",
+        verify=False,
+    )
+    mocker.patch.object(Client, "request_decyfir_api", return_value=mock_response["take_down_list"])
+    da = get_take_down_list(client=client,  decyfir_api_key="api_key", args={"size": "1"})
+    
+    assert da[0] == {
+        "ContentsFormat": "json",
+        "Type": "note",
+        "Contents": {"data": mock_response["take_down_list"]},
+        "ReadableContentsFormat": "markdown",
+        "HumanReadable":""
+    }
+
+
+
+def test_initiate_take_down_request(mocker):
+    from decyfir import Client, initiate_take_down_request
+
+    mock_response = util_load_json("test_data/take_down_list.json")
+    client = Client(
+        base_url="test_url",
+        verify=False,
+    )
+    mocker.patch.object(Client, "request_decyfir_api", return_value=mock_response["take_down_list"])
+    da = initiate_take_down_request(client=client,decyfir_api_key="api_key", args={"alert_id": "63ac266713b0752aa7865100"})
+    assert da == {
+        "ContentsFormat": "json",
+        "Type": "note",
+        "Contents": {"data": mock_response["take_down_list"]},
+        "ReadableContentsFormat": "markdown",
+        "HumanReadable": ""
+    }
+

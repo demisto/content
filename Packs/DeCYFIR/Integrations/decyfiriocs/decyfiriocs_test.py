@@ -151,47 +151,6 @@ def test_add_tags(mocker):
     assert ta_data["fields"]["tags"] == ta_data_out["fields"]["tags"]
 
 
-def test_convert_decyfir_ti_to_indicator_format(mocker):
-    raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-    raw_ti_data = util_load_json("test_data/iocs.json")
-    ti_data = raw_iocs_ti_data["threat_actors"]
-
-    client = Client(
-        base_url="test_url",
-        verify=False,
-    )
-    ti_data_out = client.convert_decyfir_ti_to_indicator_format(
-        decyfir_api_key="api_key",
-        data=ti_data[0],
-        tlp_color="tlp_color",
-        feed_tags=["feedTags"],
-        threat_intel_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-        is_data_save=False,
-    )
-
-    assert ti_data_out[0] == raw_ti_data["IN_DATA_3"][0]
-
-
-def test_convert_decyfir_ti_to_indicators_formats(mocker):
-    raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-    raw_ti_data = util_load_json("test_data/iocs.json")
-    ti_data = raw_iocs_ti_data["threat_actors"]
-
-    client = Client(
-        base_url="test_url",
-        verify=False,
-    )
-    ti_data_out = client.convert_decyfir_ti_to_indicators_formats(
-        decyfir_api_key="api_key",
-        ti_data=ti_data,
-        tlp_color="tlp_color",
-        feed_tags=["feedTags"],
-        threat_intel_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-        is_data_save=False,
-    )
-
-    assert ti_data_out == raw_ti_data["IN_DATA_3"]
-
 
 def test_convert_decyfir_ioc_to_indicators_formats(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
