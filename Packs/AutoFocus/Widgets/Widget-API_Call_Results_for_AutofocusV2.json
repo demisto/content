@@ -92,5 +92,9 @@
     "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
     "widgetType": "line",
     "fromVersion": "6.10.0",
-    "description": ""
+    "description": "",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
