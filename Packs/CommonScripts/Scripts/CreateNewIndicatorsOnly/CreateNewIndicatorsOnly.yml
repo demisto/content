@@ -1,7 +1,7 @@
 commonfields:
-  id: CreateNewIndicatorsOnly
+  id: CreateNewIndicatorsOnly-v2
   version: -1
-name: CreateNewIndicatorsOnly
+name: CreateNewIndicatorsOnly-v2
 script: ''
 type: python
 tags:
@@ -10,7 +10,10 @@ comment: Create indicators to the Threat Intel database only if they are not reg
 enabled: true
 args:
 - name: indicator_values
-  description: The indicator values.
+  description: |
+    The indicator values to create or associate.
+    This argument does not support comma-separated values, because indicator values may contain commas.
+    Pass multiple indicators as an array only.
   isArray: true
 - name: type
   auto: PREDEFINED
