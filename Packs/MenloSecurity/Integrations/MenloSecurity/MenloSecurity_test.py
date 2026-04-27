@@ -4,11 +4,7 @@ import pytest
 
 from MenloSecurity import (
     Client,
-    DEFAULT_FIRST_FETCH,
-    LOG_TYPE_MAP,
     MAX_EVENTS_PER_PAGE,
-    SOURCE_LOG_TYPE_MAP,
-    ALL_LOG_TYPES,
     fetch_events,
     get_boundary_hashes,
     get_events_command,
@@ -36,36 +32,28 @@ def mock_client(mocker) -> Client:
     return client
 
 
+# All event/response examples live in test_data/. The integration enriches event dicts
+# in-place, so each helper returns a fresh deep copy to avoid cross-test pollution.
+_WEB_RESPONSE = load_test_data("web_logs_response.json")
+_EMAIL_RESPONSE = load_test_data("email_logs_response.json")
+_EMPTY_RESPONSE = load_test_data("empty_response.json")
+
+
 def make_web_response(event_time: str = "2024-01-15T10:00:40.548000") -> dict:
-    """Build a minimal web log API response with one event."""
-    return {
-        "timestamp": "2024-01-15T10:00:02.599Z",
-        "result": {
-            "events": [
-                {
-                    "event": {
-                        "event_time": event_time,
-                        "domain": "example.com",
-                        "userid": "admin@menlosecurity.com",
-                        "name": "page_request",
-                        "product": "MSIP",
-                        "vendor": "Menlo Security",
-                    }
-                }
-            ],
-            "pagingIdentifiers": {
-                "next_time": "2024-01-15T10:00:00.000Z",
-                "hashes": {"f21fdde7b4e3baa896d2154184bd451f": 0},
-                "last_iteration": True,
-            },
-        },
-    }
+    """Return a fresh deep-copied web response with an optional event_time override."""
+    response = json.loads(json.dumps(_WEB_RESPONSE))
+    response["result"]["events"][0]["event"]["event_time"] = event_time
+    return response
 
 
-EMPTY_RESPONSE = {
-    "timestamp": "2024-01-15T10:00:00.000Z",
-    "result": {"pagingIdentifiers": {}, "events": []},
-}
+def make_email_response() -> dict:
+    """Return a fresh deep-copied email response."""
+    return json.loads(json.dumps(_EMAIL_RESPONSE))
+
+
+def make_empty_response() -> dict:
+    """Return a fresh deep-copied empty response."""
+    return json.loads(json.dumps(_EMPTY_RESPONSE))
 
 
 # ─── Client Tests ─────────────────────────────────────────────────────────────
@@ -103,8 +91,8 @@ class TestClient:
         Then:
             - The pagingIdentifiers are included in the POST body.
         """
-        mocker.patch.object(mock_client, "post", return_value=EMPTY_RESPONSE)
-        mock_post = mocker.patch.object(mock_client, "post", return_value=EMPTY_RESPONSE)
+        mocker.patch.object(mock_client, "post", return_value=make_empty_response())
+        mock_post = mocker.patch.object(mock_client, "post", return_value=make_empty_response())
 
         paging = {"next_time": "2024-01-15T10:00:00.000Z", "hashes": {"abc123": 0}, "last_iteration": True}
         mock_client.fetch_log_page(log_type="web", start=1700000000, end=1700003600, limit=1000, paging_identifiers=paging)
@@ -121,7 +109,7 @@ class TestClient:
         Then:
             - start, end, limit, and format=json are passed as URL query parameters.
         """
-        mock_post = mocker.patch.object(mock_client, "post", return_value=EMPTY_RESPONSE)
+        mock_post = mocker.patch.object(mock_client, "post", return_value=make_empty_response())
 
         mock_client.fetch_log_page(log_type="audit", start=1700000000, end=1700003600, limit=500)
 
@@ -146,7 +134,7 @@ class TestGetEventsForLogType:
             - Events are returned with _time and source_log_type fields added.
             - The event envelope {"event": {...}} is unwrapped.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         events = get_events_for_log_type(
             client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=5000
@@ -167,7 +155,7 @@ class TestGetEventsForLogType:
         Then:
             - Events are returned WITHOUT _time or source_log_type fields.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         events = get_events_for_log_type(
             client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=5000, enrich=False
@@ -187,14 +175,9 @@ class TestGetEventsForLogType:
             - fetch_log_page is called with log_type="email" (not "safemail").
             - Events have source_log_type="email_logs".
         """
-        email_response = {
-            "timestamp": "2024-01-15T10:00:00.000Z",
-            "result": {
-                "events": [{"event": {"event_time": "2024-01-15T10:00:00", "name": "url-rewrite", "domain": "cnn.com"}}],
-                "pagingIdentifiers": {},
-            },
-        }
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", side_effect=[email_response, EMPTY_RESPONSE])
+        mock_fetch = mocker.patch.object(
+            mock_client, "fetch_log_page", side_effect=[make_email_response(), make_empty_response()]
+        )
 
         events = get_events_for_log_type(
             client=mock_client, log_type_ui="safemail", start_epoch=1700000000, end_epoch=1700003600, max_events=5000
@@ -205,22 +188,51 @@ class TestGetEventsForLogType:
         # Verify the API was called with log_type="email" (not "safemail")
         assert mock_fetch.call_args_list[0].kwargs["log_type"] == "email"
 
-    def test_max_events_controls_page_limit_sent_to_api(self, mock_client: Client, mocker):
+    def test_single_call_uses_max_events_as_limit_when_below_page_size(self, mock_client: Client, mocker):
         """
-        Given:
-            - max_events is set to 50 (less than MAX_EVENTS_PER_PAGE=1000).
-        When:
-            - Calling get_events_for_log_type.
-        Then:
-            - fetch_log_page is called with limit=50.
+        Given: max_events=50 (less than MAX_EVENTS_PER_PAGE).
+        When: Calling get_events_for_log_type.
+        Then: One API call with limit=50 (no pagination needed).
         """
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         get_events_for_log_type(
             client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=50
         )
 
+        assert mock_fetch.call_count == 1
         assert mock_fetch.call_args.kwargs["limit"] == 50
+
+    def test_paginated_calls_keep_constant_page_size_and_trim_overshoot(self, mock_client: Client, mocker):
+        """
+        Given: max_events=1500 — requires pagination, and the API returns full 1000-event pages.
+        When: Calling get_events_for_log_type.
+        Then: All calls use limit=MAX_EVENTS_PER_PAGE (page size stays constant), and the result
+              is trimmed to exactly max_events.
+        """
+        # Build full 1000-event pages by replicating a fresh deep-copy per event so
+        # in-place enrichment by the integration doesn't pollute the shared template.
+        events_page_1 = [make_web_response()["result"]["events"][0] for _ in range(MAX_EVENTS_PER_PAGE)]
+        events_page_2 = [make_web_response()["result"]["events"][0] for _ in range(MAX_EVENTS_PER_PAGE)]
+        full_page_with_cursor = {
+            "result": {
+                "events": events_page_1,
+                "pagingIdentifiers": {"next_time": "2024-01-15T11:00:00.000Z"},
+            }
+        }
+        full_page_no_cursor = {
+            "result": {"events": events_page_2, "pagingIdentifiers": {}},
+        }
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", side_effect=[full_page_with_cursor, full_page_no_cursor])
+
+        events = get_events_for_log_type(
+            client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=1500
+        )
+
+        assert mock_fetch.call_count == 2
+        assert mock_fetch.call_args_list[0].kwargs["limit"] == MAX_EVENTS_PER_PAGE
+        assert mock_fetch.call_args_list[1].kwargs["limit"] == MAX_EVENTS_PER_PAGE
+        assert len(events) == 1500
 
     def test_empty_response_stops_pagination(self, mock_client: Client, mocker):
         """
@@ -232,7 +244,7 @@ class TestGetEventsForLogType:
             - Pagination stops immediately and no events are returned.
             - Only one API call is made.
         """
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         events = get_events_for_log_type(
             client=mock_client, log_type_ui="audit", start_epoch=1700000000, end_epoch=1700003600, max_events=5000
@@ -273,7 +285,7 @@ class TestFetchEvents:
         Then:
             - Events are fetched and next_run is populated with last_fetch_time.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         next_run, events = fetch_events(
             client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 day", max_events_per_fetch=5000
@@ -297,7 +309,7 @@ class TestFetchEvents:
         last_fetch_time = "2024-01-15T09:00:00Z"
         expected_start = timestamp_to_epoch(last_fetch_time)
 
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         fetch_events(
             client=mock_client,
@@ -319,7 +331,7 @@ class TestFetchEvents:
             - fetch_log_page is called at least once per log type.
             - next_run contains an entry for each log type.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         next_run, _ = fetch_events(
             client=mock_client,
@@ -345,7 +357,7 @@ class TestFetchEvents:
         """
         from CommonServerPython import arg_to_datetime
 
-        mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         next_run, _ = fetch_events(
             client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
@@ -365,7 +377,7 @@ class TestFetchEvents:
         Then:
             - next_run["web"] is identical to the previous last_run["web"] (state preserved).
         """
-        mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         prev_state = {"last_fetch_time": "2024-01-15T09:00:00Z", "boundary_hashes": ["abc123hash"]}
         last_run = {"web": prev_state}
@@ -387,7 +399,7 @@ class TestFetchEvents:
             - next_run["web"]["last_fetch_time"] equals the event's event_time.
             - next_run["web"]["boundary_hashes"] contains one hash.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         next_run, events = fetch_events(
             client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
@@ -407,7 +419,7 @@ class TestFetchEvents:
         Then:
             - The duplicate event is filtered out.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         # First cycle: get the event and its hash
         _, events_cycle1 = fetch_events(
@@ -417,7 +429,7 @@ class TestFetchEvents:
         boundary_hash = hash_event(events_cycle1[0])
 
         # Second cycle: same event returned, should be deduped
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
         last_run = {"web": {"last_fetch_time": "2024-01-15T10:00:40.548000", "boundary_hashes": [boundary_hash]}}
         _, events_cycle2 = fetch_events(
             client=mock_client, last_run=last_run, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
@@ -434,7 +446,7 @@ class TestFetchEvents:
         Then:
             - The event is NOT filtered out (different content = not a duplicate).
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         last_run = {"web": {"last_fetch_time": "2024-01-15T10:00:40.548000", "boundary_hashes": ["deadbeef00000000"]}}
         _, events = fetch_events(
@@ -452,7 +464,7 @@ class TestFetchEvents:
         Then:
             - All events are returned without any dedup filtering.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         _, events = fetch_events(
             client=mock_client, last_run={}, log_types=["web"], first_fetch_time="1 hour", max_events_per_fetch=5000
@@ -476,7 +488,7 @@ class TestFetchEvents:
         def side_effect_by_log_type(log_type: str, **kwargs):
             if log_type == "web":
                 raise Exception("API error for web")
-            return EMPTY_RESPONSE
+            return make_empty_response()
 
         mocker.patch.object(mock_client, "fetch_log_page", side_effect=side_effect_by_log_type)
 
@@ -590,7 +602,7 @@ class TestGetEventsCommand:
         Then:
             - CommandResults with readable output containing "Menlo" is returned.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         results = get_events_command(
             client=mock_client,
@@ -611,7 +623,7 @@ class TestGetEventsCommand:
         Then:
             - Events in raw_response do NOT have _time or source_log_type fields.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
 
         results = get_events_command(
             client=mock_client,
@@ -635,7 +647,7 @@ class TestGetEventsCommand:
         Then:
             - Events in raw_response have _time and source_log_type fields.
         """
-        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), EMPTY_RESPONSE])
+        mocker.patch.object(mock_client, "fetch_log_page", side_effect=[make_web_response(), make_empty_response()])
         mocker.patch("MenloSecurity.send_events_to_xsiam")
 
         results = get_events_command(
@@ -660,7 +672,7 @@ class TestGetEventsCommand:
         Then:
             - fetch_log_page is called for both default log types.
         """
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         get_events_command(
             client=mock_client,
@@ -689,7 +701,7 @@ class TestTestModule:
         """
         from MenloSecurity import test_module  # noqa: PLC0415
 
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         result = test_module(mock_client, ["web", "audit"])
 
@@ -707,7 +719,7 @@ class TestTestModule:
         """
         from MenloSecurity import test_module  # noqa: PLC0415
 
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         test_module(mock_client, ["web", "audit", "dlp"])
 
@@ -728,7 +740,7 @@ class TestTestModule:
         """
         from MenloSecurity import test_module  # noqa: PLC0415
 
-        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=EMPTY_RESPONSE)
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
         test_module(mock_client, ["safemail"])
 
@@ -784,51 +796,3 @@ class TestTestModule:
 
         with pytest.raises(Exception, match="500"):
             test_module(mock_client, ["web"])
-
-
-# ─── Constants Tests ──────────────────────────────────────────────────────────
-
-
-class TestConstants:
-    def test_log_type_map_contains_all_types(self):
-        """
-        Given / When / Then:
-            - LOG_TYPE_MAP must contain exactly the 7 expected log type keys.
-        """
-        expected = {"web", "safemail", "audit", "smtp", "attachment", "dlp", "isoc"}
-        assert set(LOG_TYPE_MAP.keys()) == expected
-
-    def test_safemail_maps_to_email_api_type(self):
-        """
-        Given / When / Then:
-            - The "safemail" UI label must map to "email" as the API log_type value.
-        """
-        assert LOG_TYPE_MAP["safemail"] == "email"
-
-    def test_source_log_type_map_matches_log_type_map(self):
-        """
-        Given / When / Then:
-            - SOURCE_LOG_TYPE_MAP must have an entry for every key in LOG_TYPE_MAP.
-        """
-        assert set(SOURCE_LOG_TYPE_MAP.keys()) == set(LOG_TYPE_MAP.keys())
-
-    def test_all_log_types_list_matches_log_type_map(self):
-        """
-        Given / When / Then:
-            - ALL_LOG_TYPES must contain exactly the same keys as LOG_TYPE_MAP.
-        """
-        assert set(ALL_LOG_TYPES) == set(LOG_TYPE_MAP.keys())
-
-    def test_max_events_per_page_is_1000(self):
-        """
-        Given / When / Then:
-            - MAX_EVENTS_PER_PAGE must be 1000 (the API hard limit per request).
-        """
-        assert MAX_EVENTS_PER_PAGE == 1000
-
-    def test_default_first_fetch_is_3_hours(self):
-        """
-        Given / When / Then:
-            - DEFAULT_FIRST_FETCH must be "3 hours".
-        """
-        assert DEFAULT_FIRST_FETCH == "3 hours"

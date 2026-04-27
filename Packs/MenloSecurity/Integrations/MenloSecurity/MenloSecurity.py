@@ -168,8 +168,14 @@ def get_events_for_log_type(
     events: list[dict] = []
     paging_identifiers: dict | None = None
 
+    # Page-size: first call uses min(MAX_EVENTS_PER_PAGE, max_events); subsequent calls
+    # must use MAX_EVENTS_PER_PAGE since the pagingIdentifiers cursor is bound to it.
+    # The final list is trimmed to max_events (we may overshoot on the last page).
     while len(events) < max_events:
-        page_limit = min(MAX_EVENTS_PER_PAGE, max_events - len(events))
+        if paging_identifiers is None:
+            page_limit = min(MAX_EVENTS_PER_PAGE, max_events)
+        else:
+            page_limit = MAX_EVENTS_PER_PAGE
         demisto.debug(f"[{thread_name}] Fetching {log_type_ui}: start={start_epoch}, end={end_epoch}, limit={page_limit}")
 
         try:
@@ -218,6 +224,11 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] All {log_type_ui} events fetched.")
             break
 
+    # Trim to the user-requested cap (we may have fetched a few extra in the last page).
+    if len(events) > max_events:
+        demisto.debug(f"[{thread_name}] Trimming {log_type_ui} from {len(events)} to {max_events} events.")
+        events = events[:max_events]
+
     demisto.debug(f"[{thread_name}] Collected {len(events)} {log_type_ui} events total.")
     return events
 
@@ -228,11 +239,14 @@ def get_events_for_log_type(
 def test_module(client: Client, log_types: list[str]) -> str:  # noqa: PT
     """Test API connectivity and authentication.
 
-    Fetches one record per configured log type for the last 1 hour.
+    Fetches one record per configured log type using the default first-fetch window.
     Returns 'ok' on success, a descriptive string for known errors, or re-raises unexpected ones.
     """
     end_epoch = int(datetime.now(UTC).timestamp())
-    start_epoch = end_epoch - 3600  # last 1 hour
+    first_fetch_dt = arg_to_datetime(DEFAULT_FIRST_FETCH)
+    if first_fetch_dt is None:
+        raise ValueError(f"Invalid DEFAULT_FIRST_FETCH: {DEFAULT_FIRST_FETCH!r}")
+    start_epoch = int(first_fetch_dt.timestamp())
 
     for log_type_ui in log_types or ALL_LOG_TYPES:
         api_log_type = LOG_TYPE_MAP.get(log_type_ui, log_type_ui)
@@ -250,9 +264,6 @@ def test_module(client: Client, log_types: list[str]) -> str:  # noqa: PT
             raise
 
     return "ok"
-
-
-test_module.__test__ = False  # type: ignore[attr-defined]  # prevent pytest from collecting this as a test
 
 
 @dataclass
@@ -483,7 +494,7 @@ def get_events_command(
 """ MAIN FUNCTION """
 
 
-def main() -> None:  # pragma: no cover
+def main() -> None:
     """Main function — parses params and dispatches commands."""
     params = demisto.params()
     args = demisto.args()

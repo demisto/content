@@ -60,7 +60,7 @@ configuration:
   defaultvalue: "5000"
   required: false
   section: Collect
-  additionalinfo: Maximum number of events to fetch per log type per fetch cycle.
+  additionalinfo: "Maximum number of events to fetch per log type per fetch cycle. Recommended limit: 5,000."
 script:
   script: ""
   type: python
