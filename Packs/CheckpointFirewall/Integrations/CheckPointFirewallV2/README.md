@@ -5,9 +5,9 @@
 Integration Overview Manage Check Point Firewall. Read information and to send commands to the Check Point Firewall server.
 This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
 
-Product Name: Check Point Firewall  
-Product Type: Network Security  
-Product Version: R80.30  
+Product Name: Check Point Firewall
+Product Type: Network Security
+Product Version: R80.30
 
 ### How to configure the integration
 
@@ -3053,3 +3053,350 @@ Deletes threat protections.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CheckPoint.DeletedThreatProtections | unknown |  |
+
+### checkpoint-service-group-delete
+
+***
+Deletes the specified service group object.
+
+#### Base Command
+
+`checkpoint-service-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier (UID) or name. | Required |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. You won't be able to publish such changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. Possible values are: true, false. Default is false. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### checkpoint-service-group-list
+
+***
+Gets a list of all service group objects.
+
+#### Base Command
+
+`checkpoint-service-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc. | Optional |
+| limit | The maximum number of results to return. API default is 50. | Optional |
+| offset | Number of results to initially skip. API default is 0. | Optional |
+| order | Define the sort order using a single string made of comma-separated direction:field pairs. The direction can be ASC or DESC. Example: "ASC:type,ASC:name,DESC:uid". Automatically sorts the results by Name, in the ascending order. | Optional |
+| show_as_ranges | When true, the service group's matched content is displayed as ranges of port numbers rather than service objects. Objects that are not represented using port numbers are presented as objects. The 'members' parameter is omitted from the response and instead the 'ranges' parameter is displayed. Possible values are: true, false. Default is false. | Optional |
+| dereference_group_members | Indicates whether to dereference "members" field by details level for every object in reply. Possible values are: true, false. Default is false. | Optional |
+| show_membership | Indicates whether to calculate and show "groups" field for every object in reply. Possible values are: true, false. Default is false. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| domains_to_process | Indicates which domains to process the commands on. It cannot be used with details_level set to 'full'. Must be run from the System Domain. Possible values are: CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ServiceGroup.name | String | Object name. |
+| CheckPoint.ServiceGroup.uid | String | Object unique identifier. |
+| CheckPoint.ServiceGroup.type | String | Object type. |
+| CheckPoint.ServiceGroup.domain.name | String | Domain name. |
+| CheckPoint.ServiceGroup.domain.uid | String | Domain UID. |
+| CheckPoint.ServiceGroup.domain.domain-type | String | Domain type. |
+
+### checkpoint-access-section-add
+
+***
+Adds a new access section.
+
+#### Base Command
+
+`checkpoint-access-section-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| layer | Layer that the rule belongs to identified by the name or UID. | Required |
+| position_rule | Rule name. Add rule relatively to another rule or section. | Optional |
+| position | The position of the rule. Possible values are: top, above, below, bottom. | Required |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| name | Object name. Must be unique in the domain. | Optional |
+| tags | Collection of tag identifiers. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. You won't be able to publish such changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. Possible values are: true, false. Default is false. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AccessSection.name | String | Object name. |
+| CheckPoint.AccessSection.uid | String | Object unique identifier. |
+| CheckPoint.AccessSection.type | String | Object type. |
+| CheckPoint.AccessSection.domain.name | String | Domain name. |
+| CheckPoint.AccessSection.domain.uid | String | Domain UID. |
+| CheckPoint.AccessSection.domain.domain-type | String | Domain type. |
+
+### checkpoint-service-group-add
+
+***
+Adds a new service group object.
+
+#### Base Command
+
+`checkpoint-service-group-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Object name. Must be unique in the domain. | Required |
+| members | Collection of Network objects identified by the name or UID. | Optional |
+| color | Color of the object. Should be one of existing colors. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| comments | Comments string. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| groups | Collection of group identifiers. | Optional |
+| tags | Collection of tag identifiers. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. You won't be able to publish such changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. Possible values are: true, false. Default is false. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ServiceGroup.name | String | Object name. |
+| CheckPoint.ServiceGroup.uid | String | Object unique identifier. |
+| CheckPoint.ServiceGroup.type | String | Object type. |
+| CheckPoint.ServiceGroup.domain.name | String | Domain name. |
+| CheckPoint.ServiceGroup.domain.uid | String | Domain UID. |
+| CheckPoint.ServiceGroup.domain.domain-type | String | Domain type. |
+| CheckPoint.ServiceGroup.members.name | String | Member object name. |
+| CheckPoint.ServiceGroup.members.uid | String | Member object UID. |
+| CheckPoint.ServiceGroup.members.type | String | Member object type. |
+| CheckPoint.ServiceGroup.groups.name | String | Group name. |
+| CheckPoint.ServiceGroup.groups.uid | String | Group UID. |
+| CheckPoint.ServiceGroup.tags.name | String | Tag name. |
+| CheckPoint.ServiceGroup.tags.uid | String | Tag UID. |
+
+### checkpoint-access-section-delete
+
+***
+Deletes the specified access section.
+
+#### Base Command
+
+`checkpoint-access-section-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier (UID) or name. | Required |
+| layer | Layer that the rule belongs to identified by the name or UID. | Required |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### checkpoint-service-group-get
+
+***
+Shows an existing service group object using object name or uid.
+
+#### Base Command
+
+`checkpoint-service-group-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier (UID) or name. | Required |
+| show_as_ranges | When true, the service group's matched content is displayed as ranges of port numbers rather than service objects. Objects that are not represented using port numbers are presented as objects. The 'members' parameter is omitted from the response and instead the 'ranges' parameter is displayed. Possible values are: true, false. Default is false. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ServiceGroup.name | String | Object name. |
+| CheckPoint.ServiceGroup.uid | String | Object unique identifier. |
+| CheckPoint.ServiceGroup.type | String | Object type. |
+| CheckPoint.ServiceGroup.domain.name | String | Domain name. |
+| CheckPoint.ServiceGroup.domain.uid | String | Domain UID. |
+| CheckPoint.ServiceGroup.domain.domain-type | String | Domain type. |
+| CheckPoint.ServiceGroup.members.name | String | Member object name. |
+| CheckPoint.ServiceGroup.members.uid | String | Member object UID. |
+| CheckPoint.ServiceGroup.members.type | String | Member object type. |
+| CheckPoint.ServiceGroup.groups.name | String | Group name. |
+| CheckPoint.ServiceGroup.groups.uid | String | Group UID. |
+| CheckPoint.ServiceGroup.tags.name | String | Tag name. |
+| CheckPoint.ServiceGroup.tags.uid | String | Tag UID. |
+
+### checkpoint-service-group-update
+
+***
+Updates the specified service group object.
+
+#### Base Command
+
+`checkpoint-service-group-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier (UID) or name. | Required |
+| members_action | When the action is "add" or "remove", the members list is wrapped as {members_action: members}. Otherwise, members are sent without an action. Possible values are: add, remove. | Optional |
+| members | List of Network objects identified by the name or UID. | Optional |
+| new_name | New name of the object. | Optional |
+| color | Color of the object. Should be one of existing colors. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| comments | Comments string. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. You won't be able to publish such changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. Possible values are: true, false. Default is false. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| groups_action | When the action is "add" or "remove", the groups list is wrapped as {groups_action: groups}. Otherwise, groups are sent without an action. Possible values are: add, remove. | Optional |
+| groups | List of group identifiers. | Optional |
+| tags_action | When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action. Possible values are: add, remove. | Optional |
+| tags | List of tag identifiers. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ServiceGroup.name | String | Object name. |
+| CheckPoint.ServiceGroup.uid | String | Object unique identifier. |
+| CheckPoint.ServiceGroup.type | String | Object type. |
+| CheckPoint.ServiceGroup.domain.name | String | Domain name. |
+| CheckPoint.ServiceGroup.domain.uid | String | Domain UID. |
+| CheckPoint.ServiceGroup.domain.domain-type | String | Domain type. |
+| CheckPoint.ServiceGroup.members.name | String | Member object name. |
+| CheckPoint.ServiceGroup.members.uid | String | Member object UID. |
+| CheckPoint.ServiceGroup.members.type | String | Member object type. |
+| CheckPoint.ServiceGroup.groups.name | String | Group name. |
+| CheckPoint.ServiceGroup.groups.uid | String | Group UID. |
+| CheckPoint.ServiceGroup.tags.name | String | Tag name. |
+| CheckPoint.ServiceGroup.tags.uid | String | Tag UID. |
+
+### checkpoint-service-group-clone
+
+***
+Clones an existing service group object.
+
+#### Base Command
+
+`checkpoint-service-group-clone`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier (UID) or name of the service group to clone. | Required |
+| members_action | When the action is "add" or "remove", the members list is wrapped as {members_action: members}. Otherwise, members are sent without an action. Possible values are: add, remove. | Optional |
+| members | List of Network objects identified by the name or UID. | Optional |
+| new_name | New name of the object. | Optional |
+| color | Color of the object. Should be one of existing colors. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| comments | Comments string. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. You won't be able to publish such changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. Possible values are: true, false. Default is false. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| groups_action | When the action is "add" or "remove", the groups list is wrapped as {groups_action: groups}. Otherwise, groups are sent without an action. Possible values are: add, remove. | Optional |
+| groups | List of group identifiers. | Optional |
+| tags_action | When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action. Possible values are: add, remove. | Optional |
+| tags | List of tag identifiers. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.ServiceGroup.name | String | Object name. |
+| CheckPoint.ServiceGroup.uid | String | Object unique identifier. |
+| CheckPoint.ServiceGroup.type | String | Object type. |
+| CheckPoint.ServiceGroup.domain.name | String | Domain name. |
+| CheckPoint.ServiceGroup.domain.uid | String | Domain UID. |
+| CheckPoint.ServiceGroup.domain.domain-type | String | Domain type. |
+| CheckPoint.ServiceGroup.members.name | String | Member object name. |
+| CheckPoint.ServiceGroup.members.uid | String | Member object UID. |
+| CheckPoint.ServiceGroup.members.type | String | Member object type. |
+| CheckPoint.ServiceGroup.groups.name | String | Group name. |
+| CheckPoint.ServiceGroup.groups.uid | String | Group UID. |
+| CheckPoint.ServiceGroup.tags.name | String | Tag name. |
+| CheckPoint.ServiceGroup.tags.uid | String | Tag UID. |
+
+### checkpoint-access-section-update
+
+***
+Updates the specified access section.
+
+#### Base Command
+
+`checkpoint-access-section-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier (UID) or name. | Required |
+| layer | Layer that the rule belongs to identified by the name or UID. | Required |
+| new_name | New name of the object. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| tags_action | When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action. Possible values are: add, remove. | Optional |
+| tags | List of tag identifiers. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. You won't be able to publish such changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. Possible values are: true, false. Default is false. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AccessSection.name | String | Object name. |
+| CheckPoint.AccessSection.uid | String | Object unique identifier. |
+| CheckPoint.AccessSection.type | String | Object type. |
+| CheckPoint.AccessSection.domain.name | String | Domain name. |
+| CheckPoint.AccessSection.domain.uid | String | Domain UID. |
+| CheckPoint.AccessSection.domain.domain-type | String | Domain type. |
+
+### checkpoint-access-section-get
+
+***
+Shows an existing access section using object name or uid.
+
+#### Base Command
+
+`checkpoint-access-section-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| layer | Layer that the rule belongs to identified by the name or UID. | Required |
+| identifier | Object unique identifier (UID) or name. | Required |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: uid, standard, full. Default is standard. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AccessSection.name | String | Object name. |
+| CheckPoint.AccessSection.uid | String | Object unique identifier. |
+| CheckPoint.AccessSection.type | String | Object type. |
+| CheckPoint.AccessSection.domain.name | String | Domain name. |
+| CheckPoint.AccessSection.domain.uid | String | Domain UID. |
+| CheckPoint.AccessSection.domain.domain-type | String | Domain type. |
