@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import json
 from typing import Any
+from datetime import timezone
 
 urllib3.disable_warnings()
 
@@ -51,12 +52,21 @@ def finding_list_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
 
 
+def _make_aware(dt):
+    """Ensure a datetime is timezone-aware (UTC). Returns None if dt is None."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
 def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int) -> tuple[dict, list[dict]]:
     last_fetch = last_run.get("last_fetch")
     if last_fetch:
-        last_fetch_time = arg_to_datetime(last_fetch)
+        last_fetch_time = _make_aware(arg_to_datetime(last_fetch))
     else:
-        last_fetch_time = arg_to_datetime(first_fetch_time)
+        last_fetch_time = _make_aware(arg_to_datetime(first_fetch_time))
 
     raw_response = client.get_company_findings(limit=max_fetch, page=1)
     findings = raw_response.get("data", [])
@@ -65,7 +75,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     latest_created_time = last_fetch_time
 
     for finding in findings:
-        finding_time = arg_to_datetime(finding.get("insert_ts"))
+        finding_time = _make_aware(arg_to_datetime(finding.get("insert_ts")))
 
         if last_fetch_time and finding_time and finding_time <= last_fetch_time:
             continue
