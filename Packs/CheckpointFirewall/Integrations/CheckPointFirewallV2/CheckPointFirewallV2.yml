@@ -1834,14 +1834,14 @@ script:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
   - arguments:
-    - description: Object unique identifier (UID) or name.
+    - description: The unique identifier (UID) or name of the object.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      description: 'The level of detail for the fields in the response. Can be "standard", "full", or "uid".'
       name: details_level
       predefined:
       - standard
@@ -1851,22 +1851,22 @@ script:
     name: checkpoint-network-get
     outputs:
     - contextPath: CheckPoint.Network.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.Network.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.Network.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.Network.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.Network.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.Network.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Network.meta-info.creator
       description: The creator of the object.
@@ -1876,49 +1876,49 @@ script:
       type: String
   - arguments:
     - defaultValue: '50'
-      description: The maximum number of results to return. Default is 50. Max is 500.
+      description: The maximum number of results to return. Max is 500.
       name: limit
     - defaultValue: '0'
-      description: Number of results to initially skip. Default is 0.
+      description: The number of results to initially skip.
       name: offset
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     - auto: PREDEFINED
-      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      description: 'The level of detail for the fields in the response. Can be "standard", "full", or "uid".'
       name: details_level
       predefined:
       - standard
       - full
       - uid
-    description: Retrieve a list of network objects.
+    description: Retrieves a list of network objects.
     name: checkpoint-network-list
     outputs:
     - contextPath: CheckPoint.Network.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.Network.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.Network.type
-      description: Object type.
+      description: The object type.
       type: String
   - arguments:
-    - description: Object name. Must be unique in the domain.
+    - description: The object name. Must be unique in the domain.
       name: identifier
       required: true
-    - description: IPv4 network address.
+    - description: The IPv4 network address.
       name: subnet
       required: true
-    - description: IPv4 network mask length (e.g. 24).
+    - description: The IPv4 network mask length (for example, 24).
       name: mask_length
-    - description: IPv4 network mask (e.g. 255.255.255.0).
+    - description: The IPv4 network mask (for example, 255.255.255.0).
       name: subnet_mask
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -1957,16 +1957,16 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
     - auto: PREDEFINED
-      description: Allow broadcast address inclusion.
+      description: 'Whether to allow broadcast address inclusion. Can be "allow" or "disallow".'
       name: broadcast
       predefined:
       - disallow
       - allow
-    - description: Gateway for NAT rule.
+    - description: The gateway for the NAT rule.
       name: nat_install_on
     - auto: PREDEFINED
       description: 'Hide behind method. This parameter is forbidden when nat_method is "static".'
@@ -1981,37 +1981,37 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
+    - description: 'The IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
       name: nat_settings_ip
     - auto: PREDEFINED
-      description: NAT translation method.
+      description: The NAT translation method.
       name: nat_method
       predefined:
       - hide
       - static
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     description: Create a new network object.
     name: checkpoint-network-add
     outputs:
     - contextPath: CheckPoint.Network.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.Network.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.Network.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.Network.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.Network.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.Network.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.Network.meta-info.creator
       description: The creator of the object.
@@ -2020,23 +2020,23 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Network.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
   - arguments:
-    - description: Object unique identifier (UID) or name.
+    - description: The object unique identifier (UID) or name.
       name: identifier
       required: true
-    - description: New name of the object.
+    - description: The new name of the object.
       name: new_identifier
-    - description: IPv4 network address.
+    - description: The IPv4 network address.
       name: subnet
-    - description: IPv4 network mask (e.g. 255.255.255.0).
+    - description: The IPv4 network mask (for example, 255.255.255.0).
       name: subnet_mask
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2075,19 +2075,19 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
     - auto: PREDEFINED
-      description: Allow broadcast address inclusion.
+      description: 'Whether to allow broadcast address inclusion. Can be "allow" or "disallow".'
       name: broadcast
       predefined:
       - disallow
       - allow
-    - description: Gateway for NAT rule.
+    - description: The gateway for the NAT rule.
       name: nat_install_on
     - auto: PREDEFINED
-      description: 'Hide behind method. This parameter is forbidden when nat_method is "static".'
+      description: 'The hide behind method. This parameter is not allowed when nat_method is "static".'
       name: nat_hide_behind
       predefined:
       - gateway
@@ -2099,37 +2099,37 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
+    - description: 'The IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
       name: nat_settings_ip
     - auto: PREDEFINED
-      description: NAT translation method.
+      description: The NAT translation method.
       name: nat_method
       predefined:
       - hide
       - static
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     description: Update an existing network object.
     name: checkpoint-network-update
     outputs:
     - contextPath: CheckPoint.Network.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.Network.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.Network.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.Network.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.Network.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.Network.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.Network.meta-info.creator
       description: The creator of the object.
@@ -2138,17 +2138,17 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Network.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Network.comments
-      description: Comments string.
+      description: A comment string.
       type: String
   - arguments:
-    - description: Object unique identifier (UID) or name.
+    - description: The object unique identifier (UID) or name.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -2157,15 +2157,15 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Delete a network object.
+    description: Deletes a network object.
     name: checkpoint-network-delete
     outputs: []
   - arguments:
-    - description: Object unique identifier (UID) or name.
+    - description: The object unique identifier (UID) or name.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     - auto: PREDEFINED
       description: The type of service to retrieve.
@@ -2179,22 +2179,22 @@ script:
     name: checkpoint-service-get
     outputs:
     - contextPath: CheckPoint.TCPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.TCPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.TCPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.TCPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.TCPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.TCPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.TCPService.meta-info.creator
       description: The creator of the object.
@@ -2203,25 +2203,25 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.TCPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
     - contextPath: CheckPoint.UDPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.UDPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.UDPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.UDPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.UDPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.UDPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.UDPService.meta-info.creator
       description: The creator of the object.
@@ -2230,25 +2230,25 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.UDPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
     - contextPath: CheckPoint.ICMPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.ICMPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.ICMPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.ICMPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.ICMPService.meta-info.creator
       description: The creator of the object.
@@ -2257,16 +2257,16 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ICMPService.icmp-type
-      description: ICMP type as listed in RFC 792.
+      description: The ICMP type as listed in RFC 792.
       type: Number
     - contextPath: CheckPoint.ICMPService.icmp-code
-      description: ICMP code as listed in RFC 792.
+      description: The ICMP code as listed in RFC 792.
       type: Number
   - arguments:
-    - description: Object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint.
+    - description: The object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint.
       name: identifier
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     - auto: PREDEFINED
       description: The type of service to retrieve.
@@ -2277,94 +2277,94 @@ script:
       - icmp
       required: true
     - defaultValue: '50'
-      description: The maximum number of results to return. Default is 50. Max is 500.
+      description: The maximum number of results to return. Max is 500.
       name: limit
     - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
       name: offset
-    description: Retrieve a list of service objects. When identifier is provided, returns a single service object.
+    description: Retrieves a list of service objects. When the identifier is provided, returns a single service object.
     name: checkpoint-service-list
     outputs:
     - contextPath: CheckPoint.TCPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.TCPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.TCPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.TCPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
     - contextPath: CheckPoint.TCPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.TCPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.TCPService.domain.domain-type
       description: Domain type.
       type: String
     - contextPath: CheckPoint.UDPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.UDPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.UDPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.UDPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
     - contextPath: CheckPoint.UDPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.UDPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.UDPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.ICMPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.ICMPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.ICMPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.ICMPService.icmp-type
-      description: ICMP type as listed in RFC 792.
+      description: The ICMP type as listed in RFC 792.
       type: Number
     - contextPath: CheckPoint.ICMPService.icmp-code
-      description: ICMP code as listed in RFC 792.
+      description: The ICMP code as listed in RFC 792.
       type: Number
     - contextPath: CheckPoint.ICMPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
   - arguments:
-    - description: Object name. Must be unique in the domain.
+    - description: The object name. Must be unique in the domain.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    - description: The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
+    - description: The port number of the service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
       name: port
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2403,31 +2403,31 @@ script:
       - red
       - sienna
       - yellow
-    - description: Time (in seconds) before the session times out.
+    - description: The time (in seconds) before the session times out.
       name: session_timeout
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
-    description: Create a new TCP service object.
+    description: Creates a new TCP service object.
     name: checkpoint-tcp-service-add
     outputs:
     - contextPath: CheckPoint.TCPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.TCPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.TCPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.TCPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.TCPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.TCPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.TCPService.meta-info.creator
       description: The creator of the object.
@@ -2436,25 +2436,25 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.TCPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.TCPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
   - arguments:
-    - description: Object name. Must be unique in the domain.
+    - description: The object name. Must be unique in the domain.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    - description: The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
+    - description: The port number of the service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
       name: port
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2495,29 +2495,29 @@ script:
       - yellow
     - description: Time (in seconds) before the session times out.
       name: session_timeout
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
-    description: Create a new UDP service object.
+    description: Creates a new UDP service object.
     name: checkpoint-udp-service-add
     outputs:
     - contextPath: CheckPoint.UDPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.UDPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.UDPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.UDPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.UDPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.UDPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.UDPService.meta-info.creator
       description: The creator of the object.
@@ -2526,27 +2526,27 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.UDPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.UDPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
   - arguments:
-    - description: Object name. Must be unique in the domain.
+    - description: The object name. Must be unique in the domain.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    - description: ICMP type as listed in RFC 792 (default is 0).
+    - description: The ICMP type as listed in RFC 792 (default is 0).
       name: icmp_type
-    - description: ICMP code as listed in RFC 792 (default is 0).
+    - description: The ICMP code as listed in RFC 792 (default is 0).
       name: icmp_code
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2585,29 +2585,29 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
-    description: Create a new ICMP service object.
+    description: Creates a new ICMP service object.
     name: checkpoint-icmp-service-add
     outputs:
     - contextPath: CheckPoint.ICMPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.ICMPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.ICMPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.ICMPService.meta-info.creator
       description: The creator of the object.
@@ -2616,30 +2616,30 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ICMPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.ICMPService.icmp-type
-      description: ICMP type as listed in RFC 792.
+      description: The ICMP type as listed in RFC 792.
       type: Number
     - contextPath: CheckPoint.ICMPService.icmp-code
-      description: ICMP code as listed in RFC 792.
+      description: The ICMP code as listed in RFC 792.
       type: Number
   - arguments:
-    - description: Object unique identifier (UID) or name.
+    - description: The object unique identifier (UID) or name.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    - description: New name of the object.
+    - description: The new name of the object.
       name: new_identifier
-    - description: The number of the port used to provide this service.
+    - description: The port number of the service.
       name: port
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2678,26 +2678,26 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
-    description: Update an existing TCP service object.
+    description: Updates an existing TCP service object.
     name: checkpoint-tcp-service-update
     outputs:
     - contextPath: CheckPoint.TCPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.TCPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.TCPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.TCPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.TCPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.TCPService.domain.domain-type
       description: Domain type.
@@ -2709,30 +2709,30 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.TCPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.TCPService.comments
-      description: Comments string.
+      description: A comment string.
       type: String
     - contextPath: CheckPoint.TCPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    - description: New name of the object.
+    - description: The new name of the object.
       name: new_identifier
-    - description: The number of the port used to provide this service.
+    - description: The port number of the service.
       name: port
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2771,29 +2771,29 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
     description: Update an existing UDP service object.
     name: checkpoint-udp-service-update
     outputs:
     - contextPath: CheckPoint.UDPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.UDPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.UDPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.UDPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.UDPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.UDPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.UDPService.meta-info.creator
       description: The creator of the object.
@@ -2802,32 +2802,32 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.UDPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.UDPService.comments
-      description: Comments string.
+      description: A comment string.
       type: String
     - contextPath: CheckPoint.UDPService.port
-      description: The number of the port used to provide this service.
+      description: The port number of the service.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    - description: New name of the object.
+    - description: The new name of the object.
       name: new_identifier
-    - description: ICMP type as listed in RFC 792.
+    - description: The ICMP type as listed in RFC 792.
       name: icmp_type
-    - description: ICMP code as listed in RFC 792.
+    - description: The ICMP code as listed in RFC 792.
       name: icmp_code
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
       defaultValue: black
-      description: Color of the object.
+      description: The color of the object.
       name: color
       predefined:
       - aquamarine
@@ -2866,29 +2866,29 @@ script:
       - red
       - sienna
       - yellow
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
-    description: Update an existing ICMP service object.
+    description: Updates an existing ICMP service object.
     name: checkpoint-icmp-service-update
     outputs:
     - contextPath: CheckPoint.ICMPService.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.ICMPService.uid
-      description: Object UID.
+      description: The object UID.
       type: String
     - contextPath: CheckPoint.ICMPService.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.ICMPService.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
     - contextPath: CheckPoint.ICMPService.meta-info.creator
       description: The creator of the object.
@@ -2897,10 +2897,10 @@ script:
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ICMPService.read-only
-      description: Indicates if the object is read-only.
+      description: Whether the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.ICMPService.comments
-      description: Comments string.
+      description: A comment string.
       type: String
     - contextPath: CheckPoint.ICMPService.icmp-type
       description: ICMP type as listed in RFC 792.
@@ -2913,7 +2913,7 @@ script:
       name: identifier
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     - auto: PREDEFINED
       description: The type of service to delete.
@@ -2930,18 +2930,18 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Delete a service object.
+    description: Deletes a service object.
     name: checkpoint-service-delete
     outputs: []
   - arguments:
-    - description: Rule name or Rule number.
+    - description: The rule name or rule number.
       name: identifier
       required: true
-    - description: Name of the package.
+    - description: The name of the package.
       name: package
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     description: Gets full data for the specified NAT rule.
     name: checkpoint-nat-rule-get
@@ -2950,109 +2950,109 @@ script:
       description: Object unique identifier.
       type: String
     - contextPath: CheckPoint.NatRule.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.NatRule.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.NatRule.enabled
       description: Whether the rule is enabled.
       type: Boolean
     - contextPath: CheckPoint.NatRule.method
-      description: NAT translation method.
+      description: The NAT translation method.
       type: String
     - contextPath: CheckPoint.NatRule.original-source.name
-      description: Original source object name.
+      description: The original source object name.
       type: String
     - contextPath: CheckPoint.NatRule.original-destination.name
-      description: Original destination object name.
+      description: The original destination object name.
       type: String
     - contextPath: CheckPoint.NatRule.original-service.name
-      description: Original service object name.
+      description: The original service object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-source.name
-      description: Translated source object name.
+      description: The translated source object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-destination.name
-      description: Translated destination object name.
+      description: The translated destination object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-service.name
-      description: Translated service object name.
+      description: The translated service object name.
       type: String
     - contextPath: CheckPoint.NatRule.comments
-      description: Comments string.
+      description: A comment string.
       type: String
     - contextPath: CheckPoint.NatRule.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.NatRule.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.NatRule.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
   - arguments:
     - description: Name of the package.
       name: package
       required: true
     - defaultValue: '50'
-      description: The maximum number of results to return. Default is 50. Max is 500.
+      description: The maximum number of results to return. Max is 500.
       name: limit
     - defaultValue: '0'
-      description: Number of results to initially skip. Default is 0.
+      description: The number of results to initially skip.
       name: offset
-    - description: Search expression to filter the rulebase. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR.
+    - description: The search expression to filter the rule base. The provided text should be exactly the same as it would be given in the Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR.
       name: filter
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    description: Retrieve a list of NAT rules from the rulebase.
+    description: Retrieves a list of NAT rules from the rulebase.
     name: checkpoint-nat-rule-list
     outputs:
     - contextPath: CheckPoint.NatRule.uid
-      description: Object unique identifier.
+      description: The object unique identifier.
       type: String
     - contextPath: CheckPoint.NatRule.name
-      description: Object name.
+      description: The object name.
       type: String
   - arguments:
-    - description: Name of the package.
+    - description: The name of the package.
       name: package
       required: true
-    - description: Position in the rulebase.
+    - description: The position in the rule base.
       name: position
       required: true
       auto: PREDEFINED
       predefined:
       - 'top'
       - 'bottom'
-    - description: Rule name.
+    - description: The rule name.
       name: name
-    - description: Original source object.
+    - description: The original source object.
       name: original_source
-    - description: Original destination object.
+    - description: The original destination object.
       name: original_destination
-    - description: Original service object.
+    - description: The original service object.
       name: original_service
-    - description: Translated source object.
+    - description: The translated source object.
       name: translated_source
-    - description: Translated destination object.
+    - description: The translated destination object.
       name: translated_destination
-    - description: Translated service object.
+    - description: The translated service object.
       name: translated_service
-    - description: Which Gateways identified by the name or UID to install the policy on.
+    - description: The gateways, identified by name or UID, on which to install the policy
       isArray: true
       name: install_on
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
-      description: Enable/Disable the rule.
+      description: Whether to enable or disable the rule.
       name: enabled
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: NAT translation method.
+      description: The NAT translation method.
       name: nat_method
       predefined:
       - static
@@ -3060,11 +3060,11 @@ script:
       - nat64
       - nat46
       - cgnat
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
     description: Add a new NAT rule.
     name: checkpoint-nat-rule-add
@@ -3073,76 +3073,76 @@ script:
       description: Object unique identifier.
       type: String
     - contextPath: CheckPoint.NatRule.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.NatRule.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.NatRule.enabled
       description: Whether the rule is enabled.
       type: Boolean
     - contextPath: CheckPoint.NatRule.method
-      description: NAT translation method.
+      description: The NAT translation method.
       type: String
     - contextPath: CheckPoint.NatRule.original-source.name
-      description: Original source object name.
+      description: The original source object name.
       type: String
     - contextPath: CheckPoint.NatRule.original-destination.name
-      description: Original destination object name.
+      description: The original destination object name.
       type: String
     - contextPath: CheckPoint.NatRule.original-service.name
-      description: Original service object name.
+      description: The original service object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-source.name
-      description: Translated source object name.
+      description: The translated source object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-destination.name
-      description: Translated destination object name.
+      description: The translated destination object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-service.name
-      description: Translated service object name.
+      description: The translated service object name.
       type: String
     - contextPath: CheckPoint.NatRule.comments
-      description: Comments string.
+      description: A comment string.
       type: String
     - contextPath: CheckPoint.NatRule.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.NatRule.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.NatRule.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
   - arguments:
-    - description: Rule name or Rule number.
+    - description: The rule name or rule number.
       name: identifier
       required: true
-    - description: Name of the package.
+    - description: The name of the package.
       name: package
       required: true
-    - description: Original source object.
+    - description: The original source object.
       name: original_source
-    - description: Original destination object.
+    - description: The original destination object.
       name: original_destination
-    - description: Translated source object.
+    - description: The translated source object.
       name: translated_source
-    - description: Translated destination object.
+    - description: The translated destination object.
       name: translated_destination
-    - description: Original service object.
+    - description: The original service object.
       name: original_service
-    - description: Translated service object.
+    - description: The translated service object.
       name: translated_service
-    - description: Comments string.
+    - description: A comment string.
       name: comments
     - auto: PREDEFINED
-      description: Enable/Disable the rule.
+      description: Whether to enable or disable the rule.
       name: enabled
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: NAT translation method.
+      description: The NAT translation method.
       name: nat_method
       predefined:
       - static
@@ -3150,71 +3150,71 @@ script:
       - nat64
       - nat46
       - cgnat
-    - description: Collection of tag identifiers.
+    - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    description: Update an existing NAT rule.
+    description: Updates an existing NAT rule.
     name: checkpoint-nat-rule-update
     outputs:
     - contextPath: CheckPoint.NatRule.uid
-      description: Object unique identifier.
+      description: The object unique identifier.
       type: String
     - contextPath: CheckPoint.NatRule.name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CheckPoint.NatRule.type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CheckPoint.NatRule.enabled
       description: Whether the rule is enabled.
       type: Boolean
     - contextPath: CheckPoint.NatRule.method
-      description: NAT translation method.
+      description: The NAT translation method.
       type: String
     - contextPath: CheckPoint.NatRule.original-source.name
-      description: Original source object name.
+      description: The original source object name.
       type: String
     - contextPath: CheckPoint.NatRule.original-destination.name
-      description: Original destination object name.
+      description: The original destination object name.
       type: String
     - contextPath: CheckPoint.NatRule.original-service.name
-      description: Original service object name.
+      description: The original service object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-source.name
-      description: Translated source object name.
+      description: The translated source object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-destination.name
-      description: Translated destination object name.
+      description: The translated destination object name.
       type: String
     - contextPath: CheckPoint.NatRule.translated-service.name
-      description: Translated service object name.
+      description: The translated service object name.
       type: String
     - contextPath: CheckPoint.NatRule.comments
-      description: Comments string.
+      description: A comment string.
       type: String
     - contextPath: CheckPoint.NatRule.domain.name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: CheckPoint.NatRule.domain.uid
-      description: Domain UID.
+      description: The domain UID.
       type: String
     - contextPath: CheckPoint.NatRule.domain.domain-type
-      description: Domain type.
+      description: The domain type.
       type: String
   - arguments:
-    - description: Rule name or Rule number.
+    - description: The rule name or rule number.
       name: identifier
       required: true
-    - description: Name of the package.
+    - description: The name of the package.
       name: package
       required: true
     - defaultValue: None
-      description: Executes the command with the specified session ID.
+      description: The session ID to use when executing the command.
       name: session_id
-    description: Delete a NAT rule.
+    description: Deletes a NAT rule.
     name: checkpoint-nat-rule-delete
     outputs: []
   dockerimage: demisto/python3:3.12.13.7444307
