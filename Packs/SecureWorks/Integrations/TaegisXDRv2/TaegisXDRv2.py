@@ -1787,7 +1787,7 @@ def fetch_events_command(client: Client, env: str, args=None):
         except (KeyError, TypeError) as e:
             demisto.debug(f"fetch_events_command (ids) exception: {e}\nFull result: {result}")
             raise ValueError(f"Failed to fetch events by ID: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
-        output_query = None  # ID-based fetch has no CQL query
+
     elif args.get("next"):
         # Fetch next page using pagination cursor — no CQL query involved
         variables = {"next": args.get("next")}
@@ -1804,7 +1804,7 @@ def fetch_events_command(client: Client, env: str, args=None):
         except (KeyError, TypeError) as e:
             demisto.debug(f"fetch_events_command (next page) exception: {e}\nFull result: {result}")
             raise ValueError(f"Failed to fetch events page: {result.get('errors', [{}])[0].get('message', 'Unknown error')}")
-        output_query = None  # Pagination fetch has no CQL query
+
     else:
         # Standard CQL query — assign default only here
         if not cql_query:

@@ -682,9 +682,9 @@ def test_fetch_events(requests_mock):
 
     # Successful query with default cql_query (no args)
     response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
-    assert response.outputs["events"] == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
-    assert len(response.outputs["events"]) == 1
-    assert response.outputs["events"][0] == TAEGIS_EVENT
+    assert response.outputs == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
+    assert len(response.outputs) == 1
+    assert response.outputs[0] == TAEGIS_EVENT
 
     # Successful query with explicit cql_query
     args = {
@@ -693,27 +693,27 @@ def test_fetch_events(requests_mock):
         "offset": 0,
     }
     response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs["query"] == args["cql_query"]
-    assert response.outputs["events"] == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
-    assert response.outputs["next"] is None
+    assert response.outputs == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
+    # next cursor is embedded in the last event object
+    assert response.outputs[0].get("next") is None
 
     # Query with next page token returned
     client = mock_client(requests_mock, FETCH_EVENTS_NEXT_PAGE_RESPONSE)
     response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs["next"] == TAEGIS_EVENT_NEXT_PAGE
-    assert len(response.outputs["events"]) == 1
+    assert response.outputs[0].get("next") == TAEGIS_EVENT_NEXT_PAGE
+    assert len(response.outputs) == 1
 
     # Fetch by IDs
     client = mock_client(requests_mock, FETCH_EVENTS_BY_ID_RESPONSE)
     args_by_id = {"ids": [TAEGIS_EVENT["id"]]}
     response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args_by_id)
-    assert response.outputs["events"] == FETCH_EVENTS_BY_ID_RESPONSE["data"]["eventsServiceRetrieveEventsById"]
+    assert response.outputs == FETCH_EVENTS_BY_ID_RESPONSE["data"]["eventsServiceRetrieveEventsById"]
 
     # Fetch next page using cursor
     client = mock_client(requests_mock, FETCH_EVENTS_PAGE_RESPONSE)
     args_next = {"next": TAEGIS_EVENT_NEXT_PAGE}
     response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args_next)
-    assert response.outputs["events"] == FETCH_EVENTS_PAGE_RESPONSE["data"]["eventsServiceEventPage"]
+    assert response.outputs == FETCH_EVENTS_PAGE_RESPONSE["data"]["eventsServiceEventPage"]
 
     # Query failure
     client = mock_client(requests_mock, FETCH_EVENTS_BAD_RESPONSE)
