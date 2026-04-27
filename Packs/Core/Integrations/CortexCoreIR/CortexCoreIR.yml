@@ -2534,10 +2534,10 @@ script:
       name: hostname
     description: Returns information about an endpoint.
     name: endpoint
-    supportedModules:
-    - cloud_runtime_security
-    - edr
-    - xsiam
+    # supportedModules:
+    # - cloud_runtime_security
+    # - edr
+    # - xsiam
     outputs:
     - contextPath: Endpoint.Hostname
       description: The hostname of the endpoint.
