@@ -1,32 +1,36 @@
-def mocked_client(requests_mock, mock_response_search_endpoints=None):
-    from CyberArkEPMSOCResponse import Client
+import pytest
+from CyberArkEPMSOCResponse import Client
 
-    mock_response_sets = {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
 
-    if not mock_response_search_endpoints:
-        mock_response_search_endpoints = {
-            "endpoints": [
-                {"id": "endpoint_id1", "external_ip": "1.1.1.1", "connectionStatus": "Connected"},
-            ]
-        }
-    mock_response_search_endpoint_group_id = [{"id": "group_id1"}]
+@pytest.fixture()
+def client(mocker):
+    """Returns a mocked Client instance for testing.
 
-    requests_mock.post(
-        "https://url.com/EPM/API/Auth/EPM/Logon", json={"ManagerURL": "https://mock.com", "EPMAuthenticationResult": "123"}
+    This fixture provides a default client that can be used by any test.
+    The client is mocked to prevent actual HTTP requests.
+    """
+    client_instance = Client(
+        base_tenant_url="https://base-tenant.cyberark.cloud",
+        identity_url="https://identity.cyberark.cloud/OAuth2/Token/test-web-app-id",
+        client_id="test-client-id",
+        client_secret="test-client-secret",
+        web_app_id="test-web-app-id",
+        verify=True,
+        proxy=False,
     )
-    requests_mock.get("https://mock.com/EPM/API/Sets", json=mock_response_sets)
-    requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Search", json=mock_response_search_endpoints)
-    requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Groups/Search", json=mock_response_search_endpoint_group_id)
-    requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Groups/group_id1/Members/ids", json={})
-    requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Groups/group_id1/Members/ids/remove", json={})
 
-    return Client("https://url.com", "test", "123456", "1")
+    # Mock the methods that make HTTP requests to prevent actual network calls
+    mocker.patch.object(client_instance, "_get_access_token", return_value="mock_access_token")
+    mocker.patch.object(client_instance, "_get_tenant_url", return_value="https://mock-tenant.cyberark.cloud")
+    mocker.patch("CyberArkEPMSOCResponse.get_sets", return_value=[{"Id": "id1", "Name": "set_name1"}])
+
+    return client_instance
 
 
-def test_activate_risk_plan_command(requests_mock, mocker):
+def test_activate_risk_plan_command(client, mocker):
     """
     Given:
-        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and a logged-in user.
 
     When:
         - activate_risk_plan_command function is running.
@@ -42,22 +46,31 @@ def test_activate_risk_plan_command(requests_mock, mocker):
 
     mock_response_search_endpoints = {
         "endpoints": [
-            {"id": "endpoint_id1", "external_ip": "1.1.1.1", "connectionStatus": "Connected"},
+            {"id": "endpoint_id1", "logged_in_user": "tester", "connectionStatus": "Connected"},
         ]
     }
 
-    client = mocked_client(requests_mock, mock_response_search_endpoints)
-    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            mock_response_search_endpoints,  # search_endpoints call
+            [{"id": "group_id1"}],  # search_endpoint_group_id call
+            {},  # add_endpoint_to_group call
+        ],
+    )
+
+    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
 
     result = change_risk_plan_command(client, args)
     expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "add"}
     assert result.outputs == expected_outputs
 
 
-def test_activate_multiple_endpoint_risk_plan_command(requests_mock, mocker):
+def test_activate_multiple_endpoint_risk_plan_command(client, mocker):
     """
     Given:
-        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and a logged-in user.
 
     When:
         - activate_risk_plan_command function is running.
@@ -73,17 +86,26 @@ def test_activate_multiple_endpoint_risk_plan_command(requests_mock, mocker):
 
     mock_response_search_endpoints = {
         "endpoints": [
-            {"id": "endpoint_id2", "external_ip": "2.2.2.2", "connectionStatus": "Connected"},
-            {"id": "endpoint_id2", "external_ip": "2.2.2.2", "connectionStatus": "Disconnected"},
+            {"id": "endpoint_id2", "logged_in_user": "tester2", "connectionStatus": "Connected"},
+            {"id": "endpoint_id2", "logged_in_user": "tester2", "connectionStatus": "Disconnected"},
         ]
     }
 
-    client = mocked_client(requests_mock, mock_response_search_endpoints)
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            mock_response_search_endpoints,  # search_endpoints call
+            [{"id": "group_id1"}],  # search_endpoint_group_id call
+            {},  # add_endpoint_to_group call
+        ],
+    )
+
     args = {
         "risk_plan": "risk_plan1",
         "action": "add",
         "endpoint_name": "endpoint2",
-        "external_ip": "2.2.2.2",
+        "logged_in_user": "tester2",
     }
 
     result = change_risk_plan_command(client, args)
@@ -92,7 +114,7 @@ def test_activate_multiple_endpoint_risk_plan_command(requests_mock, mocker):
     assert result.outputs == expected_outputs
 
 
-def test_deactivate_risk_plan_command(requests_mock, mocker):
+def test_deactivate_risk_plan_command(client, mocker):
     """
     Given:
         - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
@@ -108,9 +130,120 @@ def test_deactivate_risk_plan_command(requests_mock, mocker):
     mocker.patch(
         "CyberArkEPMSOCResponse.get_integration_context", return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}}
     )
-    client = mocked_client(requests_mock)
-    args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+
+    mock_response_search_endpoints = {
+        "endpoints": [
+            {"id": "endpoint_id1", "logged_in_user": "tester", "connectionStatus": "Connected"},
+        ]
+    }
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            mock_response_search_endpoints,  # search_endpoints call
+            [{"id": "group_id1"}],  # search_endpoint_group_id call
+            {},  # remove_endpoint_from_group call
+        ],
+    )
+
+    args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
 
     result = change_risk_plan_command(client, args)
     expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "remove"}
     assert result.outputs == expected_outputs
+
+
+def test_change_risk_plan_no_endpoints_found(client, mocker):
+    """Tests error when no endpoints are found."""
+    from CyberArkEPMSOCResponse import change_risk_plan_command
+    from CommonServerPython import DemistoException
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": []},  # search_endpoints call
+        ],
+    )
+
+    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "nonexistent", "logged_in_user": "tester9"}
+
+    with pytest.raises(DemistoException, match=r"(?i)no endpoints found"):
+        change_risk_plan_command(client, args)
+
+
+def test_change_risk_plan_no_group_found(client, mocker):
+    """Tests error when no endpoint group is found."""
+    from CyberArkEPMSOCResponse import change_risk_plan_command
+    from CommonServerPython import DemistoException
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": [{"id": "endpoint_id1"}]},  # search_endpoints
+            [],  # search_endpoint_group_id returns empty
+        ],
+    )
+
+    args = {"risk_plan": "nonexistent_plan", "action": "add", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
+
+    with pytest.raises(DemistoException, match=r"(?i)no endpoint group found"):
+        change_risk_plan_command(client, args)
+
+
+def test_change_risk_plan_invalid_action(client, mocker):
+    """Tests error when invalid action is provided."""
+    from CyberArkEPMSOCResponse import change_risk_plan_command
+    from CommonServerPython import DemistoException
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": [{"id": "endpoint_id1"}]},
+            [{"id": "group_id1"}],
+        ],
+    )
+
+    args = {"risk_plan": "risk_plan1", "action": "invalid_action", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
+
+    with pytest.raises(DemistoException, match=r"(?i)invalid action"):
+        change_risk_plan_command(client, args)
+
+
+def test_search_endpoints_without_logged_in_user(client, mocker):
+    """Tests search_endpoints works without logged_in_user parameter."""
+    from CyberArkEPMSOCResponse import search_endpoints
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": [{"id": "endpoint_id1"}]},  # search_endpoints call
+        ],
+    )
+
+    result = search_endpoints("endpoint1", "", client)
+    assert result == ["endpoint_id1"]
