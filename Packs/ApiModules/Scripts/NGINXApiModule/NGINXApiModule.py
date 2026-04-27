@@ -326,10 +326,7 @@ def parse_nginx_time_to_seconds(time_str: str) -> int:
     Returns:
         int: The time in seconds. If no unit is provided, seconds are assumed.
     """
-    if not time_str:
-        raise DemistoException(f"Invalid NGINX time format: {time_str}")
-    time_str = time_str.strip()
-    if not time_str:
+    if not time_str or not (time_str := time_str.strip()):
         raise DemistoException(f"Invalid NGINX time format: {time_str}")
     if time_str.isdigit():
         return int(time_str)

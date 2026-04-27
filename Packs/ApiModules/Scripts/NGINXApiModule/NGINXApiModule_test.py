@@ -372,6 +372,7 @@ def test_parse_nginx_time_to_seconds(time_str, expected_seconds):
     "time_str",
     [
         "",
+        "   ",
         "invalid",
         None,
     ],
