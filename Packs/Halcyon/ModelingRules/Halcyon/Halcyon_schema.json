@@ -1,0 +1,56 @@
+{
+    "halcyon_halcyon_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "log": {
+            "type": "string",
+            "is_array": false
+        },
+        "kind": {
+            "type": "string",
+            "is_array": false
+        },
+        "asset": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "summary": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantId": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertType": {
+            "type": "string",
+            "is_array": false
+        },
+        "triageStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "primaryProcess": {
+            "type": "string",
+            "is_array": false
+        },
+        "badPath": {
+            "type": "string",
+            "is_array": false
+        },
+        "bytes": {
+            "type": "int",
+            "is_array": false
+        },
+        "guid": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
