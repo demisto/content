@@ -84,3 +84,5 @@ ignore=GR107
 ignore=GR107
 [file:playbook-MDE_Malware_-_Incident_Enrichment.yml]
 ignore=GR107
+[file:MicrosoftAtpEndpoint.yml]
+ignore=GR109
