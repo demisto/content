@@ -1033,8 +1033,9 @@ class Client(CoreClient):
         Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
 
         Returns comprehensive metadata for all custom fields including:
-        - CUSTOM_FIELD_NAME: Internal field identifier
+        - CUSTOM_FIELD_NAME: Internal field identifier (display name)
         - CUSTOM_FIELD_PRETTY_NAME: User-friendly display name
+        - CUSTOM_FIELD_CLI_NAME: Machine/CLI name used in commands and search
         - CUSTOM_FIELD_IS_SYSTEM: Boolean flag (true = system field, false = custom field)
         - CUSTOM_FIELD_TYPE: Field data type
 
@@ -1053,6 +1054,7 @@ class Client(CoreClient):
                 "paging": {"from": 0, "to": 1000},
             },
             "jsons": [],
+            "on_demand_fields": ["CUSTOM_FIELD_CLI_NAME"],
         }
 
         return self.get_webapp_data(request_data)
@@ -3504,8 +3506,12 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     """
     Validates custom fields against system metadata.
 
+    Users must pass the CLI/machine name (e.g., ``servicenowticketid``) which
+    is the identifier shown in Object Setup and used in XQL queries.  The
+    metadata API returns this value in ``CUSTOM_FIELD_CLI_NAME``.
+
     Args:
-        fields_to_validate: Dict of field names and values to validate.
+        fields_to_validate: Dict of field CLI names and values to validate.
         client: Client instance for API calls.
 
     Returns:
@@ -3520,17 +3526,17 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         return {}, "No Fields are defined in the system."
 
     system_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_CLI_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"])
         for f in fields_data
-        if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
+        if f.get("CUSTOM_FIELD_CLI_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: {
-            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+        f["CUSTOM_FIELD_CLI_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
         }
         for f in fields_data
-        if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
+        if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
 
     if not custom_fields:
@@ -3559,7 +3565,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             else:
                 valid_fields[field_name] = field_value
         else:
-            error_messages.append(f"Field '{field_name}' does not exist.")
+            error_messages.append(f"Field '{field_name}' does not exist. Use the CLI/machine name as shown in Object Setup.")
 
     return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
