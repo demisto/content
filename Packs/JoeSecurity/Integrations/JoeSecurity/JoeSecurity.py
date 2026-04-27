@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
+import os
 import time
 import shutil
 import requests
@@ -255,7 +256,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
 
     # removing backslashes from filename as the API does not like it
     # if given filename such as dir\file.xlsx - the sample will end with the name file.xlsx
-    filename = demisto.getFilePath(file_entry)['name']
+    filename = os.path.basename(demisto.getFilePath(file_entry)['name'])
     if isinstance(filename, unicode):  # py2 way of checking if a var is of type unicode
         filename = filename.encode('ascii', 'ignore')
     fixed_filename = filename.replace('\\', '/')
@@ -271,7 +272,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
         LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
         raise Exception('command failed to run.')
 
-    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+    os.remove(os.path.basename(demisto.getFilePath(file_entry)['name']))
 
     if should_wait:
         return poll_webid(res['data']['webids'][0])
