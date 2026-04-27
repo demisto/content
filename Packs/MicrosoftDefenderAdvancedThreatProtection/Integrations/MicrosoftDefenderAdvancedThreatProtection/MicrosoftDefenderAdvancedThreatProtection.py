@@ -4733,7 +4733,7 @@ def sc_create_update_indicator_command(client: MsClient, args: dict[str, str]) -
     indicator_type = args["indicator_type"]
     action = args["action"]
     severity = args.get("severity")
-    expiration_time = get_future_time(args.get("expiration_time", "1 day"))
+    expiration_time = get_future_time(args["expiration_time"]) if args.get("expiration_time") else None
     indicator_description = args["indicator_description"]
     indicator_title = args["indicator_title"]
     indicator_application = args.get("indicator_application", "")

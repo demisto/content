@@ -2863,20 +2863,20 @@ script:
     description: Retrieves a list of assets (hosts) affected by a specified Qualys QID. If no QID is provided, all assets with detections will be returned.
     name: qualys-get-assets
     outputs:
-      - contextPath: Qualys.Assets
-        description: All Qualys assets associated with the specified QID (Qualys ID).
-        type: unknown
+    - contextPath: Qualys.Assets
+      description: All Qualys assets associated with the specified QID (Qualys ID).
+      type: unknown
   - arguments:
-      - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
-        name: cve
-        required: true
+    - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
+      name: cve
+      required: true
     description: Retrieves one or more Qualys QIDs (Qualys IDs) associated with a specified CVE.
     name: qualys-get-quid-by-cve
     outputs:
     - contextPath: Qualys.QID
       description: All the Qualys QID (Qualys ID) associated with a specified CVE.
       type: unknown
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetchevents: true
   isfetchassets: true
   runonce: false
@@ -2886,3 +2886,5 @@ script:
 fromversion: 5.5.0
 tests:
 - QualysVulnerabilityManagement-Test
+supportedModules:
+- xsiam

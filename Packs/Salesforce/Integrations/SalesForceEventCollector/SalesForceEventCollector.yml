@@ -80,3 +80,5 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests
+supportedModules:
+- xsiam

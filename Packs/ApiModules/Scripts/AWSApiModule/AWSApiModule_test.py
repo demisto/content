@@ -432,3 +432,59 @@ def test_aws_session_sts_endpoint_url(mocker, params, region, expected_sts_endpo
         "config": aws_client.config,
         "endpoint_url": expected_sts_endpoint_url,
     }
+
+
+@pytest.mark.parametrize(
+    "sts_region, region, expected_sts_region, aws_access_key_id, aws_secret_access_key",
+    [
+        ("eu-west-1", "us-west-2", "eu-west-1", "test_access_key", "test_secret_key"),
+        (None, "us-west-2", "us-west-2", "test_access_key", "test_secret_key"),
+        (None, None, "us-east-1", "test_access_key", "test_secret_key"),
+        ("eu-west-1", "us-west-2", "eu-west-1", None, None),
+    ],
+)
+def test_aws_session_sts_region(mocker, sts_region, region, expected_sts_region, aws_access_key_id, aws_secret_access_key):
+    """
+    Given
+    - Case A: sts_region is explicitly provided.
+    - Case B: sts_region is not provided, but region is passed to aws_session.
+    - Case C: Neither sts_region nor region is provided.
+    - Case D: sts_region is provided, but no aws_access_key_id is provided (Role ARN login).
+
+    When
+    - Calling the aws_session method.
+
+    Then
+    - Case A: Verify that the sts client is created with the sts_region.
+    - Case B: Verify that the sts client is created with the region passed to aws_session.
+    - Case C: Verify that the sts client is created with the aws_default_region.
+    - Case D: Verify that the sts client is created with the sts_region.
+    """
+    params = {
+        "aws_default_region": "us-east-1",
+        "aws_role_arn": "role_arn_param",
+        "aws_role_session_name": "role_session_name_param",
+        "aws_role_session_duration": None,
+        "sts_endpoint_url": None,
+        "aws_role_policy": None,
+        "verify_certificate": False,
+        "timeout": 60,
+        "retries": 3,
+        "sts_region": sts_region,
+        "aws_access_key_id": aws_access_key_id,
+        "aws_secret_access_key": aws_secret_access_key,
+    }
+
+    sts_client_mock = MagicMock()
+    mocker.patch.object(
+        sts_client_mock,
+        "assume_role",
+        return_value={"Credentials": {"AccessKeyId": "1", "SecretAccessKey": "2", "SessionToken": "3"}},
+    )
+    boto3_client_mock = mocker.patch("AWSApiModule.boto3.client")
+    boto3_client_mock.side_effect = [MagicMock(), MagicMock()]
+    aws_client = AWSClient(**params)
+    aws_client.aws_session(service="ec2", region=region)
+
+    sts_call_args = boto3_client_mock.call_args_list[0]
+    assert sts_call_args[1]["region_name"] == expected_sts_region

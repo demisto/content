@@ -1875,12 +1875,18 @@ script:
       - 'True'
       - 'False'
       required: false
+  - name: checkpointhec-download-large-email
+    description: Download large email file.
+    arguments:
+    - name: entity_id
+      description: Email entity id, currently available in the incident's mirror external id.
+      required: true
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
