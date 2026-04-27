@@ -13950,9 +13950,13 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='h
         raise DemistoException('map_input_to_list_item can only be used from scripts, not integrations.')
 
     if not isinstance(valid_items, list):
-        raise DemistoException(
+        raise ValueError(
             f'Expected "valid_items" argument to be a list, got {type(valid_items).__name__}'
         )
+
+    confidence_threshold = confidence_threshold.lower()
+    if confidence_threshold not in ["low", "medium", "high"]:
+        raise ValueError(f"Invalid confidence_threshold: {confidence_threshold}. Must be one of: low, medium, high")
 
     # --- Extract string values; when key is provided, build a lookup back to original items ---
     items: list = []
