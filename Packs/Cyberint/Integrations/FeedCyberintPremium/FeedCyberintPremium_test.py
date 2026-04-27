@@ -1,15 +1,15 @@
+import json
 from unittest import mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-import FeedCyberintPremium
 import pytest
 
-import json
+import FeedCyberintPremium
 
 BASE_URL = "https://feed-example.com"
 TOKEN = "example_token"
-FEED_URL = f"{BASE_URL}/ioc-intel/feed-api/v1/feed/jsonl"
-ENRICH_URL = f"{BASE_URL}/ioc-intel/enrichment-api/v1/enrichment"
+FEED_PATH = "/ioc-intel/feed-api/v1/feed/jsonl"
+ENRICH_PATH = "/ioc-intel/enrichment-api/v1/enrichment"
 
 
 def load_mock_response() -> str:
@@ -23,19 +23,40 @@ def load_mock_empty_response() -> str:
 
 
 @pytest.fixture()
-def mock_client() -> FeedCyberintPremium.Client:
-    return FeedCyberintPremium.Client(
+def mock_client(mocker) -> FeedCyberintPremium.Client:
+    # ContentClient.__init__ touches the XSOAR runtime (support_multithreading),
+    # which isn't available under demistomock — bypass it in tests.
+    mocker.patch("FeedCyberintPremium.ContentClient.__init__", return_value=None)
+    client = FeedCyberintPremium.Client(
         base_url=BASE_URL,
         access_token=TOKEN,
         verify=False,
         proxy=False,
     )
+    client._base_url = BASE_URL
+    client._verify = False
+    client._headers = {}
+    client._ok_codes = ()
+    return client
 
 
-def test_fetch_feed_page(
-    requests_mock,
-    mock_client: FeedCyberintPremium.Client,
-):
+def _http_responder(feed_text: str | list[str] | None = None, enrich_json: dict | None = None):
+    """Build a side_effect for Client._http_request that routes by url_suffix."""
+    feed_responses = feed_text if isinstance(feed_text, list) else ([feed_text] if feed_text is not None else [])
+    feed_iter = iter(feed_responses)
+
+    def side_effect(*args, **kwargs):
+        url_suffix = kwargs.get("url_suffix", "")
+        if url_suffix == FEED_PATH:
+            return next(feed_iter)
+        if url_suffix == ENRICH_PATH:
+            return enrich_json
+        raise AssertionError(f"Unexpected url_suffix: {url_suffix}")
+
+    return side_effect
+
+
+def test_fetch_feed_page(mocker, mock_client: FeedCyberintPremium.Client):
     """
     Scenario: Test fetching a single page of IOCs from the premium feed.
 
@@ -43,8 +64,7 @@ def test_fetch_feed_page(
     When: Called fetch_feed_page.
     Then: Ensure that indicators are returned.
     """
-    response1 = load_mock_response()
-    requests_mock.post(FEED_URL, text=response1)
+    mocker.patch.object(FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(feed_text=load_mock_response()))
 
     with patch("FeedCyberintPremium.auto_detect_indicator_type") as mock_auto_detect:
         mock_auto_detect.side_effect = lambda x: "IP" if "." in str(x) and len(str(x)) < 16 else "URL"
@@ -54,10 +74,7 @@ def test_fetch_feed_page(
     assert len(indicators) > 0
 
 
-def test_get_indicators_command(
-    mock_client,
-    requests_mock,
-):
+def test_get_indicators_command(mocker, mock_client):
     """
     Scenario: Test retrieving indicators via get_indicators_command.
 
@@ -65,8 +82,7 @@ def test_get_indicators_command(
     When: Called the get_indicators_command.
     Then: Ensure that the result is returned.
     """
-    response1 = load_mock_response()
-    requests_mock.post(FEED_URL, text=response1)
+    mocker.patch.object(FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(feed_text=load_mock_response()))
 
     args = {"limit": 10, "offset": 0}
 
@@ -79,10 +95,7 @@ def test_get_indicators_command(
     assert len(result.outputs) > 0
 
 
-def test_get_indicators_command_with_filters(
-    mock_client,
-    requests_mock,
-):
+def test_get_indicators_command_with_filters(mocker, mock_client):
     """
     Scenario: Test retrieving indicators with filters.
 
@@ -90,8 +103,9 @@ def test_get_indicators_command_with_filters(
     When: Called the get_indicators_command with indicator_type and severity_min.
     Then: Ensure that the result is returned and filters were sent to the API.
     """
-    response1 = load_mock_response()
-    requests_mock.post(FEED_URL, text=response1)
+    http_mock = mocker.patch.object(
+        FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(feed_text=load_mock_response())
+    )
 
     args = {
         "limit": 10,
@@ -107,8 +121,7 @@ def test_get_indicators_command_with_filters(
 
     assert result is not None
 
-    last_request = requests_mock.last_request
-    body = last_request.json()
+    body = http_mock.call_args.kwargs["json_data"]
     assert body["filters"]["indicator_type"] == ["ipv4"]
     assert body["filters"]["severity_min"] == 3
     assert body["filters"]["malicious"] == "yes"
@@ -119,8 +132,8 @@ def test_get_indicators_command_with_filters(
 def test_fetch_indicators_with_publish(
     is_execution_time_exceeded_mock,
     mock_demisto,
+    mocker,
     mock_client: FeedCyberintPremium.Client,
-    requests_mock,
 ):
     """
     Scenario: Test that fetch publishes indicators page-by-page.
@@ -137,10 +150,11 @@ def test_fetch_indicators_with_publish(
     mock_demisto.setIntegrationContext = MagicMock()
     mock_demisto.createIndicators = MagicMock()
 
-    response1 = load_mock_response()
-    response2 = load_mock_empty_response()
-
-    requests_mock.post(FEED_URL, [{"text": response1}, {"text": response2}])
+    mocker.patch.object(
+        FeedCyberintPremium.Client,
+        "_http_request",
+        side_effect=_http_responder(feed_text=[load_mock_response(), load_mock_empty_response()]),
+    )
 
     with patch("FeedCyberintPremium.auto_detect_indicator_type") as mock_auto_detect:
         mock_auto_detect.side_effect = lambda x: "IP" if x and "." in str(x) and len(str(x)) < 16 else "File"
@@ -152,9 +166,7 @@ def test_fetch_indicators_with_publish(
         )
 
     assert total > 0
-    # createIndicators should have been called at least once (page-by-page publishing)
     assert mock_demisto.createIndicators.call_count >= 1
-    # Check the first batch of published indicators
     first_call_args = mock_demisto.createIndicators.call_args_list[0][0][0]
     assert first_call_args[0]["service"] == "Cyberint Premium Feed"
     assert "rawJSON" in first_call_args[0]
@@ -168,7 +180,6 @@ def test_fetch_saves_offset_on_timeout(
     is_execution_time_exceeded_mock,
     mock_demisto,
     mock_client: FeedCyberintPremium.Client,
-    requests_mock,
 ):
     """
     Scenario: When execution time is exceeded, offset is saved for next run.
@@ -191,7 +202,6 @@ def test_fetch_saves_offset_on_timeout(
     )
 
     assert total == 0
-    # Offset and last_fetch_time should be preserved
     call_args = mock_demisto.setIntegrationContext.call_args[0][0]
     assert call_args["offset"] == 40000
     mock_demisto.createIndicators.assert_not_called()
@@ -202,8 +212,8 @@ def test_fetch_saves_offset_on_timeout(
 def test_fetch_indicators_command_incremental(
     is_execution_time_exceeded_mock,
     mock_demisto,
+    mocker,
     mock_client: FeedCyberintPremium.Client,
-    requests_mock,
 ):
     """
     Scenario: On subsequent runs, fetch only new indicators since last run.
@@ -223,10 +233,11 @@ def test_fetch_indicators_command_incremental(
     mock_demisto.setIntegrationContext = MagicMock()
     mock_demisto.createIndicators = MagicMock()
 
-    response1 = load_mock_response()
-    response2 = load_mock_empty_response()
-
-    requests_mock.post(FEED_URL, [{"text": response1}, {"text": response2}])
+    http_mock = mocker.patch.object(
+        FeedCyberintPremium.Client,
+        "_http_request",
+        side_effect=_http_responder(feed_text=[load_mock_response(), load_mock_empty_response()]),
+    )
 
     params = {
         "feed": True,
@@ -237,12 +248,9 @@ def test_fetch_indicators_command_incremental(
         mock_auto_detect.side_effect = lambda x: "IP" if x and "." in str(x) and len(str(x)) < 16 else "File"
         FeedCyberintPremium.fetch_indicators_command(mock_client, params)
 
-    # Check that the first API call includes added_to_feed_after
-    first_request = requests_mock.request_history[0]
-    body = first_request.json()
-    assert body["filters"]["added_to_feed_after"] == "2025-01-05T00:00:00Z"
+    first_body = http_mock.call_args_list[0].kwargs["json_data"]
+    assert first_body["filters"]["added_to_feed_after"] == "2025-01-05T00:00:00Z"
 
-    # Check that last_fetch_time was updated
     final_ctx = mock_demisto.setIntegrationContext.call_args_list[-1][0][0]
     assert "last_fetch_time" in final_ctx
     assert final_ctx["offset"] == 0
@@ -253,8 +261,8 @@ def test_fetch_indicators_command_incremental(
 def test_fetch_indicators_command_first_run(
     is_execution_time_exceeded_mock,
     mock_demisto,
+    mocker,
     mock_client: FeedCyberintPremium.Client,
-    requests_mock,
 ):
     """
     Scenario: On first run (no last_fetch_time), uses first_fetch window.
@@ -269,10 +277,11 @@ def test_fetch_indicators_command_first_run(
     mock_demisto.setIntegrationContext = MagicMock()
     mock_demisto.createIndicators = MagicMock()
 
-    response1 = load_mock_response()
-    response2 = load_mock_empty_response()
-
-    requests_mock.post(FEED_URL, [{"text": response1}, {"text": response2}])
+    http_mock = mocker.patch.object(
+        FeedCyberintPremium.Client,
+        "_http_request",
+        side_effect=_http_responder(feed_text=[load_mock_response(), load_mock_empty_response()]),
+    )
 
     params = {
         "feed": True,
@@ -284,10 +293,8 @@ def test_fetch_indicators_command_first_run(
         mock_auto_detect.side_effect = lambda x: "IP" if x and "." in str(x) and len(str(x)) < 16 else "File"
         FeedCyberintPremium.fetch_indicators_command(mock_client, params)
 
-    # Check that the first API call includes added_to_feed_after
-    first_request = requests_mock.request_history[0]
-    body = first_request.json()
-    assert "added_to_feed_after" in body["filters"]
+    first_body = http_mock.call_args_list[0].kwargs["json_data"]
+    assert "added_to_feed_after" in first_body["filters"]
 
 
 def test_raw_to_indicator():
@@ -395,10 +402,9 @@ def test_premium_header_transformer():
     assert FeedCyberintPremium.premium_header_transformer("has_campaign") == "Has Campaign"
 
 
-def test_test_module(mock_client, requests_mock):
+def test_test_module(mocker, mock_client):
     """Test the test_module function."""
-    response = load_mock_response()
-    requests_mock.post(FEED_URL, text=response)
+    mocker.patch.object(FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(feed_text=load_mock_response()))
 
     with patch("FeedCyberintPremium.auto_detect_indicator_type") as mock_auto_detect:
         mock_auto_detect.side_effect = lambda x: "IP"
@@ -407,14 +413,14 @@ def test_test_module(mock_client, requests_mock):
     assert result == "ok"
 
 
-def test_enrich_command_ipv4(mock_client, requests_mock):
+def test_enrich_command_ipv4(mocker, mock_client):
     """Test enrichment of an IPv4 indicator."""
     with open("test_data/enrichment_ipv4.json") as f:
         mock_response = json.load(f)
 
-    requests_mock.post(ENRICH_URL, json=mock_response)
+    mocker.patch.object(FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(enrich_json=mock_response))
 
-    args = {"type": "ipv4", "value": "1.1.1.1"}
+    args = {"type": "ipv4", "value": "192.0.2.1"}
     result = FeedCyberintPremium.enrich_command(mock_client, args)
 
     assert result is not None
@@ -430,19 +436,20 @@ def test_enrich_command_ipv4(mock_client, requests_mock):
     assert result.outputs["enrichment"]["geo"]["country"] == "Russia"
     assert result.outputs["enrichment"]["asn"]["number"] == 12345
 
-    # Check human readable contains key sections
     assert "Indicator Details" in result.readable_output
     assert "Threat Intelligence" in result.readable_output
     assert "TTPs" in result.readable_output
     assert "IPv4 Enrichment" in result.readable_output
 
 
-def test_enrich_command_domain(mock_client, requests_mock):
+def test_enrich_command_domain(mocker, mock_client):
     """Test enrichment of a domain indicator."""
     with open("test_data/enrichment_domain.json") as f:
         mock_response = json.load(f)
 
-    requests_mock.post(ENRICH_URL, json=mock_response)
+    http_mock = mocker.patch.object(
+        FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(enrich_json=mock_response)
+    )
 
     args = {"type": "domain", "value": "malicious-example.com"}
     result = FeedCyberintPremium.enrich_command(mock_client, args)
@@ -457,14 +464,12 @@ def test_enrich_command_domain(mock_client, requests_mock):
     assert "Indicator Details" in result.readable_output
     assert "Domain Enrichment" in result.readable_output
 
-    # Verify request body
-    last_request = requests_mock.last_request
-    body = last_request.json()
+    body = http_mock.call_args.kwargs["json_data"]
     assert body["type"] == "domain"
     assert body["value"] == "malicious-example.com"
 
 
-def test_enrich_command_no_enrichment(mock_client, requests_mock):
+def test_enrich_command_no_enrichment(mocker, mock_client):
     """Test enrichment when no type-specific enrichment data is returned."""
     mock_response = {
         "indicator_type": "ipv4",
@@ -491,7 +496,7 @@ def test_enrich_command_no_enrichment(mock_client, requests_mock):
         "enrichment": None,
     }
 
-    requests_mock.post(ENRICH_URL, json=mock_response)
+    mocker.patch.object(FeedCyberintPremium.Client, "_http_request", side_effect=_http_responder(enrich_json=mock_response))
 
     args = {"type": "ipv4", "value": "9.9.9.9"}
     result = FeedCyberintPremium.enrich_command(mock_client, args)
@@ -499,5 +504,4 @@ def test_enrich_command_no_enrichment(mock_client, requests_mock):
     assert result is not None
     assert result.outputs["indicator_value"] == "9.9.9.9"
     assert "Indicator Details" in result.readable_output
-    # Should NOT have enrichment sections
     assert "IPv4 Enrichment" not in result.readable_output

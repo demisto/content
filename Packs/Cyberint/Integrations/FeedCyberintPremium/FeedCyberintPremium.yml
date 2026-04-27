@@ -294,16 +294,16 @@ script:
       description: Kill chain stage.
       type: String
     - contextPath: CyberintPremium.Indicator.first_seen
-      description: First seen date-time.
+      description: 'First seen date-time. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Indicator.last_seen
-      description: Last seen date-time.
+      description: 'Last seen date-time. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Indicator.added_to_feed
-      description: Date-time when added to the feed.
+      description: 'Date-time when added to the feed. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Indicator.valid_until
-      description: Valid until date-time.
+      description: 'Valid until date-time. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Indicator.is_blocking
       description: Whether the indicator is blocking.
@@ -360,13 +360,13 @@ script:
       description: Kill chain stage.
       type: String
     - contextPath: CyberintPremium.Enrichment.first_seen
-      description: First seen date-time.
+      description: 'First seen date-time. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Enrichment.last_seen
-      description: Last seen date-time.
+      description: 'Last seen date-time. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Enrichment.valid_until
-      description: Valid until date-time.
+      description: 'Valid until date-time. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: CyberintPremium.Enrichment.malware_types
       description: List of malware types.
@@ -405,7 +405,7 @@ script:
       description: Type-specific enrichment data (geo, whois, file info, etc.).
       type: Unknown
     description: Enriches a single IOC indicator with reputation, threat intelligence, and type-specific enrichment data.
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/fastapi:0.125.0.7194517
   feed: true
   subtype: python3
 tests:

@@ -1,16 +1,14 @@
 import http
-import json
 import math
-import traceback
-from datetime import UTC
 from json import JSONDecodeError
-from typing import Any
 
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from ContentClientApiModule import *  # noqa
 
 urllib3.disable_warnings()
+
+INTEGRATION_NAME = "Cyberint Premium Feed"
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_INTERVAL = 30  # 30 minutes
@@ -49,7 +47,7 @@ SEVERITY_MAP = {
 }
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """
     Client to use in the Cyberint Premium Feed integration.
     """
@@ -62,15 +60,21 @@ class Client(BaseClient):
         verify: bool = False,
         proxy: bool = False,
     ):
-        self._cookies = {"access_token": access_token}
-        self._headers = {
+        headers = {
+            "Cookie": f"access_token={access_token}",
             "X-Integration-Type": "XSOAR",
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": client_name,
             "X-Integration-Version": str(get_pack_version()),
         }
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=self._headers)
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+            client_name=INTEGRATION_NAME,
+        )
 
     @logger
     def fetch_feed_page(
@@ -174,7 +178,6 @@ class Client(BaseClient):
             method="POST",
             url_suffix=url_suffix,
             json_data=body,
-            cookies=self._cookies,
             resp_type="text",
             timeout=120,
             retries=RETRIES,
@@ -202,7 +205,6 @@ class Client(BaseClient):
             method="POST",
             url_suffix=url_suffix,
             json_data=body,
-            cookies=self._cookies,
             timeout=120,
             retries=RETRIES,
             status_list_to_retry=STATUS_LIST_TO_RETRY,
