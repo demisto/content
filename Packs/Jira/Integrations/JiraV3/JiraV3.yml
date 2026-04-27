@@ -223,13 +223,11 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
-    - description: Deprecated. Please use issue_id or issue_key.
-      name: issueIdOrKey
-      hidden: true
-    - description: The issue ID (Issue ID or key is required).
-      name: issue_id
-    - description: The issue key (Issue ID or key is required).
-      name: issue_key
+    - description: The search string.
+      name: query
+    - description: The maximum number of results to return. Default is 50 and maximum is 5000.
+      name: limit
+      defaultValue: '50'
     description: Gets the users and groups of an issue in Jira.
     name: jira-issue-get-users-groups
     outputs:
@@ -240,11 +238,13 @@ script:
       description: The Groups that match the query string.
       type: Object
   - arguments:
-    - description: The search string.
-      name: query
-    - description: The maximum number of users and groups to fetch when searching for a matching string (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
-      name: max_results
-      defaultValue: '50'
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueIdOrKey
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
     description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted if there are any.
     name: jira-delete-issue
   - arguments:

@@ -2641,12 +2641,11 @@ def get_users_and_groups_command(client: JiraBaseClient, args: Dict[str, str]) -
     query = args.get("query", "")
     limit = arg_to_number(args.get("limit", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     res = client.get_users_and_groups(query=query, max_results=limit)
-    outputs: Dict[str, Any] = {"Users": res.get("users", ""), "Groups": res.get("groups", "")}
-    markdown_dict: list[Dict[str, Any]] = [{"Users": res.get("users", ""), "Groups": res.get("groups", "")}]
+    outputs: Dict[str, Any] = {"Users": res.get("users", {}), "Groups": res.get("groups", {})}
+    markdown_dict: list[Dict[str, Any]] = [{"Users": res.get("users", {}), "Groups": res.get("groups", {})}]
     return CommandResults(
         outputs_prefix="Jira.GetUsersAndGroups",
         outputs=outputs,
-        outputs_key_field="id",
         readable_output=tableToMarkdown(name="Get User and Groups", t=markdown_dict),
         raw_response=res,
     )
