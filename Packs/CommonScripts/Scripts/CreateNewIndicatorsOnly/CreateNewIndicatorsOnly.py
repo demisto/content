@@ -25,15 +25,11 @@ def find_existing_indicators_by_value(indicator_values: list[str]) -> dict[str, 
     Returns:
         A case-insensitive dictionary mapping indicator values to their indicator objects.
     """
-    escaped_normalized_indicators = {
-        indicator_value.replace('"', r'\"') for indicator_value in indicator_values
-    }
+    escaped_normalized_indicators = {indicator_value.replace('"', r"\"") for indicator_value in indicator_values}
     if not escaped_normalized_indicators:
         return {}
 
-    query = " or ".join(
-        f'value:"{indicator_value}"' for indicator_value in escaped_normalized_indicators
-    )
+    query = " or ".join(f'value:"{indicator_value}"' for indicator_value in escaped_normalized_indicators)
     demisto.debug(f"Searching for existing indicators with query: {query}")
 
     searcher = IndicatorsSearcher(query=query)
@@ -43,9 +39,7 @@ def find_existing_indicators_by_value(indicator_values: list[str]) -> dict[str, 
         for indicator in page_result.get("iocs") or []:
             indicator_value = indicator.get(KEY_VALUE)
             if indicator_value:
-                existing_indicators_by_value.setdefault(
-                    str(indicator_value).casefold(), indicator
-                )
+                existing_indicators_by_value.setdefault(str(indicator_value).casefold(), indicator)
 
     demisto.debug(f"Found {len(existing_indicators_by_value)} existing indicators")
     return existing_indicators_by_value

@@ -74,8 +74,11 @@ def test_all_indicators_exist_with_single_value(mocker):
 
     def mock_search_indicators(query=None, size=100, **kwargs):
         if query and 'value:"1.1.1.1"' in query:
-            return {"iocs": [{"id": "0", "value": "1.1.1.1", "score": 0, "indicator_type": "Unknown"}],
-                    "total": 1, "searchAfter": None}
+            return {
+                "iocs": [{"id": "0", "value": "1.1.1.1", "score": 0, "indicator_type": "Unknown"}],
+                "total": 1,
+                "searchAfter": None,
+            }
         return {"iocs": [], "total": 0, "searchAfter": None}
 
     mocker.patch.object(demisto, "searchIndicators", side_effect=mock_search_indicators)
@@ -230,7 +233,8 @@ def test_some_indicators_are_excluded(mocker):
     """
 
     mocker.patch.object(
-        demisto, "searchIndicators",
+        demisto,
+        "searchIndicators",
         return_value={"iocs": [], "total": 0, "searchAfter": None},
     )
 
@@ -284,7 +288,8 @@ def test_indicator_including_commas(mocker):
     """
 
     mocker.patch.object(
-        demisto, "searchIndicators",
+        demisto,
+        "searchIndicators",
         return_value={"iocs": [], "total": 0, "searchAfter": None},
     )
 
@@ -339,7 +344,8 @@ def test_print_verbose(mocker):
     """
 
     mocker.patch.object(
-        demisto, "searchIndicators",
+        demisto,
+        "searchIndicators",
         return_value={"iocs": [], "total": 0, "searchAfter": None},
     )
 
@@ -390,7 +396,7 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
     from CreateNewIndicatorsOnly import add_new_indicator, find_existing_indicators_by_value
 
     indicator_value = '(External):Test "test2 test (unsigned)"'
-    escaped_value = indicator_value.replace('"', r'\"')
+    escaped_value = indicator_value.replace('"', r"\"")
 
     def mock_search_indicators(query=None, size=100, **kwargs):
         assert query is not None
@@ -547,7 +553,8 @@ def test_find_existing_indicators_case_insensitive(mocker):
     from CreateNewIndicatorsOnly import find_existing_indicators_by_value
 
     mocker.patch.object(
-        demisto, "searchIndicators",
+        demisto,
+        "searchIndicators",
         return_value={"iocs": [{"value": "test.com", "id": "1"}], "total": 1, "searchAfter": None},
     )
     result = find_existing_indicators_by_value(["TEST.COM"])
@@ -601,7 +608,8 @@ def test_find_existing_indicators_iocs_none(mocker):
     from CreateNewIndicatorsOnly import find_existing_indicators_by_value
 
     mocker.patch.object(
-        demisto, "searchIndicators",
+        demisto,
+        "searchIndicators",
         return_value={"iocs": None, "total": 0, "searchAfter": None},
     )
     result = find_existing_indicators_by_value(["1.1.1.1"])
