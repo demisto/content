@@ -21,10 +21,11 @@ Workflow columns (in order):
   11. validations passed   - ✅ when demisto-sdk validate passes
   12. unit tests passed    - ✅ when unit tests pass
   13. param parity test passes - ✅ when param parity test passes
-  14. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
-  15. auth parity test passes   - ✅ when auth parity test passes (or N/A)
-  16. code reviewed        - ✅ when code review is done
-  17. code merged          - ✅ when code is merged
+  14. shadowed command test passes - ✅ when shadowed command test passes
+  15. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
+  16. auth parity test passes   - ✅ when auth parity test passes (or N/A)
+  17. code reviewed        - ✅ when code review is done
+  18. code merged          - ✅ when code is merged
 
 Rules:
   - You must explicitly name the step you are marking as passed.
@@ -114,6 +115,7 @@ WORKFLOW_COLUMNS = [
     "validations passed",
     "unit tests passed",
     "param parity test passes",
+    "shadowed command test passes",
     "requires auth parity test",
     "auth parity test passes",
     "code reviewed",
@@ -129,6 +131,7 @@ CHECKPOINT_COLUMNS = [
     "validations passed",
     "unit tests passed",
     "param parity test passes",
+    "shadowed command test passes",
     # "requires auth parity test" is a flag, not a checkpoint
     "auth parity test passes",
     "code reviewed",

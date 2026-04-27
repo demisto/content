@@ -521,7 +521,7 @@ class TestFormatDashboardRow:
         row["wrote code"] = CHECK
         result = format_dashboard_row(row)
         assert result is not None
-        # Should have 3 filled + 6 empty blocks (auth params set + generated manifest + wrote code)
+        # Should have 3 filled + 7 empty blocks (auth params set + generated manifest + wrote code)
         assert "███" in result
         assert "░" in result
 
@@ -1198,3 +1198,41 @@ class TestSetAuth:
         assert "error" in result
         assert "not found" in result["error"].lower()
         mock_save.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Shadowed command test passes (placeholder step)
+# ---------------------------------------------------------------------------
+
+class TestShadowedCommandStep:
+    def test_shadowed_command_in_workflow_columns(self) -> None:
+        assert "shadowed command test passes" in WORKFLOW_COLUMNS
+
+    def test_shadowed_command_in_checkpoint_columns(self) -> None:
+        assert "shadowed command test passes" in CHECKPOINT_COLUMNS
+
+    def test_shadowed_command_after_param_parity(self) -> None:
+        param_idx = CHECKPOINT_COLUMNS.index("param parity test passes")
+        cmd_idx = CHECKPOINT_COLUMNS.index("shadowed command test passes")
+        assert cmd_idx == param_idx + 1
+
+    def test_shadowed_command_before_auth_parity(self) -> None:
+        cmd_idx = CHECKPOINT_COLUMNS.index("shadowed command test passes")
+        auth_idx = CHECKPOINT_COLUMNS.index("auth parity test passes")
+        assert cmd_idx < auth_idx
+
+    def test_markpass_shadowed_command(self) -> None:
+        row = _make_row(script_inputs="{}", params_for_test="{}")
+        _complete_up_to(row, "shadowed command test passes")
+        msg = markpass_step(row, "shadowed command test passes")
+        assert "ERROR" not in msg
+        assert row["shadowed command test passes"] == CHECK
+
+    def test_cannot_skip_shadowed_command(self) -> None:
+        row = _make_row(script_inputs="{}", params_for_test="{}")
+        _complete_up_to(row, "shadowed command test passes")
+        # Try to skip to auth parity
+        row["requires auth parity test"] = "YES"
+        msg = markpass_step(row, "auth parity test passes")
+        assert "ERROR" in msg
+        assert "shadowed command test passes" in msg

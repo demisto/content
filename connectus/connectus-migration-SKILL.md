@@ -7,7 +7,7 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows an **11-step workflow** tracked in `connectus/integrations_report.csv` via the `connectus/workflow_state.py` CLI tool. Step 1 (Verify Auth Classification) is a manual pre-check; steps 2–11 are tracked by the state machine.
+This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a **12-step workflow** tracked in `connectus/integrations_report.csv` via the `connectus/workflow_state.py` CLI tool. Step 1 (Verify Auth Classification) is a manual pre-check; steps 2–12 are tracked by the state machine.
 
 ## Critical Rules
 
@@ -377,7 +377,17 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration Name>" "param parity test passes"
 ```
 
-### Step 8: Auth Parity Flag (column 13)
+### Step 8: Shadowed Command Test Passes (column 14)
+
+Verify that integrations in the same connector do not have conflicting or shadowed commands. This is a placeholder step — the specific test procedure will be defined later.
+
+When the test passes:
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration Name>" "shadowed command test passes"
+```
+
+### Step 9: Auth Parity Flag (column 15)
 
 This is a **flag**, not a checkpoint. Set it based on whether the integration requires auth parity testing:
 
@@ -394,7 +404,7 @@ python3 connectus/workflow_state.py set-auth-flag "<Integration Name>" N/A
 
 **Important:** When set to `NO` or `N/A`, the next step (auth parity test passes) is automatically set to `N/A` and skipped.
 
-### Step 9: Auth Parity Test Passes (column 14)
+### Step 10: Auth Parity Test Passes (column 16)
 
 Only relevant if the auth flag is `YES`. Run the auth parity test to verify authentication works identically:
 
@@ -404,7 +414,7 @@ python3 connectus/workflow_state.py markpass "<Integration Name>" "auth parity t
 
 If the flag was `NO` or `N/A`, this step is auto-skipped.
 
-### Step 10: Code Reviewed (column 15)
+### Step 11: Code Reviewed (column 17)
 
 After code review is complete:
 
@@ -412,7 +422,7 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration Name>" "code reviewed"
 ```
 
-### Step 11: Code Merged (column 16)
+### Step 12: Code Merged (column 18)
 
 After the code is merged to the branch:
 
