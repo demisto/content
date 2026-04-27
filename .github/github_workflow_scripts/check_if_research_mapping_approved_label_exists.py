@@ -21,7 +21,7 @@ RESEARCH_MAPPING_PACKS = {
     "MicrosoftWindowsEvents",
     "Slack",
     "SalesForce",
-    "CyberArkIdentity"
+    "CyberArkIdentity",
 }
 
 
