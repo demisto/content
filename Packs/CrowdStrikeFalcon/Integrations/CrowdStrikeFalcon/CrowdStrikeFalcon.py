@@ -4375,7 +4375,7 @@ def handle_spotlight_fetch_error(
     # Check if this is an expired cursor error - if so, don't save state (already cleared)
     error_str = str(error)
     is_expired_cursor = "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str)
-    
+
     if is_expired_cursor:
         # Expired cursor - context already cleared, don't save state
         log_falcon_assets("Expired cursor detected in error handler. Skipping state save (context already cleared).", "info")
@@ -4480,14 +4480,16 @@ async def process_vulnerability_batches(
                 log_falcon_assets(
                     f"Pagination cursor expired. Saved cursor from previous fetch is no longer valid. "
                     f"Clearing state and starting fresh. Previous progress ({total_fetched} vulnerabilities) will be discarded.",
-                    "warning"
+                    "warning",
                 )
                 # Clear only Spotlight-specific data from integration context
                 current_context = context_store.read()
                 if "spotlight_assets" in current_context:
                     del current_context["spotlight_assets"]
                     context_store.write(current_context)
-                    log_falcon_assets("Spotlight state cleared from integration context. Next fetch will start from beginning.", "info")
+                    log_falcon_assets(
+                        "Spotlight state cleared from integration context. Next fetch will start from beginning.", "info"
+                    )
                 else:
                     log_falcon_assets("No Spotlight state found in context (already clear).", "info")
                 # Re-raise to abort this fetch - next cycle will start fresh
@@ -4628,72 +4630,383 @@ async def finalize_spotlight_fetch(
     )
 
 
-async def fetch_spotlight_assets():
-    """Fetch Spotlight vulnerabilities using ContentClient with async capabilities.
+async def get_all_device_ids_async(client: ContentClient) -> list[str]:
+    """Fetch all device IDs from CrowdStrike Falcon.
 
-    Orchestrates the full Spotlight asset fetch lifecycle:
-    1. Loads persisted state and initializes the client and asset handler.
-    2. Paginates through all vulnerability batches via ``process_vulnerability_batches``.
-    3. Waits for all background send tasks via ``wait_for_background_tasks``.
-    4. Flushes remaining asset enrichment and resets state via ``finalize_spotlight_fetch``.
+    Uses the /devices/queries/devices/v1 endpoint to retrieve all device IDs.
+    This is fast (< 5 seconds for 13.7K devices) and doesn't require pagination
+    for reasonable device counts.
+
+    Args:
+        client: ContentClient instance for API calls
+
+    Returns:
+        List of device IDs (AIDs)
     """
-    log_falcon_assets("Starting Spotlight assets fetch execution.", "info")
+    log_falcon_assets("Fetching all device IDs from Falcon", "info")
+
+    try:
+        # Fetch device IDs with a high limit (API supports up to 5000 per request)
+        # For most customers, this will get all devices in one call
+        response = await client._request(method="GET", url_suffix="/devices/queries/devices/v1", params={"limit": 5000})
+
+        response_data = response.json()
+        device_ids = response_data.get("resources", [])
+
+        # Check if there are more devices (pagination needed)
+        total = response_data.get("meta", {}).get("pagination", {}).get("total", len(device_ids))
+
+        if total > len(device_ids):
+            log_falcon_assets(f"Retrieved {len(device_ids)} device IDs, but {total} total exist. Fetching remaining...", "info")
+            # Fetch remaining devices using offset pagination
+            offset = len(device_ids)
+            while offset < total:
+                response = await client._request(
+                    method="GET", url_suffix="/devices/queries/devices/v1", params={"limit": 5000, "offset": offset}
+                )
+                response_data = response.json()
+                batch = response_data.get("resources", [])
+                device_ids.extend(batch)
+                offset += len(batch)
+                log_falcon_assets(f"Fetched {len(device_ids)}/{total} device IDs", "debug")
+
+        log_falcon_assets(f"Successfully fetched {len(device_ids)} device IDs", "info")
+        return device_ids
+
+    except Exception as e:
+        log_falcon_assets(f"Error fetching device IDs: {e}", "error")
+        raise
+
+
+async def fetch_vulnerabilities_for_device(
+    client: ContentClient, device_id: str, semaphore: asyncio.Semaphore
+) -> tuple[str, list[dict]]:
+    """Fetch vulnerabilities for a single device.
+
+    Uses filter=aid:'device_id' to get all vulnerabilities for one device.
+    This is fast (< 1 second per device) and avoids pagination cursor issues.
+
+    Args:
+        client: ContentClient instance for API calls
+        device_id: The device ID (AID) to fetch vulnerabilities for
+        semaphore: Asyncio semaphore for rate limiting
+
+    Returns:
+        Tuple of (device_id, vulnerabilities_list)
+    """
+    async with semaphore:
+        try:
+            # Query vulnerabilities for this specific device
+            response = await client._request(
+                method="GET",
+                url_suffix="/spotlight/combined/vulnerabilities/v1",
+                params={
+                    "limit": 5000,  # Max per request
+                    "filter": f"aid:'{device_id}'+status:['open','reopen']",
+                    "facet": ["host_info", "cve"],
+                },
+            )
+
+            response_data = response.json()
+            vulnerabilities = response_data.get("resources", [])
+
+            # Check if pagination is needed (unlikely for single device)
+            total = response_data.get("meta", {}).get("pagination", {}).get("total", len(vulnerabilities))
+            if total > len(vulnerabilities):
+                log_falcon_assets(f"Device {device_id} has {total} vulnerabilities, fetching remaining...", "debug")
+                # Use offset pagination for this device
+                offset = len(vulnerabilities)
+                while offset < total:
+                    response = await client._request(
+                        method="GET",
+                        url_suffix="/spotlight/combined/vulnerabilities/v1",
+                        params={
+                            "limit": 5000,
+                            "offset": offset,
+                            "filter": f"aid:'{device_id}'+status:['open','reopen']",
+                            "facet": ["host_info", "cve"],
+                        },
+                    )
+                    response_data = response.json()
+                    batch = response_data.get("resources", [])
+                    vulnerabilities.extend(batch)
+                    offset += len(batch)
+
+            return device_id, vulnerabilities
+
+        except Exception as e:
+            log_falcon_assets(f"Error fetching vulnerabilities for device {device_id}: {e}", "error")
+            # Return empty list on error to continue processing other devices
+            return device_id, []
+
+
+async def process_device_vulnerabilities_parallel(
+    client: ContentClient,
+    device_ids: list[str],
+    context_store: ContentClientContextStore,
+    spotlight_state: ContentClientState,
+    snapshot_id: str,
+    max_concurrent: int = 20,
+) -> tuple[int, int, set[asyncio.Task]]:
+    """Process vulnerabilities for all devices in parallel.
+
+    Fetches vulnerabilities for each device concurrently, sends them to XSIAM,
+    and extracts asset data from host_info in vulnerability responses (no additional API calls needed).
+
+    Args:
+        client: ContentClient instance for API calls
+        device_ids: List of all device IDs to process
+        context_store: Context store for state persistence
+        spotlight_state: Current Spotlight state object
+        snapshot_id: Snapshot ID for asset collection tracking
+        max_concurrent: Maximum number of concurrent device queries (default: 20)
+
+    Returns:
+        Tuple of (total_vulnerabilities, total_assets_with_vulns, pending_tasks)
+    """
+    log_falcon_assets(
+        f"Starting parallel vulnerability fetch for {len(device_ids)} devices with {max_concurrent} concurrent requests", "info"
+    )
+
+    semaphore = asyncio.Semaphore(max_concurrent)
+    pending_tasks: set[asyncio.Task] = set()
+
+    total_vulnerabilities = 0
+    devices_with_vulns: set[str] = set()
+    vuln_batch_counter = 0
+    vuln_last_saved_batch_number = 0
+
+    # Asset tracking - use dict to store host_info for each device
+    asset_batch_counter = 0
+    asset_last_saved_batch_number = 0
+    processed_aids: set[str] = set()
+    device_host_info: dict[str, dict] = {}  # Maps device_id -> host_info
+
+    # Process devices in batches to avoid overwhelming memory
+    batch_size = 100
+    for batch_start in range(0, len(device_ids), batch_size):
+        batch_end = min(batch_start + batch_size, len(device_ids))
+        device_batch = device_ids[batch_start:batch_end]
+
+        log_falcon_assets(f"Processing device batch {batch_start}-{batch_end} of {len(device_ids)}", "info")
+
+        # Fetch vulnerabilities for this batch of devices in parallel
+        tasks = [fetch_vulnerabilities_for_device(client, device_id, semaphore) for device_id in device_batch]
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Process results
+        for result in results:
+            if isinstance(result, Exception):
+                log_falcon_assets(f"Device query failed: {result}", "error")
+                continue
+
+            device_id, vulnerabilities = result
+
+            if not vulnerabilities:
+                continue  # Skip devices with no vulnerabilities
+
+            # Track device with vulnerabilities
+            devices_with_vulns.add(device_id)
+            total_vulnerabilities += len(vulnerabilities)
+
+            # Extract host_info from first vulnerability (all vulns for same device have same host_info)
+            if device_id not in device_host_info and vulnerabilities:
+                host_info = vulnerabilities[0].get("host_info", {})
+                if host_info:
+                    device_host_info[device_id] = host_info
+
+            # Send vulnerabilities to XSIAM
+            vuln_batch_counter += 1
+            is_last_batch = (batch_end >= len(device_ids)) and (result == results[-1])
+            items_count = total_vulnerabilities if is_last_batch else 1
+
+            task = create_task_send_batch_to_xsiam_and_save_context(
+                data=vulnerabilities,
+                product=SPOTLIGHT_VULN_PRODUCT,
+                snapshot_id=snapshot_id,
+                items_count=items_count,
+                batch_number=vuln_batch_counter,
+                last_saved_batch_number=vuln_last_saved_batch_number,
+                context_store=context_store,
+                state=spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+
+            def update_vuln_last_saved(future):
+                nonlocal vuln_last_saved_batch_number
+                try:
+                    vuln_last_saved_batch_number = future.result()
+                except Exception as e:
+                    log_falcon_assets(f"Vulnerability send task failed: {e}", "error")
+                finally:
+                    pending_tasks.discard(future)
+
+            pending_tasks.add(task)
+            task.add_done_callback(update_vuln_last_saved)
+
+            log_falcon_assets(
+                f"Device {device_id}: {len(vulnerabilities)} vulnerabilities (total: {total_vulnerabilities})", "debug"
+            )
+
+        # Convert host_info to asset format and send for devices with vulnerabilities in this batch
+        batch_devices_with_vulns = [
+            device_id
+            for device_id, vulns in results
+            if not isinstance(vulns, Exception) and vulns and device_id not in processed_aids
+        ]
+
+        if batch_devices_with_vulns:
+            # Convert host_info to asset format in sub-batches
+            asset_batch_size = 100
+            for asset_start in range(0, len(batch_devices_with_vulns), asset_batch_size):
+                asset_end = min(asset_start + asset_batch_size, len(batch_devices_with_vulns))
+                aids_in_batch = batch_devices_with_vulns[asset_start:asset_end]
+
+                # Convert host_info to asset format
+                assets = []
+                for aid in aids_in_batch:
+                    host_info = device_host_info.get(aid, {})
+                    if host_info:
+                        # Map host_info fields to asset fields expected by XSIAM
+                        asset = {
+                            "device_id": aid,
+                            "cid": host_info.get("cid", ""),
+                            "external_ip": host_info.get("external_ip", ""),
+                            "mac_address": host_info.get("mac_address", ""),
+                            "hostname": host_info.get("hostname", ""),
+                            "first_seen": host_info.get("first_seen", ""),
+                            "last_login_timestamp": host_info.get("last_login_timestamp", ""),
+                            "last_seen": host_info.get("last_seen", ""),
+                            "local_ip": host_info.get("local_ip", ""),
+                            "machine_domain": host_info.get("machine_domain", ""),
+                            "os_version": host_info.get("os_version", ""),
+                            "os_build": host_info.get("os_build", ""),
+                            "serial_number": host_info.get("serial_number", ""),
+                            "status": host_info.get("status", ""),
+                            "os_product_name": host_info.get("os_product_name", ""),
+                            "connection_mac_address": host_info.get("connection_mac_address", ""),
+                            "tags": host_info.get("tags", []),
+                        }
+                        assets.append(asset)
+
+                if assets:
+                    asset_batch_counter += 1
+                    is_last_asset_batch = (batch_end >= len(device_ids)) and (asset_end >= len(batch_devices_with_vulns))
+                    asset_items_count = len(devices_with_vulns) if is_last_asset_batch else 1
+
+                    log_falcon_assets(f"Sending {len(assets)} assets from host_info (batch {asset_batch_counter})", "info")
+
+                    # Update processed AIDs
+                    processed_aids.update(aids_in_batch)
+
+                    # Send assets to XSIAM
+                    asset_task = create_task_send_batch_to_xsiam_and_save_context(
+                        data=assets,
+                        product=SPOTLIGHT_ASSETS_PRODUCT,
+                        snapshot_id=snapshot_id,
+                        items_count=asset_items_count,
+                        batch_number=asset_batch_counter,
+                        last_saved_batch_number=asset_last_saved_batch_number,
+                        context_store=context_store,
+                        state=spotlight_state,
+                        save_state_callback=save_spotlight_state,
+                        data_type="assets",
+                    )
+
+                    def update_asset_last_saved(future):
+                        nonlocal asset_last_saved_batch_number
+                        try:
+                            asset_last_saved_batch_number = future.result()
+                        except Exception as e:
+                            log_falcon_assets(f"Asset send task failed: {e}", "error")
+                        finally:
+                            pending_tasks.discard(future)
+
+                    pending_tasks.add(asset_task)
+                    asset_task.add_done_callback(update_asset_last_saved)
+
+                    log_falcon_assets(f"Sent {len(assets)} assets to XSIAM (batch {asset_batch_counter})", "info")
+
+        log_falcon_assets(
+            f"Completed batch {batch_start}-{batch_end}: {total_vulnerabilities} total vulnerabilities, "
+            f"{len(devices_with_vulns)} devices with vulnerabilities",
+            "info",
+        )
+
+    log_falcon_assets(
+        f"Completed parallel processing: {total_vulnerabilities} vulnerabilities across " f"{len(devices_with_vulns)} devices",
+        "info",
+    )
+
+    return total_vulnerabilities, len(devices_with_vulns), pending_tasks
+
+
+async def fetch_spotlight_assets():
+    """Fetch Spotlight vulnerabilities using asset-first approach.
+
+    NEW IMPLEMENTATION (Asset-First):
+    1. Fetch all device IDs (< 5 seconds for 13.7K devices)
+    2. For each device, query vulnerabilities with filter=aid:'device_id' (parallel)
+    3. Only enrich and send assets that have vulnerabilities
+    4. No pagination cursor expiration issues (queries are too fast)
+
+    This approach solves the pagination cursor TTL issue for customers with millions
+    of vulnerabilities by avoiding sequential pagination entirely.
+    """
+    log_falcon_assets("Starting Spotlight assets fetch execution (asset-first approach).", "info")
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
-
     spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
 
     client = create_spotlight_client(context_store)
 
-    asset_handler = AssetsDeviceHandler(
-        client=client,
-        context_store=context_store,
-        spotlight_state=spotlight_state,
-        snapshot_id=snapshot_id,
-        processed_aids=processed_aids,
-        batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
-    )
-
     try:
-        total_fetched, unique_aids, pending_tasks = await process_vulnerability_batches(
+        # Step 1: Fetch all device IDs
+        device_ids = await get_all_device_ids_async(client)
+
+        if not device_ids:
+            log_falcon_assets("No devices found, skipping vulnerability fetch", "warning")
+            return
+
+        # Step 2: Process vulnerabilities for all devices in parallel
+        total_vulnerabilities, total_assets_with_vulns, pending_tasks = await process_device_vulnerabilities_parallel(
             client=client,
+            device_ids=device_ids,
             context_store=context_store,
             spotlight_state=spotlight_state,
             snapshot_id=snapshot_id,
-            asset_handler=asset_handler,
-            unique_aids=unique_aids,
-            after_token=spotlight_state.cursor,
-            total_fetched=total_fetched,
+            max_concurrent=20,  # Process 20 devices concurrently
         )
 
-        await wait_for_background_tasks(pending_tasks, "vulnerability send")
+        # Step 3: Wait for all background send tasks
+        await wait_for_background_tasks(pending_tasks, "vulnerability and asset send")
 
-        await finalize_spotlight_fetch(
-            asset_handler=asset_handler,
-            context_store=context_store,
-            spotlight_state=spotlight_state,
-            total_fetched=total_fetched,
-            unique_aids=unique_aids,
+        # Step 4: Reset state after successful fetch
+        log_falcon_assets("Resetting Spotlight state after successful complete fetch")
+        update_spotlight_state_and_metadata(
+            spotlight_state=spotlight_state, cursor=None, snapshot_id="", total_fetched=0, unique_aids=set(), processed_aids=set()
+        )
+        save_spotlight_state(context_store, spotlight_state)
+
+        log_falcon_assets(
+            f"Finished Spotlight assets fetch. Total devices: {len(device_ids)}, "
+            f"Devices with vulnerabilities: {total_assets_with_vulns}, "
+            f"Total vulnerabilities: {total_vulnerabilities}",
+            "info",
         )
 
     except (ContentClientError, Exception) as e:
-        # Read latest values from spotlight_state which is updated in-place by
-        # even if the function raised before returning.
-        metadata = spotlight_state.metadata
-        if isinstance(metadata, dict):
-            total_fetched = metadata.get("total_fetched_until_now", total_fetched)
-            unique_aids = set(metadata.get("unique_aids", unique_aids))
-        handle_spotlight_fetch_error(
-            error=e,
-            client=client,
-            spotlight_state=spotlight_state,
-            context_store=context_store,
-            after_token=spotlight_state.cursor,
-            snapshot_id=snapshot_id,
-            total_fetched=total_fetched,
-            unique_aids=unique_aids,
-            processed_aids=asset_handler.processed_aids,
-        )
+        log_falcon_assets(f"Error during Spotlight fetch: {e}", "error")
+
+        # For asset-first approach, we don't save cursor state since we don't use pagination
+        # Just log the error and re-raise
+        if isinstance(e, ContentClientError):
+            diagnosis = client.diagnose_error(e)
+            log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
+
+        raise
 
     finally:
         await client.aclose()

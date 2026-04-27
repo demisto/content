@@ -9045,10 +9045,10 @@ class TestSpotlightFetchAssets:
     async def test_fetch_spotlight_assets_expired_cursor_recovery(self, mocker):
         """
         Test that fetch_spotlight_assets detects expired pagination cursors and clears state.
-        
+
         This test verifies the fix for XSUP-66416 where saved cursors from interrupted fetches
         caused repeated failures with "Search context expired" errors.
-        
+
         Given:
             - Integration context has a saved cursor from a previous fetch
             - The saved cursor is expired (CrowdStrike returns 404 "Search context expired")
@@ -9060,32 +9060,28 @@ class TestSpotlightFetchAssets:
             - Error is re-raised to abort this fetch
             - Next fetch will start fresh
         """
-        import CrowdStrikeFalcon
         from CrowdStrikeFalcon import fetch_spotlight_assets, ContentClientError
-        
+
         # 1. Setup Mocks
         mock_client = mocker.AsyncMock()
         mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
-        
+
         # Mock context store with saved expired cursor
         mock_context_store = mocker.Mock()
         mock_context_store.read.return_value = {
             "spotlight_assets": {
                 "cursor": "expired_cursor_token",
-                "metadata": {"total_fetched_until_now": 340000, "snapshot_id": "old_snapshot"}
+                "metadata": {"total_fetched_until_now": 340000, "snapshot_id": "old_snapshot"},
             }
         }
         mocker.patch("CrowdStrikeFalcon.ContentClientContextStore", return_value=mock_context_store)
-        
+
         # Mock load_spotlight_state to return saved state with expired cursor
         mock_state = mocker.Mock()
         mock_state.cursor = "expired_cursor_token"
         mock_state.metadata = {"total_fetched_until_now": 340000}
-        mocker.patch(
-            "CrowdStrikeFalcon.load_spotlight_state",
-            return_value=(mock_state, "old_snapshot", 340000, set(), set())
-        )
-        
+        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(mock_state, "old_snapshot", 340000, set(), set()))
+
         # Mock fetch to raise expired cursor error
         expired_cursor_error = ContentClientError(
             'Request failed: {"errors": [{"code": 404, "message": "Search context expired, \'after\' key no longer valid"}]}'
@@ -9093,21 +9089,346 @@ class TestSpotlightFetchAssets:
         mock_fetch_batch = mocker.patch(
             "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
             new_callable=mocker.AsyncMock,
-            side_effect=expired_cursor_error
+            side_effect=expired_cursor_error,
         )
-        
+
         mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
-        
+
         # 2. Execute and verify error is raised
         with pytest.raises(ContentClientError, match="Search context expired"):
             await fetch_spotlight_assets()
-        
+
         # 3. Verify context was cleared
         mock_context_store.write.assert_called_once_with({})
-        
+
         # 4. Verify fetch was attempted with the expired cursor
         mock_fetch_batch.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_get_all_device_ids_async_single_page(self, mocker):
+        """
+        Tests fetching device IDs when all fit in a single page.
+
+        Given:
+            - An API that returns 100 device IDs in one call.
+        When:
+            - get_all_device_ids_async is called.
+        Then:
+            - The function returns all 100 device IDs.
+            - Only one API call is made.
+        """
+        from CrowdStrikeFalcon import get_all_device_ids_async
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        device_ids = [f"aid{i}" for i in range(100)]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"resources": device_ids, "meta": {"pagination": {"total": 100}}}
+        mock_client._request.return_value = mock_response
+
+        # Execute
+        result = await get_all_device_ids_async(mock_client)
+
+        # Verify
+        assert result == device_ids
+        assert mock_client._request.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_get_all_device_ids_async_multiple_pages(self, mocker):
+        """
+        Tests fetching device IDs when pagination is required.
+
+        Given:
+            - An API that returns 5000 device IDs per page, with 7000 total.
+        When:
+            - get_all_device_ids_async is called.
+        Then:
+            - The function returns all 7000 device IDs.
+            - Two API calls are made (5000 + 2000).
+        """
+        from CrowdStrikeFalcon import get_all_device_ids_async
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        page1_ids = [f"aid{i}" for i in range(5000)]
+        page2_ids = [f"aid{i}" for i in range(5000, 7000)]
+
+        mock_response1 = mocker.Mock()
+        mock_response1.json.return_value = {"resources": page1_ids, "meta": {"pagination": {"total": 7000}}}
+
+        mock_response2 = mocker.Mock()
+        mock_response2.json.return_value = {"resources": page2_ids, "meta": {"pagination": {"total": 7000}}}
+
+        mock_client._request.side_effect = [mock_response1, mock_response2]
+
+        # Execute
+        result = await get_all_device_ids_async(mock_client)
+
+        # Verify
+        assert len(result) == 7000
+        assert result == page1_ids + page2_ids
+        assert mock_client._request.call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_for_device_success(self, mocker):
+        """
+        Tests fetching vulnerabilities for a single device.
+
+        Given:
+            - A device with 10 vulnerabilities.
+        When:
+            - fetch_vulnerabilities_for_device is called.
+        Then:
+            - Returns the device ID and its vulnerabilities.
+            - Vulnerabilities include host_info.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_for_device
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        semaphore = asyncio.Semaphore(20)
+        device_id = "aid123"
+
+        vulnerabilities = [
+            {
+                "id": f"vuln{i}",
+                "aid": device_id,
+                "host_info": {"hostname": "test-host", "local_ip": "192.168.1.1", "os_version": "Windows 10"},
+                "cve": {"id": f"CVE-2023-{i}"},
+            }
+            for i in range(10)
+        ]
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"resources": vulnerabilities, "meta": {"pagination": {"total": 10}}}
+        mock_client._request.return_value = mock_response
+
+        # Execute
+        result_device_id, result_vulns = await fetch_vulnerabilities_for_device(mock_client, device_id, semaphore)
+
+        # Verify
+        assert result_device_id == device_id
+        assert len(result_vulns) == 10
+        assert all("host_info" in v for v in result_vulns)
+        mock_client._request.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_for_device_no_vulns(self, mocker):
+        """
+        Tests fetching vulnerabilities for a device with no vulnerabilities.
+
+        Given:
+            - A device with no vulnerabilities.
+        When:
+            - fetch_vulnerabilities_for_device is called.
+        Then:
+            - Returns the device ID and an empty list.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_for_device
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        semaphore = asyncio.Semaphore(20)
+        device_id = "aid456"
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"resources": [], "meta": {"pagination": {"total": 0}}}
+        mock_client._request.return_value = mock_response
+
+        # Execute
+        result_device_id, result_vulns = await fetch_vulnerabilities_for_device(mock_client, device_id, semaphore)
+
+        # Verify
+        assert result_device_id == device_id
+        assert result_vulns == []
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_asset_first_success(self, mocker):
+        """
+        Tests the new asset-first implementation end-to-end.
+
+        Given:
+            - 3 devices in the environment.
+            - 2 devices have vulnerabilities, 1 does not.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - All device IDs are fetched.
+            - Vulnerabilities are fetched for all devices in parallel.
+            - Only 2 devices with vulnerabilities are sent as assets.
+            - Asset data is extracted from host_info (no additional API calls).
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets, SPOTLIGHT_VULN_PRODUCT, SPOTLIGHT_ASSETS_PRODUCT
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+
+        # Mock get_all_device_ids_async
+        device_ids = ["aid1", "aid2", "aid3"]
+        mocker.patch("CrowdStrikeFalcon.get_all_device_ids_async", return_value=device_ids)
+
+        # Mock fetch_vulnerabilities_for_device
+        async def mock_fetch_vulns(client, device_id, semaphore):
+            if device_id == "aid1":
+                return device_id, [
+                    {
+                        "id": "vuln1",
+                        "aid": device_id,
+                        "host_info": {"hostname": "host1", "local_ip": "192.168.1.1", "device_id": device_id},
+                    }
+                ]
+            elif device_id == "aid2":
+                return device_id, [
+                    {
+                        "id": "vuln2",
+                        "aid": device_id,
+                        "host_info": {"hostname": "host2", "local_ip": "192.168.1.2", "device_id": device_id},
+                    }
+                ]
+            else:
+                return device_id, []  # aid3 has no vulnerabilities
+
+        mocker.patch("CrowdStrikeFalcon.fetch_vulnerabilities_for_device", side_effect=mock_fetch_vulns)
+
+        # Mock task creation
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
+        )
+
+        # Execute
+        await fetch_spotlight_assets()
+
+        # Verify
+        CrowdStrikeFalcon.get_all_device_ids_async.assert_awaited_once()
+
+        # Should have created tasks for 2 vulnerability batches and 2 asset batches
+        assert mock_create_task.call_count == 4  # 2 vuln + 2 assets
+
+        # Verify vulnerability tasks
+        vuln_calls = [call for call in mock_create_task.call_args_list if call.kwargs["product"] == SPOTLIGHT_VULN_PRODUCT]
+        assert len(vuln_calls) == 2
+
+        # Verify asset tasks
+        asset_calls = [call for call in mock_create_task.call_args_list if call.kwargs["product"] == SPOTLIGHT_ASSETS_PRODUCT]
+        assert len(asset_calls) == 2  # Only 2 devices with vulnerabilities
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_asset_first_no_devices(self, mocker):
+        """
+        Tests asset-first implementation when no devices exist.
+
+        Given:
+            - No devices in the environment.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - Function returns early without errors.
+            - No vulnerability or asset tasks are created.
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+        mocker.patch("CrowdStrikeFalcon.get_all_device_ids_async", return_value=[])
+
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+
+        # Execute
+        await fetch_spotlight_assets()
+
+        # Verify
+        CrowdStrikeFalcon.get_all_device_ids_async.assert_awaited_once()
+        mock_create_task.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_process_device_vulnerabilities_extracts_host_info(self, mocker):
+        """
+        Tests that host_info is correctly extracted from vulnerabilities.
+
+        Given:
+            - Vulnerabilities with host_info data.
+        When:
+            - process_device_vulnerabilities_parallel is called.
+        Then:
+            - Asset data is extracted from host_info.
+            - No additional API calls are made to enrich devices.
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import process_device_vulnerabilities_parallel
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        context_store = mocker.Mock()
+        spotlight_state = mocker.Mock()
+        spotlight_state.metadata = {}
+        snapshot_id = "snap123"
+        device_ids = ["aid1"]
+
+        # Mock fetch_vulnerabilities_for_device
+        async def mock_fetch_vulns(client, device_id, semaphore):
+            return device_id, [
+                {
+                    "id": "vuln1",
+                    "aid": device_id,
+                    "host_info": {
+                        "hostname": "test-host",
+                        "local_ip": "192.168.1.1",
+                        "os_version": "Windows 10",
+                        "device_id": device_id,
+                        "tags": ["tag1", "tag2"],
+                    },
+                }
+            ]
+
+        mocker.patch("CrowdStrikeFalcon.fetch_vulnerabilities_for_device", side_effect=mock_fetch_vulns)
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
+        )
+
+        # Execute
+        total_vulns, total_assets, pending_tasks = await process_device_vulnerabilities_parallel(
+            client=mock_client,
+            device_ids=device_ids,
+            context_store=context_store,
+            spotlight_state=spotlight_state,
+            snapshot_id=snapshot_id,
+            max_concurrent=20,
+        )
+
+        # Verify
+        assert total_vulns == 1
+        assert total_assets == 1
+
+        # Verify asset data was sent with host_info fields
+        asset_calls = [
+            call
+            for call in mock_create_task.call_args_list
+            if call.kwargs["product"] == CrowdStrikeFalcon.SPOTLIGHT_ASSETS_PRODUCT
+        ]
+        assert len(asset_calls) == 1
+
+        asset_data = asset_calls[0].kwargs["data"]
+        assert len(asset_data) == 1
+        assert asset_data[0]["hostname"] == "test-host"
+        assert asset_data[0]["local_ip"] == "192.168.1.1"
+        assert asset_data[0]["os_version"] == "Windows 10"
+        assert asset_data[0]["tags"] == ["tag1", "tag2"]
 
 
 class TestAssetsDeviceHandler:
