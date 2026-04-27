@@ -349,7 +349,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     if indicator_type == IDENTITYIDS_PARAM:
         identityids = argToList(indicator_value)
         for identityid in identityids:
-            if not identityid.isdigit():
+            if not identityid.lstrip("-").isdigit():
                 raise ValueError(f"Invalid input Error: Identityids argument is not a valid list of integers: {indicator_value}")
 
     return True

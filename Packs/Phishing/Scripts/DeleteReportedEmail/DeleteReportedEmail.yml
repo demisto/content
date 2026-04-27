@@ -17,7 +17,7 @@ args:
   - 'false'
 - description: Interval in seconds between each poll.
   name: interval_in_seconds
-comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
+comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to.'
 commonfields:
   id: DeleteReportedEmail
   version: -1
@@ -48,7 +48,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4819260
 fromversion: '6.1.0'
 tests:
 - No tests (auto formatted)

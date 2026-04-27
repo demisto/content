@@ -1,7 +1,7 @@
 args:
 - default: true
   defaultValue: array
-  description: 'This is the array data to create array from, should be in the format of comma separator by default: val1,val2,val3'
+  description: 'This is the array data to create array from, should be in the format of comma separator by default: val1,val2,val3.'
   name: arrayData
 - defaultValue: ','
   description: Separator to use to split arrayData, by default will be comma ',' .
@@ -21,7 +21,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: CreateArrayWithDuplicates
 runas: DBotWeakRole

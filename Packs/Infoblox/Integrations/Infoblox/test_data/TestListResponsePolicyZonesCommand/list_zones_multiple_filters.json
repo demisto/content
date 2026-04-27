@@ -1,0 +1,34 @@
+{
+    "result": [
+        {
+            "_ref": "zone_rp/dummy:test.com/default",
+            "disable": false,
+            "fqdn": "test.com",
+            "rpz_policy": "GIVEN",
+            "rpz_severity": "MAJOR",
+            "rpz_type": "LOCAL",
+            "view": "default",
+            "comment": "Test response policy zone"
+        },
+        {
+            "_ref": "zone_rp/dummy2:example.com/default",
+            "disable": false,
+            "fqdn": "example.com",
+            "rpz_policy": "NXDOMAIN",
+            "rpz_severity": "CRITICAL",
+            "rpz_type": "FEED",
+            "view": "default",
+            "comment": "Example RPZ zone"
+        },
+        {
+            "_ref": "zone_rp/dummy3:demo.com/default",
+            "disable": true,
+            "fqdn": "demo.com",
+            "rpz_policy": "PASSTHRU",
+            "rpz_severity": "INFORMATIONAL",
+            "rpz_type": "LOCAL",
+            "view": "default",
+            "comment": "Demo RPZ zone"
+        }
+    ]
+}

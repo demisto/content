@@ -14,3 +14,4 @@
 !gti-passive-dns-data ip=1.1.1.1
 !gti-file-scan-upload-url
 !gti-assessment-get resource=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+!cve cve=CVE-2022-30190

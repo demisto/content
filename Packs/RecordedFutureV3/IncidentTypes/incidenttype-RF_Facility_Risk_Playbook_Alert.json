@@ -1,0 +1,27 @@
+{
+	"autorun": false,
+	"color": "#69A536",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"hours": 0,
+	"hoursR": 0,
+	"id": "RF Facility Risk Playbook Alert",
+	"layout": "RF Facility Risk Playbook Alert Layout",
+	"locked": false,
+	"name": "RF Facility Risk Playbook Alert",
+	"onChangeRepAlg": 1,
+	"readonly": false,
+	"reputationCalc": 1,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0,
+	"fromVersion": "6.0.0"
+}

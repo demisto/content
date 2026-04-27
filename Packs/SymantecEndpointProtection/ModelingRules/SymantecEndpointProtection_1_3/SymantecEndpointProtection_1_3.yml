@@ -4,3 +4,5 @@ name: Symantec Endpoint Protection Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

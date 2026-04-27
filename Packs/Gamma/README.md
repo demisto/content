@@ -5,7 +5,7 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
 
 ### Acknowledgements
 
-Special Thanks to the **Upstart team** (Ines Kim, Chris Schafer) for their ideas, support and
+Special Thanks to the **Upstart team** (Ines Testman, Chris Schafer) for their ideas, support and
  significant code contribution in developing this content pack.
 
 ### What does this pack do?

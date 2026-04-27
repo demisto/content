@@ -6,6 +6,6 @@ Please contact the partner directly via the support link on the right.
 
 ---
 
-- Julian Kaufmann
+- Jules Testmann
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

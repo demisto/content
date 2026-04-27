@@ -1,8 +1,9 @@
 category: Database
+provider: Microsoft
 commonfields:
   id: Generic SQL
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -187,7 +188,7 @@ script:
       name: bind_variables_values
     description: Running a sql query.
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.3262557
+  dockerimage: demisto/genericsql:1.1.0.5740116
   isfetch: true
   runonce: false
   script: '-'

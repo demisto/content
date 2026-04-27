@@ -4,6 +4,7 @@ commonfields:
 name: FortiSIEM
 display: FortiSIEM
 category: Analytics & SIEM
+provider: Fortinet
 description: Search and update events of FortiSIEM and manage resource lists.
 configuration:
 - display: Fetch incidents
@@ -373,7 +374,7 @@ script:
     description: Lists all elements in a resource list.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No Test
 fromversion: 5.0.0

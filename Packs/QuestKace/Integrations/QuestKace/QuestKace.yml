@@ -1,4 +1,5 @@
 category: Case Management
+provider: Quest Software
 beta: true
 commonfields:
   id: QuestKace
@@ -72,7 +73,7 @@ script:
     name: kace-machines-list
     outputs:
     - contextPath: QuestKace.Machine.ID
-      description: ID of machine
+      description: ID of machine.
       type: String
     - contextPath: QuestKace.Machine.Modified
       description: Last modified date of the machine.
@@ -457,7 +458,7 @@ script:
       required: true
     description: Deletes the specified ticket.
     name: kace-ticket-delete
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

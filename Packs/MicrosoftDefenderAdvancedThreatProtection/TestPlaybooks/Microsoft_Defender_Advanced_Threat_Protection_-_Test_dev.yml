@@ -39,7 +39,7 @@ tasks:
       id: 6408bbf1-b8bd-454d-8af2-32bbfc759989
       version: -1
       name: set playbook to Microsoft Defender Advanced Threat Protection - Test
-      description: set playbook for current incident to Microsoft Defender Advanced Threat Protection - Test
+      description: set playbook for current incident to Microsoft Defender Advanced Threat Protection - Test.
       script: Builtin|||setPlaybook
       type: regular
       iscommand: true

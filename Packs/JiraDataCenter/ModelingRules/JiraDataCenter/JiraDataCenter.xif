@@ -1,0 +1,23 @@
+[MODEL: dataset= "atlassian_jira_raw"]
+alter
+    affectedObject_resource_name = arraystring(arraymap(_raw_log -> affectedObjects[], if(json_extract_scalar("@element", "$.type") != "USER", json_extract_scalar("@element", "$.name"))), ", "),
+    affectedObject_user_name = arraystring(arraymap(_raw_log -> affectedObjects[], if(json_extract_scalar("@element", "$.type") = "USER", json_extract_scalar("@element", "$.name"))), ", "),
+    affectedObject_user_id = arraystring(arraymap(_raw_log -> affectedObjects[], if(json_extract_scalar("@element", "$.type") = "USER", json_extract_scalar("@element", "$.id"))), ", "),
+    changedValues_from = arraystring(arraymap(json_extract_array(_raw_log, "$.changedValues"), "@element" -> from), ", "),
+    changedValues_to = arraystring(arraymap(json_extract_array(_raw_log, "$.changedValues"), "@element" -> to), ", "),
+    auditType_action = _raw_log -> auditType.action,
+    auditType_action_key = _raw_log -> auditType.actionI18nKey,
+    auditType_category_key = _raw_log -> auditType.categoryI18nKey,
+    author_name = _raw_log -> author.name,
+    extra_data = object_create("Area Type", _raw_log -> auditType.area, "Category Type", _raw_log -> auditType.category, "Method", _raw_log -> method, "System", _raw_log -> system)
+| alter
+    xdm.target.resource.name = affectedObject_resource_name,
+    xdm.target.user.username = affectedObject_user_name,
+    xdm.target.user.identifier = affectedObject_user_id,
+    xdm.event.type = auditType_action,
+    xdm.event.operation_sub_type = auditType_action_key,
+    xdm.event.original_event_type = auditType_category_key,
+    xdm.target.resource_before.value = changedValues_from,
+    xdm.target.resource.value = changedValues_to,
+    xdm.source.user.username = author_name,
+    xdm.event.description = extra_data;

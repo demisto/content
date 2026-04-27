@@ -1,7 +1,9 @@
+import hashlib
 from typing import Any
 
 import demistomock as demisto
 import urllib3
+from enum import Enum
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -20,9 +22,17 @@ DEFAULT_MAX_FETCH_USER_AUDIT = 5000
 DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION = 5000
 DEFAULT_COMMAND_LIMIT = 10
 
+FETCH_EVENTS_TIMEOUT = 180  # allow up to 3 minutes to fetch events of all types
+
 ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
 USER_AUDIT_TYPE = "User Audit Logs"
 ACCESS_AUTHENTICATION_TYPE = "Access Authentication Logs"
+
+
+class AuthTypes(Enum):
+    GLOBAL_API_KEY = "Global API Key (Legacy)"
+    API_TOKEN = "API Token"
+
 
 """ CLIENT CLASS """
 
@@ -140,23 +150,22 @@ def fetch_events_for_type(
     while len(events) < events_to_fetch:
         response = client.get_events(start_date, page_size, page, event_type)
         result = response.get("result", [])
-        demisto.debug(f"Fetched {len(result)} events on page {page}")
+        demisto.debug(f"Fetched {len(result)} events of {event_type=} on {page=}.")
         events.extend(result)
         if len(result) < page_size:
             break
         page += 1
 
+    generate_event_id_if_not_exists(events)
     unique_events = handle_duplicates(events, previous_event_ids)[:max_fetch]
-    demisto.debug(f"Unique events after deduplication: {len(unique_events)}")
-
-    for event in unique_events:
-        event["SOURCE_LOG_TYPE"] = event_type
+    demisto.debug(f"{event_type=} has {len(unique_events)} events after deduplication.")
 
     if unique_events:
+        format_events(event_type, unique_events)
         start_date, previous_event_ids = prepare_next_run(unique_events)
 
     new_last_run = {"last_fetch": start_date, "events_ids": previous_event_ids}
-    demisto.debug(f"New last_run: {new_last_run}")
+    demisto.debug(f"{event_type=} has {new_last_run=}.")
     return unique_events, new_last_run
 
 
@@ -184,35 +193,72 @@ def fetch_events(
             - dict[str, Any]: The updated last run data for all event types.
             - list[dict[str, Any]]: The aggregated list of fetched events.
     """
-    events = []
-    next_run = {}
+    demisto.debug(f"Starting to fetch events. Got {last_run=}.")
+    events: list[dict[str, Any]] = []
+    next_run: dict[str, Any] = {}
 
-    event_type_params = {
+    account_audit_last_run = last_run.get(ACCOUNT_AUDIT_TYPE, {})
+    user_audit_last_run = last_run.get(USER_AUDIT_TYPE, {})
+    access_authentication_last_run = last_run.get(ACCESS_AUTHENTICATION_TYPE, {})
+
+    event_type_kwargs = {
         ACCOUNT_AUDIT_TYPE: {
-            "last_run": last_run.get(ACCOUNT_AUDIT_TYPE, {}),
-            "max_fetch": max_fetch_account_audit,
+            "last_run": account_audit_last_run,
+            "max_fetch": account_audit_last_run.pop("max_fetch", max_fetch_account_audit),
             "event_type": ACCOUNT_AUDIT_TYPE,
             "max_page_size": ACCOUNT_AUDIT_PAGE_SIZE,
         },
         USER_AUDIT_TYPE: {
-            "last_run": last_run.get(USER_AUDIT_TYPE, {}),
-            "max_fetch": max_fetch_user_audit,
+            "last_run": user_audit_last_run,
+            "max_fetch": user_audit_last_run.pop("max_fetch", max_fetch_user_audit),
             "event_type": USER_AUDIT_TYPE,
             "max_page_size": USER_AUDIT_PAGE_SIZE,
         },
         ACCESS_AUTHENTICATION_TYPE: {
-            "last_run": last_run.get(ACCESS_AUTHENTICATION_TYPE, {}),
-            "max_fetch": max_fetch_authentication,
+            "last_run": access_authentication_last_run,
+            "max_fetch": access_authentication_last_run.pop("max_fetch", max_fetch_authentication),
             "event_type": ACCESS_AUTHENTICATION_TYPE,
             "max_page_size": ACCESS_AUTHENTICATION_PAGE_SIZE,
         },
     }
+    event_type_is_finished: dict[str, bool] = {}
 
     for event_type in event_types_to_fetch:
-        fetched_events, updated_last_run = fetch_events_for_type(client=client, **event_type_params[event_type])
-        next_run[event_type] = updated_last_run
-        events.extend(fetched_events)
+        event_type_is_finished[event_type] = False
+        event_type_timeout = FETCH_EVENTS_TIMEOUT // len(event_types_to_fetch)
+        event_type_max_fetch = event_type_kwargs[event_type]["max_fetch"]
 
+        with ExecutionTimeout(event_type_timeout):
+            demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
+            fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
+            event_type_is_finished[event_type] = True
+
+        if event_type_is_finished[event_type]:
+            demisto.debug(
+                f"Completed fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
+                f"Adding {len(fetched_events)} events to the list of all events."
+            )
+            next_run[event_type] = event_type_next_run
+            events.extend(fetched_events)
+
+        else:
+            demisto.debug(
+                f"Timed out fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
+                f"Setting next run for {event_type=} with reduced limit."
+            )
+            # If timed out, keep event type last run and reduce its max fetch limit to ensure it completes in the next iteration
+            event_type_last_run = event_type_kwargs[event_type]["last_run"]
+            next_run[event_type] = {**event_type_last_run, "max_fetch": max(event_type_max_fetch // 2, 1)}
+
+    event_types_finished = event_type_is_finished.values()
+    # If at least one event type timed out and at least one finished in time, trigger instant next run
+    if False in event_types_finished and True in event_types_finished:
+        demisto.debug("Some event types timed out. Next fetch triggered immediately.")
+        next_run["nextTrigger"] = "0"
+    else:
+        demisto.debug("All event types timed out or finished in time. Next fetch triggered based on the configured interval.")
+
+    demisto.debug(f"Finished fetching {len(events)} events. Setting {next_run=}.")
     return next_run, events
 
 
@@ -305,6 +351,24 @@ def prepare_next_run(events: list[dict[str, Any]]) -> tuple[str, list[str]]:
     return latest_time_truncated, latest_ids
 
 
+def generate_event_id_if_not_exists(events: list[dict[str, Any]]):
+    """
+    Generates a unique SHA256 hash as the event ID if the `id` field does not exist in the event JSON.
+
+    Args:
+        events (list[dict[str, Any]]): The list of events to process.
+    """
+    for event in events:
+        if "id" in event:
+            continue
+        # Access authentication logs do *not* have an "id" field, so we need to generate a unique hash for deduplication
+        # https://developers.cloudflare.com/api/resources/zero_trust/subresources/access/subresources/logs/subresources/access_requests/
+        encoded_event: bytes = json.dumps(event, sort_keys=True).encode("utf-8")
+        event_id = str(hashlib.sha256(encoded_event).hexdigest())
+        event["id"] = event_id
+        demisto.debug(f"Generated a unique SHA256 {event_id=} using the contents of {event=}.")
+
+
 def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str]) -> list[dict[str, Any]]:
     """
     Filters out events that have already been fetched.
@@ -316,22 +380,69 @@ def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str
     Returns:
         list[dict[str, Any]]: A list of events excluding duplicates.
     """
-    unique_events = [event for event in events if event.get("id") not in previous_event_ids]
+    unique_events = [event for event in events if event["id"] not in previous_event_ids]
     demisto.debug(f"Deduplicated events: {len(unique_events)} (removed {len(events) - len(unique_events)} duplicates)")
     return unique_events
 
 
-def add_time_to_events(events: list[dict[str, Any]] | None):
+def format_events(event_type: str, events: list[dict[str, Any]]):
     """
-    Adds the '_time' key to events based on their creation or occurrence timestamp.
+    Formats events by adding `_time` and `SOURCE_LOG_TYPE` fields.
+    The `_time` value is based on on the event creation or occurrence timestamp.
+    The `SOURCE_LOG_TYPE` value is the event type.
 
     Args:
-        events (list[dict[str, Any]] | None): A list of events.
+        event_type (str): The type of fetched events.
+        events (list[dict[str, Any]]): The list of events to process.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get("when") or event.get("created_at"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+    for event in events:
+        create_time = arg_to_datetime(arg=event.get("when") or event.get("created_at"))
+        event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+        event["SOURCE_LOG_TYPE"] = event_type
+
+
+def validate_headers(params: dict) -> dict:
+    """
+    Validates the provided the configuration parameters and returns the authorization headers.
+
+    Args:
+        params (dict): Configuration parameters to validate.
+
+    Raises:
+        DemistoException: If the credentials do not match the selected authorization type.
+
+    Returns:
+        dict: Validated request authorization headers.
+    """
+    auth_type = params.get("auth_type")
+    demisto.debug(f"Starting to validate parameters for {auth_type=}.")
+
+    # API Token credentials
+    token = params.get("token_credentials", {}).get("password")
+    # Global API Key credentials
+    auth_email = params.get("credentials", {}).get("identifier")
+    auth_key = params.get("credentials", {}).get("password")
+
+    if auth_type == AuthTypes.API_TOKEN.value:
+        if not token:
+            raise DemistoException(f"API Token is required for the {auth_type} authorization type.")
+        if auth_email or auth_key:
+            raise DemistoException(f"API Email and Global API Key should be left blank for the {auth_type} authorization type.")
+
+        demisto.debug(f"Found API token matching {auth_type=}. Creating request headers.")
+        return {"Authorization": f"Bearer {token}"}
+
+    elif auth_type == AuthTypes.GLOBAL_API_KEY.value:
+        if not (auth_email and auth_key):
+            raise DemistoException(f"API Email and Global API Key are required for the {auth_type} authorization type.")
+        if token:
+            raise DemistoException(f"API Token should be left blank for the {auth_type} authorization type.")
+
+        demisto.debug(f"Found API email and global key matching {auth_type=}. Creating request headers.")
+        return {"X-Auth-Email": auth_email, "X-Auth-Key": auth_key}
+
+    else:
+        raise DemistoException(f"Invalid authorization type: {auth_type!r}.")
 
 
 def validate_args(args: dict):
@@ -373,19 +484,15 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
 
-    credentials = params.get("credentials", {})
     max_fetch_account_audit = arg_to_number(params.get("max_fetch_account_audit_logs")) or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT
     max_fetch_user_audit = arg_to_number(params.get("max_fetch_user_audit_logs")) or DEFAULT_MAX_FETCH_USER_AUDIT
     max_fetch_authentication = (
         arg_to_number(params.get("max_fetch_access_authentication_logs")) or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION
     )
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch"))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch"), transform=lambda event_type: event_type.strip())
 
     try:
-        headers = {
-            "X-Auth-Email": credentials.get("identifier"),
-            "X-Auth-Key": credentials.get("password"),
-        }
+        headers = validate_headers(params)
         client = Client(
             base_url=params.get("url", ""),
             verify=not params.get("insecure", False),
@@ -402,7 +509,6 @@ def main() -> None:  # pragma: no cover
             events, results = get_events_command(client=client, args=args)
             return_results(results)
             if events and argToBoolean(args.get("should_push_events")):
-                add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
@@ -415,8 +521,6 @@ def main() -> None:  # pragma: no cover
                 max_fetch_authentication=max_fetch_authentication,
                 event_types_to_fetch=event_types_to_fetch,
             )
-
-            add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 

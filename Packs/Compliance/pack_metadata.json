@@ -9,7 +9,9 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "created": "2020-05-10T10:50:52Z",
     "useCases": [],
     "keywords": [

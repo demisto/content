@@ -1,22 +1,29 @@
 This playbook receives ChronicleAsset identifier information and provides a list of events related to each one of them.
-Supported integration: Chronicle
+Supported integration: Chronicle, Google SecOps
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-**Chronicle**
+
+* Chronicle
+* Google SecOps
 
 ### Scripts
-**DeleteContext**
+
+* DeleteContext
 
 ### Commands
-***gcb-list-events***
+
+* gcb-list-events
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -27,6 +34,7 @@ This playbook does not use any sub-playbooks.
 | chronicleasset_product_id | The product ID associated with the ChronicleAsset. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -34,5 +42,7 @@ This playbook does not use any sub-playbooks.
 | GoogleChronicleBackstory.Events | List of events associated with the ChronicleAsset. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![List Device Events - Chronicle](../doc_files/List_Device_Events_-_Chronicle.png)

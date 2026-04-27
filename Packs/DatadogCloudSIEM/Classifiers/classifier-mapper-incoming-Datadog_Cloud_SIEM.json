@@ -1,0 +1,84 @@
+{
+    "id": "Datadog Cloud SIEM V2 - Incoming Mapper",
+    "name": "Datadog Cloud SIEM V2 - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Datadog Cloud SIEM security signals to XSOAR incident fields",
+    "mapping": {
+        "Datadog Cloud SIEM V2": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "simple": "title"
+                },
+                "details": {
+                    "simple": "message"
+                },
+                "occurred": {
+                    "simple": "timestamp"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "Datadog Cloud SIEM V2 Security Signal ID": {
+                    "simple": "id"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Event ID": {
+                    "simple": "event_id"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Title": {
+                    "simple": "title"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Message": {
+                    "simple": "message"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Timestamp": {
+                    "simple": "timestamp"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Severity": {
+                    "simple": "severity"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Host": {
+                    "simple": "host"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Tags": {
+                    "simple": "tags"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Triggering Log ID": {
+                    "simple": "triggering_log_id"
+                },
+                "Datadog Cloud SIEM V2 Security Signal URL": {
+                    "simple": "url"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Rule ID": {
+                    "simple": "rule.id"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Rule URL": {
+                    "simple": "rule.url"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Triage State": {
+                    "simple": "triage.state"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Triage Archive Comment": {
+                    "simple": "triage.archive_comment"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Triage Archive Reason": {
+                    "simple": "triage.archive_reason"
+                },
+                "Datadog Cloud SIEM V2 Security Signal Triage Assignee Name": {
+                    "simple": "triage.assignee.name"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

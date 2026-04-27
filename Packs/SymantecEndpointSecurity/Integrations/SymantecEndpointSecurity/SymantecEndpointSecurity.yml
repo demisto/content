@@ -1,12 +1,13 @@
 commonfields:
   id: Symantec Endpoint Security
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Symantec Endpoint Security
 display: Symantec Endpoint Security
 category: Analytics & SIEM
+provider: Broadcom
 description: "Symantec Endpoint Security Event Collector for Cortex XSIAM."
 configuration:
 - display: Server URL
@@ -63,7 +64,7 @@ script:
       - 'false'
   script: ""
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   longRunning: true
   subtype: python3
 marketplaces:

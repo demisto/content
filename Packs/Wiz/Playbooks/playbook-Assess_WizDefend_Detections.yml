@@ -1,0 +1,385 @@
+id: Assess WizDefend Detections
+name: Assess WizDefend Detections
+description: Playbook to assess Wiz Detections from the WizDefend integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    type: start
+    task:
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+      id: 5f7d6811-ad26-42ca-b47e-ee8a12f9bb7f
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    taskid: 5f7d6811-ad26-42ca-b47e-ee8a12f9bb7f
+  "1":
+    id: "1"
+    type: condition
+    task:
+      description: Is WizDefend integration enabled?
+      id: 7f8e9d10-1234-5678-9abc-def012345678
+      version: -1
+      name: Is WizDefend integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WizDefend
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    taskid: 7f8e9d10-1234-5678-9abc-def012345678
+  "2":
+    id: "2"
+    type: condition
+    task:
+      description: Is there a detection ID to process?
+      id: 8a9b0c1d-2345-6789-abcd-ef0123456789
+      version: -1
+      name: Is there a detection ID to process?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.wizdetectionid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    taskid: 8a9b0c1d-2345-6789-abcd-ef0123456789
+  "3":
+    id: "3"
+    type: regular
+    task:
+      version: -1
+      name: Get Detection Information
+      description: Get detailed information about the specific detection
+      script: WizDefend|||wiz-defend-get-detection
+      type: regular
+      iscommand: true
+      brand: WizDefend
+      id: 7f90d8e3-df5a-4cbc-b8a5-fb63a59d7c48
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      detection_id:
+        simple: ${incident.wizdetectionid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    taskid: 7f90d8e3-df5a-4cbc-b8a5-fb63a59d7c48
+  "4":
+    id: "4"
+    type: condition
+    task:
+      description: Does the detection have an associated threat (issue ID)?
+      id: 4b5c6d7e-8901-2345-6789-abcdef012345
+      version: -1
+      name: Does detection have an issue ID?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Wiz.Manager.Detection.issue
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    taskid: 4b5c6d7e-8901-2345-6789-abcdef012345
+  "5":
+    id: "5"
+    type: regular
+    task:
+      version: -1
+      name: Get Threat Information
+      description: Get detailed threat information using the issue ID from the detection
+      script: WizDefend|||wiz-defend-get-threat
+      type: regular
+      iscommand: true
+      brand: WizDefend
+      id: 5c6d7e8f-9012-3456-789a-bcdef0123456
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      issue_id:
+        complex:
+          root: Wiz.Manager.Detection.issue
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    taskid: 5c6d7e8f-9012-3456-789a-bcdef0123456
+  "6":
+    id: "6"
+    type: condition
+    task:
+      version: -1
+      name: "Set Threat Status to In Progress ?"
+      description: |-
+        Do you want to set this threat to "In Progress" status in Wiz?
+        
+        **Detection Details:**
+        - ID: ${Wiz.Manager.Detection.id}
+        - Severity: ${Wiz.Manager.Detection.severity}
+        - Status: ${Wiz.Manager.Detection.status}
+        
+        **Threat Details:**
+        - ID: ${Wiz.Manager.Threat.id}
+        - Severity: ${Wiz.Manager.Threat.severity}
+        - Status: ${Wiz.Manager.Threat.status}
+      type: condition
+      iscommand: false
+      brand: ""
+      id: fabde172-2e4d-4548-a4e3-f67ecb646c90
+    nexttasks:
+      "Yes":
+      - "7"
+      "No":
+      - "8"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Do you want to set this threat to In Progress status?"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: "Choose Yes to set the threat to In Progress in Wiz, or No to skip this action"
+        readonly: false
+      title: "Set Threat Status Confirmation"
+      description: "Review the detection details above and choose whether to set the threat to In Progress status in Wiz"
+      sender: ""
+      expired: false
+      totalanswers: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    taskid: fabde172-2e4d-4548-a4e3-f67ecb646c90
+  "7":
+    id: "7"
+    type: regular
+    task:
+      version: -1
+      name: "Set Threat Status to In Progress"
+      description: Set the Wiz threat to in-progress status
+      script: WizDefend|||wiz-defend-set-threat-in-progress
+      type: regular
+      iscommand: true
+      brand: WizDefend
+      id: a1b2c3d4-5e6f-7890-abcd-ef1234567890
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      issue_id:
+        complex:
+          root: Wiz.Manager.Detection.issue
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    taskid: a1b2c3d4-5e6f-7890-abcd-ef1234567890
+  "8":
+    id: "8"
+    type: title
+    task:
+      id: 9e8f7g6h-3456-789a-bcde-f01234567890
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    taskid: 9e8f7g6h-3456-789a-bcde-f01234567890
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+version: -1
+tests:
+- No tests

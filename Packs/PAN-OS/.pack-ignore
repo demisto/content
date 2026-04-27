@@ -68,3 +68,11 @@ ignore=GR107
 [file:playbook-PAN-OS_DAG_Configuration.yml]
 ignore=GR107
 
+[file:playbook-PAN-OS_-_Block_IP_-_Static_Address_Group_6_10.yml]
+ignore=RM116
+
+[file:playbook-PAN-OS_DAG_Configuration_6_10.yml]
+ignore=RM116
+
+[file:playbook-PAN-OS_-_Create_Or_Edit_Rule.yml]
+ignore=RM116

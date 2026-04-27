@@ -1,10 +1,13 @@
-import json
-
-import demistomock as demisto
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-from SendEmailReply import get_unique_code
+from SendEmailReply import (
+    get_unique_code,
+    apply_direction,
+    process_directions,
+    ensure_markdown_tables_have_spacing,
+    replace_atlassian_tags,
+)
 
 
 def util_open_file(path):
@@ -17,10 +20,22 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-EMAIL_SIGNATURE_APPENDED = "<html><body>Simple HTML message.\r\n\r\nTest email signature.\r\n</body></html>"
-
-
-def test_append_email_signature(mocker):
+@pytest.mark.parametrize(
+    "inputted_body, expected_body",
+    [
+        pytest.param(
+            '<html><body style="font-family: Arial">Formatted HTML message.\r\n</body></html>',
+            '<html><body style="font-family: Arial">Formatted HTML message.\r\n\r\nTest email signature.\r\n</body></html>',
+            id="HTML Body",
+        ),
+        pytest.param(
+            "<p>Plain text message.</p>",
+            "<p>Plain text message.</p>\r\nTest email signature.\r\n",
+            id="Plain Text Body",
+        ),
+    ],
+)
+def test_append_email_signature(mocker, inputted_body: str, expected_body: str):
     """
     Given
     - Email signature stored in XSOAR List
@@ -33,8 +48,8 @@ def test_append_email_signature(mocker):
 
     signature_list = util_load_json("test_data/getList_signature_success.json")
     mocker.patch.object(demisto, "executeCommand", return_value=signature_list)
-    result = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
-    assert result == EMAIL_SIGNATURE_APPENDED
+    email_body = append_email_signature(inputted_body)
+    assert email_body == expected_body
 
 
 def test_append_email_signature_fails(mocker):
@@ -52,12 +67,13 @@ def test_append_email_signature_fails(mocker):
     get_list_error_response = util_load_json("test_data/getList_signature_error.json")
     mocker.patch.object(demisto, "executeCommand", return_value=get_list_error_response)
     debug_mocker = mocker.patch.object(demisto, "debug")
-    append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
+    html_body = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
     debug_mocker_call_args = debug_mocker.call_args
     assert (
         debug_mocker_call_args.args[0] == "Error occurred while trying to load the `XSOAR - Email Communication "
-        "Signature` list. No signature added to email"
+        "Signature` list. No signature added to email. Error: Item not found (8)."
     )
+    assert html_body == "<html><body>Simple HTML message.\r\n</body></html>"
 
 
 @pytest.mark.parametrize(
@@ -100,6 +116,7 @@ def test_validate_email_sent(email_cc, email_bcc, expected_result, mocker):
         "item_id",
         "12345678",
         "test.onmicrosoft.com",
+        "test.from.mail",
     )
     assert result == expected_result
 
@@ -115,15 +132,16 @@ def test_validate_email_sent_fails(mocker):
     """
     from SendEmailReply import validate_email_sent
 
-    reply_mail_error = util_load_json("test_data/reply_mail_error.json")
-    mocker.patch("SendEmailReply.execute_reply_mail", return_value=reply_mail_error)
-
+    False, get_error(util_load_json("test_data/reply_mail_error.json"))
+    mocker.patch("SendEmailReply.execute_command", side_effect=Exception())
+    mocker.patch.object(demisto, "debug")
     return_error_mock = mocker.patch("SendEmailReply.return_error")
-    validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")
+    with pytest.raises(Exception):
+        validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "", "")
     assert return_error_mock.call_count == 1
     assert (
         return_error_mock.call_args[0][0]
-        == "Error:\n Command reply-mail in module EWS Mail Sender requires argument inReplyTo that is missing (7)"
+        == 'SetIncident Failed."emailsubject" field was not updated with <>  value for incident: '
     )
 
 
@@ -146,12 +164,14 @@ def test_validate_email_sent_fails(mocker):
                 "5",
                 "12345678",
                 "soc_sender@company.com",
+                "from_mail",
             ),
             {
                 "to": "end_user@company.com",
                 "inReplyTo": "5",
                 "subject": "<12345678> Email Subject",
                 "cc": "cc_user@company.com",
+                "from": "from_mail",
                 "bcc": "bcc_user@company.com",
                 "htmlBody": "<html><body>Reply body.</body></html",
                 "body": "Reply body.",
@@ -176,6 +196,7 @@ def test_validate_email_sent_fails(mocker):
                 ["10", "12"],
                 "5",
                 "12345678",
+                "",
                 "",
             ),
             {
@@ -207,12 +228,14 @@ def test_validate_email_sent_fails(mocker):
                 "5",
                 "12345678",
                 "soc_sender@company.com",
+                "from_mail",
             ),
             {
                 "to": "end_user@company.com",
                 "inReplyTo": "5",
                 "subject": "<12345678> [2] Email Subject",
                 "cc": "cc_user@company.com",
+                "from": "from_mail",
                 "bcc": "bcc_user@company.com",
                 "htmlBody": "<html><body>Reply body.</body></html",
                 "body": "Reply body.",
@@ -237,6 +260,7 @@ def test_validate_email_sent_fails(mocker):
                 ["10", "12"],
                 "5",
                 "12345678",
+                "",
                 "",
             ),
             {
@@ -305,6 +329,22 @@ GET_EMAIL_RECIPIENTS = [
         "",
         "",
         {"test123@gmail.com", "test1@gmail.com", "avishai@demistodev.onmicrosoft.com"},
+    ),
+    # Mailbox is configured with different capitalization, but should still be removed.
+    (
+        '["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
+        "test123@gmail.com",
+        "",
+        "AVISHAI@DEMISTODEV.ONMICROSOFT.COM",
+        {"test123@gmail.com", "test1@gmail.com"},
+    ),
+    # Service mail is configured with different capitalization, but should still be removed.
+    (
+        '["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
+        "test123@gmail.com",
+        "AVISHAI@DEMISTODEV.ONMICROSOFT.COM",
+        "",
+        {"test123@gmail.com", "test1@gmail.com"},
     ),
 ]
 
@@ -516,7 +556,10 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
     from SendEmailReply import create_thread_context
 
     # Mock function to get current time string to match the expected result
-    mocker.patch("SendEmailReply.get_utc_now", return_value=datetime.strptime("2022-02-04T20:58:20UTC", "%Y-%m-%dT%H:%M:%SUTC"))
+    mocker.patch(
+        "SendEmailReply.get_current_time_in_timezone",
+        return_value="2022-02-04T20:58:20UTC",
+    )
     mocker.patch.object(SendEmailReply, "get_email_threads", return_value=email_threads)
     append_context_mocker = mocker.patch.object(SendEmailReply, "appendContext", return_value=True)
     create_thread_context(
@@ -533,6 +576,7 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
         "end_user@company.com",
         "123",
         "",
+        time_zone="UTC",
     )
     call_args = append_context_mocker.call_args
     if scenario == "thread_found":
@@ -580,7 +624,7 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
     "test_args, expected_result, expected_message",
     [
         (
-            (
+            (  # Test arguments for send_new_email
                 1,
                 "Email Subject",
                 False,
@@ -589,15 +633,17 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "",
                 "",
-                "<html><body>Email Body</body></html>",
+                "<html><body>Email Body</body></html>",  # email_html_body
                 "html",
                 [],
                 "12345678",
                 "soc_sender@company.com",
                 "attachment.txt",
-                "",
+                "<html><body>Email Body</body></html>",  # context_html_body
+                "from.mail",
+                "UTC",
             ),
-            (
+            (  # Expected result for send_new_mail_request
                 1,
                 "Email Subject",
                 False,
@@ -606,17 +652,19 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "",
                 "",
-                "Email Body + Signature",
+                "Email Body + Signature",  # Updated email_html_body
                 "html",
                 [],
                 "attachment.txt",
                 "12345678",
                 "soc_sender@company.com",
-                "",
+                "Email Body + Signature",  # Updated context_html_body
+                "from.mail",
+                "UTC",
             ),
             "Mail sent successfully. To: end_user@company.com",
         ),
-        (
+        (  # Test arguments for send_new_email
             (
                 1,
                 "Email Subject",
@@ -632,9 +680,11 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "attachment.txt",
-                "",
+                "<html><body>Email Body</body></html>",
+                "from.mail",
+                "UTC",
             ),
-            (
+            (  # Expected result for send_new_mail_request
                 1,
                 "Email Subject",
                 False,
@@ -649,11 +699,13 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "attachment.txt",
                 "12345678",
                 "soc_sender@company.com",
-                "",
+                "Email Body + Signature",
+                "from.mail",
+                "UTC",
             ),
             "Mail sent successfully. To: end_user@company.com Cc: cc_user@company.com",
         ),
-        (
+        (  # Test arguments for send_new_email
             (
                 1,
                 "Email Subject",
@@ -669,9 +721,11 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "attachment.txt",
-                "",
+                "<html><body>Email Body</body></html>",
+                "from_mail",
+                "UTC",
             ),
-            (
+            (  # Expected result for send_new_mail_request
                 1,
                 "Email Subject",
                 False,
@@ -686,7 +740,9 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "attachment.txt",
                 "12345678",
                 "soc_sender@company.com",
-                "",
+                "Email Body + Signature",
+                "from_mail",
+                "UTC",
             ),
             "Mail sent successfully. To: end_user@company.com Bcc: bcc_user@company.com",
         ),
@@ -758,6 +814,8 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
         "soc_sender@company.com",
         "",
         False,
+        "",
+        time_zone="UTC",
     )
     send_new_email_args = send_new_email_mocker.call_args
     return_error_args = return_error_mocker.call_args
@@ -779,6 +837,8 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
             "soc_sender@company.com",
             "",
             "<html><body>Resending email.</body></html>",
+            "",
+            "UTC",
         )
     if expected_result == "fail":
         assert return_error_args.args[0] == (
@@ -804,6 +864,7 @@ def test_single_thread_reply(email_code, mocker):
     import SendEmailReply
     from SendEmailReply import single_thread_reply
 
+    mocker.patch.object(SendEmailReply, "append_email_signature", side_effect=lambda body: body + " - signature")
     mocker.patch.object(SendEmailReply, "get_unique_code", return_value="12345678")
     execute_command_mocker = mocker.patch.object(demisto, "executeCommand", return_value=True)
     mocker.patch.object(SendEmailReply, "get_entry_id_list", return_value=["5", "10"])
@@ -825,6 +886,7 @@ def test_single_thread_reply(email_code, mocker):
         "soc_sender@company.com",
         10,
         "soc_sender@company.com",
+        "",
     )
     validate_mail_sent_call_args = validate_email_sent_mocker.call_args
     execute_command_call_args = execute_command_mocker.call_args
@@ -838,11 +900,12 @@ def test_single_thread_reply(email_code, mocker):
         "soc_sender@company.com",
         "",
         "",
-        "<html><body>Email body.</body></html>",
+        "<html><body>Email body.</body></html> - signature",  # The expected value is now a signed body
         ["5", "10"],
         10,
         "12345678",
         "soc_sender@company.com",
+        "",
     )
     if not email_code:
         assert execute_command_call_args.args == ("setIncident", {"id": 1, "customFields": {"emailgeneratedcode": "12345678"}})
@@ -868,6 +931,8 @@ def test_single_thread_reply(email_code, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "",
+                "",
+                "UTC",
             ),
             {
                 "to": "end_user@company.com",
@@ -899,6 +964,8 @@ def test_single_thread_reply(email_code, mocker):
                 "12345678",
                 "",
                 "",
+                "from.mail",
+                "UTC",
             ),
             {
                 "to": "end_user@company.com",
@@ -910,6 +977,7 @@ def test_single_thread_reply(email_code, mocker):
                 "bodyType": "html",
                 "attachIDs": "10,12",
                 "replyTo": "soc_sender@company.com",
+                "from": "from.mail",
             },
         ),
     ],
@@ -997,6 +1065,8 @@ def test_multi_thread_new(scenario, mocker):
             "bcc_user@company.com",
             "soc_sender@company.com",
             "",
+            "",
+            time_zone="UTC",
         )
         call_args = return_error_mocker.call_args
         assert call_args.args[0] == expected
@@ -1017,6 +1087,8 @@ def test_multi_thread_new(scenario, mocker):
             "bcc_user@company.com",
             "soc_sender@company.com",
             "",
+            "",
+            time_zone="UTC",
         )
         set_incident_call_args = set_incident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
@@ -1037,6 +1109,8 @@ def test_multi_thread_new(scenario, mocker):
             "soc_sender@company.com",
             "",
             "<html>Some HTML</html>",
+            "",
+            "UTC",
         )
         assert send_new_email_mocker_args.args == valid_args
         assert reset_fields_mocker.called is True
@@ -1057,6 +1131,8 @@ def test_multi_thread_new(scenario, mocker):
             "bcc_user@company.com",
             "soc_sender@company.com",
             "",
+            "",
+            time_zone="UTC",
         )
         set_incident_call_args = set_incident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
@@ -1077,6 +1153,8 @@ def test_multi_thread_new(scenario, mocker):
             "soc_sender@company.com",
             "",
             "<html>Some HTML</html>",
+            "",
+            "UTC",
         )
         assert send_new_email_mocker_args.args == valid_args
         assert reset_fields_mocker.called is True
@@ -1174,6 +1252,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            time_zone="UTC",
         )
         expected = (
             0,
@@ -1205,6 +1285,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            "UTC",
         )
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
@@ -1241,6 +1323,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            time_zone="UTC",
         )
 
         expected = (
@@ -1273,6 +1357,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            "UTC",
         )
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
@@ -1304,12 +1390,13 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "cc_user@company.com",
             "bcc_user@company.com",
-            "<html><body>Email body</body></html>",
+            "<html><body>Email body+signature</body></html>",
             [],
             "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zha"
             "dm7iVXBwAkkBJXBb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",
             "87692312",
             "soc_sender@company.com",
+            "",
         )
         create_context_expected = (
             "87692312",
@@ -1325,6 +1412,7 @@ def test_multi_thread_reply(scenario, mocker):
             "end_user@company.com",
             1,
             "",
+            "UTC",
         )
 
         # Execute the tested function
@@ -1341,6 +1429,8 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "",
             False,
+            "",
+            time_zone="UTC",
         )
 
         validate_email_sent_call_args = validate_email_sent_mocker.call_args
@@ -1414,6 +1504,7 @@ def test_main(new_thread, mocker):
             "soc_sender@company.com",
             "123456",
             "mail-sender-instance-1",
+            None,
             False,
         )
         assert single_thread_reply_args.args == expected_args
@@ -1434,6 +1525,8 @@ def test_main(new_thread, mocker):
             "test_bcc@example.com",
             "mail-sender-instance-1",
             "None",
+            None,
+            "UTC",
         )
         assert multi_thread_new_args.args == expected_args
     elif new_thread == "false":
@@ -1451,6 +1544,8 @@ def test_main(new_thread, mocker):
             "mail-sender-instance-1",
             "None",
             False,
+            None,
+            "UTC",
         )
         assert multi_thread_reply_args.args == expected_args
 
@@ -1466,8 +1561,9 @@ def test_main(new_thread, mocker):
         # Test ID: #3 - Table conversion
         (
             "| Header1 | Header2 |\n| ------- | ------- |\n| Cell1   | Cell2   |",
-            "<table>\n<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Cell1</td>\n"
-            "<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
+            '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; border: 1px solid #999;">\n'
+            "<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n"
+            "<tbody>\n<tr>\n<td>Cell1</td>\n<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
             "table_conversion",
         ),
         # Test ID: #4 - Emphasis conversion using legacy syntax
@@ -1531,6 +1627,27 @@ def test_demisto_custom_markdown_syntax(input_md, expected_html, test_id):
     assert result == expected_html, f"Test failed for {test_id}"
 
 
+def test_format_body_raw_checkbox_true(mocker):
+    """
+    Given
+    - An incident with the checkbox 'Send Body as Raw Text (No Markdown)' checked
+    When
+    - The format_body function is called with a markdown-formatted body
+    Then
+    - Validate that the body is returned as-is, without any markdown conversion
+    """
+    from SendEmailReply import format_body
+
+    mock_incident = {"CustomFields": {"sendbodyasrawnomarkdown": True}}
+    mocker.patch("SendEmailReply.demisto.incident", return_value=mock_incident)
+
+    result = format_body("**bold**")
+    assert result == ("**bold**", "**bold**")
+
+    result = format_body("_using italic_")
+    assert result == ("_using italic_", "_using italic_")
+
+
 @freeze_time("2024-02-22 10:00:00 UTC")
 def test_get_unique_code_happy_path(mocker):
     # Arrange
@@ -1582,7 +1699,7 @@ def test_format_body(mocker):
     from SendEmailReply import format_body
 
     html_body = "![image](/markdown/image/aljhgfghdjakldvygi)"
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"FileID": "111"}])
+    mocker.patch("SendEmailReply.execute_command", return_value=(True, [{"FileID": "111"}]))
     mocker.patch.object(demisto, "investigation", return_value={"id": "1234"})
     open_mock = mocker.mock_open(read_data=b"some binary data")
     mocker.patch("builtins.open", open_mock)
@@ -1592,3 +1709,87 @@ def test_format_body(mocker):
         '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" /></p>',
     )
     assert result == expected_result
+
+
+def test_apply_direction():
+    """
+    Test that apply_direction correctly transforms lines with direction tags
+    into the expected HTML div wrappers, and leaves other lines unchanged.
+    """
+    # Center alignment
+    assert apply_direction("<-:->Centered text") == '<div style="text-align:center;">Centered text</div>'
+    # Leading spaces should be ignored for detecting tags
+    assert apply_direction("   <-:->Indented center") == '<div style="text-align:center;">Indented center</div>'
+    # Left-to-right direction
+    assert apply_direction("<--:>LTR text") == '<div dir="ltr">LTR text</div>'
+    # Right-to-left direction
+    assert apply_direction("<:-->RTL text") == '<div dir="rtl">RTL text</div>'
+    # No direction tag, returns original line
+    assert apply_direction("No special tag") == "No special tag"
+    # Tag-like but not at start after stripping
+    assert apply_direction("  some text <-:-> not a tag") == "  some text <-:-> not a tag"
+
+
+def test_process_directions():
+    """
+    Test that process_directions applies apply_direction line-by-line on multiline text.
+    """
+    md = """Line 1
+<-:->Center
+Some text
+<--:>LTR line
+<:-->RTL line"""
+
+    expected = (
+        "Line 1\n"
+        '<div style="text-align:center;">Center</div>\n'
+        "Some text\n"
+        '<div dir="ltr">LTR line</div>\n'
+        '<div dir="rtl">RTL line</div>'
+    )
+    assert process_directions(md) == expected
+
+
+def test_ensure_markdown_tables_have_spacing():
+    """
+    Test that ensure_markdown_tables_have_spacing adds blank lines before and after markdown tables.
+    It should not add extra blank lines if already present.
+    """
+    # Single table without blank lines
+    md = "Paragraph\n| Header |\n|--------|\n| Row    |\nParagraph2"
+    expected = "Paragraph\n\n| Header |\n|--------|\n| Row    |\n\nParagraph2"
+    assert ensure_markdown_tables_have_spacing(md) == expected
+
+    # Table already has blank lines
+    md2 = "Para\n\n| H |\n|---|\n| R |\n\nPara2"
+    expected2 = md2
+    assert ensure_markdown_tables_have_spacing(md2) == expected2
+
+    # Multiple tables with some blank lines missing
+    md3 = "| H1 |\n|----|\n| R1 |\nPara\n| H2 |\n|----|\n| R2 |"
+    expected3 = "| H1 |\n" "|----|\n" "| R1 |\n" "\n" "Para\n" "\n" "| H2 |\n" "|----|\n" "| R2 |"
+    assert ensure_markdown_tables_have_spacing(md3).rstrip() == expected3.rstrip()
+
+
+def test_replace_atlassian_tags():
+    """
+    Test that replace_atlassian_tags converts Atlassian color and background tags into HTML span tags.
+    """
+    # Color tag
+    input_md = "{{color:#FF0000}}(red text)"
+    expected = '<span style="color:#FF0000;">red text</span>'
+    assert replace_atlassian_tags(input_md) == expected
+
+    # Background tag
+    input_md2 = "{{background:#00FF00}}(green background)"
+    expected2 = '<span style="background-color:#00FF00;">green background</span>'
+    assert replace_atlassian_tags(input_md2) == expected2
+
+    # Both tags in one string
+    input_md3 = "Text {{color:#123456}}(colored) and {{background:#654321}}(background)"
+    expected3 = 'Text <span style="color:#123456;">colored</span> and <span style="background-color:#654321;">background</span>'
+    assert replace_atlassian_tags(input_md3) == expected3
+
+    # No tags remain unchanged
+    input_md4 = "No tags here"
+    assert replace_atlassian_tags(input_md4) == input_md4

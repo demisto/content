@@ -1,0 +1,27 @@
+{
+  "total": 2,
+  "items": [
+    {
+      "short_id": "ALT1234567890",
+      "created_at": 1714036855,
+      "title": "Old Alert 1",
+      "status": {"name": "Ongoing"},
+      "urgency": {"display": "Low"},
+      "first_seen_at": "2024-04-25T10:00:00Z",
+      "last_seen_at": "2024-04-25T15:00:00Z",
+      "assets": [],
+      "kill_chain_short_id": null
+    },
+    {
+      "short_id": "ALT1234567891",
+      "created_at": 1714036855,
+      "title": "Old Alert 2",
+      "status": {"name": "Ongoing"},
+      "urgency": {"display": "Low"},
+      "first_seen_at": "2024-04-25T10:00:00Z",
+      "last_seen_at": "2024-04-25T15:00:00Z",
+      "assets": [],
+      "kill_chain_short_id": null
+    }
+  ]
+}

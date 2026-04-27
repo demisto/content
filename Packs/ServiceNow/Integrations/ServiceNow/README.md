@@ -275,7 +275,7 @@
 <ol>
 <li><a href="#h_2106334508571543393959765">Get ticket information: servicenow-get-ticket</a></li>
 <li><a href="#h_2766128079841543393964767">Create a ticket: servicenow-create-ticket</a></li>
-<li><a href="#h_57281505611101543393969762">Update a ticket: servicenow-update-ticket</a></li>
+<li><a href="#h_57281505555010101393969762">Update a ticket: servicenow-update-ticket</a></li>
 <li><a href="#h_68978447212351543393976748">Delete a ticket: servicenow-delete-ticket</a></li>
 <li><a href="#h_88472210313581543393982361">Add a link to a ticket: servicenow-add-link</a></li>
 <li><a href="#h_53831027625241543393995300">Add a comment to a ticket: servicenow-add-comment</a></li>
@@ -931,7 +931,7 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><a href="../../doc_files/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png" alt="image"></a></p>
-<h3 id="h_57281505611101543393969762">3. Update a ticket</h3>
+<h3 id="h_57281505555010101393969762">3. Update a ticket</h3>
 <hr>
 <p>Updates a specified ServiceNow ticket.</p>
 <h5>Base Command</h5>
@@ -3020,7 +3020,7 @@
             "Created": "2012-02-18 03:04:50",
             "Email": "sean.bonnet@example.com",
             "ID": "02826bf03710200044e0bfc8bcbe5d6d",
-            "Name": "Sean Bonnet",
+            "Name": "Sean Testman",
             "Updated": "2018-08-12 22:18:39",
             "UserName": "sean.bonnet"
         }

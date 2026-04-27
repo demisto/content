@@ -4,7 +4,8 @@ commonfields:
 name: Twilio
 display: Twilio
 category: Messaging and Conferencing
-description: Send SMS notifications
+provider: Twilio
+description: Send SMS notifications.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -50,12 +51,12 @@ script:
     arguments:
     - name: to
       required: true
-      description: Phone number of SMS reciever (e.g. +123456789101)
+      description: Phone number of SMS reciever (e.g. +123456789101).
     - name: body
       required: true
-      description: Message body
+      description: Message body.
     - name: from
-      description: Phone number of SMS sender (e.g. +123456789101)
+      description: Phone number of SMS sender (e.g. +123456789101).
     description: send an SMS
 fromversion: 5.0.0
 tests:

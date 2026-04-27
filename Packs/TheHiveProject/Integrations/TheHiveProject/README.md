@@ -98,7 +98,7 @@ List cases.
                 "_type": "case",
                 "caseId": 1,
                 "createdAt": "2021-10-11T17:02:01Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "case with tasks",
                 "endDate": null,
@@ -108,7 +108,7 @@ List cases.
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
                 "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -136,7 +136,7 @@ List cases.
                 "tasks": [
                     {
                         "_createdAt": 1633971721834,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_createdBy": "ad@example.com",
                         "_id": "~41500824",
                         "_type": "Task",
                         "extraData": {
@@ -151,7 +151,7 @@ List cases.
                     },
                     {
                         "_createdAt": 1633971721837,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_createdBy": "ad@example.com",
                         "_id": "~438408",
                         "_type": "Task",
                         "extraData": {
@@ -166,7 +166,7 @@ List cases.
                     },
                     {
                         "_createdAt": 1633971721840,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_createdBy": "ad@example.com",
                         "_id": "~442504",
                         "_type": "Task",
                         "extraData": {
@@ -183,14 +183,14 @@ List cases.
                 "title": "case with tasks",
                 "tlp": 2,
                 "updatedAt": 1633971749765,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
+                "updatedBy": "ad@example.com"
             },
             {
                 "_id": "~487504",
                 "_type": "case",
                 "caseId": 2,
                 "createdAt": "2021-10-11T17:02:34Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "case with no task",
                 "endDate": null,
@@ -200,7 +200,7 @@ List cases.
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
                 "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -229,14 +229,14 @@ List cases.
                 "title": "no tasks case",
                 "tlp": 2,
                 "updatedAt": 1633971809110,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
+                "updatedBy": "ad@example.com"
             },
             {
                 "_id": "~491600",
                 "_type": "case",
                 "caseId": 3,
                 "createdAt": "2021-10-11T17:02:55Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "case to merge",
                 "endDate": null,
@@ -246,7 +246,7 @@ List cases.
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
                 "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -275,14 +275,14 @@ List cases.
                 "title": "merge 1",
                 "tlp": 2,
                 "updatedAt": 1633971809811,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
+                "updatedBy": "ad@example.com"
             },
             {
                 "_id": "~524320",
                 "_type": "case",
                 "caseId": 4,
                 "createdAt": "2021-10-11T17:03:12Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "case to merge 2",
                 "endDate": null,
@@ -292,7 +292,7 @@ List cases.
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
                 "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -321,14 +321,14 @@ List cases.
                 "title": "merge 2",
                 "tlp": 2,
                 "updatedAt": 1633971810562,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
+                "updatedBy": "ad@example.com"
             },
             {
                 "_id": "~561160",
                 "_type": "case",
                 "caseId": 5,
                 "createdAt": "2021-10-11T17:12:06Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "case with observables",
                 "endDate": null,
@@ -340,7 +340,7 @@ List cases.
                 "observables": [
                     {
                         "_createdAt": 1633972384854,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_createdBy": "ad@example.com",
                         "_id": "~41504920",
                         "_type": "Observable",
                         "data": "google",
@@ -379,7 +379,7 @@ List cases.
                     },
                     {
                         "_createdAt": 1633972365905,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_createdBy": "ad@example.com",
                         "_id": "~532512",
                         "_type": "Observable",
                         "data": "8.8.8.8",
@@ -417,7 +417,7 @@ List cases.
                         "tlp": 2
                     }
                 ],
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -446,14 +446,14 @@ List cases.
                 "title": "observables case",
                 "tlp": 2,
                 "updatedAt": 1633972353588,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
+                "updatedBy": "ad@example.com"
             },
             {
                 "_id": "~41509016",
                 "_type": "case",
                 "caseId": 6,
                 "createdAt": "2021-10-11T17:16:33Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "case to be removed",
                 "endDate": null,
@@ -463,7 +463,7 @@ List cases.
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
                 "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -492,7 +492,7 @@ List cases.
                 "title": "remove case",
                 "tlp": 2,
                 "updatedAt": 1633972648939,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
+                "updatedBy": "ad@example.com"
             }
         ]
     }
@@ -588,7 +588,7 @@ Get a case
             "_type": "case",
             "caseId": 1,
             "createdAt": "2021-10-11T17:02:01Z",
-            "createdBy": "adrugobitski@paloaltonetworks.com",
+            "createdBy": "ad@example.com",
             "customFields": {},
             "description": "case with tasks",
             "endDate": null,
@@ -596,7 +596,7 @@ Get a case
             "id": "~479312",
             "impactStatus": null,
             "observables": [],
-            "owner": "adrugobitski@paloaltonetworks.com",
+            "owner": "ad@example.com",
             "pap": 2,
             "permissions": [
                 "manageShare",
@@ -624,7 +624,7 @@ Get a case
             "tasks": [
                 {
                     "_createdAt": 1633971721834,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_createdBy": "ad@example.com",
                     "_id": "~41500824",
                     "_type": "Task",
                     "extraData": {
@@ -639,7 +639,7 @@ Get a case
                 },
                 {
                     "_createdAt": 1633971721837,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_createdBy": "ad@example.com",
                     "_id": "~438408",
                     "_type": "Task",
                     "extraData": {
@@ -654,7 +654,7 @@ Get a case
                 },
                 {
                     "_createdAt": 1633971721840,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_createdBy": "ad@example.com",
                     "_id": "~442504",
                     "_type": "Task",
                     "extraData": {
@@ -671,7 +671,7 @@ Get a case
             "title": "case with tasks",
             "tlp": 2,
             "updatedAt": 1633971749765,
-            "updatedBy": "adrugobitski@paloaltonetworks.com"
+            "updatedBy": "ad@example.com"
         }
     }
 }
@@ -775,14 +775,14 @@ Update a case
             "_type": "case",
             "caseId": 2,
             "createdAt": "2021-10-11T17:02:34Z",
-            "createdBy": "adrugobitski@paloaltonetworks.com",
+            "createdBy": "ad@example.com",
             "customFields": {},
             "description": "case with no task",
             "endDate": null,
             "flag": false,
             "id": "~487504",
             "impactStatus": null,
-            "owner": "adrugobitski@paloaltonetworks.com",
+            "owner": "ad@example.com",
             "pap": 2,
             "permissions": [
                 "manageShare",
@@ -810,7 +810,7 @@ Update a case
             "title": "updated title for case with no tasks",
             "tlp": 2,
             "updatedAt": 1633973798560,
-            "updatedBy": "adrugobitski@paloaltonetworks.com"
+            "updatedBy": "ad@example.com"
         }
     }
 }
@@ -913,14 +913,14 @@ Create a new case
                 "_type": "case",
                 "caseId": 7,
                 "createdAt": "2021-10-11T17:36:40Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "description for new case",
                 "endDate": null,
                 "flag": false,
                 "id": "~41492552",
                 "impactStatus": null,
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -955,14 +955,14 @@ Create a new case
                 "_type": "case",
                 "caseId": 7,
                 "createdAt": "2021-10-11T17:36:40Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "customFields": {},
                 "description": "description for new case",
                 "endDate": null,
                 "flag": false,
                 "id": "~41496648",
                 "impactStatus": null,
-                "owner": "adrugobitski@paloaltonetworks.com",
+                "owner": "ad@example.com",
                 "pap": 2,
                 "permissions": [
                     "manageShare",
@@ -1051,7 +1051,7 @@ Create a new task
                 "_id": "~585736",
                 "_type": "case_task",
                 "createdAt": "2021-10-11T17:36:42Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "description": "new description",
                 "flag": false,
                 "group": "default",
@@ -1064,7 +1064,7 @@ Create a new task
                 "_id": "~581640",
                 "_type": "case_task",
                 "createdAt": "2021-10-11T17:36:42Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "description": "new description",
                 "flag": false,
                 "group": "default",
@@ -1187,7 +1187,7 @@ Merges 2 cases
 {
         "_id": "~41443480",
         "id": "~41443480",
-        "createdBy": "adrugobitski@paloaltonetworks.com",
+        "createdBy": "ad@example.com",
         "updatedBy": null,
         "createdAt": 1633374980441,
         "updatedAt": null,
@@ -1206,7 +1206,7 @@ Merges 2 cases
         "pap": 2,
         "status": "Open",
         "summary": null,
-        "owner": "adrugobitski@paloaltonetworks.com",
+        "owner": "ad@example.com",
         "customFields": {},
         "stats": {},
         "permissions": [
@@ -1257,7 +1257,7 @@ There is no context output for this command.
         "Tasks": [
             {
                 "_createdAt": "2021-10-11T17:36:42Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~585736",
                 "_type": "Task",
                 "description": "new description",
@@ -1273,7 +1273,7 @@ There is no context output for this command.
             },
             {
                 "_createdAt": "2021-10-11T17:36:42Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~581640",
                 "_type": "Task",
                 "description": "new description",
@@ -1289,7 +1289,7 @@ There is no context output for this command.
             },
             {
                 "_createdAt": "2021-10-11T17:02:01Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~41500824",
                 "_type": "Task",
                 "extraData": {
@@ -1304,7 +1304,7 @@ There is no context output for this command.
             },
             {
                 "_createdAt": "2021-10-11T17:02:01Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~438408",
                 "_type": "Task",
                 "extraData": {
@@ -1319,7 +1319,7 @@ There is no context output for this command.
             },
             {
                 "_createdAt": "2021-10-11T17:02:01Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~442504",
                 "_type": "Task",
                 "extraData": {
@@ -1343,11 +1343,11 @@ There is no context output for this command.
 
 >|_id|title|_createdAt|_createdBy|status|group|
 >|---|---|---|---|---|---|
->| ~585736 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~581640 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~41500824 | task1 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~438408 | task2 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~442504 | task3 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~585736 | newly added task | 2021-10-11T17:36:42Z | ad@example.com | Waiting | default |
+>| ~581640 | newly added task | 2021-10-11T17:36:42Z | ad@example.com | Waiting | default |
+>| ~41500824 | task1 | 2021-10-11T17:02:01Z | ad@example.com | Waiting | default |
+>| ~438408 | task2 | 2021-10-11T17:02:01Z | ad@example.com | Waiting | default |
+>| ~442504 | task3 | 2021-10-11T17:02:01Z | ad@example.com | Waiting | default |
 
 ### thehive-get-task
 
@@ -1463,10 +1463,10 @@ There is no context output for this command.
                 "_id": "~8256",
                 "_type": "user",
                 "createdAt": "2021-04-21T08:27:32Z",
-                "createdBy": "rrapoport@paloaltonetworks.com",
+                "createdBy": "rrapoport@example.com",
                 "hasKey": true,
-                "id": "adrugobitski@paloaltonetworks.com",
-                "login": "adrugobitski@paloaltonetworks.com",
+                "id": "ad@example.com",
+                "login": "ad@example.com",
                 "name": "name API",
                 "organisation": "name",
                 "roles": [
@@ -1483,9 +1483,9 @@ There is no context output for this command.
                 "createdAt": "2021-04-21T08:13:40Z",
                 "createdBy": "admin@thehive.local",
                 "hasKey": false,
-                "id": "rrapoport@paloaltonetworks.com",
-                "login": "rrapoport@paloaltonetworks.com",
-                "name": "Roman Rapoport",
+                "id": "rrapoport@example.com",
+                "login": "rrapoport@example.com",
+                "name": "Roman Testov",
                 "organisation": "name",
                 "roles": [
                     "admin",
@@ -1499,7 +1499,7 @@ There is no context output for this command.
                 "_id": "~24712",
                 "_type": "user",
                 "createdAt": "2021-07-15T11:40:29Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "example@example.com",
                 "login": "example@example.com",
@@ -1514,7 +1514,7 @@ There is no context output for this command.
                 "_id": "~28704",
                 "_type": "user",
                 "createdAt": "2021-07-15T12:06:57Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "example@example.com",
                 "login": "example@example.com",
@@ -1529,7 +1529,7 @@ There is no context output for this command.
                 "_id": "~32800",
                 "_type": "user",
                 "createdAt": "2021-07-15T12:16:53Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "new_example@example.com",
                 "login": "new_example@example.com",
@@ -1544,7 +1544,7 @@ There is no context output for this command.
                 "_id": "~41208",
                 "_type": "user",
                 "createdAt": "2021-07-15T12:17:35Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "example_2@example.com",
                 "login": "example_2@example.com",
@@ -1559,7 +1559,7 @@ There is no context output for this command.
                 "_id": "~422136",
                 "_type": "user",
                 "createdAt": "2021-09-22T10:27:48Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "name_login@thehive.local",
                 "login": "name_login@thehive.local",
@@ -1574,7 +1574,7 @@ There is no context output for this command.
                 "_id": "~41033880",
                 "_type": "user",
                 "createdAt": "2021-07-21T09:21:38Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "example_2@example.com",
                 "login": "example_2@example.com",
@@ -1589,7 +1589,7 @@ There is no context output for this command.
                 "_id": "~41402520",
                 "_type": "user",
                 "createdAt": "2021-09-22T10:32:01Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "createdBy": "ad@example.com",
                 "hasKey": false,
                 "id": "test@example.com",
                 "login": "test@example.com",
@@ -1611,8 +1611,8 @@ There is no context output for this command.
 
 >|id|name|roles|status|
 >|---|---|---|---|
->| adrugobitski@paloaltonetworks.com | name API | admin,<br/>write,<br/>read,<br/>alert | Ok |
->| rrapoport@paloaltonetworks.com | Roman Rapoport | admin,<br/>write,<br/>read,<br/>alert | Ok |
+>| ad@example.com | name API | admin,<br/>write,<br/>read,<br/>alert | Ok |
+>| rrapoport@example.com | Roman Testov | admin,<br/>write,<br/>read,<br/>alert | Ok |
 >| example@example.com | username | read | Ok |
 >| example@example.com | usernamee | read | Ok |
 >| new_example@example.com | user_name | read | Ok |
@@ -1653,7 +1653,7 @@ There is no context output for this command.
             "_id": "~41402520",
             "_type": "user",
             "createdAt": "2021-09-22T10:32:01Z",
-            "createdBy": "adrugobitski@paloaltonetworks.com",
+            "createdBy": "ad@example.com",
             "hasKey": false,
             "id": "test@example.com",
             "login": "test@example.com",
@@ -1711,7 +1711,7 @@ There is no context output for this command.
         "Users": [
             {
                 "_createdAt": 1633973834658,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~593928",
                 "hasKey": false,
                 "hasMFA": false,
@@ -1726,7 +1726,7 @@ There is no context output for this command.
             },
             {
                 "_createdAt": 1633973834659,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~598024",
                 "hasKey": false,
                 "hasMFA": false,
@@ -1812,7 +1812,7 @@ List observables for a case.
         "Observables": [
             {
                 "_createdAt": 1633972384854,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~41504920",
                 "_type": "Observable",
                 "data": "google",
@@ -1851,7 +1851,7 @@ List observables for a case.
             },
             {
                 "_createdAt": 1633972365905,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_createdBy": "ad@example.com",
                 "_id": "~532512",
                 "_type": "Observable",
                 "data": "8.8.8.8",
@@ -1970,7 +1970,7 @@ There is no context output for this command.
             "_id": "~41504920",
             "_type": "case_artifact",
             "createdAt": 1633972384854,
-            "createdBy": "adrugobitski@paloaltonetworks.com",
+            "createdBy": "ad@example.com",
             "data": "google",
             "dataType": "domain",
             "id": "~41504920",
@@ -1984,7 +1984,7 @@ There is no context output for this command.
             "tags": [],
             "tlp": 1,
             "updatedAt": 1633973833004,
-            "updatedBy": "adrugobitski@paloaltonetworks.com"
+            "updatedBy": "ad@example.com"
         }
     }
 }

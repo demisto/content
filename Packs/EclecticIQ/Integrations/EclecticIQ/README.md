@@ -183,19 +183,19 @@
         {
             "Address": "8.8.8.8"
         }
-    ], 
+    ],
     "DBotScore": {
-        "Vendor": "EclecticIQ", 
-        "Indicator": "8.8.8.8", 
-        "Score": 1, 
+        "Vendor": "EclecticIQ",
+        "Indicator": "8.8.8.8",
+        "Score": 1,
         "Type": "ip"
-    }, 
+    },
     "EclecticIQ.IP": [
         {
-            "Maliciousness": "safe", 
-            "Created": "2019-01-16T11:55:11.732145+00:00", 
-            "ID": 86, 
-            "LastUpdated": "2019-01-16T11:55:11.708640+00:00", 
+            "Maliciousness": "safe",
+            "Created": "2019-01-16T11:55:11.732145+00:00",
+            "ID": 86,
+            "LastUpdated": "2019-01-16T11:55:11.708640+00:00",
             "Address": "8.8.8.8"
         }
     ]
@@ -362,19 +362,19 @@
 <div class="cl-preview-section">
 <pre>{
     "DBotScore": {
-        "Vendor": "OpenPhish", 
-        "Indicator": "http://chstarkeco.com", 
-        "Score": 0, 
+        "Vendor": "OpenPhish",
+        "Indicator": "http://chstarkeco.com",
+        "Score": 0,
         "Type": "url"
     }
 }{
     "URL": {
         "Data": "http://chstarkeco.com"
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "PhishTank", 
-        "Indicator": "http://chstarkeco.com", 
-        "Score": 0, 
+        "Vendor": "PhishTank",
+        "Indicator": "http://chstarkeco.com",
+        "Score": 0,
         "Type": "url"
     }
 }{
@@ -382,19 +382,19 @@
         {
             "Data": "http://chstarkeco.com"
         }
-    ], 
+    ],
     "DBotScore": {
-        "Vendor": "EclecticIQ", 
-        "Indicator": "http://chstarkeco.com", 
-        "Score": 2, 
+        "Vendor": "EclecticIQ",
+        "Indicator": "http://chstarkeco.com",
+        "Score": 2,
         "Type": "url"
-    }, 
+    },
     "EclecticIQ.URL": [
         {
-            "Maliciousness": "medium", 
-            "Data": "http://chstarkeco.com", 
-            "ID": 83, 
-            "LastUpdated": "2019-01-16T11:53:51.128167+00:00", 
+            "Maliciousness": "medium",
+            "Data": "http://chstarkeco.com",
+            "ID": 83,
+            "LastUpdated": "2019-01-16T11:53:51.128167+00:00",
             "Created": "2019-01-16T11:52:49.993110+00:00"
         }
     ]
@@ -738,24 +738,24 @@
 <pre>{
     "EclecticIQ.Entity": [
         {
-            "HalfLife": "30 Days", 
-            "Title": "Indicator containing malicious file hashes", 
-            "EstimatedObservedTime": "2018-11-21T13:34:35.890076+00:00", 
-            "Analysis": "Indicator that contains malicious file hashes.", 
+            "HalfLife": "30 Days",
+            "Title": "Indicator containing malicious file hashes",
+            "EstimatedObservedTime": "2018-11-21T13:34:35.890076+00:00",
+            "Analysis": "Indicator that contains malicious file hashes.",
             "Source": [
                 {
-                    "Reliability": null, 
-                    "Type": "incoming_feed", 
+                    "Reliability": null,
+                    "Type": "incoming_feed",
                     "Name": "TAXII Stand Samples"
                 }
-            ], 
-            "EstimatedStartTime": "2014-05-08T09:00:00+00:00", 
-            "ID": "56e218b0-3f6b-4237-beca-3b39ab8e96c2", 
+            ],
+            "EstimatedStartTime": "2014-05-08T09:00:00+00:00",
+            "ID": "56e218b0-3f6b-4237-beca-3b39ab8e96c2",
             "Exposure": {
-                "Detection": false, 
-                "Sighting": false, 
-                "Prevention": false, 
-                "Community": false, 
+                "Detection": false,
+                "Sighting": false,
+                "Prevention": false,
+                "Community": false,
                 "Exposed": true
             }
         }
@@ -975,30 +975,30 @@
 <pre>{
     "EclecticIQ.Email": [
         {
-            "Maliciousness": "unknown", 
-            "Created": "2018-11-21T13:34:31.126027+00:00", 
-            "ID": 42, 
-            "LastUpdated": "2018-11-21T13:34:31.126027+00:00", 
+            "Maliciousness": "unknown",
+            "Created": "2018-11-21T13:34:31.126027+00:00",
+            "ID": 42,
+            "LastUpdated": "2018-11-21T13:34:31.126027+00:00",
             "Address": "disco-team@stealthemail.com"
-        }, 
+        },
         {
-            "Maliciousness": "unknown", 
-            "Created": "2018-11-21T13:34:31.134425+00:00", 
-            "ID": 43, 
-            "LastUpdated": "2018-11-21T13:34:31.134425+00:00", 
+            "Maliciousness": "unknown",
+            "Created": "2018-11-21T13:34:31.134425+00:00",
+            "ID": 43,
+            "LastUpdated": "2018-11-21T13:34:31.134425+00:00",
             "Address": "disco-team@stealthemail.com"
         }
-    ], 
+    ],
     "DBotScore": {
-        "Vendor": "EclecticIQ", 
-        "Indicator": "disco-team@stealthemail.com", 
-        "Score": 0, 
+        "Vendor": "EclecticIQ",
+        "Indicator": "disco-team@stealthemail.com",
+        "Score": 0,
         "Type": "email"
-    }, 
+    },
     "Account.Email": [
         {
             "Address": "disco-team@stealthemail.com"
-        }, 
+        },
         {
             "Address": "disco-team@stealthemail.com"
         }
@@ -1177,19 +1177,19 @@
         {
             "Name": "gooc.om"
         }
-    ], 
+    ],
     "DBotScore": {
-        "Vendor": "EclecticIQ", 
-        "Indicator": "gooc.om", 
-        "Score": 0, 
+        "Vendor": "EclecticIQ",
+        "Indicator": "gooc.om",
+        "Score": 0,
         "Type": "domain"
-    }, 
+    },
     "EclecticIQ.Domain": [
         {
-            "Maliciousness": "unknown", 
-            "Name": "gooc.om", 
-            "ID": 74, 
-            "LastUpdated": "2018-11-21T13:34:38.964435+00:00", 
+            "Maliciousness": "unknown",
+            "Name": "gooc.om",
+            "ID": 74,
+            "LastUpdated": "2018-11-21T13:34:38.964435+00:00",
             "Created": "2018-11-21T13:34:38.964435+00:00"
         }
     ]

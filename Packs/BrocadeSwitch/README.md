@@ -39,7 +39,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 
@@ -55,4 +55,8 @@ You can configure the specific vendor and product for this instance.
    | `Vendor`      | Enter **Brocade**.
    | `Product`     | Enter **Switch**.
 
+   **NOTE:** The content pack parsing rule has been updated to include the `tmp_timezone` field.
+   Users can now configure their specific time zone offset preferences within the ***`User Defined`*** settings.
+
+   **For example: `tmp_timezone = "UTC+2"`**
 </~XSIAM>

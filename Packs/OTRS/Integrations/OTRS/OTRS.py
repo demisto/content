@@ -17,6 +17,7 @@ urllib3.disable_warnings()
 """ GLOBAL VARS """
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+DEFAULT_ARTICLE_CONTENT_TYPE = "text/plain; charset=utf8"
 
 """ HELPER FUNCTIONS """
 
@@ -121,8 +122,23 @@ def get_mirroring():
 
 
 class OTRSClient:
-    def __init__(self, base_url: str, username: str, password: str, https_verify: bool, use_legacy_sessions: bool):
-        self.client = Client(base_url, username, password, https_verify=https_verify, use_legacy_sessions=use_legacy_sessions)
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        https_verify: bool,
+        use_legacy_sessions: bool,
+        webservice_config_ticket: dict | None = None,
+    ):
+        self.client = Client(
+            base_url,
+            username,
+            password,
+            https_verify=https_verify,
+            use_legacy_sessions=use_legacy_sessions,
+            webservice_config_ticket=webservice_config_ticket,
+        )
         cache = demisto.getIntegrationContext()
         # OTRS creates new session for each request, to avoid that behavior -
         # save the sessionId in integration context to use it multiple times
@@ -403,6 +419,7 @@ def create_ticket_command(client: Client, args: dict[str, str]):
     owner = args.get("owner")
     article_subject = args.get("article_subject")
     article_body = args.get("article_body")
+    article_content_type = args.get("article_content_type", DEFAULT_ARTICLE_CONTENT_TYPE)
     ticket_type = args.get("type")
     dynamic_fields = args.get("dynamic_fields")
     attachment = args.get("attachment")
@@ -434,7 +451,7 @@ def create_ticket_command(client: Client, args: dict[str, str]):
         }
     )
 
-    article = Article({"Subject": article_subject, "Body": article_body})
+    article = Article({"Subject": article_subject, "Body": article_body, "ContentType": article_content_type})
 
     ticket = client.create_ticket(new_ticket, article, df, attachments)
 
@@ -446,7 +463,7 @@ def create_ticket_command(client: Client, args: dict[str, str]):
         "Queue": queue,
         "State": state,
         "Title": title,
-        "Article": {"Subject": article_subject, "Body": article_body},
+        "Article": {"Subject": article_subject, "Body": article_body, "ContentType": article_content_type},
         "Type": ticket_type,
         "DynamicField": df_output,
     }
@@ -469,6 +486,7 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     priority = args.get("priority")
     article_subject = args.get("article_subject")
     article_body = args.get("article_body")
+    article_content_type = args.get("article_content_type", DEFAULT_ARTICLE_CONTENT_TYPE)
     ticket_type = args.get("type")
     dynamic_fields = args.get("dynamic_fields")
     attachment = args.get("attachment")
@@ -494,7 +512,7 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     if (article_subject and article_body is None) or (article_subject is None and article_body):
         raise Exception("Both article subject and body are required in order to add article")
     elif article_subject and article_body:
-        article_obj = {"Subject": article_subject, "Body": article_body}
+        article_obj = {"Subject": article_subject, "Body": article_body, "ContentType": article_content_type}
         article = Article(article_obj)
     else:
         article = None
@@ -559,9 +577,10 @@ def close_ticket_command(client: Client, args: dict[str, str]):
     ticket_id = args.get("ticket_id")
     article_subject = args.get("article_subject")
     article_body = args.get("article_body")
+    article_content_type = args.get("article_content_type", DEFAULT_ARTICLE_CONTENT_TYPE)
     state = args.get("state", "closed successful")
 
-    article_object = {"Subject": article_subject, "Body": article_body}
+    article_object = {"Subject": article_subject, "Body": article_body, "ContentType": article_content_type}
 
     article = Article(article_object)
 
@@ -744,6 +763,7 @@ def main():
     username = params.get("credentials", {}).get("identifier")
     password = params.get("credentials", {}).get("password")
     use_legacy_sessions = argToBoolean(params.get("use_legacy_sessions", False))
+    webservice_config_ticket = params.get("webservice_config_ticket", None)
     verify = not params.get("unsecure", False)
     fetch_queue = params.get("fetch_queue", "Any")
     fetch_priority = params.get("fetch_priority")
@@ -753,7 +773,17 @@ def main():
     look_back_days = int(params.get("look_back", 1))
     handle_proxy(params.get("proxy"))
 
-    otrs_client = OTRSClient(base_url, username, password, https_verify=verify, use_legacy_sessions=use_legacy_sessions)
+    if webservice_config_ticket and isinstance(webservice_config_ticket, str):
+        webservice_config_ticket = safe_load_json(webservice_config_ticket)
+
+    otrs_client = OTRSClient(
+        base_url,
+        username,
+        password,
+        https_verify=verify,
+        use_legacy_sessions=use_legacy_sessions,
+        webservice_config_ticket=webservice_config_ticket,
+    )
 
     args = demisto.args()
 

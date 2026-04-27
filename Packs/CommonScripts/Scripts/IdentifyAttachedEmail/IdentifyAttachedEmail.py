@@ -20,8 +20,9 @@ def is_email(file_metadata: dict, file_name: str) -> bool:
     file_type = file_metadata.get("type", "").strip().lower()
     return any(
         (
-            file_type in EMAIL_FILE_TYPES,
-            any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
+            not file_info and file_type in EMAIL_FILE_TYPES,
+            not file_type and any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
+            file_type in EMAIL_FILE_TYPES and any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
             file_name.endswith(".eml") and ("text" in file_info or file_info == "data"),
             file_name.endswith(".msg") and "composite document file v2 document" in file_info,
         )

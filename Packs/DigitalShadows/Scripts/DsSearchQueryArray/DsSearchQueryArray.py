@@ -5,7 +5,7 @@ from CommonServerPython import *
 
 QUOTED_STRINGS_PATTERN = r"\"[^\"]*\""
 KEYWORDS_PATTERN = " (AND|OR|NOT) "
-NON_WORD_PATTERN = "\W+"
+NON_WORD_PATTERN = r"\W+"
 
 
 def append_arg(terms: Set[str], arg: Union[str, List[str]], filter_fn=lambda _: True):

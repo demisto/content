@@ -1,34 +1,68 @@
-[
-    {
-        "Attribute": {
-            "Event": {
-                "RelatedEvent": [],
-                "Tags": [
-                    "actor:APT",
-                    "actor:Lazarus",
-                    "event:observation",
-                    "source:osint"
+{
+    "items": [
+        {
+            "apt_description": "N/A",
+            "created_at": "2025-01-01T01:00:00.000000",
+            "entity_type": "indicator",
+            "external_references": [],
+            "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+            "id": "dummy_id",
+            "last_seen_at": "2025-01-02T01:00:00.000000",
+            "latest_sighting": {
+                "related_iocs": [
+                    {
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id_2",
+                        "id": "dummy_id_2",
+                        "type": "file",
+                        "value": "dummy_value"
+                    }
                 ],
-                "attack_ids": [
-                    "T1001"
-                ],
-                "event_uuid": "00000000-0000-0000-0000-000000000001",
-                "fpid": "0000000000000000000001",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
-                "info": "Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34]",
-                "reports": [],
-                "timestamp": "1627527286"
+                "sighted_at": "2025-01-01T01:00:00.000000",
+                "source": "flashpoint_extraction",
+                "tags": [
+                    "extracted_config:true",
+                    "malware:xworm",
+                    "source:flashpoint_extraction"
+                ]
             },
-            "category": "Network activity",
-            "fpid": "0000000000000000000001",
-            "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
-            "timestamp": "1627526875",
+            "malware_description": "\u003cp\u003eThis is dummy description.\u003c/p\u003e",
+            "mitre_attack_ids": [],
+            "modified_at": "2025-01-02T01:00:00.000000",
+            "platform_urls": {
+                "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+            },
+            "score": {
+                "last_scored_at": "2025-01-02T01:00:00.000000",
+                "value": "malicious"
+            },
+            "sightings": [
+                {
+                    "related_iocs": [
+                        {
+                            "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id_3",
+                            "id": "dummy_id_3",
+                            "type": "file",
+                            "value": "dummy_value"
+                        }
+                    ],
+                    "sighted_at": "2025-01-02T01:00:00.000000",
+                    "source": "flashpoint_extraction",
+                    "tags": [
+                        "extracted_config:true",
+                        "malware:xworm",
+                        "source:flashpoint_extraction"
+                    ]
+                }
+            ],
+            "sort_date": "2025-01-01T01:00:00.000000",
+            "total_sightings": 1,
             "type": "domain",
-            "uuid": "00000000-0000-0000-0000-000000000001",
-            "value": {
-                "comment": "",
-                "domain": "dummy.com"
-            }
+            "value": "dummy_domain.com"
         }
-    }
-]
+       ],
+    "pagination": {
+        "next": null,
+        "prev": null
+    },
+    "total": null
+}

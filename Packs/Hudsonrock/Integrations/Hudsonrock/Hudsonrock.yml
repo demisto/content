@@ -4,6 +4,7 @@ commonfields:
 name: Hudsonrock
 display: Hudsonrock
 category: Data Enrichment & Threat Intelligence
+provider: Hudson Rock
 description: "Enrichment from Hudsonrock OSINT tools at https://cavalier.hudsonrock.com/api/json/v2/osint-tools/ Supports: IP, Email and Username."
 configuration:
 - display: Server URL (e.g. https://cavalier.hudsonrock.com/)
@@ -103,7 +104,7 @@ script:
       description: Username reputation.
       type: string
     description: Send username reputation query.
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
 fromversion: 6.10.0

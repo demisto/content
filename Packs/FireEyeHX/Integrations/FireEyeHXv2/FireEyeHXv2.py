@@ -268,7 +268,7 @@ class Client(BaseClient):
             try:
                 self._http_request(method="DELETE", url_suffix="token", resp_type="response")
             except Exception as e:
-                demisto.debug(f"Encountered an error when tring to logout: {e}")
+                demisto.debug(f"Encountered an error when trying to logout: {e}")
 
             # successful request
             self._headers["X-FeApi-Token"] = None
@@ -349,7 +349,7 @@ class Client(BaseClient):
     HOST CONTAINMENT REQUESTS
     """
 
-    def host_containmet_request(self, agent_id: str):
+    def host_containment_request(self, agent_id: str):
         self._http_request(
             method="POST",
             url_suffix=f"hosts/{agent_id}/containment",
@@ -457,6 +457,76 @@ class Client(BaseClient):
 
         """
         self._http_request(method="DELETE", url_suffix=f"acqs/files/{acquisition_id}", return_empty_response=True)
+
+    def host_acquisition_information_request(self, agent_id: str) -> Dict[str, Any]:
+        """API Call to get information about a specific triage
+
+        Args:
+            agent_id (str): The unique agent ID
+
+        Returns:
+            dict: HTTP response from the server, containing information about all acquisitions for the host.
+        """
+
+        return self._http_request(method="GET", url_suffix=f"hosts/{agent_id}/host_details_acquisitions").get("data")
+
+    def triage_acquisition_information_request(self, acquisition_id: str) -> Dict[str, Any]:
+        """API Call to get information about a specific triage
+
+        Args:
+            acquisition_id (str): The unique Triage ID
+
+        Returns:
+            dict: HTTP response from the server, containing information about the specified triage.
+        """
+
+        return self._http_request(method="GET", url_suffix=f"acqs/triages/{acquisition_id}").get("data")
+
+    def triage_acquisition_request(self, agent_id: str):
+        """API Call to start a triage for a specific host
+
+        Args:
+            agent_id (str): The unique agent ID
+
+        Returns:
+            dict: HTTP response from the server, containing information about the started triage acquisition.
+        """
+
+        return self._http_request(method="POST", url_suffix=f"hosts/{agent_id}/triages").get("data")
+
+    def delete_triage_acquisition_request(self, acquisition_id: str):
+        """API Call to delete a specific triage
+
+        Args:
+            acquisition_id (str): The unique Triage ID
+        """
+        headers = {"Accept": "text/plain"}
+        self._http_request(
+            method="DELETE",
+            url_suffix=f"acqs/triages/{acquisition_id}",
+            headers=headers,
+            return_empty_response=True,
+            resp_type="text",
+        )
+
+    def triage_acquisition_package_request(self, acquisition_id):
+        """API Call to return the triage collection file
+
+        Args:
+            acquisition_id (str): The unique Triage ID
+
+        Returns:
+            dict: HTTP response content.
+        """
+
+        headers = {"Accept": "application/octet-stream"}
+        response = self._http_request(
+            method="GET",
+            url_suffix=f"acqs/triages/{acquisition_id}.mans",
+            headers=self._headers | headers,  # Update the headers with the new Accept octet-stream
+            resp_type="content",
+        )
+        return response
 
     """
     ALERTS REQUEST
@@ -834,7 +904,7 @@ def organize_search_body_query(argForQuery: tuple, args: Dict):
     return query
 
 
-def get_collect_endpoint_contxt(host: Dict):
+def get_collect_endpoint_context(host: Dict):
     return {
         "Hostname": host.get("hostname"),
         "ID": host.get("_id"),
@@ -874,6 +944,29 @@ def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
     body = {"name": script_name, "script": {"b64": base64.b64encode(bytes(script, "utf-8")).decode()}}
 
     return client.data_acquisition_request(agent_id, body)["data"]
+
+
+# Helper function triage acq
+def get_triage_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
+    """Helper function to start a triage on a provided host
+
+    Args:
+        client (Client): The HX client object.
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: Missing Agent ID or Hostname
+
+    Returns:
+        Dict: HTTP response from the server, containing information about the started triage acquisition.
+    """
+    host_name = args.get("hostName", "")
+    agent_id = args.get("agentId")
+    if not host_name and not agent_id:
+        raise ValueError("Please provide either agentId or hostName")
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
+    return client.triage_acquisition_request(agent_id)
 
 
 def get_alert_entry(alert: Dict):
@@ -987,7 +1080,7 @@ def get_all_enabled_conditions(client: Client, indicator_category, indicator_nam
 def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
-    returns a list of enabled conditions assosiated with a specific indicator to the war room
+    returns a list of enabled conditions associated with a specific indicator to the war room
 
     """
 
@@ -1003,7 +1096,7 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def validate_base_url(base_url: str) -> None:
-    # Any of the folloiwng combinations is not allowed as suffix: /v3, /api/v3, /hx/api/v3 etc.
+    # Any of the following combinations is not allowed as suffix: /v3, /api/v3, /hx/api/v3 etc.
     # The error message is built to include the complete suffix that should be removed (rather than running 2 or 3 times,
     # seeing an error each time)
     error_message = ""
@@ -1020,17 +1113,17 @@ def validate_base_url(base_url: str) -> None:
 
 
 def organize_reported_at(reported_at):
-    milisecond = int(reported_at[-4:-1]) + 1
-    if milisecond == 1000:
+    millisecond = int(reported_at[-4:-1]) + 1
+    if millisecond == 1000:
         reported_at = date_to_timestamp(reported_at[:-5], date_format=DATE_FORMAT) + 1000
         reported_at = timestamp_to_datestring(reported_at, date_format=DATE_FORMAT) + ".000Z"
     else:
-        if milisecond < 10:
-            reported_at = reported_at[:-4] + "00" + str(milisecond) + reported_at[-1]
-        elif milisecond < 100:
-            reported_at = reported_at[:-4] + "0" + str(milisecond) + reported_at[-1]
+        if millisecond < 10:
+            reported_at = reported_at[:-4] + "00" + str(millisecond) + reported_at[-1]
+        elif millisecond < 100:
+            reported_at = reported_at[:-4] + "0" + str(millisecond) + reported_at[-1]
         else:
-            reported_at = reported_at[:-4] + str(milisecond) + reported_at[-1]
+            reported_at = reported_at[:-4] + str(millisecond) + reported_at[-1]
 
     return reported_at
 
@@ -1186,7 +1279,7 @@ def delete_host_set_policy_command(client: Client, args: Dict[str, Any]) -> Comm
         message = "Success"
     except Exception as e:
         if "404" in str(e):
-            message = f"polisy ID - {policy_id} or Host Set ID - {host_set_id} Not Found"
+            message = f"policy ID - {policy_id} or Host Set ID - {host_set_id} Not Found"
         else:
             raise ValueError(e)
 
@@ -1194,7 +1287,7 @@ def delete_host_set_policy_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 """
-HOST INFORMAITION
+HOST INFORMATION
 """
 
 
@@ -1396,7 +1489,7 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
         agent_id = get_agent_id_by_host_name(client, host_name)
 
     try:
-        client.host_containmet_request(agent_id)
+        client.host_containment_request(agent_id)
     except Exception as e:
         raise ValueError(e)
 
@@ -1419,7 +1512,7 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
 
     return [
         CommandResults(outputs_prefix="FireEyeHX.Hosts", outputs_key_field="_id", outputs=host["data"], readable_output=message),
-        CommandResults(outputs_prefix="Endpoint", outputs=get_collect_endpoint_contxt(host["data"])),
+        CommandResults(outputs_prefix="Endpoint", outputs=get_collect_endpoint_context(host["data"])),
     ]
 
 
@@ -1560,7 +1653,7 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
     if query and (query_key or query_value or query_operator):
         raise ValueError("Cannot use free text query with other query operators, Please use one.")
     elif not (query_key and query_value and query_operator) and not query:
-        raise ValueError("Please provide a free text query, or add all of the query operators toghether.")
+        raise ValueError("Please provide a free text query, or add all of the query operators together.")
 
     data: Dict[str, Any] = {}
     try:
@@ -1598,7 +1691,7 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
     if query and (query_key or query_value or query_operator):
         raise ValueError("Cannot use free text query with other query operators, Please use one.")
     elif not (query_key and query_value and query_operator) and not query:
-        raise ValueError("Please provide a free text query, or add all of the query operators toghether.")
+        raise ValueError("Please provide a free text query, or add all of the query operators together.")
 
     data = {}
     try:
@@ -1730,11 +1823,11 @@ def file_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[Comm
 
 def file_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
     return run_polling_command(
-        client, args, "fireeye-hx-file-acquisition", file_acquisition_command, result_file_acquisituon, "acquisition"
+        client, args, "fireeye-hx-file-acquisition", file_acquisition_command, result_file_acquisition, "acquisition"
     )
 
 
-def result_file_acquisituon(client: Client, args: Dict[str, Any]) -> List:
+def result_file_acquisition(client: Client, args: Dict[str, Any]) -> List:
     demisto.debug("acquisition process has been complete. Fetching zip file.")
 
     acquired_file = client.file_acquisition_package_request(args.get("acquisition_id"))
@@ -1839,6 +1932,206 @@ def delete_file_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
     # successful request
 
     return CommandResults(readable_output=f"file acquisition {acquisition_id} deleted successfully")
+
+
+# Start of Triage demisto calls
+def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto function to start a triage on the provided hosts via Demisto Args
+
+    Args:
+        client (Client): The HX client object.
+        args (Dict[str, Any]): Demisto Arguments
+
+    Returns:
+        CommandResults: A demisto command result.
+    """
+    acquisition_info: Dict = get_triage_acquisition(client, args)
+
+    # Add hostname to the host info of acquisition_info
+    if args.get("hostName", False):
+        acquisition_info["host"]["hostname"] = args.get("hostName")
+
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+    readable = f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.'
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Acquisitions.Triage",
+        outputs=acquisition_info,
+        outputs_key_field="_id",
+        readable_output=readable,
+    )
+
+
+def list_host_acquisitions(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto call to get acq info for a host
+
+    Args:
+        client (Client): The HX client object.
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: A required parameter is not provided.
+
+    Returns:
+        CommandResults: A demisto command result.
+    """
+    host_name = args.get("hostName", "")
+    agent_id = args.get("agentId")
+    if not host_name and not agent_id:
+        raise ValueError("Please provide either agentId or hostName")
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
+
+    acquisition_info = client.host_acquisition_information_request(agent_id)
+    headers_for_table = ["_id", "acq_type", "request_time", "state"]
+    md_table = tableToMarkdown(
+        name="FireEye HX Acquisitions",
+        t=acquisition_info,
+        headers=headers_for_table,
+        removeNull=True,
+        date_fields=["request_time"],
+    )
+
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Host.Acquisitions.All",
+        outputs=acquisition_info,
+        readable_output=md_table,
+        outputs_key_field="_id",
+    )
+
+
+def get_triage_acquisition_information(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto call to get information (Status, requested by, etc) from an HX Triage
+
+    Args:
+        client (Client): The HX client object.
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: A required parameter is not provided.
+
+    Returns:
+        CommandResults: A demisto command result.
+    """
+    if not args.get("acquisitionId"):
+        raise ValueError("Acquisition Id is required")
+    acquisition_id = str(args.get("acquisitionId"))
+
+    acquisition_info = client.triage_acquisition_information_request(acquisition_id)
+    agent_id = acquisition_info.get("host", {}).get("_id", "")
+    host_info = client.get_hosts_by_agentId_request(agent_id)["data"]
+    hostname = host_info.get("hostname")
+
+    # Add hostname to the host info of acquisition_info
+    acquisition_info["host"]["hostname"] = hostname
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+
+    headers_for_table = [
+        "host",
+        "_id",
+        "state",
+        "request_time",
+        "finish_time",
+        "instance",
+    ]
+    md_table = tableToMarkdown(
+        name="FireEye HX Triage",
+        t=acquisition_info,
+        headers=headers_for_table,
+        removeNull=True,
+        date_fields=["request_time", "finish_time"],
+    )
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Acquisitions.Triage",
+        outputs=acquisition_info,
+        outputs_key_field="_id",
+        readable_output=md_table,
+    )
+
+
+def delete_triage_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto call to delete a triage acquisition
+
+    Args:
+        client (Client): The HX client object.
+        args (Dict[str, Any]): Demisto Arguments
+
+    Returns:
+        CommandResults: A demisto command result.
+    """
+    if "acquisitionId" not in args:
+        raise ValueError("Acquisition Id is required")
+    acquisition_id = str(args.get("acquisitionId"))
+    client.delete_triage_acquisition_request(acquisition_id)
+    # successful request
+
+    return CommandResults(readable_output=f"Triage acquisition {acquisition_id} deleted successfully")
+
+
+def get_triage_acquisition_package(client: Client, args: Dict[str, Any]) -> list[CommandResults | dict[str, Any]]:
+    """Demisto call to return a file result from a triage acquisition
+
+    Args:
+        client (Client): The HX client object.
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: Required parameters are not provided.
+
+    Returns:
+        list[CommandResults]: A list of Demisto command results.
+    """
+
+    if not args.get("acquisitionId"):
+        raise ValueError("Acquisition Id is required")
+
+    acquisition_id = str(args.get("acquisitionId"))
+
+    acquisition_info = client.triage_acquisition_information_request(acquisition_id)
+
+    agent_id = acquisition_info.get("host", {}).get("_id", "")
+    host_info = client.get_hosts_by_agentId_request(agent_id)["data"]
+    hostname = host_info.get("hostname")
+
+    # Add hostname to the host info of acquisition_info
+    acquisition_info["host"]["hostname"] = hostname
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+
+    # if `state` equals to 'COMPLETE'
+    if acquisition_info.get("state") == "COMPLETE":
+        message = "Triage acquisition completed successfully."
+        if acquisition_info.get("error_message"):
+            message = acquisition_info.get("error_message", "Generic error message, no details provided.")
+
+        # output file and acquisition information to the war room
+        data = client.triage_acquisition_package_request(acquisition_id)
+
+        return [
+            CommandResults(
+                outputs_prefix="FireEyeHX.Acquisitions.Triage",
+                outputs_key_field="_id",
+                outputs=acquisition_info,
+                readable_output=f"{message}\nTriage acquisition ID: {acquisition_id}",
+            ),
+            fileResult(f"triage_{acquisition_id}_agent_{agent_id}_data.mans", data),
+        ]
+    # else return message for states in [ NEW, ERROR, QUEUED, RUNNING, FAILED ]
+    state = acquisition_info.get("state")
+
+    message = "Triage acquisition process not yet completed."
+    if acquisition_info.get("error_message"):
+        message = acquisition_info.get("error_message", "Generic error message, no details provided.")
+
+    return [
+        CommandResults(
+            outputs_prefix="FireEyeHX.Acquisitions.Triage",
+            outputs_key_field="_id",
+            outputs=acquisition_info,
+            readable_output=f"{message}\nacquisition ID: {acquisition_id}\nstate: {state}",
+        )
+    ]
 
 
 """
@@ -2131,7 +2424,7 @@ def list_indicator_categories_command(client: Client, args: Dict[str, Any]) -> C
 def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Append conditions to indicator
-    no return value on successfull request
+    no return value on successful request
     """
     name = args.get("name")
     category = args.get("category")
@@ -2228,7 +2521,7 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> tuple[CommandR
         if arg is False:
             raise ValueError("One of the following arguments is required -> [agentsIds, hostsNames, hostSet, hostSetName]")
 
-        # orgenized the search body, the function checks if provided only one argument,
+        # organized the search body, the function checks if provided only one argument,
         # and returns dict with key of Host_name or Hosts
         body = organize_search_body_host(client, arg, {})
 
@@ -2528,6 +2821,11 @@ def main() -> None:
         "fireeye-hx-update-host-set-static": update_static_host_set_command,
         "fireeye-hx-create-host-set-dynamic": create_dynamic_host_set_command,
         "fireeye-hx-update-host-set-dynamic": update_dynamic_host_set_command,
+        "fireeye-hx-triage-acquisition-delete": delete_triage_acquisition_command,
+        "fireeye-hx-triage-acquisition-package-get": get_triage_acquisition_package,
+        "fireeye-hx-triage-acquisition-get": get_triage_acquisition_information,
+        "fireeye-hx-triage-acquisition-start": initiate_triage_acquisition_command,
+        "fireeye-hx-host-acquisitions-list": list_host_acquisitions,
     }
 
     params = demisto.params()

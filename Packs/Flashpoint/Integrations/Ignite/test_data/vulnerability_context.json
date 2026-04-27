@@ -1,0 +1,265 @@
+{
+    "changelog": [
+        {
+            "created_at": "2024-06-15T10:30:00Z",
+            "description": "Dummy Product Application version 1.5.0 by Test Vendor: Affected Status set to \"Affected\""
+        },
+        {
+            "created_at": "2024-05-20T14:20:00Z",
+            "description": "Initial vulnerability entry created"
+        }
+    ],
+    "classifications": [
+        {
+            "description": "This vulnerability can be exploited remotely over a network.",
+            "longname": "Remote / Network Access",
+            "name": "location_remote"
+        },
+        {
+            "description": "Exploitation requires minimal specialized access or circumstances.",
+            "longname": "Low Access Complexity",
+            "name": "access_complexity_low"
+        }
+    ],
+    "creditees": [
+        {
+            "name": "Test Security Researcher"
+        },
+        {
+            "name": "Dummy Research Team"
+        }
+    ],
+    "cve_ids": [
+        "CVE-2024-0001",
+        "CVE-2024-0002"
+    ],
+    "cvss_v2s": [
+        {
+            "access_complexity": "LOW",
+            "access_vector": "NETWORK",
+            "authentication": "NONE",
+            "availability_impact": "COMPLETE",
+            "calculated_cvss_base_score": 10.0,
+            "confidentiality_impact": "COMPLETE",
+            "cve_id": "CVE-2024-0001",
+            "generated_at": "2024-01-15T00:00:00Z",
+            "integrity_impact": "COMPLETE",
+            "score": 10.0,
+            "source": "http://nvd.nist.gov"
+        }
+    ],
+    "cvss_v3s": [
+        {
+            "attack_complexity": "LOW",
+            "attack_vector": "NETWORK",
+            "availability_impact": "HIGH",
+            "confidentiality_impact": "HIGH",
+            "cve_id": "CVE-2024-0001",
+            "exploit_code_maturity": "Proof-of-Concept",
+            "generated_at": "2024-01-15T00:00:00Z",
+            "integrity_impact": "HIGH",
+            "privileges_required": "NONE",
+            "remediation_level": "Official Fix",
+            "report_confidence": "Confirmed",
+            "scope": "CHANGED",
+            "score": 9.8,
+            "source": "http://nvd.nist.gov",
+            "temporal_score": "8.9",
+            "updated_at": "2024-06-15T10:30:00Z",
+            "user_interaction": "NONE",
+            "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+            "version": "3.1"
+        }
+    ],
+    "cvss_v4s": [
+        {
+            "attack_complexity": "LOW",
+            "attack_requirements": "NONE",
+            "attack_vector": "NETWORK",
+            "cve_id": "CVE-2024-0001",
+            "exploit_maturity": "PROOF_OF_CONCEPT",
+            "generated_at": "2024-01-15T00:00:00Z",
+            "privileges_required": "NONE",
+            "score": 9.2,
+            "source": "http://nvd.nist.gov",
+            "subsequent_system_availability_impact": "NONE",
+            "subsequent_system_confidentiality_impact": "NONE",
+            "subsequent_system_integrity_impact": "NONE",
+            "threat_score": 8.5,
+            "updated_at": "2024-06-15T10:30:00Z",
+            "user_interaction": "NONE",
+            "vector_string": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+            "version": "4.0",
+            "vulnerable_system_availability_impact": "HIGH",
+            "vulnerable_system_confidentiality_impact": "HIGH",
+            "vulnerable_system_integrity_impact": "HIGH"
+        }
+    ],
+    "cwes": [
+        {
+            "cwe_id": "CWE-79",
+            "name": "Improper Neutralization of Input During Web Page Generation"
+        },
+        {
+            "cwe_id": "CWE-89",
+            "name": "SQL Injection"
+        }
+    ],
+    "description": "This is a dummy vulnerability description for testing purposes. It describes a hypothetical security flaw in a test application.",
+    "exploits": [
+        {
+            "type": "Exploit Database",
+            "value": "http://www.exploit-db.com/exploits/99999"
+        },
+        {
+            "type": "Packet Storm",
+            "value": "http://packetstormsecurity.com/files/dummy-exploit"
+        }
+    ],
+    "exploits_count": 2,
+    "ext_references": [
+        {
+            "created_at": "2024-01-15T00:00:00Z",
+            "description": "Dummy Snort signature for testing",
+            "type": "Snort Signature ID",
+            "url": "http://www.snort.org/sid/12345",
+            "value": "12345"
+        },
+        {
+            "created_at": "2024-01-10T00:00:00Z",
+            "description": "Test security advisory reference",
+            "type": "Security Advisory",
+            "url": "http://security.example.com/advisory/TEST-2024-001",
+            "value": "TEST-2024-001"
+        }
+    ],
+    "id": 123456,
+    "keywords": "test, dummy, vulnerability",
+    "nvd_additional_information": [
+        {
+            "cve_id": "CVE-2024-0001",
+            "cvss_v2s": [
+                {
+                    "access_complexity": "LOW",
+                    "access_vector": "NETWORK",
+                    "authentication": "NONE",
+                    "availability_impact": "PARTIAL",
+                    "confidentiality_impact": "PARTIAL",
+                    "integrity_impact": "PARTIAL",
+                    "score": 7.5
+                }
+            ],
+            "cvss_v3s": [
+                {
+                    "attack_complexity": "LOW",
+                    "attack_vector": "NETWORK",
+                    "availability_impact": "PARTIAL",
+                    "confidentiality_impact": "PARTIAL",
+                    "integrity_impact": "PARTIAL",
+                    "privileges_required": "NONE",
+                    "scope": "PARTIAL",
+                    "score": 7.5,
+                    "user_interaction": "PARTIAL",
+                    "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+                    "version": "3.1"
+                }
+            ],
+            "cwes": [
+                {
+                    "cwe_id": "CWE-79",
+                    "name": "Cross-site Scripting"
+                }
+            ],
+            "references": [
+                {
+                    "name": "99999",
+                    "url": "http://www.securityfocus.com/bid/99999"
+                },
+                {
+                    "name": "TEST-ADV-2024",
+                    "url": "http://security.example.com/advisory/test"
+                }
+            ],
+            "summary": "Dummy vulnerability summary from NVD for testing purposes. This describes a hypothetical security issue in a test application."
+        }
+    ],
+    "products": [
+        {
+            "id": 99999,
+            "name": "Dummy Test Application",
+            "vendor": "Test Vendor Corporation",
+            "vendor_id": 12345,
+            "versions": [
+                {
+                    "affected": "Affected",
+                    "all_prior_versions_affected": true,
+                    "cpes": [
+                        {
+                            "name": "cpe:2.3:a:testvendor:dummyapp:1.0:*:*:*:*:*:*:*",
+                            "source": "Official"
+                        }
+                    ],
+                    "id": 88888,
+                    "name": "1.0",
+                    "vulndb_version_id": 77777
+                },
+                {
+                    "affected": "Affected",
+                    "all_prior_versions_affected": false,
+                    "cpes": [
+                        {
+                            "name": "cpe:2.3:a:testvendor:dummyapp:1.5:*:*:*:*:*:*:*",
+                            "source": "Official"
+                        }
+                    ],
+                    "id": 88889,
+                    "name": "1.5",
+                    "vulndb_version_id": 77778
+                }
+            ]
+        }
+    ],
+    "scores": {
+        "epss_score": 0.75,
+        "epss_v1_score": 0.68,
+        "ransomware_score": 0.45,
+        "severity": "Critical",
+        "social_risk_scores": [
+            {
+                "categorical_score": "High",
+                "cve_id": "CVE-2024-0001",
+                "numeric_score": 8.5,
+                "score_date": "2024-06-15T10:30:00Z",
+                "todays_tweets": 25,
+                "total_tweets": 150,
+                "unique_users": 75
+            }
+        ]
+    },
+    "solution": "Apply the latest security patch or upgrade to version 2.0 or higher.",
+    "tags": [
+        "test",
+        "dummy",
+        "critical"
+    ],
+    "technical_description": "Technical details about the dummy vulnerability for testing.",
+    "timelines": {
+        "disclosed_at": "2024-01-05T00:00:00Z",
+        "discovered_at": "2023-12-15T00:00:00Z",
+        "exploit_published_at": "2024-02-10T00:00:00Z",
+        "exploited_in_the_wild_at": "2024-03-01T00:00:00Z",
+        "last_modified_at": "2024-06-15T10:30:00Z",
+        "published_at": "2024-01-01T00:00:00Z",
+        "solution_provided_at": "2024-01-30T00:00:00Z",
+        "time_to_exploit": "40 days, 0:00:00",
+        "time_to_patch": "25 days",
+        "time_unpatched": "30 days, 0:00:00",
+        "total_time_to_exploit": "75 days",
+        "total_time_to_patch": "46 days",
+        "vendor_acknowledged_at": "2023-12-22T00:00:00Z",
+        "vendor_informed_at": "2023-12-20T00:00:00Z",
+        "vendor_response_time": "2 days"
+    },
+    "title": "Dummy Vulnerability Title for Testing",
+    "vuln_status": "Active"
+}

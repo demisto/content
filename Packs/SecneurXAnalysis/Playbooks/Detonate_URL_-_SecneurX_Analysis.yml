@@ -389,50 +389,50 @@ inputs:
             iscontext: true
   required: false
   description: URL to detonate.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Priority
   value:
     simple: Normal
   required: false
   description: Analysis priority. Possible values are "High" or "Normal".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Duration
   value:
     simple: "120"
   required: false
   description: Analysis duration in seconds.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Reboot
   value:
     simple: "False"
   required: false
   description: Reboot the system during analysis. The value should be "True" or "False".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ReportFormat
   value:
     simple: json
   required: false
   description: 'The resource type to download. Supported values are: ["json", "html"].'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the pooling (in minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: The duration after which to stop pooling and to resume the playbook (in minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: SecneurXAnalysis.Report.SHA256
   description: SHA256 value of the analyzed sample
   type: string
 - contextPath: SecneurXAnalysis.Report.Platform
   description: Platform of the analyzed sample
-  type: String  
+  type: String
 - contextPath: SecneurXAnalysis.Report.Verdict
   description: Summary result of the analyzed sample
   type: string
@@ -476,4 +476,4 @@ outputs:
   description: Analysis queued sample state
   type: String
 tests:
-- Detonate URL - SecneurX Anlaysis - Test
+- Detonate URL - SecneurX Analysis - Test

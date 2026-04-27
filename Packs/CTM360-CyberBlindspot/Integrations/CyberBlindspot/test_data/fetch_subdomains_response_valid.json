@@ -10,6 +10,7 @@
         "risks": [
             "SSL issued on domain"
         ],
+        "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
         "status": "monitoring",
         "brand": "RiskAssess Demo",
         "timestamp": 1735407216507
@@ -25,6 +26,7 @@
         "risks": [
             "SSL issued on domain"
         ],
+        "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
         "status": "monitoring",
         "brand": "RiskAssess Demo",
         "timestamp": 1735270069133
@@ -43,6 +45,7 @@
             "SSL issued on domain",
             "Has A Record"
         ],
+        "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
         "status": "monitoring",
         "brand": "RiskAssess Demo",
         "timestamp": 1735195246025

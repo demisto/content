@@ -33,5 +33,6 @@ Before you start running the commands, you need to configure the integration par
 3. Username and Password: The username and password used for secure communication with the Team Cymru Scout platform. Required if "Basic Auth" as Authentication Type is selected.
 4. Source Reliability: Select the reliability of the source providing the intelligence data.
 5. Create relationships: Select whether to create relationships between indicators as part of enrichment.
+6. Use Foundation API for IP enrichment: Enable this parameter to use the Foundation API for the "ip" command. If not enabled, the "ip" command uses the Scout Details API by default. To specifically use the Scout Details API for the "ip" command, set the "force_use_scout_details_api" argument to "Yes".
 
 After configuring the integration parameters, you can click **Test** to ensure that the connection to the Team Cymru Scout platform is successful.

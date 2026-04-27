@@ -714,6 +714,92 @@ def test_get_service_record_update_time():
     assert get_service_record_update_time(input_data.service_record_update_time) == input_data.update_time
 
 
+@pytest.mark.parametrize(
+    "service_record, use_classic_date_format, expected_datetime",
+    [
+        # Test American format (MM/DD/YYYY with AM/PM)
+        (
+            {"id": "123", "info": [{"key": "update_time", "valueCaption": "05/11/2025 01:12:48 PM"}]},
+            True,
+            "2025-05-11 13:12:48",  # May 11, 2025 at 1:12:48 PM
+        ),
+        # Test European format (DD/MM/YYYY 24-hour)
+        (
+            {"id": "124", "info": [{"key": "update_time", "valueCaption": "05/11/2025 13:12:48"}]},
+            True,
+            "2025-11-05 13:12:48",  # November 5, 2025 at 1:12:48 PM
+        ),
+        # Test ISO format (standard parsing) - only valid when use_classic_date_format=False
+        (
+            {"id": "125", "info": [{"key": "update_time", "valueCaption": "2025-11-05T13:12:48"}]},
+            False,
+            "2025-11-05 13:12:48",  # November 5, 2025 at 1:12:48 PM
+        ),
+        # Test ambiguous date with American format (day <= 12)
+        (
+            {"id": "126", "info": [{"key": "update_time", "valueCaption": "05/04/2025 01:12:48 PM"}]},
+            True,
+            "2025-05-04 13:12:48",  # May 4, 2025 (American MM/DD)
+        ),
+        # Test ambiguous date with European format (day <= 12)
+        (
+            {"id": "127", "info": [{"key": "update_time", "valueCaption": "05/04/2025 13:12:48"}]},
+            True,
+            "2025-04-05 13:12:48",  # April 5, 2025 (European DD/MM)
+        ),
+        # Test unambiguous date with American format (day > 12)
+        (
+            {"id": "128", "info": [{"key": "update_time", "valueCaption": "05/13/2025 01:12:48 PM"}]},
+            True,
+            "2025-05-13 13:12:48",  # May 13, 2025 (only valid as MM/DD)
+        ),
+        # Test unambiguous date with European format (day > 12)
+        (
+            {"id": "129", "info": [{"key": "update_time", "valueCaption": "13/05/2025 13:12:48"}]},
+            True,
+            "2025-05-13 13:12:48",  # May 13, 2025 (only valid as DD/MM)
+        ),
+    ],
+)
+def test_get_service_record_update_time_classic_format(service_record, use_classic_date_format, expected_datetime):
+    """
+    Given:
+        - A service record with update_time in various formats
+        - use_classic_date_format parameter set to True or False
+    When:
+        - get_service_record_update_time function is called
+    Then:
+        - Ensure the correct datetime is parsed based on format detection:
+          * American format (with AM/PM) parses as MM/DD/YYYY when use_classic_date_format=True
+          * European format (24-hour) parses as DD/MM/YYYY when use_classic_date_format=True
+          * ISO format parses correctly when use_classic_date_format=False
+    """
+    from datetime import datetime
+    from SysAid import get_service_record_update_time
+
+    result = get_service_record_update_time(service_record, use_classic_date_format)
+    expected = datetime.strptime(expected_datetime, "%Y-%m-%d %H:%M:%S")
+
+    assert result == expected, f"Expected {expected}, but got {result}"
+
+
+def test_get_service_record_update_time_no_update_time():
+    """
+    Given:
+        - A service record without update_time field
+    When:
+        - get_service_record_update_time function is called
+    Then:
+        - Ensure None is returned
+    """
+    from SysAid import get_service_record_update_time
+
+    service_record = {"id": "130", "info": [{"key": "other_field", "valueCaption": "some value"}]}
+
+    result = get_service_record_update_time(service_record, use_classic_date_format=True)
+    assert result is None
+
+
 @pytest.mark.parametrize("raw_service_record, incident_context", input_data.service_record_to_incident_context_input)
 def test_service_record_to_incident_context(raw_service_record, incident_context):
     """

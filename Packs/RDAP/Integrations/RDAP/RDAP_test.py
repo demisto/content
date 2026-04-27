@@ -65,7 +65,7 @@ def test_parse_ip_response():
                         ],
                         ["fn", {}, "text", "Google LLC"],
                         ["email", {}, "text", "abuse@google.com"],
-                        ["tel", {}, "uri", "+16502530000"],
+                        ["tel", {}, "uri", "+15559876543"],
                     ],
                 ],
             }

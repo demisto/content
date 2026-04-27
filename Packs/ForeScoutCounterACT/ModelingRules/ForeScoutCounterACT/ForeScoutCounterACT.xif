@@ -1,4 +1,4 @@
-[MODEL: dataset = "forescout_counteract_raw"]
+[MODEL: dataset = "forescout_technologies_counteract_raw"]
 alter 
     xdm.event.type = cs1,
     xdm.event.original_event_type = cs2,

@@ -5,7 +5,6 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 
 ## Configure ThycoticDSV in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.com\) | True |
@@ -15,34 +14,37 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | client_secret | Client secret for client_credentials grant type | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### dsv-secret-get
+
 ***
 Get secret for client
-
 
 #### Base Command
 
 `dsv-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name secret for operation Get. | Required | 
-
+| name | Name secret for operation Get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| secret | String | JSON object secret | 
-
+| secret | String | JSON object secret |
 
 #### Command Example
+
 ```!dsv-secret-get name="accounts/xsoar"```
 
 #### Context Example
+
 ```json
 {
     "DSV": {

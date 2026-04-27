@@ -22,7 +22,7 @@ from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
 from demisto_sdk.commands.common.logger import DEFAULT_CONSOLE_THRESHOLD, logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from pkg_resources import get_distribution
+from importlib.metadata import version
 from ruamel.yaml import YAML
 
 DEFAULT_CONFIG_CATEGORY = "xsoar_best_practices_path_based_validations"
@@ -31,6 +31,7 @@ PACKS_DIR_NAME = "Packs"
 CONTENT_REPO_URL = "https://github.com/demisto/content.git"
 CACHED_MODULES_DIR = "/tmp/cached_modules"
 PRE_COMMIT_TEMPLATE_PATH = os.path.join(CONTENT_DIR_PATH, ".pre-commit-config_template.yaml")
+PRE_COMMIT_MODE = "validate_content"
 BRANCH_MASTER = "master"
 DEFAULT_ERROR_PATTERN = {
     "regex": re.compile(r"(\/[\w\/\.-]+):(\d+):(\d+): .* : (.*)"),
@@ -119,17 +120,16 @@ def ConstantTemporaryDirectory(path):
 
 def log_demisto_sdk_version():
     try:
-        demisto.debug(f'Using demisto-sdk version {get_distribution("demisto-sdk").version}')
+        demisto.debug(f'Using demisto-sdk version {version("demisto-sdk")}')
     except Exception as e:
         demisto.debug(f"Could not get demisto-sdk version. Error: {e}")
 
 
 def setup_proxy(_args: dict):
     if _args.get("use_system_proxy") == "no":
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
+        # Remove proxy environment variables if they exist
+        for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+            os.environ.pop(proxy_var, None)
 
 
 def strip_ansi_codes(text):
@@ -504,6 +504,7 @@ def run_pre_commit(output_path: Path) -> int:
         run_docker_hooks=False,
         pre_commit_template_path=Path(PRE_COMMIT_TEMPLATE_PATH),
         json_output_path=output_path,
+        mode=PRE_COMMIT_MODE,
     )
     demisto.debug(f"run_pre_commit {exit_code=}")
     return exit_code

@@ -59,7 +59,7 @@ MITRE ATT&CK CoA - T1135 - Network Share Discovery
 MITRE ATT&CK CoA - T1083 - File and Directory Discovery
 Cyren Inbox Security Default
 Get User Devices by Email Address - Generic
-FireEye ETP - Indicators Hunting
+Trellix Email Security Cloud - Indicators Hunting
 FireEye HX - Isolate Endpoint
 MITRE ATT&CK CoA - T1133 - External Remote Services
 FireEye HX - Execution Flow Indicators Hunting

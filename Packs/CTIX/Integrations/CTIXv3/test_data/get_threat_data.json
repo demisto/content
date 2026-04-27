@@ -5,7 +5,7 @@
 		"results": [
 			{"analyst_score": null,
 				 "analyst_tlp": null,
-				 "confidence_score": 50,
+				 "confidence_score": "NA",
 				 "confidence_type": "ctix",
 				 "country": null,
 				 "created": 1652081902,

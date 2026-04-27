@@ -1,0 +1,23 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/incidents",
+      "method": "changeIncidentStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "changeIncidentStatus",
+        "params": {
+          "type": "incidents",
+          "incidentId": "INCIDENT_ID_1",
+          "status": 3
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": true
+    }
+  }
+]

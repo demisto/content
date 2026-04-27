@@ -114,7 +114,7 @@
 			}
 		},
         "Malware Investigation and Response": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"close_reason": {
 					"simple": "closeReason"
@@ -128,7 +128,7 @@
 			}
 		},
 		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"assigned_user_mail": {
 					"simple": "xdrassigneduseremail"

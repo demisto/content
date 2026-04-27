@@ -4,6 +4,7 @@ commonfields:
 name: Zerohack XDR
 display: Zerohack XDR
 category: Network Security
+provider: Zerohack
 description: The companion integration for Zerohack XDR. Current versions allow the user to collect data from the XDR and later versions will support data exfiltration to XDR.
 configuration:
 - display: Fetch incidents
@@ -56,7 +57,7 @@ script:
       required: true
       description: The severity level helps in extracting latest incident of a specific severity.
     description: Fetch a single incident of your choice of severity level to study the incidents structure before you start continously fecthing incidents.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

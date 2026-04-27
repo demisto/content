@@ -1,0 +1,22 @@
+[MODEL: dataset="appsentinels_appsentinels_raw"]
+alter
+    xdm.event.id = to_string(id),
+    xdm.event.original_event_type = action,
+    xdm.event.description = description,
+    xdm.event.operation = if(
+        action = "create", XDM_CONST.OPERATION_TYPE_CREATE, 
+        action = "modify", XDM_CONST.OPERATION_TYPE_UPDATE, 
+        action = "delete", XDM_CONST.OPERATION_TYPE_DELETE, 
+        action = "read", XDM_CONST.OPERATION_TYPE_READ, 
+        null
+    ),    
+    xdm.alert.category = category,
+    xdm.target.application.name = application,
+    xdm.source.user.identifier = rbac_id,
+    xdm.source.user.username = arrayindex(split(username, "@"), 0),
+    xdm.source.user.upn = username,
+    xdm.source.user.user_type = if(
+        type = "user", XDM_CONST.USER_TYPE_REGULAR, 
+        type = "service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, 
+        null
+    );

@@ -1,0 +1,22 @@
+{
+    "GoogleChronicleBackstory.DataTable(val.displayName == obj.displayName)": {
+        "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table",
+        "displayName": "Test Table",
+        "description": "This is a test data table",
+        "createTime": "2025-08-13T07:26:56.704838492Z",
+        "updateTime": "2025-08-14T07:26:56.704838492Z",
+        "columnInfo": [
+            {
+                "originalColumn": "column_1",
+                "columnType": "STRING"
+            },
+            {
+                "columnIndex": 1,
+                "originalColumn": "column_2",
+                "columnType": "REGEX"
+            }
+        ],
+        "dataTableUuid": "00000000000000000000000000000001",
+        "approximateRowCount": "4"
+    }
+}

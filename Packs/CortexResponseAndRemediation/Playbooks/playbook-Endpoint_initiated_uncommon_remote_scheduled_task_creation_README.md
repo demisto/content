@@ -26,26 +26,26 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Command-Line Analysis
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
+* CommandLineAnalysis
 * Print
 * SearchIncidentsV2
 * Set
+* get-endpoint-data
 
 ### Commands
 
-* core-get-process-analytics-prevalence
-* core-get-endpoints
-* core-get-cloud-original-alerts
-* core-run-script-execute-commands
 * closeInvestigation
-* core-get-script-execution-results
+* core-execute-command
+* core-get-cloud-original-alerts
+* core-get-process-analytics-prevalence
 * core-terminate-causality
 
 ## Playbook Inputs

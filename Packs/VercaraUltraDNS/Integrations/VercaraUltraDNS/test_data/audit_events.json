@@ -1,0 +1,56 @@
+{
+  "auditRecords": [
+    {
+      "account": "EXAMPLE CORP - 1234567",
+      "changeTime": "2025-09-27 14:32:30.0", 
+      "changeType": "DELETE",
+      "detail": {
+        "recordType": "MX"
+      },
+      "others": [],
+      "ipAddress": "192.168.1.102",
+      "object": "mail.example-test.com.",
+      "objectType": "RECORD",
+      "user": "cleanup_service"
+    },
+    {
+      "account": "EXAMPLE CORP - 1234567", 
+      "changeTime": "2025-09-27 14:31:15.0",
+      "changeType": "MODIFY",
+      "detail": {
+        "recordType": "CNAME",
+        "ttl": 600
+      },
+      "others": [
+        {
+          "name": "target",
+          "value": "example-alias.com"
+        }
+      ],
+      "ipAddress": "192.168.1.101",
+      "object": "subdomain.example-test.com.",
+      "objectType": "RECORD",
+      "user": "api_system"
+    },
+    {
+      "account": "EXAMPLE CORP - 1234567",
+      "changeTime": "2025-09-27 14:30:00.0",
+      "changeType": "CREATE",
+      "detail": {
+        "recordType": "A",
+        "ttl": 300
+      },
+      "others": [
+        {
+          "name": "priority",
+          "value": "10"
+        }
+      ],
+      "ipAddress": "192.168.1.100",
+      "object": "example-test.com.",
+      "objectType": "ZONE",
+      "user": "admin_user"
+    }
+  ],
+  "next_cursor": "cursor_123"
+}

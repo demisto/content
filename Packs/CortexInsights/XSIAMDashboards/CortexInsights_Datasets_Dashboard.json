@@ -1,0 +1,256 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights [Datasets]",
+            "description": "This dashboard provides an overview of the health and completeness of data collection across your configured datasets. It provides key metrics on data source inventory, log collection status by product, and the recency of data updates for critical datasets.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-2527",
+                    "data": [
+                        {
+                            "key": "xql_1772560039491",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 51.79448432187382,
+                                "height": 511,
+                                "phrase": "dataset = pan_dss_raw \n  | fields record_generated_time, domain_name\n  | sort desc record_generated_time \n  | dedup domain_name\n  | filter timestamp_diff(current_time(), record_generated_time, \"DAY\") \u003e 1\n  | alter daysNoUpdate = timestamp_diff(current_time(), record_generated_time, \"DAY\")\n  | fields domain_name as name, daysNoUpdate",
+                                "entityType": "xql-widget-table-8ee492d1-4c75-4942-811d-79a08f6708c8",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1772559800030",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 48.20551567812618,
+                                "height": 511,
+                                "phrase": "dataset = pan_dss_raw | fields domain_name as IdentityDomain | dedup IdentityDomain",
+                                "entityType": "xql-widget-table-0edefe6c-9729-40b4-ae74-88cf5229ca56",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4661",
+                    "data": [
+                        {
+                            "key": "xql_1772560102695",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d | dataset = metrics_source | filter _PRODUCT = \"NGFW\"\n  | alter ngfw_serial =_device_id\n  | comp values (_log_type) as log_types by ngfw_serial\n  | alter sending_eal_logs = if(log_types = \"eal\", \"yes\", \"no\")\n  | alter sending_traffic_logs = if(log_types = \"traffic\", \"yes\", \"no\")\n  | alter sending_file_data = if(log_types = \"file_data\", \"yes\", \"no\")\n  | alter sending_system_logs = if(log_types = \"system\", \"yes\", \"no\")\n  | alter sending_threat_logs = if(log_types = \"threat\", \"yes\", \"no\")\n  | alter sending_url_logs = if(log_types = \"url\", \"yes\", \"no\")\n  | alter sending_gp_logs = if(log_types = \"globalprotect\", \"yes\", \"no\")\n  | alter sending_config_logs = if(log_types = \"config\", \"yes\", \"no\")\n  | alter sending_auth_logs = if(log_types = \"auth\", \"yes\", \"no\")",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-57d0b8fa-a51e-4c81-96e0-15b71eb4f447",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3781",
+                    "data": [
+                        {
+                            "key": "xql_1772559881530",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = metrics_source | dedup _vendor, _product, _collector_type, _collector_name | fields _vendor as vendor, _product as product, _collector_type as type, _collector_name as name",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-23ee83f4-283e-428a-a616-48d8e284be40",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "a2335232972d4229baa96d96b4e4a45a",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1772559800030",
+            "title": "Cloud Identity Engine Domains",
+            "creation_time": 1772559800030,
+            "description": "This widget lists all unique domains synchronized into the system by the Cloud Identity Engine. Use this information to quickly verify that all expected identity sources are correctly configured and providing user context for analysis.",
+            "data": {
+                "phrase": "dataset = pan_dss_raw | fields domain_name as IdentityDomain | dedup IdentityDomain",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "pan_dss_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1772560039491",
+            "title": "Last Domain Update Time \u003e2 days",
+            "creation_time": 1772560039491,
+            "description": "This widget lists domains whose security records have not been updated for two or more days. This helps identify potential data collection issues or stale entries, which could indicate a gap in security visibility.",
+            "data": {
+                "phrase": "dataset = pan_dss_raw \n  | fields record_generated_time, domain_name\n  | sort desc record_generated_time \n  | dedup domain_name\n  | filter timestamp_diff(current_time(), record_generated_time, \"DAY\") \u003e 1\n  | alter daysNoUpdate = timestamp_diff(current_time(), record_generated_time, \"DAY\")\n  | fields domain_name as name, daysNoUpdate",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "pan_dss_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1772559881530",
+            "title": "Onboarded Data Sources",
+            "creation_time": 1772559881530,
+            "description": "This widget lists all distinct data sources that have actively sent information to the platform within the last 30 days. It enables you to quickly audit data ingestion and confirm that all expected sources are reporting correctly, preventing gaps in security visibility.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = metrics_source | dedup _vendor, _product, _collector_type, _collector_name | fields _vendor as vendor, _product as product, _collector_type as type, _collector_name as name",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "metrics_source"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1772560102695",
+            "title": "Onboarded Palo Alto Networks Firewalls",
+            "creation_time": 1772560102695,
+            "description": "This widget lists all onboarded Palo Alto Networks firewalls and indicates which specific log types are being ingested from each device. Use this to quickly validate data collection health and identify any firewalls not sending the necessary logs for complete security visibility.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = metrics_source | filter _PRODUCT = \"NGFW\"\n  | alter ngfw_serial =_device_id\n  | comp values (_log_type) as log_types by ngfw_serial\n  | alter sending_eal_logs = if(log_types = \"eal\", \"yes\", \"no\")\n  | alter sending_traffic_logs = if(log_types = \"traffic\", \"yes\", \"no\")\n  | alter sending_file_data = if(log_types = \"file_data\", \"yes\", \"no\")\n  | alter sending_system_logs = if(log_types = \"system\", \"yes\", \"no\")\n  | alter sending_threat_logs = if(log_types = \"threat\", \"yes\", \"no\")\n  | alter sending_url_logs = if(log_types = \"url\", \"yes\", \"no\")\n  | alter sending_gp_logs = if(log_types = \"globalprotect\", \"yes\", \"no\")\n  | alter sending_config_logs = if(log_types = \"config\", \"yes\", \"no\")\n  | alter sending_auth_logs = if(log_types = \"auth\", \"yes\", \"no\")",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "metrics_source"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

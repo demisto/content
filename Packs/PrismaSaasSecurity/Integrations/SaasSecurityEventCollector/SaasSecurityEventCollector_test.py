@@ -248,7 +248,7 @@ class TestFetchEvents:
         from SaasSecurityEventCollector import fetch_events_from_saas_security
 
         mocker.patch.object(Client, "http_request", side_effect=queue)
-        events, _ = fetch_events_from_saas_security(client=mock_client, max_fetch=max_fetch)
+        events, _, _ = fetch_events_from_saas_security(client=mock_client, max_fetch=max_fetch)
 
         assert expected_events.get("events") == events
 

@@ -1,0 +1,33 @@
+[
+    {
+        "name": "DUMMY_ENTITY",
+        "type": "threatActor",
+        "aliases": [
+            "DUMMY_ALIAS"
+        ]
+    },
+    {
+        "name": "DUMMY_ENTITY02",
+        "type": "malware",
+        "affectedOperatingSystems": [
+            "DUMMY_OS"
+        ]
+    },
+    {
+        "name": "DUMMY_ENTITY03",
+        "type": "vulnerability",
+        "publishedDate": "2025-01-01T00:00:00.000Z",
+        "epssScore": 2.0,
+        "cvss": 2.5,
+        "products": [
+            {
+                "productName": "DUMMY_PRODUCT",
+                "productVendor": "DUMMY_VENDOR",
+                "productVersion": "DUMMY_VERSION"
+            }
+        ],
+        "exploitPocLinks": [
+            "DUMMY_LINK"
+        ]
+    }
+]

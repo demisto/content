@@ -19,5 +19,9 @@
     "disabled": false,
     "reputationCalc": 0,
     "layout": "FireEye EX Alert",
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

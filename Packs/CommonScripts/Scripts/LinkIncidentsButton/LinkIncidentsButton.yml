@@ -8,13 +8,13 @@ args:
   predefined:
   - link
   - unlink
-  description: Action to perform - Link or Unlink Incidents
-comment: |
-  Incident action button script to link or unlink Incidents from an Incident
+  description: Action to perform - Link or Unlink Incidents.
+comment: |-
+  Incident action button script to link or unlink Incidents from an Incident.
 commonfields:
   id: LinkIncidentsButton
   version: -1
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: LinkIncidentsButton
 runas: DBotWeakRole
@@ -27,3 +27,5 @@ type: python
 fromversion: 5.0.0
 tests:
 - No test
+marketplaces:
+- xsoar

@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtiasmissuecollectionuuid",
+    "version": -1,
+    "modified": "2025-09-22T00:29:22.203999095+05:30",
+    "name": "GTI ASM Issue Collection UUID",
+    "ownerOnly": false,
+    "description": "UUID of the associated collection.",
+    "cliName": "gtiasmissuecollectionuuid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Threat Intelligence ASM Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

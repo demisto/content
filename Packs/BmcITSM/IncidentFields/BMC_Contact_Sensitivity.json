@@ -27,9 +27,16 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "Aliases": [
+        {
+            "cliName": "bmccontactsensitivity",
+            "type": "singleSelect",
+            "name": "Bmc Contact Sensitivity"
+        }
+    ]
 }

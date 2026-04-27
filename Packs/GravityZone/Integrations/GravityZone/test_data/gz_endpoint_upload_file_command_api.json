@@ -1,0 +1,167 @@
+[
+  {
+    "request": {
+      "url": "/storage/investigationFiles",
+      "files": "file_to_upload.txt",
+      "data": {
+        "metadata": "{\"protectedEntityId\": \"6942a43afe8d4e463ca5c197\", \"path\": \"/home/ENDPOINT_NAME/\"}"
+      }
+    },
+    "response": {
+      "success": true,
+      "files": [
+        {
+          "name": "file",
+          "success": true,
+          "id": "694447384f1ba9a2650ec758",
+          "url": "https://localhost/storage/investigationFiles/694447384f1ba9a2650ec758",
+          "filename": "file_to_upload.txt"
+        }
+      ],
+      "additionalData": {
+        "taskId": "694447384f1ba9a2650ec75a"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "694447384f1ba9a2650ec75a",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Upload investigation files 2025-12-18 18:26:00",
+        "startDate": "2025-12-18T20:26:00",
+        "status": 1,
+        "type": 24,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "6942a43afe8d4e463ca5c197",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-18T20:26:00",
+            "status": 0
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "694447384f1ba9a2650ec75a",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Upload investigation files 2025-12-18 18:26:00",
+        "startDate": "2025-12-18T20:26:00",
+        "status": 1,
+        "type": 24,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "6942a43afe8d4e463ca5c197",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-18T20:26:00",
+            "status": 0
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "694447384f1ba9a2650ec75a",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Upload investigation files 2025-12-18 18:26:00",
+        "startDate": "2025-12-18T20:26:00",
+        "status": 3,
+        "type": 24,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "6942a43afe8d4e463ca5c197",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-18T20:26:00",
+            "status": 2,
+            "endDate": "2025-12-18T20:26:40",
+            "errorCode": "2",
+            "errorMessage": "Task failed! [2]"
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  }
+]

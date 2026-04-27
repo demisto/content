@@ -177,7 +177,7 @@ Gets events from Cisco Webex.
 
 |_time|actorId|created|data|id|resource|source_log_type|type|
 |---|---|---|---|---|---|---|---|
-| 2023-11-05T13:33:46.417Z | 222222 | 2023-11-05T13:33:46.417Z | id: 333333<br>roomId: 444444<br>roomType: group<br>personId: 222222<br>personEmail: ksolberg@paloaltonetworks.com<br>personDisplayName: Kfir Solberg<br>personOrgId: 555555<br>isModerator: false<br>isMonitor: false<br>isRoomHidden: false<br>created: 2023-11-05T13:33:46.417Z | 111111 | memberships | Events | created |
+| 2023-11-05T13:33:46.417Z | 222222 | 2023-11-05T13:33:46.417Z | id: 333333<br>roomId: 444444<br>roomType: group<br>personId: 222222<br>personEmail: jsmith@example.com<br>personDisplayName: Kfir Testman<br>personOrgId: 555555<br>isModerator: false<br>isMonitor: false<br>isRoomHidden: false<br>created: 2023-11-05T13:33:46.417Z | 111111 | memberships | Events | created |
 
 #### Context Output
 

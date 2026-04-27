@@ -6,7 +6,7 @@ Get the overall score for the indicator as calculated by DBot.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Tags |  |
 | Cortex XSOAR Version | 6.0.0 |
 

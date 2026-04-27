@@ -18,7 +18,7 @@ interactions:
     uri: https://api.recordedfuture.com/v2/info/whoami
   response:
     body:
-      string: '{"user": {"name": "Jonathan Sundqvist", "uhash": "1YGOwfGNpV", "email":
+      string: '{"user": {"name": "Jon Testmandqvist", "uhash": "1YGOwfGNpV", "email":
         "jonathan.sundqvist@recordedfuture.com", "role": false, "username": "user-5e17cb63d05e40fc97f31a5fb43f71f7",
         "enterprise": false, "privileges": ["UseCaseActivate", "ImportByID", "AlertCreate",
         "EntityStructure", "ShareList", "AdvancedSearch", "web-all-datagroups", "IntelligenceCard",

@@ -1,0 +1,84 @@
+{
+    "commvault_backupsolution_raw": {
+        "alert": {
+            "type": "string",
+            "is_array": false
+        },
+        "alert_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "alert_rule_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertdescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "commcell": {
+            "type": "string",
+            "is_array": false
+        },
+        "commcellname": {
+            "type": "string",
+            "is_array": false
+        },
+        "computer": {
+            "type": "string",
+            "is_array": false
+        },
+        "client": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "detected_criteria": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_code": {
+            "type": "string",
+            "is_array": false
+        },
+        "operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "program": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "opid": {
+            "type": "int",
+            "is_array": false
+        },
+        "alert_id": {
+            "type": "int",
+            "is_array": false
+        }        
+    }
+}

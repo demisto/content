@@ -450,7 +450,7 @@ Recovers all resources from the module.
                 "search_words": [
                     "sodimac"
                 ],
-                "title": "Programa SCM Update ?\u00b7 en Sodimac. Mauricio Mu\u00f1oz Jefe de log\u00edstica en Cl\u00ednica Alemana. L\u00eda Vera\u2026",
+                "title": "Programa SCM Update ?\u00b7 en Sodimac. Mauri Mu\u00f1oz log\u00edstica en Cl\u00ednica Alemana. L\u00eda Vera\u2026",
                 "tlpStatus": "AMBER",
                 "total_retweets": 0,
                 "url": "https://fdocuments.es/document/programa-scm-update-en-sodimac-mauricio-munoz-jefe-de-logistica-en-clinica.html",
@@ -476,7 +476,7 @@ Recovers all resources from the module.
 >| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711233 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Sodimac Chile 18.151 trabajadores 617.398 horas destinadas a capacitaciأ³n en 2017. ... productividad | AMBER | 0 | https://fdocuments.es/document/sodimac-chile-18151-trabajadores-617398-horas-destinadas-a-capacitacin-en-2017.html | 0 |
 >| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711234 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Emisiأ³n de Bonos Ordinarios Fuente: Organizaciأ³n Corona y Sodimac Corporativo, 1Capital IQ Agosto | AMBER | 0 | https://fdocuments.es/document/emisin-de-bonos-ordinarios-fuente-organizacin-corona-y-sodimac-corporativo.html | 0 |
 >| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711235 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | SODIMAC COLOMBIA S.A. - ?· empresas emisoras de valores, lo que nos conlleva a presentar a consideración… | AMBER | 0 | https://fdocuments.es/document/sodimac-colombia-sa-empresas-emisoras-de-valores-lo-que-nos-conlleva-a.html | 0 |
->| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711236 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Programa SCM Update ?· en Sodimac. Mauricio Muñoz Jefe de logística en Clínica Alemana. Lía Vera… | AMBER | 0 | https://fdocuments.es/document/programa-scm-update-en-sodimac-mauricio-munoz-jefe-de-logistica-en-clinica.html | 0 |
+>| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711236 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Programa SCM Update ?· en Sodimac. Maur Muñoz logística en Clínica Alemana. Lía Vera… | AMBER | 0 | https://fdocuments.es/document/programa-scm-update-en-sodimac-mauricio-munoz-jefe-de-logistica-en-clinica.html | 0 |
 
 ### blueliv-resource-search
 

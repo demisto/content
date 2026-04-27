@@ -6,11 +6,131 @@
 		"CyberBlindspot Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"CTM360 CyberBlindspot BC Breach Source": {
+					"simple": "CustomFields.breach_source"
+				},
+				"CTM360 CyberBlindspot BC Domain": {
+					"simple": "CustomFields.domain"
+				},
+				"CTM360 CyberBlindspot BC Email": {
+					"simple": "CustomFields.email"
+				},
+				"CTM360 CyberBlindspot BC Executive Name": {
+					"simple": "CustomFields.executive_name"
+				},
+				"CTM360 CyberBlindspot BC Password": {
+					"simple": "CustomFields.password"
+				},
+				"CTM360 CyberBlindspot BC Username": {
+					"simple": "CustomFields.username"
+				},
+				"CTM360 CyberBlindspot Brand": {
+					"simple": "CustomFields.brand"
+				},
+				"CTM360 CyberBlindspot CC CVV": {
+					"simple": "CustomFields.cc_cvv"
+				},
+				"CTM360 CyberBlindspot CC Card Number": {
+					"simple": "CustomFields.cc_card_number"
+				},
+				"CTM360 CyberBlindspot CC Expiry Month": {
+					"simple": "CustomFields.cc_expiry_month"
+				},
+				"CTM360 CyberBlindspot CC Expiry Year": {
+					"simple": "CustomFields.cc_expiry_year"
+				},
+				"CTM360 CyberBlindspot Class": {
+					"simple": "CustomFields.class"
+				},
+				"CTM360 CyberBlindspot Confirmation Time": {
+					"simple": "CustomFields.confirmation_time"
+				},
 				"CTM360 CyberBlindspot Course of Action": {
 					"simple": "CustomFields.cbs_coa"
 				},
-				"CTM360 CyberBlindspot Module": {
+				"CTM360 CyberBlindspot First Seen": {
+					"simple": "occurred"
+				},
+				"CTM360 CyberBlindspot Incident Type": {
 					"simple": "CustomFields.cbs_type"
+				},
+				"CTM360 CyberBlindspot Last Seen": {
+					"simple": "CustomFields.cbs_updated_date"
+				},
+				"CTM360 CyberBlindspot ML Computer Name": {
+					"simple": "CustomFields.computer_name"
+				},
+				"CTM360 CyberBlindspot ML Date Compromised": {
+					"simple": "CustomFields.date_compromised"
+				},
+				"CTM360 CyberBlindspot ML Domain": {
+					"simple": "CustomFields.domain"
+				},
+				"CTM360 CyberBlindspot ML Hostname": {
+					"simple": "CustomFields.hostname"
+				},
+				"CTM360 CyberBlindspot ML Malware Path": {
+					"simple": "CustomFields.malware_path"
+				},
+				"CTM360 CyberBlindspot ML Masked Password": {
+					"simple": "CustomFields.masked_password"
+				},
+				"CTM360 CyberBlindspot ML Operating System": {
+					"simple": "CustomFields.operating_system"
+				},
+				"CTM360 CyberBlindspot ML Password": {
+					"simple": "CustomFields.password"
+				},
+				"CTM360 CyberBlindspot ML Software": {
+					"simple": "CustomFields.software"
+				},
+				"CTM360 CyberBlindspot ML Source URI": {
+					"simple": "CustomFields.source_uri"
+				},
+				"CTM360 CyberBlindspot ML Sources": {
+					"simple": "CustomFields.sources"
+				},
+				"CTM360 CyberBlindspot ML Stealer Family": {
+					"simple": "CustomFields.stealer_family"
+				},
+				"CTM360 CyberBlindspot ML URL Path": {
+					"simple": "CustomFields.url_path"
+				},
+				"CTM360 CyberBlindspot ML User": {
+					"simple": "CustomFields.user"
+				},
+				"CTM360 CyberBlindspot ML User Domain": {
+					"simple": "CustomFields.user_domain"
+				},
+				"CTM360 CyberBlindspot ML Website": {
+					"simple": "CustomFields.website"
+				},
+				"CTM360 CyberBlindspot Module": {
+					"simple": "CustomFields.cbs_module"
+				},
+				"CTM360 CyberBlindspot Remarks": {
+					"simple": "CustomFields.remarks"
+				},
+				"CTM360 CyberBlindspot Risks": {
+					"simple": "CustomFields.risks"
+				},
+				"CTM360 CyberBlindspot Screenshots": {
+					"simple": "CustomFields.screenshots"
+				},
+				"CTM360 CyberBlindspot Severity": {
+					"simple": "CustomFields.severity"
+				},
+				"CTM360 CyberBlindspot Status": {
+					"simple": "externalstatus"
+				},
+				"CTM360 CyberBlindspot Subject": {
+					"simple": "CustomFields.subject"
+				},
+				"CTM360 CyberBlindspot Ticket ID": {
+					"simple": "name"
+				},
+				"CTM360 CyberBlindspot Timestamp": {
+					"simple": "CustomFields.timestamp"
 				},
 				"External Status": {
 					"simple": "externalstatus"

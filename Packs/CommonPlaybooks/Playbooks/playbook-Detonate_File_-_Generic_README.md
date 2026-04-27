@@ -1,7 +1,7 @@
 Detonate files through one or more active integrations that support file detonation.
 Supported integrations:
 - SecneurX Analysis
-- ANY.RUN
+- ANY.RUN Cloud Sandbox
 - McAfee Advanced Threat Defense
 - WildFire
 - Lastline
@@ -22,7 +22,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * ATD - Detonate File
-* Detonate File - ANYRUN
 * Detonate File - SecneurX Analysis
 * Detonate file - CrowdStrike Falcon Sandbox v2
 * Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
@@ -34,6 +33,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Detonate File - Lastline v2
 * Detonate File - JoeSecurity V2
 * Detonate File - ThreatGrid v2
+* ANYRUN Detonate File Android
+* ANYRUN Detonate File Linux
+* ANYRUN Detonate File Windows
 
 ### Integrations
 
@@ -128,64 +130,7 @@ This playbook does not use any scripts.
 | Cuckoo.Task.CompletedOn | Date on which the task was completed. | string |
 | Cuckoo.Task.Score | Reported score of the the task. | string |
 | Cuckoo.Task.Monitor | Monitor of the reported task. | string |
-| ANYRUN.Task.AnalysisDate | Date and time the analysis was executed. | String |
-| ANYRUN.Task.Behavior.Category | Category of a process behavior. | String |
-| ANYRUN.Task.Behavior.Action | Actions performed by a process. | String |
-| ANYRUN.Task.Behavior.ThreatLevel | Threat score associated with a process behavior. | Number |
-| ANYRUN.Task.Behavior.ProcessUUID | Unique ID of the process whose behaviors are being profiled. | String |
-| ANYRUN.Task.Connection.Reputation | Connection reputation. | String |
-| ANYRUN.Task.Connection.ProcessUUID | ID of the process that created the connection. | String |
-| ANYRUN.Task.Connection.ASN | Connection autonomous system network. | String |
-| ANYRUN.Task.Connection.Country | Connection country. | String |
-| ANYRUN.Task.Connection.Protocol | Connection protocol. | String |
-| ANYRUN.Task.Connection.Port | Connection port number. | Number |
-| ANYRUN.Task.Connection.IP | Connection IP number. | String |
-| ANYRUN.Task.DnsRequest.Reputation | Reputation of the DNS request. | String |
-| ANYRUN.Task.DnsRequest.IP | IP addresses associated with a DNS request. | Unknown |
-| ANYRUN.Task.DnsRequest.Domain | Domain resolution of a DNS request. | String |
-| ANYRUN.Task.Threat.ProcessUUID | Unique process ID from where the threat originated. | String |
-| ANYRUN.Task.Threat.Msg | Threat message. | String |
-| ANYRUN.Task.Threat.Class | Class of the threat. | String |
-| ANYRUN.Task.Threat.SrcPort | Port on which the threat originated. | Number |
-| ANYRUN.Task.Threat.DstPort | Destination port of the threat. | Number |
-| ANYRUN.Task.Threat.SrcIP | Source IP address where the threat originated. | String |
-| ANYRUN.Task.Threat.DstIP | Destination IP address of the threat. | String |
-| ANYRUN.Task.HttpRequest.Reputation | Reputation of the HTTP request. | String |
-| ANYRUN.Task.HttpRequest.Country | HTTP request country. | String |
-| ANYRUN.Task.HttpRequest.ProcessUUID | ID of the process making the HTTP request. | String |
-| ANYRUN.Task.HttpRequest.Body | HTTP request body parameters and details. | Unknown |
-| ANYRUN.Task.HttpRequest.HttpCode | HTTP request response code. | Number |
-| ANYRUN.Task.HttpRequest.Status | Status of the HTTP request. | String |
-| ANYRUN.Task.HttpRequest.ProxyDetected | Whether the HTTP request was made through a proxy. | Boolean |
-| ANYRUN.Task.HttpRequest.Port | HTTP request port. | Number |
-| ANYRUN.Task.HttpRequest.IP | HTTP request IP address. | String |
-| ANYRUN.Task.HttpRequest.URL | HTTP request URL. | String |
-| ANYRUN.Task.HttpRequest.Host | HTTP request host. | String |
-| ANYRUN.Task.HttpRequest.Method | HTTP request method type. | String |
-| ANYRUN.Task.FileInfo | Details of the submitted file. | String |
-| ANYRUN.Task.OS | OS of the sandbox in which the file was analyzed. | String |
-| ANYRUN.Task.ID | The unique ID of the task. | String |
-| ANYRUN.Task.MIME | The MIME of the file submitted for analysis. | String |
-| ANYRUN.Task.MD5 | The MD5 hash of the file submitted for analysis. | String |
-| ANYRUN.Task.SHA1 | The SHA1 hash of the file submitted for analysis. | String |
-| ANYRUN.Task.SHA256 | The SHA256 hash of the file submitted for analysis. | String |
-| ANYRUN.Task.SSDeep | SSDeep hash of the file submitted for analysis. | String |
-| ANYRUN.Task.Verdict | ANY.RUN verdict for the maliciousness of the submitted file or URL. | String |
-| ANYRUN.Task.Process.FileName | File name of the process. | String |
-| ANYRUN.Task.Process.PID | Process identification number. | Number |
-| ANYRUN.Task.Process.PPID | Parent process identification number. | Number |
-| ANYRUN.Task.Process.ProcessUUID | Unique process ID \(used by ANY.RUN\). | String |
-| ANYRUN.Task.Process.CMD | Process command. | String |
-| ANYRUN.Task.Process.Path | Path of the executed command. | String |
-| ANYRUN.Task.Process.User | User who executed the command. | String |
-| ANYRUN.Task.Process.IntegrityLevel | The process integrity level. | String |
-| ANYRUN.Task.Process.ExitCode | Process exit code. | Number |
-| ANYRUN.Task.Process.MainProcess | Whether the process is the main process. | Boolean |
-| ANYRUN.Task.Process.Version.Company | Company responsible for the program executed. | String |
-| ANYRUN.Task.Process.Version.Description | Description of the type of program. | String |
-| ANYRUN.Task.Process.Version.Version | Version of the program executed. | String |
 | File.SSDeep | SSDeep hash of the file submitted for analysis. | String |
-| ANYRUN.Task.Status | Task analysis status. | String |
 | VMRay.Job | The Job Object. | unknown |
 | VMRay.Job.JobID | The ID of a new job. | number |
 | VMRay.Job.SampleID | The ID of sample. | number |
@@ -371,6 +316,244 @@ This playbook does not use any scripts.
 | OPSWAT.Filescan.Analysis.file.name | The name of the file. | unknown |
 | OPSWAT.Filescan.Analysis.file.hash | The SHA256 of the file. | unknown |
 | OPSWAT.Filescan.Analysis.file.type | The type of the submission. | unknown |
+| ANYRUN.SandboxAnalysis.mitre.name | String | MITRE Technic text description. | 
+| ANYRUN.SandboxAnalysis.mitre.phases | String | MITRE Technic phases. | 
+| ANYRUN.SandboxAnalysis.mitre.id | String | MITRE Technic identifier. | 
+| ANYRUN.SandboxAnalysis.debugStrings | Unknown | Analysis debug information. | 
+| ANYRUN.SandboxAnalysis.incidents.process | String | Analysis process. | 
+| ANYRUN.SandboxAnalysis.incidents.events.time | Date | Event time. | 
+| ANYRUN.SandboxAnalysis.incidents.events.cmdline | String | Event command line. | 
+| ANYRUN.SandboxAnalysis.incidents.events.image | String | Event image. | 
+| ANYRUN.SandboxAnalysis.incidents.mitre.v | String | MITRE version. | 
+| ANYRUN.SandboxAnalysis.incidents.mitre.sid | String | SID. | 
+| ANYRUN.SandboxAnalysis.incidents.mitre.tid | String | TID. | 
+| ANYRUN.SandboxAnalysis.incidents.count | String | Count of related incidents. | 
+| ANYRUN.SandboxAnalysis.incidents.firstSeen | Date | Incident first seen date. | 
+| ANYRUN.SandboxAnalysis.incidents.source | String | Incident source. | 
+| ANYRUN.SandboxAnalysis.incidents.desc | String | Incident description. | 
+| ANYRUN.SandboxAnalysis.incidents.title | String | Incident title. | 
+| ANYRUN.SandboxAnalysis.incidents.threatLevel | String | Incident threat level. | 
+| ANYRUN.SandboxAnalysis.incidents.events.typeValue | String | Event type value. | 
+| ANYRUN.SandboxAnalysis.incidents.events.key | String | Event key. | 
+| ANYRUN.SandboxAnalysis.incidents.events.value | String | Event value. | 
+| ANYRUN.SandboxAnalysis.incidents.events.name | String | Event name. | 
+| ANYRUN.SandboxAnalysis.incidents.events.operation | String | Even operation. | 
+| ANYRUN.SandboxAnalysis.incidents.events.cmdParent | String | Event parent cmd. | 
+| ANYRUN.SandboxAnalysis.incidents.events.cmdChild | String | Event child cmd. | 
+| ANYRUN.SandboxAnalysis.modified.registry.time | Date | Registry time. | 
+| ANYRUN.SandboxAnalysis.modified.registry.process | String | Registry process. | 
+| ANYRUN.SandboxAnalysis.modified.registry.operation | String | Registry operation. | 
+| ANYRUN.SandboxAnalysis.modified.registry.value | String | Registry value. | 
+| ANYRUN.SandboxAnalysis.modified.registry.name | String | Registry name. | 
+| ANYRUN.SandboxAnalysis.modified.registry.key | String | Registry key. | 
+| ANYRUN.SandboxAnalysis.modified.files.process | String | File process. | 
+| ANYRUN.SandboxAnalysis.modified.files.size | String | File size. | 
+| ANYRUN.SandboxAnalysis.modified.files.filename | String | Filename. | 
+| ANYRUN.SandboxAnalysis.modified.files.time | Date | File creating time. | 
+| ANYRUN.SandboxAnalysis.modified.files.info.mime | String | File MIME type. | 
+| ANYRUN.SandboxAnalysis.modified.files.info.file | String | File content. | 
+| ANYRUN.SandboxAnalysis.modified.files.permanentUrl | String | File url. | 
+| ANYRUN.SandboxAnalysis.modified.files.hashes.ssdeep | String | File SSDeep. | 
+| ANYRUN.SandboxAnalysis.modified.files.hashes.sha256 | String | File sha256 hash. | 
+| ANYRUN.SandboxAnalysis.modified.files.hashes.sha1 | String | File sha1 hash. | 
+| ANYRUN.SandboxAnalysis.modified.files.hashes.md5 | String | File md5 hash. | 
+| ANYRUN.SandboxAnalysis.modified.files.threatLevel | String | File threat level. | 
+| ANYRUN.SandboxAnalysis.modified.files.type | String | File type. | 
+| ANYRUN.SandboxAnalysis.network.threats | Unknown | Analysis network threats. | 
+| ANYRUN.SandboxAnalysis.network.connections.reputation | String | Network connection reputation. | 
+| ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3SFullstring | String | Network connection ja3S. | 
+| ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3S | String | Network connection ja3S. | 
+| ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3Fullstring | String | Network connection ja3F. | 
+| ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3 | String | Network connection ja3F. | 
+| ANYRUN.SandboxAnalysis.network.connections.time | Date | Network connection time. | 
+| ANYRUN.SandboxAnalysis.network.connections.asn | String | Network connection ASN. | 
+| ANYRUN.SandboxAnalysis.network.connections.country | String | Network connection country. | 
+| ANYRUN.SandboxAnalysis.network.connections.protocol | String | Network connection protocol. | 
+| ANYRUN.SandboxAnalysis.network.connections.port | String | Network connection port. | 
+| ANYRUN.SandboxAnalysis.network.connections.ip | String | Network connection ip. | 
+| ANYRUN.SandboxAnalysis.network.connections.process | String | Network connection processes. | 
+| ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.jarm | String | Network connection jarm. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.country | String | HTTP Request country. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.reputation | String | HTTP Request reputation. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.process | String | HTTP Request related process. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.httpCode | String | HTTP Request status code. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.status | String | HTTP Request status. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.user-agent | String | HTTP Request User-Agent header value. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.proxyDetected | String | HTTP Request is proxy detected. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.port | String | HTTP Request port. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.ip | String | HTTP Request ip. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.url | String | HTTP Request url. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.host | String | HTTP Request host. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.method | String | HTTP Request method. | 
+| ANYRUN.SandboxAnalysis.network.httpRequests.time | Date | HTTP Request time estimate. | 
+| ANYRUN.SandboxAnalysis.network.dnsRequests.reputationNumber | String | DNS Request reputation number. | 
+| ANYRUN.SandboxAnalysis.network.dnsRequests.reputation | String | DNS Request reputation. | 
+| ANYRUN.SandboxAnalysis.network.dnsRequests.ips | String | DNS Request IPs. | 
+| ANYRUN.SandboxAnalysis.network.dnsRequests.domain | String | DNS Request domain. | 
+| ANYRUN.SandboxAnalysis.network.dnsRequests.time | Date | DNS Request time estimate. | 
+| ANYRUN.SandboxAnalysis.malconf | Unknown | Analysis malconf. | 
+| ANYRUN.SandboxAnalysis.processes.synchronization | Unknown | Analysis processes synchronization. | 
+| ANYRUN.SandboxAnalysis.processes.modules | Unknown | Analysis processes modules. | 
+| ANYRUN.SandboxAnalysis.processes.hasMalwareConfig | String | Process has malware config. | 
+| ANYRUN.SandboxAnalysis.processes.parentUUID | String | Process parent UUID. | 
+| ANYRUN.SandboxAnalysis.processes.status | String | Process status. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.malwareConfig | String | Process malware config. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.privEscalation | String | Process priv escalation. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.stealing | String | Process stealing. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.networkLoader | String | Process network loader. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.network | String | Process network. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.lowAccess | String | Process low access. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.knownThreat | String | Process known threat. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.injects | String | Process inject. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.exploitable | String | Process exploitable. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.executableDropped | String | Process executable dropped. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.debugOutput | String | Process debug output. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.crashedApps | String | Process crashed apps. | 
+| ANYRUN.SandboxAnalysis.processes.scores.specs.autoStart | String | Process auto start. | 
+| ANYRUN.SandboxAnalysis.processes.scores.loadsSusp | String | Process loads susp. | 
+| ANYRUN.SandboxAnalysis.processes.scores.injected | String | Process injected. | 
+| ANYRUN.SandboxAnalysis.processes.scores.dropped | String | Process dropped. | 
+| ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevelText | String | Process threat level text. | 
+| ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevel | String | Process threat level. | 
+| ANYRUN.SandboxAnalysis.processes.scores.verdict.score | String | Process score. | 
+| ANYRUN.SandboxAnalysis.processes.context.userName | String | Process context username. | 
+| ANYRUN.SandboxAnalysis.processes.context.integrityLevel | String | Process context integrity level. | 
+| ANYRUN.SandboxAnalysis.processes.context.rebootNumber | String | Process context reboot number. | 
+| ANYRUN.SandboxAnalysis.processes.versionInfo.version | String | Process version. | 
+| ANYRUN.SandboxAnalysis.processes.versionInfo.description | String | Process description. | 
+| ANYRUN.SandboxAnalysis.processes.versionInfo.company | String | Process company. | 
+| ANYRUN.SandboxAnalysis.processes.mainProcess | String | Process main process. | 
+| ANYRUN.SandboxAnalysis.processes.fileType | String | Process file type. | 
+| ANYRUN.SandboxAnalysis.processes.fileName | String | Process filename. | 
+| ANYRUN.SandboxAnalysis.processes.commandLine | String | Process cmd. | 
+| ANYRUN.SandboxAnalysis.processes.image | String | Process image. | 
+| ANYRUN.SandboxAnalysis.processes.uuid | String | Process uuid. | 
+| ANYRUN.SandboxAnalysis.processes.ppid | String | Process PPID. | 
+| ANYRUN.SandboxAnalysis.processes.important | String | Process important. | 
+| ANYRUN.SandboxAnalysis.processes.pid | String | Process PID. | 
+| ANYRUN.SandboxAnalysis.processes.exitCode | String | Process exit code. | 
+| ANYRUN.SandboxAnalysis.processes.times.terminate | Date | Process time terminate. | 
+| ANYRUN.SandboxAnalysis.processes.times.start | Date | Process time start. | 
+| ANYRUN.SandboxAnalysis.processes.resolvedCOM.title | String | Process resolved COM title. | 
+| ANYRUN.SandboxAnalysis.processes.synchronization.operation | String | Process sync operation. | 
+| ANYRUN.SandboxAnalysis.processes.synchronization.type | String | Process sync type. | 
+| ANYRUN.SandboxAnalysis.processes.synchronization.name | String | Process sync name. | 
+| ANYRUN.SandboxAnalysis.processes.synchronization.time | Date | Process sync time. | 
+| ANYRUN.SandboxAnalysis.processes.modules.image | String | Process module image. | 
+| ANYRUN.SandboxAnalysis.processes.modules.time | Date | Process module time. | 
+| ANYRUN.SandboxAnalysis.processes.scores.monitoringReason | String | Process monitoring reason. | 
+| ANYRUN.SandboxAnalysis.processes.times.monitoringSince | Date | Process monitoring since. | 
+| ANYRUN.SandboxAnalysis.counters.synchronization.type.event | String | Process sync event. | 
+| ANYRUN.SandboxAnalysis.counters.synchronization.type.mutex | String | Process sync mutex. | 
+| ANYRUN.SandboxAnalysis.counters.synchronization.operation.create | String | Process sync operation create. | 
+| ANYRUN.SandboxAnalysis.counters.synchronization.operation.open | String | Process sync operation open. | 
+| ANYRUN.SandboxAnalysis.counters.synchronization.total | String | Process sync total. | 
+| ANYRUN.SandboxAnalysis.counters.registry.delete | String | Registry delete. | 
+| ANYRUN.SandboxAnalysis.counters.registry.write | String | Registry write. | 
+| ANYRUN.SandboxAnalysis.counters.registry.read | String | Registry reed. | 
+| ANYRUN.SandboxAnalysis.counters.registry.total | String | Registry total. | 
+| ANYRUN.SandboxAnalysis.counters.files.malicious | String | File malicious count. | 
+| ANYRUN.SandboxAnalysis.counters.files.suspicious | String | File suspicious count. | 
+| ANYRUN.SandboxAnalysis.counters.files.text | String | File text. | 
+| ANYRUN.SandboxAnalysis.counters.files.unknown | String | File unknown count. | 
+| ANYRUN.SandboxAnalysis.counters.network.threats | String | Network threats count. | 
+| ANYRUN.SandboxAnalysis.counters.network.dns | String | Network dns count. | 
+| ANYRUN.SandboxAnalysis.counters.network.connections | String | Network connections count. | 
+| ANYRUN.SandboxAnalysis.counters.network.http | String | Network networks count. | 
+| ANYRUN.SandboxAnalysis.counters.processes.malicious | String | Malicious processes count. | 
+| ANYRUN.SandboxAnalysis.counters.processes.suspicious | String | Suspicious processes count. | 
+| ANYRUN.SandboxAnalysis.counters.processes.monitored | String | Monitored processes count. | 
+| ANYRUN.SandboxAnalysis.counters.processes.total | String | Total processes count. | 
+| ANYRUN.SandboxAnalysis.environments.hotfixes.title | String | Environment hotfixes title. | 
+| ANYRUN.SandboxAnalysis.environments.software.version | String | Environment software version. | 
+| ANYRUN.SandboxAnalysis.environments.software.title | String | Environment software title. | 
+| ANYRUN.SandboxAnalysis.environments.internetExplorer.kbnum | String | Environment Internet Explorer KBNUM. | 
+| ANYRUN.SandboxAnalysis.environments.internetExplorer.version | String | Environment Internet Explorer version. | 
+| ANYRUN.SandboxAnalysis.environments.os.bitness | String | Environment OS version. | 
+| ANYRUN.SandboxAnalysis.environments.os.softSet | String | Environment OS software set. | 
+| ANYRUN.SandboxAnalysis.environments.os.servicePack | String | Environment OS service pack. | 
+| ANYRUN.SandboxAnalysis.environments.os.major | String | Environment OS major version. | 
+| ANYRUN.SandboxAnalysis.environments.os.productType | String | Environment OS product type. | 
+| ANYRUN.SandboxAnalysis.environments.os.variant | String | Environment OS variant. | 
+| ANYRUN.SandboxAnalysis.environments.os.product | String | Environment OS product. | 
+| ANYRUN.SandboxAnalysis.environments.os.build | String | Environment OS build. | 
+| ANYRUN.SandboxAnalysis.environments.os.title | String | Environment OS title. | 
+| ANYRUN.SandboxAnalysis.analysis.content.dumps | Unknown | Content dumps. | 
+| ANYRUN.SandboxAnalysis.analysis.content.screenshots.thumbnailUrl | String | Screenshots thumbnail url. | 
+| ANYRUN.SandboxAnalysis.analysis.content.screenshots.permanentUrl | String | Screenshots permanent url. | 
+| ANYRUN.SandboxAnalysis.analysis.content.screenshots.time | String | Screenshots time. | 
+| ANYRUN.SandboxAnalysis.analysis.content.screenshots.uuid | String | Screenshots uuid. | 
+| ANYRUN.SandboxAnalysis.analysis.content.sslkeys.present | String | SSL keys present. | 
+| ANYRUN.SandboxAnalysis.analysis.content.pcap.permanentUrl | String | Pcap dump permanent url. | 
+| ANYRUN.SandboxAnalysis.analysis.content.pcap.present | String | Pcap present. | 
+| ANYRUN.SandboxAnalysis.analysis.content.video.permanentUrl | String | Video permanent url. | 
+| ANYRUN.SandboxAnalysis.analysis.content.video.present | String | Video present. | 
+| ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.ssdeep | String | Main object ssdeep. | 
+| ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha256 | String | Main object sha256. | 
+| ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha1 | String | Main object sha1. | 
+| ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.md5 | String | Main object md5. | 
+| ANYRUN.SandboxAnalysis.analysis.content.mainObject.url | String | Main object url. | 
+| ANYRUN.SandboxAnalysis.analysis.content.mainObject.type | String | Main object type. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.knownThreat | String | Specs known threat. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.malwareConfig | String | Specs malware Config. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.notStarted | String | Specs not started. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.privEscalation | String | Specs priv escalation. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.torUsed | String | Specs TOR used. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.suspStruct | String | Specs susp structure. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.stealing | String | Specs stealing. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.staticDetections | String | Specs static detections. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.spam | String | Specs spam. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.serviceLauncher | String | Specs service launcher. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.rebooted | String | Specs rebooted. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.networkThreats | String | Specs network threats. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.networkLoader | String | Specs network loader. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.multiprocessing | String | Specs multiprocessing. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.memOverrun | String | Specs memory overrun. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.lowAccess | String | Specs low access. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.exploitable | String | Specs exploitable. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.executableDropped | String | Specs executable dropped. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.debugOutput | String | Specs debug output. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedTask | String | Specs crashed task. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedApps | String | Specs crashed apps. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.cpuOverrun | String | Specs CPU overrun. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.autoStart | String | Specs suto start. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.specs.injects | String | Specs injects. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevelText | String | Verdict threat level text. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevel | String | Verdict threat level. | 
+| ANYRUN.SandboxAnalysis.analysis.scores.verdict.score | String | Verdict score. | 
+| ANYRUN.SandboxAnalysis.analysis.options.automatization.uac | String | Options automatization UAC. | 
+| ANYRUN.SandboxAnalysis.analysis.options.privateSample | String | Options private sample. | 
+| ANYRUN.SandboxAnalysis.analysis.options.privacy | String | Options privacy. | 
+| ANYRUN.SandboxAnalysis.analysis.options.network | String | Options network. | 
+| ANYRUN.SandboxAnalysis.analysis.options.hideSource | String | Options hide source. | 
+| ANYRUN.SandboxAnalysis.analysis.options.video | String | Options video. | 
+| ANYRUN.SandboxAnalysis.analysis.options.presentation | String | Options presentation. | 
+| ANYRUN.SandboxAnalysis.analysis.options.tor.used | String | Options tor used. | 
+| ANYRUN.SandboxAnalysis.analysis.options.mitm | String | Options MITM proxy. | 
+| ANYRUN.SandboxAnalysis.analysis.options.heavyEvasion | String | Options kernel heavy evasion. | 
+| ANYRUN.SandboxAnalysis.analysis.options.fakeNet | String | Options fake network. | 
+| ANYRUN.SandboxAnalysis.analysis.options.additionalTime | String | Options additions time. | 
+| ANYRUN.SandboxAnalysis.analysis.options.timeout | String | Options timeout. | 
+| ANYRUN.SandboxAnalysis.analysis.tags | Unknown | Analysis tags. | 
+| ANYRUN.SandboxAnalysis.analysis.stopExecText | Date | Analysis stopExecText. | 
+| ANYRUN.SandboxAnalysis.analysis.stopExec | Date | Analysis creation stopExec. | 
+| ANYRUN.SandboxAnalysis.analysis.creationText | Date | Analysis creation creation text. | 
+| ANYRUN.SandboxAnalysis.analysis.creation | Date | Analysis creation date. | 
+| ANYRUN.SandboxAnalysis.analysis.duration | String | Analysis duration. | 
+| ANYRUN.SandboxAnalysis.analysis.sandbox.plan.name | String | Analysis sandbox user plan name. | 
+| ANYRUN.SandboxAnalysis.analysis.sandbox.name | String | Analysis sandbox name. | 
+| ANYRUN.SandboxAnalysis.analysis.reports.graph | String | Analysis reports graph. | 
+| ANYRUN.SandboxAnalysis.analysis.reports.STIX | String | Analysis STIX report url. | 
+| ANYRUN.SandboxAnalysis.analysis.reports.HTML | String | Analysis HTML report url. | 
+| ANYRUN.SandboxAnalysis.analysis.reports.MISP | String | Analysis MISP report url. | 
+| ANYRUN.SandboxAnalysis.analysis.reports.IOC | String | Analysis IOC report url. | 
+| ANYRUN.SandboxAnalysis.analysis.permanentUrl | String | Analysis permanent url. | 
+| ANYRUN.SandboxAnalysis.analysis.uuid | String | Analysis uuid. | 
+| ANYRUN.SandboxAnalysis.status | String | Analysis status. | 
+| ANYRUN.SandboxAnalysisReportVerdict | String | The analysis verdict. | 
+| ANYRUN_DetonateFileAndroid.TaskID | String | Task UUID. | 
+| ANYRUN_DetonateFileLinux.TaskID | String | Task UUID. | 
+| ANYRUN_DetonateFileWindows.TaskID | String | Task UUID. | 
 
 ## Playbook Image
 

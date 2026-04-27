@@ -3850,3 +3850,99 @@ Upload an attachment to an incident in TOPdesk.
 >|Id|FileName|DownloadUrl|InvisibleForCaller|EntryDate|Operator|
 >|---|---|---|---|---|---|
 >|some-id|tiny_upload_file|/tas/api/incidents/id/some-incident-id/attachments/some-id/download|False|2021-03-24T13:40:47.000+0000|xsoar operator a|
+
+### topdesk-assets-list
+
+***
+Get list of assets.
+
+#### Base Command
+
+`topdesk-assets-list`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                  | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| start             | The offset at which to start listing the assets at. Must be greater or equal to 0. Default is 0.                                                                                                                 | Optional     |
+| page_size         | The amount of assets to be returned per request. Must be between 1 and 100 or 0 for all assets. Default is 50.                                                                                                   | Optional     |
+| filter            | Supports a set of OData filters which can be combined with 'and' and 'or' assets. Filter expressions can also be grouped by parentheses. https://developers.topdesk.com/explorer/?page=assets#/Assets/getAssets. | Optional     |
+| search_term       | Search assets by name.                                                                                                                                                                                           | Optional     |
+| archived          | List only Archived or only Active devices. Leave empty for all.                                                                                                                                                  | Optional     |
+| fields            | Additional fields to include in the response.                                                                                                                                                                    | Optional     |
+
+#### Context Output
+
+| **Path**               | **Type** | **Description**                                    |
+|------------------------|----------|----------------------------------------------------|
+| TOPdesk.Asset.Archived | Boolean  | Asset status, archived or not.                     |
+| TOPdesk.Asset.Etag     | String   | Asset entry date.                                  |
+| TOPdesk.Asset.Id       | String   | Unique ID of the Asset.                            |
+| TOPdesk.Asset.Text     | String   | Asset freetext field, often the name of the asset. |
+
+#### Command Example
+
+```!topdesk-assets-list page_size=10 fields="archived,etag,id,text,name,mac-address"```
+
+#### Context Example
+
+```json
+{
+  "TOPdesk": {
+    "Asset": [
+      {
+        "Archived": false,
+        "Etag": "2025-06-18T14:18:59.111         ",
+        "Id": "4a5ef5e0-41fa-4a25-a5f4-8c4ea2780c69",
+        "Text": "test.host"
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### TOPdesk assets
+>
+>| Archived | Etag                    | Id                                  | Text      |
+>|----------|-------------------------|-------------------------------------|-----------|
+>| false    | 2025-06-18T14:18:59.111 | 4a5ef5e0-41fa-4a25-a5f4-8c4ea2780c6 | test.host |
+
+### topdesk-asset-update
+
+***
+Update Asset Fields.
+
+#### Base Command
+
+`topdesk-asset-update`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                  | **Required** |
+|-------------------|----------------------------------------------------------------------------------|--------------|
+| asset_id          | The Unique ID of the Asset.                                                      | Required     |
+| data              | "A json with the fields that you want to configure: {'asset_name':'testasset'}." | Required     |
+
+#### Context Output
+
+| **Path**      | **Type** | **Description**                                  |
+|---------------|----------|--------------------------------------------------|
+| TOPdesk.Asset | Dict     | Dictionary of all Asset Data specific to company |
+
+#### Command Example
+
+```!topdesk-asset-update asset_id="4a5ef5e0-41fa-4a25-a5f4-8c4ea2780c69" data="{\"edr-status\":\"Not OK\"}"```
+
+#### Context Example
+
+```json
+{
+......
+}
+```
+
+#### Human Readable Output
+
+> Sucessfully Updated Asset

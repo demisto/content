@@ -1,9 +1,13 @@
 commonfields:
   id: ArgusManagedDefence
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: ArgusManagedDefence
 display: Argus Managed Detection and Response by mnemonic
 category: Data Enrichment & Threat Intelligence
+provider: mnemonic
 description: Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
 sectionOrder:
 - Connect
@@ -37,6 +41,7 @@ configuration:
   defaultvalue: Low
   type: 15
   required: true
+  section: Collect
   options:
   - Low
   - Medium
@@ -76,6 +81,7 @@ configuration:
   additionalinfo: "Which direction should the integration mirror incidents."
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - display: Mirroring tag
@@ -85,6 +91,7 @@ configuration:
   additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma separated."
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - display: Close Argus Case
@@ -94,6 +101,7 @@ configuration:
   additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored Argus Case'
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - display: Close XSOAR Incident
@@ -101,8 +109,10 @@ configuration:
   defaultvalue: "true"
   type: 8
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
+  section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - display: Trust any certificate (not secure)

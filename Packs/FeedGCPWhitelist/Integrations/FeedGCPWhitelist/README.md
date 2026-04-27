@@ -2,7 +2,6 @@ Use the Google Cloud Platform whitelist integration to get indicators from the f
 
 ## Configure GCP Whitelist Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | Fetch indicators | False |
@@ -18,37 +17,43 @@ Use the Google Cloud Platform whitelist integration to get indicators from the f
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gcp-whitelist-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 ##### Base Command
 
 `gcp-whitelist-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 10. | Optional |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!gcp-whitelist-get-indicators limit=2```
 
 ##### Context Example
+
 ```
 {}
 ```
 
 ##### Human Readable Output
-### Indicators from GCP Whitelist Feed:
+
+### Indicators from GCP Whitelist Feed
+
 |value|type|
 |---|---|
 | 52.86.122.241/18 | CIDR |

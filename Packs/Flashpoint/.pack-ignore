@@ -1,6 +1,9 @@
 [file:README.md]
 ignore=RM102,RM104,RM100,RM112
 
+[file:Ignite.yml]
+ignore=BA129
+
 [file:incidentfield-Flashpoint-Reason-Name.json]
 ignore=IF115
 
@@ -279,3 +282,35 @@ Shodan
 llc
 Ethereum
 Monero
+unpatched
+EPSS
+Vuln
+changelog
+CWE
+NVD
+CPE
+CVEs
+CVS
+namespace
+subpath
+pypi
+npm
+longname
+creditees
+cpes
+CWES
+Misconfiguration
+MITM
+severities
+Bugtraq
+CIAC
+IAVA
+Metasploit
+Nessus
+Nikto
+RHSA
+SCIP
+Vul
+Secunia
+PVS
+VUPEN

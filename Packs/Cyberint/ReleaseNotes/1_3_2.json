@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The 'Cyberint Closure reason' incident field has been renamed to 'Cyberint Alert Close Reason'. Its select values have been changed from lowercase/snake_case ('none', 'resolved', 'no_longer_a_threat', 'irrelevant_alert_subtype', 'false_positive', 'other') to human-readable title case ('None', 'Resolved', 'No Longer a Threat', 'Irrelevant Alert Subtype', 'False Positive', 'Other'). If you have any playbooks, scripts, or automations that reference the old field name or the old select values, please update them accordingly.\n\nThe 'CyberInt Closure reason Description' incident field has been renamed to 'Cyberint Alert Close Reason Description'."
+}

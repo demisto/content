@@ -76,5 +76,52 @@
             "type": "string",
             "is_array": false
         }
+    },
+    
+    "ibm_guardium_dsc_raw": {
+        "Context": {
+            "type": "string",
+            "is_array": false
+        },
+        "Activity": {
+            "type": "string",
+            "is_array": false
+        },
+        "Action_taken": {
+            "type": "string",
+            "is_array": false
+        },
+        "Performed_by": {
+            "type": "string",
+            "is_array": false
+        },
+        "Audit_trail_ID": {
+            "type": "string",
+            "is_array": false
+        },
+        "Context_description": {
+            "type": "string",
+            "is_array": false
+        },
+        "DB_user": {
+            "type": "string",
+            "is_array": false
+        },
+        "Client_IP": {
+            "type": "string",
+            "is_array": false
+        },
+        "Server_IP": {
+            "type": "string",
+            "is_array": false
+        },
+        "Database_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "Source_application": {
+            "type": "string",
+            "is_array": false
+        }
     }
 }

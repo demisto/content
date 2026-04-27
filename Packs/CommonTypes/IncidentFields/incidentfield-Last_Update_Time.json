@@ -41,7 +41,15 @@
         "Cyberint Incident",
         "CrowdStrike Falcon Mobile Detection",
         "CrowdStrike Falcon On-Demand Scans Detection",
-        "CrowdStrike Falcon OFP Detection"
+        "CrowdStrike Falcon OFP Detection",
+        "CrowdStrike Falcon Third Party Detection",
+        "CrowdStrike Falcon NGSIEM Detection",
+        "CrowdStrike Falcon Intelligence Recon notification",
+        "CrowdStrike Falcon NGSIEM Incident",
+        "CrowdStrike Falcon NGSIEM Automated Lead",
+        "CrowdStrike Falcon NGSIEM Case",
+        "GravityZone EDR",
+        "GravityZone XDR"
     ],
     "breachScript": "",
     "caseInsensitive": true,

@@ -2,14 +2,14 @@ comment: 'This is a pre-processing script that is used to create the attachments
 
   It should be configured as a pre-processing rule, and the logic for finding the right incident should be added to the code manually.
 
-  The automation collects the paths and names of the attachments of the incoming incident and passes it to the "CreateFileFromPathObject" automation that is being executed on the existing incident'
+  The automation collects the paths and names of the attachments of the incoming incident and passes it to the "CreateFileFromPathObject" automation that is being executed on the existing incident.'
 commonfields:
   id: GetFilePathPreProcessing
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: GetFilePathPreProcessing
 runas: DBotWeakRole

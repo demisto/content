@@ -8,13 +8,6 @@ DEFAULT_TIMEOUT = 600
 DEFAULT_INTERVAL = 30
 
 
-def shorten_text(text: str) -> str:
-    parts = text.split()
-    if len(parts) == 2:
-        return f"{parts[0]}{parts[1][0].lower()}"
-    return text  # Return original if not exactly two words
-
-
 def check_status(args: dict) -> PollResult:
     """
     This function executes the xdr-xql-get-query-results command and PollResult object accordingly.
@@ -58,16 +51,22 @@ def execute_query(args: dict) -> dict:
     indicator: str = args["indicator"]
     query_name: str = args["query_name"]
 
-    time_frame_for_query: str = shorten_text(time_frame)
-    query: str = f'config timeframe = {time_frame_for_query} | search "{indicator}" dataset = {data_set}'
+    query: str = f'search "{indicator}" dataset = {data_set}'
 
-    entry_result = demisto.executeCommand(command="xdr-xql-generic-query", args={"query": query, "query_name": query_name})
+    entry_result = demisto.executeCommand(
+        command="xdr-xql-generic-query",
+        args={"query": query, "query_name": query_name, "time_frame": time_frame},
+    )
     demisto.debug(f"This is the entry result from executing xdr-xql-generic-query command:\n{entry_result} ")
+
+    if is_error(entry_result):
+        raise DemistoException(f"Failed to execute query: {get_error(entry_result)}")
+
     polling_args = entry_result[0]["Metadata"]["pollingArgs"]
     args_for_next_run = {
         "query_id": polling_args["query_id"],
         "query_name": polling_args["query_name"],
-        "time_frame": time_frame_for_query,
+        "time_frame": time_frame,
         "data_set": data_set,
         "indicator": indicator,
     }

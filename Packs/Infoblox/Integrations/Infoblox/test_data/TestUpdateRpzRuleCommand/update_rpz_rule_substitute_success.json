@@ -1,0 +1,13 @@
+{
+    "result": {
+        "_ref": "record:rpz:cname/1234:redirect.test.com/default",
+        "name": "redirect.test.com",
+        "rp_zone": "test.com",
+        "comment": "Redirect to safe domain",
+        "canonical": "safe.example.com",
+        "disable": false,
+        "view": "default",
+        "zone": "test.com",
+        "type": "record:rpz:cname"
+    }
+}

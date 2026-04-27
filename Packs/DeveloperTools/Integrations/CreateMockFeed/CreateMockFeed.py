@@ -62,7 +62,7 @@ def generate_dbotscore(indicator, indicator_type):
         score = 2
     else:
         score = 3
-    return {"Indicator": indicator, "Type": indicator_type, "Vendor": "Bar Saar", "Score": score}
+    return {"Indicator": indicator, "Type": indicator_type, "Vendor": "Bar Testsar", "Score": score}
 
 
 def main():

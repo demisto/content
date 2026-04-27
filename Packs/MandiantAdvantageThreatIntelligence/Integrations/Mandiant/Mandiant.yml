@@ -2,10 +2,11 @@ name: Mandiant
 display: Mandiant Enrich
 description: Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
+provider: Google
 commonfields:
   id: Mandiant
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -868,7 +869,7 @@ script:
       description: A list of alias objects associated with the Campaign.
       type: list
     description: Retrieve information about a Campaign from Mandiant.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
   feed: false
   runonce: false
   script: '-'

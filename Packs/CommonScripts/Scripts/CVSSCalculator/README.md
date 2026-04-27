@@ -1,4 +1,4 @@
-This script calculates the CVSS Base Score, Temporal Score, and Environmental Score using either the CVSS 3.0 or CVSS 3.1 calculator according to https://www.first.org/cvss/ calculation documentation.
+This script calculates the CVSS Base Score, Temporal Score, and Environmental Score using either the CVSS 3.0 or CVSS 3.1 calculator according to <https://www.first.org/cvss/> calculation documentation.
 
 ## Script Data
 

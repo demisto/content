@@ -1,11 +1,11 @@
 commonfields:
   id: RansomwareDataEncryptionStatus
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: RansomwareDataEncryptionStatus
 runas: DBotWeakRole
-comment: A Widget script - checks for the data encryption status in post ransomware investigation  playbook and layout.
+comment: A Widget script - checks for the data encryption status in post ransomware investigation playbook and layout.
 script: ''
 scripttarget: 0
 subtype: python3

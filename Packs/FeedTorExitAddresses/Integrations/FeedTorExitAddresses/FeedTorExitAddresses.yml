@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 commonfields:
   id: Tor Exit Addresses Feed
   version: -1
@@ -91,7 +92,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: tor-get-indicators
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   script: '-'

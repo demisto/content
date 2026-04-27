@@ -1,0 +1,208 @@
+id: Asimily Asset Info Enrich
+name: Asimily Asset Info Enrich
+outputs: []
+starttaskid: "0"
+version: -1
+tasks:
+  "0":
+    id: "0"
+    taskid: 57bb609f-322e-4377-8ad0-1504bca2b7bc
+    type: start
+    task:
+      id: 57bb609f-322e-4377-8ad0-1504bca2b7bc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": -394
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 951479cb-f27a-401f-99e0-f95564616dcb
+    type: condition
+    task:
+      id: 951479cb-f27a-401f-99e0-f95564616dcb
+      version: -1
+      name: Check if MacAddr Not Empty
+      description: Fetch Asimily Asset information
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      mac_addr:
+        simple: ${incident.asimilydevicemacaddress}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.asimilydevicemacaddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": 64
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7c9a9d64-1ca2-42b6-b193-dd8fa8d48194
+    type: title
+    task:
+      id: 7c9a9d64-1ca2-42b6-b193-dd8fa8d48194
+      version: -1
+      name: Done
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": 342
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fdd10856-dd84-49a9-9b77-ebfe76603a55
+    type: regular
+    task:
+      id: fdd10856-dd84-49a9-9b77-ebfe76603a55
+      version: -1
+      name: Query asimily-get-asset-details
+      description: Fetch Asimily Asset information.
+      script: Asimily Insight|||asimily-get-asset-details
+      type: regular
+      iscommand: true
+      brand: Asimily Insight
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      mac_addr:
+        simple: ${incident.asimilydevicemacaddress}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 343,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3ebdff85-b7e2-4e7f-ace4-0a7e9f951c90
+    type: condition
+    task:
+      id: 3ebdff85-b7e2-4e7f-ace4-0a7e9f951c90
+      version: -1
+      name: Is "Asimily Insight" integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Asimily Insight
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.7,
+      "4_2_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 796,
+        "width": 661,
+        "x": 62,
+        "y": -394
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Default playbook for Asimily Anomaly and CVE incidents. It enriches incidents by running asimily-get-asset-details to fetch related asset information.

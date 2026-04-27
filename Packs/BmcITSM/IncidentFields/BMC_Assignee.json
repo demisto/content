@@ -23,11 +23,11 @@
     "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "fullname",
+            "key": "FullName",
             "displayName": "Full Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -40,7 +40,7 @@
             "selectValues": null
         },
         {
-            "key": "group",
+            "key": "Group",
             "displayName": "Group",
             "type": "shortText",
             "orgType": "shortText",
@@ -53,7 +53,7 @@
             "selectValues": null
         },
         {
-            "key": "supportorganization",
+            "key": "SupportOrganization",
             "displayName": "Support Organization",
             "type": "shortText",
             "orgType": "shortText",
@@ -66,7 +66,7 @@
             "selectValues": null
         },
         {
-            "key": "supportcompany",
+            "key": "SupportCompany",
             "displayName": "Support Company",
             "type": "shortText",
             "orgType": "shortText",
@@ -84,5 +84,12 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "Aliases": [
+        {
+            "cliName": "bmcitsmassignee",
+            "type": "grid",
+            "name": "Bmc Assignee"
+        }
+    ]
 }

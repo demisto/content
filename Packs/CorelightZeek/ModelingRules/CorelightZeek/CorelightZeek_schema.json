@@ -179,7 +179,7 @@
         "version": {
             "type": "string",
             "is_array": false
-        },        
+        },
         "cipher": {
             "type": "string",
             "is_array": false
@@ -197,6 +197,10 @@
             "is_array": false
         },
         "id_resp_p": {
+            "type": "string",
+            "is_array": false
+        },
+        "ts": {
             "type": "string",
             "is_array": false
         }

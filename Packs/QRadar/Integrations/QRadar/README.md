@@ -184,16 +184,16 @@
 <pre>{
     "QRadar": {
         "Offense": {
-            "Followup": false, 
-            "Description": "Multiple Login Failures for the Same User\n preceded by shachar_test\n containing Failed Login Attempt\n", 
-            "EventCount": 3, 
-            "Magnitude": 3, 
-            "OffenseType": "Username", 
-            "StartTime": "2018-10-16T13:07:36.245000Z", 
+            "Followup": false,
+            "Description": "Multiple Login Failures for the Same User\n preceded by shachar_test\n containing Failed Login Attempt\n",
+            "EventCount": 3,
+            "Magnitude": 3,
+            "OffenseType": "Username",
+            "StartTime": "2018-10-16T13:07:36.245000Z",
             "SourceAddress": [
                 "94.188.164.68"
-            ], 
-            "ID": 78, 
+            ],
+            "ID": 78,
             "LastUpdatedTime": "2018-10-16T13:07:40.675000Z"
         }
     }
@@ -379,30 +379,30 @@
 <pre>{
     "QRadar": {
         "Offense": {
-            "Followup": false, 
-            "OffenseSource": "admin", 
-            "Description": "Multiple Login Failures for the Same User\n preceded by shachar_test\n containing Failed Login Attempt\n", 
-            "EventCount": 3, 
-            "Credibility": 3, 
-            "Status": "OPEN", 
+            "Followup": false,
+            "OffenseSource": "admin",
+            "Description": "Multiple Login Failures for the Same User\n preceded by shachar_test\n containing Failed Login Attempt\n",
+            "EventCount": 3,
+            "Credibility": 3,
+            "Status": "OPEN",
             "DestinationHostname": [
                 "Net-10-172-192.Net_172_16_0_0"
-            ], 
-            "StartTime": "2018-10-16T13:07:36.245000Z", 
-            "Protected": false, 
-            "Magnitude": 3, 
-            "FlowCount": 0, 
-            "OffenseType": "Username", 
+            ],
+            "StartTime": "2018-10-16T13:07:36.245000Z",
+            "Protected": false,
+            "Magnitude": 3,
+            "FlowCount": 0,
+            "OffenseType": "Username",
             "SourceAddress": [
                 "94.188.164.68"
-            ], 
-            "Relevance": 3, 
-            "Severity": 7, 
-            "ID": 78, 
+            ],
+            "Relevance": 3,
+            "Severity": 7,
+            "ID": 78,
             "Categories": [
-                "User Login Failure", 
+                "User Login Failure",
                 "SIM User Authentication"
-            ], 
+            ],
             "LastUpdatedTime": "2018-10-16T13:07:40.675000Z"
         }
     }
@@ -467,7 +467,7 @@
 <pre>{
     "QRadar": {
         "Search": {
-            "Status": "EXECUTE", 
+            "Status": "EXECUTE",
             "ID": "14b1d702-edba-43e7-b01c-36f8da1ed016"
         }
     }
@@ -532,7 +532,7 @@
 <pre>{
     "QRadar": {
         "Search": {
-            "Status": "COMPLETED", 
+            "Status": "COMPLETED",
             "ID": "14b1d702-edba-43e7-b01c-36f8da1ed016"
         }
     }
@@ -807,30 +807,30 @@
 <pre>{
     "QRadar": {
         "Offense": {
-            "Followup": false, 
-            "OffenseSource": "admin", 
-            "Description": "Multiple Login Failures for the Same User\n preceded by shachar_test\n containing Failed Login Attempt\n", 
-            "EventCount": 3, 
-            "Credibility": 3, 
-            "Status": "OPEN", 
+            "Followup": false,
+            "OffenseSource": "admin",
+            "Description": "Multiple Login Failures for the Same User\n preceded by shachar_test\n containing Failed Login Attempt\n",
+            "EventCount": 3,
+            "Credibility": 3,
+            "Status": "OPEN",
             "DestinationHostname": [
                 "Net-10-172-192.Net_172_16_0_0"
-            ], 
-            "StartTime": "2018-10-16T13:07:36.245000Z", 
-            "Protected": false, 
-            "Magnitude": 3, 
-            "FlowCount": 0, 
-            "OffenseType": "Username", 
+            ],
+            "StartTime": "2018-10-16T13:07:36.245000Z",
+            "Protected": false,
+            "Magnitude": 3,
+            "FlowCount": 0,
+            "OffenseType": "Username",
             "SourceAddress": [
                 "94.188.164.68"
-            ], 
-            "Relevance": 3, 
-            "Severity": 7, 
-            "ID": 78, 
+            ],
+            "Relevance": 3,
+            "Severity": 7,
+            "ID": 78,
             "Categories": [
-                "User Login Failure", 
+                "User Login Failure",
                 "SIM User Authentication"
-            ], 
+            ],
             "LastUpdatedTime": "2018-10-16T13:07:40.675000Z"
         }
     }
@@ -941,24 +941,24 @@
     "QRadar": {
         "Asset": {
             "AggregatedCVSSScore": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "h"
-            }, 
-            "ID": 1001, 
+            },
+            "ID": 1001,
             "Weight": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "10"
-            }, 
+            },
             "Name": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "Test"
             }
         }
-    }, 
+    },
     "Endpoint": {
-        "OS": "80345", 
+        "OS": "80345",
         "IPAddress": [
-            "10.0.0.1", 
+            "10.0.0.1",
             "10.0.0.2"
         ]
     }
@@ -1129,55 +1129,55 @@
     "QRadar": {
         "Asset": {
             "Name": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "Test"
-            }, 
+            },
             "Weight": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "10"
-            }, 
+            },
             "SwitchPort": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "1"
-            }, 
+            },
             "SwitchID": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "1"
-            }, 
+            },
             "AggregatedCVSSScore": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "h"
-            }, 
+            },
             "Location": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "Israel"
-            }, 
+            },
             "CompliancePlan": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "Correction Plan"
-            }, 
-            "ID": 1001, 
+            },
+            "ID": 1001,
             "ComplianceNotes": {
-                "LastUser": "USER:admin", 
+                "LastUser": "USER:admin",
                 "Value": "some notes"
             }
         }
-    }, 
+    },
     "Endpoint": [
         {
-            "OS": "80345", 
+            "OS": "80345",
             "IPAddress": [
-                "10.0.0.1", 
+                "10.0.0.1",
                 "10.0.0.2"
             ]
-        }, 
+        },
         {
             "MACAddress": [
                 "Unknown NIC"
-            ], 
-            "OS": "80345", 
+            ],
+            "OS": "80345",
             "IPAddress": [
-                "10.0.0.1", 
+                "10.0.0.1",
                 "10.0.0.2"
             ]
         }
@@ -1259,27 +1259,27 @@
         "Offense": {
             "ClosingReasons": [
                 {
-                    "IsReserved": false, 
-                    "ID": 2, 
-                    "IsDeleted": false, 
+                    "IsReserved": false,
+                    "ID": 2,
+                    "IsDeleted": false,
                     "Name": "False-Positive, Tuned"
-                }, 
+                },
                 {
-                    "IsReserved": false, 
-                    "ID": 1, 
-                    "IsDeleted": false, 
+                    "IsReserved": false,
+                    "ID": 1,
+                    "IsDeleted": false,
                     "Name": "Non-Issue"
-                }, 
+                },
                 {
-                    "IsReserved": false, 
-                    "ID": 3, 
-                    "IsDeleted": false, 
+                    "IsReserved": false,
+                    "ID": 3,
+                    "IsDeleted": false,
                     "Name": "Policy Violation"
-                }, 
+                },
                 {
-                    "IsReserved": false, 
-                    "ID": 54, 
-                    "IsDeleted": false, 
+                    "IsReserved": false,
+                    "ID": 54,
+                    "IsDeleted": false,
                     "Name": "Duplicate"
                 }
             ]
@@ -1366,9 +1366,9 @@
 <pre>{
     "QRadar": {
         "Note": {
-            "Text": "Demisto has the best documentation!", 
-            "CreateTime": "2018-10-29T13:26:57.579000Z", 
-            "CreatedBy": "API_user: admin", 
+            "Text": "Demisto has the best documentation!",
+            "CreateTime": "2018-10-29T13:26:57.579000Z",
+            "CreatedBy": "API_user: admin",
             "ID": 190
         }
     }
@@ -1453,9 +1453,9 @@
 <pre>{
     "QRadar": {
         "Note": {
-            "Text": "Demisto has the best documentation!", 
-            "CreateTime": "2018-10-29T13:26:57.579000Z", 
-            "CreatedBy": "API_user: admin", 
+            "Text": "Demisto has the best documentation!",
+            "CreateTime": "2018-10-29T13:26:57.579000Z",
+            "CreatedBy": "API_user: admin",
             "ID": 190
         }
     }
@@ -1550,18 +1550,18 @@
 <pre>{
     "QRadar": {
         "Reference": {
-            "Name": "Date", 
-            "CreationTime": "2018-11-27T11:34:23.110000Z", 
-            "TimeoutType": "UNKNOWN", 
-            "ElementType": "DATE", 
+            "Name": "Date",
+            "CreationTime": "2018-11-27T11:34:23.110000Z",
+            "TimeoutType": "UNKNOWN",
+            "ElementType": "DATE",
             "Data": [
                 {
-                    "Source": "reference data api", 
-                    "Value": "2018-11-27T11:34:23.000000Z", 
-                    "LastSeen": "2018-11-27T11:34:59.552000Z", 
+                    "Source": "reference data api",
+                    "Value": "2018-11-27T11:34:23.000000Z",
+                    "LastSeen": "2018-11-27T11:34:59.552000Z",
                     "FirstSeen": "2018-11-27T11:34:59.552000Z"
                 }
-            ], 
+            ],
             "NumberOfElements": 1
         }
     }
@@ -1651,10 +1651,10 @@
 <pre>{
     "QRadar": {
         "Reference": {
-            "TimeoutType": "UNKNOWN", 
-            "ElementType": "DATE", 
-            "CreationTime": "2018-11-27T11:34:23.000000Z", 
-            "Name": "Date", 
+            "TimeoutType": "UNKNOWN",
+            "ElementType": "DATE",
+            "CreationTime": "2018-11-27T11:34:23.000000Z",
+            "Name": "Date",
             "NumberOfElements": 1
         }
     }
@@ -1776,10 +1776,10 @@
 <pre>{
     "QRadar": {
         "Reference": {
-            "TimeoutType": "UNKNOWN", 
-            "ElementType": "DATE", 
-            "CreationTime": "2018-11-27T11:34:23.110000Z", 
-            "Name": "Date", 
+            "TimeoutType": "UNKNOWN",
+            "ElementType": "DATE",
+            "CreationTime": "2018-11-27T11:34:23.110000Z",
+            "Name": "Date",
             "NumberOfElements": 1
         }
     }
@@ -1869,10 +1869,10 @@
 <pre>{
     "QRadar": {
         "Reference": {
-            "TimeoutType": "UNKNOWN", 
-            "ElementType": "ALN", 
-            "CreationTime": "2018-11-21T11:42:25.492000Z", 
-            "Name": "Documentation Reference", 
+            "TimeoutType": "UNKNOWN",
+            "ElementType": "ALN",
+            "CreationTime": "2018-11-21T11:42:25.492000Z",
+            "Name": "Documentation Reference",
             "NumberOfElements": 1
         }
     }
@@ -1960,10 +1960,10 @@
 <pre>{
     "QRadar": {
         "Reference": {
-            "TimeoutType": "UNKNOWN", 
-            "ElementType": "DATE", 
-            "CreationTime": "2018-11-27T11:34:23.110000Z", 
-            "Name": "Date", 
+            "TimeoutType": "UNKNOWN",
+            "ElementType": "DATE",
+            "CreationTime": "2018-11-27T11:34:23.110000Z",
+            "Name": "Date",
             "NumberOfElements": 0
         }
     }

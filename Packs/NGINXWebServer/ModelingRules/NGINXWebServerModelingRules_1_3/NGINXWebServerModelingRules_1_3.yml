@@ -4,3 +4,5 @@ name: NGINX Web Server
 rules: ''
 schema: ''
 tags: NGINX Web Server
+supportedModules:
+- xsiam

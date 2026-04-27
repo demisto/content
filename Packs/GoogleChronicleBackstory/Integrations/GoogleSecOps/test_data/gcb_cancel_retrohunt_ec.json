@@ -1,0 +1,7 @@
+{
+  "GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)": {
+    "id": "dummy_rule_or_version_id",
+    "retrohuntId": "dummy_retrohunt_id",
+    "cancelled": true
+  }
+}

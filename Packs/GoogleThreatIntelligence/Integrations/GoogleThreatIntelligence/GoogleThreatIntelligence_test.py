@@ -1,5 +1,5 @@
 import json
-
+import os
 import demistomock as demisto
 import pytest
 from CommonServerPython import DemistoException, argToList
@@ -687,7 +687,7 @@ def test_private_file_command(mocker, requests_mock):
     - A valid Testing private file
 
     When:
-    - Running the !vt-privatescanning-file command
+    - Running the !gti-privatescanning-file command
 
     Then:
     - Validate the command results are valid and contains metric data
@@ -724,7 +724,7 @@ def test_not_found_private_file_command(mocker, requests_mock):
     - A valid Testing private file
 
     When:
-    - Running the !vt-privatescanning-file command
+    - Running the !gti-privatescanning-file command
 
     Then:
     - Display "Not found" message to user
@@ -749,6 +749,78 @@ def test_not_found_private_file_command(mocker, requests_mock):
 
     assert results[0].execution_metrics is None
     assert results[0].readable_output == f'File "{sha256}" was not found in GoogleThreatIntelligence.'
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing file
+
+    When:
+    - Running the !file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from GoogleThreatIntelligence import Client, file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    client = Client(params=params)
+
+    results = file_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=None,
+    )
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_private_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing private file
+
+    When:
+    - Running the !gti-privatescanning-file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from GoogleThreatIntelligence import Client, private_file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    results = private_file_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -829,7 +901,7 @@ def test_not_found_file_sandbox_report_command(mocker, requests_mock):
     - A valid Testing hash
 
     When:
-    - Running the !vt-file-sandbox-report command
+    - Running the !gti-file-sandbox-report command
 
     Then:
     - Display "Not found" message to user
@@ -1465,8 +1537,14 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 1",
                     "description": "Description 1",
                     "last_modification_date": 1718719985,
-                    "targeted_regions": ["UK", "FR"],
-                    "targeted_industries": ["Industry 1", "Industry 2"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "UK"},
+                        {"country_iso2": "FR"},
+                    ],
+                    "targeted_industries_tree": [
+                        {"industry_group": "Industry 1"},
+                        {"industry_group": "Industry 2"},
+                    ],
                 },
             },
             {
@@ -1475,7 +1553,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 2",
                     "description": "Description 2",
                     "last_modification_date": 1718720000,
-                    "targeted_regions": ["FR"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "FR"},
+                    ],
                     "targeted_industries": [],
                 },
             },
@@ -1508,8 +1588,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                 filter_query += "%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29"
             else:
                 filter_query += f"collection_type%3A{collection_type}"
+            args = f"filter={filter_query}&exclude_attributes=aggregations"
             requests_mock.get(
-                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections?filter={filter_query}",
+                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/associations?{args}",
                 json=data_json,
             )
 
@@ -1521,3 +1602,111 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                 "id": resource,
                 "collections": data_json["data"],
             }
+
+
+def test_cve_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid CVE identifier (CVE-2022-30190)
+
+    When:
+    - Running the !cve command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    import CommonServerPython
+    from GoogleThreatIntelligence import Client, ScoreCalculator, cve_command
+
+    # Setup Mocks
+    cve_id = "CVE-2022-30190"
+    mocker.patch.object(demisto, "args", return_value={"cve": cve_id})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    client = Client(params=params)
+
+    # Mock CVE API response with comprehensive data
+    mock_response = util_load_json("test_data/cve.json")
+    mock_output_response = util_load_json("test_data/cve_output_response.json")
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cve_readable_output.md")) as f:
+        cve_hr = f.read()
+
+    requests_mock.get(f"https://www.virustotal.com/api/v3/collections/vulnerability--{cve_id.lower()}", json=mock_response)
+
+    # Run command and collect result array
+    results = cve_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
+
+    assert results[0].outputs == mock_output_response
+    assert results[1].execution_metrics == [{"APICallsCount": 1, "Type": "Successful"}]
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == cve_hr
+    assert results[0].raw_response == mock_response
+    assert results[0].indicator.cvss == "7.8"
+    assert results[0].outputs_prefix == "GoogleThreatIntelligence.CVE"
+    assert isinstance(results[0].outputs, dict)
+    assert results[0].indicator.id == cve_id
+    assert results[0].indicator.dbot_score.indicator == cve_id
+    assert results[0].indicator.dbot_score.indicator_type == "cve"
+    assert results[0].indicator.dbot_score.integration_name == "GoogleThreatIntelligence"
+    assert results[0].indicator.dbot_score.score == 2
+    assert results[0].indicator.dbot_score.reliability == "A - Completely reliable"
+    assert "google has provided the following description" in results[0].indicator.description
+    assert results[0].indicator.published == "2022-05-27T00:00:00.000Z"
+
+    # Validate CVE relationships (CVE to File MD5 hashes from sources)
+    assert len(results[0].indicator.relationships) == 2
+
+    # First relationship: CVE -> File (CISA MD5)
+    assert results[0].indicator.relationships[0]._name == "related-to"
+    assert results[0].indicator.relationships[0]._entity_a == cve_id
+    assert results[0].indicator.relationships[0]._entity_a_type == "CVE"
+    assert results[0].indicator.relationships[0]._entity_b == "test_md5_001"
+    assert results[0].indicator.relationships[0]._entity_b_type == "File"
+    assert results[0].indicator.relationships[0]._brand == "GoogleThreatIntelligence"
+
+    # Second relationship: CVE -> File (Mitre MD5)
+    assert results[0].indicator.relationships[1]._name == "related-to"
+    assert results[0].indicator.relationships[1]._entity_a == cve_id
+    assert results[0].indicator.relationships[1]._entity_a_type == "CVE"
+    assert results[0].indicator.relationships[1]._entity_b == "test_md5_002"
+    assert results[0].indicator.relationships[1]._entity_b_type == "File"
+    assert results[0].indicator.relationships[1]._brand == "GoogleThreatIntelligence"
+
+
+def test_invalid_cve_command(mocker):
+    """
+    Given:
+    - An invalid CVE format (INVALID-CVE-FORMAT)
+
+    When:
+    - Running the !cve command
+
+    Then:
+    - Display warning message and return empty results if all CVEs are invalid
+    """
+    import CommonServerPython
+    from GoogleThreatIntelligence import Client, ScoreCalculator, cve_command
+
+    # Setup Mocks
+    invalid_cve = "INVALID-CVE-FORMAT"
+    mocker.patch.object(demisto, "args", return_value={"cve": invalid_cve})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Mock return_warning to capture the warning call
+    mock_return_warning = mocker.patch("GoogleThreatIntelligence.return_warning")
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    client = Client(params=params)
+
+    # Execute command - no longer expecting exception
+    cve_command(client=client, score_calculator=mocked_score_calculator, args=demisto.args())
+
+    # Verify warning was called with correct message and exit=True (since all CVEs are invalid)
+    mock_return_warning.assert_called_once_with("The following CVEs were found invalid: INVALID-CVE-FORMAT", exit=True)

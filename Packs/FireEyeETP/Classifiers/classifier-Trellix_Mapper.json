@@ -1,0 +1,49 @@
+{
+    "description": "Trellix Mapper for alerts",
+    "feed": false,
+    "id": "Trellix Mapper",
+    "mapping": {
+        "Trellix Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+                "Domain Name": {
+					"simple": "domain"
+				},
+                "App message": {
+					"simple": "msg"
+				},
+                "Traffic Direction": {
+					"simple": "traffic_type"
+				},
+                "Verdict": {
+					"simple": "verdict"
+				},
+                "External Start Time": {
+					"simple": "alert_date"
+				},
+                "Vendor Product": {
+					"simple": "product"
+				},
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "Alert Name": {
+                    "simple": "alert.name"
+                },
+                "UUID": {
+                    "simple": "alert.uuid"
+                },
+                "Alert Attack Time": {
+					"simple": "alert.attack-time"
+				},
+				"severity": {
+					"simple": "severity"
+				}
+            }
+        }
+    },
+    "name": "Trellix Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

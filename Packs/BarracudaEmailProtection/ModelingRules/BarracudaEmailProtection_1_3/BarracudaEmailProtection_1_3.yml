@@ -4,3 +4,5 @@ name: Barracuda Email Protection
 rules: ''
 schema: ''
 tags: Barracuda, Email
+supportedModules:
+- xsiam

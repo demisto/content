@@ -147,7 +147,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -216,29 +216,40 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "rubrikpolarislastactivitystatus",
-                                "height": 22,
+                                "height": 53,
                                 "id": "55d3ced0-f9a1-11ef-98dc-ef869f4670b6",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "endCol": 4,
+                                "fieldId": "incidentlink",
+                                "height": 53,
+                                "id": "f84a9ec0-7f4b-11f0-9017-992963622ec4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2,
                                 "dropEffect": "move",
+                                "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05"
+                            },
+                            {
                                 "endCol": 4,
                                 "fieldId": "rubrikcdmclusterid",
                                 "height": 53,
                                 "id": "62032d90-a44b-11eb-82ca-4d054531f5f7",
-                                "index": 0,
-                                "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+                                "index": 1,
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 2,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05"
                             },
                             {
                                 "endCol": 4,
                                 "fieldId": "rubrikcdmclustername",
                                 "height": 53,
                                 "id": "f12222d0-a4ee-11eb-9bb3-6df13f2ef3ea",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -247,7 +258,7 @@
                                 "fieldId": "rubrikcdmclusterlocation",
                                 "height": 53,
                                 "id": "6658a500-a44b-11eb-82ca-4d054531f5f7",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -256,7 +267,7 @@
                                 "fieldId": "rubrikpolarisclusterlocationpath",
                                 "height": 53,
                                 "id": "07b02120-37be-11ec-8878-41b30c8936ff",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -265,7 +276,7 @@
                                 "fieldId": "rubrikpolarisactivitytype",
                                 "height": 53,
                                 "id": "412c7c20-f9a1-11ef-98dc-ef869f4670b6",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
@@ -371,7 +382,7 @@
                         "type": "workplan",
                         "w": 2,
                         "x": 1,
-                        "y": 5
+                        "y": 7
                     },
                     {
                         "h": 2,
@@ -385,10 +396,9 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 11
+                        "y": 12
                     },
                     {
-                        "description": "",
                         "h": 1,
                         "i": "caseinfoid-f72ff2b0-3f46-11ef-b346-cdbc4d18c742",
                         "items": [],
@@ -396,13 +406,14 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Sensitive Files with Open Access Permissions",
-                        "query": "RubrikSonarOpenAccessFileHits",
-                        "queryType": "script",
                         "static": false,
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 3
+                        "y": 3,
+                        "description": "",
+                        "query": "RubrikSonarOpenAccessFileHits",
+                        "queryType": "script"
                     },
                     {
                         "description": "",
@@ -435,7 +446,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 11
+                        "y": 12
                     },
                     {
                         "h": 2,
@@ -449,10 +460,10 @@
                         "type": "notes",
                         "w": 1,
                         "x": 0,
-                        "y": 7
+                        "y": 8
                     },
                     {
-                        "h": 3,
+                        "h": 2,
                         "i": "caseinfoid-b692ce70-c809-11ef-b02b-91540fae8b93",
                         "items": [],
                         "maxW": 3,
@@ -473,7 +484,7 @@
                         "type": "invTimeline",
                         "w": 2,
                         "x": 1,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -516,7 +527,50 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 9
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-90593b6f-08f1-44af-a8de-2b5fc17d0f2e",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "rubriksuspiciousfilelist",
+                                "height": 106,
+                                "id": "ab09e4c8-fab2-4765-baf9-d74fecf84373",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Suspicious File List",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "i": "caseinfoid-4c774e30-a40e-11f0-add7-f941fa334f23",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Total Number of Suspicious Files",
+                        "query": "RubrikSuspiciousFileCount",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
                     }
                 ],
                 "type": "custom"

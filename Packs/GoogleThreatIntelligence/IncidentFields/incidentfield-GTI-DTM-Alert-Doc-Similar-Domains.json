@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtidtmalertdocsimilardomains",
+    "version": -1,
+    "modified": "2025-09-02T12:02:17.579896834+05:30",
+    "name": "GTI DTM Alert Doc Similar Domains",
+    "ownerOnly": false,
+    "description": "Similar Domains of the document associated with the alert.",
+    "cliName": "gtidtmalertdocsimilardomains",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Google Threat Intelligence DTM Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -6,7 +6,7 @@ Get the Server URL.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In

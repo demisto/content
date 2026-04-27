@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -7,6 +7,7 @@ commonfields:
 name: Hoxhunt v2
 display: Hoxhunt v2
 category: Email
+provider: Hoxhunt
 description: "Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents."
 configuration:
 - display: Server URL
@@ -35,6 +36,7 @@ configuration:
   - Incoming And Outgoing
   hidden:
   - marketplacev2
+  - platform
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -221,7 +223,7 @@ script:
     name: get-mapping-fields
     arguments: []
     outputs: []
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   subtype: python3

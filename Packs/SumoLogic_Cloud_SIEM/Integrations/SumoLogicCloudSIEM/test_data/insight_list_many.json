@@ -1,0 +1,189 @@
+{
+  "data": {
+    "objects": [
+      {
+        "id": "INSIGHT-200",
+        "readableId": "INSIGHT-200",
+        "name": "Insight 0",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 0 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-201",
+        "readableId": "INSIGHT-201",
+        "name": "Insight 1",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 1 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-202",
+        "readableId": "INSIGHT-202",
+        "name": "Insight 2",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 2 for bulk test.",
+        "severity": "HIGH",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-203",
+        "readableId": "INSIGHT-203",
+        "name": "Insight 3",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 3 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-204",
+        "readableId": "INSIGHT-204",
+        "name": "Insight 4",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 4 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-205",
+        "readableId": "INSIGHT-205",
+        "name": "Insight 5",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 5 for bulk test.",
+        "severity": "HIGH",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-206",
+        "readableId": "INSIGHT-206",
+        "name": "Insight 6",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 6 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-207",
+        "readableId": "INSIGHT-207",
+        "name": "Insight 7",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 7 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-208",
+        "readableId": "INSIGHT-208",
+        "name": "Insight 8",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 8 for bulk test.",
+        "severity": "HIGH",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-209",
+        "readableId": "INSIGHT-209",
+        "name": "Insight 9",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 9 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-210",
+        "readableId": "INSIGHT-210",
+        "name": "Insight 10",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 10 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-211",
+        "readableId": "INSIGHT-211",
+        "name": "Insight 11",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 11 for bulk test.",
+        "severity": "HIGH",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-212",
+        "readableId": "INSIGHT-212",
+        "name": "Insight 12",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 12 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-213",
+        "readableId": "INSIGHT-213",
+        "name": "Insight 13",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 13 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-214",
+        "readableId": "INSIGHT-214",
+        "name": "Insight 14",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 14 for bulk test.",
+        "severity": "HIGH",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-215",
+        "readableId": "INSIGHT-215",
+        "name": "Insight 15",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 15 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-216",
+        "readableId": "INSIGHT-216",
+        "name": "Insight 16",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 16 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-217",
+        "readableId": "INSIGHT-217",
+        "name": "Insight 17",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 17 for bulk test.",
+        "severity": "HIGH",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-218",
+        "readableId": "INSIGHT-218",
+        "name": "Insight 18",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 18 for bulk test.",
+        "severity": "LOW",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-219",
+        "readableId": "INSIGHT-219",
+        "name": "Insight 19",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "Insight 19 for bulk test.",
+        "severity": "MEDIUM",
+        "signals": []
+      }
+    ],
+    "total": 20,
+    "hasNextPage": false
+  },
+  "errors": []
+}

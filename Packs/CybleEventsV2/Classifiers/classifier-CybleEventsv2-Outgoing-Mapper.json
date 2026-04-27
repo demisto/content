@@ -14,6 +14,9 @@
                 },
                 "status": {
                     "simple": "cybleeventsv2status"
+                },
+                "service": {
+                    "simple": "eventtype"
                 }
             }
         }

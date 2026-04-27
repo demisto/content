@@ -4845,6 +4845,19 @@ arg_error = [
         {"name": "dummy_name", "description": "dummy", "lines": "l1,l2", "content_type": "type"},
         MESSAGES["VALIDATE_SINGLE_SELECT"].format("content_type", ", ".join(VALID_CONTENT_TYPE)),
     ),
+    ({"name": "dummy_name", "description": "dummy", "entry_id": ""}, "Missing argument entry_id."),
+    (
+        {"name": "dummy_name", "description": "dummy", "lines": "L1,L2", "entry_id": "12"},
+        "Both 'lines' and 'entry_id' cannot be provided together.",
+    ),
+    (
+        {
+            "name": "dummy_name",
+            "description": "dummy",
+        },
+        "Either 'lines' or 'entry_id' must be provided.",
+    ),
+    ({"name": "dummy_name", "entry_id": "123"}, "Missing argument description."),
 ]
 
 
@@ -4858,11 +4871,53 @@ def test_gcb_create_reference_list_command_when_empty_args_provided(client, args
     assert str(e.value) == error_msg
 
 
-def test_gcb_create_reference_list_command_when_valid_args_provided(client):
+def test_gcb_create_reference_list_command_when_file_does_not_exists(client, mocker):
+    """Test gcb_create_reference_list command when file does not exist."""
+    from GoogleChronicleBackstory import gcb_create_reference_list_command
+
+    args = {"name": "dummy", "description": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' does not exist."
+    mocker.patch.object(demisto, "getFilePath", side_effect=ValueError("Invalid entry_id."))
+    with pytest.raises(ValueError) as e:
+        gcb_create_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_create_reference_list_command_when_file_is_empty(client, mocker):
+    """Test gcb_create_reference_list command when file is empty."""
+    from GoogleChronicleBackstory import gcb_create_reference_list_command
+
+    args = {"name": "dummy", "description": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' is empty."
+    entry_mock = {
+        "id": "123",
+        "path": "test_data/gcb_reference_list_command_empty_text.txt",
+        "name": "gcb_reference_list_command_empty_text.txt",
+    }
+    mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+    with pytest.raises(ValueError) as e:
+        gcb_create_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy", "lines": "L1,L2,L3,L4", "description": "dummy_description"}),
+        ({"name": "dummy", "entry_id": "1234", "description": "dummy_description"}),
+    ],
+)
+def test_gcb_create_reference_list_command_when_valid_args_provided(client, mocker, args):
     """Test gcb_create_reference_list command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_create_reference_list_command
 
-    args = {"name": "dummy_name", "description": "dummy_description", "lines": "L1,L2,L3,L4"}
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "1234",
+            "path": "test_data/gcb_create_reference_list_command_text.txt",
+            "name": "gcb_create_reference_list_command_text.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
     with open("test_data/gcb_create_reference_list_response.json") as f:
         response = f.read()
     with open("test_data/gcb_create_reference_list_ec.json") as f:
@@ -4883,11 +4938,30 @@ def test_gcb_create_reference_list_command_when_valid_args_provided(client):
     assert ec == expected_ec
 
 
-def test_gcb_create_reference_list_command_when_delimiter_provided(client):
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy_name", "description": "dummy_description", "lines": "L1:L2:L3:L4", "delimiter": ":"}),
+        {
+            "name": "dummy_name",
+            "description": "dummy_description",
+            "entry_id": "1234",
+            "use_delimiter_for_file": True,
+            "delimiter": ",",
+        },
+    ],
+)
+def test_gcb_create_reference_list_command_when_delimiter_provided(client, mocker, args):
     """Test gcb_create_reference_list command for valid output when delimiter is provided."""
     from GoogleChronicleBackstory import gcb_create_reference_list_command
 
-    args = {"name": "dummy_name", "description": "dummy_description", "lines": "L1:L2:L3:L4", "delimiter": ":"}
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "1234",
+            "path": "test_data/gcb_create_reference_list_command_text_with_delimiter.txt",
+            "name": "gcb_create_reference_list_command_text_with_delimiter.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
     with open("test_data/gcb_create_reference_list_response.json") as f:
         response = f.read()
     with open("test_data/gcb_create_reference_list_ec.json") as f:
@@ -5096,6 +5170,12 @@ def test_gcb_get_reference_list_command_when_valid_arguments_provided(client):
             {"name": "x", "lines": "y", "content_type": "type"},
             MESSAGES["VALIDATE_SINGLE_SELECT"].format("content_type", ", ".join(VALID_CONTENT_TYPE)),
         ),
+        ({"name": "dummy_name", "entry_id": ""}, "Missing argument entry_id."),
+        (
+            {"name": "dummy_name", "lines": "L1,L2", "entry_id": "12"},
+            "Both 'lines' and 'entry_id' cannot be provided together.",
+        ),
+        ({"name": "dummy_name"}, "Either 'lines' or 'entry_id' must be provided."),
     ],
 )
 def test_gcb_update_reference_list_command_when_empty_args_provided(client, args, error_msg):
@@ -5107,11 +5187,61 @@ def test_gcb_update_reference_list_command_when_empty_args_provided(client, args
     assert str(e.value) == error_msg
 
 
-def test_gcb_update_reference_list_command_when_valid_args_provided(client):
+def test_gcb_update_reference_list_command_when_file_does_not_exists(client, mocker):
+    """Test gcb_update_reference_list command when file does not exist."""
+    from GoogleChronicleBackstory import gcb_update_reference_list_command
+
+    args = {"name": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' does not exist."
+    mocker.patch.object(demisto, "getFilePath", side_effect=ValueError("Invalid entry_id."))
+    with pytest.raises(ValueError) as e:
+        gcb_update_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_update_reference_list_command_when_file_is_empty(client, mocker):
+    """Test gcb_update_reference_list command when file is empty."""
+    from GoogleChronicleBackstory import gcb_update_reference_list_command
+
+    args = {"name": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' is empty."
+    entry_mock = {
+        "id": "123",
+        "path": "test_data/gcb_reference_list_command_empty_text.txt",
+        "name": "gcb_reference_list_command_empty_text.txt",
+    }
+    mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+    with pytest.raises(ValueError) as e:
+        gcb_update_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy", "lines": "L1;L2;L3", "delimiter": ";", "description": "dummy_description"}),
+        (
+            {
+                "name": "dummy",
+                "entry_id": "123",
+                "use_delimiter_for_file": True,
+                "delimiter": ";",
+                "description": "dummy_description",
+            }
+        ),
+    ],
+)
+def test_gcb_update_reference_list_command_when_valid_args_provided(client, mocker, args):
     """Test gcb_update_reference_list command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_update_reference_list_command
 
-    args = {"name": "dummy", "lines": "L1;L2;L3", "description": "dummy_description", "delimiter": ";"}
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "123",
+            "path": "test_data/gcb_update_reference_list_command_text.txt",
+            "name": "gcb_update_reference_list_command_text.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
     with open("test_data/gcb_update_reference_list_command_response.json") as f:
         response = f.read()
     with open("test_data/gcb_update_reference_list_command_ec.json") as f:
@@ -5133,11 +5263,32 @@ def test_gcb_update_reference_list_command_when_valid_args_provided(client):
     assert ec == expected_ec
 
 
-def test_gcb_update_reference_list_command_when_valid_args_provided_without_content_type(client):
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy", "lines": "L1;L2;L3", "delimiter": ";", "description": "dummy_description"}),
+        (
+            {
+                "name": "dummy",
+                "entry_id": "123",
+                "use_delimiter_for_file": True,
+                "delimiter": ";",
+                "description": "dummy_description",
+            }
+        ),
+    ],
+)
+def test_gcb_update_reference_list_command_when_valid_args_provided_without_content_type(client, mocker, args):
     """Test gcb_update_reference_list command for valid output when valid arguments without content_type are provided."""
     from GoogleChronicleBackstory import gcb_update_reference_list_command
 
-    args = {"name": "dummy", "lines": "L1;L2;L3", "description": "dummy_description", "delimiter": ";"}
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "123",
+            "path": "test_data/gcb_update_reference_list_command_text.txt",
+            "name": "gcb_update_reference_list_command_text.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
     with open("test_data/gcb_update_reference_list_command_response.json") as f:
         response = f.read()
     with open("test_data/gcb_update_reference_list_command_ec.json") as f:
@@ -5193,11 +5344,25 @@ def test_gcb_update_reference_list_command_when_name_prided_does_not_exists(clie
     )
 
 
-def test_gcb_update_reference_list_command_when_invalid_lines_content_provided(client):
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy_name", "lines": "dummy_lines", "description": "dummy_description", "content_type": "Regex"}),
+        ({"name": "dummy_name", "entry_id": "123", "description": "dummy_description", "content_type": "Regex"}),
+    ],
+)
+def test_gcb_update_reference_list_command_when_invalid_lines_content_provided(client, mocker, args):
     """Test gcb_update_reference_list command when invalid lines content is provided accordingly to the content_type."""
     from GoogleChronicleBackstory import gcb_update_reference_list_command
 
-    args = {"name": "dummy_name", "description": "dummy_description", "lines": "dummy_lines", "content_type": "Regex"}
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "123",
+            "path": "test_data/gcb_update_reference_list_command_text.txt",
+            "name": "gcb_update_reference_list_command_text.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+
     with open("test_data/gcb_update_reference_list_invalid_lines_content_400.json") as f:
         response = f.read()
 
@@ -5215,6 +5380,192 @@ def test_gcb_update_reference_list_command_when_invalid_lines_content_provided(c
         str(e.value) == "Status code: 400\nError: generic::invalid_argument: validating parsed content: "
         "invalid regex pattern dummy_lines"
     )
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"name": "dummy", "lines": ""}, "Missing argument lines."),
+        ({"name": "dummy_name", "lines": "[]"}, "Missing argument lines."),
+        ({"name": "dummy_name", "lines": ", ,"}, "Missing argument lines."),
+        ({"name": "", "lines": "dummy"}, "Missing argument name."),
+        ({"name": "", "entry_id": "dummy"}, "Missing argument name."),
+        ({"name": "dummy_name", "entry_id": ""}, "Missing argument entry_id."),
+        (
+            {"name": "dummy_name", "lines": "L1,L2", "entry_id": "12"},
+            "Both 'lines' and 'entry_id' cannot be provided together.",
+        ),
+        ({"name": "dummy_name"}, "Either 'lines' or 'entry_id' must be provided."),
+    ],
+)
+def test_gcb_reference_list_append_content_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_reference_list_append_content command when provided args are empty."""
+    from GoogleChronicleBackstory import gcb_reference_list_append_content
+
+    with pytest.raises(ValueError) as e:
+        gcb_reference_list_append_content(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_reference_list_append_content_command_when_file_does_not_exists(client, mocker):
+    """Test gcb_reference_list_append_content command when file does not exist."""
+    from GoogleChronicleBackstory import gcb_reference_list_append_content
+
+    args = {"name": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' does not exist."
+    mocker.patch.object(demisto, "getFilePath", side_effect=ValueError("Invalid entry_id."))
+    with pytest.raises(ValueError) as e:
+        gcb_reference_list_append_content(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_reference_list_append_content_command_when_file_is_empty(client, mocker):
+    """Test gcb_reference_list_append_content command when file is empty."""
+    from GoogleChronicleBackstory import gcb_reference_list_append_content
+
+    args = {"name": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' is empty."
+    entry_mock = {
+        "id": "123",
+        "path": "test_data/gcb_reference_list_command_empty_text.txt",
+        "name": "gcb_reference_list_command_empty_text.txt",
+    }
+    mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+    with pytest.raises(ValueError) as e:
+        gcb_reference_list_append_content(client, args)
+    assert str(e.value) == error_msg
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy", "lines": "L4;L5;L6", "delimiter": ";", "append_unique": True}),
+        ({"name": "dummy", "entry_id": "123", "use_delimiter_for_file": True, "append_unique": True, "delimiter": ";"}),
+    ],
+)
+def test_gcb_reference_list_append_content_command_when_valid_args_provided(client, mocker, args):
+    """Test gcb_reference_list_append_content command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_reference_list_append_content
+
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "123",
+            "path": "test_data/gcb_reference_list_command_text.txt",
+            "name": "gcb_reference_list_command_text.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+    with open("test_data/gcb_reference_list_append_content_command_response.json") as f:
+        response = f.read()
+    with open("test_data/gcb_reference_list_append_content_command_ec.json") as f:
+        expected_ec = json.loads(f.read())
+    with open("test_data/gcb_reference_list_append_content_command_hr.md") as f:
+        expected_hr = f.read()
+
+    class MockResponse:
+        status_code = 200
+        text = response
+
+        def json():
+            return json.loads(response)
+
+    client.http_client.request.return_value = MockResponse
+    hr, ec, json_data = gcb_reference_list_append_content(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"name": "dummy", "lines": ""}, "Missing argument lines."),
+        ({"name": "dummy_name", "lines": "[]"}, "Missing argument lines."),
+        ({"name": "dummy_name", "lines": ", ,"}, "Missing argument lines."),
+        ({"name": "", "lines": "dummy"}, "Missing argument name."),
+        ({"name": "", "entry_id": "dummy"}, "Missing argument name."),
+        ({"name": "dummy_name", "entry_id": ""}, "Missing argument entry_id."),
+        (
+            {"name": "dummy_name", "lines": "L1,L2", "entry_id": "12"},
+            "Both 'lines' and 'entry_id' cannot be provided together.",
+        ),
+        ({"name": "dummy_name"}, "Either 'lines' or 'entry_id' must be provided."),
+    ],
+)
+def test_gcb_reference_list_remove_content_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_reference_list_remove_content command when provided args are empty."""
+    from GoogleChronicleBackstory import gcb_reference_list_remove_content
+
+    with pytest.raises(ValueError) as e:
+        gcb_reference_list_remove_content(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_reference_list_remove_content_command_when_file_does_not_exists(client, mocker):
+    """Test gcb_reference_list_remove_content command when file does not exist."""
+    from GoogleChronicleBackstory import gcb_reference_list_remove_content
+
+    args = {"name": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' does not exist."
+    mocker.patch.object(demisto, "getFilePath", side_effect=ValueError("Invalid entry_id."))
+    with pytest.raises(ValueError) as e:
+        gcb_reference_list_remove_content(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_reference_list_remove_content_command_when_file_is_empty(client, mocker):
+    """Test gcb_reference_list_remove_content command when file is empty."""
+    from GoogleChronicleBackstory import gcb_reference_list_remove_content
+
+    args = {"name": "dummy", "entry_id": "123"}
+    error_msg = "The file with entry_id '123' is empty."
+    entry_mock = {
+        "id": "123",
+        "path": "test_data/gcb_reference_list_command_empty_text.txt",
+        "name": "gcb_reference_list_command_empty_text.txt",
+    }
+    mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+    with pytest.raises(ValueError) as e:
+        gcb_reference_list_remove_content(client, args)
+    assert str(e.value) == error_msg
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"name": "dummy", "lines": "L4;L5;L6", "delimiter": ";"}),
+        ({"name": "dummy", "entry_id": "456", "use_delimiter_for_file": True, "delimiter": ";"}),
+    ],
+)
+def test_gcb_reference_list_remove_content_command_when_valid_args_provided(client, mocker, args):
+    """Test gcb_reference_list_remove_content command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_reference_list_remove_content
+
+    if args.get("entry_id"):
+        entry_mock = {
+            "id": "456",
+            "path": "test_data/gcb_reference_list_command_text.txt",
+            "name": "gcb_reference_list_command_text.txt",
+        }
+        mocker.patch.object(demisto, "getFilePath", return_value=entry_mock)
+    with open("test_data/gcb_reference_list_remove_content_command_response.json") as f:
+        response = f.read()
+    with open("test_data/gcb_reference_list_remove_content_command_ec.json") as f:
+        expected_ec = json.loads(f.read())
+    with open("test_data/gcb_reference_list_remove_content_command_hr.md") as f:
+        expected_hr = f.read()
+
+    class MockResponse:
+        status_code = 200
+        text = response
+
+        def json():
+            return json.loads(response)
+
+    client.http_client.request.return_value = MockResponse
+    hr, ec, json_data = gcb_reference_list_remove_content(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
 
 
 @pytest.mark.parametrize(

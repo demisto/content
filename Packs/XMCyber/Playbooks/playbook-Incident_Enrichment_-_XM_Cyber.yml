@@ -1,0 +1,994 @@
+id: Incident Enrichment - XM Cyber
+version: -1
+name: Incident Enrichment - XM Cyber
+description: This playbook enriches the incident using the hostname indicators and user data and increases the severity based on the calculated risk score and pushes breach points of the identified entities to XM Cyber.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ed77d150-baf1-4044-8a21-10181f54a41b
+    type: start
+    task:
+      id: ed77d150-baf1-4044-8a21-10181f54a41b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a5c01f54-c6fc-4de9-87da-9636b1496574
+    type: condition
+    task:
+      id: a5c01f54-c6fc-4de9-87da-9636b1496574
+      version: -1
+      name: Is XM Cyber CEM integration enabled?
+      description: Checks whether XM Cyber CEM integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: XMCyberCEM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d13740ec-246d-46fc-859d-cdf3fedd7c80
+    type: regular
+    task:
+      id: d13740ec-246d-46fc-859d-cdf3fedd7c80
+      version: -1
+      name: Clear previous inputs.
+      description: |-
+        Deletes specific keys from context to ensure a clean run.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: FoundIndicators,calculated_severity,Collect the Hostname and User entities,calculated_risk_score
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b5136941-12f3-4e7f-814a-b062c1f81a86
+    type: regular
+    task:
+      id: b5136941-12f3-4e7f-814a-b062c1f81a86
+      version: -1
+      name: Extract Hostname Entities.
+      description: Automatically pulls indicators from the incident.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2072d3a5-a064-40a8-8118-c95db2b3757d
+    type: condition
+    task:
+      id: 2072d3a5-a064-40a8-8118-c95db2b3757d
+      version: -1
+      name: Check entity values in playbook input.
+      description: Validates if entity values were provided at launch.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.entity_values
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b62e0075-dd4d-45c5-83ff-6cbb097ef802
+    type: regular
+    task:
+      id: b62e0075-dd4d-45c5-83ff-6cbb097ef802
+      version: -1
+      name: Enrich incident.
+      description: Enriches Hostname and User entities on the SOAR platform by using information available in the XM Cyber platform.
+      script: '|||xmcyber-enrich-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entity_values:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.entity_values
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the Hostname and User entities.Answers.0
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 50a8fb5b-2d39-469d-8075-2c3e418f25bb
+    type: collection
+    task:
+      id: 50a8fb5b-2d39-469d-8075-2c3e418f25bb
+      version: -1
+      name: Collect Hostname/User entities.
+      description: Provide the Hostname and User entities.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the Hostname and User entities.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Hostname or User entity.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Collect the Hostname and User entities.
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1835bfc6-f70a-4251-87a0-76714c66b740
+    type: regular
+    task:
+      id: 1835bfc6-f70a-4251-87a0-76714c66b740
+      version: -1
+      name: Calculate risk score.
+      description: Calculates the overall risk score for entities based on their Compromise Risk Score and Choke Point Score from XM Cyber enrichment data.
+      script: '|||xmcyber-calculate-risk-score'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      choke_point_score:
+        complex:
+          root: inputs.choke_point_score
+          transformers:
+          - operator: trim
+      compromise_risk_score:
+        complex:
+          root: inputs.compromise_risk_score
+          transformers:
+          - operator: trim
+      entity_values:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.entity_values
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the Hostname and User entities.Answers.0
+                iscontext: true
+      extend-context:
+        simple: calculated_risk_score=calculatedRiskScore
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8d7b98a3-631d-4709-8424-d90c587b1312
+    type: regular
+    task:
+      id: 8d7b98a3-631d-4709-8424-d90c587b1312
+      version: -1
+      name: Set calculated severity.
+      description: Maps the XM Cyber risk score to XSOAR severity levels (0-4).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: calculated_severity
+      value:
+        complex:
+          root: calculated_risk_score
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 0,1-9.99,10-39.99,40-64.99,65-84.99,85-100
+              map_to:
+                value:
+                  simple: 0,0.5,1,2,3,4
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bbb5ceac-d742-4cb4-8f13-96724b199a76
+    type: condition
+    task:
+      id: bbb5ceac-d742-4cb4-8f13-96724b199a76
+      version: -1
+      name: Is the new severity higher?
+      description: Compares calculated severity against current incident severity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: calculated_severity
+            iscontext: true
+          right:
+            value:
+              simple: incident.severity
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5fd3fc35-6397-44a8-868b-ced59542475e
+    type: regular
+    task:
+      id: 5fd3fc35-6397-44a8-868b-ced59542475e
+      version: -1
+      name: Set Incident severity.
+      description: Updates the severity of XSOAR incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      severity:
+        complex:
+          root: calculated_severity
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 542.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ba20a593-6f81-498a-8407-fa13493970f2
+    type: regular
+    task:
+      id: ba20a593-6f81-498a-8407-fa13493970f2
+      version: -1
+      name: Push breach point data.
+      description: Adds a custom breach point label to relevant entities and pushes the label to CEM Imported Attributes.
+      script: '|||xmcyber-push-breach-point'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attribute_name:
+        complex:
+          root: inputs.attribute_name
+          transformers:
+          - operator: trim
+      entity_values:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.entity_values
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the Hostname and User entities.Answers.0
+                iscontext: true
+      operator:
+        complex:
+          root: inputs.operator
+          transformers:
+          - operator: trim
+      parameter:
+        complex:
+          root: inputs.parameter
+          transformers:
+          - operator: trim
+      value:
+        complex:
+          root: inputs.value
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 773d5dde-7093-46c8-8ad3-bb42a6290321
+    type: title
+    task:
+      id: 773d5dde-7093-46c8-8ad3-bb42a6290321
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 06287957-609b-4f3f-835f-110d3ccf965e
+    type: condition
+    task:
+      id: 06287957-609b-4f3f-835f-110d3ccf965e
+      version: -1
+      name: Collect or Extract Entities?
+      description: Collect the entities or extract the entities from incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Collect:
+      - "6"
+      Extract:
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Extract the hostname values from the incident?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Extract
+      - Collect
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 007b72e4-8699-4b28-8fd9-5840e147a3d2
+    type: condition
+    task:
+      id: 007b72e4-8699-4b28-8fd9-5840e147a3d2
+      version: -1
+      name: Check Hostname availability.
+      description: Verifies whether Hostname values are available in incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 990fc4f7-5fef-43e2-881f-f3236949fd43
+    type: condition
+    task:
+      id: 990fc4f7-5fef-43e2-881f-f3236949fd43
+      version: -1
+      name: Remove breach point data?
+      description: Determines whether breach point information is removed from the entities.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "12"
+      "Yes":
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Remove the breach point labels from the entities?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 744cc6c2-ac03-4588-82e4-7f2da976a191
+    type: regular
+    task:
+      id: 744cc6c2-ac03-4588-82e4-7f2da976a191
+      version: -1
+      name: Remove breach point data.
+      description: Removes a breach point label from the specified entities in XM Cyber CEM's platform.
+      script: '|||xmcyber-remove-breach-point'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      attribute_name:
+        complex:
+          root: inputs.attribute_name
+          transformers:
+          - operator: trim
+      entity_values:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.entity_values
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect the Hostname and User entities.Answers.0
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_3_Extract": 0.41,
+      "13_6_Collect": 0.55,
+      "14_5_yes": 0.34,
+      "14_6_#default#": 0.62,
+      "15_12_No": 0.56,
+      "15_16_Yes": 0.49,
+      "1_12_#default#": 0.22,
+      "1_2_yes": 0.52,
+      "4_13_#default#": 0.48,
+      "4_5_yes": 0.51,
+      "9_10_yes": 0.4,
+      "9_11_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2865,
+        "width": 882.5,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: entity_values
+  value: {}
+  required: false
+  description: Specify the hostname or user entity. Supports comma separated values.
+  playbookInputQuery:
+- key: compromise_risk_score
+  value:
+    simple: "0.5"
+  required: false
+  description: Specify the weight of Compromise Risk Score to apply to the final score calculation. Provide the value between 0 and 1.
+  playbookInputQuery:
+- key: choke_point_score
+  value:
+    simple: "0.5"
+  required: false
+  description: Specify the weight of Choke Point Score to apply to the final score calculation. Provide the value between 0 and 1.
+  playbookInputQuery:
+- key: attribute_name
+  value:
+    simple: XSOAR_BP
+  required: false
+  description: The name of the custom label you want to push to CEM as an imported attribute.
+  playbookInputQuery:
+- key: parameter
+  value:
+    simple: All
+  required: false
+  description: |-
+    When setting up the condition for when to push the breach point data, this is the parameter of the condition. It is a list of predefined parameters for determining the criteria. Select "All" to apply the breach point label to all entities.
+
+    Possible values are: All, Entity ID, Affected Unique Entities, Compromise Risk Score, Choke Point Score, Labels, Domain Name, Is Enabled, Last Login Date, Last Password Set Date.
+  playbookInputQuery:
+- key: operator
+  value:
+    simple: Equals
+  required: false
+  description: |-
+    When setting up the condition for when to push the breach point data, this is the operator of the condition.
+
+    Possible values are: Less than, Greater than, Less than equal to, Greater than equal to, Equals, Not equal to, Contains, Not Contains.
+  playbookInputQuery:
+- key: value
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    When setting up the condition for when to push the breach point data, this is the value of the condition. Can be boolean, string, integer, float, or date values.
+
+    Supported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+    For example: 01 Dec 2025, 01 Dec 2025 04:45:33, 2025-12-10T14:05:44Z.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

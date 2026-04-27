@@ -13,8 +13,13 @@ from collections.abc import Generator, Iterable
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
 import git
+from github import Github
+from github.PullRequest import PullRequest
+from blessings import Terminal
 
-
+# Constants
+BRANCH_NAME = "BRANCH_NAME"
+GITHUB_TOKEN = "GITHUB_TOKEN"
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
@@ -25,7 +30,10 @@ GITHUB_HIDDEN_DIR = ".github"
 CONTENT_ROLES_BLOB_MASTER_URL = (
     f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
 )
-
+GITHUB_API_BASE_URL = "https://api.github.com"
+GITHUB_API_VERSION = "2022-11-28"
+ORGANIZATION_NAME = "demisto"
+REPO_NAME = "content"
 LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
 # override print so we have a timestamp with each print
@@ -388,3 +396,50 @@ def get_logger(file_name: str) -> Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def is_organization_member(gh: Github, username: str, org_name: str = ORGANIZATION_NAME) -> bool:
+    """
+    Check if a user is a member of the organization.
+
+    Args:
+        gh (Github): The GitHub client instance.
+        username (str): The GitHub username to check.
+        org_name (str): The organization name (default: 'demisto').
+
+    Returns:
+        bool: True if the user is an organization member, False otherwise.
+    """
+    try:
+        org = gh.get_organization(org_name)
+        return org.has_in_members(gh.get_user(username))
+    except Exception as e:
+        print(f"Error checking organization membership for {username}: {e}")  # noqa: T201
+        return False
+
+
+def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = None, t: Terminal | None = None) -> None:
+    """
+    Posts the AI reviewer introduction comment.
+
+    Args:
+        pr (PullRequest): The PullRequest object.
+        reviewers (list[str] | None): List of assigned reviewers. If None or empty, uses generic greeting.
+        t (Terminal | None): The terminal object for printing.
+    """
+    if reviewers:
+        reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
+        greeting = f"Hi {reviewer_mentions}, you"
+    else:
+        greeting = "You"
+
+    ai_reviewer_introduction_msg = (
+        "## 🤖 AI-Powered Code Review Available\n\n"
+        f"{greeting} can leverage AI-powered code review to assist with this PR!\n\n"
+        "**Available Commands:**\n"
+        "- `@marketplace-ai-reviewer start review` - Initiate a full AI code review\n"
+        "- `@marketplace-ai-reviewer re-review` - Incremental review for new commits\n"
+    )
+    pr.create_issue_comment(ai_reviewer_introduction_msg)
+    if t:
+        print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201

@@ -9,7 +9,7 @@ In order to connect to the AzureWAF using either Cortex XSOAR Azure App or the S
 - *Azure Managed Identities*
 - *Client Credentials Flow*.
 
-# Self-Deployed Application
+## Self-Deployed Application
 
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
@@ -19,21 +19,21 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 2. offline_access
 3. user.read
 
-## Authentication Using the  User-Authentication Flow (recommended)
+## Authentication Using the  Authorization Code Flow (recommended)
 
 Follow these steps for a self-deployed configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. choose the 'User Auth' option in the ***Authentication Type*** parameter.
+2. choose the **Authorization Code** option in the ***Authentication Type*** parameter.
 3. Enter your Client/Application ID in the ***Application ID*** parameter.
 4. Enter your Client Secret in the ***Client Secret*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
 7. Save the instance.
-8. Run the `!azure-waf-generate-login-url` command in the War Room and follow the instruction.
+8. Run the **!azure-waf-generate-login-url** command in the War Room and follow the instruction.
 9. Run the ***!azure-waf-auth-test*** command - a 'Success' message should be printed to the War Room.
 
-### Authentication Using the Device Code Flow
+## Authentication Using the Device Code Flow
 
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Azure SQL Management with Cortex XSOAR.
@@ -41,8 +41,8 @@ to link Azure SQL Management with Cortex XSOAR.
 In order to connect to Azure Web Application Firewall using either the Cortex XSOAR Azure or Self Deployed Azure application:
 
 1. Fill in the required parameters
-2. choose the 'Device' option in the ***user_auth_flow*** parameter.
-4. Run the ***!azure-waf-auth-start*** command.
+2. choose the **Device Code** option in the ***Authentication Type*** parameter.
+3. Run the ***!azure-waf-auth-start*** command.
 4. Follow the instructions that appear.
 5. Run the ***!azure-waf-auth-complete*** command.
 At end of the process, you will see a message that you logged in successfully.
@@ -53,6 +53,24 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 
 You only need to fill in your subscription ID and resource group name. You can find your resource group and
 subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+
+## Azure Managed Identities Authentication
+
+##### Note: This option is relevant only if the integration is running on Azure VM
+
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+
+  - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client id** field in the instance configuration.
+   3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
 ## Client Credentials Flow Authentication
 
@@ -71,9 +89,12 @@ To configure a Microsoft integration that uses this authorization flow with a se
 
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-waf-auth-test*** command.
 
-## Configure AzureWAF on Cortex XSOAR
+## Configure AzureWAF on Cortex XSOAR/XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to one of the following:
+    - Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances
+    - Cortex XSOAR 6: Settings > Integrations > Servers & Services.
+    - Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations
 2. Search for Azure Web Application Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -115,10 +136,10 @@ Retrieves protection policies within a resource group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional |
-| resource_group_names | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| resource_group_name | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
-| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
-| limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional |
+| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false".| Optional |
+| limit | Maximum number of policies to fetch. Default is "10".| Optional |
 
 #### Context Output
 
@@ -226,7 +247,7 @@ Retrieves all the WAF policies in a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
 | limit | Maximum number of policies to be shown. (This will only affect visualized data, not context.). Default is 10. | Optional |
 | subscription_id | Comma-separated list of subscription IDs. Will override the default subscription ID. | Optional |
 
@@ -337,7 +358,7 @@ Creates or updates a policy with a specified rule set name within a resource gro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Required |
-| resource_group_names | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| resource_group_name | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
 | subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
 | managed_rules | Describes the managedRules structure. | Required |
 | resource_id | Resource ID. | Optional |
@@ -460,10 +481,142 @@ There is no context output for this command.
 
 >Policy example_policy was deleted successfully.
 
+### azure-waf-front-door-policies-list
+
+***
+Lists all of the Front Door protection policies within a resource group.
+
+#### Base Command
+
+`azure-waf-front-door-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional |
+| resource_group_name | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+| verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". | Optional |
+| limit | Maximum number of policies to fetch. Default is "10". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.FrontDoorPolicy.name | String | Resource name. |
+| AzureWAF.FrontDoorPolicy.id | String | Resource ID. |
+| AzureWAF.FrontDoorPolicy.type | String | Resource type. |
+| AzureWAF.FrontDoorPolicy.etag | String | A unique read-only string that changes whenever the resource is updated. |
+| AzureWAF.FrontDoorPolicy.location | String | Resource location. |
+
+#### Command Example
+
+```!azure-waf-front-door-policies-list limit=2```
+
+### azure-waf-front-door-policies-list-all-in-subscription
+
+***
+Lists all of the Front Door protection policies within a subscription.
+
+#### Base Command
+
+`azure-waf-front-door-policies-list-all-in-subscription`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". | Optional |
+| limit | Maximum number of policies to fetch. Default is "10". | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.FrontDoorPolicy.name | String | Resource name. |
+| AzureWAF.FrontDoorPolicy.id | String | Resource ID. |
+| AzureWAF.FrontDoorPolicy.type | String | Resource type. |
+| AzureWAF.FrontDoorPolicy.etag | String | A unique read-only string that changes whenever the resource is updated. |
+| AzureWAF.FrontDoorPolicy.location | String | Resource location. |
+
+#### Command Example
+
+```!azure-waf-front-door-policies-list-all-in-subscription limit=2```
+
+### azure-waf-front-door-policy-update-or-create
+
+***
+Creates or updates a Front Door policy with a specified rule set name within a resource group.
+
+#### Base Command
+
+`azure-waf-front-door-policy-update-or-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. | Required |
+| resource_group_name | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+| managed_rules | Describes the managedRules structure. | Required |
+| custom_rules | The custom rules inside the policy. | Optional |
+| policy_settings | Describes settings for the policy. | Optional |
+| location | Describes the resource location. | Optional |
+| sku | The pricing tier of web application firewall policy. Defaults to Classic_AzureFrontDoor if not specified. Possible values are: Classic_AzureFrontDoor, Standard_AzureFrontDoor, Premium_AzureFrontDoor. Default is Classic_AzureFrontDoor. | Optional |
+| etag | A unique read-only string that changes whenever the resource is updated. | Optional |
+| verbose | Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false". | Optional |
+| tags | Resource tags. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.FrontDoorPolicy.name | String | Resource name. |
+| AzureWAF.FrontDoorPolicy.id | String | Resource ID. |
+| AzureWAF.FrontDoorPolicy.type | String | Resource type. |
+| AzureWAF.FrontDoorPolicy.etag | String | A unique read-only string that changes whenever the resource is updated. |
+| AzureWAF.FrontDoorPolicy.location | String | Resource location. |
+
+#### Command Example
+
+```!azure-waf-front-door-policy-update-or-create policy_name="example_policy" resource_group_name="demisto-sentinel2" location="WestUs" managed_rules="{ \"managedRuleSets\": [{\"ruleSetType\": \"OWASP\",\"ruleSetVersion\": \"3.0\"}]}"```
+
+### azure-waf-front-door-policy-delete
+
+***
+Deletes a Front Door policy.
+
+#### Base Command
+
+`azure-waf-front-door-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. | Required |
+| resource_group_name | Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used. | Optional |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!azure-waf-front-door-policy-delete policy_name="example_policy"```
+
+#### Human Readable Output
+
+>Front Door Policy example_policy was deleted successfully.
+
 ### azure-waf-auth-start
 
 ***
-Run this command to start the authorization process and follow the instructions in the command results.
+Run this command to start the authorization process and follow the instructions provided in the command results.
 
 #### Base Command
 

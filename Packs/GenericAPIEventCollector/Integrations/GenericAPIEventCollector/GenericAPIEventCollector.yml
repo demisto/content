@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Open Source
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -254,3 +255,5 @@ marketplaces:
   - platform
 tests:
   - No tests (auto formatted)
+supportedModules:
+- xsiam

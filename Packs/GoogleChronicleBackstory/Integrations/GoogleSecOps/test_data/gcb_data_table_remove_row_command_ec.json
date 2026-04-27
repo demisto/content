@@ -1,0 +1,13 @@
+{
+    "GoogleChronicleBackstory.RemovedDataTableRows(val.name == obj.name)": [
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row1",
+            "values": {
+                "column_1": "1",
+                "column_2": "[]/+*a"
+            },
+            "createTime": "2025-08-19T05:11:53.230367Z",
+            "updateTime": "2025-08-19T05:11:53.230367Z"
+        }
+    ]
+}

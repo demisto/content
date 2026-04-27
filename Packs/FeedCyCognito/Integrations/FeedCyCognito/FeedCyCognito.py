@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 HR_DATE_FORMAT = "%d %b %Y, %I:%M %p"
-BASE_URL = "https://api.platform.cycognito.com/v1"
+BASE_URL = "https://api.{}platform.cycognito.com/v1"
 AVAILABLE_ASSET_TYPES = ["ip", "domain", "cert", "webapp", "iprange"]
 AVAILABLE_HOSTING_TYPES = ["cloud", "owned", "undetermined"]
 AVAILABLE_SECURITY_GRADE = ["a", "b", "c", "d", "f"]
@@ -41,11 +41,53 @@ ERRORS = {
     "INVALID_REQUIRED_PARAMETER": "{} is a required parameter. Please provide correct value.",
     "INVALID_COUNTRY_ERROR": "{} is an invalid country name.",
 }
+REGIONS = {"General": "", "US": "us-"}
+
+
 """ CLIENT CLASS """
 
 
 class CyCognitoFeedClient(BaseClient):
     """Client class to interact with the service API."""
+
+    def __init__(self, params: dict, verify, proxy):
+        """
+        :type params: ``dict``
+        :param params: Integration parameters.
+
+        :type verify: ``bool``
+        :param verify: Verify SSL certificate.
+
+        :type proxy: ``bool``
+        :param proxy: Use proxy.
+        """
+        api_key = params.pop("api_key")
+        headers = {"Authorization": api_key}
+
+        region = params.get("region", "")
+        other_region = params.get("other_region", "").strip()
+        region = self.get_region(region=region, other_region=other_region)
+
+        super().__init__(base_url=BASE_URL.format(region), verify=verify, proxy=proxy, headers=headers)
+
+    def get_region(self, region: str, other_region: str) -> str:
+        """Get region to use.
+
+        :type region: ``str``
+        :param region: Region to use.
+
+        :type other_region: ``str``
+        :param other_region: Other region to use.
+
+        :rtype: ``str``
+        :return: Region to use.
+        """
+        if region:
+            if other_region and other_region[-1] != "-":
+                other_region = f"{other_region}-"
+            return REGIONS[region] if region.lower() != "other" else other_region
+        else:
+            return REGIONS["General"]
 
     def get_indicators(
         self,
@@ -278,7 +320,7 @@ def prepare_hr_for_get_indicators(asset_type: str, response: Any) -> str:
         )
 
     headers = ["Asset ID", "Security Grade", "Status", "Organizations", "First Seen", "Last Seen", "Locations", "Hosting Type"]
-    title = f"Indicator Detail:\n #### Asset type: {asset_type.title() if asset_type != 'ip' else asset_type.upper()}"
+    title = f"Indicator Detail: \n #### Asset type: {asset_type.title() if asset_type != 'ip' else asset_type.upper()}"
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 
 
@@ -432,8 +474,8 @@ def fetch_indicators_command(
     :param is_test: True if the function call is from test_module, False otherwise
     """
     asset_type = params.get("asset_type")
-    first_fetch_timestamp = arg_to_datetime(params.get("first_fetch", DEFAULT_FIRST_FETCH),
-                                            arg_name="First Fetch Time").strftime(DATE_FORMAT)  # type: ignore
+    first_fetch_timestamp_obj = arg_to_datetime(params.get("first_fetch", DEFAULT_FIRST_FETCH), arg_name="First Fetch Time")
+    first_fetch_timestamp = first_fetch_timestamp_obj.strftime(DATE_FORMAT)  # type: ignore
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), arg_name="Max Fetch")
     organizations = argToList(params.get("organizations"))
     security_grade = [x.split(":")[0].lower() for x in params.get("security_grade", [])] if params.get("security_grade") else []
@@ -475,7 +517,7 @@ def fetch_indicators_command(
 
     demisto.info(f"[+] FeedCyCognito: Number of indicators fetched: {len(response)}")
     indicators = build_iterators(
-        tlp_color=tlp_color,    # type: ignore
+        tlp_color=tlp_color,  # type: ignore
         default_mapping=default_mapping,  # type: ignore
         response=response,
         feed_tags=feed_tags,
@@ -510,7 +552,7 @@ def test_module(client: CyCognitoFeedClient, params) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    if params["feed"]:
+    if argToBoolean(params.get("feed", "true")):
         fetch_indicators_command(client, params, {}, is_test=True)
     else:
         client.get_indicators(asset_type="ip", count=1, filters=[])  # Body is required for this endpoint
@@ -527,9 +569,7 @@ def main():
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": params.get("api_key")}
-
-        client = CyCognitoFeedClient(base_url=BASE_URL, headers=headers, verify=verify_certificate, proxy=proxy)
+        client = CyCognitoFeedClient(params=params, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
             return_results(test_module(client, params))
@@ -548,7 +588,7 @@ def main():
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as err:
-        return_error(f"Failed to execute {command} command.\nError:\n{err}", error=err)
+        return_error(f"Failed to execute {command} command.\nError: \n{err}", error=err)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

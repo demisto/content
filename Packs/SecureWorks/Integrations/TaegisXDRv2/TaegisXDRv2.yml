@@ -4,6 +4,7 @@ commonfields:
 name: TaegisXDRv2
 display: TaegisXDR v2
 category: Data Enrichment & Threat Intelligence
+provider: Sophos
 description: For integration with the Secureworks Taegis XDR platform.
 configuration:
 - display: Taegis Environment
@@ -547,7 +548,7 @@ script:
     - contextPath: TaegisXDR.InvestigationEvidenceUpdate
       description: The investigation that received the update.
     description: Add alerts and events to an existing investigation.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   subtype: python3

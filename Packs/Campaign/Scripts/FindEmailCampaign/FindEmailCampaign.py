@@ -338,6 +338,7 @@ INCIDENTS_CONTEXT_TD = "incidents(obj.id == val.id)"
 
 
 def return_outputs_custom(readable_output, outputs=None, tag=None):
+    demisto.debug(f"Entering return_outputs_custom with {tag=}")
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
@@ -348,12 +349,15 @@ def return_outputs_custom(readable_output, outputs=None, tag=None):
     if tag is not None:
         return_entry["Tags"] = [f"campaign_{tag}"]
     demisto.results(return_entry)
+    demisto.debug("Exiting return_outputs_custom")
 
 
 def add_context_key(entry_context):
+    demisto.debug("Entering add_context_key")
     new_context = {}
     for k, v in entry_context.items():
         new_context["{}.{}".format("EmailCampaign", k)] = v
+    demisto.debug(f"Exiting add_context_key, created {len(new_context)} new keys.")
     return new_context
 
 
@@ -383,11 +387,14 @@ def extract_domain_from_recipients(row):
 
 
 def create_context_for_campaign_details(campaign_found=False, incidents_df=None, additional_context_fields: list = None):
+    demisto.debug(f"Entering create_context_for_campaign_details. campaign_found: {campaign_found}")
     if not campaign_found:
+        demisto.debug("No campaign found, returning minimal context.")
         return {
             "isCampaignFound": campaign_found,
         }
     else:
+        demisto.debug("Campaign found, building full context.")
         incident_id = demisto.incident()["id"]
         incidents_df["recipients"] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df["recipientsdomain"] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
@@ -413,6 +420,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
                     invalid_context_keys.add(key)
 
         if invalid_context_keys:
+            demisto.debug(f"Found invalid context keys: {invalid_context_keys}")
             return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
         incidents_context_df = incidents_df.copy(deep=True)
@@ -424,6 +432,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incidents_context = incident_df.fillna(1).to_dict(orient="records")
         datetimes: pd.DataFrame = incidents_context_df["created_dt"].dropna()
         min_datetime = min(datetimes).isoformat()
+        demisto.info("Successfully created campaign details context.")
         return {
             "isCampaignFound": campaign_found,
             "involvedIncidentsCount": len(incidents_context_df) if incidents_context_df is not None else 0,
@@ -434,9 +443,12 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
 
 
 def create_context_for_indicators(indicators_df=None):
+    demisto.debug("Entering create_context_for_indicators.")
     if indicators_df is None:
+        demisto.debug("No indicators DataFrame provided.")
         indicators_context = []
     else:
+        demisto.debug(f"Creating context for {len(indicators_df)} indicators.")
         indicators_df = indicators_df.rename({"Value": "value"}, axis=1)
         indicators_df = indicators_df[["id", "value"]]
         indicators_context = indicators_df.to_dict(orient="records")
@@ -444,19 +456,24 @@ def create_context_for_indicators(indicators_df=None):
 
 
 def create_empty_context():
+    demisto.debug("Entering create_empty_context.")
     context = create_context_for_campaign_details(campaign_found=False)
     context = add_context_key(context)
     return context
 
 
 def is_number_of_incidents_too_low(res, incidents):
+    demisto.debug("Entering is_number_of_incidents_too_low check.")
     if not res["EntryContext"]["isDuplicateIncidentFound"] or len(incidents) < MIN_CAMPAIGN_SIZE:
+        demisto.info(f"Number of incidents ({len(incidents)}) is less than min ({MIN_CAMPAIGN_SIZE}). Not a campaign.")
         return_outputs_custom("No possible campaign was detected", create_empty_context())
         return True
+    demisto.debug("Number of incidents is sufficient.")
     return False
 
 
 def is_number_of_unique_recipients_is_too_low(incidents):
+    demisto.debug("Entering is_number_of_unique_recipients_is_too_low check.")
     unique_recipients = Counter([str(i.get(EMAIL_TO_FIELD, "None")) for i in incidents])
     unique_recipients += Counter([str(i[EMAIL_CC_FIELD]) for i in incidents if EMAIL_CC_FIELD in i])
     unique_recipients += Counter([str(i[EMAIL_BCC_FIELD]) for i in incidents if EMAIL_BCC_FIELD in i])
@@ -465,6 +482,9 @@ def is_number_of_unique_recipients_is_too_low(incidents):
     if (len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients == 0) or (
         0 < len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients > 0
     ):
+        demisto.info(
+            f"Number of unique recipients ({len(unique_recipients)}) is less than min ({MIN_UNIQUE_RECIPIENTS}). Not a campaign."
+        )
         msg = "Similar emails were found, but the number of their unique recipients is too low to consider them as campaign.\n "
         msg += (
             "If you wish to consider similar emails as campaign even with low number of unique recipients, "
@@ -483,6 +503,7 @@ def is_number_of_unique_recipients_is_too_low(incidents):
 
         return_outputs_custom(msg, create_empty_context())
         return True
+    demisto.debug("Number of unique recipients is sufficient.")
     return False
 
 
@@ -504,6 +525,7 @@ def standardize_recipients_column(df, column):
 
 
 def calculate_campaign_details_table(incidents_df, fields_to_display):
+    demisto.debug("Entering calculate_campaign_details_table.")
     global RECIPIENTS_COLUMNS
     n_incidents = len(incidents_df)
     similarities = incidents_df["similarity"].dropna().to_list()
@@ -577,6 +599,7 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
                 headers.append(field)
                 contents.append(field_value_str)
     hr = tableToMarkdown("Possible Campaign Detected", dict(zip(headers, contents)), headers=headers)
+    demisto.info("Successfully calculated campaign details table (Human Readable).")
     return hr
 
 
@@ -591,6 +614,7 @@ def cosine_sim(a, b):
 
 
 def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keywords_weight=1.5):
+    demisto.debug("Entering summarize_email_body.")
     corpus: list[str] = sent_tokenize(body)
     cv = CountVectorizer(stop_words=list(stopwords.words("english")))
     body_arr = cv.fit_transform(corpus).toarray()
@@ -630,10 +654,12 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
         elif sent_i - 1 not in top_sentences_indices and sent_i + 1 not in top_sentences_indices:
             sent = "... " + sent + " ..."
         summary.append(sent)
+    demisto.info("Successfully summarized email body.")
     return "\n".join(summary)
 
 
 def create_email_summary_hr(incidents_df, fields_to_display):
+    demisto.debug("Entering create_email_summary_hr.")
     clean_email_subject = incidents_df.iloc[0][PREPROCESSED_EMAIL_SUBJECT]
     email_summary = "*Subject*: " + clean_email_subject.replace("\n", "") + " |"
     clean_email_body = incidents_df.iloc[0][PREPROCESSED_EMAIL_BODY]
@@ -647,6 +673,7 @@ def create_email_summary_hr(incidents_df, fields_to_display):
             campaign_found=True, incidents_df=incidents_df, additional_context_fields=fields_to_display
         )
     )
+    demisto.info("Successfully created email summary (Human Readable).")
     return context, hr_email_summary
 
 
@@ -658,9 +685,12 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
 
     Returns: md string with rotated table
     """
+    demisto.debug("Entering horizontal_to_vertical_md_table.")
     lines = horizontal_md_table.split("\n")
     headers_list = lines[1][1:-1].split("|")
-    content_list = lines[3][1:-1].split("|")
+    # To allow pipes in the values, verify that there is a space before or after the pipe, before splitting.
+    regex = rf"(?<=\s){re.escape('|')}|{re.escape('|')}(?=\s)"
+    content_list = re.split(regex, lines[3][1:-1])
 
     new_table = "\n| | |"
     new_table += "\n|---|---|"
@@ -671,6 +701,7 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
 
 
 def return_campaign_details_entry(incidents_df, fields_to_display):
+    demisto.debug("Entering return_campaign_details_entry.")
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
     context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = "\n".join([hr_campaign_details, hr_email_summary])
@@ -678,19 +709,24 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
     demisto.executeCommand(
         "setIncident", {"emailcampaignsummary": f"{vertical_hr_campaign_details}", "emailcampaignsnippets": hr_email_summary}
     )
+    demisto.info("Successfully set incident fields for campaign summary.")
     return return_outputs_custom(hr, context, tag="campaign_details")
 
 
 def return_no_mututal_indicators_found_entry():
+    demisto.debug("Entering return_no_mututal_indicators_found_entry.")
     hr = "No mutual indicators were found."
 
     demisto.executeCommand("setIncident", {"emailcampaignmutualindicators": hr})
     return_outputs_custom(hr, add_context_key(create_context_for_indicators()), tag="indicators")
+    demisto.info("No mutual indicators found.")
 
 
 def return_indicator_entry(incidents_df):
+    demisto.debug("Entering return_indicator_entry.")
     indicators_query = "investigationIDs:({})".format(" ".join(f'"{id_}"' for id_ in incidents_df["id"]))
     fields = ["id", "indicator_type", "investigationIDs", "investigationsCount", "score", "value"]
+    demisto.debug(f"Querying indicators with: {indicators_query}")
     search_indicators = IndicatorsSearcher(query=indicators_query, limit=150, size=500, filter_fields=",".join(fields))
     indicators = []
     for res in search_indicators:
@@ -698,6 +734,7 @@ def return_indicator_entry(incidents_df):
 
     indicators_df = pd.DataFrame(data=indicators)
     if len(indicators_df) == 0:
+        demisto.debug("No indicators found after initial search.")
         return_no_mututal_indicators_found_entry()
         return indicators_df
     indicators_df = indicators_df[indicators_df["relatedIncCount"] < 150]
@@ -706,6 +743,7 @@ def return_indicator_entry(incidents_df):
     )
     indicators_df = indicators_df[indicators_df["Involved Incidents Count"] > 1]
     if len(indicators_df) == 0:
+        demisto.debug("No indicators found with involved count > 1.")
         return_no_mututal_indicators_found_entry()
         return indicators_df
     indicators_df["Id"] = indicators_df["id"].apply(lambda x: f"[{x}](#/indicator/{x})")
@@ -718,6 +756,7 @@ def return_indicator_entry(incidents_df):
 
     hr_no_title = "\n".join(hr.split("\n")[1:])
     demisto.executeCommand("setIncident", {"emailcampaignmutualindicators": hr_no_title})  # without title
+    demisto.info(f"Found {len(indicators_df)} mutual indicators.")
     return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)), tag="indicators")
     return indicators_df
 
@@ -740,6 +779,7 @@ def get_reputation(id_, indicators_df):
 
 
 def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display):
+    demisto.debug("Entering return_involved_incidents_entry.")
     incidents_df["Id"] = incidents_df["id"].apply(lambda x: f"[{x}](#/Details/{x})")
     incidents_df = incidents_df.sort_values("created", ascending=False).reset_index(drop=True)
     incidents_df["created_dt"] = incidents_df["created"].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
@@ -765,10 +805,12 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     hr = "\n\n" + tableToMarkdown(
         "Involved Incidents", incidents_df[incidents_headers].to_dict(orient="records"), headers=incidents_headers
     )
+    demisto.info("Successfully created 'Involved Incidents' markdown table.")
     return_outputs_custom(hr, tag="incidents")
 
 
 def draw_canvas(incidents, indicators):
+    demisto.debug(f"Entering draw_canvas for {len(incidents)} incidents and {len(indicators)} indicators.")
     incident_ids = {x["id"] for x in incidents}
     filtered_indicators = []
     for indicator in indicators:
@@ -783,24 +825,35 @@ def draw_canvas(incidents, indicators):
         )
 
         if not is_error(res):
+            demisto.info("Successfully generated canvas.")
             res[-1]["Tags"] = ["canvas"]
+        else:
+            demisto.debug(f"Error drawing canvas: {get_error(res)}")
         try:
             demisto.executeCommand("setIncident", {"emailcampaigncanvas": res[-1].get("HumanReadable", "").strip("#")})
-        except Exception:
-            pass
+        except Exception as e:
+            demisto.debug(f"Could not set emailcampaigncanvas incident field: {e}")
         demisto.results(res)
-    except Exception:
-        pass
+    except Exception as e:
+        demisto.debug(f"Exception in draw_canvas: {e}")
 
 
 def analyze_incidents_campaign(incidents, fields_to_display):
     global TO_PLOT_CANVAS, MAX_INCIDENTS_FOR_CANVAS_PLOTTING, MAX_INDICATORS_FOR_CANVAS_PLOTTING
+    demisto.debug(f"Entering analyze_incidents_campaign for {len(incidents)} incidents.")
     incidents_df = pd.DataFrame(incidents)
     return_campaign_details_entry(incidents_df, fields_to_display)
     indicators_df = return_indicator_entry(incidents_df)
     return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display)
     if TO_PLOT_CANVAS and len(incidents_df) <= MAX_INCIDENTS_FOR_CANVAS_PLOTTING:
+        demisto.debug("TO_PLOT_CANVAS is true and incident count is within limit. Drawing canvas.")
         draw_canvas(incidents, indicators_df.head(MAX_INDICATORS_FOR_CANVAS_PLOTTING).to_dict(orient="records"))
+    else:
+        demisto.debug(
+            f"Skipping canvas plot. TO_PLOT_CANVAS: {TO_PLOT_CANVAS}, "
+            f"Incidents: {len(incidents_df)} (Max: {MAX_INCIDENTS_FOR_CANVAS_PLOTTING})"
+        )
+    demisto.info("Campaign analysis complete.")
 
 
 def split_non_content_entries(response: list) -> tuple[dict, list]:
@@ -810,6 +863,7 @@ def split_non_content_entries(response: list) -> tuple[dict, list]:
 
     Return: (dict: The last content entry, list: non content entries)
     """
+    demisto.debug("Entering split_non_content_entries.")
     content_entry = response[0]
     non_content_entries = []
     for res_entry in response:
@@ -817,39 +871,53 @@ def split_non_content_entries(response: list) -> tuple[dict, list]:
             content_entry = res_entry
         else:
             non_content_entries.append(res_entry)
-
+    demisto.debug(f"Found {len(non_content_entries)} non-content entries and 1 content entry.")
     return content_entry, non_content_entries
 
 
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
 
+    demisto.debug("Starting EmailCampaign script.")
     input_args = demisto.args()
+    demisto.debug(f"Script arguments: {input_args}")
     EMAIL_BODY_FIELD = input_args.get("emailBody", EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get("emailSubject", EMAIL_SUBJECT_FIELD)
     EMAIL_HTML_FIELD = input_args.get("emailBodyHTML", EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get("emailFrom", FROM_FIELD)
     fields_to_display = input_args.get("fieldsToDisplay")
     SELF_IN_CONTEXT = argToBoolean(input_args.get("includeSelf", "false"))
+
     if fields_to_display is not None:
         input_args["populateFields"] = fields_to_display
         fields_to_display = get_comma_sep_list(fields_to_display)
     else:
         fields_to_display = []
+    demisto.debug(f"fields_to_display: {fields_to_display}")
+    demisto.debug("Executing FindDuplicateEmailIncidents command.")
     res = demisto.executeCommand("FindDuplicateEmailIncidents", input_args)
     if is_error(res):
+        demisto.debug(f"Error from FindDuplicateEmailIncidents: {get_error(res)}")
         return_error(get_error(res))
 
     content_entry, non_content_entries = split_non_content_entries(res)
     incidents = json.loads(content_entry["Contents"])
     if incidents:
+        demisto.info(f"FindDuplicateEmailIncidents returned {len(incidents)} incidents.")
         skip_analysis = is_number_of_incidents_too_low(content_entry, incidents) or is_number_of_unique_recipients_is_too_low(
             incidents
         )
         if not skip_analysis:
+            demisto.debug("Proceeding with campaign analysis.")
             analyze_incidents_campaign(incidents, fields_to_display)
+        else:
+            demisto.info("Skipping campaign analysis due to pre-check failures (low incidents or recipients).")
+    else:
+        demisto.info("FindDuplicateEmailIncidents returned no incidents.")
     if non_content_entries:
+        demisto.debug(f"Returning {len(non_content_entries)} non-content entries.")
         return_results(non_content_entries)
+    demisto.debug("EmailCampaign script finished.")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

@@ -47,7 +47,7 @@ args:
   - NonClosedOnly
 - auto: PREDEFINED
   defaultValue: 'false'
-  description: Whether to close the current incident if a duplicate incident is found.
+  description: Whether to close the current incident if a duplicate incident is found. Only supported in Cortex XSOAR.
   name: closeAsDuplicate
   predefined:
   - 'true'
@@ -109,7 +109,7 @@ tags:
 - phishing
 timeout: 600ns
 type: python
-dockerimage: demisto/sklearn:1.0.0.2013408
+dockerimage: demisto/sklearn:1.0.0.5898415
 tests:
 - Detect & Manage Phishing Campaigns - Test
 fromversion: 5.0.0

@@ -1,0 +1,13 @@
+{
+    "raw_response": {
+        "stream_id": 12345,
+        "deletion": "completed"
+    },
+    "human_readable": "### Akamai WAF - delete datastream command\n|deletion|stream_id|\n|---|---|\n| completed | 12345 |\n",
+    "context_entry": {
+        "Akamai.DataStream": {
+            "stream_id": 12345,
+            "deletion": "completed"
+        }
+    }
+}

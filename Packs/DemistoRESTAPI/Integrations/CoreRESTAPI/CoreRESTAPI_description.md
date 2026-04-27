@@ -31,7 +31,7 @@
 <~XSOAR_SAAS>
 1. Go to **Settings & Info** > **Settings** > **Integrations** > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
-<~XSOAR_SAAS>
+</~XSOAR_SAAS>
 
 <~XSOAR_ON_PREM>
 Enter the server URL.

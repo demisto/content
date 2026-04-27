@@ -4,12 +4,13 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 
 from polyswarm_api.api import PolyswarmAPI
+from polyswarm_api import settings as polyswarm_settings
 
 import socket
 import io
 
 """ CONSTANTS """
-POLYSWARM_DEMISTO_VERSION = "0.2.0"
+POLYSWARM_DEMISTO_VERSION = "2.0.11"
 ERROR_ENDPOINT = "Error with endpoint: "
 
 
@@ -28,7 +29,12 @@ class PolyswarmConnector:
         self.config["base_url"] = demisto.params().get("base_url")
         self.config["polyswarm_community"] = demisto.params().get("polyswarm_community")
 
-        self.polyswarm_api = PolyswarmAPI(key=self.config["polyswarm_api_key"], uri=self.config["base_url"])
+        polyswarm_ua = f"{polyswarm_settings.DEFAULT_USER_AGENT} xsoar-PolySwarmV2/{POLYSWARM_DEMISTO_VERSION}"
+        self.polyswarm_api = PolyswarmAPI(
+            key=self.config["polyswarm_api_key"],
+            uri=self.config["base_url"],
+            user_agent=polyswarm_ua,
+        )
 
     def _get_results(
         self, object_name: str, title: str, total_scans: int, positives: int, permalink: str, artifact: str, indicator: object
@@ -65,12 +71,15 @@ class PolyswarmConnector:
         return True
 
     def get_score(self, polyscore) -> int:
-        if float(polyscore) < 0.2:
-            return Common.DBotScore.GOOD
-        elif 0.2 <= float(polyscore) < 0.7:
-            return Common.DBotScore.SUSPICIOUS
-        else:  # polyscore is >= 0.7
-            return Common.DBotScore.BAD
+        try:
+            if float(polyscore) < 0.2:
+                return Common.DBotScore.GOOD
+            elif 0.2 <= float(polyscore) < 0.7:
+                return Common.DBotScore.SUSPICIOUS
+            else:  # polyscore is >= 0.7
+                return Common.DBotScore.BAD
+        except TypeError:
+            return Common.DBotScore.NONE
 
     def return_hash_results(self, results: list, title: str, error_msg: str) -> object:
         # default values
@@ -94,9 +103,7 @@ class PolyswarmConnector:
                     positives += 1
                 total_scans += 1
 
-            demisto.debug(
-                f"Positives: {positives} - Total Scans: {total_scans}"
-            )
+            demisto.debug(f"Positives: {positives} - Total Scans: {total_scans}")
 
             md5 = result.md5
             sha256 = result.sha256

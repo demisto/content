@@ -1,0 +1,6 @@
+name: Azure FlowLogs Parsing Rule
+id: Azure_FlowLogs_ParsingRule
+fromversion: 8.5.0
+tags: []
+rules: ''
+samples: ''

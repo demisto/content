@@ -2,6 +2,7 @@ import json
 import random
 import re
 from datetime import datetime as dt
+from zoneinfo import ZoneInfo
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -16,13 +17,18 @@ QUOTE_MARKERS = [
 ]
 
 
-def get_utc_now():
-    """A wrapper function for datetime.utcnow
-    Helps handle tests
-    Returns:
-        datetime: current UTC time
+def get_current_time_in_timezone(tz_name: str = "UTC") -> str:
     """
-    return dt.utcnow()
+    Returns current time formatted in the requested timezone.
+    Falls back to UTC if timezone is invalid.
+    """
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        demisto.debug(f"Invalid timezone '{tz_name}' provided. Falling back to UTC.")
+        tz = ZoneInfo("UTC")
+
+    return dt.now(tz).isoformat()
 
 
 def get_query_window():
@@ -372,6 +378,7 @@ def create_thread_context(
     email_to,
     incident_id,
     attachments,
+    time_zone,
 ):
     """Creates a new context entry to store the email in the incident context.  Checks current threads
     stored on the incident to get the thread number associated with this new message, if present.
@@ -389,6 +396,7 @@ def create_thread_context(
         email_to: The address the email was delivered to
         incident_id: ID of the related incident
         attachments: File attachments from the email
+        time_zone: timezone used for email thread timestamps
     """
     thread_number = ""
     thread_found = False
@@ -443,7 +451,7 @@ def create_thread_context(
             "EmailTo": email_to,
             "EmailAttachments": f"{attachment_names}",
             "MessageDirection": "inbound",
-            "MessageTime": get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC"),
+            "MessageTime": get_current_time_in_timezone(time_zone),
         }
         # Add email message to context key
         try:
@@ -478,7 +486,7 @@ def main():
     email_latest_message = custom_fields.get("emaillatestmessage", "")
 
     reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
-
+    time_zone = args.get("timezone", "UTC")
     try:
         email_related_incident_code = email_subject.split("<")[1].split(">")[0]
         email_original_subject = email_subject.split("<")[-1].split(">")[1].strip()
@@ -525,6 +533,7 @@ def main():
                 email_to,
                 email_related_incident,
                 attachments,
+                time_zone,
             )
 
         # Return False - tell pre-processing to not create new incident

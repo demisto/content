@@ -28,4 +28,8 @@ Filter FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog events
 */
 filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
 | alter
-    _time = TimeGenerated;
+    time = to_string(time)
+| alter
+    tmp_get_time = if(len(time) > 20 and time not contains ".", parse_timestamp("%FT%X%Z", time ),len(time) = 20 and time not contains ".", parse_timestamp("%FT%XZ", time ),time ~="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{1,9}Z", parse_timestamp("%FT%H:%M:%E*SZ", time ),null)
+| alter
+    _time = coalesce(TimeGenerated , tmp_get_time);

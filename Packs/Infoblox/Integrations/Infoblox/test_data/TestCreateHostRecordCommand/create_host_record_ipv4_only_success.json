@@ -1,0 +1,31 @@
+{
+    "result": {
+        "_ref": "record:host/56789:testhost/%20",
+        "name": "testhost",
+        "view": "default",
+        "network_view": "default",
+        "comment": "Test host record",
+        "disable": false,
+        "configure_for_dns": true,
+        "ddns_protected": false,
+        "disable_discovery": false,
+        "dns_name": "testhost",
+        "extattrs": {},
+        "ipv4addrs": [
+            {
+                "_ref": "record:host_ipv4addr/67890:192.168.1.2/testhost/%20",
+                "configure_for_dhcp": true,
+                "host": "testhost",
+                "ipv4addr": "192.168.1.2"
+            }
+        ],
+        "ipv6addrs": [],
+        "rrset_order": "cyclic",
+        "type": "record:host",
+        "use_cli_credentials": false,
+        "use_snmp3_credential": false,
+        "use_snmp_credential": false,
+        "use_ttl": false,
+        "zone": ""
+    }
+}

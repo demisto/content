@@ -4,3 +4,5 @@ name: Trend Micro Deep Security Modeling Rule
 rules: ''
 schema: ''
 tags: Trend Micro TrendMicro Deep Security DeepSecurity
+supportedModules:
+- xsiam

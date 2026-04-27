@@ -350,15 +350,12 @@ def test_url_parameter(mocker):
 
 
 def test_get_api_token_when_found_in_integration_context(mocker):
-    """ Test cases for scenario when there is api_token and expiration_time in integration context."""
+    """Test cases for scenario when there is api_token and expiration_time in integration context."""
     from Armis import Client
 
-    test_integration_context = {
-        "token": "1234567890",
-        "token_expiration": time.ctime(time.time() + 10000)
-    }
+    test_integration_context = {"token": "1234567890", "token_expiration": time.ctime(time.time() + 10000)}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=test_integration_context)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=test_integration_context)
     client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
 
     api_token = client._get_token()
@@ -367,7 +364,7 @@ def test_get_api_token_when_found_in_integration_context(mocker):
 
 
 def test_get_api_token_when_expired_token_found_in_integration_context(mocker, requests_mock):
-    """ Test cases for scenario when there is an expired api_token in integration context."""
+    """Test cases for scenario when there is an expired api_token in integration context."""
     from Armis import Client
 
     mock_token = {"data": {"access_token": "example", "expiration_utc": time.ctime(time.time() + 10000)}}
@@ -383,12 +380,9 @@ def test_get_api_token_when_expired_token_found_in_integration_context(mocker, r
 def test_retry_for_401_error(mocker, requests_mock):
     from Armis import Client, search_alerts_by_aql_command
 
-    test_integration_context = {
-        "token": "invalid_token",
-        "token_expiration": time.ctime(time.time() - 10000)
-    }
+    test_integration_context = {"token": "invalid_token", "token_expiration": time.ctime(time.time() - 10000)}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=test_integration_context)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=test_integration_context)
 
     url = "https://test.com/api/v1/search/?aql="
     url += "+".join(
@@ -440,9 +434,9 @@ def test_retry_for_401_error(mocker, requests_mock):
     ]
     new_mock_results = {"data": {"results": example_alerts}}
 
-    requests_mock.register_uri('GET', url, [
-        {'status_code': 401, 'json': mock_results},
-        {'status_code': 200, 'json': new_mock_results}])
+    requests_mock.register_uri(
+        "GET", url, [{"status_code": 401, "json": mock_results}, {"status_code": 200, "json": new_mock_results}]
+    )
 
     client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
     args = {"aql_string": 'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'}
@@ -466,13 +460,15 @@ def test_test_module_when_is_fetch_is_true(mocker):
     """
     from Armis import Client, test_module as armis_test_module
 
-    params = {"isFetch": True,
-              "min_severity": "Low",
-              "alert_type": [],
-              "alert_status": [],
-              "free_fetch_string": "",
-              "first_fetch": "3 days",
-              "max_fetch": 10}
+    params = {
+        "isFetch": True,
+        "min_severity": "Low",
+        "alert_type": [],
+        "alert_status": [],
+        "free_fetch_string": "",
+        "first_fetch": "3 days",
+        "max_fetch": 10,
+    }
 
     mocker.patch.object(demisto, "params", return_value=params)
 
@@ -482,4 +478,4 @@ def test_test_module_when_is_fetch_is_true(mocker):
     response = {"results": [armis_incident], "next": "more data"}
     mocker.patch.object(client, "search_alerts", return_value=response)
 
-    assert armis_test_module(client, params) == 'ok'
+    assert armis_test_module(client, params) == "ok"

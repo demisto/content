@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
@@ -12,7 +11,6 @@ from CommonServerUserPython import *
 
 #  disable insecure warnings
 DEFAULT_KEYS_TO_REPLACE = {"createdDateTime": "CreatedDate"}
-urllib3.disable_warnings()
 
 APP_NAME = "ms-graph-security"
 API_V2 = "Alerts v2"
@@ -108,8 +106,11 @@ class MsGraphClient:
 
     def search_alerts(self, params):
         cmd_url = CMD_URL
-        demisto.debug(f"Fetching MS Graph Security incidents with params: {params}")
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        headers = {"Prefer": "include-unknown-enum-members"}
+        # This header maps unknownFutureValue value to the appropriate service resource.
+        # https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the
+        demisto.debug(f"Fetching MS Graph Security incidents with params: {params} and header: {headers}")
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, headers=headers)
         return response
 
     def get_alert_details(self, alert_id):
@@ -267,13 +268,256 @@ class MsGraphClient:
         body = {"purgeType": purge_type, "purgeAreas": purge_areas}
         return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body, resp_type="response")
 
+    def start_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/estimateStatistics"
+        body = {}
+        if statistics_options:
+            # Handle lists or single values safely
+            if isinstance(statistics_options, list):
+                statistics_options = ",".join(statistics_options)
+            body["statisticsOptions"] = statistics_options
+
+        response = self.ms_client.http_request(
+            method="POST",
+            url_suffix=url,
+            json_data=body,
+            resp_type="response",
+            ok_codes=[202],
+        )
+
+        # Get the Location header which contains the location of the microsoft.graph.security.estimateStatisticsOperation
+        # that was created to handle the estimate.
+        location_url = response.headers.get("Location")
+        if not location_url:
+            raise DemistoException("Estimate statistics is not available for this search_id.")
+
+        # Fetch operation status
+        operation = self.ms_client.http_request(method="GET", full_url=location_url)
+
+        return operation
+
+    def get_last_estimate_statistics_operation(self, case_id: str, search_id: str):
+        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/lastEstimateStatisticsOperation"
+        return self.ms_client.http_request(method="GET", url_suffix=url)
+
+    def create_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        display_name: str,
+        description: Any,
+        content_query: Any,
+    ) -> Any:
+        """
+        Create a legal hold policy for an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            display_name: The display name of the hold policy.
+            description: Description of the hold policy.
+            content_query: KQL query defining content to be held.
+
+        Returns:
+            The created hold policy object.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds"
+        body = assign_params(
+            displayName=display_name,
+            description=description,
+            contentQuery=content_query,
+        )
+        return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body)
+
+    def delete_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        hold_policy_id: str,
+    ) -> None:
+        """
+        Delete a legal hold policy from an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            hold_policy_id: The ID of the hold policy to delete.
+
+        Returns:
+            None.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
+        self.ms_client.http_request(
+            ok_codes=[204],
+            method="DELETE",
+            url_suffix=url,
+            return_empty_response=True,
+        )
+
+    def update_ediscovery_case_policy(
+        self,
+        case_id: str,
+        hold_policy_id: str,
+        description: Any,
+        content_query: Any,
+    ) -> None:
+        """
+        Update an existing legal hold policy.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            hold_policy_id: The ID of the hold policy to update.
+            description: Updated description.
+            content_query: Updated content query.
+
+        Returns:
+            None.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
+        body = assign_params(
+            description=description,
+            contentQuery=content_query,
+        )
+        self.ms_client.http_request(
+            ok_codes=[204],
+            method="PATCH",
+            url_suffix=url,
+            json_data=body,
+            return_empty_response=True,
+        )
+
+    def list_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        limit: int | None,
+    ) -> Any:
+        """
+        List legal hold policies for an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            limit: Maximum number of results to return.
+
+        Returns:
+            A list of hold policy objects.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds"
+        if limit:
+            url += f"?$top={limit}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+    def get_ediscovery_case_hold_policy(
+        self,
+        case_id: str,
+        hold_policy_id: str,
+    ) -> Any:
+        """
+        Retrieve a specific legal hold policy.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            hold_policy_id: The ID of the hold policy.
+
+        Returns:
+            The hold policy object.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/legalHolds/{hold_policy_id}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+    def list_case_operation(
+        self,
+        case_id: str,
+        limit: int | None,
+    ) -> Any:
+        """
+        List operations for an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            limit: Maximum number of results to return.
+
+        Returns:
+            A list of case operation objects.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/operations"
+        if limit:
+            url += f"?$top={limit}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+    def get_case_operation(
+        self,
+        case_id: str,
+        operation_id: str,
+    ) -> Any:
+        """
+        Retrieve a specific eDiscovery case operation.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            operation_id: The ID of the operation.
+
+        Returns:
+            The operation object.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/operations/{operation_id}"
+        return self.ms_client.http_request(ok_codes=[200], method="GET", url_suffix=url)
+
+    def export_result_ediscovery_data(
+        self,
+        case_id: str,
+        search_id: str,
+        additional_options: str,
+        export_criteria: str,
+        export_format: str,
+        cloud_attachment_version: str,
+        description: str,
+        display_name: str,
+        document_version: str,
+        export_location: str,
+    ) -> Any:
+        """
+        Export search results from an eDiscovery case.
+
+        Args:
+            case_id: The ID of the eDiscovery case.
+            search_id: The ID of the eDiscovery search.
+            additional_options: Additional export options.
+            export_criteria: Criteria defining what to export.
+            export_format: Export format.
+            cloud_attachment_version: Cloud attachment version.
+            description: Export description.
+            display_name: Display name of the export.
+            document_version: Document version.
+            export_location: Export destination.
+
+        Returns:
+            HTTP response object for the export request.
+        """
+        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/exportResult"
+        body = assign_params(
+            additionalOptions=additional_options,
+            exportCriteria=export_criteria,
+            exportFormat=export_format,
+            cloudAttachmentVersion=cloud_attachment_version,
+            description=description,
+            displayName=display_name,
+            documentVersion=document_version,
+            exportLocation=export_location,
+        )
+        headers = {"Prefer": "include-unknown-enum-members"}
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url,
+            json_data=body,
+            headers=headers,
+            ok_codes=[202],
+            return_empty_response=True,
+            resp_type="response",
+        )
+
     def create_mail_assessment_request(self, recipient_email, expected_assessment, category, user_id, message_id):
         body = {
             "@odata.type": "#microsoft.graph.mailAssessmentRequest",
             "recipientEmail": recipient_email,
             "expectedAssessment": expected_assessment,
             "category": category,
-            "messageUri": f"https://graph.microsoft.com/v1.0/users/{user_id}/messages/{message_id}",
+            "messageUri": urljoin(self.ms_client._base_url, "users/{user_id}/messages/{message_id}"),
         }
         return self.ms_client.http_request(method="POST", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
@@ -326,8 +570,6 @@ class MsGraphClient:
                 method="GET",
                 url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
                 params={"$skipToken": next_token},
-                retries=1,
-                status_list_to_retry=[405],
             )
         if filters:
             params["$filter"] = filters
@@ -336,9 +578,7 @@ class MsGraphClient:
             if sort_order:
                 params["$orderby"] = f"{order_by} {sort_order}"
 
-        return self.ms_client.http_request(
-            method="GET", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, params=params, retries=1, status_list_to_retry=[405]
-        )
+        return self.ms_client.http_request(method="GET", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, params=params)
 
     def advanced_hunting_request(self, query: str, timeout: int):
         """
@@ -387,6 +627,8 @@ class MsGraphClient:
         assigned_to: Optional[str],
         classification: Optional[str],
         determination: Optional[str],
+        severity: Optional[str],
+        resolving_comment: Optional[str],
         custom_tags: Optional[List[str]],
         timeout: int,
     ) -> dict:
@@ -399,6 +641,11 @@ class MsGraphClient:
              classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
              determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                   Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+             severity (str): Indicates the possible impact on assets. The higher the severity, the bigger the impact.
+                 Typically, higher severity items require the most immediate attention. The possible values are: unknown,
+                 informational, low, medium, high, unknownFutureValue.
+             resolving_comment (str): User input that explains the resolution of the incident and the classification choice.
+                 It contains free editable text.
              tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
                   for example: tag1,tag2,tag3.
              timeout (int): The amount of time (in seconds) that a request will wait for a client to
@@ -415,6 +662,8 @@ class MsGraphClient:
             assignedTo=assigned_to,
             classification=classification,
             determination=determination,
+            severity=severity,
+            resolvingComment=resolving_comment,
             customTags=custom_tags,
         )
 
@@ -422,6 +671,26 @@ class MsGraphClient:
             method="PATCH", url_suffix=f"security/incidents/{incident_id}", json_data=body, timeout=timeout
         )
         return updated_incident
+
+    def download_export_file(self, download_url: str):
+        """
+        Download an eDiscovery export file using the download URL returned by Microsoft Graph.
+
+        Args:
+            download_url (str): The pre-authorized download URL returned in the
+                `exportFileMetadata` property of an export operation.
+
+        Returns:
+            requests.Response: The raw HTTP response object (resp_type="response"),
+                which can be streamed or saved to disk by the caller.
+        """
+        return self.ms_client.http_request(
+            method="GET",
+            headers={"X-AllowWithAADToken": "true"},
+            full_url=download_url,
+            resp_type="response",
+            scope="b26e684c-5068-4120-a679-64a5d2c909d9/.default",
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -628,11 +897,13 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
                 providers_query.append(f"vendorInformation/provider eq '{provider}'")
             filter_query = " or ".join(providers_query)
         elif API_VER == API_V2 and service_sources_param:
-            service_sources_query = []
-            service_sources_lst = service_sources_param.split(",")
-            for service_source in service_sources_lst:
-                service_sources_query.append(f"serviceSource eq '{service_source}'")
-            filter_query = " or ".join(service_sources_query)
+            demisto.debug("In API V2 and service sources param")
+            service_sources_lst = [source.strip() for source in service_sources_param.split(",")]
+            # This creates a string like: "serviceSource in ('source1','source2')"
+            # see docs supporting this operation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+            quoted_sources = [f"'{source}'" for source in service_sources_lst]
+            filter_query = f"serviceSource in ({','.join(quoted_sources)})"
+    demisto.debug("filter query: " + str(filter_query))
     return filter_query
 
 
@@ -1500,7 +1771,7 @@ def update_ediscovery_search_command(client: MsGraphClient, args):
         args.get("search_id"),
         args.get("display_name"),
         args.get("description"),
-        args.get("query"),
+        args.get("content_query"),
         args.get("data_source_scopes"),
     )
 
@@ -1521,9 +1792,417 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     return CommandResults(readable_output=f"eDiscovery purge status is {status}.")
 
 
+def run_estimate_statistics_command(client: MsGraphClient, args) -> CommandResults:
+    case_id = args.get("case_id")
+    search_id = args.get("search_id")
+    statistics_options = argToList(args.get("statistics_options", []))
+
+    # Start the estimate statistics operation
+    client.start_estimate_statistics_request(case_id, search_id, statistics_options)
+
+    demisto.info(f"[run_estimate_statistics_command] Estimate statistics started for case {case_id}, search {search_id}.")
+
+    # Return confirmation only
+    return CommandResults(
+        readable_output=f"Estimate statistics request initiated for case `{case_id}`, search `{search_id}`.",
+    )
+
+
+def create_ediscovery_case_hold_policy_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    Create a legal hold policy for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing the created hold policy.
+    """
+    raw_resp = client.create_ediscovery_case_hold_policy(
+        args.get("case_id"),
+        args.get("display_name"),
+        args.get("description"),
+        args.get("content_query"),
+    )
+    human_readable = tableToMarkdown(
+        name="Created eDiscovery Hold Policy",
+        t={
+            "Display Name": raw_resp.get("displayName"),
+            "Id": raw_resp.get("id"),
+            "Status": raw_resp.get("status"),
+        },
+    )
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
+        outputs_key_field="ID",
+        outputs=capitalize_dict_keys_first_letter(raw_resp),
+        readable_output=human_readable,
+        raw_response=raw_resp,
+    )
+
+
+def delete_ediscovery_case_hold_policy_command(
+    client: MsGraphClient,
+    args: Any,
+) -> CommandResults:
+    """
+    Delete a legal hold policy from an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    hold_policy_id = args.get("hold_policy_id")
+    case_id = args.get("case_id")
+
+    client.delete_ediscovery_case_hold_policy(
+        case_id,
+        hold_policy_id,
+    )
+    return CommandResults(
+        readable_output=(f"The deletion request for hold policy {hold_policy_id} in case {case_id} was sent successfully."),
+    )
+
+
+def update_ediscovery_case_policy_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    Update a legal hold policy for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults with a success message.
+    """
+    case_id = args.get("case_id")
+    hold_policy_id = args.get("hold_policy_id")
+    description = args.get("description")
+    content_query = args.get("content_query")
+
+    if not description and not content_query:
+        raise DemistoException("Please provide at least one field to update: description and/or content_query.")
+
+    try:
+        client.update_ediscovery_case_policy(
+            case_id,
+            hold_policy_id,
+            description,
+            content_query,
+        )
+    except DemistoException as e:
+        err = str(e)
+
+        # Only enrich message when the user tried to update contentQuery and we recognize the failure
+        if content_query and "ErrorRuleNotFoundException" in err:
+            raise DemistoException(
+                f"Failed to update hold policy '{hold_policy_id}' content query.\n\n"
+                "This can happen when the hold policy was created using the legacy Security & Compliance (PowerShell/RPS) flow "
+                "and the underlying hold rule is not available to be updated via Microsoft Graph yet.\n\n"
+                "Recommended actions:\n"
+                "1) Retry the hold policy in Purview (Policy actions → Retry) and try again.\n"
+                "2) If the issue persists, recreate the hold policy using Microsoft Graph Security and "
+                "then manage it via the Graph commands.\n\n"
+                f"Error message: {err}"
+            ) from e
+
+        raise e
+    return CommandResults(readable_output=f'Hold policy {args.get("hold_policy_id")} was updated successfully.')
+
+
+def list_ediscovery_case_hold_policy_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults:
+    """
+    List or retrieve legal hold policies for an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing hold policy data.
+    """
+    case_id = args.get("case_id")
+    hold_policy_id = args.get("hold_policy_id")
+    limit = None if argToBoolean(args.get("all_results")) else int(args.get("limit", 50))
+
+    if hold_policy_id:
+        raw_res = client.get_ediscovery_case_hold_policy(case_id, hold_policy_id)
+        hold_list = [raw_res]
+    else:
+        raw_res = client.list_ediscovery_case_hold_policy(case_id, limit)
+        hold_list = raw_res.get("value", [])
+
+    demisto.debug(f"returned {len(hold_list)} results from the api")
+
+    hr = [
+        {
+            "Display Name": hold.get("displayName"),
+            "Id": hold.get("id"),
+            "Status": hold.get("status"),
+        }
+        for hold in hold_list
+    ]
+
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryCase.HoldPolicy",
+        outputs_key_field="ID",
+        outputs=[capitalize_dict_keys_first_letter(hold) for hold in hold_list],
+        readable_output=tableToMarkdown(name="eDiscovery Case Hold Policies", t=hr),
+        raw_response=raw_res,
+    )
+
+
+def list_case_operation_command(
+    client: MsGraphClient,
+    args,
+) -> CommandResults | list[dict | CommandResults]:
+    """
+    List or retrieve operations for an eDiscovery case.
+    Optionally downloads the export file when operation_id is provided and ediscovery-export-file=true.
+    """
+    case_id = args.get("case_id")
+    operation_id = args.get("operation_id")
+
+    download_file = argToBoolean(args.get("download_file", "false"))
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = None if all_results else int(args.get("limit", 50))
+
+    file_result = None
+
+    if operation_id:
+        raw_res = client.get_case_operation(case_id, operation_id)
+        operation_list = [raw_res]
+        if download_file and operation_list:
+            file_result = _download_operation_export_file(client, operation_list[0])
+    else:
+        raw_res = client.list_case_operation(case_id, limit)
+        operation_list = raw_res.get("value") or []
+        if isinstance(operation_list, dict):
+            operation_list = [operation_list]
+
+    demisto.debug(f"returned {len(operation_list)} results from the api")
+
+    hr = [
+        {
+            "ID": op.get("id"),
+            "Action": op.get("action"),
+            "Status": op.get("status"),
+            "Created By": op.get("createdBy"),
+            "Link to download a file": _extract_export_download_url(op),
+        }
+        for op in operation_list
+    ]
+
+    command_result = CommandResults(
+        outputs_prefix="MsGraph.eDiscoveryCase.Operation",
+        outputs_key_field="ID",
+        outputs=[capitalize_dict_keys_first_letter(op) for op in operation_list],
+        readable_output=tableToMarkdown(
+            name="eDiscovery Case Operations",
+            t=hr,
+            headers=["ID", "Action", "Status", "Created By", "Link to download a file"],
+            removeNull=True,
+        ),
+        raw_response=raw_res,
+    )
+
+    return [file_result, command_result] if file_result else command_result
+
+
+def _extract_export_download_url(operation: dict) -> str | None:
+    """
+    exportFileMetadata can be a dict or a list of dicts (sometimes).
+    Return downloadUrl if present.
+    """
+    meta = operation.get("exportFileMetadata")
+
+    if isinstance(meta, dict):
+        return meta.get("downloadUrl")
+    if isinstance(meta, list) and meta and isinstance(meta[0], dict):
+        return meta[0].get("downloadUrl")
+
+    return None
+
+
+def _extract_filename_from_headers(
+    headers: Optional[dict[str, str]] = None,
+    default: str = "ediscovery_export.zip",
+) -> str:
+    """
+    Extract a filename from the Content-Disposition header (expects `filename=...`).
+
+    Args:
+        headers: Response headers mapping.
+        default: Filename to return if Content-Disposition is missing or unparseable.
+
+    Returns:
+        The extracted filename, or `default`.
+    """
+    headers = headers or {}
+    cd = headers.get("Content-Disposition") or headers.get("content-disposition") or ""
+
+    m = re.search(r'(?i)\bfilename\s*=\s*"?([^";]+)"?', cd)
+    return (m.group(1).strip() if m else "") or default
+
+
+def _download_operation_export_file(client: MsGraphClient, operation: dict) -> dict | None:
+    """
+    Download the export file referenced by an operation and return a fileResult.
+    Returns None if the operation has no valid download URL.
+    """
+    download_url = _extract_export_download_url(operation)
+    if not isinstance(download_url, str) or not download_url:
+        return None
+
+    res = client.download_export_file(download_url)
+
+    status = getattr(res, "status_code", None)
+    ok = bool(getattr(res, "ok", False))
+    if not ok:
+        text = (getattr(res, "text", "") or "")[:500]
+        raise DemistoException(f"Failed to download export file. HTTP {status}. {text}")
+
+    file_bytes = getattr(res, "content", None) or b""
+    if len(file_bytes) == 0:
+        raise DemistoException(f"Downloaded export file is empty. HTTP {status}.")
+
+    filename = _extract_filename_from_headers(getattr(res, "headers", None), default="ediscovery_export.zip")
+    return fileResult(filename=filename, data=file_bytes)
+
+
+def export_result_ediscovery_data_command(
+    client: MsGraphClient,
+    args: Any,
+) -> CommandResults:
+    """
+    Export search results from an eDiscovery case.
+
+    Args:
+        client: Microsoft Graph client.
+        args: Command arguments.
+
+    Returns:
+        CommandResults containing the export operation location.
+    """
+    resp = client.export_result_ediscovery_data(
+        args.get("case_id"),
+        args.get("search_id"),
+        args.get("additional_options"),
+        args.get("export_criteria"),
+        args.get("export_format"),
+        args.get("cloud_attachment_version"),
+        args.get("description"),
+        args.get("display_name"),
+        args.get("document_version"),
+        args.get("export_location"),
+    )
+
+    operation_url = resp.headers.get("Location")
+    if not operation_url:
+        raise DemistoException("Missing Location header in exportResult response")
+
+    case_id_from_url = re.search(r"ediscoveryCases\('([^']+)'\)", operation_url) or re.search(
+        r"ediscoveryCases/([^/]+)/", operation_url
+    )
+    operation_id_from_url = re.search(r"operations\('([^']+)'\)", operation_url) or re.search(
+        r"operations/([^/?]+)", operation_url
+    )
+
+    case_id = (case_id_from_url.group(1) if case_id_from_url else args.get("case_id")) or "N/A"
+    operation_id = operation_id_from_url.group(1) if operation_id_from_url else "N/A"
+
+    readable_output = (
+        "eDiscovery export request was submitted successfully.\n" f"- Case ID: {case_id}\n" f"- Operation ID: {operation_id}\n"
+    )
+    outputs = {"Location": operation_url, "OperationID": operation_id, "CaseID": case_id}
+    return CommandResults(readable_output=readable_output, outputs=outputs, outputs_prefix="MsGraph.eDiscoveryCase.Export")
+
+
+# @polling_function(
+#     "msg-get-last-estimate-statistics-operation",
+#     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+#     requires_polling_arg=False,
+# )
+def _get_last_estimate_statistics_command(args, client: MsGraphClient) -> PollResult:
+    case_id = args.get("case_id")
+    search_id = args.get("search_id")
+
+    resp = client.get_last_estimate_statistics_operation(case_id, search_id)
+    status = (resp.get("status") or "").lower()
+
+    if status not in ("succeeded", "completed"):
+        demisto.debug(f"[get_last_estimate_statistics_command] Status: {status}, scheduling next poll.")
+        return PollResult(
+            continue_to_poll=True,
+            args_for_next_run=args,
+            response=None,
+            partial_result=CommandResults(
+                readable_output=f"Estimate statistics operation is still running... (Status: {status})"
+            ),
+        )
+
+    # Completed — return final statistics
+    stats_info = {
+        "Operation ID": resp.get("id"),
+        "Status": resp.get("status"),
+        "Progress": resp.get("percentProgress"),
+        "Created": resp.get("createdDateTime"),
+        "Last Modified": resp.get("lastActionDateTime"),
+        "Indexed Items": resp.get("indexedItemCount"),
+        "Indexed Size (bytes)": resp.get("indexedItemsSize"),
+        "Unindexed Items": resp.get("unindexedItemCount"),
+        "Unindexed Size (bytes)": resp.get("unindexedItemsSize"),
+        "Total Items": resp.get("totalItemCount"),
+        "Total Size (bytes)": resp.get("totalItemsSize"),
+        "Mailbox Count": resp.get("mailboxCount"),
+        "Site Count": resp.get("siteCount"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"eDiscovery Estimate Statistics for Search `{search_id}`",
+        stats_info,
+        removeNull=True,
+    )
+
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="MsGraph.eDiscovery.EstimateStatistics",
+            outputs_key_field="id",
+            outputs=resp,
+            raw_response=resp,
+        )
+    )
+
+
+# Decorated version for XSOAR runtime
+get_last_estimate_statistics_command = polling_function(
+    "msg-get-last-estimate-statistics-operation",
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+    requires_polling_arg=False,
+)(_get_last_estimate_statistics_command)
+
+
 def create_ediscovery_search_command(client: MsGraphClient, args):
     resp = client.create_ediscovery_search(
-        args.get("case_id"), args.get("display_name"), args.get("description"), args.get("query"), args.get("data_source_scopes")
+        args.get("case_id"),
+        args.get("display_name"),
+        args.get("description"),
+        args.get("content_query"),
+        args.get("data_source_scopes"),
     )
 
     return to_ediscovery_search_command_results(resp)
@@ -1660,6 +2339,11 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
               - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
               - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+              - severity (str): Indicates the possible impact on assets. The higher the severity, the bigger the impact.
+                 Typically, higher severity items require the most immediate attention. The possible values are: unknown,
+                 informational, low, medium, high, unknownFutureValue.
+              - resolving_comment (str): User input that explains the resolution of the incident and the classification choice.
+                 It contains free editable text.
               - custom_tags - Custom tags associated with an incident. Separated by commas without spaces (CSV)
                        for example: tag1,tag2,tag3.
 
@@ -1670,6 +2354,8 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
     assigned_to = args.get("assigned_to")
     determination = args.get("determination")
     classification = args.get("classification")
+    severity = args.get("severity")
+    resolving_comment = args.get("resolving_comment")
     custom_tags = argToList(args.get("custom_tags"))
     timeout = arg_to_number(args["timeout"])  # default value is defined
     updated_incident = client.update_incident_request(
@@ -1678,6 +2364,8 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
         assigned_to=assigned_to,
         classification=classification,
         determination=determination,
+        severity=severity,
+        resolving_comment=resolving_comment,
         custom_tags=custom_tags,
         timeout=timeout,  # type:ignore[arg-type]
     )
@@ -2021,7 +2709,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
-    url = params.get("host", "").rstrip("/") + "/v1.0/"
     tenant = params.get("creds_tenant_id", {}).get("password") or params.get("tenant_id")
     auth_and_token_url = params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
     enc_key = params.get("creds_enc_key", {}).get("password") or params.get("enc_key")
@@ -2032,6 +2719,7 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
+    azure_cloud = get_azure_cloud(params, "MicrosoftGraphSecurity")
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2075,13 +2763,19 @@ def main():
         "msg-list-ediscovery-searchs": list_ediscovery_search_command,
         "msg-delete-ediscovery-search": delete_ediscovery_search_command,
         "msg-purge-ediscovery-data": purge_ediscovery_data_command,
+        "msg-run-estimate-statistics": run_estimate_statistics_command,
         "msg-advanced-hunting": advanced_hunting_command,
         "msg-list-security-incident": get_list_security_incident_command,
         "msg-update-security-incident": update_incident_command,
+        "msg-create-ediscovery-case-hold-policy": create_ediscovery_case_hold_policy_command,
+        "msg-delete-ediscovery-case-hold-policy": delete_ediscovery_case_hold_policy_command,
+        "msg-update-ediscovery-case-hold-policy": update_ediscovery_case_policy_command,
+        "msg-list-ediscovery-case-hold-policy": list_ediscovery_case_hold_policy_command,
+        "msg-list-case-operation": list_case_operation_command,
+        "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
-
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
@@ -2094,7 +2788,10 @@ def main():
             enc_key=enc_key,
             redirect_uri=redirect_uri,
             app_name=APP_NAME,
-            base_url=url,
+            azure_cloud=azure_cloud,
+            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"/{tenant}/oauth2/v2.0/token"),
+            base_url=urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/v1.0/"),
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
@@ -2129,6 +2826,8 @@ def main():
             return_results(create_url_assessment_request_command(args, client))
         elif command == "msg-list-threat-assessment-requests":
             return_results(list_threat_assessment_requests_command(client, args))
+        elif command == "msg-get-last-estimate-statistics-operation":
+            return_results(get_last_estimate_statistics_command(args, client))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
         elif demisto.command() == "msg-generate-login-url":
@@ -2145,7 +2844,7 @@ def main():
                 return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
-        return_error(f"Failed to execute {command} command.\nError:\n{err}\nTraceback:{traceback.format_exc()}")
+        return_error(str(err))
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

@@ -3,3 +3,5 @@ id: MicrosoftWindowsEvents
 name: MicrosoftWindowsEvents
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

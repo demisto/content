@@ -1,0 +1,31 @@
+{
+    "id": "incident_dataminrpulsesubheadlinecontent",
+    "version": -1,
+    "modified": "2025-09-03T19:48:43.183658842+05:30",
+    "name": "Dataminr Pulse Sub Headline Content",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsesubheadlinecontent",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Dataminr Pulse ReGenAI Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

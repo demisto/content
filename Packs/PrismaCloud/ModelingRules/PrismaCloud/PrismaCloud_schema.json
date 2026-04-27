@@ -27,6 +27,10 @@
         "status": {
             "type": "string",
             "is_array": false
+        },
+        "alertTime": {
+            "type": "int",
+            "is_array": false
         }
     }
 }

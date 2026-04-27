@@ -1,7 +1,7 @@
 [
     {
         "_vectra_specific": {
-            "UI_URL": "https://vectra.test/accounts/107?pivot=Vectra_AI-XSOAR-2.0.0",
+            "UI_URL": "https://vectra.test/accounts/107?pivot=Vectra_AI-XSOAR-2.1.0",
             "entity_type": "account"
         },
         "account_type": [
@@ -62,7 +62,7 @@
                 "detection": "Azure AD Suspicious Sign-On",
                 "detection_category": "COMMAND & CONTROL",
                 "detection_type": "Azure AD Suspicious Sign-On",
-                "url": "https://vectra.test/detections/14?pivot=Vectra_AI-XSOAR-2.0.0",
+                "url": "https://vectra.test/detections/14?pivot=Vectra_AI-XSOAR-2.1.0",
                 "filtered_by_ai": false,
                 "filtered_by_rule": false,
                 "filtered_by_user": false,

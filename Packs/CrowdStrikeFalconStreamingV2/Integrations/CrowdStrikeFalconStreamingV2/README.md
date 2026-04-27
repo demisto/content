@@ -126,7 +126,7 @@ The command output is as follows:
     "metadata": {
         "customerIDString": "20874a8064904ecfbb62c118a6a19411",
         "eventCreationTime": 1592479032000,
-        "eventType": "DetectionSummaryEvent",
+        "eventType": "EppDetectionSummaryEvent",
         "offset": 70628,
         "version": "1.0"
     }

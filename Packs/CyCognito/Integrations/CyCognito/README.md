@@ -3,9 +3,15 @@ This integration was integrated and tested with CyCognito V1 API.
 
 ## Configure CyCognito in Cortex
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for CyCognito.
+3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | The API Key required to authenticate to the service. | True |
+| Region | Select the region based on the location of the CyCognito instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field. | False |
+| Other Region | Specify the region based on the location of the CyCognito instance. Only applicable if the "Other" option is selected in the Region dropdown. | False |
 | Incident type | Incident type to map if no classifier is provided. | False |
 | Incident Mirroring Direction | The mirroring direction in which to mirror the incident. You can mirror only in \(from CyCognito to XSOAR\), out \(from XSOAR to CyCognito\), or in both directions. | False |
 | Fetch incidents | Indicates whether to fetch incident from the instance. | False |
@@ -19,6 +25,8 @@ This integration was integrated and tested with CyCognito V1 API.
 | Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
 | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Incidents Fetch Interval | Time interval for fetching incidents. | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 

@@ -1,0 +1,31 @@
+commonfields:
+  id: MsGraphMailDeleteEmail
+  version: -1
+name: MsGraphMailDeleteEmail
+script: ''
+type: python
+tags:
+  - Utilities
+comment: A polling wrapper script; deletes an email.
+enabled: true
+args:
+  - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+    name: user_id
+    required: true
+  - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    name: message_id
+    required: true
+  - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
+    name: folder_id
+  - deprecated: true
+    description: A flag for rate limit retry.
+    name: ran_once_flag
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.1.0
+isInternal: true
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform

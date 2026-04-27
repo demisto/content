@@ -4,6 +4,7 @@ commonfields:
 name: Genians
 display: Genians
 category: Network Security
+provider: Genians
 description: Use the Genian NAC integration to block IP addresses using the assign tag.
 detaileddescription:
 configuration:
@@ -59,7 +60,7 @@ script:
       description: Tag name.
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

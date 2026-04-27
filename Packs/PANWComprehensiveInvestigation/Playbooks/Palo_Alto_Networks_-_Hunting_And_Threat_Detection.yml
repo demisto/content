@@ -2,7 +2,7 @@ id: Palo Alto Networks - Hunting And Threat Detection
 version: -1
 fromversion: 5.0.0
 name: Palo Alto Networks - Hunting And Threat Detection
-description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nThe playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook enables you to find possibly affected IP addresses, users, and endpoints."
+description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nThe playbook leverages data received by PANW products including, Strata Logging Service and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook enables you to find possibly affected IP addresses, users, and endpoints."
 starttaskid: "0"
 tasks:
   "0":
@@ -56,7 +56,6 @@ tasks:
     nexttasks:
       '#none#':
       - "96"
-      - "108"
       - "109"
       - "175"
     scriptarguments:
@@ -194,7 +193,6 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "112"
       - "90"
       - "113"
       - "184"
@@ -242,7 +240,6 @@ tasks:
       "yes":
       - "111"
       - "93"
-      - "110"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -264,112 +261,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 40a05796-6e85-4c73-8fd2-f893c6326afd
-    type: condition
-    task:
-      id: 40a05796-6e85-4c73-8fd2-f893c6326afd
-      version: -1
-      name: Is Autofocus enabled?
-      description: Is Autofocus enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "23"
-      "yes":
-      - "100"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AutoFocus V2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 1100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 0dcc38bf-5be7-4253-86c4-0ae975892c33
-    type: condition
-    task:
-      id: 0dcc38bf-5be7-4253-86c4-0ae975892c33
-      version: -1
-      name: Are there related sessions in Autofocus?
-      description: Are there related sessions in Autofocus?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "23"
-      "yes":
-      - "86"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AutoFocus.SessionsResults.dst_ip
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: AutoFocus.SessionsResults.src_ip
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 1760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -788,57 +679,11 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: 19e4e525-4811-453c-8b0e-abd9d7a133bf
-    type: condition
-    task:
-      id: 19e4e525-4811-453c-8b0e-abd9d7a133bf
-      version: -1
-      name: Are there related sessions in Autofocus?
-      description: Are there related sessions in Autofocus?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "72"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AutoFocus.SessionsResults.dst_ip
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: AutoFocus.SessionsResults.src_ip
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 590,
-          "y": 1610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "47":
@@ -1212,129 +1057,11 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: 5c3e164b-98bf-4b51-808b-7595db30a868
-    type: condition
-    task:
-      id: 5c3e164b-98bf-4b51-808b-7595db30a868
-      version: -1
-      name: Is Autofocus enabled?
-      description: Is Autofocus enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "99"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AutoFocus V2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 38c609ba-71d2-4578-8127-66d187c1d5a5
-    type: condition
-    task:
-      id: 38c609ba-71d2-4578-8127-66d187c1d5a5
-      version: -1
-      name: Is Autofocus enabled?
-      description: Is Autofocus enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "55"
-      "yes":
-      - "101"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AutoFocus V2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 4710,
-          "y": 1170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "70":
@@ -1449,60 +1176,11 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "72":
-    id: "72"
-    taskid: 38938eae-d197-4b34-8ad1-835b8ac3c77f
-    type: regular
-    task:
-      id: 38938eae-d197-4b34-8ad1-835b8ac3c77f
-      version: -1
-      name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: PANWHunting.DetectedIPs
-      value:
-        complex:
-          root: ${AutoFocus
-          accessor: SessionsResults.src_ip}
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${AutoFocus.SessionsResults.dst_ip}
-                iscontext: true
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 590,
-          "y": 1950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "80":
@@ -1670,101 +1348,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
-    taskid: f57f5c5b-d440-4847-85cf-996b9bbbaad7
-    type: regular
-    task:
-      id: f57f5c5b-d440-4847-85cf-996b9bbbaad7
-      version: -1
-      name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "55"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: ${AutoFocus
-          accessor: SessionsResults.dst_ip}
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${AutoFocus.SessionsResults.dst_ip}
-                iscontext: true
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 5270,
-          "y": 1825
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "84":
-    id: "84"
-    taskid: 9c33eecb-7e04-476f-8042-df44b73456f5
-    type: condition
-    task:
-      id: 9c33eecb-7e04-476f-8042-df44b73456f5
-      version: -1
-      name: Are there related sessions in Autofocus?
-      description: Are there related sessions in Autofocus?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "55"
-      "yes":
-      - "83"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AutoFocus.SessionsResults.dst_ip
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: AutoFocus.SessionsResults.src_ip
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 4990,
-          "y": 1610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "85":
     id: "85"
     taskid: 61c46324-3bf4-4bbe-810a-1b8619d74ba6
@@ -1796,49 +1379,6 @@ tasks:
         "position": {
           "x": 4050,
           "y": 1610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
-    taskid: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
-    type: regular
-    task:
-      id: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
-      version: -1
-      name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: PANWHunting.DetectedIPs
-      value:
-        complex:
-          root: ${AutoFocus
-          accessor: SessionsResults.src_ip}
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 2155
         }
       }
     note: false
@@ -2099,161 +1639,6 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  "99":
-    id: "99"
-    taskid: c537fc45-5e32-4933-8e7a-bd8f11b78b77
-    type: playbook
-    task:
-      id: c537fc45-5e32-4933-8e7a-bd8f11b78b77
-      version: -1
-      name: Autofocus Query Samples, Sessions and Tags
-      description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or advanced queries that can leverage several query parameters. To run advanced queries, we recommend first using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and than use the export search button. The result can be used as a playbook input.
-
-        The playbook supports searching both the Samples API and the Sessions API.
-      playbookName: Autofocus Query Samples, Sessions and Tags
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "43"
-    scriptarguments:
-      Hash:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: toUpperCase
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      Search Type:
-        simple: session
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 590,
-          "y": 1350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "100":
-    id: "100"
-    taskid: ba675c58-ac65-4301-8335-c618d772b2d6
-    type: playbook
-    task:
-      id: ba675c58-ac65-4301-8335-c618d772b2d6
-      version: -1
-      name: Autofocus Query Samples, Sessions and Tags
-      playbookName: Autofocus Query Samples, Sessions and Tags
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.IPAddresses
-          transformers:
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      Search Type:
-        simple: session
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 1545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "101":
-    id: "101"
-    taskid: 2eb947e7-5df0-4696-8af5-c69e58297b02
-    type: playbook
-    task:
-      id: 2eb947e7-5df0-4696-8af5-c69e58297b02
-      version: -1
-      name: Autofocus Query Samples, Sessions and Tags
-      playbookName: Autofocus Query Samples, Sessions and Tags
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "84"
-    scriptarguments:
-      Search Type:
-        simple: session
-      URL:
-        complex:
-          root: inputs.URLDomain
-          transformers:
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 4990,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "104":
     id: "104"
     taskid: 0875678b-51fb-4d3c-8882-37861c5120dd
@@ -2395,37 +1780,6 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  "108":
-    id: "108"
-    taskid: bf03de85-aaf8-41d4-81f7-7f5ca5814ee0
-    type: title
-    task:
-      id: bf03de85-aaf8-41d4-81f7-7f5ca5814ee0
-      version: -1
-      name: Autofocus hash search
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "68"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "109":
     id: "109"
     taskid: c35b5e37-813f-472e-8ec8-ee41b091b463
@@ -2457,37 +1811,6 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  "110":
-    id: "110"
-    taskid: 6d241144-3dc7-40c1-8b2d-f01d3bb9c9aa
-    type: title
-    task:
-      id: 6d241144-3dc7-40c1-8b2d-f01d3bb9c9aa
-      version: -1
-      name: Autofocus domain search
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "69"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4710,
-          "y": 1025
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "111":
     id: "111"
     taskid: 3d88479c-bc21-4821-812a-d9d3027ea6d6
@@ -2509,37 +1832,6 @@ tasks:
         "position": {
           "x": 3310,
           "y": 1025
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "112":
-    id: "112"
-    taskid: 346194fe-e8bb-4833-8388-75cc8d787238
-    type: title
-    task:
-      id: 346194fe-e8bb-4833-8388-75cc8d787238
-      version: -1
-      name: Autofocus IP seach
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1230,
-          "y": 910
         }
       }
     note: false
@@ -4226,7 +3518,6 @@ view: |-
   {
     "linkLabelsPosition": {
       "104_55_#default#": 0.19,
-      "10_110_yes": 0.85,
       "10_55_#default#": 0.19,
       "129_23_#default#": 0.12,
       "178_4_#default#": 0.1,
@@ -4234,34 +3525,25 @@ view: |-
       "185_23_#default#": 0.1,
       "187_188_yes": 0.46,
       "187_23_#default#": 0.1,
-      "18_100_yes": 0.41,
-      "18_23_#default#": 0.15,
-      "21_23_#default#": 0.32,
-      "21_86_yes": 0.41,
       "26_23_#default#": 0.11,
       "31_23_#default#": 0.12,
       "35_4_#default#": 0.42,
       "3_2_yes": 0.4,
       "3_4_#default#": 0.25,
-      "43_4_#default#": 0.19,
       "48_4_#default#": 0.24,
-      "5_112_yes": 0.49,
       "5_184_yes": 0.85,
       "5_23_#default#": 0.24,
       "66_23_#default#": 0.1,
       "67_55_#default#": 0.25,
-      "68_4_#default#": 0.1,
-      "69_55_#default#": 0.18,
       "70_23_#default#": 0.29,
       "82_4_#default#": 0.26,
-      "84_55_#default#": 0.1,
       "85_55_#default#": 0.23,
       "92_55_#default#": 0.11
     },
     "paper": {
       "dimensions": {
         "height": 4455,
-        "width": 10700,
+        "width": 9640,
         "x": -5050,
         "y": 10
       }

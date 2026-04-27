@@ -1706,7 +1706,9 @@ marketplaces:
 - platform
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

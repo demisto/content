@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### To align with API changes from Jira, The ***jira-query-issue*** command now accepts a next_page_token argument instead of the previous start_at argument."
+}

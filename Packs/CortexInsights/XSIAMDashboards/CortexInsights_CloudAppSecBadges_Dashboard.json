@@ -1,0 +1,704 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Cloud Appsec Badges (Text)",
+            "description": "This dashboard tracks the achievement of key milestones for implementing Cloud Application Security best practices. It visualizes whether essential configurations are in place, such as the creation of custom policies, the use of automated CI/CD actions, and recent scan activity.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-3400",
+                    "data": [
+                        {
+                            "key": "xql_1770931833379",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy for any Finding Type\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy for any Finding Type\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policy_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770930118959",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d | dataset = cas_policies  | filter is_custom = true  | filter actions = \"REPORT_CLI\" \n| comp count_distinct(policy_id   ) as policy_count\n| alter status = if (policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Comment\" xaxis = status yaxis = policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy with CI Comment\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "policy_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770926769532",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with PR Comment or Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy with PR Comment or Block\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policy_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "`true`"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9265",
+                    "data": [
+                        {
+                            "key": "xql_1770926375988",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 707.5,
+                                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id  ) as cicd_scan_count\n| alter status = if (cicd_scan_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"At least one CI scan in past week\" xaxis = status yaxis = cicd_scan_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"At least one CI scan in past week\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "cicd_scan_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770928928880",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"\n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy with CI Block\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policy_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "multi_color",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "7ff8d94b7db547cead7690b864397fd0",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1770926375988",
+            "title": "Fixing issues earlier in the Application Lifecycle - Silver",
+            "creation_time": 1771946943625,
+            "description": "This widget confirms whether at least one CI/CD scan has been conducted in the past week. It provides a quick check to ensure that security practices are being consistently applied early in the application lifecycle.",
+            "data": {
+                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id  ) as cicd_scan_count\n| alter status = if (cicd_scan_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"At least one CI scan in past week\" xaxis = status yaxis = cicd_scan_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"At least one CI scan in past week\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "cicd_scan_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "scans_management"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770930118959",
+            "title": "AppSec coverage - Silver",
+            "creation_time": 1771946943524,
+            "description": "This widget indicates whether a custom AppSec policy is active to report findings as comments within your CI/CD pipeline. Achieving this status provides developers with immediate security feedback in their workflow, enabling faster remediation of vulnerabilities.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cas_policies  | filter is_custom = true  | filter actions = \"REPORT_CLI\" \n| comp count_distinct(policy_id   ) as policy_count\n| alter status = if (policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Comment\" xaxis = status yaxis = policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with CI Comment\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "policy_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770928928880",
+            "title": "Fixing issues earlier in the Application Lifecycle - Gold",
+            "creation_time": 1771946943869,
+            "description": "This widget displays whether a custom policy is active to block vulnerable code submissions during the development process. This status confirms the adoption of a proactive security posture, reducing risk by preventing vulnerabilities from entering the codebase at the earliest stage.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"\n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with CI Block\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policy_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770931833379",
+            "title": "AppSec Coverage - Bronze",
+            "creation_time": 1771946943726,
+            "description": "This widget verifies the existence of at least one custom Application Security (AppSec) policy created within the last 30 days. Achieving this bronze-level metric demonstrates that the organization has begun to actively tailor its cloud security monitoring beyond the default configuration.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy for any Finding Type\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy for any Finding Type\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policy_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770926769532",
+            "title": "AppSec Coverage - Gold",
+            "creation_time": 1771946944028,
+            "description": "This widget indicates whether the organization has active, custom AppSec policies designed to automatically block or comment on developer pull requests. This status serves as a key indicator of a mature 'shift-left' security posture, which proactively prevents vulnerabilities from being introduced into the codebase.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with PR Comment or Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with PR Comment or Block\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policy_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "`true`"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

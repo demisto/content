@@ -82,7 +82,7 @@
                 "notifyTime": "0001-01-01T00:00:00Z",
                 "occurred": "2025-04-22T15:26:17.021909512Z",
                 "openDuration": 0,
-                "owner": "dfried@paloaltonetworks.com",
+                "owner": "df@example.com",
                 "parent": "",
                 "parentXDRIncident": "INCIDENT-71527896cc72bbc21fd1cf63812c104e$&$ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
                 "phase": "",
@@ -129,10 +129,10 @@
             "category": "",
             "closed": "0001-01-01T00:00:00Z",
             "created": "2025-04-22T15:26:17.022Z",
-            "creatingUserId": "dfried@paloaltonetworks.com",
+            "creatingUserId": "df@example.com",
             "details": "",
             "entryUsers": [
-                "dfried@paloaltonetworks.com"
+                "df@example.com"
             ],
             "highPriority": false,
             "id": "71527896cc72bbc21fd1cf63812c104e$&$ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
@@ -153,7 +153,7 @@
             "tags": null,
             "type": 10,
             "users": [
-                "dfried@paloaltonetworks.com"
+                "df@example.com"
             ],
             "version": 1
         },
@@ -411,7 +411,7 @@
             "disabled": false,
             "editedDashboards": null,
             "editorStyle": "",
-            "email": "dfried@paloaltonetworks.com",
+            "email": "df@example.com",
             "externalSAMLSession": null,
             "favoriteIncidents": null,
             "fcmToken": "",
@@ -419,7 +419,7 @@
             "helpSnippetDisabled": false,
             "homepage": "",
             "hours24": "",
-            "id": "dfried@paloaltonetworks.com",
+            "id": "df@example.com",
             "imagePrefix": "",
             "investigationPage": "",
             "investogations": {
@@ -434,7 +434,7 @@
             "lastMasterLogin": "0001-01-01T00:00:00Z",
             "lastWarRoomVisitEntryId": null,
             "modified": "0001-01-01T00:00:00Z",
-            "name": "Danny Fried",
+            "name": "Dan Testfried",
             "notificationSubscriptionPackIds": null,
             "notificationsSettings": null,
             "notify": null,
@@ -461,7 +461,7 @@
             "timeZone": "",
             "userTimeZone": "",
             "userType": 0,
-            "username": "dfried@paloaltonetworks.com",
+            "username": "df@example.com",
             "version": 0,
             "wasAssigned": false
         },

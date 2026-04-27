@@ -1,0 +1,14 @@
+{
+    "result": [
+        {
+            "_ref": "zone_rp/dummy:test.com/default",
+            "disable": false,
+            "fqdn": "test.com",
+            "rpz_policy": "GIVEN",
+            "rpz_severity": "MAJOR",
+            "rpz_type": "LOCAL",
+            "view": "default",
+            "comment": "Test response policy zone"
+        }
+    ]
+}

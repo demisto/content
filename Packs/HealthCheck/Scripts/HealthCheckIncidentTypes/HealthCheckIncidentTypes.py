@@ -11,8 +11,10 @@ def main():
     incident = demisto.incidents()[0]
     account_name = incident.get("account")
     account_name = f"acc_{account_name}" if account_name != "" else ""
-
-    res = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})["response"]
+    if is_demisto_version_ge("8.0.0"):
+        res = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})[0]["response"]
+    else:
+        res = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})["response"]
 
     nonLockedTypes = filter_non_locked(res)
 

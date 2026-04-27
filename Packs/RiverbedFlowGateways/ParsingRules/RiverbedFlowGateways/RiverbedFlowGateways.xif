@@ -1,0 +1,16 @@
+[INGEST:vendor="riverbed", product="flow_gateways", target_dataset="riverbed_flow_gateways_raw", no_hit=keep]
+// This parsing rule supports logs in RFC 5424 syslog protocol for UTC timezone. For example: 1985-04-12T23:20:50.52Z.
+// The "_time" field is parsed from the "created" field foung in the syslog payload.
+// All fields from the syslog are populated into 3 JSON objects: parsed_header, parsed_fields1 and parsed_fields2.
+filter _raw_log ~= "\<\d+\>.+\s\S+\s\S+\[\d+\]\:"
+| alter
+    tmp_get_keys1 = rtrim(arraystring(arraymap(regextract(_raw_log, "(?:AuditEventID@\d+\s)?\s*([^=\[]+)=\"[^\"]+\""), concat("(?P<", replex("@element", "[^a-zA-Z0-9_]", "_"), ">[^|]+)?\|")), ""), "\|"),
+    tmp_get_values1 = replex(replex(arraystring(regextract(_raw_log, "(?:AuditEventID@\d+\s)?[^=\[]+=\"([^\"]+)\""), "|"), "(?:^|)null(?:\||$)", "|"), "\|$", ""),
+    tmp_get_keys2 = rtrim(arraystring(arraymap(regextract(_raw_log, "Key Value:([^@]+)\@"), concat("(?P<", replex("@element", "[^a-zA-Z0-9_]", "_"), ">[^|]+)?\|")), ""), "\|"),
+    tmp_get_values2 = replex(replex(arraystring(regextract(_raw_log, "Key Value:.+?\@([^@|]+)\|*"), "|"), "(?:^|)null(?:\||$)", "|"), "\|$", "")
+| alter
+    parsed_fields1 = if(tmp_get_values1 = null or tmp_get_values1 ~= "^\s*$", null, regexcapture(tmp_get_values1, tmp_get_keys1)),
+    parsed_fields2 = if(tmp_get_values2 = null or tmp_get_values2 ~= "^\s*$", null, regexcapture(tmp_get_values2, tmp_get_keys2)),
+    parsed_header = regexcapture(_raw_log, "<(?P<priority>\d+)>(?P<time_stamp>.+) (?P<hostname>\S+) (?P<app_name>\S+)\[(?P<process_id>\d+)\]:")
+| alter _time = parse_timestamp("%FT%R:%E*S", replex(parsed_fields1 -> created, "Z", ""))
+| fields -tmp*;

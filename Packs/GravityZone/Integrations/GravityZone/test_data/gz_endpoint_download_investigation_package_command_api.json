@@ -1,0 +1,83 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "collectInvestigationPackage",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "collectInvestigationPackage",
+        "params": {
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "activityId": "69443b020126750c1a0dbe2f"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "69443b020126750c1a0dbe2f",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "pending"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "69443b020126750c1a0dbe2f",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "success",
+        "url": "https://localhost/storage/forensicArtefacts/69443b2b96301725c50b0999",
+        "bucket": "forensicArtefacts",
+        "fileId": "69443b2b96301725c50b0999"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/storage/forensicArtefacts/69443b2b96301725c50b0999",
+      "get": true
+    },
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"Invpack_ENDPOINT_NAME_2025-12-18 173437.tgz\""
+      },
+      "content": ""
+    }
+  }
+]

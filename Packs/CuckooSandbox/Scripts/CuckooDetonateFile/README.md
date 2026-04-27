@@ -3,6 +3,7 @@ Deprecated. Use the 'cuckoo-create-task-from-file' command instead.
 Adds a file to the list of pending tasks. Returns the ID of the newly created task.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,13 +11,15 @@ Adds a file to the list of pending tasks. Returns the ID of the newly created ta
 | Script Type | python |
 | Tags | cuckoo |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * cuckoo-create-task-from-file
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -32,5 +35,6 @@ This script uses the following commands and scripts.
 | options | The options to pass to the analysis package. (optional)  |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

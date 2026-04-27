@@ -4,3 +4,5 @@ name: JamfProtect Modeling Rule
 rules: ''
 schema: ''
 tags: Jamf
+supportedModules:
+- xsiam

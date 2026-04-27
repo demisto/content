@@ -781,7 +781,6 @@ tasks:
       script: 'splunk-kv-store-collection-add-entries'
       type: regular
       iscommand: true
-      brand: SplunkPy
     nexttasks:
       '#none#':
       - "4"

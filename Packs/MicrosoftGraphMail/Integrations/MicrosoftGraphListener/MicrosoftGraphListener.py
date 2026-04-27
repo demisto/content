@@ -222,7 +222,7 @@ def main():  # pragma: no cover
             return_results(update_email_status_command(client, args))
         elif command == "reply-mail":
             return_results(reply_email_command(client, args))
-        elif command == "send-mail":
+        elif command == "send-mail" or command == "msgraph-email-security-send-email-to-recipients-office-365-quick-action":
             return_results(send_email_command(client, args))
         elif command == "msgraph-mail-generate-login-url":
             return_results(generate_login_url(client))

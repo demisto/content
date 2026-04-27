@@ -1944,3 +1944,8 @@ tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.10.0
+supportedModules:
+- cloud
+- cloud_runtime_security
+- xsiam
+- edr

@@ -1,0 +1,15 @@
+[INGEST:vendor="atlassian", product="bitbucket", target_dataset="atlassian_bitbucket_raw",no_hit = keep]
+//Parse timestamp
+alter
+    tmp_time = _raw_log -> timestamp.epochSecond
+| alter 
+    _time = to_timestamp(to_integer(tmp_time),"SECONDS")
+//Extra Attributes regex extraction
+| alter
+    tmp_keys = arraymap(_raw_log -> extraAttributes[], replex("@element" -> name, "\s+|\/", "_")),
+    tmp_values = arraystring(arraymap(_raw_log -> extraAttributes[], "@element" -> value), "|")
+| alter
+    tmp_obj_struct = arraystring(arraymap(tmp_keys, concat("(?P<", "@element", ">[^\|]+)")), "\|")
+| alter
+    parsed_fields = regexcapture(tmp_values, tmp_obj_struct)    
+| fields -tmp*;

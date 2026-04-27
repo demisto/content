@@ -4,3 +4,5 @@ name: BoxEventCollector
 rules: ''
 schema: ''
 toversion: 6.9.9
+supportedModules:
+- xsiam

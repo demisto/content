@@ -1,0 +1,91 @@
+{
+    "data": {
+        "stats": {
+            "score": 87,
+            "grade": "B",
+            "trend": 1
+        },
+        "avgGraphData": [
+            {
+                "date": "2025-12-20T00:00:00.000Z",
+                "score": 86,
+                "grade": "B"
+            },
+            {
+                "date": "2025-12-21T00:00:00.000Z",
+                "score": 85,
+                "grade": "B"
+            }
+        ],
+        "scenarios": [
+            {
+                "id": "000A",
+                "name": "3rdPartyVPN>CustomerDB",
+                "grade": "A",
+                "score": 100,
+                "graphData": [
+                    {
+                        "toDate": "2025-12-20T00:00:00.000Z",
+                        "fromDate": "2025-12-19T00:00:00.000Z",
+                        "campaigns": null,
+                        "score": 100,
+                        "grade": "A"
+                    },
+                    {
+                        "toDate": "2025-12-21T00:00:00.000Z",
+                        "fromDate": "2025-12-20T00:00:00.000Z",
+                        "campaigns": null,
+                        "score": 100,
+                        "grade": "A"
+                    }
+                ]
+            },
+            {
+                "id": "001A",
+                "name": "ADSecurity|ADReplicationAttack",
+                "grade": "F",
+                "score": 17,
+                "graphData": [
+                    {
+                        "toDate": "2025-12-20T00:00:00.000Z",
+                        "fromDate": "2025-12-19T00:00:00.000Z",
+                        "campaigns": null,
+                        "score": 16.799999999999997,
+                        "grade": "F"
+                    },
+                    {
+                        "campaigns": null,
+                        "fromDate": "2025-12-20T00:00:00.000Z",
+                        "toDate": "2025-12-21T00:00:00.000Z",
+                        "score": 16.799999999999997,
+                        "grade": "F"
+                    }
+                ]
+            },
+            {
+                "id": "001C",
+                "name": "ADSecurity|RiskfromSOCUsers",
+                "grade": "F",
+                "score": 13,
+                "graphData": [
+                    {
+                        "toDate": "2025-12-20T00:00:00.000Z",
+                        "fromDate": "2025-12-19T00:00:00.000Z",
+                        "campaigns": null,
+                        "score": 13.304484362357712,
+                        "grade": "F"
+                    },
+                    {
+                        "campaigns": null,
+                        "fromDate": "2025-12-20T00:00:00.000Z",
+                        "toDate": "2025-12-21T00:00:00.000Z",
+                        "score": 13.304484362357712,
+                        "grade": "F"
+                    }
+                ]
+            }
+        ]
+    },
+    "timeId": "timeAgo_days_30",
+    "resolution": 1
+}

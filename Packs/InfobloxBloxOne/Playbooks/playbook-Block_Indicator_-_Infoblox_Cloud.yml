@@ -1,0 +1,928 @@
+id: Block Indicator - Infoblox Cloud
+version: -1
+name: Block Indicator - Infoblox Cloud
+description: This playbook blocks the given IP or domain by adding it to the given block type custom list of the Infoblox Cloud platform. If prompted it also removes the provided indicators from given allow list.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b1256c8-1b5e-4951-8fa6-6c8a083b04f9
+    type: start
+    task:
+      id: 6b1256c8-1b5e-4951-8fa6-6c8a083b04f9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 71928c4f-45b8-4e71-8668-550157a9b8ca
+    type: condition
+    task:
+      id: 71928c4f-45b8-4e71-8668-550157a9b8ca
+      version: -1
+      name: Is Infoblox Threat Defense with DDI integration enabled?
+      description: Checks whether Infoblox BloxOne Threat Defense is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InfobloxBloxOneThreatDefense
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4b047d99-b908-4589-8fcf-78c011ee01df
+    type: regular
+    task:
+      id: 4b047d99-b908-4589-8fcf-78c011ee01df
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: Collect IP or domain indicators
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3b33b557-479b-4157-89a8-4b24c6e7a2d0
+    type: condition
+    task:
+      id: 3b33b557-479b-4157-89a8-4b24c6e7a2d0
+      version: -1
+      name: Check whether indicators are available in playbook input
+      description: Check whether IP addresses or domains are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ip_addresses
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.domains
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 713595d7-aa0d-4b3e-8818-9338638ec3a4
+    type: collection
+    task:
+      id: 713595d7-aa0d-4b3e-8818-9338638ec3a4
+      version: -1
+      name: Collect the IP or domain indicators to block.
+      description: Collect the IP or Domain indicator to block.
+      type: collection
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the IP or domain indicators to block.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the IP addresses to block.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The given IP indicators will be added to the specified custom list.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the domains to block.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The given domain indicators will be added to the specified custom list.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Specify the name of the custom list.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Default Block
+        tooltip: Specify the name of the custom list to add the given IP addresses or domains to. Default is "Default Block".
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Specify the type of the custom list.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: default_block
+        tooltip: 'Specify the type of the custom list to add the given IP addresses or domains to. Possible values are: default_block, custom_list, threat_insight, dga, dnsm, zero_day_dns, threat_insight_nde. Default is "default_block".'
+        readonly: false
+      title: Collect IP or domain indicators.
+      description: This task collects the IP or domain indicator values to block them. Also, it allows to specify the custom list name and its type.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5af9d231-4103-48aa-8a65-e2810207aadc
+    type: title
+    task:
+      id: 5af9d231-4103-48aa-8a65-e2810207aadc
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d3f1f2a9-c136-4e8e-89c0-9008e4b1c6b8
+    type: condition
+    task:
+      id: d3f1f2a9-c136-4e8e-89c0-9008e4b1c6b8
+      version: -1
+      name: Check that IP indicators are present or not
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect IP or domain indicators.Answers
+                accessor: "0"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ip_addresses
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 19c5243e-69b8-45b0-8628-0bfb9f540a60
+    type: condition
+    task:
+      id: 19c5243e-69b8-45b0-8628-0bfb9f540a60
+      version: -1
+      name: Check that domain indicators are present or not
+      description: Check that domains are present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect IP or domain indicators.Answers
+                accessor: "1"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.domains
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3d82fed1-a4fd-4f9e-84a1-10e177fb80a7
+    type: regular
+    task:
+      id: 3d82fed1-a4fd-4f9e-84a1-10e177fb80a7
+      version: -1
+      name: Block the IP indicators
+      description: Block the IP addresses.
+      script: '|||infobloxcloud-block-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "10"
+      '#none#':
+      - "13"
+    scriptarguments:
+      custom_list_name:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "2"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.custom_list_name
+                iscontext: true
+          - operator: trim
+      custom_list_type:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.custom_list_type
+                iscontext: true
+          - operator: trim
+      ip:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ip_addresses
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4edb1b62-4b0e-4e5a-8c41-5a8b3bc14845
+    type: regular
+    task:
+      id: 4edb1b62-4b0e-4e5a-8c41-5a8b3bc14845
+      version: -1
+      name: Block the  domain indicators
+      description: Block the domains.
+      script: '|||infobloxcloud-block-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "10"
+      '#none#':
+      - "13"
+    scriptarguments:
+      custom_list_name:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "2"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.custom_list_name
+                iscontext: true
+          - operator: trim
+      custom_list_type:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.custom_list_type
+                iscontext: true
+          - operator: trim
+      domain:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "1"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 574d8e09-3b93-4178-83ac-ecd5feb5aa76
+    type: title
+    task:
+      id: 574d8e09-3b93-4178-83ac-ecd5feb5aa76
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c10c1b44-49d9-486a-8c8a-c5620d07baf5
+    type: regular
+    task:
+      id: c10c1b44-49d9-486a-8c8a-c5620d07baf5
+      version: -1
+      name: Remove the indicators from Allow list
+      description: The given indicators will be removed from the provided custom list.
+      script: '|||infobloxcloud-customlist-indicator-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      custom_list_name:
+        complex:
+          root: Collect custom list name and custom list type.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.custom_list_name
+                iscontext: true
+          - operator: trim
+      custom_list_type:
+        complex:
+          root: Collect custom list name and custom list type.Answers
+          accessor: "1"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.custom_list_type
+                iscontext: true
+          - operator: trim
+      indicators:
+        complex:
+          root: Collect IP or domain indicators.Answers
+          accessor: "0"
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Collect IP or domain indicators.Answers.1
+                iscontext: true
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: inputs.ip_addresses
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.domains
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e7873192-d5c6-44ca-8fb2-ac49c06669ad
+    type: condition
+    task:
+      id: e7873192-d5c6-44ca-8fb2-ac49c06669ad
+      version: -1
+      name: Do you want to remove the indicators from Allow list
+      description: Ask whether the user wants to remove the indicators from allow list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "10"
+      "Yes":
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Do you want to remove the provided indicators from Allow list?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3a340390-6aef-4c32-8de2-9d4d4c0fa2c3
+    type: collection
+    task:
+      id: 3a340390-6aef-4c32-8de2-9d4d4c0fa2c3
+      version: -1
+      name: Collect the information to remove indicators from allow list
+      description: Collect the custom list information to remove indicators from block list.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the custom list information to remove indicators from allow list
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the name of the custom list.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Default Allow
+        tooltip: Specify the name of the custom list to remove the given indicators from.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the type of the custom list.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: default_allow
+        tooltip: 'Specify the type of the custom list to remove the given indicators from. Possible values are: default_allow, default_block, custom_list, threat_insight, dga, dnsm, zero_day_dns, threat_insight_nde.'
+        readonly: false
+      title: Collect custom list name and custom list type
+      description: This task collects the custom list name and custom list type values to remove indicators from.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_10_#default#": 0.12,
+      "1_2_yes": 0.57,
+      "3_5_yes": 0.53,
+      "6_10_#default#": 0.1,
+      "6_8_yes": 0.4,
+      "7_10_#default#": 0.1,
+      "7_9_yes": 0.37,
+      "8_10_#error#": 0.13,
+      "9_10_#error#": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2105,
+        "width": 1047.5,
+        "x": -290,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ip_addresses
+  value: {}
+  required: false
+  description: The IP addresses to block.
+  playbookInputQuery:
+- key: domains
+  value: {}
+  required: false
+  description: The domains to block.
+  playbookInputQuery:
+- key: custom_list_name
+  value:
+    simple: Default Block
+  required: false
+  description: |
+    Specify the name of the custom list to add the given IP addresses or domains to.  Default is "Default Block".
+  playbookInputQuery:
+- key: custom_list_type
+  value:
+    simple: default_block
+  required: false
+  description: 'Specify the type of the custom list to add the given IP addresses or domains to. Possible values are: default_block, custom_list, threat_insight, dga, dnsm, zero_day_dns, threat_insight_nde. Default is "default_block".'
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

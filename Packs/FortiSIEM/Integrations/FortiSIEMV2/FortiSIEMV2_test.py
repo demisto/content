@@ -787,3 +787,381 @@ def test_fetch_incidents_without_incident_title(requests_mock):
     assert updated_last_run == expected_last_run
     assert incidents[0].get("name") == "FortiSIEM incident: 1"
     assert events_number == expected_events_number
+
+
+def test_events_list_request_with_time_params_success(requests_mock):
+    """
+    Testing events_list_request with timeFrom/timeTo parameters - success path.
+    Given:
+        - An incident ID and time_from/time_to parameters are provided.
+    When:
+        - events_list_request is called with time_from and time_to.
+    Then:
+        - The request is made with timeFrom and timeTo query params.
+        - The response is returned correctly.
+    """
+    from FortiSIEMV2 import FortiSIEMClient
+
+    client: FortiSIEMClient = mock_client()
+    mock_response = load_json_mock_response("list_events_by_incident.json")
+    incident_id = "123"
+    time_from = 1646092830000
+    time_to = 1646147610000
+
+    adapter = requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents", json=mock_response)
+
+    result = client.events_list_request(size=10, incident_id=incident_id, time_from=time_from, time_to=time_to)
+
+    assert result == mock_response
+    assert adapter.called_once
+    # Verify the request was made with time params
+    assert adapter.last_request.qs["timefrom"] == [str(time_from)]
+    assert adapter.last_request.qs["timeto"] == [str(time_to)]
+    assert adapter.last_request.qs["incidentid"] == [incident_id]
+
+
+def test_events_list_request_with_time_params_fallback(requests_mock):
+    """
+    Testing events_list_request with timeFrom/timeTo parameters - fallback path.
+    Given:
+        - An incident ID and time_from/time_to parameters are provided.
+        - The first request (with time params) raises an exception.
+    When:
+        - events_list_request is called with time_from and time_to.
+    Then:
+        - The first request with time params fails.
+        - A fallback request without time params is made and succeeds.
+        - The fallback response is returned correctly.
+    """
+    from FortiSIEMV2 import FortiSIEMClient
+
+    client: FortiSIEMClient = mock_client()
+    mock_response = load_json_mock_response("list_events_by_incident.json")
+    incident_id = "123"
+    time_from = 1646092830000
+    time_to = 1646147610000
+
+    # First call raises an exception (with time params), second call succeeds (without time params)
+    responses = [
+        {"status_code": 500, "json": {"error": "timeFrom/timeTo not supported"}},
+        {"status_code": 200, "json": mock_response},
+    ]
+    adapter = requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents", responses)
+
+    result = client.events_list_request(size=10, incident_id=incident_id, time_from=time_from, time_to=time_to)
+
+    assert result == mock_response
+    # Verify both requests were attempted
+    assert adapter.call_count == 2
+    # First request should have time params
+    first_request = adapter.request_history[0]
+    assert "timefrom" in first_request.qs
+    assert "timeto" in first_request.qs
+    # Second request (fallback) should NOT have time params
+    second_request = adapter.request_history[1]
+    assert "timefrom" not in second_request.qs
+    assert "timeto" not in second_request.qs
+
+
+def test_events_list_request_without_time_params(requests_mock):
+    """
+    Testing events_list_request without timeFrom/timeTo parameters - original behavior.
+    Given:
+        - An incident ID is provided but no time_from/time_to parameters.
+    When:
+        - events_list_request is called without time_from and time_to.
+    Then:
+        - The request is made without timeFrom and timeTo query params.
+        - The original behavior is preserved.
+    """
+    from FortiSIEMV2 import FortiSIEMClient
+
+    client: FortiSIEMClient = mock_client()
+    mock_response = load_json_mock_response("list_events_by_incident.json")
+    incident_id = "123"
+
+    adapter = requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents", json=mock_response)
+
+    result = client.events_list_request(size=10, incident_id=incident_id)
+
+    assert result == mock_response
+    assert adapter.called_once
+    # Verify the request was made WITHOUT time params
+    assert "timefrom" not in adapter.last_request.qs
+    assert "timeto" not in adapter.last_request.qs
+    assert adapter.last_request.qs["incidentid"] == [incident_id]
+
+
+@patch("FortiSIEMV2.FortiSIEMClient.events_list_request")
+def test_get_related_events_for_fetch_command_with_time_params(mock_events_list_request):
+    """
+    Testing get_related_events_for_fetch_command with time_from and time_to parameters.
+    Given:
+        - An incident ID, max_events_fetch, and time_from/time_to parameters are provided.
+    When:
+        - get_related_events_for_fetch_command is called with time_from and time_to.
+    Then:
+        - events_list_request is called with the time_from and time_to parameters forwarded.
+    """
+    from FortiSIEMV2 import FortiSIEMClient, get_related_events_for_fetch_command
+
+    client: FortiSIEMClient = mock_client()
+    mock_events_list_request.return_value = load_json_mock_response("triggered_events.json")
+
+    time_from = 1646092830000
+    time_to = 1646147610000
+
+    result = get_related_events_for_fetch_command("123456", 20, client, time_from=time_from, time_to=time_to)
+
+    assert len(result) == 5
+    mock_events_list_request.assert_called_once_with(20, "123456", time_from=time_from, time_to=time_to)
+
+
+@pytest.mark.commands
+@freeze_time(time.ctime(1646205070))
+@patch("FortiSIEMV2.FortiSIEMClient.events_list_request")
+def test_fetch_incidents_passes_time_params_to_events(mock_events_list_request, requests_mock):
+    """
+    Testing that fetch_incidents passes incidentFirstSeen/incidentLastSeen (with 5-minute buffer)
+    as time_from/time_to to events_list_request when fetching with events.
+    Given:
+        - fetch_with_events is True.
+        - Incidents have incidentFirstSeen and incidentLastSeen fields.
+    When:
+        - fetch_incidents is called.
+    Then:
+        - events_list_request is called with time_from=incidentFirstSeen - EVENTS_TIME_BUFFER_MS
+          and time_to=incidentLastSeen + EVENTS_TIME_BUFFER_MS for each incident.
+    """
+    from FortiSIEMV2 import EVENTS_TIME_BUFFER_MS, FortiSIEMClient, fetch_incidents
+
+    client: FortiSIEMClient = mock_client()
+    status_list = ["Active"]
+    max_fetch = 2
+    max_events_fetch = 5
+    first_fetch = "1 week"
+
+    mock_response = load_json_mock_response("fetch_incidents.json")
+    # Limit to 2 incidents for simplicity
+    mock_response["data"] = mock_response["data"][:2]
+    mock_response["total"] = 2
+    mock_response["size"] = 2
+
+    requests_mock.post(f"{client._base_url}pub/incident", json=mock_response)
+
+    events_data = load_json_mock_response("triggered_events.json")
+    mock_events_list_request.return_value = events_data
+
+    incidents, _ = fetch_incidents(client, max_fetch, first_fetch, status_list, True, max_events_fetch, {})
+
+    assert len(incidents) == 2
+    # Verify events_list_request was called with time params from each incident
+    assert mock_events_list_request.call_count == 2
+
+    # First incident: incidentFirstSeen=1646092830000, incidentLastSeen=1646147610000
+    # Buffer of EVENTS_TIME_BUFFER_MS (300000ms = 5 minutes) is subtracted from time_from and added to time_to
+    first_call_kwargs = mock_events_list_request.call_args_list[0]
+    assert first_call_kwargs[1]["time_from"] == 1646092830000 - EVENTS_TIME_BUFFER_MS
+    assert first_call_kwargs[1]["time_to"] == 1646147610000 + EVENTS_TIME_BUFFER_MS
+
+    # Second incident: incidentFirstSeen=1646093040000, incidentLastSeen=1646697840000
+    second_call_kwargs = mock_events_list_request.call_args_list[1]
+    assert second_call_kwargs[1]["time_from"] == 1646093040000 - EVENTS_TIME_BUFFER_MS
+    assert second_call_kwargs[1]["time_to"] == 1646697840000 + EVENTS_TIME_BUFFER_MS
+
+
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_success(mock_get_events):
+    """
+    Testing fetch_events_concurrently with multiple incidents - all succeed.
+    Given:
+        - 3 formatted incidents with incidentId, incidentFirstSeen, and incidentLastSeen.
+        - get_related_events_for_fetch_command returns sample events for each incident.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - The returned events_map has the correct keys and values.
+        - success_count == 3 and fail_count == 0.
+        - get_related_events_for_fetch_command was called with the correct time_from (with 5-minute buffer subtracted)
+          and time_to (with 5-minute buffer added).
+    """
+    from FortiSIEMV2 import EVENTS_TIME_BUFFER_MS, fetch_events_concurrently
+
+    client = mock_client()
+
+    sample_incidents = [
+        {"incidentId": 101, "incidentFirstSeen": 1646092830000, "incidentLastSeen": 1646147610000},
+        {"incidentId": 102, "incidentFirstSeen": 1646093040000, "incidentLastSeen": 1646697840000},
+        {"incidentId": 103, "incidentFirstSeen": 1646094000000, "incidentLastSeen": 1646700000000},
+    ]
+
+    def side_effect(incident_id, max_events, cli, time_from=None, time_to=None):
+        return [{"Event ID": f"event_{incident_id}_1"}, {"Event ID": f"event_{incident_id}_2"}]
+
+    mock_get_events.side_effect = side_effect
+
+    events_map, total_time, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client)
+
+    assert success_count == 3
+    assert fail_count == 0
+    assert len(events_map) == 3
+    assert 101 in events_map
+    assert 102 in events_map
+    assert 103 in events_map
+    assert len(events_map[101]) == 2
+    assert len(events_map[102]) == 2
+    assert len(events_map[103]) == 2
+
+    # Verify get_related_events_for_fetch_command was called with correct time_from/time_to
+    assert mock_get_events.call_count == 3
+    for call_args in mock_get_events.call_args_list:
+        inc_id = call_args[0][0]
+        called_time_from = call_args[1]["time_from"]
+        called_time_to = call_args[1]["time_to"]
+        matching_incident = next(i for i in sample_incidents if i["incidentId"] == inc_id)
+        assert called_time_from == matching_incident["incidentFirstSeen"] - EVENTS_TIME_BUFFER_MS
+        assert called_time_to == matching_incident["incidentLastSeen"] + EVENTS_TIME_BUFFER_MS
+
+
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_partial_failure(mock_get_events):
+    """
+    Testing fetch_events_concurrently with partial failure - some incidents fail.
+    Given:
+        - 3 formatted incidents.
+        - get_related_events_for_fetch_command succeeds for incidents 201 and 203 but raises an exception for 202.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - Successful incidents have events in the map.
+        - Failed incident has an empty list in the map.
+        - success_count == 2 and fail_count == 1.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+
+    sample_incidents = [
+        {"incidentId": 201, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000},
+        {"incidentId": 202, "incidentFirstSeen": 3000000, "incidentLastSeen": 4000000},
+        {"incidentId": 203, "incidentFirstSeen": 5000000, "incidentLastSeen": 6000000},
+    ]
+
+    def side_effect(incident_id, max_events, cli, time_from=None, time_to=None):
+        if incident_id == 202:
+            raise Exception("API error for incident 202")
+        return [{"Event ID": f"event_{incident_id}_1"}]
+
+    mock_get_events.side_effect = side_effect
+
+    events_map, total_time, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client)
+
+    assert success_count == 2
+    assert fail_count == 1
+    assert len(events_map) == 3
+    assert len(events_map[201]) == 1
+    assert events_map[202] == []
+    assert len(events_map[203]) == 1
+
+
+def test_fetch_events_concurrently_empty_list():
+    """
+    Testing fetch_events_concurrently with an empty incidents list.
+    Given:
+        - An empty formatted_incidents list.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - A ValueError is raised because ThreadPoolExecutor requires max_workers > 0.
+    Note:
+        - In production, fetch_incidents() guards against this by checking
+          `if fetch_with_events and formatted_incidents` before calling fetch_events_concurrently.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+
+    with pytest.raises(ValueError, match="max_workers must be greater than 0"):
+        fetch_events_concurrently([], 20, client)
+
+
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_time_buffer(mock_get_events):
+    """
+    Testing that the 5-minute buffer is correctly applied to time_from and time_to.
+    Given:
+        - An incident with incidentFirstSeen=1000000 and incidentLastSeen=2000000.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - get_related_events_for_fetch_command is called with
+          time_from=1000000 - 300000 = 700000 and time_to=2000000 + 300000 = 2300000.
+    """
+    from FortiSIEMV2 import EVENTS_TIME_BUFFER_MS, fetch_events_concurrently
+
+    client = mock_client()
+
+    sample_incidents = [
+        {"incidentId": 301, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000},
+    ]
+
+    mock_get_events.return_value = [{"Event ID": "event_301_1"}]
+
+    events_map, total_time, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client)
+
+    assert success_count == 1
+    assert fail_count == 0
+    assert EVENTS_TIME_BUFFER_MS == 300000
+
+    mock_get_events.assert_called_once()
+    call_kwargs = mock_get_events.call_args[1]
+    assert call_kwargs["time_from"] == 700000  # 1000000 - 300000
+    assert call_kwargs["time_to"] == 2300000  # 2000000 + 300000
+
+
+@pytest.mark.commands
+@freeze_time(time.ctime(1646205070))
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_incidents_with_concurrent_events(mock_get_events, requests_mock):
+    """
+    Integration-style test that verifies fetch_incidents uses concurrent fetching.
+    Given:
+        - fetch_with_events is True.
+        - fetch_relevant_incidents returns sample incidents.
+        - get_related_events_for_fetch_command returns sample events.
+    When:
+        - fetch_incidents is called with fetch_with_events=True.
+    Then:
+        - The returned incidents contain the expected events.
+        - get_related_events_for_fetch_command is called for each incident.
+    """
+    from FortiSIEMV2 import FortiSIEMClient, fetch_incidents
+
+    client: FortiSIEMClient = mock_client()
+    status_list = ["Active"]
+    max_fetch = 2
+    max_events_fetch = 5
+    first_fetch = "1 week"
+
+    mock_response = load_json_mock_response("fetch_incidents.json")
+    mock_response["data"] = mock_response["data"][:2]
+    mock_response["total"] = 2
+    mock_response["size"] = 2
+
+    requests_mock.post(f"{client._base_url}pub/incident", json=mock_response)
+
+    def side_effect(incident_id, max_events, cli, time_from=None, time_to=None):
+        return [{"Event ID": f"event_{incident_id}_1"}, {"Event ID": f"event_{incident_id}_2"}]
+
+    mock_get_events.side_effect = side_effect
+
+    incidents, _ = fetch_incidents(client, max_fetch, first_fetch, status_list, True, max_events_fetch, {})
+
+    assert len(incidents) == 2
+    assert mock_get_events.call_count == 2
+
+    # Verify each incident has events in rawJSON
+    for incident in incidents:
+        raw_json = json.loads(incident["rawJSON"])
+        events = raw_json.get("events", [])
+        assert len(events) == 2

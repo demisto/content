@@ -86,7 +86,7 @@ def test_microsoft_teams_ask(mocker):
     mocker.patch.object(demisto, "args", return_value=script_arguments)
     with pytest.raises(ValueError) as e:
         main()
-    assert str(e.value) == "Either team member or channel must be provided."
+    assert str(e.value) == "Either team member, channel or user id must be provided."
 
     script_arguments["team_member"] = "Shaq"
     script_arguments["channel"] = "WhatAchannel"

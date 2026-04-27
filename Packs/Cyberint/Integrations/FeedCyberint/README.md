@@ -512,7 +512,7 @@ Gets Domain from the feed.
 | Whois technical contact organization           | String   | Whois technical contact organization.    |
 | Whois registrar name           | String   | Whois registrar name.    |
 | Whois admin contact name           | String   | Whois admin contact name.    |
-| Whois admin contact organization           | String   | Whois admin contact organization.    | 
+| Whois admin contact organization           | String   | Whois admin contact organization.    |
 | Whois admin contact email           | String   | Whois admin contact email.    |
 | Whois admin contact email           | String   | Whois admin contact email.    |
 | Created date           | String   | Created date.    |
@@ -679,7 +679,7 @@ Gets Domain from the feed.
 | **Name**          | **Type**  | **Description**             |
 |-------------------|----------|-----------------------------|
 | Suspicious Urls  | String   | List of Suspicious Urls.    |
-| Suspicious Domains | String   | List of Suspicious domains. | 
+| Suspicious Domains | String   | List of Suspicious domains. |
 
 ##### IPv4 Detected activities
 

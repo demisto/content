@@ -4,3 +4,5 @@ name: Apache Tomcat
 rules: ''
 schema: ''
 tags: Apache Tomcat
+supportedModules:
+- xsiam

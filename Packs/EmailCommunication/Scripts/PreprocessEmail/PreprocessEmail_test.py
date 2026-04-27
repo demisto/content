@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 
 import demistomock as demisto
 import pytest
@@ -87,7 +86,7 @@ EMAIL_HTML_NO_ALT = """
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
 
-<!–
+<!-
 
 p
 
@@ -95,7 +94,7 @@ p
 
     margin-bottom:0}
 
-–>
+->
 
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
@@ -152,7 +151,7 @@ EXPECTED_RESULT_NO_ALT = """
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
 
-<!–
+<!-
 
 p
 
@@ -160,7 +159,7 @@ p
 
     margin-bottom:0}
 
-–>
+->
 
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
@@ -714,7 +713,10 @@ def test_create_thread_context(email_code, scenario, mocker):
     from PreprocessEmail import create_thread_context
 
     # Mock function to get current time string to match the expected result
-    mocker.patch("PreprocessEmail.get_utc_now", return_value=datetime.strptime("2022-02-04T20:58:20UTC", "%Y-%m-%dT%H:%M:%SUTC"))
+    mocker.patch(
+        "PreprocessEmail.get_current_time_in_timezone",
+        return_value="2022-02-04T20:58:20UTC",
+    )
 
     execute_command_mocker = mocker.patch.object(demisto, "executeCommand", side_effect=side_effect_function)
     create_thread_context(
@@ -731,6 +733,7 @@ def test_create_thread_context(email_code, scenario, mocker):
         "end_user@company.com",
         "123",
         "",
+        time_zone="UTC",
     )
     call_args = execute_command_mocker.call_args
     if scenario == "thread_found":

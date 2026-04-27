@@ -1,0 +1,112 @@
+{
+    "GoogleChronicleBackstory.CuratedRuleDetections(val.id == obj.id)": [
+        {
+            "type": "GCTI_FINDING",
+            "createdTime": "2023-06-14T18:38:30.569526Z",
+            "lastUpdatedTime": "2023-06-14T18:38:30.569526Z",
+            "id": "de_dummy_detection_id_1",
+            "detectionTime": "2023-06-14T17:28:00Z",
+            "ruleName": "GCP Secret Manager Mass Deletion",
+            "summary": "Rule Detection",
+            "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
+            "severity": "LOW",
+            "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_dummy_detection_id_1",
+            "ruleId": "ur_dummy_rule_id",
+            "alertState": "ALERTING",
+            "ruleType": "MULTI_EVENT",
+            "detectionFields": [
+                {
+                    "key": "field1",
+                    "value": "value1"
+                }
+            ],
+            "ruleLabels": [
+                {
+                    "key": "rule_name",
+                    "value": "GCP Secret Manager Mass Deletion"
+                },
+                {
+                    "key": "false_positives",
+                    "value": "This may be common behavior in dev, testing, or deprecated projects."
+                }
+            ],
+            "outcomes": [
+                {
+                    "key": "risk_score",
+                    "value": "35"
+                },
+                {
+                    "key": "resource_name",
+                    "value": "dummy_secret_1, dummy_secret_2"
+                },
+                {
+                    "key": "ip",
+                    "value": "0.0.0.0"
+                }
+            ],
+            "ruleSet": "dummy_ruleset_id",
+            "ruleSetDisplayName": "Service Disruption",
+            "riskScore": 35,
+            "timeWindowStartTime": "2023-06-14T17:18:00Z",
+            "timeWindowEndTime": "2023-06-14T17:28:00Z"
+        },
+        {
+            "type": "GCTI_FINDING",
+            "createdTime": "2023-06-14T18:38:30.569526Z",
+            "lastUpdatedTime": "2023-06-14T18:38:30.569526Z",
+            "id": "de_dummy_detection_id_2",
+            "detectionTime": "2023-06-14T17:28:00Z",
+            "ruleName": "GCP Secret Manager Mass Deletion",
+            "summary": "Rule Detection",
+            "description": "Identifies mass deletion of secrets in GCP Secret Manager.",
+            "severity": "LOW",
+            "urlBackToProduct": "https://dummy-chronicle/alert?alertId=de_dummy_detection_id_2",
+            "ruleId": "ur_dummy_rule_id",
+            "alertState": "ALERTING",
+            "ruleType": "MULTI_EVENT",
+            "detectionFields": [
+                {
+                    "key": "field1",
+                    "value": "value1"
+                },
+                {
+                    "key": "field2",
+                    "value": "value2"
+                }
+            ],
+            "ruleLabels": [
+                {
+                    "key": "rule_name",
+                    "value": "GCP Secret Manager Mass Deletion"
+                },
+                {
+                    "key": "false_positives",
+                    "value": "This may be common behavior in dev, testing, or deprecated projects."
+                }
+            ],
+            "outcomes": [
+                {
+                    "key": "risk_score",
+                    "value": "35"
+                },
+                {
+                    "key": "resource_name",
+                    "value": "dummy_secret_1, dummy_secret_2"
+                },
+                {
+                    "key": "ip",
+                    "value": "0.0.0.0"
+                }
+            ],
+            "ruleSet": "dummy_ruleset_id",
+            "ruleSetDisplayName": "Service Disruption",
+            "riskScore": 35,
+            "timeWindowStartTime": "2023-06-14T17:18:00Z",
+            "timeWindowEndTime": "2023-06-14T17:28:00Z"
+        }
+    ],
+    "GoogleChronicleBackstory.Token(val.name == obj.name)": {
+        "name": "gcb-list-curatedrule-detections",
+        "nextPageToken": "next_page_token"
+    }
+}

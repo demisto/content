@@ -3,3 +3,5 @@ id: CyberArkIdentityEventCollector
 name: CyberArkIdentityEventCollector
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

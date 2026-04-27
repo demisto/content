@@ -1,0 +1,27 @@
+{
+    "name": "projects/dummy_project_id/locations/us/instances/dummy_instance_id/rules/dummy_rule_id",
+    "revisionId": "dummy_revicion_id",
+    "displayName": "singleEventRule2",
+    "text": "rule singleEventRule2 { meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e }\n",
+    "author": "securityuser",
+    "severity": {
+        "displayName": "Medium"
+    },
+    "metadata": {
+        "description": "single event rule that should generate detections"
+    },
+    "createTime": "2025-01-01T00:00:00.000000z",
+    "revisionCreateTime": "2025-01-02T00:00:00.000000z",
+    "compilationState": "SUCCEEDED",
+    "type": "SINGLE_EVENT",
+    "allowedRunFrequencies": [
+        "LIVE",
+        "HOURLY",
+        "DAILY"
+    ],
+    "etag": "dummy_tag",
+    "nearRealTimeLiveRuleEligible": true,
+    "inputsUsed": {
+        "usesUdm": true
+    }
+}

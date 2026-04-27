@@ -1,8 +1,8 @@
 {
     "name": "Fortinet Fortiweb",
-    "description": "Fortiweb integration allows to manage WAF policies and block cookies, URLs, and hostnames.",
+    "description": "The Fortiweb integration manages WAF policies and blocks cookies, URLs, and hostnames.",
     "support": "xsoar",
-    "currentVersion": "2.0.10",
+    "currentVersion": "2.0.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,9 +21,7 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
+        "agentix",
+        "xsiam"
     ]
 }

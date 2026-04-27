@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+provider: Symphony Talent Group
 commonfields:
   id: Intezer v2
   version: -1

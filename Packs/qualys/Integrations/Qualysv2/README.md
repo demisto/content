@@ -17139,7 +17139,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-1879"
                         }
                     },
-                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by Apple Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 6s and later, iPad Pro (all models), iPad Air 2 and later, iPad 5th generation and later, iPad mini 4 and later, and iPod touch (7th generation)",
+                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by TestFruit Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 6s and later, iPad Pro (all models), iPad Air 2 and later, iPad 5th generation and later, iPad mini 4 and later, and iPod touch (7th generation)",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -17192,7 +17192,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-1879"
                         }
                     },
-                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by Apple Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 5s, iPhone 6, iPhone 6 Plus, iPad Air, iPad mini 2, iPad mini 3, and iPod touch (6th generation)",
+                    "DIAGNOSIS": "iOS is a mobile operating system created and developed by TestFruit Inc.<P>Following security issues are observed  :<BR>This issue was addressed by improved management of object lifetimes.\nCVE-2021-1879<P>Affected Devices <BR> iPhone 5s, iPhone 6, iPhone 6 Plus, iPad Air, iPad mini 2, iPad mini 3, and iPod touch (6th generation)",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -22196,14 +22196,14 @@ Retrieves a list of assets (hosts) affected by a specified Qualys QID. If no QID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_assets | If true, the command will create assets, otherwise it will only display the amount of available assets. Possible values are: true, false. Default is false. | Required | 
-| qid | The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability. | Optional | 
+| should_push_assets | If true, the command will create assets, otherwise it will only display the amount of available assets. Possible values are: true, false. Default is false. | Required |
+| qid | The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Assets | unknown | All Qualys assets associated with the specified QID \(Qualys ID\). | 
+| Qualys.Assets | unknown | All Qualys assets associated with the specified QID \(Qualys ID\). |
 
 ### qualys-get-quid-by-cve
 
@@ -22218,11 +22218,10 @@ Retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID. | Required | 
+| cve | The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.QID | unknown | All the Qualys QID \(Qualys ID\) associated with a specified CVE. | 
-
+| Qualys.QID | unknown | All the Qualys QID \(Qualys ID\) associated with a specified CVE. |

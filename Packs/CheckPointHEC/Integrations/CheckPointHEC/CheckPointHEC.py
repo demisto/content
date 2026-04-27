@@ -85,10 +85,11 @@ class Client(BaseClient):
 
     def _generate_infinity_token(self):
         if self._should_refresh_token():
-            payload = {"clientId": self.client_id, "accessKey": self.client_secret}
+            payload = {"accessKey": self.client_secret}
+            headers = {"cloudinfra-external-client-id": self.client_id}
             timestamp = time.time()
 
-            res = self._http_request(method="POST", url_suffix="auth/external", json_data=payload)
+            res = self._http_request(method="POST", url_suffix="/v2/auth/external", json_data=payload, headers=headers)
             data = res["data"]
             self.token = data.get("token")
             self.token_expiry = timestamp + float(data.get("expiresIn"))
@@ -358,6 +359,12 @@ class Client(BaseClient):
             resp_type="content",
         )
 
+    def get_large_email_presigned_url(self, entity: str):
+        return self._call_api(
+            "GET",
+            f"download_large_email/entity/{entity}",
+        )
+
     def get_ap_exceptions(self, exc_type: str, exc_id: str = None):
         path = f"exceptions/{exc_type}/{exc_id}" if exc_id else f"exceptions/{exc_type}"
         return self._call_api("GET", path)
@@ -609,7 +616,8 @@ def fetch_incidents(client: Client, params: dict):
     max_fetch: int = arg_to_number(params.get("max_fetch")) or MAX_FETCH_DEFAULT
     fetch_interval: int = arg_to_number(params.get("incidentFetchInterval")) or FETCH_INTERVAL_DEFAULT
 
-    now = datetime.now(timezone.utc).replace(tzinfo=None)  # We get current time before processing
+    now_15 = datetime.now(timezone.utc) - timedelta(minutes=15)
+    now_15 = now_15.replace(tzinfo=None)  # We get current time minus 15 minutes before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get("last_fetch")):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
@@ -621,7 +629,12 @@ def fetch_incidents(client: Client, params: dict):
     incidents: List[dict[str, Any]] = []
 
     result = client.query_events(
-        start_date=last_fetch, states=states, saas_apps=saas_apps, severities=severities, threat_types=threat_types
+        start_date=last_fetch,
+        end_date=now_15.isoformat(),
+        states=states,
+        saas_apps=saas_apps,
+        severities=severities,
+        threat_types=threat_types,
     )
     events = result["responseData"]
 
@@ -651,7 +664,7 @@ def fetch_incidents(client: Client, params: dict):
     if incidents:
         last_run["last_fetch"] = incidents[-1]["occurred"]
     else:
-        last_run["last_fetch"] = (now - timedelta(minutes=fetch_interval)).isoformat()
+        last_run["last_fetch"] = (now_15 - timedelta(minutes=fetch_interval)).isoformat()
 
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)
@@ -693,7 +706,7 @@ def fetch_restore_requests(client: Client, params: dict):
             count = last_run.get(count_field, 0) + 1
             last_run[count_field] = count
 
-            entity_payload['entityId'] = entity_info.get("entityId")
+            entity_payload["entityId"] = entity_info.get("entityId")
             incidents.append(
                 {
                     "dbotMirrorId": entity_info.get("entityId"),
@@ -739,7 +752,7 @@ def checkpointhec_get_events(client: Client, args: dict) -> CommandResults:
     saas_apps: Optional[List[str]] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(args.get("saas_apps"))]
     states: Optional[List[str]] = [x.lower() for x in argToList(args.get("states"))]
     severities: Optional[List[int]] = [SEVERITY_VALUES[x.lower()] for x in argToList(args.get("severities"))]
-    threat_types: Optional[List[str]] = [x.lower().replace(" ", "_") for x in argToList(args.get("threat_type"))]
+    threat_types: Optional[List[str]] = [x.lower().replace(" ", "_") for x in argToList(args.get("threat_types"))]
     limit: int = arg_to_number(args.get("limit")) or 1000
 
     result = client.query_events(
@@ -942,6 +955,24 @@ def checkpointhec_download_email(client: Client, args: dict) -> dict:
         filename=f"{entity}.eml",
         data=eml,
     )
+
+
+def checkpointhec_download_large_email(client: Client, args: dict) -> dict:
+    entity: str = args["entity_id"]
+
+    response = client.get_large_email_presigned_url(entity)
+    if url := response.get("responseData", {}).get("url"):
+        eml_response = requests.get(url)
+        if eml_response.status_code == 200:
+            eml = eml_response.content
+        else:
+            raise DemistoException(f"Error downloading email from presigned url, status code: {eml_response.status_code}")
+
+        return fileResult(
+            filename=f"{entity}.eml",
+            data=eml,
+        )
+    raise DemistoException("Presigned URL not found in API response when downloading large email")
 
 
 def checkpointhec_get_ap_exceptions(client: Client, args: dict) -> CommandResults:
@@ -1588,6 +1619,8 @@ def main() -> None:  # pragma: no cover
             return_results(checkpointhec_report_mis_classification(client, args))
         elif command == "checkpointhec-download-email":
             return_results(checkpointhec_download_email(client, args))
+        elif command == "checkpointhec-download-large-email":
+            return_results(checkpointhec_download_large_email(client, args))
         elif command == "checkpointhec-get-ap-exceptions":
             return_results(checkpointhec_get_ap_exceptions(client, args))
         elif command == "checkpointhec-create-ap-exception":

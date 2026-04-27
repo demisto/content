@@ -14,7 +14,7 @@ ignore=BA101
 ignore=BA108,BA109
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM110
 
 [file:classifier-mapper-ServiceNow_Create_Ticket_-_Incoming_Mapper.json]
 ignore=BA101

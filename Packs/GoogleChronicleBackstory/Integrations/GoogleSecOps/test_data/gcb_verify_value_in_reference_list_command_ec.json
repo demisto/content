@@ -1,0 +1,58 @@
+{
+    "GoogleChronicleBackstory.VerifyValueInReferenceList(val.value == obj.value && val.case_insensitive == obj.case_insensitive)": [
+        {
+            "value": "value1",
+            "found_in_lists": [
+                "list1"
+            ],
+            "not_found_in_lists": [
+                "list2"
+            ],
+            "case_insensitive": true,
+            "overall_status": "Found"
+        },
+        {
+            "value": "Value2",
+            "found_in_lists": [
+                "list1"
+            ],
+            "not_found_in_lists": [
+                "list2"
+            ],
+            "case_insensitive": true,
+            "overall_status": "Found"
+        },
+        {
+            "value": "value4",
+            "found_in_lists": [],
+            "not_found_in_lists": [
+                "list1",
+                "list2"
+            ],
+            "case_insensitive": true,
+            "overall_status": "Not Found"
+        },
+        {
+            "value": "[-\\{\\}\\^]",
+            "found_in_lists": [
+                "list2"
+            ],
+            "not_found_in_lists": [
+                "list1"
+            ],
+            "case_insensitive": true,
+            "overall_status": "Found"
+        },
+        {
+            "value": "0.0.0.1/0",
+            "found_in_lists": [
+                "list1"
+            ],
+            "not_found_in_lists": [
+                "list2"
+            ],
+            "case_insensitive": true,
+            "overall_status": "Found"
+        }
+    ]
+}

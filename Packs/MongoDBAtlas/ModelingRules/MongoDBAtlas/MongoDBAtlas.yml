@@ -4,3 +4,5 @@ name: MongoDB Atlas Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

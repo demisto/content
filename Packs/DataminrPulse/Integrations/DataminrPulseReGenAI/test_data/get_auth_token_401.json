@@ -1,0 +1,8 @@
+{
+  "errors": [
+    {
+      "code": 102,
+      "message": "Invalid client Id or client secret"
+    }
+  ]
+}

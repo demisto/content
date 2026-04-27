@@ -1,0 +1,217 @@
+<response status="success">
+	<result>
+		<policy cfg-version="11.1.0" detail-version="11.1.6" urldb="paloaltonetworks" dg-ctxt="11">
+			<shared/>
+			<panorama>
+				<pre-rulebase>
+					<security>
+						<rules>
+							<entry name="Rule 1" uuid="example-uuid" panorama="true" loc="Lab Firewalls">
+								<to loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Trust</member>
+								</to>
+								<from loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Untrust</member>
+								</from>
+								<source loc="Lab Firewalls">
+									<member loc="Lab Firewalls">10.0.0.185/32</member>
+								</source>
+								<destination loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination>
+								<source-user loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-user>
+								<category loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</category>
+								<application loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</application>
+								<service loc="Lab Firewalls">
+									<member loc="Lab Firewalls">application-default</member>
+								</service>
+								<source-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-hip>
+								<destination-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination-hip>
+								<action loc="Lab Firewalls">allow</action>
+								<log-start loc="Lab Firewalls">no</log-start>
+								<log-end loc="Lab Firewalls">yes</log-end>
+							</entry>
+							<entry name="Rule 2" uuid="example-uuid" panorama="true" loc="Lab Firewalls">
+								<profile-setting loc="Lab Firewalls">
+									<group loc="Lab Firewalls">
+										<member loc="Lab Firewalls">predefined-profiles</member>
+									</group>
+								</profile-setting>
+								<to loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Untrust</member>
+								</to>
+								<from loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Trust</member>
+								</from>
+								<source loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source>
+								<destination loc="Lab Firewalls">
+									<member loc="Lab Firewalls">8.8.8.8</member>
+								</destination>
+								<source-user loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-user>
+								<category loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</category>
+								<application loc="Lab Firewalls">
+									<member loc="Lab Firewalls">ping</member>
+								</application>
+								<service loc="Lab Firewalls">
+									<member loc="Lab Firewalls">application-default</member>
+								</service>
+								<source-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-hip>
+								<destination-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination-hip>
+								<action loc="Lab Firewalls">deny</action>
+								<log-start loc="Lab Firewalls">no</log-start>
+								<log-end loc="Lab Firewalls">yes</log-end>
+								<log-setting loc="Lab Firewalls">IoT Security Default Profile</log-setting>
+							</entry>
+							<entry name="Rule 3" uuid="example-uuid" panorama="true" loc="Lab Firewalls">
+								<profile-setting loc="Lab Firewalls">
+									<group loc="Lab Firewalls">
+										<member loc="Lab Firewalls">predefined-profiles</member>
+									</group>
+								</profile-setting>
+								<to loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Untrust</member>
+								</to>
+								<from loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Trust</member>
+								</from>
+								<source loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source>
+								<destination loc="Lab Firewalls">
+									<member loc="Lab Firewalls">1.1.1.1</member>
+								</destination>
+								<source-user loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-user>
+								<category loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</category>
+								<application loc="Lab Firewalls">
+									<member loc="Lab Firewalls">ping</member>
+								</application>
+								<service loc="Lab Firewalls">
+									<member loc="Lab Firewalls">application-default</member>
+								</service>
+								<source-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-hip>
+								<destination-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination-hip>
+								<action loc="Lab Firewalls">allow</action>
+								<log-start loc="Lab Firewalls">no</log-start>
+								<log-end loc="Lab Firewalls">yes</log-end>
+								<log-setting loc="Lab Firewalls">IoT Security Default Profile</log-setting>
+							</entry>
+							<entry name="Rule 4" uuid="example-uuid" panorama="true" loc="Lab Firewalls">
+								<profile-setting loc="Lab Firewalls">
+									<group loc="Lab Firewalls">
+										<member loc="Lab Firewalls">predefined-profiles</member>
+									</group>
+								</profile-setting>
+								<to loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Untrust</member>
+								</to>
+								<from loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Trust</member>
+								</from>
+								<source loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source>
+								<destination loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination>
+								<source-user loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-user>
+								<category loc="Lab Firewalls">
+									<member loc="Lab Firewalls">example.com</member>
+								</category>
+								<application loc="Lab Firewalls">
+									<member loc="Lab Firewalls">web-browsing</member>
+								</application>
+								<service loc="Lab Firewalls">
+									<member loc="Lab Firewalls">application-default</member>
+								</service>
+								<source-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-hip>
+								<destination-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination-hip>
+								<action loc="Lab Firewalls">allow</action>
+								<log-start loc="Lab Firewalls">no</log-start>
+								<log-end loc="Lab Firewalls">yes</log-end>
+								<log-setting loc="Lab Firewalls">IoT Security Default Profile</log-setting>
+							</entry>
+						</rules>
+					</security>
+				</pre-rulebase>
+				<post-rulebase>
+					<security>
+						<rules>
+							<entry name="Rule 5" uuid="example-uuid" panorama="true" loc="Lab Firewalls">
+								<to loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Untrust</member>
+								</to>
+								<from loc="Lab Firewalls">
+									<member loc="Lab Firewalls">Trust</member>
+								</from>
+								<source loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source>
+								<destination loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination>
+								<source-user loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-user>
+								<category loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</category>
+								<application loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</application>
+								<service loc="Lab Firewalls">
+									<member loc="Lab Firewalls">application-default</member>
+								</service>
+								<source-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</source-hip>
+								<destination-hip loc="Lab Firewalls">
+									<member loc="Lab Firewalls">any</member>
+								</destination-hip>
+								<action loc="Lab Firewalls">allow</action>
+								<log-start loc="Lab Firewalls">no</log-start>
+								<log-end loc="Lab Firewalls">yes</log-end>
+							</entry>
+						</rules>
+					</security>
+					<default-security-rules>
+						<rules/>
+					</default-security-rules>
+				</post-rulebase>
+			</panorama>
+		</policy>
+	</result>
+</response>

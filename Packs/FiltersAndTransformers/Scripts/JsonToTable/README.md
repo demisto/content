@@ -21,6 +21,7 @@ Accepts a json object and returns a markdown.
 | headers | A comma-separated list of table header values. Default will include all available table headers. |
 | is_auto_json_transform | Try to auto json transform. |
 | json_transform_properties | A json to transform the value to strings. The syntax is: \`\{"header_key": \{"keys": \[&amp;lt;item1&amp;gt;, ...\], "is_nested": true/false\}\}\`  |
+| url_keys | Comma-separated list of keys in the given JSON table that should be turned into a clickable URL.
 
 ## Outputs
 

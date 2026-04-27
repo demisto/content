@@ -4,6 +4,7 @@ commonfields:
 name: AWS - Athena - Beta
 display: AWS - Athena
 category: IT Services
+provider: Amazon
 description: Amazon Web Services Athena.
 configuration:
 - display: Role Arn
@@ -430,7 +431,7 @@ script:
     - contextPath: AWS.Athena.QueryResults
       description: List of query results.
       type: List
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.3575453
   subtype: python3
 tests:
 - No tests

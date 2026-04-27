@@ -1,4 +1,4 @@
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+**Note**: This integration is deprecated following [the announcement about Mimecast API 1.0 End of Life](https://mimecastsupport.zendesk.com/hc/en-us/articles/39704312201235-API-Integrations-API-1-0-End-of-Life-Mar-2025). Use Mimecast Event Collector v2 instead.
 
 ## Configure Mimecast Event Collector in Cortex
 

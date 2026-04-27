@@ -20,7 +20,7 @@ warnings.simplefilter("ignore")
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
-INCIDENT_ALIAS = "alert" if is_xsiam() else "incident"
+INCIDENT_ALIAS = "alert" if (is_xsiam() or is_platform()) else "incident"
 
 FIELD_SKIP_REASON_DOESNT_EXIST = f"The '{{field}}' field does not exist in {INCIDENT_ALIAS}"
 FIELD_SKIP_REASON_FALSY_VALUE = f"The '{{field}}' field has a falsy value in current {INCIDENT_ALIAS}: '{{val}}'"
@@ -69,7 +69,7 @@ TAG_INCIDENT = "incidents"
 TAG_SCRIPT_INDICATORS = "similarIncidents"
 KEEP_COLUMNS_INDICATORS = ["Identical indicators", "similarity indicators"]
 
-PREFIXES_TO_REMOVE = ["incident."]
+PREFIXES_TO_REMOVE = ["incident.", "alert.", "issue."]
 CONST_PARAMETERS_INDICATORS_SCRIPT = {
     "threshold": "0",
     "showActualIncident": "False",

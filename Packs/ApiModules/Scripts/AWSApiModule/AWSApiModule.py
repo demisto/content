@@ -49,6 +49,7 @@ class AWSClient:
         aws_session_token=None,
         sts_endpoint_url=None,
         endpoint_url=None,
+        sts_region=None,
     ):
         self.sts_endpoint_url = sts_endpoint_url
         self.endpoint_url = endpoint_url
@@ -61,6 +62,7 @@ class AWSClient:
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key, self.aws_session_token = extract_session_from_secret(aws_secret_access_key, aws_session_token)
         self.verify_certificate = verify_certificate
+        self.sts_region = sts_region
 
         sts_regional_endpoint = demisto.params().get("sts_regional_endpoint") or None
         if sts_regional_endpoint:
@@ -125,13 +127,20 @@ class AWSClient:
         demisto.debug(f"{kwargs=}")
         self.sts_endpoint_url = self.sts_endpoint_url or STS_ENDPOINTS.get(region) or STS_ENDPOINTS.get(self.aws_default_region)
 
+        calculated_sts_region = self.sts_region
+        if not calculated_sts_region:
+            calculated_sts_region = region if region else self.aws_default_region
+        demisto.debug(
+            f"Calculated sts region: {calculated_sts_region}, {self.sts_region=}, {region=}, {self.aws_default_region=}"
+        )
+
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
             if not self.aws_access_key_id:
                 sts_client = boto3.client(
                     "sts",
                     config=self.config,
                     verify=self.verify_certificate,
-                    region_name=region if region else self.aws_default_region,
+                    region_name=calculated_sts_region,
                     endpoint_url=self.sts_endpoint_url,
                 )
                 sts_response = sts_client.assume_role(**kwargs)
@@ -148,7 +157,7 @@ class AWSClient:
         elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name="sts",
-                region_name=region if region else self.aws_default_region,
+                region_name=calculated_sts_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,

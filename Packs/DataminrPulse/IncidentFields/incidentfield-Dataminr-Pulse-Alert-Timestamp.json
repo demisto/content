@@ -1,0 +1,31 @@
+{
+    "id": "incident_dataminrpulsealerttimestamp",
+    "version": -1,
+    "modified": "2025-09-03T19:48:02.76628114+05:30",
+    "name": "Dataminr Pulse Alert Timestamp",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsealerttimestamp",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse ReGenAI Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

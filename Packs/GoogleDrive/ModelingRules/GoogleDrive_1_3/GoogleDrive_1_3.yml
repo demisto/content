@@ -4,3 +4,5 @@ name: Google Drive Modeling Rule
 rules: ''
 schema: ''
 tags: Google Drive
+supportedModules:
+- xsiam

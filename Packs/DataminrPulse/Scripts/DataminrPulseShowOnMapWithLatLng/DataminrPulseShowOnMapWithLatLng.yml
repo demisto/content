@@ -1,0 +1,17 @@
+commonfields:
+  id: DataminrPulseShowOnMapWithLatLng
+  version: -1
+name: DataminrPulseShowOnMapWithLatLng
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Returns a map entry with a marker on the given coordinates (lat, lng).
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

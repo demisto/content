@@ -27,22 +27,36 @@ class AzureResourceGraphClient:
         server,
         certificate_thumbprint,
         private_key,
+        is_gov: bool = False,
     ):
-        self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id,
-            auth_id=auth_id,
-            enc_key=enc_key,
-            app_name=app_name,
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            self_deployed=self_deployed,
-            ok_codes=ok_codes,
-            scope=Scopes.management_azure,
-            certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key,
-            command_prefix="azure-rg",
-        )
+        if is_gov:
+            scope = "https://management.usgovcloudapi.net/.default"
+            azure_cloud = AZURE_US_GCC_HIGH_CLOUD
+            server = "https://management.usgovcloudapi.net"
+            base_url = f"{server}/providers/Microsoft.ResourceGraph"
+        else:
+            scope = Scopes.management_azure
+            azure_cloud = None
+
+        client_kwargs: dict[str, Any] = {
+            "tenant_id": tenant_id,
+            "auth_id": auth_id,
+            "enc_key": enc_key,
+            "app_name": app_name,
+            "base_url": base_url,
+            "verify": verify,
+            "proxy": proxy,
+            "self_deployed": self_deployed,
+            "ok_codes": ok_codes,
+            "scope": scope,
+            "certificate_thumbprint": certificate_thumbprint,
+            "private_key": private_key,
+            "command_prefix": "azure-rg",
+        }
+        if azure_cloud:
+            client_kwargs["azure_cloud"] = azure_cloud
+
+        self.ms_client = MicrosoftClient(**client_kwargs)
 
         self.server = server
         self.default_params = {"api-version": API_VERSION}
@@ -243,6 +257,7 @@ def main():
     private_key = params.get("private_key")
     verify = not params.get("unsecure", False)
     proxy: bool = params.get("proxy", False)
+    is_gov: bool = argToBoolean(params.get("gov_account", False))
 
     validate_connection_params(tenant, auth_and_token_url, enc_key, certificate_thumbprint, private_key)
 
@@ -262,7 +277,6 @@ def main():
     try:
         # Initial setup
         base_url = f"{server}/providers/Microsoft.ResourceGraph"
-
         client = AzureResourceGraphClient(
             base_url=base_url,
             tenant_id=tenant,
@@ -276,6 +290,7 @@ def main():
             server=server,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            is_gov=is_gov,
         )
         if command == "azure-rg-auth-reset":
             return_results(reset_auth())

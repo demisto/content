@@ -3,9 +3,15 @@ This integration was integrated and tested with CyCognito V1 API.
 
 ## Configure CyCognito Feed in Cortex
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for CyCognito Feed.
+3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | The API Key required to authenticate to the service. | True |
+| Region | Select the region based on the location of the CyCognito instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field. | False |
+| Other Region | Specify the region based on the location of the CyCognito instance. Only applicable if the "Other" option is selected in the Region dropdown. | False |
 | Asset Type | The type of assets to be retrieved. | True |
 | First Fetch Time | The date or relative timestamp from where to start fetching assets.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z | False |
 | Max Fetch | The maximum number of assets to fetch every time. The maximum value is '1000'. | False |
@@ -24,6 +30,8 @@ This integration was integrated and tested with CyCognito V1 API.
 | Fetch only Live Assets | When selected, Fetches only live assets. <br/><br/>Note: This filter supports only IP and IP Range type of assets. | False |
 | Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity. | False |
 | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 

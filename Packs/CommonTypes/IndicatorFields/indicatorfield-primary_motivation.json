@@ -15,7 +15,11 @@
         "Vulnerability",
         "Cyber Crime",
         "Cyber Espionage",
-        "Hacktivism"
+        "Hacktivism",
+        "Financial Gain",
+        "Espionage",
+        "Destruction",
+        "Disruption"
     ],
     "useAsKpi": false,
     "locked": false,

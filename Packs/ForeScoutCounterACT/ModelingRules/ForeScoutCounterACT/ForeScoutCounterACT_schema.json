@@ -1,5 +1,5 @@
 {
-    "forescout_counteract_raw": {
+    "forescout_technologies_counteract_raw": {
       "cs1": {
         "type": "string",
         "is_array": false

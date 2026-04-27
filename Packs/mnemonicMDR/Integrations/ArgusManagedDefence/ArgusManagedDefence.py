@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 
+import html
 import json
 import mimetypes
 import traceback
@@ -177,14 +178,15 @@ def pretty_print_case_metadata(result: dict, title: str = None) -> str:  # type:
     return string
 
 
-def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:  # type: ignore
-    string = title if title else f"<h2>#{case['id']}: {case['subject']}</h2>"
-    string += (
-        f"<em>Priority: {case['priority']}, status: {case['status']}, "
-        f"last updated: {pretty_print_date(case['lastUpdatedTime'])}</em><br>"
+def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:
+    string = title if title else f"<h2>#{case['id']}: {html.escape(str(case['subject']))}</h2>"
+    string += "<em>Priority: {}, status: {}, last updated: {}</em><br>".format(
+        html.escape(str(case["priority"])), html.escape(str(case["status"])), pretty_print_date(case["lastUpdatedTime"])
     )
-    string += f"Reported by {case['publishedByUser']['name']} at {pretty_print_date(case['publishedTime'])}<br><br>"
-    string += case["description"]
+    string += "Reported by {} at {}<br><br>".format(
+        html.escape(str(case["publishedByUser"]["name"])), pretty_print_date(case["publishedTime"])
+    )
+    string += html.escape(str(case["description"]))
     return string
 
 
@@ -199,19 +201,21 @@ def pretty_print_comment(comment: dict, title: str = None) -> str:  # type: igno
     return string
 
 
-def pretty_print_comment_html(comment: dict, title: str = None) -> str:  # type: ignore
+def pretty_print_comment_html(comment: dict, title: str = None) -> str:
+    escaped_username = html.escape(str(comment["addedByUser"]["userName"]))
+    escaped_comment_text = html.escape(str(comment["comment"]))
     string = f"<h2>{title}</h2>" if title else ""
     string += "<small>"
-    string += f"<em>Added by {comment['addedByUser']['userName']} at "
+    string += f"<em>Added by {escaped_username} at "
     string += f"{pretty_print_date(comment['addedTime'])}</em><br>"
     string += f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>" if comment["lastUpdatedTime"] else ""
     if comment["associatedAttachments"]:
         string += "<em>Associated attachment(s): "
         for attachment in comment["associatedAttachments"]:
-            string += f"{attachment.get('name', '')} "
+            string += f"{html.escape(str(attachment.get('name', '')))} "
         string += "</em><br>"
     string += "</small>"
-    string += f"{comment['comment']}"
+    string += escaped_comment_text
     return string
 
 

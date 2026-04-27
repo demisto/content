@@ -2,7 +2,6 @@ Search Safe Browsing
 
 ## Configure GoogleSafeBrowsing in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key |  | True |
@@ -14,43 +13,46 @@ Search Safe Browsing
 | Trust any certificate (not secure) |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### url
+
 ***
 Check URL Reputation
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
-
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to check. | Required | 
-
+| url | URL to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | string | Bad URLs found | 
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | int | The actual score | 
+| URL.Data | string | Bad URLs found |
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision |
+| URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | int | The actual score |
 | DBotScore.Reliability | string | Reliability of the source providing the intelligence data. |
 
-
 #### Command Example
+
 ```!url url="http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -73,7 +75,9 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Google Safe Browsing APIs - URL Query
+>
 >#### Found matches for URL http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/
+>
 >cacheDuration|platformType|threat|threatEntryType|threatType
 >---|---|---|---|---
 >300s | ANY_PLATFORM | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE

@@ -28,18 +28,19 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Access ID | The API credentials | True |
     | Secret key | The API secret key| True |
     | Default Organization | The default owner for the integration | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | | True |
+    | Maximum number of incidents to fetch | The maximum amount of incidents to fetch per run. Default is 200. | False |
+    | Trust any certificate (not secure) | Whether to trust any certificate| False |
+    | Use system proxy settings | Whether to use proxy | False |
     | Tags filter for the fetch | Free text box to add comma-separated tags to filter the fetched incidents by. | False |
     | Group Type filter for the fetch | The group type to filter the fetched incidents by. | False |
     | Status filter for the fetch | The status to filter the fetched incidents by \(if not field will fetch all statuses\). | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | | True |
     | Incident Metadata | The metadata to collect. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
-    | Confidence Threshold for Malicious Indicators (needed for reputation calculation) | Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
-    | Indicator Reputation Freshness in days (needed for reputation calculation) | Indicator Reputation Freshness.This is necessary to calculate reputation. | False |
-    | Trust any certificate (not secure) | Whether or not to trust any certificate| False |
-    | Use system proxy settings | Whether or not to use proxy | False |
-    | Maximum number of incidents to fetch | The maximum amount of incident to fetch per run | 200 |
+    | Rating Threshold for Malicious Indicators | Rating Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
+    | Confidence Threshold for Malicious Indicators | Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
+    | Indicator Reputation Freshness in days | Indicator Reputation Freshness. This is necessary to calculate reputation. | False |
+    | TQL Filter | A free text TQL filter to apply to the fetch. This filter is added as an AND to the other filters. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -217,6 +218,7 @@ Retrieves a list of all indicators.
 | page | The page to take the results from. | Optional |
 | limit | The maximum number of results that can be returned. The default is 500. | Optional |
 | fields_to_return | Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes. | Optional |
+| filter | A free text TQL filter to apply to the indicators query. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional |
 
 #### Context Output
 
@@ -375,6 +377,7 @@ Fetches all indicators that have a tag.
 | owner | A comma-separated list of indicators filtered by the owner. | Optional |
 | page | The page to take the results from. | Optional |
 | limit | The maximum number of results that can be returned. The default is 500. | Optional |
+| operator | The comparison operator to use when filtering by tag. Possible values are: LIKE, EQ, NE, CONTAINS, STARTSWITH, ENDSWITH, IN. Default is LIKE \(pattern matching\). | Optional |
 
 #### Context Output
 
@@ -1164,9 +1167,11 @@ Updates a group.
 The following arguments were removed in this version:
 
 In the *tc-tag-indicator* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-get-indicator* command:
+
 - *indicator_type* - this argument was redundant.
 - *owners* - this argument was redundant.
 - *ratingThreshold* - this argument was redundant.
@@ -1178,72 +1183,93 @@ In the *tc-get-indicator* command:
 - *indicator_attributes* - this argument was redundant.
 
 In the *tc-add-indicator* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-create-incident* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-fetch-incidents* command:
+
 - *incidentName* - this argument was redundant.
 
 In the *tc-incident-associate-indicator* command:
+
 - *indicatorType* - this argument was redundant.
 - *owner* - this argument was redundant.
 
 In the *tc-get-incident-associate-indicators* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-update-indicator* command:
+
 - *observations* - this argument was redundant.
 - *threatAssessConfidence* - this argument was redundant.
 - *threatAssessRating* - this argument was redundant.
 - *owner* - this argument was redundant.
 
 In the *tc-create-campaign* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-create-event* command:
+
 - *owner* - this argument was redundant.
 
 In the *tc-delete-group* command:
+
 - *type* - this argument was redundant.
 
 In the *tc-add-group-attribute* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-add-group-security-label* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-add-group-tag* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-group-associate-indicator* command:
+
 - *indicator_type* - this argument was redundant.
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-attributes* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-security-labels* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-tags* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-group-indicators* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-get-associated-groups* command:
+
 - *group_type* - this argument was redundant.
 
 In the *tc-associate-group-to-group* command:
+
 - *group_type* - this argument was redundant.
 - *associated_group_type* - this argument was redundant.
 
 In the *tc-download-report* command:
+
 - *group_type* - this argument was redundant.
 
 ## Additional Considerations for this version

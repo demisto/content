@@ -29,6 +29,9 @@ from AbnormalSecurity import (
     get_employee_login_information_for_last_30_days_in_csv_format_command,
     download_data_from_threat_log_in_csv_format_command,
     generate_threat_incidents,
+    generate_abuse_campaign_incidents,
+    generate_account_takeover_cases_incidents,
+    _is_skippable_error,
     get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command,
     fetch_incidents,
     ISO_8601_FORMAT,
@@ -48,6 +51,8 @@ class MockResponse:
         self.data = data
         self.text = str(data)
         self.status_code = status_code
+        # Add content attribute for file downloads
+        self.content = data if isinstance(data, bytes) else str(data).encode("utf-8")
 
 
 def util_load_json(path):
@@ -1153,3 +1158,606 @@ def test_get_paginated_abusecampaigns_list(mocker):
 
     # Verify that the underlying method was not called
     assert get_campaigns_mock.call_count == 0
+
+
+def test_search_messages_command(mocker):
+    """
+    Test the search_messages_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns the expected output structure
+    """
+    from AbnormalSecurity import search_messages_command
+
+    # Create mock response
+    mock_response = {
+        "results": [
+            {
+                "customer_id": 12345,
+                "tenant_id": 1,
+                "received_time": "2024-01-15T10:30:00Z",
+                "subject": "Test Message",
+                "sender": "sender@example.com",
+                "mailbox_name": "user@company.com",
+                "abnormal_message_id": "abnormal-uuid-123",
+                "decision_category": "malicious",
+                "judgement": "attack",
+            }
+        ],
+        "total": 1,
+        "pageNumber": 1,
+        "nextPageNumber": None,
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "source": "abnormal",
+        "tenant_ids": "1,2,3",
+        "start_time": "2024-01-01T00:00:00Z",
+        "end_time": "2024-01-31T23:59:59Z",
+        "subject": "Test",
+        "sender_email": "sender@example.com",
+        "page_number": 1,
+        "page_size": 100,
+    }
+
+    results = search_messages_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.MessageSearch"
+    assert results.outputs_key_field == "abnormal_message_id"
+    assert results.outputs.get("total") == 1
+    assert len(results.outputs.get("results", [])) == 1
+    assert results.outputs["results"][0]["abnormal_message_id"] == "abnormal-uuid-123"
+
+
+def test_remediate_messages_command(mocker):
+    """
+    Test the remediate_messages_command to verify:
+    1. It correctly handles remediation requests
+    2. It returns the expected output structure
+    """
+    from AbnormalSecurity import remediate_messages_command
+
+    # Create mock response
+    mock_response = {"activity_log_id": 12345, "metadata": {"trace_id": "abc-123-def", "response_time": "150ms"}}
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "action": "delete",
+        "tenant_ids": "1,2,3",
+        "source": "abnormal",
+        "remediation_reason": "false_negative",
+        "messages": json.dumps(
+            [
+                {
+                    "tenant_id": 1,
+                    "raw_message_id": "msg-123",
+                    "abnormal_message_id": "abnormal-uuid-123",
+                    "mailbox_name": "user@company.com",
+                    "subject": "Test Message",
+                    "sender": "sender@example.com",
+                    "received_time": "2024-01-15T10:30:00Z",
+                }
+            ]
+        ),
+    }
+
+    results = remediate_messages_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.MessageRemediation"
+    assert results.outputs_key_field == "activity_log_id"
+    assert results.outputs.get("activity_log_id") == 12345
+
+
+def test_remediate_messages_command_remediate_all(mocker):
+    """
+    Test the remediate_messages_command with remediate_all option.
+    """
+    from AbnormalSecurity import remediate_messages_command
+
+    # Create mock response
+    mock_response = {"activity_log_id": 12346, "metadata": {"trace_id": "xyz-456-def", "response_time": "200ms"}}
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "action": "delete",
+        "tenant_ids": "1",
+        "source": "abnormal",
+        "remediation_reason": "false_negative",
+        "remediate_all": "true",
+        "start_time": "2024-01-01T00:00:00Z",
+        "end_time": "2024-01-31T23:59:59Z",
+        "subject": "Phishing",
+        "sender_email": "attacker@example.com",
+    }
+
+    results = remediate_messages_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.MessageRemediation"
+    assert results.outputs.get("activity_log_id") == 12346
+
+
+def test_get_activities_list_command(mocker):
+    """
+    Test the get_activities_list_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns the expected output structure
+    """
+    from AbnormalSecurity import get_activities_list_command
+
+    # Create mock response
+    mock_response = {
+        "activities": [
+            {
+                "activity_id": 12345,
+                "action": "remediate",
+                "status": "success",
+                "performed_by": "user@company.com",
+                "timestamp": "2024-01-15T10:30:00Z",
+                "result_count": 25,
+            }
+        ],
+        "total": 1,
+        "page": 1,
+        "size": 100,
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "tenant_ids": "1,2,3",
+        "action": "remediate",
+        "status": "success",
+        "start_date": "2024-01-01T00:00:00Z",
+        "end_date": "2024-01-31T23:59:59Z",
+        "page": 1,
+        "size": 100,
+    }
+
+    results = get_activities_list_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.Activities"
+    assert results.outputs_key_field == "activity_id"
+    assert results.outputs.get("total") == 1
+    assert len(results.outputs.get("activities", [])) == 1
+    assert results.outputs["activities"][0]["activity_id"] == 12345
+
+
+def test_get_activity_status_command(mocker):
+    """
+    Test the get_activity_status_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns the expected output structure with remediation details
+    """
+    from AbnormalSecurity import get_activity_status_command
+
+    # Create mock response
+    mock_response = {
+        "activity_id": 12345,
+        "action": "remediate",
+        "status": "success",
+        "performed_by": "user@company.com",
+        "timestamp": "2024-01-15T10:30:00Z",
+        "result_count": 2,
+        "remediation_details": [
+            {
+                "tenant_id": 1,
+                "raw_message_id": "msg-123",
+                "subject": "Test Message 1",
+                "sender": "sender1@example.com",
+                "mailbox_name": "user@company.com",
+                "status": "success",
+                "date_remediated": "2024-01-15T10:35:00Z",
+            },
+            {
+                "tenant_id": 1,
+                "raw_message_id": "msg-124",
+                "subject": "Test Message 2",
+                "sender": "sender2@example.com",
+                "mailbox_name": "user@company.com",
+                "status": "success",
+                "date_remediated": "2024-01-15T10:35:00Z",
+            },
+        ],
+        "total": 2,
+        "page": 1,
+        "size": 100,
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {"activity_log_id": "12345", "page": 1, "size": 100}
+
+    results = get_activity_status_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.ActivityStatus"
+    assert results.outputs_key_field == "activity_id"
+    assert results.outputs.get("activity_id") == 12345
+    assert results.outputs.get("status") == "success"
+    assert len(results.outputs.get("remediation_details", [])) == 2
+    assert results.outputs.get("total") == 2
+
+
+def test_get_activity_status_command_in_progress(mocker):
+    """
+    Test the get_activity_status_command when activity is in progress with null values
+    """
+    from AbnormalSecurity import get_activity_status_command
+
+    # Create mock response with null values (activity in progress)
+    mock_response = {
+        "activity_id": 179049,
+        "action": "remediation",
+        "status": None,
+        "performed_by": None,
+        "timestamp": None,
+        "result_count": None,
+        "remediation_details": None,
+        "total": None,
+        "pageNumber": None,
+        "pageSize": None,
+        "metadata": {"trace_id": "2b8009b3784f4b5aa92fa203d59196f5", "response_time": "12.537802ms"},
+    }
+
+    client = mock_client(mocker, mock_response)
+
+    args = {"activity_log_id": "179049"}
+
+    results = get_activity_status_command(client, args)
+
+    # Verify the output
+    assert results.outputs_prefix == "AbnormalSecurity.ActivityStatus"
+    assert results.outputs_key_field == "activity_id"
+    assert results.outputs.get("activity_id") == 179049
+    assert results.outputs.get("action") == "remediation"
+    assert results.outputs.get("metadata", {}).get("trace_id") == "2b8009b3784f4b5aa92fa203d59196f5"
+    # Verify readable output contains in-progress message
+    assert "In Progress" in results.readable_output or "in progress" in results.readable_output
+
+
+def test_download_message_attachment_command(mocker):
+    """
+    Test the download_message_attachment_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns a file result
+    """
+    from AbnormalSecurity import download_message_attachment_command
+
+    # Create mock response for file download
+    mock_file_content = b"Mock attachment file content"
+    mock_response = MockResponse(mock_file_content, 200)
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "message_id": "abnormal-uuid-123",
+        "attachment_name": "invoice.pdf",
+        "tenant_id": 1,
+        "raw_message_id": "msg-123",
+        "native_user_id": "user-456",
+        "recipient_mailbox": "user@company.com",
+    }
+
+    results = download_message_attachment_command(client, args)
+
+    # Verify the file result
+    assert results["File"] == "invoice.pdf"
+    assert results["FileID"] is not None
+
+
+def test_download_message_eml_command(mocker):
+    """
+    Test the download_message_eml_command to verify:
+    1. It correctly formats the request parameters
+    2. It returns a file result with EML format
+    """
+    from AbnormalSecurity import download_message_eml_command
+
+    # Create mock response for EML file download
+    mock_eml_content = b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Test\r\n\r\nTest email body"
+    mock_response = MockResponse(mock_eml_content, 200)
+
+    client = mock_client(mocker, mock_response)
+
+    args = {"cloud_message_id": "abx:CloudMessage:12345:67890"}
+
+    results = download_message_eml_command(client, args)
+
+    # Verify the file result
+    assert results["File"] == "abx_CloudMessage_12345_67890.eml"
+    assert results["FileID"] is not None
+
+
+def test_download_message_eml_command_with_quarantine(mocker):
+    """
+    Test the download_message_eml_command with quarantine parameters.
+    """
+    from AbnormalSecurity import download_message_eml_command
+
+    # Create mock response for EML file download
+    mock_eml_content = b"From: sender@example.com\r\nTo: recipient@example.com\r\nSubject: Test\r\n\r\nTest email body"
+    mock_response = MockResponse(mock_eml_content, 200)
+
+    client = mock_client(mocker, mock_response)
+
+    args = {
+        "cloud_message_id": "abx:CloudMessage:12345:67890",
+        "quarantine_identity": "quarantine-id-123",
+        "recipient_mailbox": "user@company.com",
+    }
+
+    results = download_message_eml_command(client, args)
+
+    # Verify the file result
+    assert results["File"] == "abx_CloudMessage_12345_67890.eml"
+    assert results["FileID"] is not None
+
+
+"""
+    _is_skippable_error Unit Tests
+"""
+
+
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [
+        (404, True),
+        (400, True),
+        (410, True),
+        (405, True),
+        (401, False),
+        (403, False),
+        (429, False),
+        (500, False),
+        (502, False),
+    ],
+)
+def test_is_skippable_error(status_code, expected):
+    """Test that _is_skippable_error correctly categorizes errors by response status code."""
+    exc = DemistoException(f"Error in API call [{status_code}]", res=MockResponse(None, status_code))
+    assert _is_skippable_error(exc) == expected
+
+
+def test_is_skippable_error_no_response():
+    """Test that errors without a response object are not skippable."""
+    exc = DemistoException("Some unexpected error with no status code")
+    assert _is_skippable_error(exc) is False
+
+
+"""
+    generate_threat_incidents Error Handling Tests
+"""
+
+
+def test_generate_threat_incidents_skips_4xx_error(mocker):
+    """
+    Test that skippable 4xx errors for one threat don't abort processing of other threats.
+
+    When:
+        - Fetching threat details for multiple threats
+        - One threat returns a 404 error (deleted/archived)
+    Then:
+        - The errored threat should be skipped
+        - Other threats should still be processed
+    """
+    valid_threat_response = {
+        "threatId": "valid-threat-id",
+        "messages": [
+            {
+                "threatId": "valid-threat-id",
+                "receivedTime": "2023-09-17T15:00:00Z",
+                "remediationTimestamp": "2023-09-17T15:30:00Z",
+            }
+        ],
+    }
+
+    def mock_get_details(threat_id, **kwargs):
+        if threat_id == "deleted-threat-id":
+            raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
+        return valid_threat_response
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    threats = [
+        {"threatId": "deleted-threat-id"},
+        {"threatId": "valid-threat-id"},
+    ]
+
+    incidents = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
+
+
+@pytest.mark.parametrize("status_code,reason", [(401, "Unauthorized"), (403, "Forbidden"), (429, "Too Many Requests")])
+def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_code, reason):
+    """
+    Test that non-skippable errors (401, 403, 429) are re-raised.
+    """
+
+    def mock_get_details(threat_id, **kwargs):
+        raise DemistoException(f"Error in API call [{status_code}] - {reason}", res=MockResponse(None, status_code))
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    threats = [{"threatId": "some-threat-id"}]
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+
+    assert str(status_code) in str(exc_info.value)
+
+
+def test_generate_threat_incidents_raises_5xx_errors(mocker):
+    """Test that 5xx errors are re-raised."""
+
+    def mock_get_details(threat_id, **kwargs):
+        raise DemistoException("Error in API call [500] - Internal Server Error", res=MockResponse(None, 500))
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_threat_incidents(client, [{"threatId": "id"}], 1, start_datetime, end_datetime)
+
+    assert "500" in str(exc_info.value)
+
+
+def test_generate_threat_incidents_handles_4xx_mid_pagination(mocker):
+    """
+    Test that skippable 4xx errors during pagination are handled gracefully.
+    """
+
+    def mock_get_details(threat_id, **kwargs):
+        if threat_id == "paginating-threat-id":
+            if kwargs.get("page_number", 1) == 1:
+                return {
+                    "threatId": "paginating-threat-id",
+                    "messages": [
+                        {
+                            "threatId": "paginating-threat-id",
+                            "receivedTime": "2023-09-17T15:00:00Z",
+                            "remediationTimestamp": "2023-09-17T15:30:00Z",
+                        }
+                    ],
+                    "nextPageNumber": 2,
+                }
+            else:
+                raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
+        return {
+            "threatId": "valid-threat-id",
+            "messages": [
+                {
+                    "threatId": "valid-threat-id",
+                    "receivedTime": "2023-09-17T16:00:00Z",
+                    "remediationTimestamp": "2023-09-17T16:30:00Z",
+                }
+            ],
+        }
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    threats = [
+        {"threatId": "paginating-threat-id"},
+        {"threatId": "valid-threat-id"},
+    ]
+
+    incidents = generate_threat_incidents(client, threats, 5, start_datetime, end_datetime)
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
+
+
+"""
+    generate_abuse_campaign_incidents Error Handling Tests
+"""
+
+
+def test_generate_abuse_campaign_incidents_skips_4xx_error(mocker):
+    """Test that skippable 4xx errors skip the campaign and continue."""
+    valid_campaign_response = {
+        "campaignId": "valid-campaign-id",
+        "firstReported": "2023-09-17T15:00:00Z",
+    }
+
+    def mock_get_campaign(campaign_id, **kwargs):
+        if campaign_id == "deleted-campaign-id":
+            raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
+        return valid_campaign_response
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
+
+    campaigns = [
+        {"campaignId": "deleted-campaign-id"},
+        {"campaignId": "valid-campaign-id"},
+    ]
+
+    incidents = generate_abuse_campaign_incidents(client, campaigns)
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-campaign-id"
+
+
+def test_generate_abuse_campaign_incidents_raises_non_skippable_errors(mocker):
+    """Test that non-skippable errors (401) are re-raised."""
+
+    def mock_get_campaign(campaign_id, **kwargs):
+        raise DemistoException("Error in API call [401] - Unauthorized", res=MockResponse(None, 401))
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_abuse_campaign_incidents(client, [{"campaignId": "id"}])
+
+    assert "401" in str(exc_info.value)
+
+
+"""
+    generate_account_takeover_cases_incidents Error Handling Tests
+"""
+
+
+def test_generate_account_takeover_cases_incidents_skips_4xx_error(mocker):
+    """Test that skippable 4xx errors skip the case and continue."""
+    valid_case_response = {
+        "caseId": "valid-case-id",
+        "firstObserved": "2023-09-17T15:00:00Z",
+        "genai_summary": "Test summary",
+    }
+
+    def mock_get_case(case_id, **kwargs):
+        if case_id == "deleted-case-id":
+            raise DemistoException("Error in API call [410] - Gone", res=MockResponse(None, 410))
+        return valid_case_response
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
+
+    cases = [
+        {"caseId": "deleted-case-id", "description": "Deleted case"},
+        {"caseId": "valid-case-id", "description": "Valid case"},
+    ]
+
+    incidents = generate_account_takeover_cases_incidents(client, cases)
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "valid-case-id"
+
+
+def test_generate_account_takeover_cases_incidents_raises_non_skippable_errors(mocker):
+    """Test that non-skippable errors (429) are re-raised."""
+
+    def mock_get_case(case_id, **kwargs):
+        raise DemistoException("Error in API call [429] - Too Many Requests", res=MockResponse(None, 429))
+
+    client = mock_client(mocker, response=None)
+    mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
+
+    with pytest.raises(DemistoException) as exc_info:
+        generate_account_takeover_cases_incidents(client, [{"caseId": "id", "description": "test"}])
+
+    assert "429" in str(exc_info.value)

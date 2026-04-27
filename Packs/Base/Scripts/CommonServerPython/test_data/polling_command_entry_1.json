@@ -1,0 +1,19 @@
+[
+    {
+        "Type": 1,
+        "HumanReadable": "##Result\nPolling command has been executed successfully.",
+        "EntryContext": {
+            "Core.DemoPollingCommand": {
+                "Endpoint": "123"
+            }
+        },
+        "Metadata": {
+            "polling": true,
+            "pollingCommand": "demo-polling-command",
+            "pollingArgs": {
+                "endpoint_id": "123",
+                "action_id": "456"
+            }
+        }
+    }
+]

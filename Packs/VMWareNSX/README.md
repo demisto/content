@@ -1,10 +1,12 @@
 # VMware NSX
+
 VMware NSX is a platform for creating and managing virtual networks. It provides advanced security, automation, and precise network control (micro segmentation) for modern data centers and cloud systems.
 
 <~XSIAM>
 This pack includes Cortex XSIAM content.
 
 ## What this pack contains
+
 - Modeling rules for VMWare NSX
 - Syslog integration
   
@@ -35,7 +37,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-Configure the Broker VM as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+Configure the Broker VM as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 You can configure the specific vendor and product for this instance.
 
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
@@ -50,4 +52,4 @@ You can configure the specific vendor and product for this instance.
    | `Vendor`      | Enter **VMware**.
    | `Product`     | Enter **NSX**.
 
-</~XSIAM> 
+</~XSIAM>

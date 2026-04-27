@@ -1,0 +1,284 @@
+id: Criminal_IP_Micro_Asm
+version: -1
+fromversion: 6.10.0
+name: Criminal_IP_Micro_Asm
+description: |-
+  This playbook takes domains as a List argument and executes the sub-playbook 'Criminal_IP_Run_Micro_Asm' for each domain in the List, then delivers the 'micro-asm' results to the user via email.
+  The user must set up the relevant arguments for the send-mail command.
+starttaskid: "0"
+
+tasks:
+  "0":
+    id: "0"
+    taskid: 7cfa5294-9d33-4492-838e-f2beb157e7b7
+    type: start
+    task:
+      id: 7cfa5294-9d33-4492-838e-f2beb157e7b7
+      version: -1
+      name: Start
+      description: Initializes the playbook.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "10":
+    id: "10"
+    taskid: 11111111-2222-3333-4444-555555555555
+    type: condition
+    task:
+      id: 11111111-2222-3333-4444-555555555555
+      version: -1
+      name: Check CriminalIP instance enabled
+      description: Verify that the CriminalIP integration is available before running Micro ASM
+      script: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+      "no":
+      - "99"
+    scriptarguments:
+      brandname:
+        simple: CriminalIP
+      integrationInstance:
+        simple: ${inputs.IntegrationInstanceName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "2":
+    id: "2"
+    taskid: b5125def-262e-4bca-b0eb-0ed9cda4aeea
+    type: playbook
+    task:
+      id: b5125def-262e-4bca-b0eb-0ed9cda4aeea
+      version: -1
+      name: Criminal_IP_Run_Micro_Asm
+      description: Executes the 'criminalip_run_micro_asm' playbook for each domain.
+      playbookName: Criminal_IP_Run_Micro_Asm
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Domain:
+        simple: ${item}
+      items:                     
+        simple: ${inputs.Domains}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      forEach: true
+      wait: 60
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "3":
+    id: "3"
+    taskid: 7425fc60-ea8c-45e8-a418-447b12d27c20
+    type: condition
+    task:
+      id: 7425fc60-ea8c-45e8-a418-447b12d27c20
+      version: -1
+      name: Mail Body Check
+      description: Checks if Micro ASM results exist.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "99"
+      "yes":
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CriminalIP.Micro_ASM.readable_output
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+
+
+  "4":
+    id: "4"
+    taskid: a5e5aa38-ca32-4dd9-b794-98b95a144643
+    type: regular
+    task:
+      id: a5e5aa38-ca32-4dd9-b794-98b95a144643
+      version: -1
+      name: send-mail
+      description: Sends results via email.
+      script: send-mail
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      body:
+        simple: ${CriminalIP.Micro_ASM.readable_output}
+      subject:
+        simple: CriminalIP Micro ASM Report
+      to:
+        simple: you@example.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 640
+        }}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+  "99":
+    id: "99"
+    taskid: 99999999-9999-9999-9999-999999999999
+    type: title
+    task:
+      id: 99999999-9999-9999-9999-999999999999
+      version: -1
+      name: End
+      description: Playbook finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 900,
+        "width": 800,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+
+inputs:
+- key: Domains
+  value: {}
+  required: true
+  description: |-
+    A list of domains that require Micro ASM analysis.
+    ex)
+    [
+      "www.example.com",
+      "www.criminalip.io"
+    ]
+- key: IntegrationInstanceName
+  value: {}
+  required: false
+  description: "Optional - Specific CriminalIP instance name to check availability"
+
+outputs:
+- contextPath: CriminalIP.Micro_ASM.domain
+  description: Domain analyzed.
+  type: String
+- contextPath: CriminalIP.Micro_ASM.summary
+  description: Micro ASM analysis results (concise string).
+  type: String
+- contextPath: CriminalIP.Micro_ASM.suspicious_findings
+  description: Detailed list of suspicious findings (if any).
+  type: String
+- contextPath: CriminalIP.Micro_ASM.scan_id
+  description: Scan ID used for analysis.
+  type: String
+- contextPath: CriminalIP.Micro_ASM.raw
+  description: Full raw response from CriminalIP API.
+  type: Unknown
+
+tests:
+- Test-CriminalIP

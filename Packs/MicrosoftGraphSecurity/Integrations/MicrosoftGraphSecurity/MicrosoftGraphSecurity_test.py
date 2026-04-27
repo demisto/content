@@ -2,10 +2,11 @@ import itertools
 import json
 import re
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import demistomock as demisto
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults, PollResult
 from MicrosoftGraphSecurity import (
     MANAGED_IDENTITIES_TOKEN_URL,
     MsGraphClient,
@@ -44,6 +45,15 @@ from MicrosoftGraphSecurity import (
     update_ediscovery_case_command,
     update_ediscovery_search_command,
     update_incident_command,
+    create_ediscovery_case_hold_policy_command,
+    delete_ediscovery_case_hold_policy_command,
+    update_ediscovery_case_policy_command,
+    list_ediscovery_case_hold_policy_command,
+    list_case_operation_command,
+    _extract_export_download_url,
+    _extract_filename_from_headers,
+    _download_operation_export_file,
+    export_result_ediscovery_data_command,
 )
 
 API_V2 = "Alerts v2"
@@ -472,7 +482,14 @@ def test_create_alert_comment_command(mocker, test_case):
         ("param", "providers_param", "service_sources_param", "param", API_V1),
         ("param", "providers_param", "service_sources_param", "param", API_V2),
         ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", API_V1),
-        ("", "providers_param", "service_sources_param", "serviceSource eq 'service_sources_param'", API_V2),
+        ("", "providers_param", "service_sources_param", "serviceSource in ('service_sources_param')", API_V2),
+        (
+            "",
+            "providers_param",
+            "service_source1,service_source2",
+            "serviceSource in ('service_source1','service_source2')",
+            API_V2,
+        ),
         ("", "", "", "", API_V2),
     ],
 )
@@ -487,6 +504,7 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
     - Case 3: Only providers_param and service_sources_param function arguments filled, and API version flag is Legacy Alerts.
     - Case 4: Only providers_param and service_sources_param function arguments filled, and API version flag is Alerts v2.
     - Case 5: param, providers_param, and service_sources_param function arguments Empty, and API version flag is Alerts v2.
+    - Case 6: Multiple service sources are provided, and API version flag is Alerts v2.
     When:
     - Running create_filter_query.
 
@@ -497,6 +515,7 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
     - Case 3: Should return providers_param.
     - Case 4: Should return service_sources_param.
     - Case 5: Should return an empty string.
+    - Case 6: Should return service_sources_param as query operator $in and not $eq.
     """
     mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
     filter_query = create_filter_query(param, providers_param, service_sources_param)
@@ -856,6 +875,8 @@ def test_update_incident_command(mocker):
         "classification": "unknown",
         "determination": "unknown",
         "assigned_to": "",
+        "severity": "unknown",
+        "resolving_comment": "resolve_test",
         "timeout": 50,
     }
 
@@ -867,3 +888,512 @@ def test_update_incident_command(mocker):
     assert results.outputs_key_field == expected_results["outputs_key_field"]
     assert results.outputs == expected_results["outputs"]
     assert results.readable_output == expected_results["readable_output"]
+
+
+from MicrosoftGraphSecurity import (
+    run_estimate_statistics_command,
+    _get_last_estimate_statistics_command,
+)
+
+
+# ==============================
+# Dummy Client
+# ==============================
+class DummyEstimateClient:
+    """Dummy client simulating Microsoft Graph eDiscovery estimate statistics operations."""
+
+    def __init__(self):
+        # Store operations by (case_id, search_id)
+        self.operations = {}
+
+    def start_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+        """
+        Simulate starting an estimate statistics request.
+        """
+        self.operations[(case_id, search_id)] = {
+            "id": "OP123",
+            "status": "running",
+            "percentProgress": 0,
+            "createdDateTime": "2025-11-16T10:00:00Z",
+            "lastActionDateTime": "2025-11-16T10:00:00Z",
+            "indexedItemCount": 100,
+            "indexedItemsSize": 50000,
+            "unindexedItemCount": 2,
+            "unindexedItemsSize": 1024,
+            "totalItemCount": 102,
+            "totalItemsSize": 51024,
+            "mailboxCount": 3,
+            "siteCount": 2,
+            "call_count": 0,  # track how many times get_last was called
+        }
+
+    def get_last_estimate_statistics_operation(self, case_id, search_id):
+        """
+        Simulate polling: first call returns running, second call returns succeeded.
+        """
+        op = self.operations.get((case_id, search_id))
+        if not op:
+            raise KeyError(f"No estimate operation found for case {case_id}, search {search_id}")
+
+        # Increment call count
+        op["call_count"] += 1
+
+        # First call: still running
+        if op["call_count"] == 1:
+            op["status"] = "running"
+            op["percentProgress"] = 50
+        else:
+            op["status"] = "succeeded"
+            op["percentProgress"] = 100
+
+        return op
+
+
+# ==============================
+# Tests
+# ==============================
+def test_run_estimate_statistics_command():
+    """
+    Given:
+        A case_id and search_id
+    When:
+        Calling run_estimate_statistics_command
+    Then:
+        The estimate request is started and confirmation CommandResults is returned
+    """
+    client = DummyEstimateClient()
+    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
+
+    result = run_estimate_statistics_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "initiated" in result.readable_output
+    assert ("CASE1", "SEARCH1") in client.operations
+
+
+def test_get_last_estimate_statistics_command_missing_operation():
+    """
+    Given:
+        A case_id and search_id with no started operation
+    When:
+        Calling get_last_estimate_statistics_command
+    Then:
+        Raises KeyError indicating no operation found
+    """
+    client = DummyEstimateClient()
+    args = {"case_id": "CASE_UNKNOWN", "search_id": "SEARCH_UNKNOWN"}
+
+    with pytest.raises(KeyError) as e:
+        _get_last_estimate_statistics_command(args, client)
+
+    assert "No estimate operation found" in str(e.value)
+
+
+def test_get_last_estimate_statistics_command_pending():
+    args = {"case_id": "case-123", "search_id": "search-456"}
+    mock_client = MagicMock()
+    mock_client.get_last_estimate_statistics_operation.return_value = {
+        "status": "running",
+        "id": "op-123",
+        "percentProgress": 50,
+    }
+
+    result = _get_last_estimate_statistics_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run == args
+    assert result.response is None
+    assert isinstance(result.partial_result, CommandResults)
+    assert "still running" in result.partial_result.readable_output.lower()
+
+
+def test_get_last_estimate_statistics_command_completed():
+    # Arrange
+    args = {"case_id": "case-123", "search_id": "search-456"}
+    mock_client = MagicMock()
+    # Simulate a completed operation
+    response_data = {
+        "id": "op-789",
+        "status": "Succeeded",
+        "percentProgress": 100,
+        "createdDateTime": "2025-11-16T00:00:00Z",
+        "lastActionDateTime": "2025-11-16T01:00:00Z",
+        "indexedItemCount": 50,
+        "indexedItemsSize": 1024,
+        "unindexedItemCount": 5,
+        "unindexedItemsSize": 512,
+        "totalItemCount": 55,
+        "totalItemsSize": 1536,
+        "mailboxCount": 3,
+        "siteCount": 2,
+    }
+    mock_client.get_last_estimate_statistics_operation.return_value = response_data
+
+    result = _get_last_estimate_statistics_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is False or result.continue_to_poll is None  # completed
+    assert isinstance(result.response, CommandResults)
+    assert result.partial_result is None
+    assert result.response.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
+    assert result.response.raw_response == response_data
+    assert "eDiscovery Estimate Statistics" in result.response.readable_output
+
+
+def test_create_ediscovery_case_hold_policy_command(mocker):
+    """
+    Given:
+        Case ID, display name, description, and content query.
+    When:
+        Calling create_ediscovery_case_hold_policy_command.
+    Then:
+        Ensure the command returns the expected CommandResults with the created hold policy.
+    """
+    args = {
+        "case_id": "case_123",
+        "display_name": "Hold Policy 1",
+        "description": "Test Hold Policy",
+        "content_query": "size>100",
+    }
+    mock_response = {
+        "id": "hold_123",
+        "displayName": "Hold Policy 1",
+        "status": "enabled",
+        "description": "Test Hold Policy",
+        "contentQuery": "size>100",
+    }
+    mocker.patch.object(client_mocker, "create_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = create_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "hold_123"
+    assert result.outputs["DisplayName"] == "Hold Policy 1"
+    assert "Hold Policy 1" in result.readable_output
+
+
+def test_delete_ediscovery_case_hold_policy_command(mocker):
+    """
+    Given:
+        Case ID and hold policy ID.
+    When:
+        Calling delete_ediscovery_case_hold_policy_command.
+    Then:
+        Ensure the command returns a success message.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_123"}
+    mocker.patch.object(client_mocker, "delete_ediscovery_case_hold_policy", return_value=None)
+
+    result = delete_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert "was sent successfully" in result.readable_output
+    assert "hold_123" in result.readable_output
+
+
+def test_update_ediscovery_case_policy_command(mocker):
+    """
+    Given:
+        Case ID, hold policy ID, and fields to update.
+    When:
+        Calling update_ediscovery_case_policy_command.
+    Then:
+        Ensure the command returns a success message.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_123", "description": "Updated Description"}
+    mocker.patch.object(client_mocker, "update_ediscovery_case_policy", return_value=None)
+
+    result = update_ediscovery_case_policy_command(client_mocker, args)
+
+    assert "updated successfully" in result.readable_output
+    assert "hold_123" in result.readable_output
+
+
+def test_list_ediscovery_case_hold_policy_command_list(mocker):
+    """
+    Given:
+        Case ID.
+    When:
+        Calling list_ediscovery_case_hold_policy_command (listing all).
+    Then:
+        Ensure the command returns the list of hold policies.
+    """
+    args = {"case_id": "case_123", "all_results": "true"}
+    mock_response = {
+        "value": [
+            {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"},
+            {"id": "hold_2", "displayName": "Hold 2", "status": "disabled"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "list_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = list_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ID"] == "hold_1"
+    assert result.outputs[1]["ID"] == "hold_2"
+    assert "Hold 1" in result.readable_output
+    assert "Hold 2" in result.readable_output
+
+
+def test_list_ediscovery_case_hold_policy_command_get(mocker):
+    """
+    Given:
+        Case ID and hold policy ID.
+    When:
+        Calling list_ediscovery_case_hold_policy_command (getting one).
+    Then:
+        Ensure the command returns the specific hold policy.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_1", "all_results": "true"}
+    mock_response = {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"}
+    mocker.patch.object(client_mocker, "get_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = list_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "hold_1"
+    assert "Hold 1" in result.readable_output
+
+
+def test_list_case_operation_command_list(mocker):
+    """
+    Given:
+        Case ID.
+    When:
+        Calling list_case_operation_command (listing all).
+    Then:
+        Ensure the command returns the list of operations.
+    """
+    args = {"case_id": "case_123", "all_results": "true"}
+    mock_response = {
+        "value": [
+            {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"},
+            {"id": "op_2", "action": "Export", "status": "InProgress"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "list_case_operation", return_value=mock_response)
+
+    result = list_case_operation_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Operation"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ID"] == "op_1"
+    assert result.outputs[1]["ID"] == "op_2"
+    assert "AddToReviewSet" in result.readable_output
+    assert "Export" in result.readable_output
+
+
+def test_list_case_operation_command_get(mocker):
+    """
+    Given:
+        Case ID and operation ID.
+    When:
+        Calling list_case_operation_command (getting one).
+    Then:
+        Ensure the command returns the specific operation.
+    """
+    args = {"case_id": "case_123", "operation_id": "op_1", "all_results": "true"}
+    mock_response = {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"}
+    mocker.patch.object(client_mocker, "get_case_operation", return_value=mock_response)
+
+    result = list_case_operation_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Operation"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "op_1"
+    assert "AddToReviewSet" in result.readable_output
+
+
+def test_list_case_operation_command_with_download(mocker):
+    """
+    Given:
+        Arguments requesting a specific operation ID with download_file='true'.
+    When:
+        Calling list_case_operation_command.
+    Then:
+        1. The operation details are fetched.
+        2. The download helper is called.
+        3. A list containing [FileResult, CommandResult] is returned.
+    """
+    args = {"case_id": "case_1", "operation_id": "op_1", "download_file": "true"}
+
+    op_data = {
+        "id": "op_1",
+        "action": "Export",
+        "status": "Succeeded",
+        "exportFileMetadata": {"downloadUrl": "https://download.me"},
+    }
+    mocker.patch.object(client_mocker, "get_case_operation", return_value=op_data)
+
+    mock_file_result = {"Type": 3, "File": "export.zip", "Contents": b"data"}
+    mocker.patch("MicrosoftGraphSecurity._download_operation_export_file", return_value=mock_file_result)
+
+    results = list_case_operation_command(client_mocker, args)
+
+    assert isinstance(results, list)
+    assert len(results) == 2
+
+    assert results[0] == mock_file_result
+
+    assert isinstance(results[1], CommandResults)
+    assert results[1].outputs[0]["ID"] == "op_1"
+
+
+def test_export_result_ediscovery_data_command(mocker):
+    """
+    Given:
+        Case ID, search ID, and export parameters.
+    When:
+        Calling export_result_ediscovery_data_command.
+    Then:
+        Ensure the command returns the export location.
+    """
+    args = {"case_id": "case_123", "search_id": "search_123", "export_criteria": "searchHits", "export_format": "standard"}
+    mock_response = MagicMock()
+    mock_response.headers = {
+        "Location": "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_123"
+    }
+    mocker.patch.object(client_mocker, "export_result_ediscovery_data", return_value=mock_response)
+
+    result = export_result_ediscovery_data_command(client_mocker, args)
+
+    assert "eDiscovery export request was submitted successfully" in result.readable_output
+    assert "op_123" in result.readable_output
+
+
+# ==========================================
+# Helper Function Tests
+# ==========================================
+
+
+@pytest.mark.parametrize(
+    "operation_data, expected_url",
+    [
+        # Case 1: exportFileMetadata is a dictionary
+        (
+            {"exportFileMetadata": {"downloadUrl": "https://example.com/file1.zip"}},
+            "https://example.com/file1.zip",
+        ),
+        # Case 2: exportFileMetadata is a list of dictionaries
+        (
+            {"exportFileMetadata": [{"downloadUrl": "https://example.com/file2.zip"}]},
+            "https://example.com/file2.zip",
+        ),
+        # Case 3: No exportFileMetadata
+        ({"id": "op1"}, None),
+        # Case 4: exportFileMetadata exists but has no downloadUrl
+        ({"exportFileMetadata": {}}, None),
+    ],
+)
+def test_extract_export_download_url(operation_data, expected_url):
+    """
+    Given:
+        An operation dictionary with varying structures for 'exportFileMetadata'.
+    When:
+        Calling _extract_export_download_url.
+    Then:
+        The correct download URL is extracted or None is returned.
+    """
+    assert _extract_export_download_url(operation_data) == expected_url
+
+
+@pytest.mark.parametrize(
+    "headers, default, expected_filename",
+    [
+        # Case 1: Standard double-quoted filename
+        ({"Content-Disposition": 'attachment; filename="export_123.zip"'}, "def.zip", "export_123.zip"),
+        # Case 2: Unquoted filename
+        ({"Content-Disposition": "attachment; filename=plain.csv"}, "def.zip", "plain.csv"),
+        # Case 3: Case insensitive header key
+        ({"content-disposition": 'attachment; filename="lower.zip"'}, "def.zip", "lower.zip"),
+        # Case 4: Header missing
+        ({}, "default.zip", "default.zip"),
+        # Case 5: Header exists but no filename parameter
+        ({"Content-Disposition": "attachment; size=100"}, "fallback.zip", "fallback.zip"),
+    ],
+)
+def test_extract_filename_from_headers(headers, default, expected_filename):
+    """
+    Given:
+        Response headers and a default filename.
+    When:
+        Calling _extract_filename_from_headers.
+    Then:
+        The filename is correctly parsed from the Content-Disposition header,
+        or the default is returned if missing.
+    """
+    assert _extract_filename_from_headers(headers, default) == expected_filename
+
+
+# ==========================================
+# Download Logic Tests
+# ==========================================
+
+
+def test_download_operation_export_file_success(mocker):
+    """
+    Given:
+        An operation with a valid download URL.
+    When:
+        Calling _download_operation_export_file.
+    Then:
+        The client downloads the file, and a fileResult dict is returned with the correct content and name.
+    """
+    operation = {"exportFileMetadata": {"downloadUrl": "https://fake-url.com/data"}}
+
+    mock_response = MagicMock()
+    mock_response.ok = True
+    mock_response.content = b"file_content_bytes"
+    mock_response.headers = {"Content-Disposition": 'attachment; filename="results.csv"'}
+
+    mocker.patch.object(client_mocker, "download_export_file", return_value=mock_response)
+
+    result = _download_operation_export_file(client_mocker, operation)
+
+    assert result["File"] == "results.csv"
+
+
+@pytest.mark.parametrize(
+    "mock_attrs, expected_error_msg",
+    [
+        # Case 1: HTTP Error (ok=False)
+        (
+            {"ok": False, "status_code": 404, "text": "Not Found", "content": b""},
+            "Failed to download export file. HTTP 404. Not Found",
+        ),
+        # Case 2: Empty content (ok=True but content is empty)
+        (
+            {"ok": True, "status_code": 200, "content": b"", "headers": {}},
+            "Downloaded export file is empty. HTTP 200.",
+        ),
+    ],
+)
+def test_download_operation_export_file_errors(mocker, mock_attrs, expected_error_msg):
+    """
+    Given:
+        A client response that indicates failure (404 error or empty body).
+    When:
+        Calling _download_operation_export_file.
+    Then:
+        A DemistoException is raised with the specific error message.
+    """
+    operation = {"exportFileMetadata": {"downloadUrl": "https://fake-url.com/data"}}
+
+    mock_response = MagicMock()
+    for key, value in mock_attrs.items():
+        setattr(mock_response, key, value)
+
+    mocker.patch.object(client_mocker, "download_export_file", return_value=mock_response)
+
+    with pytest.raises(DemistoException) as e:
+        _download_operation_export_file(client_mocker, operation)
+
+    assert expected_error_msg in str(e.value)

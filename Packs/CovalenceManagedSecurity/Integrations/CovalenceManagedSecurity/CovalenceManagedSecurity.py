@@ -18,10 +18,9 @@ API_KEY = demisto.params().get("credentials")["password"]
 FIRST_RUN_TIME_RANGE = int(demisto.params().get("first_run_time_range").strip())
 PROXY = demisto.params().get("proxy")
 if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 
 class EndpointActionType(str, Enum):

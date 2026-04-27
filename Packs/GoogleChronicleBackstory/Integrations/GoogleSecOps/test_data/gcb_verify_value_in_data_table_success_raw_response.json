@@ -1,0 +1,45 @@
+[
+    {
+        "value": "1",
+        "found_in_columns": [
+            "column_1"
+        ],
+        "not_found_in_columns": [
+            "column_2"
+        ],
+        "overall_status": "Found",
+        "case_insensitive": true
+    },
+    {
+        "value": "20",
+        "found_in_columns": [],
+        "not_found_in_columns": [
+            "column_1",
+            "column_2"
+        ],
+        "overall_status": "Not Found",
+        "case_insensitive": true
+    },
+    {
+        "value": "^[a-zA-Z]+$",
+        "found_in_columns": [
+            "column_2"
+        ],
+        "not_found_in_columns": [
+            "column_1"
+        ],
+        "overall_status": "Found",
+        "case_insensitive": true
+    },
+    {
+        "value": "3",
+        "found_in_columns": [
+            "column_1"
+        ],
+        "not_found_in_columns": [
+            "column_2"
+        ],
+        "overall_status": "Found",
+        "case_insensitive": true
+    }
+]

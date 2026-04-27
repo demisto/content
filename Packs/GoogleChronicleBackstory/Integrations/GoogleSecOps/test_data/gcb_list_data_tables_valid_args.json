@@ -1,0 +1,44 @@
+{
+    "dataTables": [
+        {
+            "name": "projects/sample-001/locations/us/instances/00000000-0000-0000-0000-000000000001/dataTables/test",
+            "displayName": "test",
+            "description": "test description",
+            "createTime": "2025-08-18T05:45:04.624866Z",
+            "updateTime": "2025-08-18T05:45:04.624866Z",
+            "columnInfo": [
+                {
+                    "columnType": "REGEX",
+                    "originalColumn": "column_1"
+                },
+                {
+                    "columnIndex": 1,
+                    "columnType": "STRING",
+                    "originalColumn": "column_2"
+                }
+            ],
+            "dataTableUuid": "00000000000000000000000000000000"
+        },
+        {
+            "name": "projects/sample-001/locations/us/instances/00000000-0000-0000-0000-000000000001/dataTables/test_1",
+            "displayName": "test_1",
+            "description": "test description",
+            "createTime": "2025-08-13T05:01:47.031912Z",
+            "updateTime": "2025-08-22T08:03:03.395766Z",
+            "columnInfo": [
+                {
+                    "columnType": "STRING",
+                    "originalColumn": "A"
+                },
+                {
+                    "columnIndex": 1,
+                    "columnType": "REGEX",
+                    "originalColumn": "B"
+                }
+            ],
+            "dataTableUuid": "00000000000000000000000000000001",
+            "approximateRowCount": "1055"
+        }
+    ],
+    "nextPageToken": "next_page_token"
+}

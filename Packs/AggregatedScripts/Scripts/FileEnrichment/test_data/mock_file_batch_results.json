@@ -1,0 +1,35 @@
+{
+  "createNewIndicator": [
+    { "EntryContext": {}, "Type": 1 },
+    { "EntryContext": {}, "Type": 1 }
+  ],
+  "enrichIndicators": [
+    {
+      "EntryContext": {},
+      "Type": 1,
+      "Metadata": { "brand": "WildFire-v2" }
+    }
+  ],
+  "coreGetHashAnalyticsPrevalence": [
+    {
+      "EntryContext": {
+        "Core.AnalyticsPrevalence": {
+          "SHA256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "GlobalPrevalence": 5
+        }
+      },
+      "Type": 1,
+      "Metadata": { "brand": "Cortex Core - IR" }
+    },
+    {
+      "EntryContext": {
+        "Core.AnalyticsPrevalence": {
+          "SHA256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "GlobalPrevalence": 2
+        }
+      },
+      "Type": 1,
+      "Metadata": { "brand": "Cortex Core - IR" }
+    }
+  ]
+}

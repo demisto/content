@@ -1,5 +1,6 @@
 {
   "core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonPlaybooks",
@@ -20,12 +21,14 @@
     "PrismaCloud",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
+    "Unit42ThreatIntelligencebyPaloAltoNetworks",
     "VirusTotal",
     "Whois",
     "rasterize",
     "CortexResponseAndRemediation"
   ],
   "update_core_packs_list": [
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonPlaybooks",
@@ -46,6 +49,7 @@
     "PrismaCloud",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
+    "Unit42ThreatIntelligencebyPaloAltoNetworks",
     "VirusTotal",
     "Whois",
     "rasterize",

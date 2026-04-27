@@ -11,6 +11,7 @@
         "risks": [
             "Has DNS Record"
         ],
+        "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
         "status": "monitoring",
         "incident_status": "member_feedback",
         "brand": "RiskAssess Demo",
@@ -30,6 +31,7 @@
             "Has A Record",
             "Has NS Record"
         ],
+        "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
         "status": "monitoring",
         "brand": "RiskAssess Demo",
         "timestamp": 1730382290000
@@ -47,6 +49,7 @@
             "Has NS Record",
             "Has A Record"
         ],
+        "external_link": "https://platform.ctm360.com/cbs/domains/registered/uYa30ZYB_inRxraHlAO4",
         "status": "monitoring",
         "brand": "RiskAssess Demo",
         "timestamp": 1730840460000

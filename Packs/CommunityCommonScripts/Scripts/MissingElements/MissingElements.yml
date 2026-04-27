@@ -1,0 +1,32 @@
+commonfields:
+  id: MissingElements
+  version: -1
+name: MissingElements
+script: ''
+type: python
+tags:
+- Utilities
+comment: |-
+  Returns the list of missing elements from an input list of integers.
+
+  e.g. [12,14,16] -> [13,15].
+enabled: true
+args:
+- name: value
+  required: true
+  description: An input list of integers.
+  isArray: true
+- name: start
+  description: Start of the range.
+- name: end
+  description: End of the range.
+outputs:
+- contextPath: MissingElements.output
+  description: The missing elements from the input list of integers.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

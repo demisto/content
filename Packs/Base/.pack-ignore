@@ -55,6 +55,9 @@ ignore=BA124
 [file:CommonServer_6_10.yml]
 ignore=BA108,BA109
 
+[file:CommonServerPython.yml]
+ignore=BA125
+
 [known_words]
 createindicatorrelationship
 commonserverpython

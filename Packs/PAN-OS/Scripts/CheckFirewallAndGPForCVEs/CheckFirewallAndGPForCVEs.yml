@@ -1,0 +1,42 @@
+args:
+- description: System info of firewalls as obtained from running the pan-os-platform-get-system-info command.
+  isArray: true
+  name: pan_os_system_info_list
+  required: true
+- description: Details of the CVE as obtained from running the PAN-OS_Security_Advisories_Enrichment script to enrich the CVE from the <https://security.paloaltonetworks.com> page.
+  isArray: true
+  name: cve_json
+  required: true
+commonfields:
+  id: CheckFirewallAndGPForCVEs
+  version: -1
+dockerimage: demisto/python3:3.12.11.3982393
+enabled: true
+engineinfo: {}
+name: CheckFirewallAndGPForCVEs
+outputs:
+- contextPath: CVE_Check.CVE_ID
+  description: ID of the CVE being checked.
+  type: string
+- contextPath: CVE_Check.Result
+  description: Result of the CVE vulnerability assessment for firewalls.
+  type: unknown
+- contextPath: CVE_Check.Severity
+  description: Severity of the CVE being assessed.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+marketplaces:
+- platform

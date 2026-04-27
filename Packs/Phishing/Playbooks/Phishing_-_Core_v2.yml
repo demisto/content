@@ -108,6 +108,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      execution-timeout:
+        simple: "120"
       height: {}
       max_page_load_time: {}
       type: {}
@@ -1269,6 +1271,8 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
+      execution-timeout:
+        simple: "120"
       height: {}
       htmlBody:
         complex:

@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Trend Micro
 commonfields:
   id: Trend Micro Deep Security
   version: -1
@@ -4059,7 +4060,7 @@ script:
       - contextPath: TrendMicro.ScheduledTask.ID
         description: The ID of the scheduled task.
         type: Number
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
   type: python

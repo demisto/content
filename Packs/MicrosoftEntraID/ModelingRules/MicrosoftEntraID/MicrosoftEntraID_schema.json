@@ -119,6 +119,10 @@
         "_raw_log": {
             "type": "string",
             "is_array": false
+        },
+        "time": {
+            "type": "string",
+            "is_array": false
         }
     },
     "msft_azure_ad_raw": {
@@ -191,6 +195,10 @@
             "is_array": false
         },
         "ipAddressFromResourceProvider": {
+            "type": "string",
+            "is_array": false
+        },
+        "location": {
             "type": "string",
             "is_array": false
         },

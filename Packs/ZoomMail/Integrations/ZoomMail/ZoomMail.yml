@@ -4,8 +4,9 @@ commonfields:
 name: Zoom Mail
 display: Zoom Mail
 category: Email
+provider: Zoom
 description: Enables interaction with the Zoom Mail API.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -325,7 +326,7 @@ script:
     - contextPath: ZoomMail.User.email
       description: The email for the user.
       type: unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   subtype: python3

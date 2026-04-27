@@ -465,6 +465,7 @@ Verify if an email has been quarantined.
 | limit_quarantine_occurred_time | Whether or not to limit the results to include only quarantines that occurred within a limited time after alert creation. Automated quarantine actions for example typically occur within 120 seconds of alert firing. Manual actions executed by human may take longer. Default is True.| False |
 | quarantine_limit | Only used if 'limit_quarantine_occurred_time' argument is set to true. Sets a limit on the quarantines retrieved to include only those where the time difference between alert time and quarantined time is less than the number of seconds specified. The time is in seconds. Default is 120. | False|
 | fetch_delta | The time frame (in hours) used to identify the size of batches when retrieving the messages. e.g., 12. Default is 6. | False |
+| check_exact_reception_time | If true, the command checks for quarantined emails with the exact reception time of the email. If false, the verification of the quarantined email only uses the message ID and the recipient email. Default is true. | False |
 
 #### Context Output
 

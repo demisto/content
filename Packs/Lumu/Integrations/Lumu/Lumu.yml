@@ -4,6 +4,7 @@ commonfields:
 name: Lumu
 display: Lumu
 category: Utilities
+provider: Lumu
 description: SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
 configuration:
 - defaultvalue: '50'
@@ -1081,7 +1082,7 @@ script:
     - contextPath: Lumu.GetCache.lumu_incidentsId
       type: string
       description: "Lumu incident ids processed."
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   subtype: python3
   ismappable: true

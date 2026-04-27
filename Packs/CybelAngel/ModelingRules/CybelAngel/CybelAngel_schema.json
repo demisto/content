@@ -83,6 +83,66 @@
         "asset_urls": {
             "type": "string",
             "is_array": false
+        },
+        "report_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "domain": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "registrant_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "registrant_organisation": {
+            "type": "string",
+            "is_array": false
+        },
+        "mx": {
+            "type": "string",
+            "is_array": false
+        },
+        "ns": {
+            "type": "string",
+            "is_array": false
+        },
+        "abuse_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "country": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "alert_ids": {
+            "type": "string",
+            "is_array": false
+        },
+        "email": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_machine_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_session": {
+            "type": "string",
+            "is_array": false
+        },
+        "SOURCE_LOG_TYPE": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

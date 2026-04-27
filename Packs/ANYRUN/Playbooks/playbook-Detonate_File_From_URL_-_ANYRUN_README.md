@@ -3,22 +3,28 @@ Returns relevant reports to the War Room and file reputations to the context dat
 This type of analysis works only for direct download links.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
+
 * ANYRUN
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * anyrun-run-analysis
 * anyrun-get-report
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
@@ -28,6 +34,7 @@ This playbook does not use any scripts.
 | Timeout | The duration after which to stop pooling and to resume the playbook (in minutes). | 15 | - | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -103,5 +110,6 @@ This playbook does not use any scripts.
 | ANYRUN.Task.Status | The task analysis status. | String |
 
 ## Playbook Image
+
 ---
 ![Detonate_File_From_URL_ANYRUN](../doc_files/Detonate_File_From_URL_-_ANYRUN.png)

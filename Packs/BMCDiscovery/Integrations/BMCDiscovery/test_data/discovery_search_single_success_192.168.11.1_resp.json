@@ -644,7 +644,7 @@
           "#OwnedItem:Ownership:BusinessOwner:Person.name": "Julie Mayer",
           "#OwnedItem:Ownership:ITOwner:Person.name": "Allen Allbrook",
           "#OwnedItem:Ownership:Owner:OrganisationalUnit.name": null,
-          "#OwnedItem:Ownership:SupportOwner:Person.name": "Frank Thomas",
+          "#OwnedItem:Ownership:SupportOwner:Person.name": "Frank Testman",
           "#Previous:EndpointIdentity:Next:Host.name": null,
           "#Previous:EndpointIdentity:Next:Mainframe.name": null,
           "#Previous:EndpointIdentity:Next:ManagementController.name": null,

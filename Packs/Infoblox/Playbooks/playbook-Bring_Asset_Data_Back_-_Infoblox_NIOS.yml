@@ -1,0 +1,672 @@
+id: Bring Asset Data Back - Infoblox NIOS
+version: -1
+name: Bring Asset Data Back - Infoblox NIOS
+description: This playbook brings asset data from XSOAR to Infoblox by creating the host record using the Infoblox NIOS integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 273873b5-676c-4973-866d-f50bd13b12d5
+    type: start
+    task:
+      id: 273873b5-676c-4973-866d-f50bd13b12d5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3ed1e93d-c6d1-461d-8443-99b277b40960
+    type: condition
+    task:
+      id: 3ed1e93d-c6d1-461d-8443-99b277b40960
+      version: -1
+      name: Is Infoblox NIOS integration enabled?
+      description: Checks whether Infoblox NIOS integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Infoblox
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5a340212-0561-4c17-8d88-3d2f61506e78
+    type: regular
+    task:
+      id: 5a340212-0561-4c17-8d88-3d2f61506e78
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: Collect Host Info
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 811346e2-bf06-4b46-8e11-98620df0f8f5
+    type: regular
+    task:
+      id: 811346e2-bf06-4b46-8e11-98620df0f8f5
+      version: -1
+      name: Create Host Record
+      description: Creates a host record.
+      script: '|||infoblox-create-host-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      comment:
+        complex:
+          root: Collect Host Info.Answers
+          accessor: "4"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.comment
+                iscontext: true
+          - operator: trim
+      configure_for_dns:
+        complex:
+          root: Collect Host Info.Answers
+          accessor: "5"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.configure_for_dns
+                iscontext: true
+      ipv4_address:
+        complex:
+          root: Collect Host Info.Answers
+          accessor: "1"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ipv4_addresses
+                iscontext: true
+          - operator: trim
+      ipv6_address:
+        complex:
+          root: Collect Host Info.Answers
+          accessor: "2"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ipv6_addresses
+                iscontext: true
+          - operator: trim
+      name:
+        complex:
+          root: Collect Host Info.Answers
+          accessor: "0"
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.name
+                iscontext: true
+          - operator: trim
+      view:
+        complex:
+          root: Collect Host Info.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.view
+                iscontext: true
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: default
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ec39e3b7-0ccd-4be7-82af-f61ef5fadf2d
+    type: title
+    task:
+      id: ec39e3b7-0ccd-4be7-82af-f61ef5fadf2d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: bf0b003c-29b1-4114-8262-e7650491cb8a
+    type: condition
+    task:
+      id: bf0b003c-29b1-4114-8262-e7650491cb8a
+      version: -1
+      name: Check whether host info is available in playbook input
+      description: Check whether host details are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.name
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ipv4_addresses
+                transformers:
+                - operator: trim
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ipv6_addresses
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2dec33ad-9b9b-4859-8246-5470382be1af
+    type: title
+    task:
+      id: 2dec33ad-9b9b-4859-8246-5470382be1af
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 60520d20-ab5b-4cb0-8710-5249363a77d1
+    type: condition
+    task:
+      id: 60520d20-ab5b-4cb0-8710-5249363a77d1
+      version: -1
+      name: Check that host info is present or not
+      description: Check that host info is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect Host Info.Answers
+                accessor: "0"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.name
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect Host Info.Answers
+                accessor: "1"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ipv4_addresses
+                      iscontext: true
+                - operator: trim
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Collect Host Info.Answers.2
+                      iscontext: true
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ipv6_addresses
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c88148c3-db0e-4356-8a25-0aad28f2a94e
+    type: collection
+    task:
+      id: c88148c3-db0e-4356-8a25-0aad28f2a94e
+      version: -1
+      name: Collect Host Info
+      description: Collect host record details.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect Host Info.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the host name.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The name of the host record.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the IPv4 addresses.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The IPv4 addresses to create host record with. Example: [{"ipv4addr": "192.168.1.0"}], [{"ipv4addr": "192.168.1.1", "configure_for_dhcp": true}].'
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Specify the IPv6 addresses.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The IPv6 addresses to create host record with. Example: [{"ipv6addr": "2001:db8::1"}], [{"ipv6addr": "2001:db8::2", "configure_for_dhcp": true}].'
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Specify the view for the host record.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The DNS view in which the records are located.
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Specify the comment for the host record.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The comment for this host record.
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Specify whether to configure for DNS.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Whether to configure the host record for DNS. Default is Yes.
+        readonly: false
+      title: Collect Host Info
+      description: This task collects host Info to create a host record.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.46,
+      "11_6_#default#": 0.2,
+      "1_2_yes": 0.58,
+      "1_6_#default#": 0.1,
+      "8_10_yes": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 600,
+        "x": 610,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: name
+  value: {}
+  required: false
+  description: The name of the host record.
+  playbookInputQuery:
+- key: ipv4_addresses
+  value: {}
+  required: false
+  description: 'The IPv4 addresses to create host record with. Example: [{"ipv4addr": "192.168.1.0"}], [{"ipv4addr": "192.168.1.1", "configure_for_dhcp": true}].'
+  playbookInputQuery:
+- key: ipv6_addresses
+  value: {}
+  required: false
+  description: 'The IPv6 addresses to create host record with. Example: [{"ipv6addr": "2001:db8::1"}], [{"ipv6addr": "2001:db8::2", "configure_for_dhcp": true}].'
+  playbookInputQuery:
+- key: view
+  value: {}
+  required: false
+  description: The DNS view in which the records are located.
+  playbookInputQuery:
+- key: comment
+  value: {}
+  required: false
+  description: The comment for this host record.
+  playbookInputQuery:
+- key: configure_for_dns
+  value: {}
+  required: false
+  description: Boolean value to decide whether to configure the host record for DNS. Default is True.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

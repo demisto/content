@@ -5,7 +5,8 @@ name: Koodous
 system: true
 display: Koodous
 category: Forensics & Malware Analysis
-description: Check Android app samples (APK) against Koodous API
+provider: VirusTotal
+description: Check Android app samples (APK) against Koodous API.
 configuration:
 - display: Server URL
   name: ServerURL
@@ -29,7 +30,7 @@ script:
     arguments:
     - name: hash
       required: true
-      description: The hash of the sample (MD5, SHA1 or SHA256)
+      description: The hash of the sample (MD5, SHA1 or SHA256).
     description: Check APK sample.
 tests:
 - No tests

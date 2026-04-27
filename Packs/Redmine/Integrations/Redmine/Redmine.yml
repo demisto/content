@@ -4,6 +4,7 @@ commonfields:
 name: Redmine
 display: Redmine
 category: Utilities
+provider: Open Source
 description: 'A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. '
 configuration:
 - section: Connect
@@ -392,7 +393,7 @@ script:
       description: ID of the tracker field.
     - contextPath: Redmine.trackers.Name
       description: Name of the tracker field.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: false
   runonce: false
   script: '-'

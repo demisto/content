@@ -11,3 +11,6 @@
 !xdr-xql-file-dropper-query
 !xdr-xql-process-instance-network-activity-query
 !xdr-xql-process-causality-network-activity-query
+!xdr-xql-library-list xql_query_name=Test
+!xdr-xql-library-create override_existing=false xql_query="dataset = xdr_data |limit 1" xql_query_name="Test"
+!xdr-xql-library-delete xql_query_name=Test

@@ -5,7 +5,7 @@ The unified audit log contains events from
 - Exchange Online
 - SharePoint Online
 - OneDrive for Business
-- Azure Active Directory
+- Entra ID
 - Microsoft Teams
 - Power BI
 - and other Microsoft 365 services
@@ -19,7 +19,7 @@ You can search for the following types of user and admin activity in Microsoft 3
 - User activity in SharePoint Online and OneDrive for Business
 - User activity in Exchange Online (Exchange mailbox audit logging)
 - Admin activity in SharePoint Online
-- Admin activity in Azure Active Directory (the directory service for Microsoft 365)
+- Admin activity in Entra ID (the directory service for Microsoft 365)
 - Admin activity in Exchange Online (Exchange admin audit logging)
 - eDiscovery activities in the security and compliance center
 - User and admin activity in Power BI

@@ -4,6 +4,7 @@ commonfields:
 name: CounterCraft Deception Director
 display: CounterCraft Deception Director
 category: Deception & Breach Simulation
+provider: CounterCraft
 description: CounterCraft Deception Solution detects advanced adversaries. Automate counterintelligence campaigns to discover targeted attacks with real-time active response.
 configuration:
 - display: Deception Director Domain or IP Address
@@ -440,7 +441,7 @@ script:
       description: Breadcrumb ID.
       type: number
     description: Manage  breadcrumb.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

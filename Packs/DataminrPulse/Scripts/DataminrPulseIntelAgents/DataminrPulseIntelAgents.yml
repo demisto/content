@@ -1,0 +1,17 @@
+commonfields:
+  id: DataminrPulseIntelAgents
+  version: -1
+name: DataminrPulseIntelAgents
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This dynamic automation update the intel agents data to HTML and presents it in the layout in color according to theme.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

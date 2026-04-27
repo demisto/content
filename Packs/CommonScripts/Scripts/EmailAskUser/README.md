@@ -69,9 +69,9 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | email             | The email of the user to ask.                                                                                          |
 | subject           | The subject for the email.                                                                                             |
 | message           | The message sent to the user you are going to ask.                                                                     |
-| option1           | The first option for a user reply.The default is "yes".                                                                |
-| option2           | The second option for the user reply. The default is "no".                                                             |
-| additionalOptions | The comma delimited list of additional options if there are more than 2.                                               |
+| option1           | The first option for a user reply.The default is "yes". Options cannot contain whitespaces.                            |
+| option2           | The second option for the user reply. The default is "no". Options cannot contain whitespaces.                         |
+| additionalOptions | The comma delimited list of additional options if there are more than 2. Options cannot contain whitespaces.           |
 | task              | Which task the reply will close. If none, then no playbook tasks will be closed.                                       |
 | roles             | Send mail to all users of these roles (a CSV list).                                                                    |
 | attachIds         | The attachments.                                                                                                       |
@@ -82,7 +82,7 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | retries           | How many times to try and create an entitlement in case of a failure.                                                  |
 | cc                | The CC email address.                                                                                                  |
 | bcc               | The BCC email address.                                                                                                 |
-| playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all plabooks. |
+| playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all playbooks.|
 
 ## Outputs
 
@@ -98,3 +98,10 @@ Requires an instance of one of the available email integrations, set to fetch in
 
 ---
 In case that the incident in which the automation script is running, has limited permissions to (e.g. has a certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.
+
+## Notes
+
+---
+
+* `EmailAskUser` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
+* Whitespaces are not supported in custom options and will not work. (i.e. setting a button to `I Agree`)

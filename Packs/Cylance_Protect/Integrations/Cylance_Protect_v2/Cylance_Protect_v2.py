@@ -1150,7 +1150,7 @@ def delete_devices():
     except ValueError:
         return_error("Error: Batch Size specified must represent an int.")
     for i in range(0, len(device_ids_list), batch_size):
-        current_deleted_devices_batch = device_ids_list[i: i + batch_size]
+        current_deleted_devices_batch = device_ids_list[i : i + batch_size]
         delete_devices_request(current_deleted_devices_batch)
 
     context = {"Cylance.Device(val.Id && val.Id == obj.Id)": context_list}

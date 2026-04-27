@@ -1,0 +1,10 @@
+[
+    {
+      "id": 99,
+      "hostname": "srv-sysadmin-page",
+      "last_communication": "2025-06-03T12:00:00.000Z",
+      "category": "server",
+      "description": "paged asset"
+    }
+  ]
+  

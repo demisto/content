@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 import json
 import shutil
 
@@ -12,6 +10,9 @@ import shutil
 class Client(BaseClient):
     def test_module(self):
         self._http_request("GET", "/v1/auth")
+
+    def set_airs_client(self, airs_client):
+        self.airs_client = airs_client
 
     def document_list(self):
         return self._list("documents")
@@ -95,7 +96,7 @@ class Client(BaseClient):
                     "link": link,
                     "metadata": {"title": title, "docAuthor": author, "description": description, "docSource": source},
                 }
-                response = self._http_request(method="POST", url_suffix="/v1/document/raw-text", json_data=data)
+                response = self._http_request(method="POST", url_suffix="/v1/document/upload-link", json_data=data)
             finally:
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
@@ -219,7 +220,21 @@ class Client(BaseClient):
             raise Exception(msg)
 
     def workspace_thread_chat(self, workspace: str, thread: str, message: str, mode: str):
-        return self._tchat(workspace, thread, message, mode, "chat")
+        if demisto.params().get("airs_scan_prompt"):
+            result = self.airs_client.airs_sync_scan_prompt(message)
+            if result["action"] == "block":
+                msg = f"AnythingLLM: workspace_thread_chat: prompt blocked [{result.get('prompt_detected')}]"
+                demisto.debug(msg)
+                raise Exception(msg)
+        response = self._tchat(workspace, thread, message, mode, "chat")
+        if demisto.params().get("airs_scan_response"):
+            result = self.airs_client.airs_sync_scan_response(response["textResponse"])
+            if result["action"] == "block":
+                msg = f"AnythingLLM: workspace_thread_chat: response blocked [{result.get('response_detected')}]"
+                demisto.debug(msg)
+                raise Exception(msg)
+
+        return response
 
     def workspace_thread_chats(self, workspace: str, thread: str):
         try:
@@ -287,7 +302,19 @@ class Client(BaseClient):
         try:
             data = {"message": message, "mode": validate_chat_mode(mode)}
             slug = workspace_slug(workspace, self.workspace_list())
+            if demisto.params().get("airs_scan_prompt"):
+                result = self.airs_client.airs_sync_scan_prompt(message)
+                if result["action"] == "block":
+                    msg = f"AnythingLLM: _chat: prompt blocked [{result.get('prompt_detected')}]"
+                    demisto.debug(msg)
+                    raise Exception(msg)
             response = self._http_request(method="POST", url_suffix=f"/v1/workspace/{slug}/{ttype}", json_data=data)
+            if demisto.params().get("airs_scan_response"):
+                result = self.airs_client.airs_sync_scan_response(response.get("textResponse"))
+                if result["action"] == "block":
+                    msg = f"AnythingLLM: _chat: response blocked [{result.get('response_detected')}]"
+                    demisto.debug(msg)
+                    raise Exception(msg)
         except Exception as e:
             msg = f"AnythingLLM: _chat: exception chatting - {e}"
             demisto.debug(msg)
@@ -349,6 +376,70 @@ class Client(BaseClient):
             msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding [{document}] in [{workspace}] - {e}"
             demisto.debug(msg)
             raise Exception(msg)
+
+        return response
+
+
+class AirsClient(BaseClient):
+    def test_module(self):
+        self.airs_sync_scan_prompt("Hello!")
+
+    def set_params(self, params: dict):
+        self.params = params
+
+    def airs_sync_scan_prompt(self, message: str) -> dict:
+        new_args = {
+            "profile_name": self.params.get("airs_profile"),
+            "code_prompt": self.params.get("code_prompt"),
+            "code_response": self.params.get("code_response"),
+            "prompt": message,
+            "response": self.params.get("response"),
+            "context": self.params.get("context"),
+            "ai_model": self.params.get("airs_model"),
+            "app_name": self.params.get("airs_app"),
+            "app_user": self.params.get("airs_user"),
+            "user_ip": "",
+        }
+        return self.airs_sync_scan(new_args)
+
+    def airs_sync_scan_response(self, message: str) -> dict:
+        new_args = {
+            "profile_name": self.params.get("airs_profile"),
+            "code_prompt": self.params.get("code_prompt"),
+            "code_response": self.params.get("code_response"),
+            "prompt": self.params.get("prompt"),
+            "response": message,
+            "context": self.params.get("context"),
+            "ai_model": self.params.get("airs_model"),
+            "app_name": self.params.get("airs_app"),
+            "app_user": self.params.get("airs_user"),
+            "user_ip": "",
+        }
+        return self.airs_sync_scan(new_args)
+
+    def airs_sync_scan(self, args: dict) -> dict:
+        data = {
+            "ai_profile": {"profile_name": args.get("profile_name")},
+            "contents": [
+                {
+                    "code_prompt": args.get("code_prompt"),
+                    "code_response": args.get("code_response"),
+                    "prompt": args.get("prompt"),
+                    "response": args.get("response"),
+                    "context": args.get("context"),
+                }
+            ],
+            "metadata": {
+                "ai_model": args.get("ai_model"),
+                "app_name": args.get("app_name"),
+                "app_user": args.get("app_user"),
+                "user_ip": args.get("user_ip"),
+            },
+            "tr_id": "",
+        }
+        headers = self._headers
+        headers["Content-Type"] = "application/json"
+        response = self._http_request("POST", "v1/scan/sync/request", json_data=data, headers=headers)
 
         return response
 
@@ -484,7 +575,7 @@ def DictMarkdown(nested, indent):
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, args: dict) -> str:
+def test_module(client: Client) -> str:
     try:
         client.test_module()
     except DemistoException as e:
@@ -547,7 +638,7 @@ def document_upload_file_command(client: Client, args: dict) -> CommandResults:
 
 
 def document_upload_link_command(client: Client, args: dict) -> CommandResults:
-    response = client.document_upload_text(args["link"], args["title"], args["description"], args["author"], args["source"])
+    response = client.document_upload_link(args["link"], args["title"], args["description"], args["author"], args["source"])
     return CommandResults(outputs_prefix="AnythingLLM.upload_link", readable_output=DictMarkdown(response, ""), outputs=response)
 
 
@@ -657,6 +748,13 @@ def workspace_thread_delete_command(client: Client, args: dict) -> CommandResult
     )
 
 
+def airs_sync_scan_command(airs_client: AirsClient, args: dict) -> CommandResults:
+    response = airs_client.airs_sync_scan(args)
+    command_results = CommandResults(outputs=response, raw_response=response)
+
+    return command_results
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -675,10 +773,10 @@ def main() -> None:  # pragma: no cover
         cf_auth = params.get("cf_auth", None)
         cf_client_id = None if cf_auth is None else cf_auth["identifier"]
         cf_client_key = None if cf_auth is None else cf_auth["password"]
-
         if cf_client_id is not None and cf_client_key is not None:
             headers.update({"CF-Access-Client-Id": cf_client_id, "CF-Access-Client-Secret": cf_client_key})
 
+        # The Anything LLM Client
         client = Client(
             base_url=params.get("url") + "/api",
             verify=not params.get("insecure", False),
@@ -686,10 +784,28 @@ def main() -> None:  # pragma: no cover
             proxy=params.get("proxy", False),
         )
 
+        # The AIRS Client
+        if params.get("airs_url", "") != "":
+            airs_headers = {}
+            airs_headers["Accept"] = "application/json"
+            airs_headers["x-pan-token"] = params.get("airs_apikey", {}).get("password")
+            airs_client = AirsClient(
+                base_url=params.get("airs_url", ""),
+                verify=not params.get("insecure", False),
+                proxy=params.get("proxy", False),
+                headers=airs_headers,
+                auth=None,
+            )
+            # Register the AIRS client with the Anything LLM client so it can scan prompts and responses with AIRS
+            client.set_airs_client(airs_client)
+            airs_client.set_params(params)
+
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params)
-            return_results(result)
+            result = test_module(client)
+            if result == "ok" and params.get("airs_url", "") != "":
+                airs_client.test_module()
+            return_results("ok")
 
         # elif command == "anyllm-list":
         #    return_results(list_command(client, args))
@@ -741,6 +857,10 @@ def main() -> None:  # pragma: no cover
             return_results(workspace_thread_chats_command(client, args))
         elif command == "anyllm-workspace-thread-delete":
             return_results(workspace_thread_delete_command(client, args))
+
+        elif command == "anyllm-scan-request":
+            if params.get("airs_url", "") != "":
+                return_results(airs_sync_scan_command(airs_client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:

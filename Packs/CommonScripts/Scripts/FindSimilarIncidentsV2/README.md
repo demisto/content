@@ -8,6 +8,7 @@ This automation runs using the default Limited User role, unless you explicitly 
 For more information, see the section about permissions here: For Cortex XSOAR 6, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations for Cortex XSOAR 8 Cloud, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script for Cortex XSOAR 8 On-prem, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -17,8 +18,10 @@ For more information, see the section about permissions here: For Cortex XSOAR 6
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Cortex XDR incident handling v2
 * DeDup incidents
 * Dedup - Generic
@@ -31,6 +34,7 @@ This script is used in the following playbooks and scripts.
 * Shift handover
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -50,6 +54,7 @@ This script is used in the following playbooks and scripts.
 | skipMissingValues | Whether to skip the incident if it does not have specific key. Can be "yes" \(skip\) or "no" \(don't skip\). The default value is "yes". WARNING: if no fields exist in the incident, random incidents might be returned as results due to the empty condition. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
