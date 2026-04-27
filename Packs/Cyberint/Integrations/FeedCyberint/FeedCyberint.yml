@@ -6,7 +6,7 @@ commonfields:
   version: -1
 fromversion: 6.9.0
 name: Cyberint Feed
-display: Cyberint Feed
+display: Check Point EM Feed
 category: Data Enrichment & Threat Intelligence
 provider: Check Point Software Technologies
 description: Use the Cyberint Feed integration to get indicators from the feed.
@@ -367,7 +367,7 @@ script:
       description: Benign.
       type: String
     description: Gets URL enrichment from the feed.
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   subtype: python3
 tests:
