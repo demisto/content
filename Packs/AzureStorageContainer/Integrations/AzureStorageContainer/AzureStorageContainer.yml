@@ -3,6 +3,9 @@ provider: Microsoft
 commonfields:
   id: Azure Storage Container
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Storage account name
   displaypassword: Account SAS Token
