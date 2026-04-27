@@ -65,9 +65,8 @@ configuration:
   advanced: true
   required: false
 description: Zscaler Internet Access via ZIdentity OAuth 2.0. Provides URL/IP/domain classification, denylist and allowlist management, URL category management, sandbox reporting, user and group management, and IP destination group management using OAuth 2.0 client credentials authentication through ZIdentity.
-display: Zscaler Internet Access via ZIdentity (Beta)
+display: Zscaler Internet Access via ZIdentity
 name: ZscalerZIdentity
-beta: true
 script:
   commands:
   - name: zia-denylist-list
