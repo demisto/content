@@ -90,13 +90,128 @@ def test_nginx_conf_taxii2(tmp_path: Path, mocker):
 
 NGINX_PROCESS: subprocess.Popen | None = None
 
+NGINX_TEST_CONF_DIR = "/tmp/nginx-test-conf.d"
+NGINX_TEST_SSL_DIR = "/tmp/nginx-test-ssl"
+NGINX_TEST_MAIN_CONF = "/tmp/nginx-test-main.conf"
+NGINX_TEST_PID_FILE = "/tmp/nginx-test.pid"
+NGINX_TEST_ERROR_LOG = "/tmp/nginx-test-error.log"
+NGINX_TEST_ACCESS_LOG = "/tmp/nginx-test-access.log"
+NGINX_TEST_CACHE_DIR = "/tmp/nginx-test-cache"
+NGINX_TEST_TMP_DIR = "/tmp/nginx-test-tmp"
+
+
+def _create_test_nginx_main_conf():
+    """Create a custom nginx main config that includes our test conf directory.
+
+    Uses /tmp/ paths for all writable resources so tests can run as non-root.
+    """
+    Path(NGINX_TEST_CACHE_DIR).mkdir(parents=True, exist_ok=True)
+    Path(NGINX_TEST_TMP_DIR).mkdir(parents=True, exist_ok=True)
+    main_conf = f"""
+pid {NGINX_TEST_PID_FILE};
+pcre_jit on;
+error_log {NGINX_TEST_ERROR_LOG} warn;
+include /etc/nginx/modules/*.conf;
+events {{
+    worker_connections 1024;
+}}
+http {{
+    include /etc/nginx/mime.types;
+    root /var/lib/nginx/html;
+    server_tokens off;
+    client_max_body_size 1m;
+    keepalive_timeout 65;
+    sendfile on;
+    tcp_nodelay on;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:2m;
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 512;
+    gzip_types text/javascript text/xml text/plain application/javascript application/x-javascript application/json;
+    gzip_proxied any;
+    proxy_http_version 1.1;
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+        '$status $body_bytes_sent "$http_referer" '
+        '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log {NGINX_TEST_ACCESS_LOG} main;
+    client_body_temp_path {NGINX_TEST_TMP_DIR}/client_body;
+    proxy_temp_path {NGINX_TEST_TMP_DIR}/proxy;
+    fastcgi_temp_path {NGINX_TEST_TMP_DIR}/fastcgi;
+    uwsgi_temp_path {NGINX_TEST_TMP_DIR}/uwsgi;
+    scgi_temp_path {NGINX_TEST_TMP_DIR}/scgi;
+    proxy_cache_path {NGINX_TEST_CACHE_DIR} levels=1:2 keys_zone=mycache:5m max_size=2g inactive=60m use_temp_path=off;
+    proxy_cache mycache;
+    proxy_cache_valid 5m;
+    proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504 http_429;
+    proxy_cache_background_update on;
+    proxy_cache_lock on;
+    proxy_cache_lock_age 60s;
+    proxy_cache_lock_timeout 60s;
+    proxy_cache_revalidate on;
+    proxy_read_timeout 300s;
+    include {NGINX_TEST_CONF_DIR}/*.conf;
+}}
+"""
+    with open(NGINX_TEST_MAIN_CONF, "w") as f:
+        f.write(main_conf)
+
 
 @pytest.fixture
-def nginx_cleanup():
-    yield
-    from NGINXApiModule import NGINX_SERVER_CONF_FILE
+def nginx_cleanup(monkeypatch):
+    import NGINXApiModule as module
 
-    Path(NGINX_SERVER_CONF_FILE).unlink(missing_ok=True)
+    # Create writable directories for nginx config and SSL files
+    Path(NGINX_TEST_CONF_DIR).mkdir(parents=True, exist_ok=True)
+    Path(NGINX_TEST_SSL_DIR).mkdir(parents=True, exist_ok=True)
+
+    test_conf_file = f"{NGINX_TEST_CONF_DIR}/default.conf"
+    test_ssl_crt = f"{NGINX_TEST_SSL_DIR}/ssl.crt"
+    test_ssl_key = f"{NGINX_TEST_SSL_DIR}/ssl.key"
+
+    # Patch module constants to use writable paths
+    monkeypatch.setattr(module, "NGINX_SERVER_CONF_FILE", test_conf_file)
+    monkeypatch.setattr(module, "NGINX_SSL_CRT_FILE", test_ssl_crt)
+    monkeypatch.setattr(module, "NGINX_SSL_KEY_FILE", test_ssl_key)
+    monkeypatch.setattr(
+        module,
+        "NGINX_SSL_CERTS",
+        f"\n    ssl_certificate {test_ssl_crt};\n    ssl_certificate_key {test_ssl_key};\n",
+    )
+    monkeypatch.setattr(module, "NGINX_SERVER_ACCESS_LOG", NGINX_TEST_ACCESS_LOG)
+    monkeypatch.setattr(module, "NGINX_SERVER_ERROR_LOG", NGINX_TEST_ERROR_LOG)
+
+    # Create custom nginx main config pointing to our test conf directory
+    _create_test_nginx_main_conf()
+
+    # Wrap start_nginx_server to use our custom main config via -c flag
+    def _patched_start_nginx_server(port: int, params: dict = {}) -> subprocess.Popen:
+        params = params if params else demisto.params()
+        module.create_nginx_server_conf(module.NGINX_SERVER_CONF_FILE, port, params)
+        nginx_global_directives = "daemon off;"
+        global_directives_conf = params.get("nginx_global_directives")
+        if global_directives_conf:
+            nginx_global_directives = f"{nginx_global_directives} {global_directives_conf}"
+        directive_args = ["-g", nginx_global_directives]
+        try:
+            nginx_test_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF, "-T"]
+            nginx_test_command.extend(directive_args)
+            test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
+            demisto.info(f"ngnix test passed. command: [{nginx_test_command}]")
+            demisto.debug(f"nginx test ouput:\n{test_output}")
+        except subprocess.CalledProcessError as err:
+            raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
+        nginx_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF]
+        nginx_command.extend(directive_args)
+        res = subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        demisto.info(f"done starting nginx with pid: {res.pid}")
+        return res
+
+    monkeypatch.setattr(module, "start_nginx_server", _patched_start_nginx_server)
+
+    yield
+    Path(test_conf_file).unlink(missing_ok=True)
+    Path(NGINX_TEST_MAIN_CONF).unlink(missing_ok=True)
     global NGINX_PROCESS
     if NGINX_PROCESS:
         NGINX_PROCESS.terminate()
@@ -111,14 +226,28 @@ docker_only = pytest.mark.skipif("flask-nginx" not in os.getenv("DOCKER_IMAGE", 
 @docker_only
 def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
     """Test that nginx fails when config is invalid"""
+    import NGINXApiModule as module
 
     def nginx_bad_conf(file_path: str, port: int, params: dict):
         with open(file_path, "w") as f:
             f.write("server {bad_stuff test;}")
 
-    import NGINXApiModule as module
+    # Override create_nginx_server_conf to write bad config, but keep the patched start_nginx_server
+    def _start_with_bad_conf(port: int, params: dict = {}) -> subprocess.Popen:
+        nginx_bad_conf(module.NGINX_SERVER_CONF_FILE, port, params)
+        nginx_global_directives = "daemon off;"
+        directive_args = ["-g", nginx_global_directives]
+        try:
+            nginx_test_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF, "-T"]
+            nginx_test_command.extend(directive_args)
+            subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
+        except subprocess.CalledProcessError as err:
+            raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
+        nginx_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF]
+        nginx_command.extend(directive_args)
+        return subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    mocker.patch.object(module, "create_nginx_server_conf", side_effect=nginx_bad_conf)
+    mocker.patch.object(module, "start_nginx_server", side_effect=_start_with_bad_conf)
     with pytest.raises(ValueError) as e:
         module.start_nginx_server(12345, {})
         assert "bad_stuff" in str(e)
@@ -214,6 +343,7 @@ def test_lost_connection_engine_to_server(mocker):
     mocker.patch.object(demisto, "info", side_effect=ValueError("Try to write when connection closed"))
     mocker.patch.object(demisto, "error", side_effect=ValueError("Try to write when connection closed"))
     mocker.patch.object(demisto, "params", return_value={"longRunningPort": "8080"})
+    mocker.patch.object(module, "start_nginx_server", side_effect=ValueError("Try to write when connection closed"))
     with pytest.raises(SystemExit) as e:
         module.run_long_running()
         assert e.value.code == 1
