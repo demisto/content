@@ -3,6 +3,7 @@ import json
 import demistomock as demisto
 import pytest
 from Palo_Alto_Networks_WildFire_v2 import (
+    NotFoundError,
     create_dbot_score_from_url_verdict,
     create_dbot_score_from_verdict,
     create_dbot_score_from_verdicts,
@@ -18,6 +19,7 @@ from Palo_Alto_Networks_WildFire_v2 import (
     prettify_verdict,
     prettify_verdicts,
     run_polling_command,
+    test_module as _test_module,
     wildfire_file_command,
     wildfire_get_file_report,
     wildfire_get_report_command,
@@ -781,10 +783,55 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     mock_get_license = mocker.patch.object(demisto, "getLicenseCustomField", return_value="".join(["X" for i in range(32)]))
 
     mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module", return_value="ok")
     main()
 
     mock_get_license.assert_called()
+
+
+def test_test_module_uses_get_verdict(mocker: MockerFixture):
+    """
+    Given:
+        - A configured WildFire instance with valid credentials.
+    When:
+        - Running test-module.
+    Then:
+        - It should call wildfire_get_verdict with a known hash (not wildfire_upload_url).
+        - It should return 'ok'.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mock_verdict = mocker.patch.object(
+        wf,
+        "wildfire_get_verdict",
+        return_value=(
+            {"wildfire": {"get-verdict-info": {"sha256": "abc", "verdict": "1", "md5": "def"}}},
+            {"sha256": "abc", "verdict": "1", "md5": "def"},
+        ),
+    )
+
+    result = _test_module()
+
+    mock_verdict.assert_called_once_with(file_hash="dca86121cc7427e375fd24fe5871d727")
+    assert result == "ok"
+
+
+def test_test_module_handles_not_found(mocker: MockerFixture):
+    """
+    Given:
+        - A configured WildFire instance where the test hash is not found (e.g., on an appliance).
+    When:
+        - Running test-module.
+    Then:
+        - It should still return 'ok' since NotFoundError means auth and connectivity are working.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch.object(wf, "wildfire_get_verdict", side_effect=NotFoundError("Not Found."))
+
+    result = _test_module()
+
+    assert result == "ok"
 
 
 @pytest.mark.parametrize(
