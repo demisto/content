@@ -1,6 +1,3 @@
-from unittest import result
-from urllib import response
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -12,8 +9,6 @@ import urllib3
 import json
 import dateparser
 
-# Disable insecure warnings
-# requests.packages.urllib3.disable_warnings()
 urllib3.disable_warnings()
 
 """ CONSTANTS """

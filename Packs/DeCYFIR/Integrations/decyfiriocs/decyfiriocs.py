@@ -328,7 +328,7 @@ class Client(BaseClient):
                                         src_exists_in = True
                                 except Exception as e:
                                     demisto.debug(
-                                        f"Error occurred while checking for existing source relationship-re_data1 ({str(re_data1)} <> {str(source_ti_data_obj)}). Error: {e}")
+                                        f"Error occurred at relationship-re_data1 ({str(re_data1)} <> {str(source_ti_data_obj)}). Error: {e}")
                                     break
                             if not src_exists_in:
                                 return_data.append(source_ti_data_obj)
@@ -350,7 +350,7 @@ class Client(BaseClient):
                                         break
                                 except Exception as e:
                                     demisto.debug(
-                                        f"Error occurred while checking for existing target relationship-re_data2 ({str(re_data2)} <> {str(target_ti_data_obj)}). Error: {e}")
+                                        f"Error occurred at relationship-re_data2 ({str(re_data2)} <> {str(target_ti_data_obj)}). Error: {e}")
                                     break
                             if not tar_exists_in:
                                 return_data.append(target_ti_data_obj)
@@ -384,7 +384,7 @@ class Client(BaseClient):
         tlp_color: Optional[str],
         feed_tags: Optional[List],
         is_data_save: bool,
-    ) -> List[Dict]:
+    ) -> List:
 
         return_data = []
         threat_actors_cache: Dict[str, List[Dict]] = {}
@@ -432,7 +432,11 @@ class Client(BaseClient):
                 ioc_properties = next(iter(ioc.get("extensions", {}).values()), {}).get("properties", {})
                 threat_actors = ioc_properties.get("threat_actors", "")
                 recomendation_actions = ioc_properties.get("recommended_actions", "")
-                recomended_action =True if recomendation_actions and recomendation_actions.lower() == "block" else False
+                
+                if recomendation_actions and recomendation_actions.lower() == "block":
+                    recomended_action =True  
+                else:
+                    recomended_action=False
 
                 ioc_data = {
                     "value": value,
