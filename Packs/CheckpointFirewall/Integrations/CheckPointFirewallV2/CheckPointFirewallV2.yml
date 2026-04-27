@@ -3040,7 +3040,7 @@ script:
       name: translated_destination
     - description: The translated service object.
       name: translated_service
-    - description: The gateways, identified by name or UID, on which to install the policy
+    - description: The gateways, identified by name or UID, on which to install the policy.
       isArray: true
       name: install_on
     - description: A comment string.
