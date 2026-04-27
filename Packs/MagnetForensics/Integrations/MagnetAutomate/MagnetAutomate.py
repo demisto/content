@@ -110,6 +110,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix="/customFields",
+            resp_type="json",
         )
 
     def case_create(self, case_number: str, custom_field_values: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -130,6 +131,7 @@ class MagnetAutomateClient(ContentClient):
         return self.post(
             url_suffix="/cases",
             json=json_data,
+            resp_type="json",
         )
 
     def cases_list(self, case_id: int | None = None) -> list[dict[str, Any]] | dict[str, Any]:
@@ -150,6 +152,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix=url_suffix,
+            resp_type="json",
         )
 
     def case_delete(self, case_id: int) -> None:
@@ -233,6 +236,7 @@ class MagnetAutomateClient(ContentClient):
         return self.post(
             url_suffix=f"/cases/{case_id}/runs",
             json=json_data,
+            resp_type="json",
         )
 
     def workflow_run_delete(self, case_id: int, run_id: int) -> None:
@@ -280,6 +284,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix=f"/cases/{case_id}/runs/{run_id}",
+            resp_type="json",
         )
 
     def workflow_run_list_all(self, case_id: int) -> list[dict[str, Any]]:
@@ -296,6 +301,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix=f"/cases/{case_id}/runs",
+            resp_type="json",
         )
 
     def merge_workflow_run_start(
@@ -328,6 +334,7 @@ class MagnetAutomateClient(ContentClient):
         return self.post(
             url_suffix=f"/cases/{case_id}/merge",
             json=json_data,
+            resp_type="json",
         )
 
     def workflows_list(self) -> list[dict[str, Any]]:
@@ -341,6 +348,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix="/workflows",
+            resp_type="json",
         )
 
     def workflow_delete(self, workflow_id: int) -> None:
@@ -371,6 +379,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix=f"/workflows/{workflow_id}/generate-export",
+            resp_type="json",
         )
 
     def node_create(
@@ -401,6 +410,7 @@ class MagnetAutomateClient(ContentClient):
         return self.post(
             url_suffix="/nodes",
             json=json_data,
+            resp_type="json",
         )
 
     def nodes_list(self) -> list[dict[str, Any]]:
@@ -414,6 +424,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.get(
             url_suffix="/nodes",
+            resp_type="json",
         )
 
     def node_update(
@@ -442,6 +453,7 @@ class MagnetAutomateClient(ContentClient):
         return self.put(
             url_suffix=f"/nodes/{node_id}",
             json=json_data,
+            resp_type="json",
         )
 
     def node_delete(self, node_id: int) -> None:
