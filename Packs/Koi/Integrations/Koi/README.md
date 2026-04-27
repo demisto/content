@@ -97,7 +97,7 @@ There are no input arguments for this command.
 ### koi-inventory-search
 
 ***
-Searches inventory items using advanced query builder filters. Provide a filter via 'filter_json' (inline JSON string) or 'filter_raw_json_entry_id' (War Room file entry ID). At least one filter source must be provided.
+Searches inventory items using advanced query builder filters. Provide a filter via the 'filter_json' argument (inline JSON string) or the 'filter_raw_json_entry_id' argument (War Room file entry ID). At least one filter source must be provided.
 
 #### Base Command
 
@@ -107,11 +107,11 @@ Searches inventory items using advanced query builder filters. Provide a filter 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter_json | Advanced filter using query builder syntax as a JSON string. Either filter_json or filter_raw_json_entry_id must be provided. | Optional |
-| filter_raw_json_entry_id | War Room entry ID of a JSON file containing the filter object. Takes priority over filter_json when both are provided. | Optional |
-| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument. | Optional |
-| page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument. | Optional |
-| limit | Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items. Default is 50. | Optional |
+| filter_json | Advanced filter using query builder syntax as a JSON string. Either the 'filter_json' or the 'filter_raw_json_entry_id' argument must be provided. | Optional |
+| filter_raw_json_entry_id | War Room entry ID of a JSON file containing the filter object. Takes priority over the 'filter_json' argument when both are provided. | Optional |
+| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the 'limit' argument. | Optional |
+| page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the 'page' argument. | Optional |
+| limit | Maximum total number of inventory items to return (default: 50, max: 1000). When provided without the 'page' argument, auto-paginates to collect up to this many items. Default is 50. | Optional |
 | sort_by | Column to sort by. Possible values are: first_seen, last_seen, item_display_name, item_id, version, marketplace, endpoint_count, risk, risk_level, status, installs_count, released_at, publisher_name. Default is first_seen. | Optional |
 | sort_direction | Sort direction. Possible values are: asc, desc. Default is desc. | Optional |
 
@@ -150,7 +150,7 @@ Searches inventory items using advanced query builder filters. Provide a filter 
 ### koi-policy-list
 
 ***
-Retrieves a list of all policies. Use 'page' and 'page_size' to fetch a specific page, or use 'limit' to auto-paginate and collect up to the specified number of policies. If 'page' is provided, 'limit' is ignored.
+Retrieves a list of all policies. Use the 'page' and 'page_size' arguments to fetch a specific page, or use the 'limit' argument to auto-paginate and collect up to the specified number of policies. If the 'page' argument is provided, the 'limit' argument is ignored.
 
 #### Base Command
 
@@ -160,9 +160,9 @@ Retrieves a list of all policies. Use 'page' and 'page_size' to fetch a specific
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument. | Optional |
-| page_size | Number of results per page (default: 50, max: 500). Used only in single-page mode together with the page argument. | Optional |
-| limit | Maximum total number of policies to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many policies. Default is 50. | Optional |
+| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the 'limit' argument. | Optional |
+| page_size | Number of results per page (default: 50, max: 500). Used only in single-page mode together with the 'page' argument. | Optional |
+| limit | Maximum total number of policies to return (default: 50, max: 1000). When provided without the 'page' argument, auto-paginates to collect up to this many policies. Default is 50. | Optional |
 
 #### Context Output
 
@@ -230,7 +230,7 @@ Retrieves comprehensive details for a specific software item, extension, or pack
 ### koi-blocklist-items-add
 
 ***
-Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+Adds one or more items to the global blocklist. Provide either the 'item_id' and 'marketplace' arguments for a single item, or the 'items_list_raw_json_entry_id' argument for bulk addition from a JSON file.
 
 #### Base Command
 
@@ -240,11 +240,11 @@ Adds one or more items to the global blocklist. Provide either 'item_id' and 'ma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The ID of the item to add to the blocklist. Required when not using items_list_raw_json_entry_id. | Optional |
-| marketplace | The source marketplace of the item. Required when not using items_list_raw_json_entry_id. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
+| item_id | The ID of the item to add to the blocklist. Required when not using the 'items_list_raw_json_entry_id' argument. | Optional |
+| marketplace | The source marketplace of the item. Required when not using the 'items_list_raw_json_entry_id' argument. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
 | created_by | Email of the user who created this entry. | Optional |
 | notes | Additional notes or justification for blocking the item. | Optional |
-| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored. | Optional |
+| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, the 'item_id' and 'marketplace' arguments are ignored. | Optional |
 
 #### Context Output
 
@@ -293,9 +293,9 @@ Retrieves a paginated list of items installed across your organization's endpoin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument. | Optional |
-| page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument. | Optional |
-| limit | Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items. Default is 50. | Optional |
+| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the 'limit' argument. | Optional |
+| page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the 'page' argument. | Optional |
+| limit | Maximum total number of inventory items to return (default: 50, max: 1000). When provided without the 'page' argument, auto-paginates to collect up to this many items. Default is 50. | Optional |
 | brew_category_koi | Filter by Homebrew package category (Koi classification). | Optional |
 | browser_category_koi | Filter by browser extension category (Koi classification). | Optional |
 | chocolatey_category_koi | Filter by Chocolatey package category (Koi classification). | Optional |
@@ -363,9 +363,9 @@ Retrieves a paginated list of endpoints that have a specific item installed.
 | item_id | Unique identifier for the item. | Required |
 | marketplace | The marketplace where the item is hosted. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Required |
 | version | The specific version of the item. Default is 1.0.0. | Optional |
-| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument. | Optional |
-| page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument. | Optional |
-| limit | Maximum total number of endpoints to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many endpoints. Default is 50. | Optional |
+| page | Page number for pagination (1-based). When provided, fetches a single page and ignores the 'limit' argument. | Optional |
+| page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the 'page' argument. | Optional |
+| limit | Maximum total number of endpoints to return (default: 50, max: 1000). When provided without the 'page' argument, auto-paginates to collect up to this many endpoints. Default is 50. | Optional |
 
 #### Context Output
 
@@ -385,7 +385,7 @@ Retrieves a paginated list of endpoints that have a specific item installed.
 ### koi-blocklist-items-remove
 
 ***
-Removes one or more items from the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
+Removes one or more items from the global blocklist. Provide either the 'item_id' and 'marketplace' arguments for a single item, or the 'items_list_raw_json_entry_id' argument for bulk removal from a JSON file.
 
 #### Base Command
 
@@ -395,11 +395,11 @@ Removes one or more items from the global blocklist. Provide either 'item_id' an
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The ID of the item to remove from the blocklist. Required when not using items_list_raw_json_entry_id. | Optional |
-| marketplace | The source marketplace of the item. Required when not using items_list_raw_json_entry_id. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
+| item_id | The ID of the item to remove from the blocklist. Required when not using the 'items_list_raw_json_entry_id' argument. | Optional |
+| marketplace | The source marketplace of the item. Required when not using the 'items_list_raw_json_entry_id' argument. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
 | created_by | Email of the user who created this entry. | Optional |
 | notes | Additional notes about the removal. | Optional |
-| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored. | Optional |
+| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, the 'item_id' and 'marketplace' arguments are ignored. | Optional |
 
 #### Context Output
 
@@ -408,7 +408,7 @@ There is no context output for this command.
 ### koi-allowlist-items-remove
 
 ***
-Removes one or more items from the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
+Removes one or more items from the global allowlist. Provide either the 'item_id' and 'marketplace' arguments for a single item, or the 'items_list_raw_json_entry_id' argument for bulk removal from a JSON file.
 
 #### Base Command
 
@@ -418,11 +418,11 @@ Removes one or more items from the global allowlist. Provide either 'item_id' an
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The ID of the item to remove from the allowlist. Required when not using items_list_raw_json_entry_id. | Optional |
-| marketplace | The source marketplace of the item. Required when not using items_list_raw_json_entry_id. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
+| item_id | The ID of the item to remove from the allowlist. Required when not using the 'items_list_raw_json_entry_id' argument. | Optional |
+| marketplace | The source marketplace of the item. Required when not using the 'items_list_raw_json_entry_id' argument. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
 | created_by | Email of the user who created this entry. | Optional |
 | notes | Additional notes about the removal. | Optional |
-| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored. | Optional |
+| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, the 'item_id' and 'marketplace' arguments are ignored. | Optional |
 
 #### Context Output
 
@@ -431,7 +431,7 @@ There is no context output for this command.
 ### koi-allowlist-items-add
 
 ***
-Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
+Adds one or more items to the global allowlist. Provide either the 'item_id' and 'marketplace' arguments for a single item, or the 'items_list_raw_json_entry_id' argument for bulk addition from a JSON file.
 
 #### Base Command
 
@@ -441,11 +441,11 @@ Adds one or more items to the global allowlist. Provide either 'item_id' and 'ma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The ID of the item to add to the allowlist. Required when not using items_list_raw_json_entry_id. | Optional |
-| marketplace | The source marketplace of the item. Required when not using items_list_raw_json_entry_id. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
+| item_id | The ID of the item to add to the allowlist. Required when not using the 'items_list_raw_json_entry_id' argument. | Optional |
+| marketplace | The source marketplace of the item. Required when not using the 'items_list_raw_json_entry_id' argument. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Optional |
 | created_by | Email of the user who created this entry. | Optional |
 | notes | Additional notes about the entry. | Optional |
-| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored. | Optional |
+| items_list_raw_json_entry_id | War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, the 'item_id' and 'marketplace' arguments are ignored. | Optional |
 
 #### Context Output
 
