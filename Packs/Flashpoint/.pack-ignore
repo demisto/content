@@ -1,6 +1,9 @@
 [file:README.md]
 ignore=RM102,RM104,RM100,RM112
 
+[file:Ignite.yml]
+ignore=BA129
+
 [file:incidentfield-Flashpoint-Reason-Name.json]
 ignore=IF115
 
