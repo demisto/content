@@ -728,7 +728,12 @@ def test_get_indicator_reputation_owner_filter(mocker, args, expected_owner_in_u
         ("ip", "Address", "1.2.3.4", "ThreatConnect Address Reputation for: 1.2.3.4"),
         ("url", "URL", "http://example.com", "ThreatConnect URL Reputation for: http://example.com"),
         ("domain", "Host", "example.com", "ThreatConnect Host Reputation for: example.com"),
-        ("file", "File", "d41d8cd98f00b204e9800998ecf8427e", "ThreatConnect File Reputation for: d41d8cd98f00b204e9800998ecf8427e"),
+        (
+            "file",
+            "File",
+            "d41d8cd98f00b204e9800998ecf8427e",
+            "ThreatConnect File Reputation for: d41d8cd98f00b204e9800998ecf8427e",
+        ),
     ],
 )
 def test_get_indicator_reputation_header(mocker, args_type, type_name, indicator_value, expected_header_fragment):
