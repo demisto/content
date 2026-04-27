@@ -2,7 +2,7 @@
     "name": "Radware Cloud WAF Services",
     "description": "Radware’s Cloud Security Services provides a range of fully managed, enterprise-grade cloud WAF and DDoS solutions to create a robust security network",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

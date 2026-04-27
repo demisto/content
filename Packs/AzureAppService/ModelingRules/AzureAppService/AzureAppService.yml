@@ -4,3 +4,5 @@ name: Azure App Service Modeling Rule
 rules: ''
 schema: ''
 tags:
+supportedModules:
+- xsiam
