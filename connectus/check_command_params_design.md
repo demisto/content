@@ -204,11 +204,25 @@ connectus/check_command_params.py
 │   └── find_pydantic_aliases(tree) → {attr: alias}
 ├── analyze_command_dynamic(integration_path, commands, yml_params) → {command: {param: bool}}
 │   ├── prepare_content(integration_path) → unified .py path
-│   ├── start_proxy() → proxy instance
-│   ├── run_with_params(unified_path, command, params) → {requests, exception}
+│   ├── proxy.new_session() → session_id
+│   ├── run_with_params(unified_path, command, params) → exception or None
+│   ├── proxy.get_requests(session_id) → list of captured requests
 │   └── diff_requests(baseline, modified) → bool
 ├── check_command_params(path, commands) → JSON result
 └── main() → CLI: parse args, discover or filter commands, loop, merge results, print JSON
+
+connectus/capture_proxy.py  (reusable standalone module)
+├── CaptureProxy(port) — main class
+│   ├── start() → starts server in background thread
+│   ├── stop() → shuts down server
+│   ├── new_session() → session_id
+│   ├── get_requests(session_id) → list of recorded requests
+│   ├── delete_session(session_id) → clears session data
+│   └── list_sessions() → list of active session IDs
+├── CaptureHandler(BaseHTTPRequestHandler) — handles all HTTP methods
+│   ├── Catch-all: records request, returns 200 {}
+│   └── Control plane: /_session/* endpoints
+└── main() → CLI: standalone server mode with --port flag
 ```
 
 ---
@@ -262,16 +276,21 @@ To execute an integration standalone, we need a fully self-contained Python file
 
 ```bash
 # What happens internally for each command:
-# 1. Starts proxy on localhost:18080
-# 2. Sets params: url=http://localhost:18080, api_key=SENTINEL_KEY, ...
-# 3. Patches demisto.params() to return these values
-# 4. Imports and runs the integration's command handler
-# 5. Proxy captures: GET http://localhost:18080/api/v1/health
-#    Headers: {Authorization: Bearer SENTINEL_KEY, ...}
-# 6. Removes api_key, re-runs → request has no Authorization header
-#    → api_key IS USED in this command
-# 7. Removes proxy param, re-runs → request still goes through
-#    → proxy param affects routing but not the request itself
+# 1. Proxy already running on localhost:18080
+# 2. Create session: POST /_session/new → session_id="baseline_test-module"
+# 3. Set params: url=http://localhost:18080, api_key=SENTINEL_KEY, ...
+# 4. Patch demisto.params() to return these values
+# 5. Import and run the integration's command handler
+# 6. Retrieve captured requests: GET /_session/baseline_test-module/requests
+#    → [{method: GET, path: /api/v1/health, headers: {Authorization: Bearer SENTINEL_KEY}}]
+# 7. For param "api_key":
+#    a. Create new session: POST /_session/new → session_id="without_api_key"
+#    b. Remove api_key from params, re-run command
+#    c. Retrieve: GET /_session/without_api_key/requests
+#    d. Diff against baseline → Authorization header missing → api_key IS USED
+#    e. Cleanup: DELETE /_session/without_api_key
+# 8. Repeat step 7 for each param
+# 9. Cleanup: DELETE /_session/baseline_test-module
 ```
 
 #### Why a proxy instead of requests_mock
@@ -287,11 +306,86 @@ To execute an integration standalone, we need a fully self-contained Python file
 
 #### Proxy implementation
 
-A **custom lightweight proxy** is simplest for this use case:
-- Accepts all requests, returns `200 OK` with empty JSON `{}`
-- Logs: method, URL, headers, body for each request
+A **custom lightweight HTTP capture server** implemented as a reusable standalone module at `connectus/capture_proxy.py`. Designed to be used by `check_command_params.py` and any future tools that need to observe HTTP traffic from integrations.
+
+**Session-based architecture:**
+
+The proxy uses **session IDs** to isolate captured requests between test runs. Each test run creates a new session, and all requests during that session are stored under that session ID. This prevents stale data from previous runs from contaminating results.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  capture_proxy.py - Reusable HTTP Capture Server             │
+│                                                              │
+│  Endpoints:                                                  │
+│                                                              │
+│  Control plane (used by test harness):                       │
+│    POST /_session/new          → {session_id: "abc123"}      │
+│    GET  /_session/<id>/requests → [{method, url, headers...}]│
+│    DELETE /_session/<id>       → clears session data          │
+│    GET  /_sessions             → list all active sessions     │
+│                                                              │
+│  Catch-all (used by integration under test):                 │
+│    ANY  /<anything>            → 200 OK, body: {}            │
+│    Records: method, path, headers, body, timestamp           │
+│    Assigns request to the currently active session           │
+│                                                              │
+│  Session lifecycle:                                          │
+│    1. Harness calls POST /_session/new → gets session_id     │
+│    2. Harness sets active session via header or param         │
+│    3. Integration makes HTTP calls → proxy records them      │
+│    4. Harness calls GET /_session/<id>/requests → gets data  │
+│    5. Harness calls DELETE /_session/<id> → cleanup           │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**How sessions work:**
+
+The test harness sets the active session by including an `X-Capture-Session` header in the integration's params (e.g., as a custom header), or more simply: the harness calls `POST /_session/new` right before each test run, and the proxy assigns all subsequent requests to the most recently created session until a new one is created.
+
+**Key properties:**
+- Pure Python stdlib (`http.server` or `socketserver`) — no external dependencies
 - No TLS complexity needed (integration connects to `http://localhost:PORT`)
-- Pure Python stdlib (`http.server` or `socketserver`)
+- Accepts all requests on catch-all routes, returns `200 OK` with empty JSON `{}`
+- Records: method, full URL path, query params, headers, body, timestamp per request
+- Thread-safe session storage (multiple concurrent test runs supported)
+- Can run as a standalone server or be started/stopped programmatically
+
+**Standalone usage:**
+
+```bash
+# Start the capture proxy server
+python3 connectus/capture_proxy.py --port 18080
+
+# From another terminal or script:
+# Create a session
+curl -X POST http://localhost:18080/_session/new
+# → {"session_id": "s_1714234567_001"}
+
+# ... integration makes requests to http://localhost:18080/api/v1/health ...
+
+# Retrieve captured requests for this session
+curl http://localhost:18080/_session/s_1714234567_001/requests
+# → [{"method": "GET", "path": "/api/v1/health", "headers": {...}, "body": "", "timestamp": "..."}]
+
+# Clean up
+curl -X DELETE http://localhost:18080/_session/s_1714234567_001
+```
+
+**Programmatic usage (from check_command_params.py):**
+
+```python
+from capture_proxy import CaptureProxy
+
+proxy = CaptureProxy(port=18080)
+proxy.start()  # starts in background thread
+
+session_id = proxy.new_session()
+# ... run integration command ...
+requests = proxy.get_requests(session_id)
+proxy.delete_session(session_id)
+
+proxy.stop()
+```
 
 #### What it detects that static analysis cannot
 
@@ -352,32 +446,42 @@ This produces a dependency graph: "first_fetch is only relevant when isFetch is 
 
 ## Implementation Plan
 
-### Static Analysis Module
-- Implement in `connectus/check_command_params.py`
+### 1. Capture Proxy (`connectus/capture_proxy.py`)
+- Reusable standalone HTTP capture server
+- Python stdlib only: `http.server`, `json`, `threading`, `argparse`
+- Session-based request storage with unique session IDs
+- Control plane endpoints: `/_session/new`, `/_session/<id>/requests`, `/_session/<id>` (DELETE), `/_sessions`
+- Catch-all handler: accepts any HTTP method/path, returns `200 {}`, records request
+- Thread-safe: supports concurrent sessions
+- Dual usage: programmatic (`CaptureProxy` class) and standalone (`python3 capture_proxy.py --port 18080`)
+- No external dependencies
+
+### 2. Static Analysis Module (`connectus/check_command_params.py`)
 - Python stdlib only: `ast`, `yaml`, `json`, `argparse`, `pathlib`, `glob`
 - No external dependencies
 - Accepts integration path + optional command filter
 - Discovers all commands from YML if no filter provided
 - Loops over each command, runs AST analysis per command
 
-### Dynamic Analysis Module
-- Implement in same file or as `connectus/check_command_params_dynamic.py`
+### 3. Dynamic Analysis Module (in `connectus/check_command_params.py`)
+- Uses `CaptureProxy` from `capture_proxy.py`
 - Content preparation pipeline:
   1. Prepend `demistomock.py` from `Packs/Base/Scripts/CommonServerPython/`
   2. Prepend `CommonServerPython.py` from `Packs/Base/Scripts/CommonServerPython/`
   3. Run `demisto-sdk prepare-content -i <path>` to attach API modules
   4. Produce a single unified `.py` file
-- Lightweight HTTP proxy using Python stdlib
 - For each command:
-  - Run with all params → capture baseline requests
-  - For each param: remove it, run again
-  - Exception → param is relevant
+  - Create baseline session → run with all params → capture requests
+  - For each param: create new session → remove param → run again
+  - Exception before HTTP call → param is relevant
+  - Exception after HTTP call → ignore (proxy already captured)
   - Request diff → param is relevant
   - No change → param is not relevant
+  - Clean up sessions after each comparison
 - Detect param dependencies via pairwise removal
 - For JS/PowerShell: execute via subprocess with `HTTP_PROXY` env var
 
-### Merging Results
+### 4. Merging Results
 - Static result: `{param: bool}` per command
 - Dynamic result: `{param: bool}` per command
 - Final: `param = static_result OR dynamic_result` (union — if either says relevant, it's relevant)
