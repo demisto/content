@@ -102,10 +102,12 @@ script:
   subtype: python3
   isfetchevents: true
   isfetchassets: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8160132
 marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

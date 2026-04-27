@@ -2886,3 +2886,5 @@ script:
 fromversion: 5.5.0
 tests:
 - QualysVulnerabilityManagement-Test
+supportedModules:
+- xsiam
