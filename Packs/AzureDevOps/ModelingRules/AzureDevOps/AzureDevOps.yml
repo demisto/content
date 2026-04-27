@@ -4,3 +4,5 @@ name: Azure DevOps Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
