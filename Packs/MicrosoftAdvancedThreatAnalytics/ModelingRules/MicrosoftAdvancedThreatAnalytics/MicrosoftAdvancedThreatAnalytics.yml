@@ -4,3 +4,5 @@ name: Microsoft Advanced Threat Analytics Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
