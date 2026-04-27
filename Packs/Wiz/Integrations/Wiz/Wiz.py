@@ -2342,7 +2342,11 @@ def reject_issue(issue_id, reject_reason, reject_comment):
 
 def resolve_issue(issue_id, resolution_reason, resolution_note):
     """
-    Reject a Wiz Issue
+    Resolve a Wiz Threat Detection Issue.
+
+    `status=RESOLVED` is only valid for Threat Detection issues. Non-Threat-Detection
+    types (Toxic Combination, Cloud Configuration, Attack Surface) are auto-resolved
+    when the underlying problem is fixed; use wiz-reject-issue for those types.
     """
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
@@ -2350,11 +2354,20 @@ def resolve_issue(issue_id, resolution_reason, resolution_note):
 
     issue_object = _get_issue(issue_id, is_evidence=False)
 
-    issue_type = issue_object["data"]["issues"]["nodes"][0]["type"]
+    nodes = (issue_object or {}).get("data", {}).get("issues", {}).get("nodes") or []
+    if not nodes:
+        return f"Issue not found: {issue_id}"
+
+    issue_type = nodes[0].get("type")
 
     if issue_type != "THREAT_DETECTION":
-        demisto.error(f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}.")
-        return f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}."
+        msg = (
+            f"Only a Threat Detection Issue can be resolved.\n"
+            f"Received an Issue of type {issue_type}.\n"
+            f"Use wiz-reject-issue for non-Threat-Detection issues."
+        )
+        demisto.error(msg)
+        return msg
 
     return reject_or_resolve_issue(issue_id, resolution_reason, resolution_note, "RESOLVED")
 
@@ -2715,11 +2728,10 @@ def get_modified_remote_data_command(args):
     cursor in integration context (`mirror_cursor`) lets us drain large backlogs
     across consecutive mirror cycles instead of one giant call.
 
-    Wiz backend semantics (verified against product-dal/internal/dal/issues_filters.go
-    + datalib/pggorm/timeDurationFilters.go):
-      - filterBy.statusChangedAt.after generates SQL `status_changed_at > ?` (EXCLUSIVE)
-      - When filterBy.statusChangedAt is set, results auto-order by status_changed_at ASC
-      - NULL status_changed_at rows are filtered out automatically
+    Filter semantics:
+      - filterBy.statusChangedAt.after is exclusive
+      - When filterBy.statusChangedAt is set, results auto-order by statusChangedAt ASC
+      - Issues with no statusChangedAt are filtered out automatically
 
     Known limitation: if multiple issues share the same microsecond-precision
     status_changed_at and a page boundary splits them, the trailing tied issues

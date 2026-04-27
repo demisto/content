@@ -301,6 +301,45 @@ def test_resolve_issue(checkAPIerrors, capfd):
     assert res == test_reject_issue_response
 
 
+_resolve_issue_non_threat_response = {
+    "data": {
+        "issues": {
+            "nodes": [{"id": "12345678-2222-3333-1111-ff5fa2ff7f78", "type": "TOXIC_COMBINATION"}],
+            "pageInfo": {"hasNextPage": False, "endCursor": ""},
+        }
+    }
+}
+
+
+@patch("Wiz.checkAPIerrors", return_value=_resolve_issue_non_threat_response)
+def test_resolve_issue_non_threat_returns_friendly_error(checkAPIerrors, capfd):
+    from Wiz import resolve_issue
+
+    with capfd.disabled():
+        res = resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "blah_note")
+
+    assert "Only a Threat Detection Issue can be resolved" in res
+    assert "TOXIC_COMBINATION" in res
+    assert "wiz-reject-issue" in res
+    # The integration must short-circuit before the update mutation, so checkAPIerrors
+    # is called exactly once (the _get_issue lookup) and never for reject_or_resolve_issue.
+    assert checkAPIerrors.call_count == 1
+
+
+_resolve_issue_unknown_id_response = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": ""}}}}
+
+
+@patch("Wiz.checkAPIerrors", return_value=_resolve_issue_unknown_id_response)
+def test_resolve_issue_unknown_id_returns_not_found(checkAPIerrors):
+    from Wiz import resolve_issue
+
+    res = resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "blah_note")
+
+    assert res == "Issue not found: 12345678-2222-3333-1111-ff5fa2ff7f78"
+    # Same short-circuit guarantee as above — no update mutation should be sent.
+    assert checkAPIerrors.call_count == 1
+
+
 @patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
 def test_reject_issue(checkAPIerrors, capfd):
     from Wiz import reject_issue
@@ -2750,8 +2789,7 @@ def test_get_modified_remote_data_does_not_rewind_cursor(mock_check_api, _get_ct
 def test_get_modified_remote_data_microsecond_tie_known_loss(mock_check_api, _get_ctx, set_ctx_mock):
     """KNOWN LIMITATION (documented, not fixed): if the LAST node in page N and the
     FIRST node of page N+1 share the same microsecond statusChangedAt, the page N+1
-    issue is silently skipped — Wiz backend uses `status_changed_at > ?` (strict
-    exclusive, verified in datalib/pggorm/timeDurationFilters.go:48).
+    issue is silently skipped — the `statusChangedAt.after` filter is exclusive.
 
     To upgrade to lossless: persist Wiz's GraphQL pageInfo.endCursor token across
     calls (also pin filterBy.statusChangedAt.after to the original value). Deferred
@@ -2791,7 +2829,7 @@ def test_get_modified_remote_data_microsecond_tie_known_loss(mock_check_api, _ge
         get_modified_remote_data_command({"lastUpdate": "2025-04-22T00:00:00Z"})
 
     call_vars = mock_check_api.call_args[0][1]
-    # The filter sends the tied timestamp; backend's `>` will skip any 3rd tied issue.
+    # The filter sends the tied timestamp; the exclusive filter will skip any 3rd tied issue.
     # If this assertion ever changes, the cursor approach has been upgraded — re-check
     # whether the documented loss case is still real.
     assert call_vars["filterBy"]["statusChangedAt"]["after"] == tied_ts

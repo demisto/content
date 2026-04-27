@@ -437,7 +437,7 @@ script:
       description: issue id.
       required: true
   - name: wiz-resolve-issue
-    description: Resolve a Wiz Issue.
+    description: Resolve a Wiz Threat Detection Issue. For non-Threat-Detection issues (Toxic Combination, Cloud Configuration, Attack Surface) use wiz-reject-issue — those types are auto-resolved by Wiz when the underlying problem is fixed and cannot be manually resolved.
     arguments:
     - name: issue_id
       required: true
