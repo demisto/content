@@ -150,6 +150,18 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
+    def decyfir_api_request(self, url) -> list[dict]:
+        response = self._http_request(
+            url_suffix=url,
+            resp_type="response",
+            method="GET",
+        )
+
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return []
+
     def request_decyfir_api(self, category, category_type, api_param_query) -> list[dict]:
         response = self._http_request(
             url_suffix=f"{API_PATH_SUFFIX}" + f"/{category}?type={category_type}" + api_param_query,
@@ -231,7 +243,7 @@ class Client(BaseClient):
                 {"type": "Description", "value": details.get("description")},
                 {"type": "Alert Id", "value": details.get("alert_uid", details.get("alert_object_uid", ""))},
                 {"type": "Object Id", "value": details.get("uid")},
-                {"type": "Risk Score", "value": str(details.get("exposure_score"))}
+                {"type": "Risk Score", "value": str(details.get("exposure_score"))},
             ],
             "customFields": {"decyfirdatadetails": decyfir_data_details},
         }
@@ -407,6 +419,28 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(str(e))
 
+    def take_down_list_data(self, decyfir_api_key, sub_category, page, size):
+        if sub_category:
+            api_url = API_TAKE_DOWN_LIST_WITH_CAT_PATH_SUFFIX.format(decyfir_api_key, page, size, sub_category)
+            return self.decyfir_api_request(api_url)
+        else:
+            api_url = API_TAKE_DOWN_LIST_PATH_SUFFIX.format(decyfir_api_key, page, size)
+            return self.decyfir_api_request(api_url)
+
+    def initiate_take_down(self, decyfir_api_key, alert_id) -> Dict:
+        api_path = API_INIT_TAKE_DOWN_PATH_SUFFIX.format(decyfir_api_key, alert_id)
+
+        response = self._http_request(
+            url_suffix=api_path,
+            resp_type="response",
+            method="POST",
+        )
+
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return {}
+
 
 # commands
 # This is the call made when pressing the integration Test button.
@@ -449,161 +483,60 @@ def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_typ
             raise e
 
 
-def take_down_list_command_results(data: List[Dict], title: str) -> CommandResults:
+def initiate_take_down_request(client: Client, decyfir_api_key: str, args: Dict):
+    alert_id = args.get("alert_id")
+    data: Dict = client.initiate_take_down(decyfir_api_key, alert_id)
+
     if not data:
-        return CommandResults(readable_output="No data found for current request.")
-
-    if not isinstance(data, list):
-        return CommandResults(readable_output="Unexpected response format.")
-
-    table_data = []
-    outputs = []
-
-    for da in data:
-        ticket_id = da.get("ticket_name", "")
-        sub_category = da.get("sub_category", "")
-        created_date = da.get("created_date", "")
-        modified_date = da.get("modified_date", "")
-        status = da.get("status", "")
-        domain = da.get("domain", "")
-        modified_by = da.get("modified_by", "")
-        created_by = da.get("created_by", "")
-
-        row = {
-            "Ticket Id": ticket_id,
-            "URL Status Updated By": da.get("url_status_updated_by", ""),
-            "URL Status": da.get("url_status", ""),
-            "Domain": domain,
-            "Sub Category": sub_category,
-            "Category": da.get("category", ""),
-            "Status": status,
-            "Created Date": created_date,
-            "Modified Date": modified_date,
-            "Created By": created_by,
-            "Modified By": modified_by,
-        }
-
-        table_data.append(row)
-
-        outputs.append({
-            "ticket_id": ticket_id,
-            "sub_category": sub_category,
-            "created_date": created_date,
-            "modified_date": modified_date,
-            "status": status,
-            "domain": domain,
-            "created_by": created_by,
-            "modified_by": modified_by,
-        })
-
-    human_readable = tableToMarkdown(title, table_data, removeNull=True)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix=f"{LABEL_DECYFIR}.TakeDownList",
-        outputs_key_field="ticket_id",
-        outputs=outputs,
-        raw_response=data
-    )
-
-
-def init_take_down_command_results(data: Dict, title: str) -> CommandResults:
-    if not data:
-        return CommandResults(readable_output="For no data found for current request.")
+        return "For no data found for current request."
 
     if bool(data.get("error")) is True:
-        return CommandResults(readable_output=f"Error in creating take down request")
+        return "Error in creating take down request"
 
-    table_data = []
-    outputs = []
     da: Dict = data.get("response", {})
-
-    ticket_id = da.get("ticketName", "")
-    domain = da.get("domain", "")
-    pending_sla_in_days = da.get("pendingSlaInDays", "")
-    sla_in_weeks = da.get("slaInWeeks", "")
-    sub_category = da.get("subCategory", "")
-    created_date = da.get("createdDate", "")
-    modified_date = da.get("modifiedDate", "")
-    status = da.get("status", "")
-    category = da.get("category", "")
-
-    row = {
-        "Ticket Id": ticket_id,
-        "Domain": domain,
-        "Sub Category": sub_category,
-        "Category": category,
-        "Status": status,
-        "Created Date": created_date,
-        "Modified Date": modified_date,
-        "Pending SLA in Days": pending_sla_in_days,
-        "SLA in Weeks": sla_in_weeks
-    }
-
-    table_data.append(row)
-
-    outputs.append({
-        "ticket_id": ticket_id,
-        "sub_category": sub_category,
-        "category": category,
-        "created_date": created_date,
-        "modified_date": modified_date,
-        "status": status,
-        "domain": domain,
-        "pending_sla_in_days": pending_sla_in_days,
-        "sla_in_weeks": sla_in_weeks
-    })
-
-    human_readable = tableToMarkdown(title, table_data, removeNull=True)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix=f"{LABEL_DECYFIR}.InitiateTakeDown",
-        outputs_key_field="ticket_id",
-        outputs=outputs,
-        raw_response=data
-    )
-
-
-def initiate_take_down_request(client, decyfir_api_key, args):
-
-    alert_id = args.get("alert_id")
-    api_path = API_INIT_TAKE_DOWN_PATH_SUFFIX.format(decyfir_api_key, alert_id)
-
-    response = client._http_request(url_suffix=api_path, method="POST", resp_type="response")
-
-    if response.status_code == 200 and response.content:
-        data = response.json()
-        if data:
-            return init_take_down_command_results(data, "Take Down Request Created Successfully")
-        else:
-            return CommandResults(readable_output="Take down request created but no data found in response.")
+    if da:
+        ticket_id = da.get("ticketName", "")
+        return f"Take Down Request Created Successfully - TIcket ID: {ticket_id}"
     else:
-        return CommandResults(readable_output=f"Error in creating take down request. Error code: {response.status_code}, message: {response.text}")
+        return "Error in creating take down request"
 
 
 def get_take_down_list(client, decyfir_api_key, args):
-
     sub_category = args.get("sub_category", "")
     size = args.get("size", "100")
     page = args.get("page", "0")
+    table_data = []
 
-    if sub_category:
-        api_url = API_TAKE_DOWN_LIST_WITH_CAT_PATH_SUFFIX.format(decyfir_api_key, page, size, sub_category)
-        response = client._http_request(url_suffix=api_url, method="GET", resp_type="response")
-    else:
-        api_url = API_TAKE_DOWN_LIST_PATH_SUFFIX.format(decyfir_api_key, page, size)
-        response = client._http_request(url_suffix=api_url, method="GET", resp_type="response")
+    res_data: list = client.take_down_list_data(decyfir_api_key, sub_category, page, size)
 
-    if response.status_code == 200 and response.content:
-        data = response.json()
-        if data:
-            title = f"Take Down List for sub-category: {sub_category}" if sub_category else "Take Down List"
-            return take_down_list_command_results(data, title)
-        else:
-            return CommandResults(readable_output="No data found in response.")
-    else:
-       return CommandResults(readable_output=f"Error in fetching take down list. Error code: {response.status_code}, message: {response.text}")
+    if res_data:
+        for da in res_data:
+            ticket_id = da.get("ticket_name", "")
+            sub_category = da.get("sub_category", "")
+            created_date = da.get("created_date", "")
+            modified_date = da.get("modified_date", "")
+            status = da.get("status", "")
+            domain = da.get("domain", "")
+            modified_by = da.get("modified_by", "")
+            created_by = da.get("created_by", "")
+
+            row = {
+                "ticket_id": ticket_id,
+                "url_status_updated_by": da.get("url_status_updated_by", ""),
+                "url_status": da.get("url_status", ""),
+                "domain": domain,
+                "sub_category": sub_category,
+                "category": da.get("category", ""),
+                "status": status,
+                "created_date": created_date,
+                "modified_date": modified_date,
+                "created_by": created_by,
+                "modified_by": modified_by,
+            }
+
+            table_data.append(row)
+
+    return table_data
 
 
 def main():  # pragma: no cover

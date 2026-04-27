@@ -111,7 +111,7 @@ class Client(BaseClient):
             name=relation_type, entity_a=source_value, entity_a_type=source_type, entity_b=target_value, entity_b_type=target_type
         ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str])-> Dict|None:
+    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]) -> Dict | None:
         target_type = target_data.get(LABEL_TYPE)
         target_value = target_data.get(LABEL_VALUE)
         source_type = source_data.get(LABEL_TYPE)
@@ -146,28 +146,17 @@ class Client(BaseClient):
         data = [item for item in data if item not in {"unknown", "Unknown"}]
         in_ti["fields"]["tags"].extend(data)
 
-    def add_aliases(self, in_ti: Dict, data: Optional[List[str] | str]):
-        if not data:
-            return
-
-        if isinstance(data, str):
-            data = [data]
-
-        data = [item for item in data if item not in {"unknown", "Unknown"}]
-        in_ti["fields"]["aliases"].extend(data)
-
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
-
         try:
             intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
             confidence: int = data.get("confidence", 0)
 
             verdict: str = "Unknown"
             cve_score: int = 0
-            if (confidence >= 80):
+            if confidence >= 80:
                 verdict = "Malicious"
                 cve_score = 3
-            elif (confidence >= 50):
+            elif confidence >= 50:
                 verdict = "Suspicious"
                 cve_score = 2
             else:
@@ -207,11 +196,16 @@ class Client(BaseClient):
                 ti_fields["cvedescription"] = data.get("description", "")
                 ti_fields["cvemodified"] = data.get("modified")
 
-            if intel_type is ThreatIntel.ObjectsNames.MALWARE:
-                ti_data_obj["fields"].update({"ismalwarefamily": data.get("is_family"),
-                                             "malwaretypes": data.get("malware_types")})
+            if data.get("labels"):
+                self.add_tags(ti_data_obj, data.get("labels"))
+            ti_data_obj["fields"]["aliases"].append(data.get("aliases", "")) if data.get("aliases") else None
 
-            ti_properties = next(iter(data.get("extensions", {}).values()), {}).get("properties", {})
+            if intel_type is ThreatIntel.ObjectsNames.MALWARE:
+                ti_data_obj["fields"].update(
+                    {"ismalwarefamily": data.get("is_family"), "malwaretypes": data.get("malware_types")}
+                )
+
+            ti_properties = next(iter(data.get("extensions", cast(Dict[str, Any], {})).values()))
 
             if ti_properties:
                 ta_origin = ti_properties.get("origin-of-country", "")
@@ -231,7 +225,6 @@ class Client(BaseClient):
                     ti_fields["technologies"] = technologies
 
                 if intel_type == FeedIndicatorType.CVE:
-
                     ti_fields["cvssscore"] = ti_properties.get("cvss_score", "")
                     ti_fields["cvssvector"] = ti_properties.get("cvss_vector", "")
                     ti_fields["cvssversion"] = ti_properties.get("cvss_version", "")
@@ -273,7 +266,7 @@ class Client(BaseClient):
 
             return ti_data_obj
         except Exception as e:
-            val=data.get("name","")
+            val = data.get("name", "")
             demisto.debug(f"Error occurred while building the threat intelligence data object ({val}). Error: {e}")
             return {}
 
@@ -304,7 +297,6 @@ class Client(BaseClient):
         # Mapping the relations with source and target objects
         if raw_ta_rels is not None and raw_ta_rels:
             for raw_ta_rel_ in raw_ta_rels:
-
                 # Source ref obj from relationship obj
                 if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
                     source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ""), {})
@@ -326,9 +318,7 @@ class Client(BaseClient):
                                 try:
                                     if re_data1["value"] == source_ti_data_obj["value"]:
                                         src_exists_in = True
-                                except Exception as e:
-                                    demisto.debug(
-                                        f"Error occurred at relationship-re_data1 ({str(re_data1)} <> {str(source_ti_data_obj)}). Error: {e}")
+                                except Exception:
                                     break
                             if not src_exists_in:
                                 return_data.append(source_ti_data_obj)
@@ -348,9 +338,7 @@ class Client(BaseClient):
                                     if re_data2["value"] == target_ti_data_obj["value"]:
                                         tar_exists_in = True
                                         break
-                                except Exception as e:
-                                    demisto.debug(
-                                        f"Error occurred at relationship-re_data2 ({str(re_data2)} <> {str(target_ti_data_obj)}). Error: {e}")
+                                except Exception:
                                     break
                             if not tar_exists_in:
                                 return_data.append(target_ti_data_obj)
@@ -385,7 +373,6 @@ class Client(BaseClient):
         feed_tags: Optional[List],
         is_data_save: bool,
     ) -> List:
-
         return_data = []
         threat_actors_cache: Dict[str, List[Dict]] = {}
 
@@ -393,7 +380,7 @@ class Client(BaseClient):
             try:
                 ioc_type: str = self.get_indicator_or_threatintel_type(ioc.get("pattern"))
                 value: str = str(ioc.get("name", ""))
-                file_hash_values = {}
+                file_hash_values: Dict[str, object] = {}
 
                 if "File SHA-1 hash" in value:
                     value = value.replace("File SHA-1 hash '", "").replace("'", "")
@@ -419,24 +406,24 @@ class Client(BaseClient):
                 confidence: int = ioc.get("confidence", 0)
                 score: int = 0
 
-                if (confidence >= 80):
+                if confidence >= 80:
                     verdict = "Malicious"
                     score = 3
-                elif (confidence >= 50):
+                elif confidence >= 50:
                     verdict = "Suspicious"
                     score = 2
                 else:
                     verdict = "Benign"
                     score = 1
 
-                ioc_properties = next(iter(ioc.get("extensions", {}).values()), {}).get("properties", {})
+                ioc_properties = next(iter(ioc.get("extensions", cast(Dict[str, Any], {})).values()))
                 threat_actors = ioc_properties.get("threat_actors", "")
                 recomendation_actions = ioc_properties.get("recommended_actions", "")
-                
+
                 if recomendation_actions and recomendation_actions.lower() == "block":
-                    recomended_action =True  
+                    recomended_action = True
                 else:
-                    recomended_action=False
+                    recomended_action = False
 
                 ioc_data = {
                     "value": value,
@@ -479,9 +466,11 @@ class Client(BaseClient):
                     self.add_tags(ioc_data, ioc_labels)
 
                 if is_data_save:
-
-                    tas = [ta.strip() for ta in threat_actors.split(",")
-                           if ta.strip() and ta.strip() not in ["Unknown", "unknown", "UNKNOW"]]
+                    tas = [
+                        ta.strip()
+                        for ta in threat_actors.split(",")
+                        if ta.strip() and ta.strip() not in ["Unknown", "unknown", "UNKNOW"]
+                    ]
 
                     if tas:
                         relationships_data = []
@@ -529,7 +518,6 @@ class Client(BaseClient):
         feed_tags: Optional[List],
         is_data_save: bool,
     ) -> List[Dict]:
-
         return_data = []
         try:
             # Indicators from DeCYFIR
@@ -585,31 +573,7 @@ def extract_value(pattern: str) -> str:
     return match.group(1) if match else ""
 
 
-def get_type(pattern: str) -> str:
-    if "ipv4-addr" in pattern:
-        return "IP"
-    elif "domain-name" in pattern:
-        return "Domain"
-    elif "url" in pattern:
-        return "URL"
-    elif "file:hashes" in pattern:
-        return "File"
-    return "Unknown"
-
-
-def calculate_score(vendors: Dict, confidence: int) -> int:
-    malicious = sum(1 for v in vendors.values() if v in ["malicious", "phishing", "malware"])
-
-    if malicious > 5:
-        return 3
-    elif malicious > 0:
-        return 2
-    elif confidence > 80:
-        return 2
-    return 1
-
-
-def command_results(indicators: List[Dict], title: str) -> CommandResults:
+def command_results(indicators: List[Dict], indicator_type: str, title: str) -> CommandResults:
     if not indicators:
         return CommandResults(readable_output="For current request no indicators found.")
 
@@ -619,13 +583,18 @@ def command_results(indicators: List[Dict], title: str) -> CommandResults:
     for ind in indicators:
         pattern = ind.get("pattern", "")
         value = extract_value(pattern)
-        ioc_type = get_type(pattern)
+        ioc_type = indicator_type
 
-        ext = next(iter(ind.get("extensions", {}).values()), {}).get("properties", {})
+        ext = next(iter(ind.get("extensions", cast(Dict[str, Any], {})).values()))
         vendors = ext.get("security_vendors", {})
 
         confidence = ind.get("confidence", 0)
-        score = calculate_score(vendors, confidence)
+        score = 1
+
+        if confidence >= 80:
+            score = 3
+        elif confidence >= 50:
+            score = 2
 
         # -------- Human Readable Row --------
         row = {
@@ -638,18 +607,21 @@ def command_results(indicators: List[Dict], title: str) -> CommandResults:
             "Role": ext.get("roles"),
             "Confidence": confidence,
             "Description": ind.get("description"),
+            "vendors": vendors,
         }
 
         table_data.append(row)
 
         # -------- Context Output --------
-        outputs.append({
-            "value": value,
-            "type": ioc_type,
-            "score": score,
-            "country": ext.get("country", ""),
-            "threat_actor": ext.get("threat_actors", ""),
-        })
+        outputs.append(
+            {
+                "value": value,
+                "type": ioc_type,
+                "score": score,
+                "country": ext.get("country", ""),
+                "threat_actor": ext.get("threat_actors", ""),
+            }
+        )
 
     human_readable = tableToMarkdown(title, table_data, removeNull=True)
 
@@ -658,35 +630,32 @@ def command_results(indicators: List[Dict], title: str) -> CommandResults:
         outputs_prefix="CYFIRMA.Indicators",
         outputs_key_field="value",
         outputs=outputs,
-        raw_response=indicators
+        raw_response=indicators,
     )
 
 
 # The below function is used to fetch the IP type indicators from DeCYFIR feed.
 def decyfir_ip_indicator_command(client: Client, decyfir_api_key: str):
     ip_indicators = client.fetch_indicators_by_type(decyfir_api_key, "ip")
-    return command_results(ip_indicators, "IP Indicators from DeCYFIR Feed:")
+    return command_results(ip_indicators, "IP", "IP Indicators from DeCYFIR Feed:")
 
 
 # The below function is used to fetch the domain type indicators from DeCYFIR feed.
 def decyfir_domain_indicator_command(client: Client, decyfir_api_key: str):
-
     domain_indicators = client.fetch_indicators_by_type(decyfir_api_key, "domain")
-    return command_results(domain_indicators, "Domain Indicators from DeCYFIR Feed:")
+    return command_results(domain_indicators, "Domain", "Domain Indicators from DeCYFIR Feed:")
 
 
 # The below function is used to fetch the URL type indicators from DeCYFIR feed.
 def decyfir_url_indicator_command(client: Client, decyfir_api_key: str):
-
     url_indicators = client.fetch_indicators_by_type(decyfir_api_key, "url")
-    return command_results(url_indicators, "URL Indicators from DeCYFIR Feed:")
+    return command_results(url_indicators, "URL", "URL Indicators from DeCYFIR Feed:")
 
 
 # The below function is used to fetch the hash type indicators (MD5, SHA-1 and SHA-256) from DeCYFIR feed.
 def decyfir_hash_indicator_command(client: Client, decyfir_api_key: str):
-
     hashIndicators = client.fetch_indicators_by_type(decyfir_api_key, "hashes")
-    return command_results(hashIndicators, "File Hash Indicators from DeCYFIR Feed:")
+    return command_results(hashIndicators, "File", "File Hash Indicators from DeCYFIR Feed:")
 
 
 def fetch_indicators_command(
@@ -699,7 +668,7 @@ def decyfir_get_indicators_command(
     client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str], feed_tags: Optional[List]
 ):
     indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
-    return command_results(indicators, "Indicators from DeCYFIR Feeds")
+    return command_results(indicators, "Indicator", "Indicators from DeCYFIR Feeds")
 
 
 def main():  # pragma: no cover
@@ -720,12 +689,12 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             result = test_module_command(client, decyfir_api_key)
             demisto.results(result)
-        
+
         elif demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags)
             for ioc in batch(indicators, batch_size=2500):
                 demisto.createIndicators(ioc)
-        
+
         elif demisto.command() == "decyfir-get-indicators":
             return_results(decyfir_get_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags))
 

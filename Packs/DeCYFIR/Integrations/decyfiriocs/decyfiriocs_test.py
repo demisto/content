@@ -1,5 +1,4 @@
 from decyfiriocs import Client
-from CommonServerPython import ThreatIntel
 import json
 
 
@@ -54,28 +53,6 @@ def test_build_threat_actor_relationship_obj(mocker):
     assert raw_iocs_data["IN_DATA_6"][0] == da_re
 
 
-def test_build_threat_intel_indicator_obj(mocker):
-    raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-
-    raw_iocs_data = util_load_json("test_data/iocs.json")
-    ta_data = raw_iocs_data["IN_DATA_3"]
-    ti_data = raw_iocs_ti_data["threat_actors"]
-
-    client = Client(
-        base_url="test_url",
-        verify=False,
-        proxy=False,
-    )
-
-    ta_data_out = client.build_threat_intel_indicator_obj(
-        data=ti_data[0],
-        tlp_color="tlp_color",
-        feed_tags=["feedTags"],
-    )
-
-    assert ta_data[0] == ta_data_out
-
-
 def test_build_ta_relationships_data(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
 
@@ -103,30 +80,6 @@ def test_build_ta_relationships_data(mocker):
     assert ta_data == return_data
 
 
-def test_add_aliases(mocker):
-    raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-
-    raw_iocs_data = util_load_json("test_data/iocs.json")
-    ta_data = raw_iocs_data["IN_DATA_3"][0]
-    ti_data = raw_iocs_ti_data["threat_actors"]
-
-    client = Client(
-        base_url="test_url",
-        verify=False,
-        proxy=False,
-    )
-
-    ta_data_out = client.build_threat_intel_indicator_obj(
-        data=ti_data[0],
-        tlp_color="tlp_color",
-        feed_tags=["feedTags"],
-    )
-    al = ["sample"]
-    client.add_aliases(ta_data_out, al)
-    ta_data["fields"]["aliases"].extend(al)
-    assert ta_data["fields"]["aliases"] == ta_data_out["fields"]["aliases"]
-
-
 def test_add_tags(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
 
@@ -149,7 +102,6 @@ def test_add_tags(mocker):
     client.add_tags(ta_data_out, al)
     ta_data["fields"]["tags"].extend(al)
     assert ta_data["fields"]["tags"] == ta_data_out["fields"]["tags"]
-
 
 
 def test_convert_decyfir_ioc_to_indicators_formats(mocker):

@@ -15,6 +15,11 @@
             "valid_from": "2023-07-11T06:21:42.110Z",
             "spec_version": "2.1",
             "labels": [
+                "feedTags",
+                "group 83",
+                "macdownloader",
+                "parastoo",
+                "Charming Kitten"
             ],
             "first_seen": "2022-06-06T00:00:00.000Z",
             "last_seen": "2022-12-16T00:00:00.000Z"
@@ -32,19 +37,8 @@
                 "Gibberish Panda"
             ],
             "labels": [
-                {
-                    "origin-of-country": "China",
-                    "target-technologies": [
-                        "Office Suites Software",
-                        "Web Application",
-                        "Operating System"
-                    ],
-                    "target-industries": [
-                        "Software",
-                        "IT Services"
-                    ],
-                    "target-countries": []
-                }
+                "feedTags",
+                "sample"
             ],
             "name": "Gibberish Panda",
             "threat_actor_types": [
@@ -81,7 +75,6 @@
             "primary_motivation": "personal-gain"
         }
     ],
-    
     "ta_relationships": [
         {
             "type": "threat-actor",
@@ -101,17 +94,6 @@
             ],
             "primary_motivation": "personal-gain"
         },
-        {
-            "source_ref": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
-            "target_ref": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
-            "relationship_type": "attributed-to",
-            "type": "relationship",
-            "spec_version": "2.1",
-            "id": "relationship--1219bdcf-41c2-469b-85e1-acda461fe44e",
-            "created": "2023-07-17T14:20:31.760Z",
-            "modified": "2023-07-17T14:20:31.760Z"
-        },
-        
         {
             "id": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
             "type": "vulnerability",
@@ -167,26 +149,6 @@
             "id": "relationship--e4a424c8-f9f5-43b7-83f4-50073c746738",
             "created": "2023-07-17T14:20:31.840Z",
             "modified": "2023-07-17T14:20:31.840Z"
-        },
-        {
-            "description": "malware can insert malicious macros into documents",
-            "external_references": [
-                {
-                    "url": "https://www.welivesecurity.com/2020/06/11/gamaredon-group-grows-its-game/",
-                    "source_name": "ESET Gamaredon June 2020"
-                }
-            ],
-            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
-            "id": "relationship--69513daf-2acd-4b04-a7be-9f31174a2ae9",
-            "created": "2020-06-16T17:53:18.768Z",
-            "modified": "2020-06-22T18:27:32.047Z",
-            "type": "relationship",
-            "sourceRef": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
-            "relationshipType": "uses",
-            "targetRef": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
-            "objectMarkingRefs": [
-                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
-            ]
         }
     ]
 }

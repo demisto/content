@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import json
+from typing import cast, Any
 
 
 def util_load_json(path):
@@ -11,13 +12,13 @@ def test_fetch_incidents(mocker):
     from decyfir import Client, fetch_incidents
 
     date_format = "%Y-%m-%dT%H:%M:%SZ"
-    mock_response = util_load_json("test_data/search_alerts.json")
+    raw_mock_response = util_load_json("test_data/raw_alerts.json")
 
     client = Client(
         base_url="test_url",
         verify=False,
     )
-    mocker.patch.object(Client, "request_decyfir_api", return_value=mock_response["alerts"])
+    mocker.patch.object(Client, "request_decyfir_api", return_value=raw_mock_response["alerts"])
     last_fetch = (datetime.now() - timedelta(days=80)).strftime(date_format)
     last_run = {"last_fetch": last_fetch}
 
@@ -30,461 +31,39 @@ def test_fetch_incidents(mocker):
         max_fetch="1",
     )
 
-    assert new_incidents == [
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "ip": "103.10.147.138", '
-            '"alert_created_date": "2023-01-05T04:18:46.001", "uid": '
-            '"63ac266713b0752aa7865100", "top_domain": "aa.id", "cat": 8, '
-            '"sub_domain": "ns6.aa.id", "open_ports": [53], "category": '
-            '"Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Open Ports",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "web_server": null, "ip": '
-            '"103.10.147.138", "alert_created_date": '
-            '"2023-01-05T04:18:46.001", "description": null, '
-            '"web_server_version": null, "uid": "63ac266713b0752aa7865100", '
-            '"top_domain": "aa.id", "cat": 8, "sub_domain": "ns6.aa.id", '
-            '"open_ports": [53], "category": "Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Open Ports",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "ip": "103.10.147.138", '
-            '"alert_created_date": "2023-01-05T04:18:46.001", "uid": '
-            '"63ac266713b0752aa7865100", "top_domain": "aa.id", "cat": 8, '
-            '"sub_domain": "ns6.aa.id", "open_ports": [53], "category": '
-            '"Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "IP Vulnerability",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "web_server": null, "ip": '
-            '"103.10.147.138", "alert_created_date": '
-            '"2023-01-05T04:18:46.001", "description": null, '
-            '"web_server_version": null, "uid": "63ac266713b0752aa7865100", '
-            '"top_domain": "aa.id", "cat": 8, "sub_domain": "ns6.aa.id", '
-            '"open_ports": [53], "category": "Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "IP Vulnerability",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "ip": "103.10.147.138", '
-            '"alert_created_date": "2023-01-05T04:18:46.001", "uid": '
-            '"63ac266713b0752aa7865100", "top_domain": "aa.id", "cat": 8, '
-            '"sub_domain": "ns6.aa.id", "open_ports": [53], "category": '
-            '"Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Configuration",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "web_server": null, "ip": '
-            '"103.10.147.138", "alert_created_date": '
-            '"2023-01-05T04:18:46.001", "description": null, '
-            '"web_server_version": null, "uid": "63ac266713b0752aa7865100", '
-            '"top_domain": "aa.id", "cat": 8, "sub_domain": "ns6.aa.id", '
-            '"open_ports": [53], "category": "Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Configuration",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "ip": "103.10.147.138", '
-            '"alert_created_date": "2023-01-05T04:18:46.001", "uid": '
-            '"63ac266713b0752aa7865100", "top_domain": "aa.id", "cat": 8, '
-            '"sub_domain": "ns6.aa.id", "open_ports": [53], "category": '
-            '"Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Cloud Weakness",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "web_server": null, "ip": '
-            '"103.10.147.138", "alert_created_date": '
-            '"2023-01-05T04:18:46.001", "description": null, '
-            '"web_server_version": null, "uid": "63ac266713b0752aa7865100", '
-            '"top_domain": "aa.id", "cat": 8, "sub_domain": "ns6.aa.id", '
-            '"open_ports": [53], "category": "Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Cloud Weakness",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "ip": "103.10.147.138", '
-            '"alert_created_date": "2023-01-05T04:18:46.001", "uid": '
-            '"63ac266713b0752aa7865100", "top_domain": "aa.id", "cat": 8, '
-            '"sub_domain": "ns6.aa.id", "open_ports": [53], "category": '
-            '"Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "IP Reputation",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "web_server": null, "ip": '
-            '"103.10.147.138", "alert_created_date": '
-            '"2023-01-05T04:18:46.001", "description": null, '
-            '"web_server_version": null, "uid": "63ac266713b0752aa7865100", '
-            '"top_domain": "aa.id", "cat": 8, "sub_domain": "ns6.aa.id", '
-            '"open_ports": [53], "category": "Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "IP Reputation",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "ip": "103.10.147.138", '
-            '"alert_created_date": "2023-01-05T04:18:46.001", "uid": '
-            '"63ac266713b0752aa7865100", "top_domain": "aa.id", "cat": 8, '
-            '"sub_domain": "ns6.aa.id", "open_ports": [53], "category": '
-            '"Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Certificates",
-            "type": "Attack Surface",
-        },
-        {
-            "category": "Attack Surface",
-            "customFields": {
-                "decyfirdatadetails": [
-                    {"fields": "First seen", "values": "2022-12-28T11:20:07.001"},
-                    {"fields": "Software", "values": ""},
-                    {"fields": "Last seen", "values": "2023-01-05T01:25:55.001"},
-                    {"fields": "Risk score", "values": 8},
-                    {"fields": "Sub category", "values": "Open Ports"},
-                    {"fields": "Ip", "values": "103.10.147.138"},
-                    {"fields": "Alert created date", "values": "2023-01-05T04:18:46.001"},
-                    {"fields": "Top domain", "values": "aa.id"},
-                    {"fields": "Cat", "values": 8},
-                    {"fields": "Sub domain", "values": "ns6.aa.id"},
-                    {"fields": "Open ports", "values": [53]},
-                    {"fields": "Category", "values": "Attack Surface"},
-                ]
-            },
-            "dbotMirrorId": "63ac266713b0752aa7865100",
-            "labels": [{"type": "Description", "value": None}],
-            "name": "DOMAIN : ns6.aa.id, aa.id\n IP: 103.10.147.138",
-            "occurred": "2023-01-05T04:18:46Z",
-            "rawJSON": '{"first_seen": "2022-12-28T11:20:07.001", "software": "", '
-            '"last_seen": "2023-01-05T01:25:55.001", "risk_score": 8, '
-            '"sub_category": "Open Ports", "web_server": null, "ip": '
-            '"103.10.147.138", "alert_created_date": '
-            '"2023-01-05T04:18:46.001", "description": null, '
-            '"web_server_version": null, "uid": "63ac266713b0752aa7865100", '
-            '"top_domain": "aa.id", "cat": 8, "sub_domain": "ns6.aa.id", '
-            '"open_ports": [53], "category": "Attack Surface"}',
-            "severity": 3,
-            "sourceBrand": "DeCYFIR",
-            "subcategory": "Certificates",
-            "type": "Attack Surface",
-        },
-    ]
-
+    assert ("rawJSON" in new_incidents[0]) is True
+    incident = cast(dict[str, Any], new_incidents[0])
+    custom_fields: dict = dict(incident.get("customFields") or {})
+    assert ("decyfirdatadetails" in custom_fields) is True
 
 
 def test_get_take_down_list(mocker):
     from decyfir import Client, get_take_down_list
 
     mock_response = util_load_json("test_data/take_down_list.json")
+
+    raw_mock_response = util_load_json("test_data/raw_take_down_list.json")
     client = Client(
         base_url="test_url",
         verify=False,
     )
-    mocker.patch.object(Client, "request_decyfir_api", return_value=mock_response["take_down_list"])
-    da = get_take_down_list(client=client,  decyfir_api_key="api_key", args={"size": "1"})
-    
-    assert da[0] == {
-        "ContentsFormat": "json",
-        "Type": "note",
-        "Contents": {"data": mock_response["take_down_list"]},
-        "ReadableContentsFormat": "markdown",
-        "HumanReadable":""
-    }
-
+    mocker.patch.object(Client, "take_down_list_data", return_value=raw_mock_response)
+    da = get_take_down_list(client=client, decyfir_api_key="api_key", args={"size": "1"})
+    assert da[0] == mock_response["take_down_list"]
 
 
 def test_initiate_take_down_request(mocker):
     from decyfir import Client, initiate_take_down_request
 
-    mock_response = util_load_json("test_data/take_down_list.json")
+    mock_response = util_load_json("test_data/raw_init_take_down.json")
     client = Client(
         base_url="test_url",
         verify=False,
     )
-    mocker.patch.object(Client, "request_decyfir_api", return_value=mock_response["take_down_list"])
-    da = initiate_take_down_request(client=client,decyfir_api_key="api_key", args={"alert_id": "63ac266713b0752aa7865100"})
-    assert da == {
-        "ContentsFormat": "json",
-        "Type": "note",
-        "Contents": {"data": mock_response["take_down_list"]},
-        "ReadableContentsFormat": "markdown",
-        "HumanReadable": ""
-    }
 
+    mocker.patch.object(Client, "initiate_take_down", return_value=mock_response)
+    da = initiate_take_down_request(client=client, decyfir_api_key="api_key", args={"uid": "63ac266713b0752aa7865100"})
+
+    assert ("Error" in da) is False
+
+    # assert da[0] == "Take Down Request Created Successfully - TIcket ID: T00001"

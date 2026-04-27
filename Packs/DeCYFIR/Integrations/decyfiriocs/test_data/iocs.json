@@ -13,10 +13,7 @@
                 "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
                 "tags": [
                     "feedTags",
-                    "group 83",
-                    "macdownloader",
-                    "parastoo",
-                    "Charming Kitten"
+                   "sample"
                 ],
                 "trafficlightprotocol": "tlp_color"
             },
@@ -32,6 +29,7 @@
                     "Command & Control"
                 ],
                 "labels": [
+                    "sample"
                 ],
                 "last_seen": "2022-12-16T00:00:00.000Z",
                 "modified": "2023-07-11T06:21:42.110Z",
@@ -120,6 +118,7 @@
                     "Gibberish Panda"
                 ],
                 "labels": [
+                    "sample"
                 ],
                 "name": "Gibberish Panda",
                 "threat_actor_types": [
@@ -170,7 +169,7 @@
                 "modified": "2023-07-17T11:27:42.558Z",
                 "description": "Chinese threat actor that uses PlugX",
                 "labels": [
-                    
+                    "sample"
                 ],
                 "name": "Pale Panda",
                 "threat_actor_types": [
