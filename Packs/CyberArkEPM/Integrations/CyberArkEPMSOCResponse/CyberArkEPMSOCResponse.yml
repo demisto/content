@@ -48,7 +48,6 @@ configuration:
   section: Connect
   additionalinfo: (Deprecated) Required for local(EPM) authentication only. This parameter is deprecated and no longer used.
   advanced: true
-  deprecated: true
 description: Use the CyberArk EPM integration to activate and deactivate CyberArk EPM risk plans for specific endpoints.
 display: CyberArk EPM SOC Response
 name: CyberArkEPMSOCResponse
