@@ -109,6 +109,7 @@ class Client(BaseClient):
         return response  # pylint: disable=E0601
 
     def document_upload_file(self, entry_id):
+        file_name = ""
         try:
             headers = self._headers
             del headers["Content-Type"]
@@ -135,7 +136,8 @@ class Client(BaseClient):
             raise Exception(msg)
         finally:
             try:
-                os.remove(file_name)
+                if file_name:
+                    os.remove(file_name)
             except OSError:
                 pass
 
