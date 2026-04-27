@@ -4,3 +4,5 @@ name: Zscaler Internet Access Modeling Rule
 rules: ''
 schema: ''
 tags: Zscaler Internet Access
+supportedModules:
+- xsiam
