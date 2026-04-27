@@ -13926,14 +13926,14 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='h
 
     :type confidence_threshold: ``str``
     :param confidence_threshold: Controls how strict the matching must be.
-        Allowed values: ``low``, ``medium``, ``high``.
+        Allowed values: ``low``, ``medium``, ``high``. Default is ``high``.
 
     :type context: ``str``
     :param context: Free-text domain hint to help disambiguate between multiple
         potential matches (e.g., ``"endpoint security products"``, ``"cloud regions"``).
 
     :type raise_on_error: ``bool``
-    :param raise_on_error: If ``True`` (default), raise a ``DemistoException`` when no
+    :param raise_on_error: If ``True`` (default), raise a ``ValueError`` when no
         match is found. If ``False``, return an empty string instead.
 
     :return: When ``key`` is not provided: the verbatim matched string from the list.
@@ -13941,9 +13941,14 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='h
         Returns an empty string if ``raise_on_error`` is ``False`` and no match is found.
     :rtype: ``str`` or ``dict``
 
-    :raises DemistoException: If no confident match is found or the command fails
+    :raises ValueError: If no confident match is found or the input is ambiguous
         (only when ``raise_on_error`` is ``True``).
+    :raises DemistoException: If ``valid_items`` is not a list, or if the underlying
+        command execution fails.
     """
+    if not hasattr(demisto, 'executeCommand'):
+        raise DemistoException('map_input_to_list_item can only be used from scripts, not integrations.')
+
     if not isinstance(valid_items, list):
         raise DemistoException(
             f'Expected "valid_items" argument to be a list, got {type(valid_items).__name__}'
@@ -13981,14 +13986,26 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='h
     if len(exact_matches) == 1:
         return _resolve_return(exact_matches[0])
 
-    # --- Ensure no multiple substring matches ---
-    substring_matches = [item for item in items if value_lower in item.strip().lower()]
-    if len(substring_matches) > 1:
-        msg = f'Ambiguous input "{value}". The value is a substring of multiple valid items: {substring_matches}'
-        if not raise_on_error:
-            demisto.debug(msg)
-            return ''
-        raise ValueError(msg)
+    # --- Ensure no multiple whole-word sub matches ---
+    # - high confidence: always block ambiguous inputs deterministically.
+    # - medium confidence: block only when no context hint is provided.
+    # - low confidence: never block — let the LLM handle all disambiguation.
+    should_guard = (
+        confidence_threshold == 'high'
+        or (confidence_threshold == 'medium' and not context)
+    )
+    if should_guard:
+        value_word_pattern = re.compile(r'\b' + re.escape(value_lower) + r'\b', re.IGNORECASE)
+        word_matches = [item for item in items if value_word_pattern.search(item)]
+        if len(word_matches) > 1:
+            preview = word_matches[:5]
+            preview_str = ', '.join(f'"{m}"' for m in preview)
+            suffix = f' (and {len(word_matches) - 5} more)' if len(word_matches) > 5 else ''
+            msg = f'Ambiguous input "{value}". Matched {len(word_matches)} valid items: {preview_str}{suffix}'
+            if not raise_on_error:
+                demisto.debug(msg)
+                return ''
+            raise ValueError(msg)
 
     # --- AI Task semantic matching ---
     list_arg = json.dumps(items)
@@ -14001,16 +14018,25 @@ def map_input_to_list_item(value, valid_items, key=None, confidence_threshold='h
     if context:
         args['context'] = context
 
-    result = execute_command('MapInputToListItem', args)
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        success, result = execute_command('MapInputToListItem', args, fail_on_error=False)
+        if success:
+            break
 
-    if isinstance(result, dict):
-        matched = result.get('result', '')
-    elif isinstance(result, list) and result:
-        matched = result[0].get('result', '') if isinstance(result[0], dict) else str(result[0])
-    elif isinstance(result, str):
-        matched = result
-    else:
-        matched = ''
+        error_message = str(result)
+        if 'Unsupported Command' in error_message:
+            raise DemistoException(
+                f'MapInputToListItem script is not available. '
+                f'Ensure the "Map Input To List Item" pack is installed and enabled. '
+                f'Error: {error_message}'
+            )
+        if attempt < max_retries:
+            demisto.debug(f'MapInputToListItem execution failed (attempt {attempt}/{max_retries}): {error_message}. Retrying...')
+        else:
+            raise DemistoException(f'Failed to execute MapInputToListItem after {max_retries} attempts. Error: {error_message}')
+
+    matched = str(result) if result else ''
 
     # The AI command returns a wrapper like "AI Task Name:\n\tMapInputToListItem\n\nAnswer:<value>".
     # Extract only the actual answer portion.
