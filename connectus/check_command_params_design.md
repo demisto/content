@@ -2,27 +2,45 @@
 
 ## Purpose
 
-Determine which YML configuration parameters are used by specific commands (e.g., `test-module`, `fetch-incidents`) in an XSOAR integration.
+Determine which YML configuration parameters are used by each command in an XSOAR integration.
 
 ## Usage
 
 ```bash
-python3 connectus/check_command_params.py <integration_name> [command1 command2 ...]
+python3 connectus/check_command_params.py <integration_path> [--commands cmd1 cmd2 ...] [--static-only]
 ```
+
+The `integration_path` is relative to the content repo root and points to the integration directory (e.g., `Packs/QRadar/Integrations/QRadar_v3`).
 
 ```bash
-# Single command
-python3 connectus/check_command_params.py "Abnormal Security" test-module
+# Analyze ALL commands in the integration (default)
+python3 connectus/check_command_params.py Packs/QRadar/Integrations/QRadar_v3
 
-# Multiple commands
-python3 connectus/check_command_params.py "QRadar v3" test-module fetch-incidents
-
-# Default: test-module if no command specified
-python3 connectus/check_command_params.py "Abnormal Security"
+# Analyze specific commands only
+python3 connectus/check_command_params.py Packs/QRadar/Integrations/QRadar_v3 --commands test-module fetch-incidents
 
 # Static analysis only (skip dynamic proxy check)
-python3 connectus/check_command_params.py "QRadar v3" test-module --static-only
+python3 connectus/check_command_params.py Packs/QRadar/Integrations/QRadar_v3 --static-only
+
+# Combine both
+python3 connectus/check_command_params.py Packs/HelloWorld/Integrations/HelloWorldV2 --commands test-module --static-only
 ```
+
+### Command Discovery
+
+By default, the tool analyzes **every command** the integration supports. Commands are discovered from the YML file:
+
+| Source | Commands added |
+|--------|---------------|
+| `script.commands[].name` | All custom commands (e.g., `qradar-offenses-list`) |
+| Always present | `test-module` |
+| `script.isfetch: true` | `fetch-incidents` |
+| `script.isfetchevents: true` | `fetch-events` |
+| `script.isRemoteSyncIn: true` | `get-remote-data`, `get-modified-remote-data` |
+| `script.isRemoteSyncOut: true` | `update-remote-system` |
+| `script.longRunning: true` | `long-running-execution` |
+
+Use `--commands` to filter to a subset of these.
 
 ### Language Support
 
@@ -36,7 +54,7 @@ Static analysis is Python-only. Dynamic analysis works for any language because 
 
 ## Output
 
-JSON to stdout. Output is always keyed by command:
+JSON to stdout. Output is keyed by command:
 
 ```json
 {
@@ -52,6 +70,12 @@ JSON to stdout. Output is always keyed by command:
       "url": true,
       "credentials": true,
       "max_fetch": true,
+      "longRunning": false
+    },
+    "qradar-offenses-list": {
+      "url": true,
+      "credentials": true,
+      "max_fetch": false,
       "longRunning": false
     }
   }
@@ -164,9 +188,10 @@ The script supports three patterns for finding which function handles a command:
 
 ```
 connectus/check_command_params.py
-├── find_integration_files(name) → yml_path, py_path
+├── find_integration_files(path) → yml_path, py_path
 ├── parse_yml_params(yml_path) → list of param names
-├── analyze_command_static(py_source, command) → {handler_found, handler_name, used_params, error}
+├── discover_commands(yml_data) → list of command names
+├── analyze_command_static(py_source, command) → set of used param names
 │   ├── ast.parse(source) → AST tree
 │   ├── build_function_map(tree) → {name: FunctionDef}
 │   ├── find_main(tree) → main FunctionDef
@@ -182,8 +207,8 @@ connectus/check_command_params.py
 │   ├── start_proxy() → proxy instance
 │   ├── run_with_params(unified_path, command, params) → {requests, exception}
 │   └── diff_requests(baseline, modified) → bool
-├── check_command_params(name, commands) → JSON result
-└── main() → CLI: parse args, loop over commands, merge results, print JSON
+├── check_command_params(path, commands) → JSON result
+└── main() → CLI: parse args, discover or filter commands, loop, merge results, print JSON
 ```
 
 ---
@@ -201,7 +226,7 @@ Actually **execute** the integration's command and observe which parameters affe
 │  1. Start local HTTP proxy on localhost                      │
 │  2. Configure integration to route traffic through proxy    │
 │  3. Set all params to known sentinel values                 │
-│  4. For each command in the list:                           │
+│  4. For each command:                                       │
 │     a. Execute the command with all params → baseline       │
 │     b. Capture all outgoing HTTP requests at the proxy      │
 │     c. For each param:                                      │
@@ -291,7 +316,9 @@ A **custom lightweight proxy** is simplest for this use case:
 
 ## Handling Exceptions in Dynamic Analysis
 
-When the proxy-based check removes a param and the command throws an exception before making any HTTP request, this is **not a failure** — it is the strongest possible signal that the param is relevant.
+When the proxy-based check removes a param and the command throws an exception **before** making any HTTP request, this is **not a failure** — it is the strongest possible signal that the param is relevant.
+
+Exceptions that occur **after** the HTTP call reached the proxy are **ignored entirely**. The proxy already captured the request, so we have the data we need. These post-request exceptions typically happen because the proxy returns a dummy `{}` response that the integration can't parse — this is expected and irrelevant to param detection.
 
 ### Decision table for dynamic check
 
@@ -300,6 +327,7 @@ When the proxy-based check removes a param and the command throws an exception b
 | Exception thrown before HTTP call | Yes | Code requires this param to even run |
 | HTTP request differs from baseline | Yes | Param value flows into the request |
 | HTTP request identical to baseline | No | Param has no effect on this command |
+| Exception thrown after HTTP call | Ignore | Proxy already captured the request; exception is from dummy response parsing |
 | No exception and no HTTP request | No | Command ran fine without it |
 
 ### Detecting param dependencies
@@ -328,7 +356,8 @@ This produces a dependency graph: "first_fetch is only relevant when isFetch is 
 - Implement in `connectus/check_command_params.py`
 - Python stdlib only: `ast`, `yaml`, `json`, `argparse`, `pathlib`, `glob`
 - No external dependencies
-- Accepts integration name + list of commands
+- Accepts integration path + optional command filter
+- Discovers all commands from YML if no filter provided
 - Loops over each command, runs AST analysis per command
 
 ### Dynamic Analysis Module
@@ -339,7 +368,7 @@ This produces a dependency graph: "first_fetch is only relevant when isFetch is 
   3. Run `demisto-sdk prepare-content -i <path>` to attach API modules
   4. Produce a single unified `.py` file
 - Lightweight HTTP proxy using Python stdlib
-- For each command in the list:
+- For each command:
   - Run with all params → capture baseline requests
   - For each param: remove it, run again
   - Exception → param is relevant
@@ -352,4 +381,4 @@ This produces a dependency graph: "first_fetch is only relevant when isFetch is 
 - Static result: `{param: bool}` per command
 - Dynamic result: `{param: bool}` per command
 - Final: `param = static_result OR dynamic_result` (union — if either says relevant, it's relevant)
-- Output: `{command: {param: true/false}}` JSON to stdout
+- Output: `{commands: {command: {param: true/false}}}` JSON to stdout
