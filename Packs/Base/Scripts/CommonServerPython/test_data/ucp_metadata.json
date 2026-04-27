@@ -1,0 +1,34 @@
+{
+    "single_profile": {
+        "connectionProfiles": [
+            {
+                "capability": "automation-and-remediation",
+                "method_unique_id": "abc123",
+                "sub_capabilities": ["salesforce-iam"],
+                "type": "oauth2"
+            }
+        ],
+        "connectorId": "salesforce",
+        "handlerId": "xsoar-salesforce-iam",
+        "instanceId": "5c10f7cb-e575-4a52-a5b3-cec02706e6b6"
+    },
+    "multi_profile": {
+        "connectionProfiles": [
+            {
+                "capability": "automation-and-remediation",
+                "method_unique_id": "method-auto-remed",
+                "sub_capabilities": ["salesforce-iam"],
+                "type": "oauth2"
+            },
+            {
+                "capability": "collection-and-ingestion",
+                "method_unique_id": "method-collect-ingest",
+                "sub_capabilities": [],
+                "type": "oauth2"
+            }
+        ],
+        "connectorId": "salesforce",
+        "handlerId": "xsoar-salesforce-iam",
+        "instanceId": "5c10f7cb-e575-4a52-a5b3-cec02706e6b6"
+    }
+}
