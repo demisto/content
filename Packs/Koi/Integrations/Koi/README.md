@@ -67,6 +67,19 @@ There are no input arguments for this command.
 | Koi.Blocklist.created_by | String | The user who created the blocklist item. |
 | Koi.Blocklist.created_at | Date | The creation time of the blocklist item in ISO 8601 format. |
 
+#### Command example
+
+```!koi-blocklist-get```
+
+#### Human Readable Output
+
+>### KOI Blocklist
+>
+>|Item Id|Item Name|Item Display Name|Marketplace|Publisher Name|Package Name|Notes|Created By|Created At|
+>|---|---|---|---|---|---|---|---|---|
+>| mal-001 | Bad Extension | Malicious Extension | chrome_web_store | Suspicious Publisher | bad-package | Known malware distribution | security@example.com | 2025-05-01T09:15:00.000Z |
+>| mal-002 | Risky Plugin | Risky Plugin | vscode | Unknown Publisher | risky-plugin | Data exfiltration risk | admin@example.com | 2025-05-02T14:30:00.000Z |
+
 ### koi-allowlist-get
 
 ***
@@ -93,6 +106,19 @@ There are no input arguments for this command.
 | Koi.Allowlist.notes | String | Notes associated with the allowlist item. |
 | Koi.Allowlist.created_by | String | The user who created the allowlist item. |
 | Koi.Allowlist.created_at | Date | The creation time of the allowlist item in ISO 8601 format. |
+
+#### Command example
+
+```!koi-allowlist-get```
+
+#### Human Readable Output
+
+>### KOI Allowlist
+>
+>|Item Id|Item Name|Item Display Name|Marketplace|Publisher Name|Package Name|Notes|Created By|Created At|
+>|---|---|---|---|---|---|---|---|---|
+>| ext-123 | My Extension | My Extension Display Name | vscode | My Publisher | my-package | Approved for development purposes | admin@example.com | 2025-04-23T17:22:24.023Z |
+>| ext-456 | Another Ext | Another Extension | chrome | Another Publisher | another-package | Approved by security team | user@example.com | 2025-04-24T10:00:00.000Z |
 
 ### koi-inventory-search
 
@@ -147,6 +173,18 @@ Searches inventory items using advanced query builder filters. Provide a filter 
 | Koi.Inventory.ide_category_koi | String | The IDE extension category \(Koi classification\). |
 | Koi.Inventory.software_category_koi | String | The software category \(Koi classification\). |
 
+#### Command example
+
+```!koi-inventory-search filter_json="{\"field\":\"risk_level\",\"operator\":\"eq\",\"value\":\"high\"}" limit=50```
+
+#### Human Readable Output
+
+>### KOI Inventory Search
+>
+>|Item Id|Item Display Name|Marketplace|Platforms|Publisher Name|Risk|Risk Level|Version|Status|Endpoint Count|Installs Count|Installation Method|Is First Party|Is Signed|First Seen|Last Seen|Last Used|Released At|Short Description|Categories|Findings|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| abc123 | React Developer Tools | chrome_web_store | chrome, edge | Meta | 5 | high | 1.0.0 | APPROVED | 42 | 1000000 | marketplace | false | true | 2024-01-01T10:00:00Z | 2024-10-15T10:00:00Z | 2025-06-15T10:00:00Z | 2023-01-15 | React debugging tools | Developer Tools | malware, permissions |
+
 ### koi-policy-list
 
 ***
@@ -177,6 +215,19 @@ Retrieves a list of all policies. Use the 'page' and 'page_size' arguments to fe
 | Koi.Policy.creator_fullname | String | The full name of the policy creator. |
 | Koi.Policy.created_at | Date | The creation time of the policy in ISO 8601 format. |
 | Koi.Policy.updated_at | Date | The last update time of the policy in ISO 8601 format. |
+
+#### Command example
+
+```!koi-policy-list limit=50```
+
+#### Human Readable Output
+
+>### KOI Policies
+>
+>|Id|Name|Description|Action|Enabled|Group Ids|Creator Fullname|Created At|Updated At|
+>|---|---|---|---|---|---|---|---|---|
+>| 1 | My Policy | This policy blocks high-risk extensions | block | true | 1, 2, 3 | John Doe | 2025-04-23T17:22:24.023Z | 2025-04-23T17:22:24.023Z |
+>| 2 | Allow Policy | This policy allows approved extensions | allow | false | 4 | Jane Smith | 2025-04-24T10:00:00.000Z | 2025-04-24T12:30:00.000Z |
 
 ### koi-inventory-item-get
 
@@ -227,6 +278,18 @@ Retrieves comprehensive details for a specific software item, extension, or pack
 | Koi.Inventory.ide_category_koi | String | The IDE extension category \(Koi classification\). |
 | Koi.Inventory.software_category_koi | String | The software category \(Koi classification\). |
 
+#### Command example
+
+```!koi-inventory-item-get item_id=example-extension marketplace=vscode```
+
+#### Human Readable Output
+
+>### KOI Inventory Item
+>
+>|Item Id|Item Display Name|Marketplace|Version|Platforms|Publisher Name|Risk|Risk Level|Status|Endpoint Count|Installs Count|Installation Method|Is First Party|Is Signed|First Seen|Last Seen|Last Used|Released At|Short Description|Categories|Findings|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| abc123 | React Developer Tools | chrome_web_store | 1.0.0 | chrome, edge | Meta | 5 | high | Allowed | 42 | 1000000 | marketplace | false | true | 2024-01-01T10:00:00Z | 2024-10-15T10:00:00Z | 2025-06-15T10:00:00Z | 2023-01-15 | React debugging tools | Developer Tools | {'description': 'This item contains malware', 'evidence': {}, 'finding_id': 'malware_detected', 'finding_name': 'Malware Detected', 'severity': 'critical'} |
+
 ### koi-blocklist-items-add
 
 ***
@@ -249,6 +312,14 @@ Adds one or more items to the global blocklist. Provide either the 'item_id' and
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!koi-blocklist-items-add item_id=malicious-ext marketplace=chrome_web_store notes="Blocked due to security risk"```
+
+#### Human Readable Output
+
+>Blocklist item 'malicious-ext' (marketplace: chrome_web_store) was added successfully.
 
 ### koi-policy-status-update
 
@@ -279,6 +350,18 @@ Enables or disables a policy by ID.
 | Koi.Policy.creator_fullname | String | The full name of the policy creator. |
 | Koi.Policy.created_at | Date | The creation time of the policy in ISO 8601 format. |
 | Koi.Policy.updated_at | Date | The last update time of the policy in ISO 8601 format. |
+
+#### Command example
+
+```!koi-policy-status-update policy_id=1 enabled=true```
+
+#### Human Readable Output
+
+>### KOI Policy Updated
+>
+>|Id|Name|Description|Action|Enabled|Group Ids|Creator Fullname|Created At|Updated At|
+>|---|---|---|---|---|---|---|---|---|
+>| 1 | My Policy | This policy blocks high-risk extensions | block | true | 1, 2, 3 | John Doe | 2025-04-23T17:22:24.023Z | 2025-04-23T17:22:24.023Z |
 
 ### koi-inventory-list
 
@@ -347,6 +430,19 @@ Retrieves a paginated list of items installed across your organization's endpoin
 | Koi.Inventory.ide_category_koi | String | The IDE extension category \(Koi classification\). |
 | Koi.Inventory.software_category_koi | String | The software category \(Koi classification\). |
 
+#### Command example
+
+```!koi-inventory-list limit=50 marketplace=vscode sort_by=first_seen sort_direction=desc```
+
+#### Human Readable Output
+
+>### KOI Inventory
+>
+>|Item Id|Item Display Name|Marketplace|Platforms|Publisher Name|Risk|Risk Level|Version|Status|Endpoint Count|Installs Count|Installation Method|Is First Party|Is Signed|First Seen|Last Seen|Last Used|Released At|Short Description|Categories|Findings|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| abc123 | React Developer Tools | chrome_web_store | chrome, edge | Meta | 5 | high | 1.0.0 | APPROVED | 42 | 1000000 | marketplace | false | true | 2024-01-01T10:00:00Z | 2024-10-15T10:00:00Z | 2025-06-15T10:00:00Z | 2023-01-15 | React debugging tools | Developer Tools | malware, permissions |
+>| def456 | Prettier - Code formatter | vscode | vscode | Prettier | 2 | low | 10.1.0 | APPROVED | 15 | 500000 | manual | true | true | 2024-03-10T08:30:00Z | 2024-11-01T14:00:00Z |  | 2022-06-01 | Code formatter using prettier | Productivity |  |
+
 ### koi-inventory-item-endpoints-list
 
 ***
@@ -382,6 +478,19 @@ Retrieves a paginated list of endpoints that have a specific item installed.
 | Koi.Inventory.Endpoint.first_seen | Date | The date the item was first seen on this endpoint in ISO 8601 format. |
 | Koi.Inventory.Endpoint.last_seen | Date | The date the item was last seen on this endpoint in ISO 8601 format. |
 
+#### Command example
+
+```!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode limit=50```
+
+#### Human Readable Output
+
+>### KOI Inventory Item Endpoints
+>
+>|Id|Hostname|Os|Platform|Serial|Last Logged On User|Activation Status|Path|First Seen|Last Seen|
+>|---|---|---|---|---|---|---|---|---|---|
+>| device-123 | laptop-01 | windows | chrome | ABC123XYZ | john.doe | enabled | /Applications/Google Chrome.app/Contents/Extensions/abc123 | 2024-01-01T10:00:00Z | 2024-10-15T10:00:00Z |
+>| device-456 | desktop-02 | macos | chrome | DEF456UVW | jane.smith | enabled | /Users/jane/Library/Application Support/Google/Chrome/Extensions/abc123 | 2024-02-15T08:30:00Z | 2024-11-01T14:00:00Z |
+
 ### koi-blocklist-items-remove
 
 ***
@@ -404,6 +513,14 @@ Removes one or more items from the global blocklist. Provide either the 'item_id
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!koi-blocklist-items-remove item_id=malicious-ext marketplace=chrome_web_store```
+
+#### Human Readable Output
+
+>Blocklist item 'malicious-ext' (marketplace: chrome_web_store) was removed successfully.
 
 ### koi-allowlist-items-remove
 
@@ -428,6 +545,14 @@ Removes one or more items from the global allowlist. Provide either the 'item_id
 
 There is no context output for this command.
 
+#### Command example
+
+```!koi-allowlist-items-remove item_id=example-extension marketplace=vscode```
+
+#### Human Readable Output
+
+>Allowlist item 'example-extension' (marketplace: vscode) was removed successfully.
+
 ### koi-allowlist-items-add
 
 ***
@@ -450,3 +575,11 @@ Adds one or more items to the global allowlist. Provide either the 'item_id' and
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!koi-allowlist-items-add item_id=example-extension marketplace=vscode notes="Approved by security team"```
+
+#### Human Readable Output
+
+>Allowlist item 'example-extension' (marketplace: vscode) was added successfully.
