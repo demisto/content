@@ -1,0 +1,13 @@
+!koi-get-events event_type=Alerts limit=10 should_push_events=false
+!koi-policy-list limit=50
+!koi-allowlist-get
+!koi-allowlist-items-add item_id=example-extension marketplace=vscode notes="Approved by security team"
+!koi-allowlist-items-remove item_id=example-extension marketplace=vscode
+!koi-blocklist-get
+!koi-blocklist-items-add item_id=malicious-ext marketplace=chrome_web_store notes="Blocked due to security risk"
+!koi-blocklist-items-remove item_id=malicious-ext marketplace=chrome_web_store
+!koi-policy-status-update policy_id=1 enabled=true
+!koi-inventory-list limit=50 marketplace=vscode sort_by=first_seen sort_direction=desc
+!koi-inventory-item-get item_id=example-extension marketplace=vscode
+!koi-inventory-search filter_json="{\"field\":\"risk_level\",\"operator\":\"eq\",\"value\":\"high\"}" limit=50
+!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode limit=50
