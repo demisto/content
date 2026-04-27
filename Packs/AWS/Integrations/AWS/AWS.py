@@ -8389,6 +8389,414 @@ class SSM:
         )
 
 
+    @staticmethod
+    def document_get_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the specified SSM document.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including document_name, and optional document_version and version_name.
+
+        Returns:
+            CommandResults: Results containing the SSM document description.
+        """
+        kwargs = remove_nulls_from_dictionary(
+            {
+                "Name": args.get("document_name"),
+                "DocumentVersion": args.get("document_version"),
+                "VersionName": args.get("version_name"),
+            }
+        )
+        print_debug_logs(client, f"Describing SSM document with {kwargs=}")
+
+        response = client.describe_document(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        document = response.get("Document", {})
+
+        if not document:
+            return CommandResults(readable_output=f"No document found with name '{args.get('document_name')}'.")
+
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Document",
+            outputs_key_field="Name",
+            outputs=document,
+            readable_output=tableToMarkdown(
+                "AWS SSM Document",
+                document,
+                headers=[
+                    "Name",
+                    "Owner",
+                    "DocumentVersion",
+                    "DocumentType",
+                    "PlatformTypes",
+                    "CreatedDate",
+                    "Status",
+                    "Description",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def automation_execution_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the executions of SSM automation workflows.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including optional filters, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of automation executions with pagination token.
+        """
+        # describe_automation_executions uses Filters: [{"Key": str, "Values": [str]}]
+        # parse_filter_field returns [{"Name": str, "Values": [str]}] — remap Name→Key
+        raw_filters = parse_filter_field(args.get("filters"))
+        automation_filters = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
+
+        kwargs = remove_empty_elements({"Filters": automation_filters})
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM automation executions with {kwargs=}")
+
+        response = client.describe_automation_executions(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        executions = response.get("AutomationExecutionMetadataList", [])
+
+        if not executions:
+            return CommandResults(readable_output="No SSM automation executions found.")
+
+        outputs = {
+            "AWS.SSM.AutomationExecution(val.AutomationExecutionId && val.AutomationExecutionId == obj.AutomationExecutionId)": executions,
+            "AWS.SSM(true)": {"AutomationExecutionNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Automation Executions",
+                executions,
+                headers=[
+                    "AutomationExecutionId",
+                    "DocumentName",
+                    "DocumentVersion",
+                    "ExecutionStartTime",
+                    "ExecutionEndTime",
+                    "AutomationExecutionStatus",
+                    "Mode",
+                    "ExecutedBy",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-automation-execution-run",
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        requires_polling_arg=False,
+    )
+    def automation_execution_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+        """
+        Initiates or polls the status of an SSM automation execution.
+        Args:
+            args (dict): Command arguments including document_name, and optional parameters, mode, document_version,
+                max_concurrency, max_errors, target_parameter_name, target_key, target_values, tags, client_token,
+                and execution_id (hidden, used for polling).
+            client: The AWS SSM boto3 client used to perform the request.
+
+        Returns:
+            PollResult: An object containing the results of the command and whether to continue polling.
+        """
+        execution_id = args.get("execution_id")
+
+        if not execution_id:
+            # First execution — start the automation
+            raw_filters = parse_filter_field(args.get("targets"))
+            targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
+
+            kwargs = remove_nulls_from_dictionary(
+                {
+                    "DocumentName": args.get("document_name"),
+                    "DocumentVersion": args.get("document_version"),
+                    "Mode": args.get("mode", "Auto"),
+                    "ClientToken": args.get("client_token"),
+                    "MaxConcurrency": args.get("max_concurrency"),
+                    "MaxErrors": args.get("max_errors"),
+                    "TargetParameterName": args.get("target_parameter_name"),
+                    "Parameters": parse_key_values_2_dict(args.get("parameters")) if args.get("parameters") else None,
+                    "Tags": parse_tag_field(args.get("tags")) or None,
+                    "Targets": targets,
+                }
+            )
+            print_debug_logs(client, f"Starting SSM automation execution with {kwargs=}")
+
+            response = client.start_automation_execution(**kwargs)
+            execution_id = response.get("AutomationExecutionId", "")
+            args["execution_id"] = execution_id
+            demisto.debug(f"[ssm] aws-ssm-automation-execution-run: started execution_id={execution_id}")
+
+            return PollResult(
+                partial_result=CommandResults(
+                    readable_output=f"Automation execution {execution_id} started successfully.",
+                    outputs={"AutomationExecutionId": execution_id},
+                    outputs_prefix="AWS.SSM.AutomationExecution",
+                ),
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+            )
+
+        # Polling — check status
+        demisto.debug(f"[ssm] aws-ssm-automation-execution-run: polling execution_id={execution_id}")
+        automation_response = client.get_automation_execution(AutomationExecutionId=execution_id)
+        automation = serialize_response_with_datetime_encoding(
+            automation_response.get("AutomationExecution", {})
+        )
+        status = automation.get("AutomationExecutionStatus", "")
+        demisto.debug(f"[ssm] aws-ssm-automation-execution-run: execution_id={execution_id} status={status}")
+
+        terminal_statuses = {
+            "Success": "The automation completed successfully.",
+            "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
+            "Cancelled": "The automation was stopped by a requester before it completed.",
+            "Failed": "The automation didn't complete successfully.",
+        }
+
+        if status in terminal_statuses:
+            if failure_message := automation.get("FailureMessage"):
+                readable_output = f"Automation execution {execution_id} failed: {failure_message}"
+            else:
+                readable_output = f"Automation execution {execution_id} status: {status}. {terminal_statuses[status]}"
+            return PollResult(
+                response=CommandResults(
+                    outputs_prefix="AWS.SSM.AutomationExecution",
+                    outputs_key_field="AutomationExecutionId",
+                    outputs=automation,
+                    readable_output=readable_output,
+                    raw_response=automation,
+                ),
+                continue_to_poll=False,
+            )
+
+        return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-automation-execution-cancel",
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        requires_polling_arg=True,
+        polling_arg_name="include_polling",
+    )
+    def automation_execution_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+        """
+        Cancels an SSM automation execution and optionally polls until the cancellation is confirmed.
+        Args:
+            args (dict): Command arguments including automation_execution_id, optional type (Cancel or CompleteExecution),
+                include_polling, and first_run (hidden, used for polling state).
+            client: The AWS SSM boto3 client used to perform the request.
+
+        Returns:
+            PollResult: An object containing the results of the command and whether to continue polling.
+        """
+        automation_execution_id = args.get("automation_execution_id", "")
+        include_polling = argToBoolean(args.get("include_polling", False))
+
+        cancel_terminal_statuses = {
+            "Success": "The cancel command failed. The automation completed successfully before the cancellation.",
+            "TimedOut": "The cancel command failed. The automation failed on timeout before the cancellation.",
+            "Cancelled": "The cancel command completed successfully. The automation was stopped before it completed.",
+            "Failed": "The cancel command failed. The automation failed before it completed.",
+        }
+
+        if not argToBoolean(args.get("first_run", True)):
+            # Polling — check cancellation status
+            automation_response = client.get_automation_execution(AutomationExecutionId=automation_execution_id)
+            status = automation_response.get("AutomationExecution", {}).get("AutomationExecutionStatus", "")
+            demisto.debug(
+                f"[ssm] aws-ssm-automation-execution-cancel: automation_execution_id={automation_execution_id} status={status}"
+            )
+
+            if status in cancel_terminal_statuses:
+                return PollResult(
+                    response=CommandResults(
+                        readable_output=f"Automation execution {automation_execution_id} status: {status}. "
+                        f"{cancel_terminal_statuses[status]}",
+                    ),
+                    continue_to_poll=False,
+                )
+            return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
+
+        # Initial execution — send cancel
+        kwargs = remove_nulls_from_dictionary(
+            {
+                "AutomationExecutionId": automation_execution_id,
+                "Type": args.get("type"),
+            }
+        )
+        print_debug_logs(client, f"Stopping SSM automation execution with {kwargs=}")
+
+        client.stop_automation_execution(**kwargs)
+        args["first_run"] = False
+
+        return PollResult(
+            response=CommandResults(
+                readable_output=f"Cancellation request sent for automation execution '{automation_execution_id}'.",
+            ),
+            partial_result=CommandResults(
+                readable_output=f"Cancellation request sent for automation execution '{automation_execution_id}'.",
+            ),
+            continue_to_poll=include_polling,
+            args_for_next_run=args,
+        )
+
+    @staticmethod
+    def command_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Lists the commands requested by users of the AWS account.
+        Args:
+            client: The AWS SSM boto3 client used to perform the request.
+            args (dict): Command arguments including optional command_id, instance_id, filters, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM commands with pagination token.
+        """
+        # list_commands uses Filters: [{"key": str, "value": str}] (lowercase, single value per filter)
+        # parse_filter_field returns [{"Name": str, "Values": [str]}] — remap to list_commands format
+        raw_filters = parse_filter_field(args.get("filters"))
+        command_filters = [{"key": f["Name"], "value": f["Values"][0]} for f in raw_filters] if raw_filters else None
+
+        kwargs = remove_nulls_from_dictionary(
+            {
+                "CommandId": args.get("command_id"),
+                "InstanceId": args.get("instance_id"),
+                "Filters": command_filters,
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM commands with {kwargs=}")
+
+        response = client.list_commands(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        commands = response.get("Commands", [])
+
+        if not commands:
+            return CommandResults(readable_output="No SSM commands found.")
+
+        outputs = {
+            "AWS.SSM.Command(val.CommandId && val.CommandId == obj.CommandId)": commands,
+            "AWS.SSM(true)": {"CommandNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SSM Commands",
+                commands,
+                headers=[
+                    "CommandId",
+                    "DocumentName",
+                    "Status",
+                    "RequestedDateTime",
+                    "Comment",
+                    "TargetCount",
+                    "CompletedCount",
+                    "ErrorCount",
+                    "DeliveryTimedOutCount",
+                ],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    @polling_function(
+        name="aws-ssm-command-cancel",
+        interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+        timeout=arg_to_number(demisto.args().get("timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        requires_polling_arg=True,
+        polling_arg_name="include_polling",
+    )
+    def command_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
+        """
+        Cancels the specified SSM command and optionally polls until the cancellation is confirmed.
+        Args:
+            args (dict): Command arguments including command_id, optional instance_ids, include_polling,
+                and first_run (hidden, used for polling state).
+            client: The AWS SSM boto3 client used to perform the request.
+
+        Returns:
+            PollResult: An object containing the results of the command and whether to continue polling.
+        """
+        command_id = args.get("command_id", "")
+        include_polling = argToBoolean(args.get("include_polling", False))
+
+        cancel_terminal_statuses = {
+            "Success": "The cancel command failed. The command completed successfully before the cancellation.",
+            "Failed": "The cancel command failed. The command failed before it completed.",
+            "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
+            "Cancelled": "The cancel command completed successfully. The command was cancelled before it was completed.",
+            "Canceled": "The cancel command completed successfully. The command was canceled before it was completed.",
+        }
+
+        if not argToBoolean(args.get("first_run", True)):
+            # Polling — check command status
+            response_list = client.list_commands(CommandId=command_id)
+            status = response_list.get("Commands", [{}])[0].get("Status", "")
+            demisto.debug(f"[ssm] aws-ssm-command-cancel: command_id={command_id} status={status}")
+
+            if status in cancel_terminal_statuses:
+                return PollResult(
+                    response=CommandResults(
+                        readable_output=f"Command {command_id} status: {status}. {cancel_terminal_statuses[status]}",
+                    ),
+                    continue_to_poll=False,
+                )
+            return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
+
+        # Initial execution — send cancel
+        kwargs = remove_nulls_from_dictionary(
+            {
+                "CommandId": command_id,
+                "InstanceIds": argToList(args.get("instance_ids")) or None,
+            }
+        )
+        print_debug_logs(client, f"Cancelling SSM command with {kwargs=}")
+
+        client.cancel_command(**kwargs)
+        args["first_run"] = False
+
+        return PollResult(
+            response=CommandResults(
+                readable_output=f"Cancellation request sent for command '{command_id}'.",
+            ),
+            partial_result=CommandResults(
+                readable_output=f"Cancellation request sent for command '{command_id}'.",
+            ),
+            continue_to_poll=include_polling,
+            args_for_next_run=args,
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -8562,6 +8970,12 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ssm-tag-add": SSM.add_tags_to_resource_command,
     "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
     "aws-ssm-document-list": SSM.document_list_command,
+    "aws-ssm-document-get": SSM.document_get_command,
+    "aws-ssm-automation-execution-list": SSM.automation_execution_list_command,
+    "aws-ssm-automation-execution-run": SSM.automation_execution_run_command,
+    "aws-ssm-automation-execution-cancel": SSM.automation_execution_cancel_command,
+    "aws-ssm-command-list": SSM.command_list_command,
+    "aws-ssm-command-cancel": SSM.command_cancel_command,
     "aws-ssm-tag-list": SSM.list_tags_for_resource_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
@@ -8585,6 +8999,13 @@ REQUIRED_ACTIONS: list[str] = [
     "ssm:RemoveTagsFromResource",
     "ssm:ListTagsForResource",
     "ssm:ListDocuments",
+    "ssm:DescribeDocument",
+    "ssm:DescribeAutomationExecutions",
+    "ssm:StartAutomationExecution",
+    "ssm:GetAutomationExecution",
+    "ssm:StopAutomationExecution",
+    "ssm:ListCommands",
+    "ssm:CancelCommand",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
