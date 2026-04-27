@@ -27,7 +27,8 @@
         "External Security Posture"
     ],
     "supportedModules": [
-        "xsiam"
+        "xsiam",
+        "agentix"
     ],
     "marketplaces": [
         "xsoar",
