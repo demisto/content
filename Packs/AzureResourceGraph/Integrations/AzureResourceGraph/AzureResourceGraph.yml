@@ -48,14 +48,23 @@ configuration:
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   section: Connect
+- display: Use Gov Account Settings
+  name: gov_account
+  type: 8
+  required: false
+  additionalinfo: Select this checkbox if you are using a US Government cloud account.
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 description: 'Azure Resource Graph integration is designed to allow for executing Azure Resource Graph commands, like querying resource data.'
 display: Azure Resource Graph
 name: Azure Resource Graph
@@ -102,7 +111,7 @@ script:
       description: Data returned from query.
       type: String
     description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.8187750
   runonce: false
   script: ''
   subtype: python3

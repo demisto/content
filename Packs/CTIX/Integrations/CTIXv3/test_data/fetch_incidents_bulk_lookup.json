@@ -1,0 +1,25 @@
+{
+  "next": null,
+  "previous": null,
+  "total": 3,
+  "results": [
+    {
+      "id": "report-001-aaaa-bbbb-cccc-ddddeeee0001",
+      "name": "APT29 Campaign Analysis",
+      "object_type": "report",
+      "relations": {}
+    },
+    {
+      "id": "report-002-aaaa-bbbb-cccc-ddddeeee0002",
+      "name": "Ransomware Trend Report Q4",
+      "object_type": "report",
+      "relations": {}
+    },
+    {
+      "id": "report-003-aaaa-bbbb-cccc-ddddeeee0003",
+      "name": "Low Confidence Observation",
+      "object_type": "report",
+      "relations": {}
+    }
+  ]
+}
