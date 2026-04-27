@@ -679,3 +679,5 @@ fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
 defaultmapperin: "Exabeam Platform - Incoming Mapper"
+supportedModules:
+- xsiam
