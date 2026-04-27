@@ -1964,7 +1964,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: "Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response."
+      description: 'Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response.'
       name: show_as_ranges
       predefined:
       - 'true'
@@ -2033,7 +2033,7 @@ script:
       name: order
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: "Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response."
+      description: 'Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response.'
       name: show_as_ranges
       predefined:
       - 'true'
