@@ -1,0 +1,43 @@
+{
+  "from": 1,
+  "to": 2,
+  "total": 2,
+  "objects": [
+    {
+      "uid": "net-uid-1234",
+      "name": "test-network-1",
+      "type": "network",
+      "domain": {
+        "uid": "domain-uid-5678",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "subnet4": "192.168.1.0",
+      "mask-length4": 24,
+      "groups": [],
+      "meta-info": {
+        "creator": "admin",
+        "last-modifier": "admin"
+      },
+      "read-only": false
+    },
+    {
+      "uid": "net-uid-5678",
+      "name": "test-network-2",
+      "type": "network",
+      "domain": {
+        "uid": "domain-uid-5678",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "subnet4": "10.0.0.0",
+      "mask-length4": 16,
+      "groups": [],
+      "meta-info": {
+        "creator": "admin",
+        "last-modifier": "admin"
+      },
+      "read-only": false
+    }
+  ]
+}
