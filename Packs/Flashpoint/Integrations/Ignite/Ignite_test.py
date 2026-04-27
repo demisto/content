@@ -3383,6 +3383,8 @@ def test_product_list_command_with_invalid_ids(requests_mock, mock_client, mocke
     warning_msg = return_warning_mock.call_args[0][0]
     assert invalid_id in warning_msg
     assert len(actual_response) == 1
+    
+
 def test_community_search_relationships_truncated_when_over_limit(mock_client):
     """
     Test that relationships are capped at DEFAULT_REPUTATION_CONTEXT_LIMIT.
