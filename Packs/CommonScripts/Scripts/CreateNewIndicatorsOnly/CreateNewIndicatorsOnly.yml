@@ -1,7 +1,7 @@
 commonfields:
-  id: CreateNewIndicatorsOnly-v2
+  id: CreateNewIndicatorsOnly
   version: -1
-name: CreateNewIndicatorsOnly-v2
+name: CreateNewIndicatorsOnly
 script: ''
 type: python
 tags:
