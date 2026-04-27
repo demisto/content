@@ -540,7 +540,7 @@ script:
     - name: cql_query
       description: The Taegis CQL query string to use for searching events (e.g. "FROM process EARLIEST=-1d | head 10"). If not defined, defaults to "FROM * EARLIEST=-1m | head 50".
     - name: limit
-      description: Maximum number of events to return. The limit is injected into the CQL query via "head N". Default is 50.
+      description: Maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., "| head 100"). Default is 50.
       defaultValue: "50"
     - name: offset
       description: The number of events to skip before returning results.
@@ -552,15 +552,48 @@ script:
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant provided, the tenant of the generated credentials is used.
     outputs:
-    - contextPath: TaegisXDR.Events.query
-      description: The CQL query that was executed.
+    - contextPath: TaegisXDR.Events.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.event_type
+      description: The type of event (e.g., process, netflow, dnsquery).
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.event_time
+      description: The timestamp when the event occurred.
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.tenant_id
+      description: The tenant ID associated with the event.
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.sensor_id
+      description: The sensor ID that generated the event.
+      type: String
+    - contextPath: TaegisXDR.Events.parent_process_id
+      description: The parent process ID associated with the event (process events).
+      type: String
+    - contextPath: TaegisXDR.Events.image_path
+      description: The image/executable path associated with the event (process events).
+      type: String
+    - contextPath: TaegisXDR.Events.commandline
+      description: The command line string associated with the event (process events).
+      type: String
+    - contextPath: TaegisXDR.Events.username
+      description: The username associated with the event.
+      type: String
+    - contextPath: TaegisXDR.Events.source_ip
+      description: The source IP address (netflow events).
+      type: String
+    - contextPath: TaegisXDR.Events.destination_ip
+      description: The destination IP address (netflow events).
+      type: String
+    - contextPath: TaegisXDR.Events.destination_port
+      description: The destination port number (netflow events).
+      type: Number
+    - contextPath: TaegisXDR.Events.protocol
+      description: The network protocol (netflow events).
       type: String
     - contextPath: TaegisXDR.Events.next
       description: Pagination cursor token for retrieving the next page of results.
       type: String
-    - contextPath: TaegisXDR.Events.events
-      description: List of events returned by the query.
-      type: Unknown
     description: Fetch Taegis events using a CQL query string or a list of event IDs. Supports pagination via the next cursor token returned in results. If no cql_query is provided, defaults to "FROM * EARLIEST=-1m | head 50".
   - name: taegis-add-evidence-to-investigation
     arguments:

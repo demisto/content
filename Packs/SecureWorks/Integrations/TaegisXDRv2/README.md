@@ -672,9 +672,9 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 #### Base Command
 
-`!taegis-fetch-events`
+`taegis-fetch-events`
 
-#### Inputs
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -695,7 +695,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | Compliance/Audit | ingest_time | You need to prove when Secureworks actually received the record. |
 | Offline Host Sync | ingest_time | You want to find data from a laptop that was just turned back on after a weekend. |
 
-#### Command Examples
+#### Command example
 
 ```
 !taegis-fetch-events
@@ -707,13 +707,11 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 #### Context Example
 
-```
-{
-    "TaegisXDR": {
-        "Events": {
-            "query": "FROM process EARLIEST=-1d | head 10",
-            "next": "eyJvZmZzZXQiOiAxMH0=",
-            "events": [
+```json
+[
+    {
+        "TaegisXDR": {
+            "Events": [
                 {
                     "id": "event-12345-67890",
                     "metadata": {
@@ -726,13 +724,46 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
                     "image_path": "C:\\Windows\\System32\\cmd.exe",
                     "commandline": "cmd.exe /c \"whoami\"",
                     "username": "admin_user",
-                    "next": "eyJvZmZzZXQiOiAxMH0="
+                    "next": "CursorToken_Batch01_Seq99"
+                },
+                {
+                    "id": "event-12345-67891",
+                    "metadata": {
+                        "event_type": "netflow",
+                        "event_time": "2024-05-20T14:30:10.456Z",
+                        "tenant_id": "999-000-111",
+                        "sensor_id": "fw-edge-02"
+                    },
+                    "source_ip": "192.168.1.50",
+                    "destination_ip": "8.8.8.8",
+                    "destination_port": 53,
+                    "protocol": "UDP",
+                    "next": "CursorToken_Batch01_Seq99"
                 }
             ]
         }
     }
-}
+]
 ```
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TaegisXDR.Events.id | String | The unique identifier of the event. |
+| TaegisXDR.Events.metadata.event_type | String | The type of event (e.g., process, netflow, dnsquery). |
+| TaegisXDR.Events.metadata.event_time | String | The timestamp when the event occurred. |
+| TaegisXDR.Events.metadata.tenant_id | String | The tenant ID associated with the event. |
+| TaegisXDR.Events.metadata.sensor_id | String | The sensor ID that generated the event. |
+| TaegisXDR.Events.parent_process_id | String | The parent process ID (process events). |
+| TaegisXDR.Events.image_path | String | The image/executable path (process events). |
+| TaegisXDR.Events.commandline | String | The command line string (process events). |
+| TaegisXDR.Events.username | String | The username associated with the event. |
+| TaegisXDR.Events.source_ip | String | The source IP address (netflow events). |
+| TaegisXDR.Events.destination_ip | String | The destination IP address (netflow events). |
+| TaegisXDR.Events.destination_port | Number | The destination port number (netflow events). |
+| TaegisXDR.Events.protocol | String | The network protocol (netflow events). |
+| TaegisXDR.Events.next | String | Pagination cursor token for retrieving the next page of results. |
 
 ### taegis-update-alert-status
 
