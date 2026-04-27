@@ -66,8 +66,12 @@ switch (command) {
             }
             logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
+            // if this incident already holds the lock, treat it as acquired
+            if (lock.guid === guid) {
+                lock_candidate = [lock, version];
+            }
             // if no lock found, try to acquire a new lock
-            if (!lock.guid) {
+            else if (!lock.guid) {
                 attemptToAcquireLock(guid, lockInfo, version)
                 lock_candidate = getLock();
             }
