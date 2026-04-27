@@ -4,3 +4,5 @@ name: Akamai GuardiCore Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
