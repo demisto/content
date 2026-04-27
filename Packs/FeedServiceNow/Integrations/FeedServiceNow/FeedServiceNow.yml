@@ -1,7 +1,7 @@
 category: Data Enrichment & Threat Intelligence
 provider: ServiceNow
 commonfields:
-  id: ServiceNowGenericFeed
+  id: FeedServiceNow
   version: -1
 configuration:
 - additionalinfo: The format should be https://company.service-now.com/
@@ -107,12 +107,12 @@ configuration:
   required: true
   type: 0
 description: This is a feed integration for extracting indicators from ServiceNow
-display: ServiceNowGenericFeed
-name: ServiceNowGenericFeed
+display: ServiceNow Generic Feed
+name: FeedServiceNow
 script:
   commands:
     - arguments:
-      description: retrieve indicators from ServiceNow
+      description: Retrieve indicators from ServiceNow.
       name: fetch-indicators
   dockerimage: demisto/auth-utils:1.0.0.5427065
   feed: true
