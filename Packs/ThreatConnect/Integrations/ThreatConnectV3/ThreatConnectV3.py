@@ -229,7 +229,7 @@ def detection_to_incident(threatconnect_data: dict, threatconnect_date: str) -> 
     return incident
 
 
-def get_indicator_reputation(client: Client, args_type: str, type_name: str, args: dict) -> None:  # pragma: no cover
+def get_indicator_reputation(client: Client, args_type: str, type_name: str, args: dict) -> None:
     owners_query = create_or_query(args.get("owners", ""), "ownerName")
     query = create_or_query(args.get(args_type), "summary")  # type: ignore
     rating_threshold = args.get("ratingThreshold", "")
