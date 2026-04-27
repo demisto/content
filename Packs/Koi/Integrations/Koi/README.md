@@ -244,7 +244,7 @@ Retrieves comprehensive details for a specific software item, extension, or pack
 | --- | --- | --- |
 | item_id | Unique identifier for the item. | Required |
 | marketplace | The marketplace where the item is hosted. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Required |
-| version | The specific version of the item to retrieve. Default is 1.0.0. | Optional |
+| version | The specific version of the item to retrieve. | Required |
 
 #### Context Output
 
@@ -253,11 +253,11 @@ Retrieves comprehensive details for a specific software item, extension, or pack
 | Koi.Inventory.item_id | String | The unique identifier of the inventory item. |
 | Koi.Inventory.item_display_name | String | The display name of the inventory item. |
 | Koi.Inventory.marketplace | String | The marketplace source of the item. |
-| Koi.Inventory.version | String | The version of the item. |
 | Koi.Inventory.platforms | Unknown | List of platforms where the item is installed. |
 | Koi.Inventory.publisher_name | String | The publisher name of the item. |
 | Koi.Inventory.risk | Number | The numeric risk score of the item. |
 | Koi.Inventory.risk_level | String | The risk level classification of the item. |
+| Koi.Inventory.version | String | The version of the item. |
 | Koi.Inventory.status | String | The governance status of the item. |
 | Koi.Inventory.endpoint_count | Number | The number of endpoints where the item is installed. |
 | Koi.Inventory.installs_count | Number | The total number of installs for the item. |
@@ -286,9 +286,9 @@ Retrieves comprehensive details for a specific software item, extension, or pack
 
 >### KOI Inventory Item
 >
->|Item Id|Item Display Name|Marketplace|Version|Platforms|Publisher Name|Risk|Risk Level|Status|Endpoint Count|Installs Count|Installation Method|Is First Party|Is Signed|First Seen|Last Seen|Last Used|Released At|Short Description|Categories|Findings|
+>|Item Id|Item Display Name|Marketplace|Platforms|Publisher Name|Risk|Risk Level|Version|Status|Endpoint Count|Installs Count|Installation Method|Is First Party|Is Signed|First Seen|Last Seen|Last Used|Released At|Short Description|Categories|Findings|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| abc123 | React Developer Tools | chrome_web_store | 1.0.0 | chrome, edge | Meta | 5 | high | Allowed | 42 | 1000000 | marketplace | false | true | 2024-01-01T10:00:00Z | 2024-10-15T10:00:00Z | 2025-06-15T10:00:00Z | 2023-01-15 | React debugging tools | Developer Tools | {'description': 'This item contains malware', 'evidence': {}, 'finding_id': 'malware_detected', 'finding_name': 'Malware Detected', 'severity': 'critical'} |
+>| abc123 | React Developer Tools | chrome_web_store | chrome, edge | Meta | 5 | high | 1.0.0 | Allowed | 42 | 1000000 | marketplace | false | true | 2024-01-01T10:00:00Z | 2024-10-15T10:00:00Z | 2025-06-15T10:00:00Z | 2023-01-15 | React debugging tools | Developer Tools | {'description': 'This item contains malware', 'evidence': {}, 'finding_id': 'malware_detected', 'finding_name': 'Malware Detected', 'severity': 'critical'} |
 
 ### koi-blocklist-items-add
 
@@ -458,7 +458,7 @@ Retrieves a paginated list of endpoints that have a specific item installed.
 | --- | --- | --- |
 | item_id | Unique identifier for the item. | Required |
 | marketplace | The marketplace where the item is hosted. Possible values are: chocolatey, chrome_web_store, claude_desktop_extensions, cursor, docker, edge_add_ons, firefox_add_ons, github_mcp_registry, homebrew, hugging_face, jetbrains, linux, mac, notepad++, npm, office_add_ins, open_vsx_registry, pypi, visual_studio, vscode, windows, windsurf. | Required |
-| version | The specific version of the item. Default is 1.0.0. | Optional |
+| version | The specific version of the item. | Required |
 | page | Page number for pagination (1-based). When provided, fetches a single page and ignores the 'limit' argument. | Optional |
 | page_size | Number of results per page (default: 50, max: 500). Used in single-page mode with the 'page' argument. | Optional |
 | limit | Maximum total number of endpoints to return (default: 50, max: 1000). When provided without the 'page' argument, auto-paginates to collect up to this many endpoints. Default is 50. | Optional |

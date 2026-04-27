@@ -235,7 +235,6 @@ script:
     outputs: []
   - name: koi-allowlist-items-add
     description: Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
-    execution: true
     arguments:
     - name: item_id
       description: The ID of the item to add to the allowlist. Required when not using items_list_raw_json_entry_id.
@@ -344,7 +343,6 @@ script:
     outputs: []
   - name: koi-blocklist-items-add
     description: Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
-    execution: true
     arguments:
     - name: item_id
       description: The ID of the item to add to the blocklist. Required when not using items_list_raw_json_entry_id.
@@ -383,7 +381,6 @@ script:
     outputs: []
   - name: koi-policy-status-update
     description: Enables or disables a policy by ID.
-    execution: true
     arguments:
     - name: policy_id
       description: The ID of the policy to update.
@@ -697,8 +694,8 @@ script:
       - windows
       - windsurf
     - name: version
+      required: true
       description: The specific version of the item to retrieve.
-      defaultValue: '1.0.0'
     outputs:
     - contextPath: Koi.Inventory.item_id
       description: The unique identifier of the inventory item.
@@ -708,9 +705,6 @@ script:
       type: String
     - contextPath: Koi.Inventory.marketplace
       description: The marketplace source of the item.
-      type: String
-    - contextPath: Koi.Inventory.version
-      description: The version of the item.
       type: String
     - contextPath: Koi.Inventory.platforms
       description: List of platforms where the item is installed.
@@ -723,6 +717,9 @@ script:
       type: Number
     - contextPath: Koi.Inventory.risk_level
       description: The risk level classification of the item.
+      type: String
+    - contextPath: Koi.Inventory.version
+      description: The version of the item.
       type: String
     - contextPath: Koi.Inventory.status
       description: The governance status of the item.
@@ -936,8 +933,8 @@ script:
       - windows
       - windsurf
     - name: version
+      required: true
       description: The specific version of the item.
-      defaultValue: '1.0.0'
     - name: page
       description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size

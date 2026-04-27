@@ -2836,13 +2836,13 @@ class TestKoiInventoryItemGetCommand:
     @pytest.mark.parametrize(
         "args, expected_version",
         [
-            ({"item_id": "abc123", "marketplace": "chrome_web_store"}, Config.DEFAULT_VERSION),
+            ({"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0"}, "1.0.0"),
             ({"item_id": "abc123", "marketplace": "chrome_web_store", "version": "2.0.0"}, "2.0.0"),
         ],
-        ids=["default_version", "explicit_version"],
+        ids=["version_1", "version_2"],
     )
     def test_inventory_item_get(self, mock_client, inventory_item_response, mocker, args, expected_version):
-        """Test koi-inventory-item-get with default and explicit version."""
+        """Test koi-inventory-item-get with different versions."""
         mocker.patch.object(mock_client, "get_inventory_item", return_value=inventory_item_response)
 
         result = koi_inventory_item_get_command(mock_client, args)
@@ -2861,7 +2861,7 @@ class TestKoiInventoryItemGetCommand:
         """Test that all expected fields are present in outputs and readable output."""
         mocker.patch.object(mock_client, "get_inventory_item", return_value=inventory_item_response)
 
-        args = {"item_id": "abc123", "marketplace": "chrome_web_store"}
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0"}
         result = koi_inventory_item_get_command(mock_client, args)
 
         # Verify readable output contains key data
@@ -3259,8 +3259,8 @@ class TestKoiInventoryItemEndpointsListCommand:
         "args, expected_version, expected_page, expected_page_size",
         [
             (
-                {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "1"},
-                Config.DEFAULT_VERSION,
+                {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "page": "1"},
+                "1.0.0",
                 1,
                 Config.DEFAULT_PAGE_SIZE,
             ),
@@ -3271,13 +3271,20 @@ class TestKoiInventoryItemEndpointsListCommand:
                 50,
             ),
             (
-                {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "3", "page_size": "25", "limit": "200"},
-                Config.DEFAULT_VERSION,
+                {
+                    "item_id": "abc123",
+                    "marketplace": "chrome_web_store",
+                    "version": "1.0.0",
+                    "page": "3",
+                    "page_size": "25",
+                    "limit": "200",
+                },
+                "1.0.0",
                 3,
                 25,
             ),
         ],
-        ids=["default_version_and_page_size", "explicit_version_and_page_size", "limit_ignored_when_page_provided"],
+        ids=["version_1_default_page_size", "explicit_version_and_page_size", "limit_ignored_when_page_provided"],
     )
     def test_endpoints_list_single_page(
         self,
@@ -3330,7 +3337,7 @@ class TestKoiInventoryItemEndpointsListCommand:
         }
         mocker.patch.object(mock_client, "get_inventory_item_endpoints", return_value=response)
 
-        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "limit": limit_arg}
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "limit": limit_arg}
         result = koi_inventory_item_endpoints_list_command(mock_client, args)
 
         assert len(result.outputs) == expected_output_count
@@ -3339,7 +3346,7 @@ class TestKoiInventoryItemEndpointsListCommand:
         """Test that all expected fields are present in outputs and readable output."""
         mocker.patch.object(mock_client, "get_inventory_item_endpoints", return_value=inventory_item_endpoints_response)
 
-        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "1"}
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "page": "1"}
         result = koi_inventory_item_endpoints_list_command(mock_client, args)
 
         # Verify readable output
@@ -3398,13 +3405,13 @@ class TestClientGetInventoryItemEndpoints:
 
     def test_inventory_item_endpoints_page_size_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
-        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "page": "1", "page_size": "501"}
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "page": "1", "page_size": "501"}
         with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
             koi_inventory_item_endpoints_list_command(mock_client, args)
 
     def test_inventory_item_endpoints_limit_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that limit exceeding MAX_LIMIT raises ValueError."""
-        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "limit": "1001"}
+        args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "limit": "1001"}
         with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
             koi_inventory_item_endpoints_list_command(mock_client, args)
 

@@ -49,7 +49,6 @@ class Config:
     # Pagination
     DEFAULT_PAGE_SIZE = 50
     MAX_PAGE_SIZE = 500
-    DEFAULT_VERSION = "1.0.0"
     MAX_PAGES_PER_FETCH = 10
     DEFAULT_PAGE = 1
     DEFAULT_LIMIT = 50
@@ -1867,7 +1866,7 @@ def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> Comm
 
     item_id: str = args["item_id"]
     marketplace: str = args["marketplace"]
-    version: str = args.get("version") or Config.DEFAULT_VERSION
+    version: str = args["version"]
 
     response = client.get_inventory_item(
         item_id=item_id,
@@ -1884,11 +1883,11 @@ def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> Comm
             "item_id",
             "item_display_name",
             "marketplace",
-            "version",
             "platforms",
             "publisher_name",
             "risk",
             "risk_level",
+            "version",
             "status",
             "endpoint_count",
             "installs_count",
@@ -2097,7 +2096,7 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
 
     item_id: str = args["item_id"]
     marketplace: str = args["marketplace"]
-    version: str = args.get("version") or Config.DEFAULT_VERSION
+    version: str = args["version"]
 
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
