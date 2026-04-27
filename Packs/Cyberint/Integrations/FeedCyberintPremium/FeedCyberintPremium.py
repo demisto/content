@@ -1,6 +1,8 @@
 import http
 import json
 import math
+import traceback
+from datetime import UTC
 from json import JSONDecodeError
 from typing import Any
 
@@ -56,16 +58,16 @@ class Client(BaseClient):
         self,
         base_url: str,
         access_token: str,
+        client_name: str = "",
         verify: bool = False,
         proxy: bool = False,
     ):
-        params = demisto.params()
         self._cookies = {"access_token": access_token}
         self._headers = {
             "X-Integration-Type": "XSOAR",
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
-            "X-Integration-Customer-Name": params.get("client_name", ""),
+            "X-Integration-Customer-Name": client_name,
             "X-Integration-Version": str(get_pack_version()),
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=self._headers)
@@ -118,12 +120,15 @@ class Client(BaseClient):
         result: list[Any] = []
         response = self.retrieve_indicators_from_api(filters, limit, offset, sort_field, sort_direction)
 
-        try:
-            feeds = response.strip().split("\n")
-            ioc_feeds = [json.loads(feed) for feed in feeds if feed.strip()]
-        except JSONDecodeError as e:
-            demisto.error(f"Failed to decode JSON: {e}")
-            return result
+        feeds = response.strip().split("\n")
+        ioc_feeds: list[dict[str, Any]] = []
+        for feed in feeds:
+            if not feed.strip():
+                continue
+            try:
+                ioc_feeds.append(json.loads(feed))
+            except JSONDecodeError as e:
+                demisto.error(f"Failed to decode JSON line: {e}. Line: {feed}")
 
         if not ioc_feeds:
             demisto.debug("No more indicators found")
@@ -430,7 +435,7 @@ def fetch_indicators_with_publish(
     offset = ctx.get("offset", 0)
     init_offset = offset
     total_published = 0
-    execution_start_time = datetime.now()
+    execution_start_time = datetime.now(tz=UTC)
 
     demisto.debug(f"Fetching premium indicators, starting offset {offset}, filters: {json.dumps(filters)}")
 
@@ -454,7 +459,7 @@ def fetch_indicators_with_publish(
             limit=PAGE_SIZE,
             offset=offset,
             sort_field="added_to_feed",
-            sort_direction="desc",
+            sort_direction="asc",
         )
 
         if not raw_indicators:
@@ -533,7 +538,7 @@ def get_indicators_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="CyberintPremium.indicator",
+        outputs_prefix="CyberintPremium.Indicator",
         outputs_key_field="indicator_value",
         raw_response=indicators,
         outputs=indicators,
@@ -693,7 +698,7 @@ def enrich_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="CyberintPremium.enrichment",
+        outputs_prefix="CyberintPremium.Enrichment",
         outputs_key_field="indicator_value",
         raw_response=data,
         outputs=data,
@@ -735,7 +740,7 @@ def fetch_indicators_command(
     else:
         # First fetch: use configured window
         first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
-        first_fetch_dt = dateparser.parse(f"{first_fetch} ago")
+        first_fetch_dt = arg_to_datetime(f"{first_fetch} ago", arg_name="first_fetch")
         if first_fetch_dt:
             filters["added_to_feed_after"] = first_fetch_dt.strftime(DATETIME_FORMAT)
             demisto.debug(f"First fetch: added_to_feed_after={filters['added_to_feed_after']}")
@@ -822,8 +827,8 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     Returns:
         bool: true, if execution passed timeout settings, false otherwise.
     """
-    end_time = datetime.now()
-    secs_from_beginning = (end_time - start_time).seconds
+    end_time = datetime.now(tz=UTC)
+    secs_from_beginning = (end_time - start_time).total_seconds()
     demisto.debug(f"Execution duration is {secs_from_beginning} secs so far")
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
@@ -838,7 +843,8 @@ def main():
 
     base_url = params.get("url")
     access_token = params.get("access_token").get("password")
-    insecure = not params.get("insecure", False)
+    client_name = params.get("client_name", "")
+    verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
     command = demisto.command()
@@ -848,7 +854,8 @@ def main():
         client = Client(
             base_url=base_url,
             access_token=access_token,
-            verify=insecure,
+            client_name=client_name,
+            verify=verify_certificate,
             proxy=proxy,
         )
 
@@ -868,6 +875,7 @@ def main():
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 

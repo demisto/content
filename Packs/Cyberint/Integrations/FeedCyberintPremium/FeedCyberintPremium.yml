@@ -1,3 +1,5 @@
+name: Cyberint Premium Feed
+display: Check Point EM Premium Feed
 sectionorder:
 - Connect
 - Collect
@@ -5,8 +7,6 @@ commonfields:
   id: Cyberint Premium Feed
   version: -1
 fromversion: 6.9.0
-name: Cyberint Premium Feed
-display: Check Point EM Premium Feed
 category: Data Enrichment & Threat Intelligence
 provider: Check Point Software Technologies
 description: Use the Cyberint Premium Feed integration to get IOC indicators from the premium feed.
@@ -29,6 +29,16 @@ configuration:
   hiddenusername: true
   type: 9
   required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
   section: Connect
 - display: Fetch indicators
   name: feed
@@ -203,16 +213,6 @@ configuration:
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
   section: Collect
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-  section: Connect
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-  section: Connect
 script:
   script: ''
   type: python
@@ -272,52 +272,52 @@ script:
       - asc
       - desc
     outputs:
-    - contextPath: CyberintPremium.indicator.indicator_type
+    - contextPath: CyberintPremium.Indicator.indicator_type
       description: The indicator type.
       type: String
-    - contextPath: CyberintPremium.indicator.indicator_value
+    - contextPath: CyberintPremium.Indicator.indicator_value
       description: The indicator value.
       type: String
-    - contextPath: CyberintPremium.indicator.activity
+    - contextPath: CyberintPremium.Indicator.activity
       description: Activity classification.
       type: String
-    - contextPath: CyberintPremium.indicator.confidence
+    - contextPath: CyberintPremium.Indicator.confidence
       description: Confidence score (0-100).
       type: Number
-    - contextPath: CyberintPremium.indicator.severity
+    - contextPath: CyberintPremium.Indicator.severity
       description: Severity level (1-5).
       type: Number
-    - contextPath: CyberintPremium.indicator.malicious
+    - contextPath: CyberintPremium.Indicator.malicious
       description: Malicious classification (yes/no/inconclusive).
       type: String
-    - contextPath: CyberintPremium.indicator.kill_chain_stage
+    - contextPath: CyberintPremium.Indicator.kill_chain_stage
       description: Kill chain stage.
       type: String
-    - contextPath: CyberintPremium.indicator.first_seen
+    - contextPath: CyberintPremium.Indicator.first_seen
       description: First seen date-time.
       type: Date
-    - contextPath: CyberintPremium.indicator.last_seen
+    - contextPath: CyberintPremium.Indicator.last_seen
       description: Last seen date-time.
       type: Date
-    - contextPath: CyberintPremium.indicator.added_to_feed
+    - contextPath: CyberintPremium.Indicator.added_to_feed
       description: Date-time when added to the feed.
       type: Date
-    - contextPath: CyberintPremium.indicator.valid_until
+    - contextPath: CyberintPremium.Indicator.valid_until
       description: Valid until date-time.
       type: Date
-    - contextPath: CyberintPremium.indicator.is_blocking
+    - contextPath: CyberintPremium.Indicator.is_blocking
       description: Whether the indicator is blocking.
       type: Boolean
-    - contextPath: CyberintPremium.indicator.is_unique
+    - contextPath: CyberintPremium.Indicator.is_unique
       description: Whether the indicator is unique.
       type: Boolean
-    - contextPath: CyberintPremium.indicator.malware_types
+    - contextPath: CyberintPremium.Indicator.malware_types
       description: List of malware types.
       type: Unknown
-    - contextPath: CyberintPremium.indicator.has_cve
+    - contextPath: CyberintPremium.Indicator.has_cve
       description: Whether the indicator has associated CVEs.
       type: Boolean
-    - contextPath: CyberintPremium.indicator.has_campaign
+    - contextPath: CyberintPremium.Indicator.has_campaign
       description: Whether the indicator has an associated campaign.
       type: Boolean
     description: Gets indicators from the premium feed.
@@ -338,70 +338,70 @@ script:
       description: The indicator value (e.g. IP address, domain name, URL, or file hash).
       required: true
     outputs:
-    - contextPath: CyberintPremium.enrichment.indicator_type
+    - contextPath: CyberintPremium.Enrichment.indicator_type
       description: The indicator type.
       type: String
-    - contextPath: CyberintPremium.enrichment.indicator_value
+    - contextPath: CyberintPremium.Enrichment.indicator_value
       description: The indicator value.
       type: String
-    - contextPath: CyberintPremium.enrichment.activity
+    - contextPath: CyberintPremium.Enrichment.activity
       description: Activity classification.
       type: String
-    - contextPath: CyberintPremium.enrichment.confidence
+    - contextPath: CyberintPremium.Enrichment.confidence
       description: Confidence score (0-100).
       type: Number
-    - contextPath: CyberintPremium.enrichment.severity
+    - contextPath: CyberintPremium.Enrichment.severity
       description: Severity level (0-5).
       type: Number
-    - contextPath: CyberintPremium.enrichment.malicious
+    - contextPath: CyberintPremium.Enrichment.malicious
       description: Malicious classification (yes/no/inconclusive).
       type: String
-    - contextPath: CyberintPremium.enrichment.kill_chain_stage
+    - contextPath: CyberintPremium.Enrichment.kill_chain_stage
       description: Kill chain stage.
       type: String
-    - contextPath: CyberintPremium.enrichment.first_seen
+    - contextPath: CyberintPremium.Enrichment.first_seen
       description: First seen date-time.
       type: Date
-    - contextPath: CyberintPremium.enrichment.last_seen
+    - contextPath: CyberintPremium.Enrichment.last_seen
       description: Last seen date-time.
       type: Date
-    - contextPath: CyberintPremium.enrichment.valid_until
+    - contextPath: CyberintPremium.Enrichment.valid_until
       description: Valid until date-time.
       type: Date
-    - contextPath: CyberintPremium.enrichment.malware_types
+    - contextPath: CyberintPremium.Enrichment.malware_types
       description: List of malware types.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.malware_family
+    - contextPath: CyberintPremium.Enrichment.malware_family
       description: Malware family name.
       type: String
-    - contextPath: CyberintPremium.enrichment.origin_countries
+    - contextPath: CyberintPremium.Enrichment.origin_countries
       description: Origin countries.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.targeted_countries
+    - contextPath: CyberintPremium.Enrichment.targeted_countries
       description: Targeted countries.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.targeted_sectors
+    - contextPath: CyberintPremium.Enrichment.targeted_sectors
       description: Targeted sectors.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.targeted_brands
+    - contextPath: CyberintPremium.Enrichment.targeted_brands
       description: Targeted brands.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.threat_actors
+    - contextPath: CyberintPremium.Enrichment.threat_actors
       description: Associated threat actors.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.campaigns
+    - contextPath: CyberintPremium.Enrichment.campaigns
       description: Associated campaigns.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.cves
+    - contextPath: CyberintPremium.Enrichment.cves
       description: Associated CVEs.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.ttps
+    - contextPath: CyberintPremium.Enrichment.ttps
       description: Associated TTPs with MITRE IDs.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.tags
+    - contextPath: CyberintPremium.Enrichment.tags
       description: Tags.
       type: Unknown
-    - contextPath: CyberintPremium.enrichment.enrichment
+    - contextPath: CyberintPremium.Enrichment.enrichment
       description: Type-specific enrichment data (geo, whois, file info, etc.).
       type: Unknown
     description: Enriches a single IOC indicator with reputation, threat intelligence, and type-specific enrichment data.
