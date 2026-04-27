@@ -515,6 +515,9 @@
 				"SentinelOne UAM Alert Analyst Verdict": {
 					"simple": "node.analystVerdict"
 				},
+				"SentinelOne UAM Alert Analyst Verdict Mapped": {
+					"simple": "node.analystVerdict"
+				},
 				"SentinelOne UAM Alert Attack Surfaces": {
 					"simple": "node.attackSurfaces"
 				},
