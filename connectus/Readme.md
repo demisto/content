@@ -135,6 +135,9 @@ python3 connectus/workflow_state.py dashboard
 # Set the assignee
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
+# Set auth detail (validates JSON schema, resets workflow to auth params set)
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+
 # Set script inputs (must be valid JSON)
 python3 connectus/workflow_state.py set-inputs "Cisco Spark" '{"api_key": "str", "base_url": "str"}'
 
@@ -176,6 +179,7 @@ from connectus.workflow_state import (
     markpass_integration_step,
     fail_integration_step,
     reset_integration_to_step,
+    set_integration_auth,
 )
 
 # Get status as a dict
@@ -193,6 +197,10 @@ result = fail_integration_step("Cisco Spark", "unit tests passed")
 # Reset to a specific stage
 result = reset_integration_to_step("Cisco Spark", "wrote code")
 # Returns: {message, current_step}
+
+# Set auth detail (validates schema, resets workflow)
+result = set_integration_auth("Cisco Spark", '{"auth_types":...}')
+# Returns: {message, current_step} or {error: "..."}
 ```
 
 ### Unit Tests

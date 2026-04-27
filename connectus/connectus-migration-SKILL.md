@@ -15,7 +15,8 @@ This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs pla
 2. **Follow the workflow steps sequentially.** You cannot skip ahead — the state machine enforces ordering.
 3. **Always check status first** before doing any work on an integration.
 4. **Use `execute_command` to run all workflow_state.py commands** from the workspace root.
-5. If a step does not pass, such as unit tests passing other any other step, it might be because a previous step was not done well and you should go back to it.
+5. **Use `set-auth` to update Auth Detail.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<name>" '<json>'` instead of editing the CSV directly. This validates the JSON schema and automatically resets the workflow to the `auth params set` step.
+6. If a step does not pass, such as unit tests passing other any other step, it might be because a previous step was not done well and you should go back to it.
 
 ## Linked Files
 
@@ -53,60 +54,228 @@ python3 connectus/workflow_state.py set-assignee "<Integration Name>" "<Name>"
 
 ### Step 1: Verify Auth Classification
 
-**Before starting any migration work**, manually verify that the Auth Class and Auth Detail for this integration are correct. The automated classification was done by analyzing YML param metadata (widget types), which produces systematic errors that must be caught before proceeding.
+**Before starting any migration work**, rigorously verify that the Auth Class and Auth Detail for this integration are correct. The automated classifier analyzed YML param metadata (widget types) and has systematic errors — a manual review of 148 integrations found **71 corrections** (48% error rate). Every integration MUST be validated before proceeding.
 
-#### Why This Step Exists
+#### Validation Checklist
 
-The automated classifier has known blind spots:
+Follow this checklist for EVERY integration. Do not skip any step.
 
-| Scenario | Classifier Output | Likely Correct Value |
-|---|---|---|
-| `type=9` (credentials widget) used for OAuth2 client_credentials flow | `Plain` | `OAuth2ClientCreds` |
-| `type=9` (credentials widget) used as static API key | `Plain` | `APIKey` |
-| `type=4` (encrypted) param that is an OAuth client secret | `APIKey` | `OAuth2ClientCreds` |
-| JWT signing with private keys | `Plain` or `APIKey` | `OAuth2JWT` |
-| Old `type=4` + new `type=9` params for the same credential (one hidden/deprecated) | `CHOICE(APIKey, Plain)` | Single mechanism (e.g., `APIKey` or `Plain`) |
-| OAuth/JWT flows detected in code but not mapped to params | Missing from Auth Class | Should be included |
+1. ☐ Run `workflow_state.py status` to get current classification
+2. ☐ Locate the integration files (YML + Python)
+3. ☐ Extract auth params from YML `configuration` section
+4. ☐ Analyze Python code for actual auth mechanism
+5. ☐ Cross-reference YML params with code usage
+6. ☐ Validate Auth Detail JSON structure
+7. ☐ Determine if corrections are needed
+8. ☐ Apply corrections if needed
+9. ☐ Mark step as passed
 
-#### Procedure
+---
 
-1. **Check the current Auth Class** from the status output:
+#### 1.1 Check Current Classification
 
-   ```bash
-   python3 connectus/workflow_state.py status "<Integration Name>"
-   ```
+```bash
+python3 connectus/workflow_state.py status "<Integration Name>"
+```
 
-2. **Read the integration's YML** — open the `configuration` section and identify all auth-related params:
+Note the **Auth Class** and **Auth Detail** values from the output. These are what you will validate.
 
-   - `type: 9` — credentials widget (username + password pair)
-   - `type: 4` — encrypted text field
-   - `type: 14` — certificate/key text
-   - `hiddenusername: true` — hides the username field (often means API key, not user/pass)
-   - `display` / `displaypassword` — labels that reveal the actual credential type
+---
 
-   **Pay special attention to hidden and deprecated params:**
-   - Params with `hidden: true` are excluded from the classification but may still be used in code. Check whether they represent an old input path for the same credential (e.g., an old `type=4` param replaced by a new `type=9` param).
-   - Params with `deprecated: true` or names containing `_deprecated` should be ignored entirely — they are no longer functional.
-   - If a hidden param and a visible param carry the same credential (old/new migration), the classification should reflect only the visible param's mechanism, **not** `CHOICE` between two types.
+#### 1.2 Locate Integration Files
 
-3. **Read the integration's Python code** to understand the actual auth flow. Search for these patterns:
+Integration files follow this structure:
+- **YML**: `Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.yml`
+- **Python**: `Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.py`
 
-   - **OAuth2 Client Credentials**: `grant_type.*client_credentials`, `client_credentials`, `/oauth2/token`, `MicrosoftClient(`
-   - **OAuth2 Authorization Code**: `authorization_code`, `redirect_uri`, `oauth-start`, `oauth-complete`
-   - **OAuth2 JWT Bearer**: `jwt.encode`, `urn:ietf:params:oauth:grant-type:jwt-bearer`, `ServiceAccountCredentials`, `google.auth`
-   - **API Key**: `X-API-Key`, `apikey` header, `api_key` query param
-   - **Basic Auth**: `requests.auth.HTTPBasicAuth`, `auth=(username, password)`
-   - **Bearer Token**: `Authorization: Bearer`, `Bearer {token}`
+> **Important:** The integration name in the CSV may differ from the directory name (e.g., spaces, capitalization, version suffixes). Use `find` to locate:
 
-4. **Compare the code's actual auth mechanism against the CSV classification.** Common corrections:
+```bash
+find Packs/ -path "*/Integrations/*/*.yml" -name "*.yml" | grep -i "<integration_name>"
+```
 
-   - If a `type=9` `credentials` param is used to carry OAuth2 client ID + secret → change from `Plain(credentials)` to `OAuth2ClientCreds(credentials)`
-   - If a `type=9` param with `hiddenusername: true` carries a static API key → change from `Plain(credentials)` to `APIKey(credentials)`
-   - If `type=4` params named `client_secret` or `enc_key` are OAuth secrets → change from `APIKey(client_secret)` to `OAuth2ClientCreds(client_secret)`
-   - If the code does JWT signing → ensure `OAuth2JWT` is in the Auth Class
-   - If old `type=4` (hidden) and new `type=9` (visible) params exist for the same credential → it's not `CHOICE`, it's a single mechanism; classify based on the visible param only
+---
 
-5. **If corrections are needed**, edit the Auth Class and Auth Detail columns directly in `connectus/integrations_report.csv`. These are data columns (not managed by `workflow_state.py`).
+#### 1.3 YML Analysis Procedure
+
+Open the YML file and examine the `configuration` section. Extract ALL auth-related params by checking:
+
+| What to Check | Why |
+|---|---|
+| Params with `type: 9` (credentials widget) | These are username/password pairs — but may carry OAuth client ID/secret or API keys |
+| Params with `type: 4` (encrypted text) | These are encrypted fields — may be API keys, tokens, or OAuth secrets |
+| Params with `type: 14` (certificate/key) | Certificate-based auth |
+| Params with `type: 15` (select dropdown) | May be an `auth_type` selector for multi-auth integrations |
+| `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password |
+| `display` and `displaypassword` labels | Reveal what the credential actually is (e.g., "Client ID" / "Client Secret" vs "Username" / "Password") |
+| `hidden: true` params | Excluded from classification but may still be used in code — check if they represent an old input path for the same credential |
+| `deprecated: true` or `_deprecated` in param names | Ignore these entirely — they are no longer functional |
+| `additionalinfo` text | Often describes the auth mechanism in plain English |
+| Params named `auth_type` with `type: 15` | Indicates multi-auth integrations with user-selectable auth flow |
+
+**Key rule for hidden/deprecated params:**
+- If a hidden param and a visible param carry the same credential (old/new migration), the classification should reflect only the visible param's mechanism, **not** `CHOICE` between two types.
+
+---
+
+#### 1.4 Python Code Analysis — Specific Patterns
+
+For each auth type, search the Python file using these patterns:
+
+**OAuth2 Client Credentials:**
+```bash
+grep -n "client_credentials\|grant_type.*client\|/oauth2/token\|/token\|MicrosoftClient\|oproxy\|get_access_token\|client_id.*client_secret" <file>.py
+```
+
+**OAuth2 Authorization Code:**
+```bash
+grep -n "authorization_code\|redirect_uri\|oauth-start\|oauth-complete\|auth_code\|code_verifier\|PKCE" <file>.py
+```
+
+**OAuth2 JWT Bearer:**
+```bash
+grep -n "jwt\.encode\|jwt-bearer\|ServiceAccountCredentials\|google\.auth\|google\.oauth2\|service_account\|private_key.*sign" <file>.py
+```
+
+**OAuth2 ROPC (Resource Owner Password Credentials) — classified as `Other`:**
+```bash
+grep -n "grant_type.*password\|resource_owner\|ROPC" <file>.py
+```
+
+**OAuth2 Device Code — classified as `Other`:**
+```bash
+grep -n "device_code\|devicecode\|device_authorization" <file>.py
+```
+
+**Managed Identity — noted in `notes` field:**
+```bash
+grep -n "managed_identit\|MANAGED_IDENTITIES\|use_managed_identities\|managed_identities_client_id" <file>.py
+```
+
+**API Key:**
+```bash
+grep -n "X-API-Key\|x-api-key\|apikey.*header\|api_key.*header\|Authorization.*Bearer\|Bearer.*token" <file>.py
+```
+
+**Basic Auth:**
+```bash
+grep -n "HTTPBasicAuth\|auth=.*username.*password\|basic_auth\|base64.*encode.*:" <file>.py
+```
+
+---
+
+#### 1.5 Cross-Reference YML Params with Code Usage
+
+For each auth-related param found in the YML:
+1. Find where it is read in the Python code (search for the param name in `demisto.params()` calls)
+2. Trace how the value is used — is it sent as a header? Used in an OAuth flow? Passed to `HTTPBasicAuth`?
+3. Confirm the YML param type matches the actual usage
+
+---
+
+#### 1.6 Known Misclassification Patterns
+
+Based on manual review of 148 integrations (71 corrections found), these are the most common errors:
+
+| # | Pattern | Freq | Classifier Output | Correct Value | How to Detect |
+|---|---------|------|-------------------|---------------|---------------|
+| 1 | `type=9` credentials used for OAuth2 client_credentials | 9 | `Plain(credentials)` | `OAuth2ClientCreds(credentials)` | Code does `grant_type=client_credentials` or uses `MicrosoftClient` |
+| 2 | Bearer token classified as Plain | 8 | `Plain(credentials)` | `APIKey(credentials)` | Code sets `Authorization: Bearer {token}` with a static token from params |
+| 3 | False positive OAuth2ClientCreds from code patterns | 25 | `OPTIONAL(OAuth2ClientCreds)` added | Should be removed | Code has `client_id`/`access_token` strings but they're not OAuth2 — they're proprietary token exchange |
+| 4 | Microsoft/Azure missing ManagedIdentity | 23 | No mention | Add to notes/auth_types | Code imports `MicrosoftClient` and has `managed_identities_client_id` param |
+| 5 | Microsoft/Azure missing DeviceCode | 12 | No mention | Add to notes/auth_types | Code has `device_code` grant type support |
+| 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Other` with ROPC note | Code does `grant_type=password` |
+| 7 | Hidden old param creates false CHOICE | ~10 | `CHOICE(APIKey, Plain)` | Single mechanism | Old `type=4` param is `hidden: true`, new `type=9` param is visible — same credential |
+| 8 | `type=4` OAuth client secret classified as APIKey | ~5 | `APIKey(client_secret)` | `OAuth2ClientCreds(client_secret)` | Param named `client_secret` or `enc_key` used in OAuth flow |
+
+---
+
+#### 1.7 Microsoft/Azure Integration Special Handling
+
+Microsoft/Azure integrations are the most complex (23 corrections in the manual review). Apply this dedicated procedure:
+
+- **If the integration imports `MicrosoftClient` from `MicrosoftApiModule`:**
+  - It likely supports **4 auth flows**: OAuth2ClientCreds, OAuth2AuthCode, DeviceCode, ManagedIdentity
+  - Check for `auth_type` selector param (`type: 15`) with options like `Client Credentials`, `Authorization Code`, `Device Code`
+  - Check for `managed_identities_client_id` param → indicates ManagedIdentity support
+  - Check for `redirect_uri` and `auth_code` params → indicates OAuth2AuthCode support
+  - The config should typically be: `CHOICE(OAuth2AuthCode, OAuth2ClientCreds, DeviceCode, ManagedIdentity)` or similar
+  - DeviceCode and ManagedIdentity are classified as `Other` in the enum but should be noted in the `notes` field
+
+---
+
+#### 1.8 Auth Detail JSON Validation
+
+After determining the correct auth types, validate the Auth Detail JSON against these rules (from `connectus/auth_class_format_spec.md`):
+
+1. Must be valid JSON with keys: `auth_types`, `config`, `params`, `notes`
+2. `auth_types` entries sorted by `(type, name)`
+3. Every param in `params` must appear in `auth_types` (by name)
+4. Every type in `config` must appear in at least one param's `type` field, OR be explained in `notes`
+5. If `config` is `NONE`, then `auth_types` must be `[]` and `params` must be `{}`
+6. If `Other` is used, `notes` MUST be non-null explaining the mechanism
+7. `xsoar_type` values must match the YML param types (0=text, 4=encrypted, 8=bool, 9=credentials, 14=cert key, 15=select)
+8. `required` values must match the YML param `required` field
+
+---
+
+#### 1.9 Decision Tree for Auth Type
+
+Use this decision tree to determine the correct auth type:
+
+```
+Is there a credentials param (type=9)?
+├── YES: What does the code do with it?
+│   ├── Sends as Basic Auth (HTTPBasicAuth) → Plain
+│   ├── Sends as Bearer token (Authorization: Bearer) → APIKey
+│   ├── Uses in OAuth2 client_credentials flow → OAuth2ClientCreds
+│   ├── Uses in OAuth2 ROPC flow (grant_type=password) → Other (ROPC)
+│   └── Uses as username/password for login → Plain
+├── NO: Is there an encrypted param (type=4)?
+│   ├── YES: What is it?
+│   │   ├── Named api_key, apikey, token → APIKey
+│   │   ├── Named client_secret, enc_key used in OAuth → OAuth2ClientCreds
+│   │   └── Named private_key used for JWT signing → OAuth2JWT
+│   └── NO: Is there any auth at all?
+│       ├── YES: Check code for auth mechanism → classify accordingly
+│       └── NO: NoneRequired
+```
+
+---
+
+#### 1.10 Applying Corrections
+
+When corrections are needed, use the `set-auth` command to update the Auth Detail:
+
+```bash
+python3 connectus/workflow_state.py set-auth "<Integration Name>" '<Auth Detail JSON>'
+```
+
+This command:
+- Validates the Auth Detail JSON against the schema (auth_types, config, params, notes)
+- Sets the `Auth Detail` column in the CSV
+- Automatically resets the workflow to the `auth params set` step (clears all downstream progress)
+- Rejects invalid JSON with specific error messages
+
+Example:
+```bash
+python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+```
+
+After setting the auth, verify it looks correct:
+```bash
+python3 connectus/workflow_state.py status "<Integration Name>"
+```
+
+---
+
+#### 1.11 Marking Step as Passed
+
+After verification (whether corrections were needed or not):
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration Name>" "auth params set"
+```
 
 #### Auth Type Reference
 
@@ -285,6 +454,9 @@ python3 connectus/workflow_state.py status-all
 
 # See all integrations assigned to a specific person
 python3 connectus/workflow_state.py list-by-assignee "<assignee name>"
+
+# Set auth detail (validates JSON schema, resets workflow to auth params set)
+python3 connectus/workflow_state.py set-auth "<Integration Name>" '<Auth Detail JSON>'
 ```
 
 ## Auth Class Reference

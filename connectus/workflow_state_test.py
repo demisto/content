@@ -13,6 +13,7 @@ from workflow_state import (
     CHECK,
     CHECKPOINT_COLUMNS,
     NA_MARK,
+    VALID_AUTH_TYPES,
     WORKFLOW_COLUMNS,
     find_row,
     format_by_assignee,
@@ -24,6 +25,8 @@ from workflow_state import (
     list_by_assignee,
     markpass_step,
     reset_from_step,
+    set_integration_auth,
+    validate_auth_detail,
 )
 
 
@@ -874,3 +877,324 @@ class TestAuthParamsSet:
     def test_current_step_is_auth_params_set_on_blank_row(self) -> None:
         row = _make_row()
         assert get_current_step(row) == "auth params set"
+
+
+# ---------------------------------------------------------------------------
+# validate_auth_detail
+# ---------------------------------------------------------------------------
+
+class TestValidateAuthDetail:
+    """Tests for the Auth Detail JSON schema validator."""
+
+    VALID_SIMPLE: str = '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+    VALID_NONE: str = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+    VALID_MULTI: str = '{"auth_types":[{"type":"APIKey","name":"apikey"},{"type":"Plain","name":"credentials"}],"config":"CHOICE(APIKey, Plain)","params":{"apikey":{"type":"APIKey","xsoar_type":4,"required":false},"credentials":{"type":"Plain","xsoar_type":9,"required":false}},"notes":null}'
+    VALID_WITH_NOTES: str = '{"auth_types":[{"type":"Other","name":"access_key"}],"config":"REQUIRED(Other)","params":{"access_key":{"type":"Other","xsoar_type":4,"required":true}},"notes":"Uses custom HMAC signing"}'
+    VALID_MULTI_TYPE_PARAM: str = '{"auth_types":[{"type":"OAuth2AuthCode","name":"app_id"}],"config":"CHOICE(OAuth2AuthCode, OAuth2ClientCreds)","params":{"app_id":{"type":["OAuth2AuthCode","OAuth2ClientCreds"],"xsoar_type":0,"required":true}},"notes":null}'
+
+    def test_valid_simple(self) -> None:
+        assert validate_auth_detail(self.VALID_SIMPLE) == []
+
+    def test_valid_none_required(self) -> None:
+        assert validate_auth_detail(self.VALID_NONE) == []
+
+    def test_valid_multi_auth(self) -> None:
+        assert validate_auth_detail(self.VALID_MULTI) == []
+
+    def test_valid_with_notes(self) -> None:
+        assert validate_auth_detail(self.VALID_WITH_NOTES) == []
+
+    def test_valid_multi_type_param(self) -> None:
+        assert validate_auth_detail(self.VALID_MULTI_TYPE_PARAM) == []
+
+    def test_invalid_json(self) -> None:
+        errors = validate_auth_detail("not json at all")
+        assert len(errors) == 1
+        assert "Invalid JSON" in errors[0]
+
+    def test_not_a_dict(self) -> None:
+        errors = validate_auth_detail("[]")
+        assert len(errors) == 1
+        assert "JSON object" in errors[0]
+
+    def test_missing_keys(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[]}')
+        assert len(errors) == 1
+        assert "Missing required keys" in errors[0]
+        assert "config" in errors[0]
+        assert "params" in errors[0]
+        assert "notes" in errors[0]
+
+    def test_auth_types_not_list(self) -> None:
+        errors = validate_auth_detail('{"auth_types":"bad","config":"NONE","params":{},"notes":null}')
+        assert any("must be a list" in e for e in errors)
+
+    def test_auth_types_entry_missing_type(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[{"name":"x"}],"config":"NONE","params":{},"notes":null}')
+        assert any("missing 'type'" in e for e in errors)
+
+    def test_auth_types_entry_missing_name(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[{"type":"APIKey"}],"config":"NONE","params":{},"notes":null}')
+        assert any("missing 'name'" in e for e in errors)
+
+    def test_auth_types_invalid_type(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[{"type":"InvalidType","name":"x"}],"config":"NONE","params":{},"notes":null}')
+        assert any("invalid type 'InvalidType'" in e for e in errors)
+
+    def test_config_not_string(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":123,"params":{},"notes":null}')
+        assert any("must be a string" in e for e in errors)
+
+    def test_params_not_dict(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":"bad","notes":null}')
+        assert any("must be a dict" in e for e in errors)
+
+    def test_param_missing_type(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"xsoar_type":4,"required":true}},"notes":null}')
+        assert any("missing 'type'" in e for e in errors)
+
+    def test_param_invalid_type(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"type":"BadType","xsoar_type":4,"required":true}},"notes":null}')
+        assert any("invalid type 'BadType'" in e for e in errors)
+
+    def test_param_invalid_type_in_list(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"type":["APIKey","BadType"],"xsoar_type":4,"required":true}},"notes":null}')
+        assert any("invalid type 'BadType'" in e for e in errors)
+
+    def test_param_missing_xsoar_type(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"type":"APIKey","required":true}},"notes":null}')
+        assert any("missing 'xsoar_type'" in e for e in errors)
+
+    def test_param_xsoar_type_not_int(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"type":"APIKey","xsoar_type":"4","required":true}},"notes":null}')
+        assert any("must be int" in e for e in errors)
+
+    def test_param_missing_required(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"type":"APIKey","xsoar_type":4}},"notes":null}')
+        assert any("missing 'required'" in e for e in errors)
+
+    def test_param_required_not_bool(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{"k":{"type":"APIKey","xsoar_type":4,"required":"yes"}},"notes":null}')
+        assert any("must be bool" in e for e in errors)
+
+    def test_notes_not_string_or_null(self) -> None:
+        errors = validate_auth_detail('{"auth_types":[],"config":"NONE","params":{},"notes":123}')
+        assert any("must be a string or null" in e for e in errors)
+
+    def test_all_valid_auth_types_accepted(self) -> None:
+        """Every value in VALID_AUTH_TYPES is accepted in auth_types entries."""
+        for auth_type in VALID_AUTH_TYPES:
+            detail = f'{{"auth_types":[{{"type":"{auth_type}","name":"x"}}],"config":"NONE","params":{{}},"notes":null}}'
+            errors = validate_auth_detail(detail)
+            assert errors == [], f"Type '{auth_type}' should be valid but got: {errors}"
+
+
+# ---------------------------------------------------------------------------
+# set-auth (set Auth Detail + reset workflow)
+# ---------------------------------------------------------------------------
+
+class TestSetAuth:
+    def test_set_auth_updates_auth_detail(self) -> None:
+        """Setting auth detail updates the Auth Detail column."""
+        row = _make_row(script_inputs="{}", params_for_test="{}", auth_params_set=CHECK)
+        new_auth = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+        row["Auth Detail"] = new_auth
+        reset_from_step(row, "auth params set")
+        assert row["Auth Detail"] == new_auth
+        assert row["auth params set"] == ""
+
+    def test_set_auth_resets_workflow(self) -> None:
+        """Setting auth detail resets all workflow steps from auth params set."""
+        row = _make_row(script_inputs="{}", params_for_test="{}")
+        # Complete several steps
+        for col in CHECKPOINT_COLUMNS[:5]:
+            row[col] = CHECK
+        row["requires auth parity test"] = "YES"
+
+        # Simulate set-auth: update auth detail and reset
+        row["Auth Detail"] = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+        reset_from_step(row, "auth params set")
+
+        # All checkpoints should be cleared
+        for col in CHECKPOINT_COLUMNS:
+            assert row[col] == "", f"Expected '{col}' to be empty after set-auth"
+        # Auth flag should also be cleared
+        assert row["requires auth parity test"] == ""
+        # Current step should be auth params set
+        assert get_current_step(row) == "auth params set"
+
+    def test_set_auth_preserves_script_inputs(self) -> None:
+        """Setting auth detail preserves script inputs and params for test."""
+        row = _make_row(script_inputs='{"key": "val"}', params_for_test='{"p": "v"}')
+        row["Auth Detail"] = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+        reset_from_step(row, "auth params set")
+        assert row["script inputs"] == '{"key": "val"}'
+        assert row["params required for test"] == '{"p": "v"}'
+
+    def test_set_auth_preserves_data_columns(self) -> None:
+        """Setting auth detail preserves other data columns."""
+        row = _make_row(name="SpecialInt")
+        row["Auth Detail"] = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+        reset_from_step(row, "auth params set")
+        assert row["Integration Name"] == "SpecialInt"
+        assert row["Provider"] == "TestProvider"
+
+    def test_set_auth_schema_validation_rejects_invalid(self) -> None:
+        """set-auth rejects values that don't match the Auth Detail schema."""
+        # Missing required keys
+        errors = validate_auth_detail('{"auth_types":[]}')
+        assert len(errors) > 0
+        assert "Missing required keys" in errors[0]
+
+    def test_set_auth_schema_validation_rejects_bad_auth_type(self) -> None:
+        """set-auth rejects auth_types with invalid enum values."""
+        bad = '{"auth_types":[{"type":"INVALID","name":"x"}],"config":"NONE","params":{},"notes":null}'
+        errors = validate_auth_detail(bad)
+        assert any("invalid type" in e for e in errors)
+
+    def test_set_auth_schema_validation_rejects_bad_param(self) -> None:
+        """set-auth rejects params with missing or invalid fields."""
+        bad = '{"auth_types":[],"config":"NONE","params":{"k":{"type":"APIKey"}},"notes":null}'
+        errors = validate_auth_detail(bad)
+        assert any("missing" in e for e in errors)
+
+    def test_set_auth_schema_validation_accepts_valid(self) -> None:
+        """set-auth accepts a fully valid Auth Detail JSON."""
+        valid = '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+        errors = validate_auth_detail(valid)
+        assert errors == []
+
+    def test_set_auth_resets_from_late_stage(self) -> None:
+        """Setting auth when integration is at a late workflow stage resets everything."""
+        row = _make_row(script_inputs='{"key": "val"}', params_for_test='{"p": "v"}')
+        # Complete up to "param parity test passes" (6 checkpoints done)
+        _complete_up_to(row, "param parity test passes")
+
+        # Verify we're at a late stage
+        assert get_current_step(row) == "param parity test passes"
+        assert row["auth params set"] == CHECK
+        assert row["generated manifest"] == CHECK
+        assert row["wrote code"] == CHECK
+        assert row["validations passed"] == CHECK
+        assert row["unit tests passed"] == CHECK
+
+        # Simulate set-auth: update auth detail and reset
+        new_auth = '{"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}},"notes":null}'
+        row["Auth Detail"] = new_auth
+        reset_from_step(row, "auth params set")
+
+        # ALL checkpoints should be cleared
+        assert row["auth params set"] == ""
+        assert row["generated manifest"] == ""
+        assert row["wrote code"] == ""
+        assert row["validations passed"] == ""
+        assert row["unit tests passed"] == ""
+        assert row["param parity test passes"] == ""
+        assert get_current_step(row) == "auth params set"
+        # Auth detail should be updated
+        assert row["Auth Detail"] == new_auth
+        # Script inputs should be preserved
+        assert row["script inputs"] == '{"key": "val"}'
+
+    def test_set_auth_resets_from_fully_complete(self) -> None:
+        """Setting auth when ALL steps are complete resets everything."""
+        row = _make_row(script_inputs='{"key": "val"}', params_for_test='{"p": "v"}')
+        row["requires auth parity test"] = "NO"
+        # Complete ALL checkpoints
+        for col in CHECKPOINT_COLUMNS:
+            if col == "auth parity test passes":
+                row[col] = NA_MARK
+            else:
+                row[col] = CHECK
+
+        # Verify fully complete
+        assert get_current_step(row) is None
+
+        # Simulate set-auth
+        new_auth = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+        row["Auth Detail"] = new_auth
+        reset_from_step(row, "auth params set")
+
+        # Everything should be cleared
+        for col in CHECKPOINT_COLUMNS:
+            assert row[col] == "", f"Expected '{col}' to be empty"
+        assert row["requires auth parity test"] == ""
+        assert get_current_step(row) == "auth params set"
+        assert row["Auth Detail"] == new_auth
+
+    def test_set_auth_resets_from_code_reviewed(self) -> None:
+        """Setting auth when integration is at 'code reviewed' resets all downstream."""
+        row = _make_row(script_inputs='{"x": 1}', params_for_test='{}')
+        row["requires auth parity test"] = "YES"
+        _complete_up_to(row, "code reviewed")
+
+        # Verify we're at code reviewed
+        assert get_current_step(row) == "code reviewed"
+        assert row["auth parity test passes"] == CHECK
+
+        # Simulate set-auth
+        new_auth = '{"auth_types":[{"type":"OAuth2ClientCreds","name":"client_creds"}],"config":"REQUIRED(OAuth2ClientCreds)","params":{"client_creds":{"type":"OAuth2ClientCreds","xsoar_type":9,"required":true}},"notes":null}'
+        row["Auth Detail"] = new_auth
+        reset_from_step(row, "auth params set")
+
+        # ALL checkpoints cleared
+        for col in CHECKPOINT_COLUMNS:
+            assert row[col] == "", f"Expected '{col}' to be empty after set-auth"
+        # Auth parity flag also cleared
+        assert row["requires auth parity test"] == ""
+        assert get_current_step(row) == "auth params set"
+        assert row["Auth Detail"] == new_auth
+        # Data preserved
+        assert row["script inputs"] == '{"x": 1}'
+        assert row["params required for test"] == '{}'
+
+    def test_set_integration_auth_api_valid(self) -> None:
+        """set_integration_auth programmatic API validates, updates, and resets."""
+        from unittest.mock import patch
+
+        # Build a fake CSV row that's progressed to "unit tests passed"
+        row = _make_row(name="FakeInt", script_inputs='{"a": 1}', params_for_test='{}')
+        _complete_up_to(row, "unit tests passed")
+        rows = [row]
+
+        new_auth = '{"auth_types":[{"type":"APIKey","name":"key"}],"config":"REQUIRED(APIKey)","params":{"key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+
+        with patch("workflow_state.load_csv", return_value=rows), \
+             patch("workflow_state.save_csv") as mock_save:
+            result = set_integration_auth("FakeInt", new_auth)
+
+        assert "error" not in result
+        assert "message" in result
+        assert result["current_step"] == "auth params set"
+        # Verify the row was mutated correctly
+        assert row["Auth Detail"] == new_auth
+        for col in CHECKPOINT_COLUMNS:
+            assert row[col] == "", f"Expected '{col}' to be empty"
+        # save_csv should have been called once
+        mock_save.assert_called_once_with(rows)
+
+    def test_set_integration_auth_api_rejects_invalid_schema(self) -> None:
+        """set_integration_auth rejects invalid Auth Detail without touching CSV."""
+        from unittest.mock import patch
+
+        with patch("workflow_state.load_csv") as mock_load:
+            result = set_integration_auth("AnyInt", '{"bad": "json"}')
+
+        assert "error" in result
+        assert "schema validation failed" in result["error"].lower()
+        # load_csv should NOT have been called since validation fails first
+        mock_load.assert_not_called()
+
+    def test_set_integration_auth_api_not_found(self) -> None:
+        """set_integration_auth returns error when integration not found."""
+        from unittest.mock import patch
+
+        valid_auth = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+
+        with patch("workflow_state.load_csv", return_value=[]), \
+             patch("workflow_state.save_csv") as mock_save:
+            result = set_integration_auth("NonExistent", valid_auth)
+
+        assert "error" in result
+        assert "not found" in result["error"].lower()
+        mock_save.assert_not_called()

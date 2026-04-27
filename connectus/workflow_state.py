@@ -59,6 +59,9 @@ Usage:
   # Mark a step as failed (resets it and all subsequent steps)
   python workflow_state.py fail "Cisco Spark" "unit tests passed"
 
+  # Set auth detail (must match Auth Detail schema) — resets workflow to "auth params set"
+  python workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+
   # Set the auth parity flag
   python workflow_state.py set-auth-flag "Cisco Spark" YES
 
@@ -142,6 +145,17 @@ NON_CHECKPOINT_STEPS = {
 CHECK = "✅"
 FAIL_MARK = "❌"
 NA_MARK = "N/A"
+
+# Valid auth type enum values for Auth Detail schema validation
+VALID_AUTH_TYPES = {
+    "OAuth2AuthCode",
+    "OAuth2ClientCreds",
+    "OAuth2JWT",
+    "APIKey",
+    "Plain",
+    "Other",
+    "NoneRequired",
+}
 
 ALL_COLUMNS = DATA_COLUMNS + WORKFLOW_COLUMNS
 
@@ -235,6 +249,105 @@ def reset_from_step(row: dict[str, str], step_name: str) -> None:
     auth_flag_position = CHECKPOINT_COLUMNS.index("auth parity test passes")
     if idx <= auth_flag_position:
         row["requires auth parity test"] = ""
+
+
+def validate_auth_detail(value: str) -> list[str]:
+    """Validate that a string conforms to the Auth Detail JSON schema.
+
+    Returns a list of error messages. An empty list means the value is valid.
+
+    Schema requirements:
+      - Must be valid JSON
+      - Top-level keys: auth_types (list), config (str), params (dict), notes (str|null)
+      - Each auth_types entry: {type: <AuthEnum>, name: <str>}
+      - Each params entry: {type: <AuthEnum|list[AuthEnum]>, xsoar_type: <int>, required: <bool>}
+      - All type values must be from VALID_AUTH_TYPES
+    """
+    errors: list[str] = []
+
+    try:
+        detail = json.loads(value)
+    except json.JSONDecodeError as e:
+        return [f"Invalid JSON: {e}"]
+
+    if not isinstance(detail, dict):
+        return [f"Expected a JSON object, got {type(detail).__name__}"]
+
+    # --- Top-level keys ---
+    required_keys = {"auth_types", "config", "params", "notes"}
+    missing = required_keys - set(detail.keys())
+    if missing:
+        errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
+        return errors  # Can't validate further without required keys
+
+    # --- auth_types ---
+    if not isinstance(detail["auth_types"], list):
+        errors.append(f"'auth_types' must be a list, got {type(detail['auth_types']).__name__}")
+    else:
+        for i, entry in enumerate(detail["auth_types"]):
+            if not isinstance(entry, dict):
+                errors.append(f"auth_types[{i}]: expected object, got {type(entry).__name__}")
+                continue
+            if "type" not in entry:
+                errors.append(f"auth_types[{i}]: missing 'type'")
+            elif entry["type"] not in VALID_AUTH_TYPES:
+                errors.append(f"auth_types[{i}]: invalid type '{entry['type']}'")
+            if "name" not in entry:
+                errors.append(f"auth_types[{i}]: missing 'name'")
+            elif not isinstance(entry["name"], str):
+                errors.append(f"auth_types[{i}]: 'name' must be a string")
+
+    # --- config ---
+    if not isinstance(detail["config"], str):
+        errors.append(f"'config' must be a string, got {type(detail['config']).__name__}")
+
+    # --- params ---
+    if not isinstance(detail["params"], dict):
+        errors.append(f"'params' must be a dict, got {type(detail['params']).__name__}")
+    else:
+        for param_name, param_data in detail["params"].items():
+            if not isinstance(param_data, dict):
+                errors.append(f"params['{param_name}']: expected object, got {type(param_data).__name__}")
+                continue
+
+            # type
+            if "type" not in param_data:
+                errors.append(f"params['{param_name}']: missing 'type'")
+            else:
+                ptype = param_data["type"]
+                if isinstance(ptype, str):
+                    if ptype not in VALID_AUTH_TYPES:
+                        errors.append(f"params['{param_name}']: invalid type '{ptype}'")
+                elif isinstance(ptype, list):
+                    for t in ptype:
+                        if t not in VALID_AUTH_TYPES:
+                            errors.append(f"params['{param_name}']: invalid type '{t}' in list")
+                else:
+                    errors.append(f"params['{param_name}']: 'type' must be string or list")
+
+            # xsoar_type
+            if "xsoar_type" not in param_data:
+                errors.append(f"params['{param_name}']: missing 'xsoar_type'")
+            elif not isinstance(param_data["xsoar_type"], int):
+                errors.append(
+                    f"params['{param_name}']: 'xsoar_type' must be int, "
+                    f"got {type(param_data['xsoar_type']).__name__}"
+                )
+
+            # required
+            if "required" not in param_data:
+                errors.append(f"params['{param_name}']: missing 'required'")
+            elif not isinstance(param_data["required"], bool):
+                errors.append(
+                    f"params['{param_name}']: 'required' must be bool, "
+                    f"got {type(param_data['required']).__name__}"
+                )
+
+    # --- notes ---
+    if detail["notes"] is not None and not isinstance(detail["notes"], str):
+        errors.append(f"'notes' must be a string or null, got {type(detail['notes']).__name__}")
+
+    return errors
 
 
 def markpass_step(row: dict[str, str], step_name: str) -> str:
@@ -667,6 +780,52 @@ def cmd_set_auth_flag(args: list[str]) -> None:
     save_csv(rows)
 
 
+def cmd_set_auth(args: list[str]) -> None:
+    """Set the Auth Detail for an integration (must match Auth Detail schema).
+
+    Validates the value against the Auth Detail JSON schema, then sets the
+    column and resets the workflow back to 'auth params set' (since changing
+    auth invalidates all downstream work).
+    """
+    if len(args) < 2:
+        print("Usage: workflow_state.py set-auth <integration_name> '<auth_detail_json>'")
+        print("  The value must be valid JSON matching the Auth Detail schema.")
+        print("  Required keys: auth_types, config, params, notes")
+        sys.exit(1)
+
+    name = args[0]
+    auth_json = " ".join(args[1:])
+
+    # Validate against Auth Detail schema
+    schema_errors = validate_auth_detail(auth_json)
+    if schema_errors:
+        print("ERROR: Auth Detail does not match the required schema.")
+        for err in schema_errors:
+            print(f"  - {err}")
+        sys.exit(1)
+
+    rows = load_csv()
+    idx = find_row(rows, name)
+    if idx is None:
+        print(f"ERROR: Integration '{name}' not found.")
+        sys.exit(1)
+
+    rows[idx]["Auth Detail"] = auth_json
+
+    # Reset workflow from "auth params set" since auth changed
+    step_idx = get_step_index("auth params set")
+    reset_from_step(rows[idx], "auth params set")
+    reset_count = len(CHECKPOINT_COLUMNS) - step_idx
+
+    save_csv(rows)
+    print(f"Set 'Auth Detail' for '{rows[idx]['Integration Name']}'.")
+    print(f"  Reset workflow to 'auth params set' "
+          f"(cleared auth params set and {reset_count - 1} subsequent steps).")
+    current = get_current_step(rows[idx])
+    if current:
+        print(f"  Current step: {current}")
+
+
 def cmd_reset_to(args: list[str]) -> None:
     """Reset to a specific stage: clears that step and everything after it.
 
@@ -926,6 +1085,42 @@ def reset_integration_to_step(integration_name: str, step_name: str) -> dict:
         return {"error": str(e)}
 
 
+def set_integration_auth(integration_name: str, auth_detail_json: str) -> dict:
+    """
+    Set the Auth Detail for an integration and reset workflow to 'auth params set'.
+
+    Validates the value against the Auth Detail JSON schema. On success, sets
+    the Auth Detail column and resets all workflow steps from 'auth params set'
+    onward (since changing auth invalidates downstream work).
+
+    Args:
+        integration_name: Name of the integration (case-insensitive).
+        auth_detail_json: JSON string conforming to the Auth Detail schema.
+
+    Returns:
+        Dict with 'message' and 'current_step' on success, or 'error' on failure.
+    """
+    # Validate schema
+    schema_errors = validate_auth_detail(auth_detail_json)
+    if schema_errors:
+        return {"error": "Auth Detail schema validation failed:\n" + "\n".join(f"  - {e}" for e in schema_errors)}
+
+    rows = load_csv()
+    idx = find_row(rows, integration_name)
+    if idx is None:
+        return {"error": f"Integration '{integration_name}' not found."}
+
+    row = rows[idx]
+    row["Auth Detail"] = auth_detail_json
+    reset_from_step(row, "auth params set")
+    save_csv(rows)
+
+    return {
+        "message": f"Set 'Auth Detail' for '{row['Integration Name']}' and reset workflow to 'auth params set'.",
+        "current_step": get_current_step(row),
+    }
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -935,6 +1130,7 @@ COMMANDS = {
     "status-all": cmd_status_all,
     "dashboard": cmd_dashboard,
     "set-assignee": cmd_set_assignee,
+    "set-auth": cmd_set_auth,
     "set-inputs": cmd_set_inputs,
     "set-params-for-test": cmd_set_params_for_test,
     "markpass": cmd_markpass,
