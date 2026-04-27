@@ -4,3 +4,5 @@ name: IBM Security Verify Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
