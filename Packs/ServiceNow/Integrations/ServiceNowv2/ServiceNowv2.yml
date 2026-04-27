@@ -1569,6 +1569,13 @@ script:
       required: true
     - description: If there are mandatory variables defined for the item, they must be passed to the endpoint. Can be retrieved using the !servicenow-get-item-details command. For example, var1=value1;var2=value2.
       name: variables
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to bypass ServiceNow form validation when creating the catalog item order. When set to "true", the sysparm_no_validation flag is included in the request.
+      name: no_validation
+      predefined:
+      - 'true'
+      - 'false'
     description: Orders the specified catalog item.
     name: servicenow-create-item-order
     outputs:
@@ -1965,7 +1972,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.6111183
+  dockerimage: demisto/auth-utils:1.0.0.7837600
   isfetch: true
   ismappable: true
   isremotesyncin: true

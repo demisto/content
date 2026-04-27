@@ -2123,6 +2123,43 @@ def github_list_workflows_command():
     )
 
 
+VALID_CREDENTIAL_PREFIXES = ("ghp_", "github_pat_", "gho_", "ghu_", "ghr_")
+
+
+def github_revoke_credentials_command() -> None:
+    """Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API.
+
+    This endpoint is unauthenticated by design -- sending an Authorization header returns 403.
+    Accepts up to 1000 tokens per request. Rate-limited to 60 unauthenticated requests/hour.
+    """
+    credentials: list[str] = argToList(demisto.args().get("credentials"))
+    if not credentials:
+        raise DemistoException("The 'credentials' argument is required and must contain at least one token.")
+
+    if len(credentials) > 1000:
+        raise DemistoException(f"The GitHub API accepts a maximum of 1000 credentials per request. Received {len(credentials)}.")
+
+    invalid = [c for c in credentials if not c.startswith(VALID_CREDENTIAL_PREFIXES)]
+    if invalid:
+        raise DemistoException(
+            f"{len(invalid)} credential(s) have invalid prefixes. " f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
+        )
+
+    headers = {"Accept": "application/vnd.github+json"}
+    response = http_request("POST", "/credentials/revoke", data={"credentials": credentials}, headers=headers)
+
+    if response.status_code == 202:
+        return_results(
+            CommandResults(
+                readable_output=f"Successfully submitted {len(credentials)} credential(s) for revocation.",
+            )
+        )
+    else:
+        raise DemistoException(
+            f"Unexpected response from GitHub credential revocation API: [{response.status_code}] {response.reason}"
+        )
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 COMMANDS = {
@@ -2220,6 +2257,7 @@ COMMANDS = {
     "github-cancel-workflow": github_cancel_workflow_command,
     "github-list-workflows": github_list_workflows_command,
     "github-delete-file": github_delete_file_command,
+    "github-revoke-credentials": github_revoke_credentials_command,
 }
 
 

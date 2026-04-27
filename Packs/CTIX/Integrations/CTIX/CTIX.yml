@@ -5,32 +5,40 @@ fromversion: 5.0.0
 name: CTIX
 display: Cyware Threat Intelligence eXchange
 category: Data Enrichment & Threat Intelligence
-provider: ThreatConnect
 description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
+provider: Cyware Labs
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Endpoint URL
   name: base_url
   type: 0
   required: true
+  section: Connect
   additionalinfo: Enter the endpoint URL of your CTIX Instance.
 - display: Access Key
   name: access_id
   type: 4
   required: true
+  section: Connect
   additionalinfo: Enter the Access Key from the CTIX application.
 - display: Secret Key
   name: secret_key
   type: 4
   required: true
+  section: Connect
   additionalinfo: Enter the Secret Key from the CTIX application.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -45,6 +53,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -55,11 +64,13 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 script:
   script: ''
   type: python
@@ -785,7 +796,7 @@ script:
     - contextPath: CTIX.Intel.status
       description: Status code returned from the api.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8160132
   subtype: python3
 tests:
 - No tests

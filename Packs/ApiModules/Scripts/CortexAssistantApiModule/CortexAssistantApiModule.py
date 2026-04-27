@@ -1,0 +1,1858 @@
+from typing import ClassVar, Optional
+from enum import Enum, IntEnum
+from dataclasses import dataclass
+from datetime import datetime, UTC
+import demistomock as demisto
+from CommonServerPython import *
+
+
+# ============================================================================
+# Constants
+# ============================================================================
+
+THINKING_MESSAGE_ID_KEY = "thinking_message_id"
+
+# ============================================================================
+# Enums - Status, Message Types, Action IDs, and Backend Error Types
+# ============================================================================
+
+
+class BackendCommand(str, Enum):
+    """
+    Backend command names passed to ``demisto.agentixCommands()``.
+    """
+
+    SEND_TO_CONVERSATION = "sendToConversation"
+    RESET_CONVERSATION = "resetConversation"
+    RATE_MESSAGE = "rateMessage"
+
+
+class BackendErrorCode(IntEnum):
+    """
+    Numeric error codes returned by the backend API.
+    """
+
+    # Configuration errors
+    LLM_NOT_ENABLED = 103000
+
+    # Permission errors
+    USER_NOT_FOUND = 103102
+    PERMISSION_DENIED = 103103
+
+    # Conversation errors
+    CONVERSATION_NOT_FOUND = 103201
+    WRONG_USER = 103204
+
+    @property
+    def error_type(self) -> "BackendErrorType":
+        """Return the corresponding BackendErrorType for this code."""
+        return _CODE_TO_ERROR_TYPE[self]
+
+    @property
+    def debug_message(self) -> str:
+        """Return a human-readable debug message for this error code."""
+        return _CODE_TO_DEBUG_MESSAGE[self]
+
+    @classmethod
+    def from_response(cls, error_code: int | None) -> "BackendErrorCode | None":
+        """Try to convert a raw error code to a BackendErrorCode, or return None."""
+        if error_code is None:
+            return None
+        try:
+            return cls(error_code)
+        except ValueError:
+            return None
+
+
+class BackendErrorType(str, Enum):
+    """
+    Types of errors that can be returned from backend operations.
+    Maps to error_code from backend API.
+    """
+
+    LLM_NOT_ENABLED = "llm_not_enabled"
+    USER_NOT_FOUND = "user_not_found"
+    PERMISSION_DENIED = "permission_denied"
+    CONVERSATION_NOT_FOUND = "conversation_not_found"
+    WRONG_USER = "wrong_user"
+    UNKNOWN = "unknown"
+
+    @property
+    def user_message(self) -> str:
+        """Return the default user-facing message for this error type."""
+        return _ERROR_TYPE_TO_USER_MESSAGE.get(self, AssistantMessages.GENERIC_ERROR)
+
+
+# Mapping from BackendErrorCode → BackendErrorType
+_CODE_TO_ERROR_TYPE: dict[BackendErrorCode, BackendErrorType] = {
+    BackendErrorCode.LLM_NOT_ENABLED: BackendErrorType.LLM_NOT_ENABLED,
+    BackendErrorCode.USER_NOT_FOUND: BackendErrorType.USER_NOT_FOUND,
+    BackendErrorCode.PERMISSION_DENIED: BackendErrorType.PERMISSION_DENIED,
+    BackendErrorCode.CONVERSATION_NOT_FOUND: BackendErrorType.CONVERSATION_NOT_FOUND,
+    BackendErrorCode.WRONG_USER: BackendErrorType.WRONG_USER,
+}
+
+# Mapping from BackendErrorCode → debug log message
+_CODE_TO_DEBUG_MESSAGE: dict[BackendErrorCode, str] = {
+    BackendErrorCode.LLM_NOT_ENABLED: "LLM not enabled in Cortex platform",
+    BackendErrorCode.USER_NOT_FOUND: "User not found",
+    BackendErrorCode.PERMISSION_DENIED: "Permission denied",
+    BackendErrorCode.CONVERSATION_NOT_FOUND: "Conversation not found",
+    BackendErrorCode.WRONG_USER: "Wrong user for conversation",
+}
+
+
+@dataclass
+class BackendResponse:
+    """
+    Represents a response from a backend operation.
+    
+    Attributes:
+        success: Whether the operation succeeded
+        error_type: Type of error if failed (None if successful)
+        error_message: Detailed error message if failed (None if successful)
+        error_code: Error code from backend if failed (None if successful)
+    """
+
+    success: bool
+    error_type: BackendErrorType | None = None
+    error_message: str | None = None
+    error_code: int | None = None
+
+
+class AssistantStatus(str, Enum):
+    """
+    Manages the status of Assistant AI interactions.
+
+    Status flow:
+    1. AWAITING_BACKEND_RESPONSE: User message sent to backend, waiting for AI response
+    2. RESPONDING_WITH_PLAN: Currently responding back with plan steps
+    3. AWAITING_AGENT_SELECTION: Sent list of available agents, waiting for user to select
+    4. AWAITING_SENSITIVE_ACTION_APPROVAL: Sent sensitive action message, waiting for approval/rejection
+    """
+
+    AWAITING_BACKEND_RESPONSE = "awaiting_backend_response"
+    RESPONDING_WITH_PLAN = "responding_with_plan"
+    AWAITING_AGENT_SELECTION = "awaiting_agent_selection"
+    AWAITING_SENSITIVE_ACTION_APPROVAL = "awaiting_sensitive_action_approval"
+
+    TIMEOUTS: ClassVar[dict[str, int]] = {
+        "awaiting_backend_response": 1 * 60,  # 1 minute
+        "responding_with_plan": 5 * 60,  # 5 minutes
+        "awaiting_agent_selection": 7 * 24 * 60 * 60,  # 7 days
+        "awaiting_sensitive_action_approval": 14 * 24 * 60 * 60,  # 14 days
+    }
+
+    @classmethod
+    def is_awaiting_user_action(cls, status: str) -> bool:
+        """
+        Check if the status indicates we're waiting for user action.
+
+        Args:
+            status: The status to check
+
+        Returns:
+            True if waiting for user action, False otherwise
+        """
+        return status in {cls.AWAITING_AGENT_SELECTION.value, cls.AWAITING_SENSITIVE_ACTION_APPROVAL.value}
+
+    @classmethod
+    def get_timeout_for_status(cls, status: str) -> int:
+        """
+        Get the timeout duration for a given status.
+
+        Args:
+            status: The status to get timeout for
+
+        Returns:
+            Timeout duration in seconds, or 0 if status is invalid
+        """
+        return cls.TIMEOUTS.get(status, 0)
+
+    @classmethod
+    def is_expired(cls, status: str, last_updated: float) -> bool:
+        """
+        Check if a conversation has expired based on its status and last update time.
+
+        Args:
+            status: The conversation status
+            last_updated: Unix timestamp of last update
+
+        Returns:
+            True if the conversation has expired, False otherwise
+        """
+        timeout = cls.get_timeout_for_status(status)
+        if timeout == 0:
+            return False
+
+        current_time = datetime.now(UTC).timestamp()
+        time_elapsed = current_time - last_updated
+
+        return time_elapsed > timeout
+
+
+class AssistantMessageType(str, Enum):
+    """
+    Message types for Assistant AI responses.
+
+    Type mapping (from backend):
+    - step: Step execution (function calls, actions)
+    - model: Model/AI response (final text response)
+    - error: Error message
+    - user: User message
+    - thought: AI thinking
+    - approval: Approval request for sensitive actions
+    - clarification: Clarification request
+    - copilot: Copilot response
+    - script: Script execution
+    """
+
+    # Message types from backend
+    STEP = "step"
+    MODEL = "model"
+    ERROR = "error"
+    USER = "user"
+    THOUGHT = "thought"
+    APPROVAL = "approval"
+    CLARIFICATION = "clarification"
+    COPILOT = "copilot"
+    SCRIPT = "script"
+
+    @classmethod
+    def is_model_type(cls, message_type: str) -> bool:
+        """Check if a message type is a model/final response type."""
+        return message_type in {cls.MODEL.value, cls.CLARIFICATION.value, cls.COPILOT.value, cls.SCRIPT.value, cls.APPROVAL.value}
+
+    @classmethod
+    def is_step_type(cls, message_type: str) -> bool:
+        """Check if a message type is a step type (step/thought)."""
+        return message_type in {cls.STEP.value, cls.THOUGHT.value}
+
+    @classmethod
+    def is_approval_type(cls, message_type: str) -> bool:
+        """Check if a message type requires approval."""
+        return message_type == cls.APPROVAL.value
+
+    @classmethod
+    def is_error_type(cls, message_type: str) -> bool:
+        """Check if a message type is an error."""
+        return message_type == cls.ERROR.value
+
+
+class AssistantActionIds(str, Enum):
+    """
+    Action IDs for Assistant interactive elements.
+    """
+
+    AGENT_SELECTION = "agent_selection"
+    APPROVAL_YES = "assistant_sensitive_action_approve"
+    APPROVAL_NO = "assistant_sensitive_action_reject"
+    FEEDBACK = "assistant_feedback"
+
+    # Special constants (not enum values)
+    AGENT_SELECTION_VALUE_PREFIX = "assistant-agent-selection-"
+    FEEDBACK_MODAL_CALLBACK_ID = "assistant_feedback_modal_callback_id"
+    FEEDBACK_MODAL_QUICK_BLOCK_ID = "quick_feedback_block"
+    FEEDBACK_MODAL_TEXT_BLOCK_ID = "feedback_text_block"
+    FEEDBACK_MODAL_CHECKBOXES_ACTION_ID = "quick_feedback_checkboxes"
+    FEEDBACK_MODAL_TEXT_INPUT_ACTION_ID = "feedback_text_input"
+
+
+# ============================================================================
+# Messages - User-facing text and UI labels
+# ============================================================================
+
+
+class AssistantMessages:
+    """
+    User-facing messages and UI text for Assistant AI interactions.
+    These messages are platform-agnostic and can be used across different integrations.
+    """
+
+    # Bot display name (used when replacing bot mentions in messages sent to backend)
+    BOT_DISPLAY_NAME = "Cortex Agentic Assistant"
+    
+    # Bot name format for agent responses (used in Slack username field)
+    # {0} will be replaced with agent name (e.g., "Security Analyst")
+    AGENT_BOT_NAME_FORMAT = "Cortex {0} Agent"
+
+    # Commands
+    RESET_SESSION_COMMAND = "!reset"
+    HELP_COMMAND = "!help"
+
+    # Default message when only bot is mentioned
+    DEFAULT_BOT_MENTION_MESSAGE = "Hello"
+
+    # Thinking indicator (shown while waiting for AI response)
+    THINKING_INDICATOR = ":thought_balloon: Thinking..."
+
+    # Context formatting
+    CONTEXT_START = "--- Previous chat context ---"
+    CONTEXT_END = "--- End of context ---"
+    CURRENT_MESSAGE_HEADER = "**Current message**:"
+
+    # Messages for when user action is awaited - specific to action type
+    AWAITING_AGENT_SELECTION = "Select an agent from the dropdown above."
+    AWAITING_APPROVAL_RESPONSE = "Approve or reject the sensitive action above."
+
+    ONLY_LOCKED_USER_CAN_RESPOND = (
+        "This thread is currently locked to {locked_user_tag}. To chat, please start a new thread."
+    )
+
+    # Messages for when backend is processing
+    ALREADY_PROCESSING = "Still working on your previous request. Please wait."
+
+    # Messages for when plan is being sent
+    WAITING_FOR_COMPLETION = "Still generating a response for you."
+
+    # Messages for action errors
+    CANNOT_SELECT_AGENT = "Only {locked_user_tag} can select an agent for this thread."
+    CANNOT_APPROVE_ACTION = "Only {locked_user_tag} can approve or reject this action."
+
+    # Configuration errors
+    LLM_NOT_ENABLED = (
+        f"❌ {BOT_DISPLAY_NAME} is not available. "
+        "The LLM feature must be enabled in your Cortex platform by your administrator."
+    )
+
+    # Permission errors
+    USER_NOT_FOUND = "You don't have an account in the system. Please contact your administrator."
+    NO_ASSISTANT_PERMISSIONS = (
+        f"You don't have permissions to use the {BOT_DISPLAY_NAME}. "
+        "Please request the required permissions from your administrator."
+    )
+    THREAD_LOCKED_TO_ANOTHER_USER = (
+        "This conversation is currently locked to another user. "
+        "You can start a new thread or run `{bot_tag} !reset` to release the lock and start a new chat."
+    )
+    NOT_CONVERSATION_OWNER_FEEDBACK = "Only the chat owner can provide feedback on this message."
+
+    # Generic error messages
+    GENERIC_ERROR = "❌ An error occurred. Please try again later or contact your administrator if the issue persists."
+    SYSTEM_ERROR = "❌ A system error occurred. Please try again later or contact your administrator if the issue persists."
+
+    # Reset session messages
+    RESET_SESSION_SUCCESS = "✅ Session reset successfully."
+    RESET_SESSION_FAILED = "❌ Failed to reset session."
+    RESET_SESSION_NO_ACTIVE_SESSION = "No active session to reset. You can start a new chat by mentioning {bot_tag}."
+    RESET_SESSION_CANNOT_RESET_AWAITING_SELECTION = (
+        "Can't reset because an agent hasn't been selected. Please pick an agent to get started."
+    )
+    RESET_SESSION_CANNOT_RESET_PROCESSING = (
+        "Still working on your previous request. The response must complete before you reset the session."
+    )
+    RESET_SESSION_CANNOT_RESET_RESPONDING = "Cannot reset session while responding. Please wait for the response to complete."
+
+    # Agent selection messages
+    NO_AGENTS_AVAILABLE = "❌ No agents are currently available. Please try again later or contact your administrator."
+    AGENT_SELECTION_FAILED = "❌ Failed to start chat with selected agent. Please try again or select a different agent."
+
+    # Agent selection UI texts
+    AGENT_SELECTION_PROMPT = "Please select an agent:"
+    AGENT_SELECTION_PLACEHOLDER = "Select an agent"
+    AGENT_SELECTION_CONFIRM_TITLE = "Confirm agent selection"
+    AGENT_SELECTION_CONFIRM_TEXT = "Are you sure you want to use this agent?"
+    AGENT_SELECTION_CONFIRM_BUTTON = "Yes, use this agent"
+    AGENT_SELECTION_DENY_BUTTON = "No, let me choose again"
+
+    # Approval UI texts
+    APPROVAL_HEADER = "⚠️ Sensitive action detected. Approval required"
+    APPROVAL_PROMPT = "*Should I proceed?*"
+    APPROVAL_PROCEED_BUTTON = "Proceed"
+    APPROVAL_CANCEL_BUTTON = "Cancel"
+    APPROVAL_CONFIRM_TITLE = "Are you sure?"
+    APPROVAL_CONFIRM_TEXT = "This action will be executed. Do you want to proceed?"
+    APPROVAL_CONFIRM_BUTTON = "Yes, proceed"
+    APPROVAL_DENY_BUTTON = "No, cancel"
+
+    # Feedback buttons texts
+    FEEDBACK_GOOD_BUTTON = "Good response"
+    FEEDBACK_BAD_BUTTON = "Bad response"
+    FEEDBACK_GOOD_ACCESSIBILITY = "Mark this response as good"
+    FEEDBACK_BAD_ACCESSIBILITY = "Mark this response as bad"
+    FEEDBACK_THANK_YOU = "Thanks for your feedback!"
+    FEEDBACK_FAILED = "❌ Failed to submit feedback. Please try again."
+
+    # Feedback modal texts
+    FEEDBACK_MODAL_TITLE = "Send feedback"
+    FEEDBACK_MODAL_SUBMIT = "Submit"
+    FEEDBACK_MODAL_CANCEL = "Cancel"
+    FEEDBACK_MODAL_QUICK_LABEL = "Quick feedback"
+    FEEDBACK_MODAL_ADDITIONAL_LABEL = "Anything to add?"
+    FEEDBACK_MODAL_ADDITIONAL_PLACEHOLDER = "Enter your feedback here..."
+
+    # Feedback modal checkbox options (text is also used as value)
+    FEEDBACK_OPTION_NO_ANSWER = "No answer but I expected you to know that"
+    FEEDBACK_OPTION_FACTUALLY_INCORRECT = "Factually incorrect"
+    FEEDBACK_OPTION_ANSWERED_ANOTHER = "Answered another question"
+    FEEDBACK_OPTION_PARTIALLY_HELPFUL = "Partially helpful"
+    FEEDBACK_OPTION_UNHELPFUL = "Unhelpful"
+
+    # Help hint (sent after agent selection)
+    HELP_HINT = "💡 For help, type `{bot_tag} !help`"
+
+    # Help message (sent on !help command)
+    HELP_MESSAGE = (
+        "📖 *{bot_display_name} - Help*\n\n"
+        "• Each thread is *locked to the user who started the chat*. "
+        "Other users can start their own chat in a different thread.\n"
+        "• Every message must *mention the bot* (e.g. `{bot_tag} <your question>`).\n"
+        "• To *start a new chat*, open a new thread or type `{bot_tag} !reset` to release the current session.\n"
+    )
+
+    # Decision indicators
+    DECISION_APPROVED = "✅ *Approved*"
+    DECISION_DECLINED = "❌ *Declined*"
+
+
+# Mapping from BackendErrorType → default user-facing message
+_ERROR_TYPE_TO_USER_MESSAGE: dict[BackendErrorType, str] = {
+    BackendErrorType.LLM_NOT_ENABLED: AssistantMessages.LLM_NOT_ENABLED,
+    BackendErrorType.USER_NOT_FOUND: AssistantMessages.USER_NOT_FOUND,
+    BackendErrorType.PERMISSION_DENIED: AssistantMessages.NO_ASSISTANT_PERMISSIONS,
+    BackendErrorType.WRONG_USER: AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK,
+    BackendErrorType.CONVERSATION_NOT_FOUND: AssistantMessages.SYSTEM_ERROR,
+    BackendErrorType.UNKNOWN: AssistantMessages.SYSTEM_ERROR,
+}
+
+
+# ============================================================================
+# Base Handler Class
+# ============================================================================
+
+
+class AssistantMessagingHandler:
+    """
+    Base class for handling Assistant messaging across different platforms.
+    This class contains the platform-agnostic logic for handling Assistant interactions.
+    Platform-specific implementations (Slack, Microsoft Teams, etc.) should inherit from this class
+    and implement the abstract methods.
+    """
+
+    # Integration context key for assistant conversations
+    CONTEXT_KEY = "assistant_context"
+
+    # Maximum number of previous messages to include as conversation context
+    MAX_CONTEXT_MESSAGES = 5
+
+    def __init__(self):
+        """Initialize the messaging handler"""
+
+    # ============================================================================
+    # Abstract methods - must be implemented by platform-specific subclasses
+    # ============================================================================
+
+    async def send_message_async(
+        self,
+        channel_id: str,
+        message: str,
+        thread_id: str = "",
+        blocks: Optional[list] = None,
+        attachments: Optional[list] = None,
+        ephemeral: bool = False,
+        user_id: str = "",
+    ):
+        """
+        Send a message to the platform.
+        Must be implemented by subclass.
+
+        Args:
+            channel_id: The channel/conversation ID
+            message: The message text
+            thread_id: Optional thread ID
+            blocks: Optional platform-specific blocks
+            attachments: Optional attachments
+            ephemeral: Whether message should be ephemeral (visible only to a specific user)
+            user_id: User ID for ephemeral messages
+        """
+        raise NotImplementedError("Subclass must implement send_message_async()")
+
+    @staticmethod
+    def _validate_update_message_args(text: str, blocks: list | None) -> None:
+        """Validate that at least one of ``text`` or ``blocks`` is provided."""
+        if not text and not blocks:
+            raise ValueError("update_message requires at least one of 'text' or 'blocks'")
+
+    async def update_message(
+        self,
+        channel_id: str,
+        message_id: str,
+        text: str = "",
+        blocks: list | None = None,
+    ):
+        """
+        Update an existing message.
+        Must be implemented by subclass.
+        At least one of ``text`` or ``blocks`` must be provided;
+        implementations should raise ``ValueError`` otherwise.
+
+        Args:
+            channel_id: The channel/conversation ID
+            message_id: The message ID
+            text: New text content (at least one of text/blocks required)
+            blocks: New blocks content (at least one of text/blocks required)
+        """
+        self._validate_update_message_args(text, blocks)
+        raise NotImplementedError("Subclass must implement update_message()")
+
+    def delete_message(
+        self,
+        channel_id: str,
+        message_id: str,
+    ) -> tuple[bool, dict]:
+        """
+        Delete an existing message.
+        Must be implemented by subclass.
+
+        Args:
+            channel_id: The channel/conversation ID
+            message_id: The message ID
+
+        Returns:
+            A tuple of (success, response) where success is a bool indicating
+            whether the deletion succeeded, and response is the platform-specific
+            response dict for logging purposes.
+        """
+        raise NotImplementedError("Subclass must implement delete_message()")
+
+    async def get_user_info(self, user_id: str) -> dict:
+        """
+        Get user information.
+        Must be implemented by subclass.
+
+        Args:
+            user_id: The user ID
+
+        Returns:
+            User information dictionary
+        """
+        raise NotImplementedError("Subclass must implement get_user_info()")
+
+    async def get_thread_last_messages(self, channel_id: str, thread_id: str, limit: int = 20) -> list:
+        """
+        Get conversation history.
+        Must be implemented by subclass.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            limit: Maximum number of messages to retrieve
+
+        Returns:
+            List of messages
+        """
+        raise NotImplementedError("Subclass must implement get_thread_last_messages()")
+
+    def format_user_mention(self, user_id: str) -> str:
+        """
+        Format a user mention for the platform.
+        Must be implemented by subclass.
+
+        Args:
+            user_id: The user ID
+
+        Returns:
+            Formatted user mention string
+        """
+        raise NotImplementedError("Subclass must implement format_user_mention()")
+
+    def normalize_message_from_user(self, text: str) -> str:
+        """
+        Normalize message text from user for backend processing.
+        Must be implemented by subclass.
+
+        Args:
+            text: The message text with platform-specific formatting
+
+        Returns:
+            Normalized text suitable for backend
+        """
+        raise NotImplementedError("Subclass must implement normalize_message_from_user()")
+
+    def prepare_message_blocks(self, message: str, message_type: AssistantMessageType) -> tuple:
+        """
+        Prepare platform-specific message blocks.
+        Must be implemented by subclass.
+
+        Args:
+            message: The message text
+            message_type: The message type
+
+        Returns:
+            Tuple of (blocks, attachments)
+        """
+        raise NotImplementedError("Subclass must implement prepare_message_blocks()")
+
+    def prepare_merged_step_blocks(self, step_contents: list[str]) -> tuple[list, list]:
+        """
+        Prepare platform-specific blocks for multiple merged step messages.
+        Must be implemented by subclass.
+
+        Consecutive step-type messages are merged into a single visual message
+        with dividers between them.
+
+        Args:
+            step_contents: List of step message content strings to merge
+
+        Returns:
+            Tuple of (blocks, attachments) for the merged step message
+        """
+        raise NotImplementedError("Subclass must implement prepare_merged_step_blocks()")
+
+    def create_agent_selection_ui(self, agents: list) -> list:
+        """
+        Create agent selection UI.
+        Must be implemented by subclass.
+
+        Args:
+            agents: List of available agents
+
+        Returns:
+            Platform-specific UI blocks
+        """
+        raise NotImplementedError("Subclass must implement create_agent_selection_ui()")
+
+    def create_approval_ui(self) -> list:
+        """
+        Create approval UI for sensitive actions.
+        Must be implemented by subclass.
+
+        Returns:
+            Platform-specific UI blocks
+        """
+        raise NotImplementedError("Subclass must implement create_approval_ui()")
+
+    def create_feedback_ui(self, message_id: str) -> dict:
+        """
+        Create feedback UI.
+        Must be implemented by subclass.
+
+        Args:
+            message_id: The message ID for tracking
+
+        Returns:
+            Platform-specific feedback UI
+        """
+        raise NotImplementedError("Subclass must implement create_feedback_ui()")
+
+    def post_agent_response(
+        self,
+        channel_id: str,
+        thread_id: str,
+        blocks: list,
+        attachments: list,
+        agent_name: str = "",
+        fallback_text: str = "",
+    ) -> Optional[dict]:
+        """
+        Send a new agent message to the platform.
+        Must be implemented by subclass.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            blocks: Message blocks
+            attachments: Message attachments
+            agent_name: Optional agent name to display (e.g., "Security Analyst")
+            fallback_text: Plain text to use if blocks/attachments fail
+
+        Returns:
+            Response dict with 'ts' (message timestamp) if successful, None otherwise
+        """
+        raise NotImplementedError("Subclass must implement post_agent_response_sync()")
+
+
+    def update_context(self, context_updates: dict):
+        """
+        Update the integration context.
+        Must be implemented by subclass.
+
+        Args:
+            context_updates: Dictionary of updates to apply
+        """
+        raise NotImplementedError("Subclass must implement update_context()")
+
+    async def show_feedback_modal(
+        self,
+        trigger_id: str,
+        message_id: str,
+        channel_id: str,
+        thread_id: str,
+    ):
+        """
+        Open a feedback modal for negative feedback collection.
+        Must be implemented by subclass.
+
+        Args:
+            trigger_id: The trigger ID for opening the modal
+            message_id: The message ID for tracking
+            channel_id: The channel ID
+            thread_id: The thread ID
+        """
+        raise NotImplementedError("Subclass must implement open_feedback_modal()")
+
+    def handle_backend_response(self, response: Any, operation: str) -> BackendResponse:
+        """
+        Handles backend response and returns structured result.
+        Uses error_code from backend to determine error type.
+        
+        Args:
+            response: The response from backend
+            operation: The operation name (for logging)
+            
+        Returns:
+            BackendResponse with success status and error details
+        """
+        if isinstance(response, dict):
+            if response.get("success") or response.get("agents"):
+                demisto.debug(f"Backend {operation} succeeded")
+                return BackendResponse(success=True)
+            
+            raw_error_code = response.get("error_code")
+            error_msg = str(response.get("error", ""))
+
+            known_code = BackendErrorCode.from_response(raw_error_code)
+            if known_code is not None:
+                demisto.debug(f"{known_code.debug_message} for {operation}: {error_msg}")
+                return BackendResponse(
+                    success=False, error_type=known_code.error_type, error_message=error_msg, error_code=raw_error_code
+                )
+
+            demisto.error(f"Backend {operation} failed with error_code={raw_error_code}: {error_msg}")
+            return BackendResponse(
+                success=False, error_type=BackendErrorType.UNKNOWN, error_message=error_msg, error_code=raw_error_code
+            )
+        else:
+            error_msg = f"Unexpected response type: {type(response)}"
+            demisto.error(f"Backend {operation} returned unexpected response: {response}")
+            return BackendResponse(success=False, error_type=BackendErrorType.UNKNOWN, error_message=error_msg)
+
+    async def submit_feedback(
+        self,
+        message_id: str,
+        is_positive: bool,
+        thread_id: str,
+        channel_id: str,
+        username: str,
+        issues: Optional[list] = None,
+        message: str = "",
+    ) -> BackendResponse:
+        """
+        Submit feedback to backend.
+        Platform-agnostic implementation.
+
+        Args:
+            message_id: The message ID
+            is_positive: True for positive feedback, False for negative
+            thread_id: The thread ID
+            channel_id: The channel ID
+            username: The username
+            issues: Optional list of issues (for negative feedback)
+            message: Optional feedback message
+
+        Returns:
+            BackendResponse indicating success or failure
+        """
+        args = {
+            "message_id": message_id,
+            "is_liked": is_positive,
+            "thread_id": thread_id,
+            "channel_id": channel_id,
+            "username": username,
+        }
+        if issues:
+            args["issues"] = issues
+        if message:
+            args["improvement_suggestion"] = message
+
+        raw_response = demisto.agentixCommands(BackendCommand.RATE_MESSAGE, args)
+        return self.handle_backend_response(raw_response, BackendCommand.RATE_MESSAGE)
+
+    # ============================================================================
+    # Platform-agnostic methods - shared logic across all platforms
+    # ============================================================================
+
+    def delete_expired_conversations(self, assistant: dict) -> dict:
+        """
+        Cleans up expired conversations from the assistant context.
+        Each status has a different timeout duration.
+
+        Args:
+            assistant: The assistant context dictionary
+
+        Returns:
+            Updated assistant dictionary with expired conversations removed
+        """
+        if not assistant:
+            return {}
+
+        expired_keys = []
+
+        for assistant_id_key, conversation in assistant.items():
+            status = conversation.get("status", "")
+            last_updated = conversation.get("last_updated", 0)
+
+            # Check if conversation has expired
+            if AssistantStatus.is_expired(status, last_updated):
+                expired_keys.append(assistant_id_key)
+                demisto.debug(
+                    f"Conversation {assistant_id_key} expired (status: {status}, "
+                    f"last_updated: {last_updated}, timeout: {AssistantStatus.get_timeout_for_status(status)}s)"
+                )
+
+        # Remove expired conversations
+        for key in expired_keys:
+            del assistant[key]
+            demisto.info(f"Cleaned up expired conversation: {key}")
+
+        if expired_keys:
+            demisto.info(f"Cleaned up {len(expired_keys)} expired conversations")
+
+        return assistant
+
+    def delete_assistant_conversations_from_context(self):
+        """
+        Checks and cleans up expired Assistant conversations from integration context.
+        This should be called periodically (e.g., in long_running_loop).
+        Handles loading from context, cleanup, and saving back to context.
+        """
+        try:
+            # Get integration context
+            integration_context = get_integration_context(sync=True)
+            assistant = integration_context.get(self.CONTEXT_KEY, {})
+
+            if not assistant:
+                return
+
+            # Parse if it's a string
+            if isinstance(assistant, str):
+                try:
+                    assistant = json.loads(assistant)
+                except json.JSONDecodeError:
+                    demisto.error(f"Failed to parse assistant context as JSON: {assistant[:200]}")
+                    assistant = {}
+
+            # Store original count before cleanup
+            original_count = len(assistant)
+
+            # Cleanup expired conversations
+            deleted_converstations = self.delete_expired_conversations(assistant)
+
+            # Update context if anything was cleaned
+            if len(deleted_converstations) < original_count:
+                demisto.debug(f"Updating context after cleanup: {original_count} -> {len(deleted_converstations)} conversations")
+                set_to_integration_context_with_retries({self.CONTEXT_KEY: deleted_converstations}, sync=True)
+        except Exception as e:
+            demisto.error(f"Failed to cleanup expired Assistant conversations: {e}")
+
+    async def handle_reset_session(
+        self,
+        text: str,
+        user_id: str,
+        channel_id: str,
+        thread_id: str,
+        assistant: dict,
+        assistant_id_key: str,
+        bot_id: str,
+        user_email: str,
+    ) -> tuple[bool, dict]:
+        """
+        Handles reset session command.
+        Checks if the message is exactly "@BotName !reset" (case-insensitive).
+
+        Args:
+            text: The message text
+            user_id: The user ID
+            channel_id: The channel ID
+            thread_id: The thread ID
+            assistant: The assistant context dictionary
+            assistant_id_key: The unique key for this conversation
+            bot_id: The bot user ID
+            user_email: The user email address
+
+        Returns:
+            Tuple of (is_reset_command, updated_assistant)
+        """
+        # Check for exact "!reset" command
+        # Format: @BotName !reset (with optional whitespace)
+        bot_mention = self.format_user_mention(bot_id)
+        # Remove the bot mention and check if remaining text is exactly "!reset"
+        text_without_mention = text.replace(bot_mention, "").strip()
+
+        if text_without_mention.lower() != AssistantMessages.RESET_SESSION_COMMAND:
+            return False, assistant
+
+        # Check status to determine if reset is allowed
+        if assistant_id_key in assistant:
+            status = assistant[assistant_id_key].get("status", "")
+
+            # For agent selection - release lock locally without calling backend
+            if status == AssistantStatus.AWAITING_AGENT_SELECTION.value:
+                del assistant[assistant_id_key]
+                await self.send_message_async(
+                    channel_id,
+                    AssistantMessages.RESET_SESSION_SUCCESS,
+                    thread_id=thread_id,
+                    ephemeral=True,
+                    user_id=user_id,
+                )
+                return True, assistant
+
+            # Cannot reset while processing
+            if status == AssistantStatus.AWAITING_BACKEND_RESPONSE.value:
+                await self.send_message_async(
+                    channel_id,
+                    AssistantMessages.RESET_SESSION_CANNOT_RESET_PROCESSING,
+                    thread_id=thread_id,
+                    ephemeral=True,
+                    user_id=user_id,
+                )
+                return True, assistant
+
+            # Cannot reset while responding
+            if status == AssistantStatus.RESPONDING_WITH_PLAN.value:
+                await self.send_message_async(
+                    channel_id,
+                    AssistantMessages.RESET_SESSION_CANNOT_RESET_RESPONDING,
+                    thread_id=thread_id,
+                    ephemeral=True,
+                    user_id=user_id,
+                )
+                return True, assistant
+
+        # For AWAITING_SENSITIVE_ACTION_APPROVAL or no lock - allow reset
+        # Call backend to reset conversation
+        demisto.debug(f"Resetting conversation for user {user_email} in channel {channel_id}")
+        raw_response = demisto.agentixCommands(
+            BackendCommand.RESET_CONVERSATION,
+            {
+                "channel_id": channel_id,
+                "thread_id": thread_id,
+                "username": user_email,
+            },
+        )
+
+        backend_response = self.handle_backend_response(raw_response, BackendCommand.RESET_CONVERSATION)
+
+        if backend_response.success:
+            # Remove from assistant context
+            if assistant_id_key in assistant:
+                del assistant[assistant_id_key]
+
+            await self.send_message_async(
+                channel_id, AssistantMessages.RESET_SESSION_SUCCESS, thread_id=thread_id, user_id=user_id
+            )
+        elif backend_response.error_type == BackendErrorType.CONVERSATION_NOT_FOUND:
+            # Backend says no active session (conversation not found)
+            no_session_msg = AssistantMessages.RESET_SESSION_NO_ACTIVE_SESSION.format(
+                bot_tag=self.format_user_mention(bot_id)
+            )
+            await self.send_message_async(
+                channel_id, no_session_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+            )
+        else:
+            error_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.RESET_SESSION_FAILED
+            await self.send_message_async(
+                channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+            )
+
+        return True, assistant
+
+    async def handle_modal_submission(
+        self,
+        message_id: str,
+        channel_id: str,
+        thread_id: str,
+        user_id: str,
+        user_email: str,
+        issues: list,
+        feedback_text: str,
+    ):
+        """
+        Handles modal submissions (e.g., negative feedback).
+        Platform-agnostic logic that submits feedback.
+
+        Args:
+            message_id: The message ID
+            channel_id: The channel ID
+            thread_id: The thread ID
+            user_id: The user ID
+            user_email: The user's email
+            issues: List of selected issues
+            feedback_text: Additional feedback text
+        """
+        # Send negative feedback with checkboxes and text to backend
+        backend_response = await self.submit_feedback(
+            message_id=message_id,
+            is_positive=False,
+            thread_id=thread_id,
+            channel_id=channel_id,
+            username=user_email,
+            issues=issues,
+            message=feedback_text,
+        )
+
+        # Send appropriate message based on backend response
+        if backend_response.success:
+            feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
+        else:
+            feedback_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+
+        await self.send_message_async(
+            channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+        )
+
+    async def _handle_action_feedback(
+        self,
+        action_value: str,
+        channel_id: str,
+        thread_id: str,
+        user_id: str,
+        user_email: str,
+        trigger_id: str,
+    ) -> None:
+        """
+        Handles feedback button actions (positive/negative).
+
+        Args:
+            action_value: The action value string (e.g., "positive-message_id")
+            channel_id: The channel ID
+            thread_id: The thread ID
+            user_id: The user ID
+            user_email: The user's email
+            trigger_id: The trigger ID for modals
+        """
+        # Value format: "positive-message_id" or "negative-message_id"
+        # message_id can contain hyphens (e.g., UUID), so split only on first hyphen
+        parts = action_value.split("-", 1)
+        if len(parts) != 2:
+            demisto.error(f"Invalid feedback value format: {action_value}")
+            return
+
+        feedback_type, message_id = parts
+        is_positive = feedback_type == "positive"
+
+        if is_positive:
+            # Positive feedback - send immediately
+            backend_response = await self.submit_feedback(
+                message_id=message_id,
+                is_positive=True,
+                thread_id=thread_id,
+                channel_id=channel_id,
+                username=user_email,
+            )
+
+            # Send appropriate message based on backend response
+            if backend_response.success:
+                feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
+            else:
+                feedback_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+
+            await self.send_message_async(
+                channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+            )
+        else:
+            # Negative feedback - open modal
+            if trigger_id:
+                try:
+                    await self.show_feedback_modal(trigger_id, message_id, channel_id, thread_id)
+                except Exception as e:
+                    demisto.error(f"Failed to open feedback modal: {e}")
+                    # Fallback to ephemeral message
+                    await self.send_message_async(
+                        channel_id, AssistantMessages.FEEDBACK_THANK_YOU, thread_id=thread_id, ephemeral=True, user_id=user_id
+                    )
+
+    async def handle_action(
+        self,
+        actions: list,
+        user_id: str,
+        user_email: str,
+        channel_id: str,
+        thread_id: str,
+        message: dict,
+        assistant: dict,
+        assistant_id_key: str,
+        trigger_id: str,
+        bot_id: str = "",
+    ) -> dict:
+        """
+        Handles interactive actions (agent selection, approval, feedback).
+        Platform-agnostic logic that uses platform-specific methods.
+
+        Args:
+            actions: The list of actions from the payload
+            user_id: The user ID
+            user_email: The user's email
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message: The message dict from payload
+            assistant: The assistant context dictionary
+            assistant_id_key: The unique key for this conversation
+            trigger_id: The trigger ID for modals
+            bot_id: The bot user ID (used for help hint after agent selection)
+
+        Returns:
+            Updated assistant dictionary
+        """
+        message_id = message.get("ts", "")
+
+        if not actions:
+            demisto.error("Received action event with empty actions list")
+            return assistant
+
+        # Decode the action payload
+        action = actions[0]
+        action_id = action.get("action_id", "")
+        action_value = action.get("value", "")
+
+        demisto.debug(f"Handling action: {action_id} with value: {action_value}")
+
+        # OPTION 1: Feedback Buttons
+        if action_id == AssistantActionIds.FEEDBACK.value:
+            await self._handle_action_feedback(
+                action_value=action_value,
+                channel_id=channel_id,
+                thread_id=thread_id,
+                user_id=user_id,
+                user_email=user_email,
+                trigger_id=trigger_id,
+            )
+            # Feedback doesn't require active conversation
+            return assistant
+
+        # For other actions, check if conversation exists
+        if assistant_id_key not in assistant:
+            demisto.debug(f"Conversation {assistant_id_key} not found.")
+            return assistant
+
+        locked_user = assistant[assistant_id_key].get("user", "")
+
+        # OPTION 2: Agent Selection
+        if action_id == AssistantActionIds.AGENT_SELECTION.value:
+            await self._handle_action_agent_selection(
+                action=action,
+                user_id=user_id,
+                user_email=user_email,
+                channel_id=channel_id,
+                thread_id=thread_id,
+                message_id=message_id,
+                assistant=assistant,
+                assistant_id_key=assistant_id_key,
+                locked_user=locked_user,
+                bot_id=bot_id,
+            )
+
+        # OPTION 3: Sensitive Action Approval
+        elif action_id in [AssistantActionIds.APPROVAL_YES.value, AssistantActionIds.APPROVAL_NO.value]:
+            await self._handle_action_sensitive_action_approval(
+                action_id=action_id,
+                user_id=user_id,
+                user_email=user_email,
+                channel_id=channel_id,
+                thread_id=thread_id,
+                message=message,
+                message_id=message_id,
+                assistant=assistant,
+                assistant_id_key=assistant_id_key,
+                locked_user=locked_user,
+            )
+
+        return assistant
+
+    async def _handle_action_agent_selection(
+        self,
+        action: dict,
+        user_id: str,
+        user_email: str,
+        channel_id: str,
+        thread_id: str,
+        message_id: str,
+        assistant: dict,
+        assistant_id_key: str,
+        locked_user: str,
+        bot_id: str,
+    ) -> None:
+        """
+        Handles agent selection actions from the dropdown UI.
+
+        Args:
+            action: The action dict from the payload
+            user_id: The user ID
+            user_email: The user's email
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message_id: The message ID
+            assistant: The assistant context dictionary (mutated in place)
+            assistant_id_key: The unique key for this conversation
+            locked_user: The user ID that owns the conversation
+            bot_id: The bot user ID (used for help hint)
+        """
+        selected_option = action.get("selected_option", {})
+        option_value = selected_option.get("value", "")
+        original_message = assistant[assistant_id_key].get("message", "")
+
+        if user_id == locked_user:
+            # Correct user selected an agent
+            selected_agent_id = option_value.replace(AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX.value, "")
+            selected_agent_name = selected_option.get("text", {}).get("text", "")
+
+            # Send message to backend with selected agent
+            raw_response = demisto.agentixCommands(
+                BackendCommand.SEND_TO_CONVERSATION,
+                {
+                    "channel_id": channel_id,
+                    "thread_id": thread_id,
+                    "message": original_message,
+                    "username": user_email,
+                    "agent_id": selected_agent_id,
+                },
+            )
+
+            backend_response = self.handle_backend_response(raw_response, "sendToConversation (agent selection)")
+
+            if backend_response.success:
+                # Update the original message to show selection
+                await self.update_message(channel_id, message_id, text=f"Selected agent: {selected_agent_name}", blocks=[])
+
+                # Send help hint as ephemeral message to the user
+                if bot_id:
+                    help_hint = AssistantMessages.HELP_HINT.format(bot_tag=self.format_user_mention(bot_id))
+                    await self.send_message_async(
+                        channel_id, help_hint, thread_id=thread_id, user_id=user_id
+                    )
+
+                # Send thinking indicator
+                thinking_response = await self.send_message_async(
+                    channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+                )
+                thinking_ts = thinking_response.get("ts") if thinking_response else None
+
+                # Update status
+                assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
+                assistant[assistant_id_key]["selected_agent"] = selected_agent_id
+                assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+
+                # Store thinking message ID if sent successfully
+                if thinking_ts:
+                    assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
+            else:
+                # Backend call failed - show appropriate error message
+                if backend_response.error_type == BackendErrorType.WRONG_USER:
+                    error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                elif backend_response.error_type:
+                    error_msg = backend_response.error_type.user_message
+                else:
+                    error_msg = AssistantMessages.AGENT_SELECTION_FAILED
+                    if backend_response.error_code:
+                        error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+                
+                await self.send_message_async(
+                    channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+                )
+                # Keep the conversation in AWAITING_AGENT_SELECTION status so user can try again
+        else:
+            # Wrong user trying to select
+            error_msg = AssistantMessages.CANNOT_SELECT_AGENT.format(locked_user_tag=self.format_user_mention(locked_user))
+            await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+
+    async def _handle_action_sensitive_action_approval(
+        self,
+        action_id: str,
+        user_id: str,
+        user_email: str,
+        channel_id: str,
+        thread_id: str,
+        message: dict,
+        message_id: str,
+        assistant: dict,
+        assistant_id_key: str,
+        locked_user: str,
+    ) -> None:
+        """
+        Handles sensitive action approval/rejection actions.
+
+        Args:
+            action_id: The action ID (approve or reject)
+            user_id: The user ID
+            user_email: The user's email
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message: The original message dict from payload
+            message_id: The message ID
+            assistant: The assistant context dictionary (mutated in place)
+            assistant_id_key: The unique key for this conversation
+            locked_user: The user ID that owns the conversation
+        """
+        if user_id == locked_user:
+            # Correct user responded
+            is_approved = action_id == AssistantActionIds.APPROVAL_YES.value
+
+            # Send response to backend
+            raw_response = demisto.agentixCommands(
+                BackendCommand.SEND_TO_CONVERSATION,
+                {
+                    "channel_id": channel_id,
+                    "thread_id": thread_id,
+                    "message": "Yes" if is_approved else "No",
+                    "username": user_email,
+                },
+            )
+            backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
+
+            if backend_response.success:
+                # Update the original message: replace the actions block with a decision indicator,
+                # keeping it above the feedback buttons (which are the last block).
+                decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_DECLINED
+                original_blocks = message.get("blocks", [])
+                updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
+                decision_block = {"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]}
+                # Insert before the last block (feedback buttons) to maintain visual order
+                feedback_index = len(updated_blocks) - 1 if updated_blocks else 0
+                updated_blocks.insert(feedback_index, decision_block)
+
+                try:
+                    await self.update_message(channel_id, message_id, blocks=updated_blocks)
+                except Exception as e:
+                    demisto.error(f"Failed to update approval message: {e}")
+                    # Fallback
+                    await self.update_message(channel_id, message_id, text=decision_indicator, blocks=[])
+
+                # Send thinking indicator
+                thinking_response = await self.send_message_async(
+                    channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+                )
+                thinking_ts = thinking_response.get("ts") if thinking_response else None
+
+                # Update status
+                assistant[assistant_id_key]["status"] = AssistantStatus.AWAITING_BACKEND_RESPONSE.value
+                assistant[assistant_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
+                assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+
+                # Store thinking message ID if sent successfully
+                if thinking_ts:
+                    assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
+            else:
+                # Backend call failed - show appropriate error
+                if backend_response.error_type == BackendErrorType.WRONG_USER:
+                    error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                elif backend_response.error_type:
+                    error_msg = backend_response.error_type.user_message
+                else:
+                    error_msg = "Failed to process your response. Please try again."
+                    if backend_response.error_code:
+                        error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+                await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+        else:
+            # Wrong user trying to respond
+            error_msg = AssistantMessages.CANNOT_APPROVE_ACTION.format(locked_user_tag=self.format_user_mention(locked_user))
+            await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
+
+    def format_context_messages(self, context_messages: list[dict]) -> str:
+        """
+        Formats a list of context messages into a string.
+        Platform-agnostic formatting logic.
+
+        Args:
+            context_messages: List of message dicts with 'user' and 'text' keys
+
+        Returns:
+            Formatted context string
+        """
+        if not context_messages:
+            return ""
+
+        # Create formatted context string
+        context_lines = [AssistantMessages.CONTEXT_START]
+        for ctx_msg in reversed(context_messages):  # Show oldest first
+            context_lines.append(f"**{ctx_msg['user']}**: {ctx_msg['text']}")
+        context_lines.append(AssistantMessages.CONTEXT_END)
+        context_lines.append("")  # Empty line before current message
+
+        return "\n".join(context_lines)
+
+    async def get_conversation_context_formatted(
+        self,
+        channel_id: str,
+        thread_id: str,
+        bot_id: str,
+        current_message_id: str,
+        max_context_messages: int = MAX_CONTEXT_MESSAGES,
+    ) -> str:
+        """
+        Retrieves and formats conversation context.
+        Must be implemented by subclass to handle platform-specific message parsing.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            bot_id: The bot user ID
+            current_message_id: The current message ID
+            max_context_messages: Maximum number of previous messages to include as context
+
+        Returns:
+            Formatted context string
+        """
+        raise NotImplementedError("Subclass must implement get_conversation_context_formatted()")
+
+    async def handle_bot_mention(
+        self,
+        text: str,
+        user_id: str,
+        user_email: str,
+        channel_id: str,
+        thread_id: str,
+        assistant: dict,
+        assistant_id_key: str,
+        bot_id: str,
+        message_id: str,
+    ) -> dict:
+        """
+        Handles when the bot is mentioned in a message for Assistant AI.
+        This is platform-agnostic logic.
+
+        Args:
+            text: The message text
+            user_id: The user ID
+            user_email: The user's email
+            channel_id: The channel ID
+            thread_id: The thread ID
+            assistant: The assistant context dictionary
+            assistant_id_key: The unique key for this conversation
+            bot_id: The bot user ID
+            message_id: The current message ID
+
+        Returns:
+            Updated assistant dictionary - to be saved by caller
+        """
+
+        # Check for "!help" command first
+        bot_mention = self.format_user_mention(bot_id)
+        text_without_mention = text.replace(bot_mention, "").strip()
+
+        if text_without_mention.lower() == AssistantMessages.HELP_COMMAND:
+            help_msg = AssistantMessages.HELP_MESSAGE.format(
+                bot_display_name=AssistantMessages.BOT_DISPLAY_NAME,
+                bot_tag=bot_mention,
+            )
+            await self.send_message_async(channel_id, help_msg, thread_id=thread_id, user_id=user_id)
+            return assistant
+
+        # Check for "!reset" command
+        is_reset, assistant = await self.handle_reset_session(text, user_id, channel_id, thread_id, assistant, assistant_id_key, bot_id, user_email)
+        if is_reset:
+            return assistant
+
+        # Check if there's already an active conversation
+        if assistant_id_key in assistant:
+            status = assistant[assistant_id_key].get("status", "")
+            locked_user = assistant[assistant_id_key].get("user", "")
+
+            # Determine the appropriate message
+            message_to_send = None
+
+            if AssistantStatus.is_awaiting_user_action(status):
+                # Waiting for user action (agent selection or approval)
+                if locked_user == user_id:
+                    # Show specific message based on what we're waiting for
+                    if status == AssistantStatus.AWAITING_AGENT_SELECTION.value:
+                        message_to_send = AssistantMessages.AWAITING_AGENT_SELECTION
+                    elif status == AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value:
+                        message_to_send = AssistantMessages.AWAITING_APPROVAL_RESPONSE
+                else:
+                    message_to_send = AssistantMessages.ONLY_LOCKED_USER_CAN_RESPOND.format(
+                        locked_user_tag=self.format_user_mention(locked_user)
+                    )
+
+            elif status == AssistantStatus.AWAITING_BACKEND_RESPONSE.value:
+                # Already processing a previous message
+                message_to_send = AssistantMessages.ALREADY_PROCESSING
+
+            elif status == AssistantStatus.RESPONDING_WITH_PLAN.value:
+                # Currently responding with a plan
+                if locked_user == user_id:
+                    message_to_send = AssistantMessages.WAITING_FOR_COMPLETION
+                else:
+                    message_to_send = AssistantMessages.ONLY_LOCKED_USER_CAN_RESPOND.format(
+                        locked_user_tag=self.format_user_mention(locked_user)
+                    )
+
+            # Send message if needed
+            if message_to_send:
+                await self.send_message_async(channel_id, message_to_send, thread_id=thread_id, ephemeral=True, user_id=user_id)
+            return assistant
+
+        # Get conversation context
+        context = await self.get_conversation_context_formatted(channel_id, thread_id, bot_id, message_id)
+
+        # Replace bot mention with friendly display name for backend
+        bot_mention = self.format_user_mention(bot_id)
+        text_cleaned = text.replace(bot_mention, "") or AssistantMessages.DEFAULT_BOT_MENTION_MESSAGE
+
+        # Normalize message for backend (decode HTML entities, preserve structure)
+        text_normalized = self.normalize_message_from_user(text_cleaned)
+
+        # Normalize context as well
+        context_normalized = self.normalize_message_from_user(context) if context else ""
+
+        # Prepare message with context
+        message_with_context = text_normalized
+        if context_normalized:
+            message_with_context = f"{context_normalized}\n{AssistantMessages.CURRENT_MESSAGE_HEADER}\n{text_normalized}"
+
+        # Send message to backend using agentixCommands
+        demisto.debug(f"Sending user message to backend: channel={channel_id}, thread={thread_id}, user={user_email}")
+        raw_response = demisto.agentixCommands(
+            BackendCommand.SEND_TO_CONVERSATION,
+            {
+                "channel_id": channel_id,
+                "thread_id": thread_id,
+                "message": message_with_context,
+                "username": user_email,
+            },
+        )
+
+        backend_response = self.handle_backend_response(raw_response, "sendToConversation (bot mention)")
+
+        # Check if response contains agent list (requires user to select an agent)
+        if "agents" in raw_response:
+            agents_list = raw_response.get("agents", [])
+            demisto.debug(f"Backend returned {len(agents_list) if isinstance(agents_list, list) else 0} agents for selection")
+            # Check if agents list is empty or UI creation failed
+            if agents_list:
+                # Backend returned a list of agents - user needs to select one
+                # Create agent selection UI
+                agent_selection_blocks = self.create_agent_selection_ui(agents_list)
+
+                if agent_selection_blocks:
+                    # Send agent selection UI
+                    await self.send_message_async(channel_id, "", thread_id, blocks=agent_selection_blocks)
+
+                    # Lock the conversation with agent selection status
+                    assistant[assistant_id_key] = {
+                        "date": thread_id,
+                        "user": user_id,
+                        "message": message_with_context,
+                        "channel_id": channel_id,
+                        "thread_id": thread_id,
+                        "status": AssistantStatus.AWAITING_AGENT_SELECTION.value,
+                        "last_updated": datetime.now(UTC).timestamp(),
+                    }
+                    demisto.debug(f"Locked conversation {assistant_id_key} for agent selection")
+                else:
+                    # Failed to create agent selection UI
+                    demisto.error("Failed to create agent selection UI despite having agents")
+                    await self.send_message_async(
+                        channel_id, AssistantMessages.NO_AGENTS_AVAILABLE, thread_id=thread_id, ephemeral=True, user_id=user_id
+                    )
+            else:
+                # Empty agents list
+                demisto.error("Received empty agents list from backend")
+                await self.send_message_async(
+                    channel_id, AssistantMessages.NO_AGENTS_AVAILABLE, thread_id=thread_id, ephemeral=True, user_id=user_id
+                )
+
+        elif backend_response.success:
+            # Send thinking indicator
+            thinking_response = await self.send_message_async(channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id)
+            thinking_ts = thinking_response.get("ts") if thinking_response else None
+
+            # Lock the conversation with initial status
+            assistant[assistant_id_key] = {
+                "date": thread_id,
+                "user": user_id,
+                "message": text,
+                "channel_id": channel_id,
+                "thread_id": thread_id,
+                "status": AssistantStatus.AWAITING_BACKEND_RESPONSE.value,
+                "last_updated": datetime.now(UTC).timestamp(),
+            }
+
+            # Store thinking message ID if sent successfully
+            if thinking_ts:
+                assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
+            
+            demisto.debug(f"Locked conversation {assistant_id_key}, awaiting backend response")
+
+        else:
+            # Handle errors - determine message and whether it should be ephemeral
+            error_msg = None
+            is_ephemeral = False
+            
+            if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
+                # Public message with user tag
+                user_mention = self.format_user_mention(user_id)
+                error_msg = f"{user_mention} {backend_response.error_type.user_message}"
+            elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
+                # Public message with user tag
+                user_mention = self.format_user_mention(user_id)
+                error_msg = f"{user_mention} {backend_response.error_type.user_message}"
+            elif backend_response.error_type == BackendErrorType.WRONG_USER:
+                is_ephemeral = True
+                error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag=self.format_user_mention(bot_id))
+            elif backend_response.error_type:
+                error_msg = backend_response.error_type.user_message
+                if backend_response.error_code:
+                    error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+            else:
+                demisto.error(f"Backend sendToConversation failed: {raw_response}")
+                error_msg = AssistantMessages.SYSTEM_ERROR
+                if backend_response.error_code:
+                    error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+            
+            # Send error message
+            await self.send_message_async(
+                channel_id, error_msg, thread_id=thread_id, ephemeral=is_ephemeral, user_id=user_id
+            )
+
+        return assistant
+
+    @staticmethod
+    def _unescape_content(text: str) -> str:
+        """Replace common escaped characters with their actual characters."""
+        return text.replace("\\n", "\n").replace('\\"', '"').replace("\\'", "'")
+
+    @staticmethod
+    def _group_messages_by_type(messages: list[dict]) -> list[list[dict]]:
+        """
+        Groups consecutive messages by their response_type category.
+        Step-type messages (step, thought) are grouped together and will be
+        merged into a single visual message with dividers. All other types
+        are kept as individual groups (one message per group).
+
+        Args:
+            messages: List of message dicts with 'content', 'response_type',
+                      'is_final', 'message_id', and 'metadata' keys.
+
+        Returns:
+            List of groups, where each group is a list of message dicts.
+        """
+        groups: list[list[dict]] = []
+        current_group: list[dict] = []
+
+        for msg in messages:
+            response_type = msg.get("response_type", "")
+            is_step = AssistantMessageType.is_step_type(response_type)
+
+            if not current_group:
+                current_group.append(msg)
+            elif is_step and AssistantMessageType.is_step_type(current_group[0].get("response_type", "")):
+                # Both are step types — keep grouping
+                current_group.append(msg)
+            else:
+                # Different category — flush current group and start new one
+                groups.append(current_group)
+                current_group = [msg]
+
+        if current_group:
+            groups.append(current_group)
+
+        return groups
+
+    def send_agent_response(
+        self,
+        channel_id: str,
+        thread_id: str,
+        messages: list[dict],
+        assistant_context: dict | None = None,
+        assistant_id_key: str = "",
+        agent_name: str = "",
+        user_id: str = "",
+    ) -> dict:
+        """
+        Sends agent response(s) and updates the Assistant status accordingly.
+        This is platform-agnostic logic that uses platform-specific methods.
+
+        Messages are grouped by response_type category:
+        - Consecutive step-type messages (step/thought) are merged into a single
+          visual message with platform-specific dividers between them.
+        - All other types are sent as individual messages.
+
+        Completion is determined by the last message's is_final field.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            messages: List of message dicts, each containing:
+                - content (str): The message text
+                - response_type (str): The message type (from AssistantMessageType)
+                - is_final (bool): Whether this is the final message
+                - message_id (str): Optional message ID for feedback tracking
+                - metadata (dict): Optional metadata
+            assistant_context: The assistant context dictionary
+            assistant_id_key: The unique key for this conversation
+            agent_name: Optional agent name to display in message
+            user_id: Optional user ID to mention in model responses
+
+        Returns:
+            Updated assistant dictionary
+
+        Raises:
+            ValueError: If any message's response_type is not valid
+        """
+        if not assistant_context:
+            assistant_context = {}
+
+        if not messages:
+            demisto.debug("No messages to send")
+            demisto.results("Agent response sent successfully.")
+            return assistant_context
+
+        # Derive completed from the last message's is_final field
+        completed = messages[-1].get("is_final", False)
+
+        # Validate all message types
+        for msg in messages:
+            response_type = msg.get("response_type", "")
+            try:
+                AssistantMessageType(response_type)
+            except ValueError:
+                error_msg = (
+                    f"Invalid response_type: '{response_type}'. "
+                    f"Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
+                )
+                demisto.error(error_msg)
+                raise ValueError(error_msg)
+
+        demisto.debug(
+            f"Sending agent response: {len(messages)} messages, completed={completed}, "
+            f"conversation={assistant_id_key}, agent={agent_name}"
+        )
+
+        # Delete thinking indicator if it exists (before sending first response)
+        if assistant_id_key in assistant_context:
+            thinking_ts = assistant_context[assistant_id_key].get(THINKING_MESSAGE_ID_KEY)
+            if thinking_ts:
+                error_prefix = f"Failed to delete thinking indicator {thinking_ts} in {channel_id}"
+                try:
+                    success, response = self.delete_message(channel_id, thinking_ts)
+                    if not success:
+                        demisto.error(f"{error_prefix}: {response}")
+                except Exception as e:
+                    demisto.error(f"{error_prefix}: {e}")
+                assistant_context[assistant_id_key].pop(THINKING_MESSAGE_ID_KEY, None)
+
+        # Group messages by type category
+        grouped = self._group_messages_by_type(messages)
+
+        # Track the final status/lock state across all groups
+        new_status = None
+        should_release_lock = False
+
+        for group in grouped:
+            first_msg = group[0]
+            message_type = first_msg.get("response_type", "")
+
+            if AssistantMessageType.is_step_type(message_type):
+                # Step-type group: merge contents using platform-specific dividers
+                step_contents = [
+                    self._unescape_content(msg.get("content", ""))
+                    for msg in group
+                    if msg.get("content", "").strip()
+                ]
+                if not step_contents:
+                    demisto.debug("Skipping step group with all empty contents")
+                    continue
+                blocks, attachments = self.prepare_merged_step_blocks(step_contents)
+
+                self.post_agent_response(
+                    channel_id, thread_id, blocks, attachments, agent_name,
+                    fallback_text=" | ".join(step_contents),
+                )
+                new_status = AssistantStatus.RESPONDING_WITH_PLAN.value
+            else:
+                # Non-step types: send each message individually
+                for msg in group:
+                    msg_content = self._unescape_content(msg.get("content", ""))
+                    msg_type = msg.get("response_type", "")
+                    msg_id = msg.get("message_id", "")
+                    msg_is_final = msg.get("is_final", False)
+
+                    # Skip messages with empty content unless they carry UI elements (e.g., approval buttons)
+                    if not msg_content.strip() and not AssistantMessageType.is_approval_type(msg_type):
+                        demisto.debug(f"Skipping message with empty content (type={msg_type})")
+                        continue
+
+                    self._send_single_response(
+                        channel_id=channel_id,
+                        thread_id=thread_id,
+                        message=msg_content,
+                        message_type=msg_type,
+                        message_id=msg_id,
+                        agent_name=agent_name,
+                        user_id=user_id,
+                        completed=msg_is_final,
+                    )
+
+                    # Determine status from the last message in the group
+                    if AssistantMessageType.is_model_type(msg_type):
+                        if AssistantMessageType.is_approval_type(msg_type):
+                            new_status = AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
+                            should_release_lock = False
+                        elif msg_is_final:
+                            should_release_lock = True
+                    elif AssistantMessageType.is_error_type(msg_type):
+                        should_release_lock = True
+
+        # Update context based on final state
+        if assistant_id_key in assistant_context:
+            if should_release_lock:
+                del assistant_context[assistant_id_key]
+                self.update_context({self.CONTEXT_KEY: assistant_context})
+            elif new_status:
+                assistant_context[assistant_id_key]["status"] = new_status
+                assistant_context[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
+                self.update_context({self.CONTEXT_KEY: assistant_context})
+
+        demisto.results("Agent response sent successfully.")
+        return assistant_context
+
+    def _send_single_response(
+        self,
+        channel_id: str,
+        thread_id: str,
+        message: str,
+        message_type: AssistantMessageType,
+        message_id: str,
+        agent_name: str,
+        user_id: str,
+        completed: bool,
+    ):
+        """
+        Sends a single agent response message to the platform.
+
+        Args:
+            channel_id: The channel ID
+            thread_id: The thread ID
+            message: The message text (already unescaped)
+            message_type: The message type (from AssistantMessageType)
+            message_id: Optional message ID for feedback tracking
+            agent_name: Optional agent name to display
+            user_id: Optional user ID to mention in model and error responses
+            completed: Whether this is the final response
+        """
+        # Prepare blocks and attachments using platform-specific method
+        blocks, attachments = self.prepare_message_blocks(message, message_type)
+        if not blocks:
+            blocks = []
+
+        # Add user mention for model and error types so the user gets notified
+        if user_id and completed:
+            user_mention_block = {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
+            }
+            blocks.insert(0, user_mention_block)
+
+        # Handle model-specific UI elements
+        if AssistantMessageType.is_model_type(message_type):
+            if AssistantMessageType.is_approval_type(message_type):
+                blocks.extend(self.create_approval_ui())
+
+            if message_id:
+                blocks.append(self.create_feedback_ui(message_id))
+
+        # Send message using platform-specific method
+        self.post_agent_response(
+            channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message
+        )

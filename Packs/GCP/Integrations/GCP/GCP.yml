@@ -1517,6 +1517,7 @@ script:
       - name: enable_uniform_access
         required: false
         hidden: true
+        defaultValue: "true"
         description: Enable uniform bucket-level access.
     outputs:
       - contextPath: GCP.StorageBucket.Metadata
