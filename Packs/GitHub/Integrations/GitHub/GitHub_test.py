@@ -484,7 +484,7 @@ def test_github_trigger_workflow_with_run_details(mocker):
     mocker_results.assert_called_once()
     result: CommandResults = mocker_results.call_args[0][0]
     assert result.outputs_prefix == "GitHub.WorkflowRun"
-    assert result.outputs["WorkflowRunID"] == 9876
+    assert result.outputs["ID"] == 9876
 
 
 def test_github_get_workflow_run(mocker):

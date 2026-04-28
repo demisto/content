@@ -2032,14 +2032,14 @@ def github_trigger_workflow_command():
     # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
     if isinstance(response, dict):
         outputs = {
-            "WorkflowRunID": response.get("workflow_run_id") or response.get("id"),
+            "ID": response.get("workflow_run_id") or response.get("id"),
             "RunUrl": response.get("run_url") or response.get("url"),
             "HtmlUrl": response.get("html_url"),
         }
         return_results(
             CommandResults(
                 outputs_prefix="GitHub.WorkflowRun",
-                outputs_key_field="WorkflowRunID",
+                outputs_key_field="ID",
                 outputs=outputs,
                 raw_response=response,
                 readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
