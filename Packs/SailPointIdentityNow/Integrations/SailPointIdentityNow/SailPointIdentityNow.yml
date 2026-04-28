@@ -53,6 +53,8 @@ configuration:
   required: false
   section: Collect
 description: The SailPoint Identity Security platform can be configured either on-prem/single tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS, multi-tenant solution, IdentityNow.
+display: SailPoint IdentityNow
+name: SailPointIdentityNow
 script:
   commands:
   - arguments:
