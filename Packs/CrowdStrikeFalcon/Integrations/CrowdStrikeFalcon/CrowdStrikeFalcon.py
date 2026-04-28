@@ -4631,11 +4631,11 @@ async def finalize_spotlight_fetch(
 
 
 async def get_all_device_ids_async(client: ContentClient) -> list[str]:
-    """Fetch all device IDs from CrowdStrike Falcon.
+    """Fetch all device IDs from CrowdStrike Falcon using combined devices API.
 
-    Uses the /devices/queries/devices/v1 endpoint to retrieve all device IDs.
-    This is fast (< 5 seconds for 13.7K devices) and doesn't require pagination
-    for reasonable device counts.
+    Uses /devices/combined/devices/v1 with continuous pagination (offset-based).
+    This endpoint supports unlimited devices (10K per page, offsets don't expire).
+    We only extract device_id field to minimize data transfer.
 
     Args:
         client: ContentClient instance for API calls
@@ -4643,34 +4643,48 @@ async def get_all_device_ids_async(client: ContentClient) -> list[str]:
     Returns:
         List of device IDs (AIDs)
     """
-    log_falcon_assets("Fetching all device IDs from Falcon", "info")
+    log_falcon_assets("Fetching all device IDs from Falcon using combined devices API", "info")
 
     try:
-        # Fetch device IDs with a high limit (API supports up to 5000 per request)
-        # For most customers, this will get all devices in one call
-        response = await client._request(method="GET", url_suffix="/devices/queries/devices/v1", params={"limit": 5000})
+        device_ids = []
+        offset_token = None
+        limit = 10000  # Combined API supports up to 10K per page
 
-        response_data = response.json()
-        device_ids = response_data.get("resources", [])
+        while True:
+            # Build params
+            params = {
+                "limit": limit,
+                "fields": "device_id"  # Only fetch device_id field to minimize response size
+            }
+            if offset_token:
+                params["offset"] = offset_token
 
-        # Check if there are more devices (pagination needed)
-        total = response_data.get("meta", {}).get("pagination", {}).get("total", len(device_ids))
+            response = await client._request(
+                method="GET",
+                url_suffix="/devices/combined/devices/v1",
+                params=params
+            )
 
-        if total > len(device_ids):
-            log_falcon_assets(f"Retrieved {len(device_ids)} device IDs, but {total} total exist. Fetching remaining...", "info")
-            # Fetch remaining devices using offset pagination
-            offset = len(device_ids)
-            while offset < total:
-                response = await client._request(
-                    method="GET", url_suffix="/devices/queries/devices/v1", params={"limit": 5000, "offset": offset}
-                )
-                response_data = response.json()
-                batch = response_data.get("resources", [])
-                device_ids.extend(batch)
-                offset += len(batch)
-                log_falcon_assets(f"Fetched {len(device_ids)}/{total} device IDs", "debug")
+            response_data = response.json()
+            devices = response_data.get("resources", [])
 
-        log_falcon_assets(f"Successfully fetched {len(device_ids)} device IDs", "info")
+            if not devices:
+                break
+
+            # Extract device IDs from device objects
+            batch_ids = [device.get("device_id") for device in devices if device.get("device_id")]
+            device_ids.extend(batch_ids)
+            
+            log_falcon_assets(f"Fetched {len(device_ids)} device IDs so far...", "debug")
+
+            # Get next offset token for continuous pagination
+            offset_token = response_data.get("meta", {}).get("pagination", {}).get("offset")
+            
+            # If no offset token, we've reached the end
+            if not offset_token:
+                break
+
+        log_falcon_assets(f"Successfully fetched {len(device_ids)} total device IDs", "info")
         return device_ids
 
     except Exception as e:
