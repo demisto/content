@@ -111,7 +111,7 @@ def _create_test_nginx_main_conf(tmp_path: Path):
     main_conf = f"""
 pid {nginx_test_pid_file};
 pcre_jit on;
-error_log {nginx_test_error_log} warn;
+error_log {nginx_test_error_log} crit;
 include /etc/nginx/modules/*.conf;
 events {{
     worker_connections 1024;
