@@ -1574,16 +1574,9 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
     """
     Extract and validate a batch of indicator values using a single `extractIndicators` call,
     then build IndicatorInstance objects for every valid indicator of the requested type.
-
-    Unlike `create_and_extract_indicators`, this function:
     - Processes the entire list in a single `extractIndicators` call (one round-trip).
     - Does NOT raise when no valid indicators are found – it returns an empty list of
       instances along with an explanatory human-readable string.
-    - Raises DemistoException only when extractIndicators raises an actual exception.
-
-    `extractIndicators` already deduplicates values per type, so each extracted value is
-    mapped 1:1 to an IndicatorInstance with `raw_input == extracted_value` (matching the
-    shape produced by `create_and_extract_indicators` for valid inputs).
 
     Args:
         data: List of raw string values to validate.
