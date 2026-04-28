@@ -90,27 +90,28 @@ def test_nginx_conf_taxii2(tmp_path: Path, mocker):
 
 NGINX_PROCESS: subprocess.Popen | None = None
 
-NGINX_TEST_CONF_DIR = "/tmp/nginx-test-conf.d"
-NGINX_TEST_SSL_DIR = "/tmp/nginx-test-ssl"
-NGINX_TEST_MAIN_CONF = "/tmp/nginx-test-main.conf"
-NGINX_TEST_PID_FILE = "/tmp/nginx-test.pid"
-NGINX_TEST_ERROR_LOG = "/tmp/nginx-test-error.log"
-NGINX_TEST_ACCESS_LOG = "/tmp/nginx-test-access.log"
-NGINX_TEST_CACHE_DIR = "/tmp/nginx-test-cache"
-NGINX_TEST_TMP_DIR = "/tmp/nginx-test-tmp"
 
-
-def _create_test_nginx_main_conf():
+def _create_test_nginx_main_conf(tmp_path: Path):
     """Create a custom nginx main config that includes our test conf directory.
 
-    Uses /tmp/ paths for all writable resources so tests can run as non-root.
+    Uses tmp_path for all writable resources so tests can run as non-root and ensure isolation.
     """
-    Path(NGINX_TEST_CACHE_DIR).mkdir(parents=True, exist_ok=True)
-    Path(NGINX_TEST_TMP_DIR).mkdir(parents=True, exist_ok=True)
+    nginx_test_conf_dir = tmp_path / "nginx-test-conf.d"
+    nginx_test_cache_dir = tmp_path / "nginx-test-cache"
+    nginx_test_tmp_dir = tmp_path / "nginx-test-tmp"
+    nginx_test_pid_file = tmp_path / "nginx-test.pid"
+    nginx_test_error_log = tmp_path / "nginx-test-error.log"
+    nginx_test_access_log = tmp_path / "nginx-test-access.log"
+    nginx_test_main_conf = tmp_path / "nginx-test-main.conf"
+
+    nginx_test_conf_dir.mkdir(parents=True, exist_ok=True)
+    nginx_test_cache_dir.mkdir(parents=True, exist_ok=True)
+    nginx_test_tmp_dir.mkdir(parents=True, exist_ok=True)
+
     main_conf = f"""
-pid {NGINX_TEST_PID_FILE};
+pid {nginx_test_pid_file};
 pcre_jit on;
-error_log {NGINX_TEST_ERROR_LOG} warn;
+error_log {nginx_test_error_log} warn;
 include /etc/nginx/modules/*.conf;
 events {{
     worker_connections 1024;
@@ -134,13 +135,13 @@ http {{
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
         '$status $body_bytes_sent "$http_referer" '
         '"$http_user_agent" "$http_x_forwarded_for"';
-    access_log {NGINX_TEST_ACCESS_LOG} main;
-    client_body_temp_path {NGINX_TEST_TMP_DIR}/client_body;
-    proxy_temp_path {NGINX_TEST_TMP_DIR}/proxy;
-    fastcgi_temp_path {NGINX_TEST_TMP_DIR}/fastcgi;
-    uwsgi_temp_path {NGINX_TEST_TMP_DIR}/uwsgi;
-    scgi_temp_path {NGINX_TEST_TMP_DIR}/scgi;
-    proxy_cache_path {NGINX_TEST_CACHE_DIR} levels=1:2 keys_zone=mycache:5m max_size=2g inactive=60m use_temp_path=off;
+    access_log {nginx_test_access_log} main;
+    client_body_temp_path {nginx_test_tmp_dir}/client_body;
+    proxy_temp_path {nginx_test_tmp_dir}/proxy;
+    fastcgi_temp_path {nginx_test_tmp_dir}/fastcgi;
+    uwsgi_temp_path {nginx_test_tmp_dir}/uwsgi;
+    scgi_temp_path {nginx_test_tmp_dir}/scgi;
+    proxy_cache_path {nginx_test_cache_dir} levels=1:2 keys_zone=mycache:5m max_size=2g inactive=60m use_temp_path=off;
     proxy_cache mycache;
     proxy_cache_valid 5m;
     proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504 http_429;
@@ -150,24 +151,37 @@ http {{
     proxy_cache_lock_timeout 60s;
     proxy_cache_revalidate on;
     proxy_read_timeout 300s;
-    include {NGINX_TEST_CONF_DIR}/*.conf;
+    include {nginx_test_conf_dir}/*.conf;
 }}
 """
-    with open(NGINX_TEST_MAIN_CONF, "w") as f:
+    with open(nginx_test_main_conf, "w") as f:
         f.write(main_conf)
+    return {
+        "main_conf": str(nginx_test_main_conf),
+        "conf_dir": str(nginx_test_conf_dir),
+        "access_log": str(nginx_test_access_log),
+        "error_log": str(nginx_test_error_log),
+    }
 
 
 @pytest.fixture
-def nginx_cleanup(monkeypatch):
+def nginx_cleanup(monkeypatch, tmp_path):
     import NGINXApiModule as module
 
     # Create writable directories for nginx config and SSL files
-    Path(NGINX_TEST_CONF_DIR).mkdir(parents=True, exist_ok=True)
-    Path(NGINX_TEST_SSL_DIR).mkdir(parents=True, exist_ok=True)
+    nginx_test_ssl_dir = tmp_path / "nginx-test-ssl"
+    nginx_test_ssl_dir.mkdir(parents=True, exist_ok=True)
 
-    test_conf_file = f"{NGINX_TEST_CONF_DIR}/default.conf"
-    test_ssl_crt = f"{NGINX_TEST_SSL_DIR}/ssl.crt"
-    test_ssl_key = f"{NGINX_TEST_SSL_DIR}/ssl.key"
+    # Create custom nginx main config pointing to our test conf directory
+    paths = _create_test_nginx_main_conf(tmp_path)
+    nginx_test_main_conf = paths["main_conf"]
+    nginx_test_conf_dir = paths["conf_dir"]
+    nginx_test_access_log = paths["access_log"]
+    nginx_test_error_log = paths["error_log"]
+
+    test_conf_file = f"{nginx_test_conf_dir}/default.conf"
+    test_ssl_crt = str(nginx_test_ssl_dir / "ssl.crt")
+    test_ssl_key = str(nginx_test_ssl_dir / "ssl.key")
 
     # Patch module constants to use writable paths
     monkeypatch.setattr(module, "NGINX_SERVER_CONF_FILE", test_conf_file)
@@ -178,11 +192,8 @@ def nginx_cleanup(monkeypatch):
         "NGINX_SSL_CERTS",
         f"\n    ssl_certificate {test_ssl_crt};\n    ssl_certificate_key {test_ssl_key};\n",
     )
-    monkeypatch.setattr(module, "NGINX_SERVER_ACCESS_LOG", NGINX_TEST_ACCESS_LOG)
-    monkeypatch.setattr(module, "NGINX_SERVER_ERROR_LOG", NGINX_TEST_ERROR_LOG)
-
-    # Create custom nginx main config pointing to our test conf directory
-    _create_test_nginx_main_conf()
+    monkeypatch.setattr(module, "NGINX_SERVER_ACCESS_LOG", nginx_test_access_log)
+    monkeypatch.setattr(module, "NGINX_SERVER_ERROR_LOG", nginx_test_error_log)
 
     # Wrap start_nginx_server to use our custom main config via -c flag
     def _patched_start_nginx_server(port: int, params: dict = {}) -> subprocess.Popen:
@@ -194,14 +205,14 @@ def nginx_cleanup(monkeypatch):
             nginx_global_directives = f"{nginx_global_directives} {global_directives_conf}"
         directive_args = ["-g", nginx_global_directives]
         try:
-            nginx_test_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF, "-T"]
+            nginx_test_command = ["nginx", "-c", nginx_test_main_conf, "-T"]
             nginx_test_command.extend(directive_args)
             test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
             demisto.info(f"ngnix test passed. command: [{nginx_test_command}]")
             demisto.debug(f"nginx test ouput:\n{test_output}")
         except subprocess.CalledProcessError as err:
             raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
-        nginx_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF]
+        nginx_command = ["nginx", "-c", nginx_test_main_conf]
         nginx_command.extend(directive_args)
         res = subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         demisto.info(f"done starting nginx with pid: {res.pid}")
@@ -209,9 +220,7 @@ def nginx_cleanup(monkeypatch):
 
     monkeypatch.setattr(module, "start_nginx_server", _patched_start_nginx_server)
 
-    yield
-    Path(test_conf_file).unlink(missing_ok=True)
-    Path(NGINX_TEST_MAIN_CONF).unlink(missing_ok=True)
+    yield paths
     global NGINX_PROCESS
     if NGINX_PROCESS:
         NGINX_PROCESS.terminate()
@@ -228,6 +237,8 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
     """Test that nginx fails when config is invalid"""
     import NGINXApiModule as module
 
+    nginx_test_main_conf = nginx_cleanup["main_conf"]
+
     def nginx_bad_conf(file_path: str, port: int, params: dict):
         with open(file_path, "w") as f:
             f.write("server {bad_stuff test;}")
@@ -238,12 +249,12 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
         nginx_global_directives = "daemon off;"
         directive_args = ["-g", nginx_global_directives]
         try:
-            nginx_test_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF, "-T"]
+            nginx_test_command = ["nginx", "-c", nginx_test_main_conf, "-T"]
             nginx_test_command.extend(directive_args)
             subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
         except subprocess.CalledProcessError as err:
             raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
-        nginx_command = ["nginx", "-c", NGINX_TEST_MAIN_CONF]
+        nginx_command = ["nginx", "-c", nginx_test_main_conf]
         nginx_command.extend(directive_args)
         return subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
