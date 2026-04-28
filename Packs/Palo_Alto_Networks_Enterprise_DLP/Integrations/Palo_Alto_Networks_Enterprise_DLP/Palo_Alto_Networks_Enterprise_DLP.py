@@ -296,9 +296,11 @@ def parse_data_profiles(report_json: dict) -> list:
     Returns: List of parsed data profile dicts with CamelCase keys
     """
     profiles = []
-    for profile in report_json.get("data_profiles", []):
+    data_profiles = report_json.get("data_profiles") or []
+    for profile in data_profiles:
         parsed_patterns = []
-        for pattern in profile.get("data_patterns", []):
+        data_patterns = profile.get("data_patterns") or []
+        for pattern in data_patterns:
             parsed_patterns.append(
                 {
                     "Id": pattern.get("id"),
