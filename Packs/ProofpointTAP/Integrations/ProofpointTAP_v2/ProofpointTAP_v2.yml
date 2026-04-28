@@ -1438,7 +1438,7 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   runonce: false
   script: '-'

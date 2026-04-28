@@ -4,6 +4,5 @@ name: Microsoft Graph Security Parsing Rules
 rules: ''
 samples: ''
 supportedModules:
-- agentix
 - xsiam
 tags: []
