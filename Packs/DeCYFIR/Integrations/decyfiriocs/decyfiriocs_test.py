@@ -29,6 +29,36 @@ def test_build_ioc_relationship_obj(mocker):
     )
     da = client.build_ioc_relationship_obj(iocs_data[0], ta_data[0])
     assert raw_iocs_ti_data["IN_DATA_5"][0] == da
+    assert da["entityA"] == "0.0.0.0"
+    assert da["entityB"] == "Gibberish Panda"
+
+
+# def test_build_ioc_relationship_obj(mocker):
+#     raw_data = util_load_json("test_data/iocs_ti.json")
+
+
+#     client = Client(
+#         base_url="test_url",
+#         verify=False,
+#         proxy=False,
+#     )
+
+#     source_data = client.convert_decyfir_ioc_to_indicators_formats(
+#         decyfir_api_key="api_key",
+#         decyfir_iocs=raw_data["iocs"],
+#         tlp_color="tlp_color",
+#         feed_tags=["feedTags"],
+#         reputation="feedReputation",
+#         is_data_save=False,
+#     )
+
+#     target_data = client.build_threat_intel_indicator_obj(
+#         data=raw_data["threat_actors"][0], tlp_color="tlp_color", feed_tags=["feedTags"]
+#     )
+
+#     da = client.build_ioc_relationship_obj(source_data[0], target_data)
+#     assert da["entityA"] ==  "0.0.0.0"
+#     assert da["entityB"] == "Gamaredon"
 
 
 def test_build_threat_intel_indicator_obj(mocker):
@@ -88,12 +118,11 @@ def test_build_threat_actor_relationship_obj(mocker):
         proxy=False,
     )
 
-    source_data = da_re = client.build_threat_intel_indicator_obj(
-        data=raw_ti_data[0], tlp_color="tlp_color", feed_tags=["feedTags"]
-    )
+    source_data = client.build_threat_intel_indicator_obj(data=raw_ti_data[0], tlp_color="tlp_color", feed_tags=["feedTags"])
 
     target_data = client.build_threat_intel_indicator_obj(data=raw_ti_data[1], tlp_color="tlp_color", feed_tags=["feedTags"])
     da_re = client.build_threat_actor_relationship_obj(source_data=source_data, target_data=target_data)
+
     assert da_re is not None
     assert da_re["entityA"] == "Gamaredon"
     assert da_re["entityB"] == "CVE-2021-40444"
@@ -195,6 +224,22 @@ def test_decyfir_file_indicator_command(mocker):
     data = decyfir_hash_indicator_command(client=client, decyfir_api_key="api_key")
 
     assert data[0]["value"] == "dbe51eabebf9d4ef9581ef99844a2944"
+
+
+def test_decyfir_ip_indicator_command(mocker):
+    from decyfiriocs import Client, decyfir_ip_indicator_command
+
+    raw_data = util_load_json("test_data/iocs_ti.json")
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+    )
+    mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["iocs"])
+    data = decyfir_ip_indicator_command(client=client, decyfir_api_key="api_key")
+
+    assert data[0]["value"] == "0.0.0.0"
+    assert data[0]["type"] == "IP"
 
 
 def test_command_results(mocker):
