@@ -2985,3 +2985,162 @@ def test_fetch_all_issue_nodes_completes_within_budget(mock_check_api):
 
     assert [n["id"] for n in result] == ["a", "b"]
     assert mock_check_api.call_count == 2
+
+
+# ===== Schema-consistency: mirror fields ↔ outgoing mapper ↔ pack IncidentFields =====
+# These tests catch the bug class behind the v2.0.4 fix: declaring a mirror source field
+# (in WIZ_MIRRORED_FIELDS or in the outgoing mapper's `simple:` source) that does not
+# exist as either an XSOAR system field or a pack-defined custom field. When that
+# happens, XSOAR populates nothing in the mirror delta and the field silently
+# defaults at the destination. Unit tests that hand-build delta dicts cannot catch
+# this because they assume the field arrives.
+
+import pathlib  # noqa: E402
+
+_PACK_ROOT = pathlib.Path(__file__).resolve().parents[2]
+_INCIDENT_FIELDS_DIR = _PACK_ROOT / "IncidentFields"
+_OUTGOING_MAPPER = _PACK_ROOT / "Classifiers" / "classifier-mapper-outgoing-Wiz.json"
+
+# XSOAR system fields that are always present on incidents and can be referenced as
+# `simple:` sources without a pack-level IncidentField definition. Keep this list
+# tight — adding to it has the same effect as the bug we're guarding against.
+# Reference: Cortex XSOAR built-in incident fields.
+_XSOAR_SYSTEM_INCIDENT_FIELDS = {
+    "status",
+    "closeReason",
+    "closeNotes",
+    "closingUserId",
+    "owner",
+    "severity",
+    "name",
+    "type",
+    "dueDate",
+    "details",
+    "occurred",
+    "modified",
+    "labels",
+}
+
+# Sources that are intentional mapper destinations rather than XSOAR field reads —
+# e.g. `resolutionReason` is the Wiz-side enum name. The runtime backstops it via
+# `closeReason` translation in `_resolve_wiz_reason`. Document each exemption with
+# the reason and the runtime guard, so a future audit can prune the list.
+_KNOWN_PHANTOM_SOURCES = {
+    # name: (where_referenced, why_exempt)
+    "resolutionReason": (
+        "outgoing mapper + WIZ_MIRRORED_FIELDS",
+        "Wiz API enum, no matching XSOAR field. Runtime backstop: _resolve_wiz_reason "
+        "translates `closeReason` (built-in) via XSOAR_CLOSE_REASON_TO_WIZ. Remove "
+        "this exemption only after either (a) a `wizresolutionreason` IncidentField "
+        "is added and the mapper is updated to use it, or (b) the mapper line and "
+        "WIZ_MIRRORED_FIELDS entry are removed entirely.",
+    ),
+    # `notes` is mirrored as war-room entries (parsed_args.entries), not via delta.
+    # It appears in WIZ_MIRRORED_FIELDS only to advertise the capability via
+    # get_mapping_fields_command. No mapper source references it.
+    "notes": (
+        "WIZ_MIRRORED_FIELDS only",
+        "Not delta-driven; pushed via outgoing entries (see _handle_outgoing_entries). "
+        "Listed in WIZ_MIRRORED_FIELDS for capability advertisement only.",
+    ),
+    # `dueAt` is the Wiz API name. The outgoing mapper rewrites the XSOAR custom
+    # field `wizissueduedate` into this key, so it is a legitimate destination
+    # name even though no XSOAR field shares it.
+    "dueAt": (
+        "WIZ_MIRRORED_FIELDS + outgoing mapper destination",
+        "Wiz API name, populated by the outgoing mapper from `wizissueduedate`. "
+        "Runtime checks both keys: `delta.get('dueAt')` then `delta.get('wizissueduedate')`.",
+    ),
+}
+
+
+def _load_pack_custom_field_cli_names():
+    """Collect every cliName declared by `Packs/Wiz/IncidentFields/incidentfield-*.json`."""
+    cli_names = set()
+    for field_file in _INCIDENT_FIELDS_DIR.glob("incidentfield-*.json"):
+        with open(field_file) as f:
+            data = json.load(f)
+        cli_name = data.get("cliName")
+        if cli_name:
+            cli_names.add(cli_name)
+    assert cli_names, f"No incident fields loaded from {_INCIDENT_FIELDS_DIR}; test setup is broken."
+    return cli_names
+
+
+def _iter_outgoing_mapper_sources():
+    """Yield (destination, simple_source) for every leaf mapping in the outgoing mapper.
+
+    Skips entries whose `simple` is empty (those use `complex` transformers, which
+    aren't a flat field-name reference and aren't in scope for this guard).
+    """
+    with open(_OUTGOING_MAPPER) as f:
+        mapper = json.load(f)
+    for incident_type, scheme in mapper.get("mapping", {}).items():
+        for destination, mapping in scheme.get("internalMapping", {}).items():
+            simple = mapping.get("simple")
+            if simple:
+                yield incident_type, destination, simple
+
+
+def test_outgoing_mapper_sources_resolve_to_real_fields():
+    """REGRESSION (v2.0.4): every `simple:` source in the outgoing mapper must be either
+    an XSOAR system field, a pack-defined custom field cliName, or a documented
+    phantom backstopped at runtime. The original bug declared
+    `resolutionReason <- resolutionReason` against a non-existent source field;
+    XSOAR delivered nothing in the delta and Wiz received the WONT_FIX default."""
+    pack_cli_names = _load_pack_custom_field_cli_names()
+    valid_sources = pack_cli_names | _XSOAR_SYSTEM_INCIDENT_FIELDS
+
+    unresolved = []
+    for incident_type, destination, simple in _iter_outgoing_mapper_sources():
+        if simple in valid_sources:
+            continue
+        if simple in _KNOWN_PHANTOM_SOURCES:
+            continue
+        unresolved.append(f"{incident_type}.{destination} <- {simple!r}")
+
+    assert not unresolved, (
+        "Outgoing mapper references field name(s) that do not exist as XSOAR system "
+        "fields, pack-defined IncidentFields, or known-exempt phantoms:\n  "
+        + "\n  ".join(unresolved)
+        + "\n\nFix options:\n"
+        "  1. Add an `incidentfield-*.json` defining the cliName, OR\n"
+        "  2. Change the mapper `simple:` to an existing field, OR\n"
+        "  3. Add a documented entry to `_KNOWN_PHANTOM_SOURCES` if a runtime fallback exists."
+    )
+
+
+def test_wiz_mirrored_fields_resolve_to_real_fields():
+    """REGRESSION (v2.0.4): every name in WIZ_MIRRORED_FIELDS (advertised to XSOAR via
+    get_mapping_fields_command) must be either an XSOAR system field, a pack-defined
+    custom field cliName, or a documented phantom. Listing a phantom name here
+    misleads admins who try to map it in the UI."""
+    pack_cli_names = _load_pack_custom_field_cli_names()
+    valid_sources = pack_cli_names | _XSOAR_SYSTEM_INCIDENT_FIELDS
+
+    unresolved = [
+        field
+        for field in WIZ_MIRRORED_FIELDS
+        if field not in valid_sources and field not in _KNOWN_PHANTOM_SOURCES
+    ]
+
+    assert not unresolved, (
+        f"WIZ_MIRRORED_FIELDS contains name(s) with no matching XSOAR or pack field "
+        f"definition: {unresolved}. Either add the field, remove the entry, or "
+        f"document an exemption in `_KNOWN_PHANTOM_SOURCES`."
+    )
+
+
+def test_known_phantom_exemptions_are_actually_referenced():
+    """Hygiene check: every entry in `_KNOWN_PHANTOM_SOURCES` must still be referenced
+    somewhere (mapper or WIZ_MIRRORED_FIELDS). If an exemption stops being needed,
+    the entry should be removed so the allow-list doesn't decay into a junk drawer."""
+    referenced = set(WIZ_MIRRORED_FIELDS)
+    for _, _, simple in _iter_outgoing_mapper_sources():
+        referenced.add(simple)
+
+    stale = [name for name in _KNOWN_PHANTOM_SOURCES if name not in referenced]
+    assert not stale, (
+        f"Phantom exemption(s) no longer referenced anywhere — remove from "
+        f"_KNOWN_PHANTOM_SOURCES: {stale}"
+    )
