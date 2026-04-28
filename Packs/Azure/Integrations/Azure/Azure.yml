@@ -1470,7 +1470,8 @@ script:
       - 'true'
       - 'false'
     name: azure-webapp-update
-    description: Updates an Azure Web App.
+    description: Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
+    deprecated: true
     outputs:
     - contextPath: Azure.WebApp.id
       description: Fully qualified resource ID for the web app.
@@ -2006,8 +2007,9 @@ script:
       auto: PREDEFINED
       predefined:
       - 'true'
-    description: Updates a key vault in the specified subscription.
+    description: Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update.
     name: azure-key-vault-update
+    deprecated: true
     outputs:
     - contextPath: Azure.KeyVault.id
       description: Resource ID.
@@ -2197,8 +2199,9 @@ script:
     - description: The name of the resource group.
       name: resource_group_name
       required: true
-    description: Updates the database's threat detection policy.
+    description: Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update.
     name: azure-sql-db-threat-policy-update
+    deprecated: true
     outputs:
     - contextPath: Azure.SqlDBThreatPolicy.kind
       description: Kind of threat policy.
@@ -2356,8 +2359,9 @@ script:
     - description: The name of the resource group.
       required: true
       name: resource_group_name
-    description: Updates the properties of an existing Azure Cosmos DB database account.
+    description: Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update.
     name: azure-cosmos-db-update
+    deprecated: true
     outputs:
     - contextPath: Azure.CosmosDB.id
       description: The unique resource identifier of the ARM resource.

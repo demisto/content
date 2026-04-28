@@ -474,7 +474,7 @@ Updates a disk.
 ### azure-webapp-update
 
 ***
-Updates an Azure Web App.
+Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
 
 #### Base Command
 
@@ -632,7 +632,7 @@ There is no context output for this command.
 ### azure-key-vault-update
 
 ***
-Updates a key vault in the specified subscription.
+Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update.
 
 #### Base Command
 
@@ -682,7 +682,7 @@ Updates a key vault in the specified subscription.
 ### azure-sql-db-threat-policy-update
 
 ***
-Updates the database's threat detection policy.
+Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update.
 
 #### Base Command
 
@@ -745,7 +745,7 @@ There is no context output for this command.
 ### azure-cosmos-db-update
 
 ***
-Updates the properties of an existing Azure Cosmos DB database account.
+Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update.
 
 #### Base Command
 
