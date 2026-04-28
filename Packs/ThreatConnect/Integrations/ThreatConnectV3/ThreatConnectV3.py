@@ -229,8 +229,8 @@ def detection_to_incident(threatconnect_data: dict, threatconnect_date: str) -> 
     return incident
 
 
-def get_indicator_reputation(client: Client, args_type: str, type_name: str, args: dict) -> None:  # pragma: no cover
-    owners_query = create_or_query(args.get("owners", demisto.params().get("defaultOrg")), "ownerName")
+def get_indicator_reputation(client: Client, args_type: str, type_name: str, args: dict) -> None:
+    owners_query = create_or_query(args.get("owners", ""), "ownerName")
     query = create_or_query(args.get(args_type), "summary")  # type: ignore
     rating_threshold = args.get("ratingThreshold", "")
     confidence_threshold = args.get("confidenceThreshold", "")
@@ -257,7 +257,7 @@ def get_indicator_reputation(client: Client, args_type: str, type_name: str, arg
             "Contents": indicators,
             "ReadableContentsFormat": formats["markdown"],
             "HumanReadable": tableToMarkdown(
-                f"ThreatConnect URL Reputation for: {args.get(args_type)}",
+                f"ThreatConnect {type_name} Reputation for: {args.get(args_type)}",
                 human_readable,
                 headerTransform=pascalToSpace,
                 removeNull=True,
