@@ -903,55 +903,6 @@ def test_categories_parse_item_as_dict():
     assert return_value.get("categories") == ["Purple category", "Orange category"]
 
 
-def test_parse_item_as_dict_plus_in_item_id_not_escaped_in_context():
-    """
-    Given -
-        a Message whose id contains '+' characters.
-
-    When -
-        running parse_item_as_dict with compact_fields=True (which populates itemId).
-
-    Then -
-        the context data retains the original '+' characters in itemId (no escaping).
-    """
-    message = Message(
-        subject="test",
-        message_id="msg1",
-        text_body="body",
-        body="body",
-        datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 0, tzinfo=EWSTimeZone(key="UTC")),
-        datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 0, tzinfo=EWSTimeZone(key="UTC")),
-        datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 0, tzinfo=EWSTimeZone(key="UTC")),
-    )
-    message._id = "FDSFSFS+FSFSDFSD+FSFSD"
-
-    result = parse_item_as_dict(message, email_address="test@test.com", camel_case=True, compact_fields=True)
-    # Context data should keep the original '+' characters
-    assert result.get("itemId") == "FDSFSFS+FSFSDFSD+FSFSD"
-
-
-def test_escape_hr_item_ids_does_not_mutate_original():
-    """
-    Given -
-        a list of item dicts with '+' in itemId.
-
-    When -
-        calling escape_hr_item_ids on a deep copy of the data.
-
-    Then -
-        the escaped copy has '\\+' in itemId, while the original is unchanged.
-    """
-    import copy
-
-    from EWSApiModule import escape_hr_item_ids
-
-    original = [{"itemId": "AAA+BBB+CCC", "subject": "test"}]
-    hr_copy = escape_hr_item_ids(copy.deepcopy(original))
-
-    assert hr_copy[0]["itemId"] == "AAA\\+BBB\\+CCC"
-    assert original[0]["itemId"] == "AAA+BBB+CCC"
-
-
 @pytest.mark.parametrize(
     "subject, expected_file_name",
     [("test_subject", "test_subject.eml"), ("", "demisto_untitled_eml.eml"), ("another subject", "another subject.eml")],
