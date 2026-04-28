@@ -486,20 +486,20 @@ Updates the properties of a case.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| case_id | A comma-separated list of case IDs to update. | Required |
-| case_name | The new name for the case. | Optional |
-| description | The new description for the case. | Optional |
-| assignee | The email address of the new assignee. Use "unassigned" to remove an existing assignee. | Optional |
-| status | The new status for the case. Possible values are: new, in_progress, resolved. | Optional |
-| notes | Additional notes for the case. | Optional |
-| starred | Whether the case should be starred. Possible values are: true, false. | Optional |
-| user_defined_severity | The user-defined severity for the case. Possible values are: low, medium, high, critical. | Optional |
-| resolve_reason | The reason for resolving the case. Only relevant when status is set to resolved. Possible values are: known_issue, duplicate, false_positive, true_positive, security_testing, other. | Optional |
-| resolved_comment | Comment when resolving the case. Only relevant when status is set to resolved. | Optional |
-| resolve_all_alerts | Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Possible values are: true, false. | Optional |
-| custom_fields | A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`). | Optional |
+| **Argument Name**     | **Description**                                                                                                                                                                       | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| case_id               | A comma-separated list of case IDs to update.                                                                                                                                         | Required     |
+| case_name             | The new name for the case.                                                                                                                                                            | Optional     |
+| description           | The new description for the case.                                                                                                                                                     | Optional     |
+| assignee              | The email address of the new assignee. Use "unassigned" to remove an existing assignee.                                                                                               | Optional     |
+| status                | The new status for the case. Possible values are: new, in_progress, resolved.                                                                                                         | Optional     |
+| notes                 | Additional notes for the case.                                                                                                                                                        | Optional     |
+| starred               | Whether the case should be starred. Possible values are: true, false.                                                                                                                 | Optional     |
+| user_defined_severity | The user-defined severity for the case. Possible values are: low, medium, high, critical.                                                                                             | Optional     |
+| resolve_reason        | The reason for resolving the case. Only relevant when status is set to resolved. Possible values are: known_issue, duplicate, false_positive, true_positive, security_testing, other. | Optional     |
+| resolved_comment      | Comment when resolving the case. Only relevant when status is set to resolved.                                                                                                        | Optional     |
+| resolve_all_alerts    | Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Possible values are: true, false.                                               | Optional     |
+| custom_fields         | A JSON encoded string representing custom field name-value pairs to update.  (e.g., `{"field1": "value1", "multiselect_field": ["a", "b"]}`).                                         | Optional     |
 
 #### Context Output
 
@@ -720,6 +720,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
+| Core.IssueRecommendations.network_reachability | Json | The Network reachability information for the issue. |
 
 ### core-enable-scanners
 
