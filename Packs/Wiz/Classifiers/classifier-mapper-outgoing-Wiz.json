@@ -17,6 +17,10 @@
                 "resolutionReason": {
                     "complex": null,
                     "simple": "resolutionReason"
+                },
+                "closeReason": {
+                    "complex": null,
+                    "simple": "closeReason"
                 }
             }
         }
