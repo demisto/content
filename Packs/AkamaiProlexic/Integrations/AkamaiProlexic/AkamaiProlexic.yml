@@ -1,0 +1,124 @@
+category: Analytics & SIEM
+provider: Akamai Technologies
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: AkamaiProlexic
+  version: -1
+name: AkamaiProlexic
+display: Akamai Prolexic Event Collector
+description: Collects DDoS detection critical events and general events from Akamai Prolexic Analytics for Cortex XSIAM.
+fromversion: 8.4.0
+configuration:
+- name: url
+  display: Server URL
+  additionalinfo: 'Your Akamai API host (the value of the "host" field in your .edgerc file). Example: https://akab-h05tnam3wl42son7nktnlnnx-kbob3i3v.luna.akamaiapis.net'
+  required: true
+  type: 0
+  section: Connect
+- name: contract_id
+  display: Contract ID
+  additionalinfo: The policy domain name of the data center or proxy that the events belong to.
+  required: true
+  type: 0
+  section: Connect
+- name: client_token_creds
+  displaypassword: Client Token
+  hiddenusername: true
+  required: true
+  type: 9
+  section: Connect
+- name: client_secret_creds
+  displaypassword: Client Secret
+  hiddenusername: true
+  required: true
+  type: 9
+  section: Connect
+- name: access_token_creds
+  displaypassword: Access Token
+  hiddenusername: true
+  required: true
+  type: 9
+  section: Connect
+- name: account_switch_key
+  display: Account Switch Key
+  additionalinfo: 'For customers managing more than one account; runs the operation against another account. The Identity and Access Management API provides a list of available account switch keys.'
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- name: event_types_to_fetch
+  display: Event types to fetch
+  type: 16
+  defaultvalue: Critical Events,Events
+  options:
+  - Critical Events
+  - Events
+  required: true
+  section: Collect
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: 3 days
+  additionalinfo: 'How far back to fetch events on the first run (e.g., "1 day", "12 hours").'
+  required: false
+  type: 0
+  section: Collect
+- name: max_events_per_fetch
+  display: Maximum events per fetch
+  defaultvalue: '1000'
+  additionalinfo: 'Per source. Maximum allowed: 10000.'
+  required: false
+  type: 0
+  section: Collect
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/auth-utils:1.0.0.6111183
+  isfetchevents: true
+  runonce: false
+  commands:
+  - name: akamai-prolexic-get-events
+    description: Manually retrieve events from Akamai Prolexic for development and debugging. May produce duplicate events when used alongside automatic fetching.
+    arguments:
+    - name: limit
+      description: Maximum number of events to retrieve per source.
+      defaultValue: '50'
+      required: false
+    - name: event_type
+      description: Comma-separated list of event types to retrieve. If empty, uses the integration configuration.
+      auto: PREDEFINED
+      predefined:
+      - Critical Events
+      - Events
+      isArray: true
+      required: false
+    - name: should_push_events
+      description: If true, push retrieved events to Cortex XSIAM. Otherwise only display them.
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    outputs: []
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)

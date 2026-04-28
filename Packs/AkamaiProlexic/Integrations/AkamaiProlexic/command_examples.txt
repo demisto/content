@@ -1,0 +1,3 @@
+!akamai-prolexic-get-events limit=10 should_push_events=false
+!akamai-prolexic-get-events limit=10 event_type="Critical Events" should_push_events=false
+!akamai-prolexic-get-events limit=10 event_type="Events" should_push_events=false

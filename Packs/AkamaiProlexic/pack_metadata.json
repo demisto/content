@@ -1,0 +1,31 @@
+{
+    "name": "Akamai Prolexic",
+    "description": "Collect DDoS detection critical events and general events from the Akamai Prolexic Analytics API for Cortex XSIAM.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Network"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Akamai",
+        "Prolexic",
+        "DDoS"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
