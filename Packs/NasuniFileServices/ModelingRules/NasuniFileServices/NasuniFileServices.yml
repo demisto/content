@@ -4,3 +4,5 @@ name: Nasuni File Services Modeling Rule
 rules: ''
 schema: ''
 tags: nasuni
+supportedModules:
+- xsiam
