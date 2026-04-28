@@ -2,7 +2,7 @@ Palo Alto Networks Enterprise DLP discovers and protects company data across eve
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP.
 
 **Note**:  
-This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Browser" channels only.
+This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Access" channels only.
 
 ### Setup
 
@@ -149,3 +149,17 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+In case specific DLP incidents are not appearing on the Cortex tenant, verify the following:
+
+1. **DLP Regions Configuration**
+   - Check the Strata Cloud Manager to confirm which regions generated the incidents.
+   - **Note**: The *DLP Regions* dropdown menu shows all currently-supported regions.
+   - Ensure all regions where incidents originated are selected from the dropdown menu.
+
+2. **Strata Cloud Manager (SCM) Channel Support**
+   - Verify the channel in SCM console under the incident details.
+   - **Note**: Only incidents from the "NGFW" and "Prisma Access" SCM channels are supported.
+   - Incidents from other channels, such as Endpoint DLP, will not be fetched by this integration.

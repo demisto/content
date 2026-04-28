@@ -4,3 +4,5 @@ name: Forcepoint DLP Modeling Rule
 rules: ''
 schema: ''
 tags: Forcepoint DLP
+supportedModules:
+- xsiam
