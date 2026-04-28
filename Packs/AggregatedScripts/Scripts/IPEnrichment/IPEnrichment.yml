@@ -48,7 +48,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script only supports indicators of type IPv4 (IPv6 is not supported) and will automatically create the indicator in TIM if it does not already exist. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
+comment: 'Enriches IP indicators with reputation data from multiple integrations and outputs a consolidated IPEnrichment object. This script exclusively supports indicators of type IPv4 (IPv6 is not supported) and will automatically create the indicator in TIM if it does not already exist. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
 commonfields:
   id: ip-enrichment
   version: -1
