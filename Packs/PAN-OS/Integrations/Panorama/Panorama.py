@@ -9093,23 +9093,26 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
 def panorama_upload_content_update_file_command(args: dict):
     category = args.get("category")
     entry_id = args.get("entryID")
-    file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
-    shutil.copy(file_path, file_name)
-    with open(file_name, "rb") as file:
-        params = {"type": "import", "category": category, "key": API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
-        human_readble = tableToMarkdown("Results", t=response.get("response"))
-        content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
-        results = CommandResults(
-            raw_response=response,
-            readable_output=human_readble,
-            outputs_prefix="Panorama.Content.Upload",
-            outputs_key_field="Status",
-            outputs=content_upload_info,
-        )
-
-    shutil.rmtree(file_name, ignore_errors=True)
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info["path"]
+    file_name = os.path.basename(file_info["name"])
+    try:
+        shutil.copy(file_path, file_name)
+        with open(file_name, "rb") as file:
+            params = {"type": "import", "category": category, "key": API_KEY}
+            response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
+            human_readble = tableToMarkdown("Results", t=response.get("response"))
+            content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
+            results = CommandResults(
+                raw_response=response,
+                readable_output=human_readble,
+                outputs_prefix="Panorama.Content.Upload",
+                outputs_key_field="Status",
+                outputs=content_upload_info,
+            )
+    finally:
+        if os.path.isfile(file_name):
+            os.remove(file_name)
     return results
 
 
