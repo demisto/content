@@ -1,0 +1,171 @@
+category: Utilities
+sectionOrder:
+- Connect
+- Browser
+commonfields:
+  id: BrowserUseLocal
+  version: -1
+name: BrowserUseLocal
+display: Browser Use Local
+description: Runs the open-source `browser-use` agent locally — Chromium + LLM execute inside the integration container. Heavier and slower than the Browser Use (cloud) integration in the same pack, but keeps everything on-prem (your own LLM provider key, no Browser Use Cloud account required).
+configuration:
+- display: LLM Provider
+  name: llm_provider
+  defaultvalue: browser-use
+  type: 15
+  required: true
+  section: Connect
+  options:
+  - browser-use
+  - anthropic
+  - google
+  - openai
+  additionalinfo: 'Which LLM client the open-source agent should use. `browser-use` uses Browser Use''s hosted preview model (requires a `bu_` key). The other options use the corresponding vendor SDK with your own key.'
+- display: ''
+  displaypassword: LLM API Key
+  name: llm_credentials
+  type: 9
+  required: false
+  hiddenusername: true
+  section: Connect
+  additionalinfo: API key for the selected provider (Anthropic, Google, OpenAI, or Browser Use). Optional only when `llm_provider=browser-use` and the integration host already has `BROWSER_USE_API_KEY` in its environment.
+- display: Default model
+  name: default_model
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: 'Provider-specific model name. Defaults: `browser-use` → `browser-use/bu-30b-a3b-preview`, `anthropic` → `claude-sonnet-4-6`, `google` → `gemini-3-flash-preview`, `openai` → `gpt-4o`.'
+- display: Default headless mode
+  name: default_headless
+  type: 8
+  required: false
+  defaultvalue: 'true'
+  section: Browser
+  additionalinfo: Run Chromium headless. The integration container has no display so this should normally stay `true`.
+- display: Default max steps
+  name: default_max_steps
+  type: 0
+  required: false
+  defaultvalue: '20'
+  section: Browser
+  additionalinfo: Hard cap on the number of agent reasoning steps per task. Lowering this caps cost.
+- display: Use Browser Use Cloud stealth browser instead of local Chromium
+  name: default_use_cloud_browser
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  section: Browser
+  additionalinfo: 'If enabled, the open-source Agent still runs in this container, but the browser itself runs on Browser Use Cloud (residential proxy + stealth). Requires a Browser Use Cloud API key below.'
+- display: ''
+  displaypassword: Browser Use Cloud API Key (only for cloud-browser mode)
+  name: cloud_credentials
+  type: 9
+  required: false
+  hiddenusername: true
+  section: Browser
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/browser-use:1.0.0.0
+  runonce: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  commands:
+  - name: browser-use-local-agent-run
+    description: 'Run an AI browser-automation task locally using the open-source `browser-use` library. Spawns Chromium in the integration container and drives it with the configured LLM provider. Each invocation is heavyweight — for high-throughput automation prefer the Browser Use (cloud) integration in the same pack.'
+    arguments:
+    - name: task
+      description: 'Natural-language instruction (e.g. "Open https://example.com and report its <h1> text").'
+      required: true
+    - name: model
+      description: Override the default model name for this task only.
+    - name: llm_provider
+      description: Override the default LLM provider for this task only.
+      auto: PREDEFINED
+      predefined:
+      - browser-use
+      - anthropic
+      - google
+      - openai
+    - name: max_steps
+      description: Override the per-task max-steps cap.
+    - name: headless
+      description: Override the default headless mode.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: use_cloud_browser
+      description: Override the default for "use Browser Use Cloud stealth browser".
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: output_schema
+      description: 'Optional JSON-Schema string. When provided, the agent returns structured data conforming to this schema in `FinalOutput`.'
+    outputs:
+    - contextPath: BrowserUseLocal.AgentRun.Task
+      description: The natural-language task that was executed.
+      type: String
+    - contextPath: BrowserUseLocal.AgentRun.Provider
+      description: LLM provider used.
+      type: String
+    - contextPath: BrowserUseLocal.AgentRun.Model
+      description: Model name used.
+      type: String
+    - contextPath: BrowserUseLocal.AgentRun.FinalOutput
+      description: Final agent output (string, or structured JSON if `output_schema` was provided).
+      type: Unknown
+    - contextPath: BrowserUseLocal.AgentRun.IsDone
+      description: Whether the agent reached a terminal state.
+      type: Boolean
+    - contextPath: BrowserUseLocal.AgentRun.IsSuccessful
+      description: Whether the agent reports the task succeeded (may be null).
+      type: Boolean
+    - contextPath: BrowserUseLocal.AgentRun.VisitedUrls
+      description: List of URLs visited during the run.
+      type: Unknown
+  - name: browser-use-local-screenshot
+    description: 'Take a single screenshot of a URL using a local headless Chromium (no LLM). Returns a War Room file entry with the PNG. Useful for quick safe URL captures from playbooks.'
+    arguments:
+    - name: url
+      description: URL to capture.
+      required: true
+    - name: wait_seconds
+      description: Seconds to wait after page load before taking the screenshot.
+      defaultValue: '0'
+    - name: full_page
+      description: Capture the full scrollable page rather than just the viewport.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: headless
+      description: Override the default headless mode.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+  - name: browser-use-local-version
+    description: Report the installed `browser-use` library version (useful for support tickets).
+    arguments: []
+    outputs:
+    - contextPath: BrowserUseLocal.Version.BrowserUseVersion
+      description: Installed `browser-use` version.
+      type: String
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

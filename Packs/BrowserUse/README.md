@@ -1,8 +1,16 @@
 # Browser Use
 
-[Browser Use](https://browser-use.com) is a managed AI browser automation platform: send a natural-language instruction and an LLM agent (Claude Opus / Sonnet, Gemini 3 Flash) drives a stealth Chromium browser to do the work — with residential proxies in 195+ countries, CAPTCHA solving, recordings, and persistent profiles.
+[Browser Use](https://browser-use.com) drives a Chromium browser with an LLM agent so you can automate web tasks with natural-language instructions. It comes in two flavors:
 
-This pack adds a Cortex XSOAR / XSIAM integration that wraps the Browser Use Cloud API (v3).
+- a **fully managed Cloud** with stealth Chromium, residential proxies in 195+ countries, CAPTCHA solving, recordings, and persistent profiles, and
+- an **open-source Python library** ([`browser-use`](https://github.com/browser-use/browser-use)) you can self-host.
+
+This pack ships **two integrations**, one for each:
+
+| Integration | When to use it | Where Chromium runs | Auth |
+| --- | --- | --- | --- |
+| **Browser Use** | High-throughput, stealth, residential proxies, recordings, persistent profiles, vendor-managed scaling. | Browser Use Cloud | One `bu_...` API key |
+| **Browser Use Local** | Air-gapped / on-prem, BYO LLM key (Anthropic / Google / OpenAI / Browser Use), full code control. | Inside the integration container | Your LLM provider key (and optionally a Browser Use Cloud key for the hybrid stealth-browser mode) |
 
 ## What you can do with it
 
@@ -25,6 +33,16 @@ This pack adds a Cortex XSOAR / XSIAM integration that wraps the Browser Use Clo
 | Workspaces (file storage) | `browser-use-workspace-list`, `browser-use-workspace-get`, `browser-use-workspace-create`, `browser-use-workspace-delete`, `browser-use-workspace-files-list` |
 
 `browser-use-task-run` supports `wait=true` to block until the agent reaches a terminal state (`stopped`, `timed_out`, `error`), so it can be used directly in synchronous playbook flows.
+
+### Integration: **Browser Use Local**
+
+| Resource | Commands |
+| --- | --- |
+| Agent (open-source) | `browser-use-local-agent-run` |
+| Quick screenshot (no LLM) | `browser-use-local-screenshot` |
+| Diagnostics | `browser-use-local-version` |
+
+Runs on a custom `demisto/browser-use:*` Docker image (Playwright + Chromium + open-source `browser-use` + LLM SDKs). A reference [`Dockerfile`](Integrations/BrowserUseLocal/Dockerfile) is included in the integration directory.
 
 ## Configuration
 

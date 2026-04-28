@@ -2,7 +2,7 @@
     "name": "Browser Use",
     "description": "AI-powered browser automation via the Browser Use Cloud API (v3). Dispatch natural-language tasks to a stealth Chromium browser driven by an LLM agent (Claude Opus / Sonnet, Gemini 3 Flash). Useful for safe URL detonation, phishing analysis, OSINT collection on portals without an API, and credential validation behind residential proxies.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "Cortex XSOAR Community",
     "url": "https://browser-use.com",
     "email": "",
