@@ -120,6 +120,12 @@ configuration:
   - platform
   required: false
   section: Collect
+- additionalinfo: Configuration of the web service routes to take by the integration in JSON format. See integration documentation or pyOTRS for default values.
+  display: Web Service Config for Tickets
+  name: webservice_config_ticket
+  type: 12
+  required: false
+  section: Connect
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
@@ -327,6 +333,12 @@ script:
     - description: Text to add to the Article Body of the new ticket.
       name: article_body
       required: true
+    - auto: PREDEFINED
+      description: Content Type of the article body.
+      name: article_content_type
+      predefined:
+      - 'text/plain; charset=utf8'
+      - 'text/html; charset=utf8'
     - description: Ticket Type to assign to the new ticket.
       name: type
     - description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2.'
@@ -343,6 +355,9 @@ script:
       type: string
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
+      type: string
+    - contextPath: OTRS.Ticket.Article.ContentType
+      description: Ticket article content type.
       type: string
     - contextPath: OTRS.Ticket.ID
       description: Ticket ID.
@@ -408,6 +423,12 @@ script:
       name: article_subject
     - description: Article Body of the ticket to update.
       name: article_body
+    - auto: PREDEFINED
+      description: Content Type of the article body.
+      name: article_content_type
+      predefined:
+      - 'text/plain; charset=utf8'
+      - 'text/html; charset=utf8'
     - description: Queue that the ticket to update is in.
       name: queue
     - description: 'Ticket Type of the ticket to update.'
@@ -428,6 +449,9 @@ script:
       type: string
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
+      type: string
+    - contextPath: OTRS.Ticket.Article.ContentType
+      description: Ticket article content type.
       type: string
     - contextPath: OTRS.Ticket.ID
       description: Ticket ID.
@@ -460,6 +484,12 @@ script:
     - description: Article Body of the ticket to close.
       name: article_body
       required: true
+    - auto: PREDEFINED
+      description: Content Type of the article body.
+      name: article_content_type
+      predefined:
+      - 'text/plain; charset=utf8'
+      - 'text/html; charset=utf8'
     - description: Ticket state to set when closing. Defaults to "closed successful".
       name: state
     description: Close an OTRS ticket.
@@ -477,7 +507,10 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.3545032
+    - contextPath: OTRS.Ticket.Article.ContentType
+      description: Ticket article content type.
+      type: string
+  dockerimage: demisto/pyotrs:1.0.0.6979213
   isfetch: true
   runonce: false
   script: '-'

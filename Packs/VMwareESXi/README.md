@@ -9,6 +9,7 @@ VMware ESXi is a hypervisor that enables you to run multiple virtual machines on
 ### Data normalization capabilities
 
 * Rules for VMware ESXi logs ingested via the Broker VM into Cortex XSIAM.
+* Normalization to Virtualization Stories, available for usage from v1.0.10.
 
 ### Supported timestamp formats
 

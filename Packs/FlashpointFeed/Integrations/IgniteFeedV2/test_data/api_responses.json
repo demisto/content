@@ -1,0 +1,56 @@
+{
+    "ipv4": [
+        {
+            "id": "dummy-id-1",
+            "type": "ipv4",
+            "value": "0.0.0.1",
+            "href": "https://api.example.com/indicators/dummy-id-1",
+            "entity_type": "indicator",
+            "score": {"value": "malicious", "last_scored_at": "2026-01-01T00:00:00Z"},
+            "modified_at": "2026-01-01T00:00:00Z",
+            "created_at": "2026-01-01T00:00:00Z",
+            "last_seen_at": "2026-01-01T00:00:00Z",
+            "platform_urls": {"ignite": "https://app.example.com/iocs/dummy-id-1"},
+            "latest_sighting": {
+                "source": "dummy_source",
+                "tags": ["malware:dummy-malware"],
+                "description": "Dummy observation"
+            },
+            "sightings": [],
+            "total_sightings": 1
+        }
+    ],
+    "file": [
+        {
+            "id": "dummy-id-2",
+            "type": "file",
+            "value": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "href": "https://api.example.com/indicators/dummy-id-2",
+            "entity_type": "indicator",
+            "hashes": {"md5": null, "sha1": null, "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+            "score": {"value": "unknown", "last_scored_at": "2026-01-01T00:00:00Z"},
+            "modified_at": "2026-01-01T00:00:00Z",
+            "created_at": "2026-01-01T00:00:00Z",
+            "last_seen_at": "2026-01-01T00:00:00Z",
+            "platform_urls": {"ignite": "https://app.example.com/iocs/dummy-id-2"},
+            "latest_sighting": {"source": "dummy_source", "tags": [], "description": "Dummy observation"},
+            "sightings": [],
+            "total_sightings": 1
+        }
+    ],
+    "map_indicator_fields": {
+        "id": "dummy-id-1",
+        "type": "ipv4",
+        "value": "0.0.0.1",
+        "href": "https://api.example.com/indicators/dummy-id-1",
+        "entity_type": "indicator",
+        "score": {"value": "malicious", "last_scored_at": "2026-01-01T00:00:00Z"},
+        "modified_at": "2026-01-01T00:00:00Z",
+        "created_at": "2026-01-01T00:00:00Z",
+        "last_seen_at": "2026-01-01T00:00:00Z",
+        "platform_urls": {"ignite": "https://app.example.com/iocs/dummy-id-1"},
+        "latest_sighting": {"source": "dummy_source", "tags": ["dummy-tag-1", "dummy-tag-2"], "description": "Dummy observation"},
+        "sightings": [],
+        "total_sightings": 5
+    }
+}

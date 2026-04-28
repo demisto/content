@@ -251,6 +251,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: timeout_in_seconds
+      description: The request timeout in seconds.
+      defaultValue: '180'
     description: Upload packs to the core server from the URL or marketplace.
   - name: core-api-file-upload
     arguments:

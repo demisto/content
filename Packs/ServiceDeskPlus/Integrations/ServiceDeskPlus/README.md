@@ -376,7 +376,6 @@ Update the request with the given request id.
 | resources | Holds the resource data mapped to the request | Optional |
 | udf_fields | Holds udf fields' values associated with the request. Input format: A string of the form "key1:value1,key2:value2" or a dictionary of the form "{'key1':'val1','key2':'val2'}" | Optional |
 | update_reason | The reason for updating this request | Optional |
-| status_change_comments | Comments added while changing the request's status | Optional |
 
 #### Context Output
 

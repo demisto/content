@@ -83,7 +83,7 @@ Checks if an email address was compromised.
         "Pwned-V2": {
             "Compromised": {
                 "Vendor": "Have I Been Pwned? V2", 
-                "Reporters": "Canva, Dubsmash, Modern Business Solutions, Straffic, Zynga"
+                "Reporters": "Canva, Dubsmash, Modern Business Solutions, Straffic, TestGame"
             }
         }, 
         "Address": "michaljordan@gmail.com"
@@ -123,11 +123,11 @@ Date: __2020-02-14__
 In February 2020, Israeli marketing company [Straffic exposed a database with 140GB of personal data](https://www.databreachtoday.com/israeli-marketing-company-exposes-contacts-database-a-13785). The publicly accessible Elasticsearch database contained over 300M rows with 49M unique email addresses. Exposed data also included names, phone numbers, physical addresses and genders. In [their breach disclosure message](https://straffic.io/updates.php), Straffic stated that &quot;it is impossible to create a totally immune system, and these things can occur&quot;.
 Data breached: __Email addresses,Genders,Names,Phone numbers,Physical addresses__
 
-#### Zynga (zynga.com): 172869660 records breached [Verified breach]
+#### TestGame (zynga.com): 172869660 records breached [Verified breach]
 
 Date: __2019-09-01__
 
-In September 2019, game developer [Zynga (the creator of Words with Friends) suffered a data breach](https://www.cnet.com/news/words-with-friends-hack-reportedly-exposes-data-of-more-than-200m-players/). The incident exposed 173M unique email addresses alongside usernames and passwords stored as salted SHA-1 hashes. The data was provided to HIBP by [dehashed.com](https://dehashed.com/).
+In September 2019, game developer [TestGame (the creator of Words with Friends) suffered a data breach](https://www.cnet.com/news/words-with-friends-hack-reportedly-exposes-data-of-more-than-200m-players/). The incident exposed 173M unique email addresses alongside usernames and passwords stored as salted SHA-1 hashes. The data was provided to HIBP by [dehashed.com](https://dehashed.com/).
 Data breached: __Email addresses,Passwords,Phone numbers,Usernames__
 
 ### 2. pwned-domain
@@ -245,7 +245,7 @@ Checks if an email address was compromised.
         "Pwned-V2": {
             "Compromised": {
                 "Vendor": "Have I Been Pwned? V2", 
-                "Reporters": "Canva, Dubsmash, Modern Business Solutions, Straffic, Zynga"
+                "Reporters": "Canva, Dubsmash, Modern Business Solutions, Straffic, TestGame"
             }
         }, 
         "Address": "michaljordan@gmail.com"
@@ -285,11 +285,11 @@ Date: __2020-02-14__
 In February 2020, Israeli marketing company [Straffic exposed a database with 140GB of personal data](https://www.databreachtoday.com/israeli-marketing-company-exposes-contacts-database-a-13785). The publicly accessible Elasticsearch database contained over 300M rows with 49M unique email addresses. Exposed data also included names, phone numbers, physical addresses and genders. In [their breach disclosure message](https://straffic.io/updates.php), Straffic stated that &quot;it is impossible to create a totally immune system, and these things can occur&quot;.
 Data breached: __Email addresses,Genders,Names,Phone numbers,Physical addresses__
 
-#### Zynga (zynga.com): 172869660 records breached [Verified breach]
+#### TestGame (zynga.com): 172869660 records breached [Verified breach]
 
 Date: __2019-09-01__
 
-In September 2019, game developer [Zynga (the creator of Words with Friends) suffered a data breach](https://www.cnet.com/news/words-with-friends-hack-reportedly-exposes-data-of-more-than-200m-players/). The incident exposed 173M unique email addresses alongside usernames and passwords stored as salted SHA-1 hashes. The data was provided to HIBP by [dehashed.com](https://dehashed.com/).
+In September 2019, game developer [TestGame (the creator of Words with Friends) suffered a data breach](https://www.cnet.com/news/words-with-friends-hack-reportedly-exposes-data-of-more-than-200m-players/). The incident exposed 173M unique email addresses alongside usernames and passwords stored as salted SHA-1 hashes. The data was provided to HIBP by [dehashed.com](https://dehashed.com/).
 Data breached: __Email addresses,Passwords,Phone numbers,Usernames__
 
 ### 4. domain

@@ -44,7 +44,7 @@ def test_get_relationships_with_entities_only(mocker):
 def test_get_relationships_with_entities_types_calls_filter_function(mocker):
     """
     Given: Entities and entity types are provided to get_relationships function
-    When: Calling get_relationships with entities and entities_types parameters
+    When: Calling get_relationships with entities and related_entity_types parameters
     Then: The filter_relationships_by_entity_types function should be called with correct parameters
     """
     from SearchIndicatorRelationshipsAgentix import get_relationships
@@ -52,7 +52,7 @@ def test_get_relationships_with_entities_types_calls_filter_function(mocker):
     mock_filter = mocker.patch("SearchIndicatorRelationshipsAgentix.filter_relationships_by_entity_types")
     mock_filter.return_value = [{"id": "filtered_rel", "type": "indicates"}]
 
-    result = get_relationships({"entities": ["malware.exe"], "entities_types": ["File"], "limit": 10})
+    result = get_relationships({"entities": ["malware.exe"], "related_entity_types": ["File"], "limit": 10})
 
     mock_filter.assert_called_once_with(["malware.exe"], ["File"], [], 10, "false", "false")
     assert result == [{"id": "filtered_rel", "type": "indicates"}]

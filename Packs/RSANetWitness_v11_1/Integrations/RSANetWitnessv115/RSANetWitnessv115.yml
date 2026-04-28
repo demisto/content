@@ -1,5 +1,9 @@
 category: Analytics & SIEM
 provider: PartnerOne
+sectionorder:
+- Connect
+- Collect
+- Mirroring
 commonfields:
   id: RSANetWitnessv115
   version: -1
@@ -7,43 +11,54 @@ configuration:
 - display: Server URL (e.g https://192.168.0.1)
   name: url
   required: true
+  section: Connect
   type: 0
 - display: User name
   name: credentials
   required: true
+  section: Connect
   type: 9
 - additionalinfo: The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'.
   display: Service Id
   name: service_id
   type: 0
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days)
   defaultvalue: 1 days
   display: Fetch Time
   name: first_fetch
   type: 0
+  section: Collect
 - defaultvalue: 'false'
   display: On 'Fetch incidents' import all alerts related to the incident
   name: import_alerts
   type: 8
+  section: Collect
 - display: Alerts Limit
   name: max_alerts
   type: 0
   required: false
+  section: Collect
   additionalinfo: The maximum number of alerts to fetch for each incident. The maximum allowed is 50.
   defaultvalue: '50'
 - defaultvalue: NetWitness Incident
@@ -51,15 +66,18 @@ configuration:
   name: incidentType
   required: false
   type: 13
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from RSA to Cortex XSOAR), Outgoing (from Cortex XSOAR to RSA), or Incoming and Outgoing (from/to Cortex XSOAR and RSA).'
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -70,18 +88,21 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  section: Mirroring
 - defaultvalue: "true"
   display: Close Mirrored XSOAR Incident
   additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
   name: close_incident
   required: false
   type: 8
+  section: Mirroring
 - additionalinfo: This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days.
   display: Mirroring Days Limit
   defaultvalue: '3'
   name: max_mirror_time
   required: false
   type: 0
+  section: Mirroring
 description: The RSA NetWitness integration provides system log, network, and endpoint visibility for real-time collection, detection, and automated response with the Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract critical data and effectively run security operations automated playbooks.
 display: RSANetWitness v11.5
 name: RSANetWitnessv115
@@ -2051,7 +2072,7 @@ script:
   - arguments: []
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   ismappable: true
   isremotesyncin: true

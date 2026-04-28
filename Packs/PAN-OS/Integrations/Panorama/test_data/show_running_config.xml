@@ -862,7 +862,7 @@
                             <issuer-hash>aaaaaaaa</issuer-hash>
                             <not-valid-before>May  9 16:35:16 2025 GMT</not-valid-before>
                             <issuer>/CN=acme-root-ca.acme.com</issuer>
-                            <not-valid-after>May  9 16:35:16 2026 GMT</not-valid-after>
+                            <not-valid-after>May  9 16:35:16 2050 GMT</not-valid-after>
                             <common-name>acme-root-ca.acme.com</common-name>
                             <expiry-epoch>1778344516</expiry-epoch>
                             <ca>yes</ca>
@@ -879,7 +879,7 @@ TestCertificate1
                             <issuer-hash>66666666</issuer-hash>
                             <not-valid-before>May  9 16:36:13 2025 GMT</not-valid-before>
                             <issuer>/CN=acme-root-ca.acme.com</issuer>
-                            <not-valid-after>May  9 16:36:13 2026 GMT</not-valid-after>
+                            <not-valid-after>May  9 16:36:13 2050 GMT</not-valid-after>
                             <common-name>decrypt.acme.com</common-name>
                             <expiry-epoch>1778344573</expiry-epoch>
                             <ca>no</ca>
@@ -1043,7 +1043,7 @@ TestCertificate2
             <issuer-hash>88888888</issuer-hash>
             <not-valid-before>Jun  6 23:20:20 2025 GMT</not-valid-before>
             <issuer>/CN=Test cert on firewall for panorama</issuer>
-            <not-valid-after>Jun  6 23:20:20 2026 GMT</not-valid-after>
+            <not-valid-after>Jun  6 23:20:20 2050 GMT</not-valid-after>
             <common-name>Test cert on firewall for panorama</common-name>
             <expiry-epoch>1780788020</expiry-epoch>
             <ca>yes</ca>
@@ -1060,7 +1060,7 @@ testcert3
             <issuer-hash>66666666</issuer-hash>
             <not-valid-before>Jun  6 23:30:57 2025 GMT</not-valid-before>
             <issuer>/CN=Test cert on firewall for panorama</issuer>
-            <not-valid-after>Jun  6 23:30:57 2026 GMT</not-valid-after>
+            <not-valid-after>Jun  6 23:30:57 2050 GMT</not-valid-after>
             <common-name>Test panorama client cert</common-name>
             <expiry-epoch>1780788657</expiry-epoch>
             <ca>no</ca>

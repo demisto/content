@@ -1,8 +1,8 @@
-# Trend Micro Vision One
+# TrendAI Vision One™
 
 ## Overview
 
-Trend Micro Vision One is a cybersecurity platform that provides one central place to see, detect, and respond to threats across your organization's IT environment.  
+TrendAI Vision One™ is a cybersecurity platform that provides one central place to see, detect, and respond to threats across your organization's IT environment.  
 It does this by combining critical security capabilities, such as Attack Surface Risk Management (ASRM) and Extended Detection and Response (XDR) into a single, integrated architecture.
 
 <~XSIAM>
@@ -11,7 +11,7 @@ It does this by combining critical security capabilities, such as Attack Surface
 
 ### Data Normalization and Querying Capabilities
 
-* Data modeling rules to normalize Trend Micro Vision One logs that are ingested via _TrendMicroVisionOneEventCollector_ to Cortex XSIAM.
+* Data modeling rules to normalize TrendAI Vision One™ logs that are ingested via _TrendMicroVisionOneEventCollector_ to Cortex XSIAM.
 * Querying ingested logs in XQL Search using the _trend_micro_vision_one_raw_ dataset.
 
 ## Supported Log Categories
@@ -27,11 +27,11 @@ It does this by combining critical security capabilities, such as Attack Surface
 
 ## Enable Data Collection
 
-### Configure Trend Micro Vision One
+### Configure TrendAI Vision One™
 
-Send an invitation to be added as an account. For more information, see the Trend Micro Vision One documentation [here.](https://automation.trendmicro.com/xdr/api-v3/#tag/Accounts-(Foundation-Services-release)/paths/~1v3.0~1iam~1accounts/post)
+Send an invitation to be added as an account. For more information, see the TrendAI Vision One™ documentation [here.](https://automation.trendmicro.com/xdr/api-v3/#tag/Accounts-(Foundation-Services-release)/paths/~1v3.0~1iam~1accounts/post)
 
-1. Log in to your Trend Micro Vision One console.
+1. Log in to your TrendAI Vision One™ console.
 2. Navigate to **Administration** → **User Accounts**.
 3. Select the **Roles** tab and create a new custom role.
 4. In the **Permissions** section, navigate to **Platform Capabilities** → **XDR Threat Investigation** and enable the following permissions:
@@ -46,13 +46,13 @@ For a configuration example from Sekoia, see [here](https://docs.sekoia.io/integ
 
 ### Configure Cortex XSIAM
 
-To fetch events from Trend Micro Vision One, see the integration configuration details [here](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one-event-collector).
+To fetch events from TrendAI Vision One™, see the integration configuration details [here](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one-event-collector).
 
 1. Navigate to **Settings** → **Configuration** → **Data Collection** → **Automation & Feed Integrations**.
-2. Search for Trend Micro Vision One.
+2. Search for TrendAI Vision One.
 3. Click **Add Instance**.
 4. Insert the **Server URL**.
-5. Insert the **API Key** generated from Trend Micro Vision One.
+5. Insert the **API Key** generated from TrendAI Vision One™.
 6. Under _Collect_, select on **Fetch events**.
 
 </~XSIAM>

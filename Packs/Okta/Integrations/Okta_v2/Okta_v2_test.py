@@ -7,6 +7,7 @@ from Okta_v2 import (
     Client,
     apply_zone_updates,
     assign_group_to_app_command,
+    clear_user_sessions_command,
     create_group_command,
     create_user_command,
     create_zone_command,
@@ -1387,3 +1388,53 @@ def test_extract_user_and_factor_id_from_url_failure(url):
 
     with pytest.raises(DemistoException, match="Could not extract user ID and Factor ID from the polling URL"):
         extract_user_and_factor_id_from_url(url)
+
+
+def test_clear_user_sessions_with_oauth_tokens(mocker):
+    """
+    Given:
+        - Arguments for clear_user_sessions_command with revokeOauthTokens set to true.
+    When:
+        - Running clear_user_sessions_command.
+    Then:
+        - Ensure the clear_user_sessions method is called with revoke_oauth_tokens=True.
+        - Ensure the API is called with the oauthTokens query parameter.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value="")
+    client.request_metadata = {}
+
+    args = {"userId": "TestUserID456", "revokeOauthTokens": "true"}
+    readable_output, outputs, raw_response = clear_user_sessions_command(client, args)
+
+    mock_http_request.assert_called_once_with(
+        method="DELETE",
+        url_suffix="/api/v1/users/TestUserID456/sessions",
+        params={"oauthTokens": True},
+        resp_type="text",
+    )
+    assert "TestUserID456" in readable_output
+
+
+def test_clear_user_sessions_without_oauth_tokens(mocker):
+    """
+    Given:
+        - Arguments for clear_user_sessions_command with revokeOauthTokens set to false.
+    When:
+        - Running clear_user_sessions_command.
+    Then:
+        - Ensure the clear_user_sessions method is called with revoke_oauth_tokens=False.
+        - Ensure the API is called without the oauthTokens query parameter.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value="")
+    client.request_metadata = {}
+
+    args = {"userId": "TestUserID789", "revokeOauthTokens": "false"}
+    readable_output, outputs, raw_response = clear_user_sessions_command(client, args)
+
+    mock_http_request.assert_called_once_with(
+        method="DELETE",
+        url_suffix="/api/v1/users/TestUserID789/sessions",
+        params={"oauthTokens": False},
+        resp_type="text",
+    )
+    assert "TestUserID789" in readable_output

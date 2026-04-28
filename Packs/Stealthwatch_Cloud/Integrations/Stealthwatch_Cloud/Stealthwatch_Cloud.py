@@ -24,10 +24,9 @@ DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/js
 """ HELPER FUNCTIONS """
 
 if not demisto.params()["proxy"]:
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 
 def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, data=None):

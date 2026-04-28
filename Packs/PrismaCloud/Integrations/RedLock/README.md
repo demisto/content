@@ -581,7 +581,7 @@ Run RQL query on Prisma Cloud
                                         "GroupName": "test"
                                     },
                                     {
-                                        "GroupId": "sg-1234567898765",
+                                        "GroupId": "sg-1255598765432",
                                         "GroupName": "test"
                                     }
                                 ],
@@ -649,7 +649,7 @@ Run RQL query on Prisma Cloud
                                         "GroupName": "test"
                                     },
                                     {
-                                        "GroupId": "sg-1234567898765",
+                                        "GroupId": "sg-1255598765432",
                                         "GroupName": "test"
                                     }
                                 ],
@@ -716,7 +716,7 @@ Run RQL query on Prisma Cloud
                                 "GroupName": "test"
                             },
                             {
-                                "GroupId": "sg-1234567898765",
+                                "GroupId": "sg-1255598765432",
                                 "GroupName": "test"
                             }
                         ],

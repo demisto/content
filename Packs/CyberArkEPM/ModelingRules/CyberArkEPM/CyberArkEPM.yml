@@ -4,3 +4,5 @@ name: CyberArk EPM Modeling Rule
 rules: ''
 schema: ''
 tags: CyberArk
+supportedModules:
+- xsiam

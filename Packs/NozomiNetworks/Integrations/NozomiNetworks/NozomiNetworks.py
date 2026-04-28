@@ -41,6 +41,7 @@ class Client:
         if self.proxy:
             return handle_proxy()
         else:
+            skip_proxy()
             return {}
 
     def build_headers(self):

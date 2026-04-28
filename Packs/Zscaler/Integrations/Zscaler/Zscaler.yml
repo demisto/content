@@ -178,6 +178,51 @@ script:
       type: number
   - arguments:
     - default: true
+      description: A comma-separated list of Domains for which to look up the classification. For example, abc.com,xyz.com.
+      isArray: true
+      name: domain
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether there are multiple Domains in the 'domain' argument. If a Domain contains commas, set this argument to 'false' and enter the single Domain as the 'domain' argument.
+      name: multiple
+      predefined:
+      - 'true'
+      - 'false'
+    description: Looks up the classification for each of the specified Domains.
+    name: domain
+    compliantpolicies:
+    - User Soft Remediation
+    outputs:
+    - contextPath: Domain.Name
+      description: The Domain that was searched.
+      type: string
+    - contextPath: Zscaler.Domain.domainClassifications
+      description: The classification of the Domain. For example, MUSIC or WEB_SEARCH.
+      type: string
+    - contextPath: Zscaler.Domain.domainClassificationsWithSecurityAlert
+      description: The classifications of the Domains that have security alerts.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that tagged the Domain as malicious.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the reason the vendor tagged the Domain as malicious.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  - arguments:
+    - default: true
       description: A comma-separated list of URLs to remove from the block list. For example, snapchat.com,facebook.com.
       isArray: true
       name: url
@@ -1848,6 +1893,13 @@ script:
       description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
       defaultValue: "False"
       type: textArea
+    - name: override
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: When set to true (default), the existing IP destination group configuration is replaced with the new values. When set to false, the existing configuration is preserved and new entries are appended.
+      defaultValue: "True"
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
       description: Unique identifier for the destination IP group.
@@ -1955,7 +2007,7 @@ script:
     description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.6796194
+  dockerimage: demisto/python3:3.12.12.7090913
   type: python
 fromversion: 5.0.0
 tests:

@@ -104,9 +104,12 @@ args:
   isArray: true
   name: entities
 - auto: PREDEFINED
-  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
+  description: |-
+    A comma-separated list of entity types used to filter results.
+    When provided, the response includes only entities that match the specified types. For example, if searching relationships for example.com and related_entity_types is set to IP, the results will only include related IP addresses, excluding other types like files or URLs.
+    Note: Leave this field empty to return all related entity types.
   isArray: true
-  name: entities_types
+  name: related_entity_types
   predefined:
   - IP
   - Domain

@@ -23,6 +23,43 @@ configuration:
   type: 9
   required: false
   section: Connect
+- display: Region
+  name: region
+  options:
+  - us-central1
+  - us-east1
+  - us-east4
+  - us-east5
+  - us-south1
+  - us-west1
+  - us-west2
+  - us-west3
+  - us-west4
+  - northamerica-northeast1
+  - northamerica-northeast2
+  - southamerica-east1
+  - europe-west1
+  - europe-west2
+  - europe-west3
+  - europe-west4
+  - europe-west6
+  - europe-west8
+  - europe-west9
+  - europe-north1
+  - europe-central2
+  - asia-east1
+  - asia-east2
+  - asia-northeast1
+  - asia-northeast2
+  - asia-northeast3
+  - asia-south1
+  - asia-southeast1
+  - australia-southeast1
+  type: 15
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: The geographic location where the connectivity test should run.
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'

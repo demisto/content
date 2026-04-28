@@ -2109,3 +2109,321 @@ def test_list_temp_access_pass_method_command_get_specific(mocker, client):
 
     assert result.outputs_prefix == "MSGraphUser.TempAccessPassAuthMethod"
     assert "WTemporary Access Pass Method tap-method-id-1 for User test-user" in result.readable_output
+
+
+def test_request_mfa_command(mocker):
+    """
+    Given:
+        - A user email and access token.
+    When:
+        - Running request_mfa_command.
+    Then:
+        - Ensure the command calls push_mfa_notification and returns the result.
+    """
+    from MicrosoftGraphUser import MsGraphClient, request_mfa_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_mail": "test@test.com", "access_token": "token", "timeout": "30"}
+    expected_output = "Status: User Approved MFA Request"
+
+    mocker.patch.object(client, "push_mfa_notification", return_value=expected_output)
+
+    result = request_mfa_command(client, args)
+
+    assert result.readable_output == expected_output
+    client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
+
+
+def test_request_mfa_command_declined(mocker):
+    """
+    Given:
+        - A user email and access token.
+    When:
+        - Running request_mfa_command.
+    Then:
+        - Ensure the command calls push_mfa_notification and returns the result.
+    """
+    from MicrosoftGraphUser import MsGraphClient, request_mfa_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_mail": "test@test.com", "access_token": "token", "timeout": "30"}
+    expected_output = "Status: User Denied Request"
+
+    mocker.patch.object(client, "push_mfa_notification", side_effect=DemistoException(expected_output))
+
+    with pytest.raises(DemistoException) as e:
+        request_mfa_command(client, args)
+
+    assert expected_output in str(e.value)
+    client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
+
+
+def test_request_mfa_command_timeout(mocker):
+    """
+    Given:
+        - A user email and access token.
+    When:
+        - Running request_mfa_command.
+    Then:
+        - Ensure the command calls push_mfa_notification and returns the result.
+    """
+    from MicrosoftGraphUser import MsGraphClient, request_mfa_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_mail": "test@test.com", "access_token": "token", "timeout": "30"}
+    expected_output = "Status: MFA Request Timed Out"
+
+    mocker.patch.object(client, "push_mfa_notification", side_effect=DemistoException(expected_output))
+
+    with pytest.raises(DemistoException) as e:
+        request_mfa_command(client, args)
+
+    assert expected_output in str(e.value)
+    client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
+
+
+def test_request_mfa_command_failed(mocker):
+    """
+    Given:
+        - A user email and access token.
+    When:
+        - Running request_mfa_command.
+    Then:
+        - Ensure the command calls push_mfa_notification and returns the result.
+    """
+    from MicrosoftGraphUser import MsGraphClient, request_mfa_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_mail": "test@test.com", "access_token": "token", "timeout": "30"}
+    expected_output = "Status: MFA Request Failed - No specific message"
+
+    mocker.patch.object(client, "push_mfa_notification", side_effect=DemistoException(expected_output))
+
+    with pytest.raises(DemistoException) as e:
+        request_mfa_command(client, args)
+
+    assert expected_output in str(e.value)
+    client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
+
+
+def test_request_mfa_command_parsing_error(mocker):
+    """
+    Given:
+        - A user email and access token.
+    When:
+        - Running request_mfa_command.
+    Then:
+        - Ensure the command calls push_mfa_notification and returns the result.
+    """
+    from MicrosoftGraphUser import MsGraphClient, request_mfa_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_mail": "test@test.com", "access_token": "token", "timeout": "30"}
+    expected_output = "Error: Could not parse MFA response."
+
+    mocker.patch.object(client, "push_mfa_notification", side_effect=DemistoException(expected_output))
+
+    with pytest.raises(DemistoException) as e:
+        request_mfa_command(client, args)
+
+    assert expected_output in str(e.value)
+    client.push_mfa_notification.assert_called_once_with("test@test.com", 30, "token")
+
+
+def test_get_default_auth_methods_command(mocker):
+    """
+    Given:
+        - A user.
+    When:
+        - Running get_default_auth_methods_command.
+    Then:
+        - Ensure the command calls get_sign_in_preferences and returns the correct outputs.
+    """
+    from MicrosoftGraphUser import MsGraphClient, get_default_auth_methods_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user": "test@test.com"}
+    mock_preferences = {
+        "userPreferredMethodForSecondaryAuthentication": "push",
+        "systemPreferredAuthenticationMethod": "sms",
+        "isSystemPreferredAuthenticationMethodEnabled": True,
+    }
+
+    mocker.patch.object(client, "get_sign_in_preferences", return_value=mock_preferences)
+
+    result = get_default_auth_methods_command(client, args)
+
+    assert result.outputs["MSGraphUser.AuthMethod(val.User === obj.User)"]["DefaultMethod"] == "push"
+    assert result.outputs["MSGraphUser.AuthMethod(val.User === obj.User)"]["User"] == "test@test.com"
+    assert "Default Auth Method:** push" in result.readable_output
+
+
+def test_create_client_secret_command(mocker):
+    """
+    Given:
+        - allow_secret_generators param.
+    When:
+        - Running create_client_secret_command.
+    Then:
+        - Ensure the command calls request_mfa_app_secret when allowed, and raises error when not.
+    """
+    from MicrosoftGraphUser import MsGraphClient, create_client_secret_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    # Case 1: Not allowed
+    params = {"allow_secret_generators": "False"}
+    with pytest.raises(DemistoException) as e:
+        create_client_secret_command(client, {}, params)
+    assert "Allow secret generators commands execution" in str(e.value)
+
+    # Case 2: Allowed
+    params = {"allow_secret_generators": "True"}
+    mock_secret = {"secretText": "secret_value", "startDateTime": "2023-01-01T00:00:00Z", "endDateTime": "2025-01-01T00:00:00Z"}
+    mocker.patch.object(client, "request_mfa_app_secret", return_value=mock_secret)
+
+    result = create_client_secret_command(client, {}, params)
+
+    assert result.outputs["MFAClientSecret"] == "secret_value"
+    assert result.outputs["ValidFrom"] == "2023-01-01T00:00:00Z"
+
+
+def test_create_access_token_command(mocker):
+    """
+    Given:
+        - allow_secret_generators param and client secret.
+    When:
+        - Running create_access_token_command.
+    Then:
+        - Ensure the command calls get_mfa_app_client_token when allowed, and raises error when not.
+    """
+    from MicrosoftGraphUser import MsGraphClient, create_access_token_command, DemistoException
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    # Case 1: Not allowed
+    params = {"allow_secret_generators": "False"}
+    with pytest.raises(DemistoException) as e:
+        create_access_token_command(client, {}, params)
+    assert "Allow secret generators commands execution" in str(e.value)
+
+    # Case 2: Allowed
+    params = {"allow_secret_generators": "True"}
+    args = {"client_secret": "secret"}
+    mock_token = {"AccessToken": "access_token_value", "ValidUntil": "2023-01-01T01:00:00Z"}
+    mocker.patch.object(client, "get_mfa_app_client_token", return_value=mock_token)
+
+    result = create_access_token_command(client, args, params)
+
+    assert result.outputs["AccessToken"] == "access_token_value"
+    assert result.outputs["ValidUntil"] == "2023-01-01T01:00:00Z"

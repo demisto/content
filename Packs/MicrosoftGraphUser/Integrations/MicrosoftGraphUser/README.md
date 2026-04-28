@@ -41,6 +41,7 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 | Trust any certificate (not secure)                                     |                                                                                                                                                                                                                                                                                                                                                        | False        |
 | Use system proxy settings                                              |                                                                                                                                                                                                                                                                                                                                                        | False        |
 | Suppress Errors for Non Found Users                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
+| Allow secret generators commands execution                                     |      Checking this box will allow running commands that generate and print secrets. Make sure to add restrictions to the related commands. For more information please refer to the following guide - MFA guide                                                                                                                                                                                                                                                                                                                                                  | False        |
 
 Azure cloud options
 
@@ -1362,3 +1363,49 @@ method_id | The ID of the Temporary Access Pass authentication method to delete.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-user-request-mfa
+
+***
+Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
+
+#### Base Command
+
+`msgraph-user-request-mfa`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_mail | The user mail to send the MFA request to. | Required |
+| timeout | The timeout for the MFA request. Default is 60. | Optional |
+| access_token | The MFA access token obtained from msgraph-user-create-mfa-client-access-token command. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-get-user-default-auth-method
+
+***
+Retrieves the authentication preferences for a user, including the default method.
+
+#### Base Command
+
+`msgraph-user-get-user-default-auth-method`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.AuthMethod.User | String | The user principal name. |
+| MSGraphUser.AuthMethod.DefaultMethod | String | The default authentication method for the user. |
+| MSGraphUser.AuthMethod.IsSystemPreferredAuthenticationMethodEnabled | Boolean | Whether system-preferred authentication is enabled. |
+| MSGraphUser.AuthMethod.UserPreferredMethodForSecondaryAuthentication | String | The user's preferred method for secondary authentication. |
+| MSGraphUser.AuthMethod.SystemPreferredAuthenticationMethod | String | The system-preferred authentication method. |

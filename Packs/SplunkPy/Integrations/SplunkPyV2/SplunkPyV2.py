@@ -828,10 +828,8 @@ def fetch_findings(
 
 def fetch_incidents(service: client.Service, mapper: UserMappingObject):
     if ENABLED_ENRICHMENTS:
-        integration_context = get_integration_context()
-        last_run = demisto.getLastRun()
-
-        if not last_run and integration_context:
+        integration_context = get_integration_context() or {}
+        if not demisto.getLastRun() and INCIDENTS in integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
@@ -841,10 +839,10 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject):
                 "If this message appears repeatedly, consider running the 'splunk-reset-enriching-fetch-mechanism' command "
                 "to clear stale data and reset the enrichment mechanism."
             )
-            demisto.debug("running fetch_incidents_for_mapping")
 
             fetch_incidents_for_mapping(integration_context)
-            # Set DUMMY in last_run to prevent this path from being triggered again if incorrectly called
+            # We set the dummy last run to avoid entering this case again in the next fetch
+            # this will set the last run object only if this is a regular fetch
             demisto.setLastRun({DUMMY: DUMMY})
         else:
             demisto.debug("running run_enrichment_mechanism")
@@ -2954,6 +2952,43 @@ def get_cim_mapping_field_command() -> dict[str, dict[str, Any]]:
 # =========== Integration Functions & Classes ===========
 
 
+RESPONSE_SIZE_WARN_THRESHOLD = 20 * 1024 * 1024  # 20 MB
+RESPONSE_SIZE_WARN_MESSAGE = (
+    "WARNING: Response size ({current_mb:.2f} MB) exceeds the normal usage size of {threshold_mb} MB. "
+    "Consider reducing the amount of data returned by your search query. "
+    "See the 'Large Search Results' section in the integration documentation for more information."
+)
+
+
+class ResponseSizeValidator:
+    """Validates response size and reports warnings only once after all data is collected."""
+
+    def __init__(self):
+        self.validated = False
+
+    def validate_and_report(self, data_to_return: list[dict[str, Any]]):
+        """Check the size of data that will actually be returned and report warning only once.
+
+        Args:
+            data_to_return: The list of results that will be returned to the user
+        """
+        if self.validated:
+            # Already validated and reported, don't do it again
+            return
+
+        self.validated = True
+
+        # Calculate the actual size of the data that will be returned
+        data_json = json.dumps(data_to_return)
+        actual_size = len(data_json.encode("utf-8"))
+        if actual_size > RESPONSE_SIZE_WARN_THRESHOLD:
+            return_results(
+                RESPONSE_SIZE_WARN_MESSAGE.format(
+                    current_mb=actual_size / (1024 * 1024), threshold_mb=RESPONSE_SIZE_WARN_THRESHOLD / (1024 * 1024)
+                )
+            )
+
+
 class ResponseReaderWrapper(io.RawIOBase):
     """This class was supplied as a solution for a bug in Splunk causing the search to run slowly."""
 
@@ -3013,12 +3048,15 @@ def add_investigation_note(
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}/notes"
 
     demisto.debug(f"Adding note to investigation/finding {investigation_or_finding_id}")
-    query_params = {"notable_time": "now"}
-    response = service.post(endpoint, body=json.dumps(body), **query_params)
+    try:
+        response = service.post(endpoint, body=json.dumps(body))
+    except Exception as e:
+        demisto.debug(f"Failed to add note without notable_time param, retrying with notable_time=now. Error: {e!s}")
+        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+
     response_data = response.body.read()
     result = json.loads(response_data)
     demisto.debug(f"Note added successfully: {result}")
-
     return result
 
 
@@ -3066,10 +3104,6 @@ def update_investigation_or_finding(
         demisto.debug(f"No fields to update for investigation/finding {investigation_or_finding_id}")
         return {"success": False, "message": "No fields provided to update"}
 
-    # Add notable_time query parameter
-    query_params = {"notable_time": "now"}
-
-    # Build the relative endpoint path
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}"
 
     demisto.debug(
@@ -3077,21 +3111,18 @@ def update_investigation_or_finding(
     )
 
     try:
-        # Use service.post() to send POST request to the management port (8089)
-        # Parameters are passed as POST form fields
-        response = service.post(endpoint, body=json.dumps(body), **query_params)
-
-        # Parse the response
-        response_data = response.body.read()
-        result = json.loads(response_data)
-
-        demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
-        return result
-
+        response = service.post(endpoint, body=json.dumps(body))
     except Exception as e:
-        error_msg = f"Failed to update investigation/finding {investigation_or_finding_id} via v2 API: {e!s}"
-        demisto.error(error_msg)
-        raise Exception(error_msg)
+        demisto.debug(
+            f"Failed to update investigation/finding {investigation_or_finding_id} without notable_time param, "
+            f"retrying with notable_time=now. Error: {e!s}"
+        )
+        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+
+    response_data = response.body.read()
+    result = json.loads(response_data)
+    demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
+    return result
 
 
 def severity_to_level(severity: str | None) -> int | float:
@@ -3365,6 +3396,11 @@ def splunk_search_command(service: client.Service, args: dict[str, Any]) -> Comm
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
+
+    # Validate response size only on the data that will actually be returned
+    size_validator = ResponseSizeValidator()
+    size_validator.validate_and_report(total_parsed_results)
+
     entry_context_splunk_search, entry_context_dbot_score = create_entry_context(
         args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid)
     )

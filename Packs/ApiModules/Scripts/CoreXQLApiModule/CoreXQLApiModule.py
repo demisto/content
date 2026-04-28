@@ -168,6 +168,50 @@ class CoreClient(BaseClient):
         res = self._http_request(method="POST", url_suffix="/xql/get_quota", json_data=data)
         return res
 
+    def get_xql_queries(self, request_data: dict):
+        """
+        Gets a list of XQL queries from the library.
+        Args:
+            request_data (dict): The request data
+        Returns:
+            dict: A dict of XQL queries and the queries count.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="../xql_library/get",  # The endpoint is without v1
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
+    def create_xql_queries(self, request_data):
+        """
+        Creates or updates XQL queries in the library.
+        Args:
+            request_data (dict): The request data.
+        Returns:
+            dict: The API response.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="../xql_library/insert",  # The endpoint is without v1
+            json_data=request_data,
+        )
+
+    def delete_xql_queries(self, request_data: dict):
+        """
+        Deletes XQL queries from the library.
+        Args:
+            request_data (dict): List of XQL query names to delete.
+        Returns:
+            dict: The API response.
+        """
+        # The API returns 200 even if xql query doesn't exist
+        return self._http_request(
+            method="POST",
+            url_suffix="../xql_library/delete",  # The endpoint is without v1
+            json_data=request_data,
+        )
+
 
 # =========================================== Built-In Queries Helpers ===========================================#
 
@@ -841,6 +885,111 @@ def get_xql_quota_command(client: CoreClient, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def xql_library_list_command(client: CoreClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-XQL-Queries
+    Gets a list of XQL queries from the library.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    extended_view = argToBoolean(args.get("extra_data", "False"))
+    xql_query_name = argToList(args.get("xql_query_name", []))
+    xql_query_tag = argToList(args.get("xql_query_tag", []))
+
+    request_data = assign_params(extended_view=extended_view, xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
+
+    queries = client.get_xql_queries({"request_data": request_data})
+    xql_queries = queries.get("xql_queries", [])
+    for query in xql_queries:
+        query.pop("query_metadata", None)
+
+    if not extended_view:
+        # Aligning the context outputs to match the outputs where extra_data is selected
+        for query in xql_queries:
+            query["name"] = query.pop("xql_query_name", None)
+            query["query_text"] = query.pop("xql_query", None)
+            query["labels"] = query.pop("xql_query_tags", None)
+
+    readable_output = tableToMarkdown(
+        name="XQL Queries",
+        t=xql_queries,
+        headers=[
+            "id",
+            "name",
+            "query_text",
+            "description",
+            "content_global_id",
+            "created_at",
+            "created_by",
+            "modified_by",
+            "is_private",
+            "labels",
+            "modified_at",
+            "created_by_pretty",
+            "modified_by_pretty",
+        ],
+        removeNull=True,
+        date_fields=["created_at", "modified_at"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksXQL.Library",
+        outputs=xql_queries,
+        outputs_key_field="name",
+        raw_response=xql_queries,
+    )
+
+
+def xql_library_create_command(client: CoreClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-XQL-queries
+    Creates or updates XQL query in the library.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    override_existing = argToBoolean(args.get("override_existing"))
+    xql_query = args.get("xql_query")
+    xql_query_name = args.get("xql_query_name")
+    xql_query_tag = args.get("xql_query_tag")
+
+    request_data = assign_params(
+        xql_queries_override=override_existing,
+        xql_query_tags=xql_query_tag,
+        xql_queries=[{"xql_query": xql_query, "xql_query_name": xql_query_name}],
+    )
+    client.create_xql_queries({"request_data": request_data})
+
+    return CommandResults(readable_output="XQL queries created successfully.")
+
+
+def xql_library_delete_command(client: CoreClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-XQL-Queries
+    Deletes XQL queries from the library.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    xql_query_name = argToList(args.get("xql_query_name", []))
+    xql_query_tag = argToList(args.get("xql_query_tag", []))
+
+    request_data = assign_params(xql_query_names=xql_query_name, xql_query_tags=xql_query_tag)
+
+    client.delete_xql_queries({"request_data": request_data})
+
+    return CommandResults(readable_output="XQL queries deleted successfully.")
+
+
 # =========================================== Built-In Queries ===========================================#
 
 
@@ -928,4 +1077,7 @@ GENERIC_QUERY_COMMANDS = {
     "xdr-xql-generic-query": start_xql_query_polling_command,
     "xdr-xql-get-query-results": get_xql_query_results_polling_command,
     "xdr-xql-get-quota": get_xql_quota_command,
+    "xdr-xql-library-delete": xql_library_delete_command,
+    "xdr-xql-library-create": xql_library_create_command,
+    "xdr-xql-library-list": xql_library_list_command,
 }

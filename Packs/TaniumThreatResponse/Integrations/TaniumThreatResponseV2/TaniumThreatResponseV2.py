@@ -1690,7 +1690,7 @@ def get_downloaded_file(client, data_args):
         "GET", f"plugin/products/threat-response/api/v1/filedownload/data/{file_id}", resp_type="content"
     )
 
-    filename = re.findall("(?<=filename=)(?s)(.*$)", content_desc)[0]
+    filename = re.findall("(?s)(?<=filename=)(.*$)", content_desc)[0]
 
     demisto.results(fileResult(filename, file_content))
 
