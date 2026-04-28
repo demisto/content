@@ -31,26 +31,22 @@ def test_build_ioc_relationship_obj(mocker):
     assert raw_iocs_ti_data["IN_DATA_5"][0] == da
 
 
-# def test_build_threat_actor_relationship_obj(mocker):
-#     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-#     ins_data_in = raw_iocs_ti_data["intrusion_set"]
-#     raw_iocs_data = util_load_json("test_data/iocs.json")
-#     ta_data = raw_iocs_data["IN_DATA_3"]
+def test_build_threat_intel_indicator_obj(mocker):
+    raw_ti_data = util_load_json("test_data/iocs_ti.json")
 
-#     client = Client(
-#         base_url="test_url",
-#         verify=False,
-#         proxy=False,
-#     )
+    # raw_iocs_data = util_load_json("test_data/iocs.json")
+    # ta_data = raw_iocs_data["IN_DATA_3"]
 
-#     ins_data_out = client.build_threat_intel_indicator_obj(
-#         data=ins_data_in[0],
-#         tlp_color="tlp_color",
-#         feed_tags=["feedTags"],
-#     )
+    client = Client(
+        base_url="test_url",
+        verify=False,
+        proxy=False,
+    )
 
-#     da_re = client.build_threat_actor_relationship_obj(ta_data[0], ins_data_out)
-#     assert raw_iocs_data["IN_DATA_6"][0] == da_re
+    da_re = client.build_threat_intel_indicator_obj(
+        data=raw_ti_data["threat_actors"][0], tlp_color="tlp_color", feed_tags=["feedTags"]
+    )
+    assert da_re["value"] == "Gamaredon"
 
 
 def test_build_ta_relationships_data(mocker):
@@ -82,28 +78,25 @@ def test_build_ta_relationships_data(mocker):
     # assert ("rawJSON" in ta_source_obj) is True
 
 
-# def test_add_tags(mocker):
-#     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-#     ti_data = raw_iocs_ti_data["threat_actors"]
+def test_build_threat_actor_relationship_obj(mocker):
+    raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
+    raw_ti_data = raw_iocs_ti_data["ta_relationships"]
 
-#     raw_iocs_data = util_load_json("test_data/iocs.json")
-#     ta_data = raw_iocs_data["IN_DATA_3"][0]
+    client = Client(
+        base_url="test_url",
+        verify=False,
+        proxy=False,
+    )
 
-#     client = Client(
-#         base_url="test_url",
-#         verify=False,
-#         proxy=False,
-#     )
+    source_data = da_re = client.build_threat_intel_indicator_obj(
+        data=raw_ti_data[0], tlp_color="tlp_color", feed_tags=["feedTags"]
+    )
 
-#     ta_data_out = client.build_threat_intel_indicator_obj(
-#         data=ti_data[0],
-#         tlp_color="tlp_color",
-#         feed_tags=["feedTags"],
-#     )
-#     al = ["sample"]
-#     client.add_tags(ta_data_out, al)
-#     # ta_data["fields"]["tags"].extend(al)
-#     assert "sample" in ta_data_out["fields"]["tags"]
+    target_data = client.build_threat_intel_indicator_obj(data=raw_ti_data[1], tlp_color="tlp_color", feed_tags=["feedTags"])
+    da_re = client.build_threat_actor_relationship_obj(source_data=source_data, target_data=target_data)
+    assert da_re is not None
+    assert da_re["entityA"] == "Gamaredon"
+    assert da_re["entityB"] == "CVE-2021-40444"
 
 
 def test_convert_decyfir_ioc_to_indicators_formats(mocker):
@@ -151,7 +144,6 @@ def test_fetch_indicators(mocker):
 def test_get_indicator_type(mocker):
     from decyfiriocs import Client
 
-    # raw_data = util_load_json("test_data/iocs_ti.json")
     client = Client(
         base_url="test_url",
         verify=False,
@@ -206,7 +198,7 @@ def test_decyfir_file_indicator_command(mocker):
 
 
 def test_command_results(mocker):
-    from decyfiriocs import Client, command_results
+    from decyfiriocs import command_results
 
     raw_data = util_load_json("test_data/iocs_ti.json")
 

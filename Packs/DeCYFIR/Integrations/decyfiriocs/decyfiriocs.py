@@ -84,6 +84,7 @@ RELATIONSHIPS_MAPPING_TYPES = {
     ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
     ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
     FeedIndicatorType.CVE: EntityRelationship.Relationships.TARGETS,
+    "vulnerability": EntityRelationship.Relationships.TARGETS,
     ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES,
 }
 
@@ -111,7 +112,7 @@ class Client(BaseClient):
             name=relation_type, entity_a=source_value, entity_a_type=source_type, entity_b=target_value, entity_b_type=target_type
         ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]) -> Dict | None:
+    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
         target_type = target_data.get(LABEL_TYPE)
         target_value = target_data.get(LABEL_VALUE)
         source_type = source_data.get(LABEL_TYPE)

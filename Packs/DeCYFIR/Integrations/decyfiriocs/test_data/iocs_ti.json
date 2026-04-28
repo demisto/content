@@ -188,52 +188,42 @@
     "threat_actors": [
         {
             "type": "threat-actor",
-            "spec_version": "2.1",
-            "id": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
-            "created": "2023-07-17T11:27:42.558Z",
-            "modified": "2023-07-17T11:27:42.558Z",
-            "description": "China based threat actor.",
-            "aliases": [
-                "Gibberish Panda"
-            ],
-            "labels": [
-                "sample"
-            ],
-            "name": "Gibberish Panda",
-            "threat_actor_types": [
-                "crime-syndicate"
-            ],
-            "primary_motivation": "personal-gain"
-        },
-        {
-            "type": "threat-actor",
-            "spec_version": "2.1",
-            "id": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
-            "created": "2023-07-17T14:20:31.646Z",
-            "modified": "2023-07-17T14:20:31.646Z",
-            "description": "We believe this shift indicates",
-            "aliases": [
-                "Primitive Bear",
-                "Shuckworm",
-                "Trident Ursa"
-            ],
             "name": "Gamaredon",
+            "id": "threat-actor--5bfb529f-aeee-40c5-823b-579885ab4b06",
+            "spec_version": "2.1",
+            "created": "2026-04-28T06:33:39.582Z",
+            "modified": "2026-04-28T06:33:39.582Z",
+            "description": "The Gamaredon Group has been active since at least 2013 and s observed distributing new, custom developed malware. In the past, the Gamaredon Group has relied heavily on off-the-shelf tools. Our new research shows the Gamaredon Group have made a shift to custom-developed malware. We believe this shift indicates the Gamaredon Group have improved their technical capabilities",
             "threat_actor_types": [
                 "crime-syndicate"
             ],
             "primary_motivation": "personal-gain",
+            "aliases": [
+                "Primitive Bear",
+                "UAC-0027",
+                " Shuckworm",
+                "Trident Ursa",
+                "Actinium",
+                "BlueAlpha",
+                "Winterflounder",
+                "UAC-0010",
+                "Armagedon",
+                "Armageddon",
+                "Iron Tilden"
+            ],
+            "labels": [],
             "extensions": {
                 "extension-definition--d3f7a1c9-6b2e-4a58-9d0c-5e1b7a3f8c92": {
                     "extension_type": "property-extension",
                     "properties": {
                         "origin-of-country": "Russia",
-                        "target-technologies": " ",
-                        "target-industries": "Aerospace & Defense,Cryptocurrency,Software and Services,Education",
-                        "target-countries": "Myanmar,United States,Hongkong,Thailand"
+                        "target-technologies": "Office Suites Software,Web Application,Operating System",
+                        "target-industries": "Aerospace & Defense,cryptocurrency,Software and Services,Education,Government,Capital Goods,Telecommunications,Defense,Military",
+                        "target-countries": "South Korea,Cambodia,Ukraine,United Kingdom"
                     }
                 }
             },
-            "confidence": 100
+            "confidence": 90
         }
     ],
     "ta_relationships": [
