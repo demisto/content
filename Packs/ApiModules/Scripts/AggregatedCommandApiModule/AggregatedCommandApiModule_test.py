@@ -2376,7 +2376,7 @@ def test_create_and_extract_indicators_batch_valid_ips(mocker):
     assert all(i.created is False for i in instances)
     assert all(i.enriched is False for i in instances)
     assert all(i.tim_context is None for i in instances)
-    assert isinstance(hr, str) and hr
+    assert isinstance(hr, str)
 
 
 def test_create_and_extract_indicators_batch_no_matching_type(mocker):
@@ -2394,7 +2394,8 @@ def test_create_and_extract_indicators_batch_no_matching_type(mocker):
     )
     instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
     assert instances == []
-    assert isinstance(hr, str) and hr
+    assert isinstance(hr, str) 
+    assert hr
 
 
 def test_create_and_extract_indicators_batch_extract_fails(mocker):
@@ -2410,7 +2411,8 @@ def test_create_and_extract_indicators_batch_extract_fails(mocker):
 
     instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
     assert instances == []
-    assert isinstance(hr, str) and hr
+    assert isinstance(hr, str) 
+    assert hr
 
 
 def test_create_and_extract_indicators_batch_extract_exception(mocker):
