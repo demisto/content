@@ -1383,20 +1383,26 @@ def test_escape_hr_item_ids():
     Given:
         - A list of dicts containing itemId values with '+' characters
     When:
-        - Calling escape_hr_item_ids
+        - Calling escape_hr_item_ids on a copy of the data
     Then:
         - The '+' characters in itemId are escaped to '\\+' in the returned data
-        - The original data is not mutated when called on a copy
+        - The original data is not mutated
     """
+    import copy
+
     from EWSApiModule import escape_hr_item_ids
 
     items = [
         {"itemId": "AAA+BBB+CCC", "messageId": "msg1", "action": "moved"},
         {"itemId": "no_plus_here", "messageId": "msg2", "action": "moved"},
     ]
-    result = escape_hr_item_ids(items)
+    original_items = copy.deepcopy(items)
+
+    result = escape_hr_item_ids(copy.deepcopy(items))
+
     assert result[0]["itemId"] == "AAA\\+BBB\\+CCC"
     assert result[1]["itemId"] == "no_plus_here"
+    assert items == original_items
 
 
 def test_escape_hr_item_ids_single_dict():

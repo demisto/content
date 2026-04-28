@@ -1,4 +1,3 @@
-import copy
 import email
 import hashlib
 from email import _header_value_parser as parser
@@ -709,7 +708,7 @@ def search_items_in_mailbox(client: EWSClient, args: dict):  # pragma: no cover
         for item in searched_items_result:
             item["itemId"] = item.pop("id", "")
 
-    hr_items = escape_hr_item_ids(copy.deepcopy(searched_items_result))
+    hr_items = escape_hr_item_ids([{**item} for item in searched_items_result])
     readable_output = tableToMarkdown(
         "Searched items",
         hr_items,
@@ -837,7 +836,7 @@ def get_items_from_folder(client: EWSClient, args: dict):  # pragma: no cover
         "toRecipients",
         "itemId",
     ]
-    hr_items = escape_hr_item_ids(copy.deepcopy(items_result))
+    hr_items = escape_hr_item_ids([{**item} for item in items_result])
     readable_output = tableToMarkdown("Items in folder " + folder_path, hr_items, headers=hm_headers)
     output = {CONTEXT_UPDATE_EWS_ITEM: items_result}
     return readable_output, output, items_result
@@ -858,7 +857,7 @@ def get_items(client: EWSClient, args: dict):  # pragma: no cover
     items = [x for x in items if isinstance(x, Message)]
     items_as_incidents = [parse_incident_from_item(x) for x in items]
     items_to_context = [parse_item_as_dict(x, account.primary_smtp_address, True, True) for x in items]
-    hr_items = escape_hr_item_ids(copy.deepcopy(items_to_context))
+    hr_items = escape_hr_item_ids([{**item} for item in items_to_context])
     readable_output = tableToMarkdown("Get items", hr_items, ITEMS_RESULTS_HEADERS)
     output = {
         CONTEXT_UPDATE_EWS_ITEM: items_to_context,

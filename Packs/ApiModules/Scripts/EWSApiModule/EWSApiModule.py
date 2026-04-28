@@ -948,7 +948,7 @@ def switch_hr_headers(obj, hr_header_changes: dict):
     return obj_copy
 
 
-def escape_hr_item_ids(items: list[dict] | dict) -> list[dict] | dict:
+def escape_hr_item_ids(items: Union[list[dict], dict]) -> Union[list[dict], dict]:
     """Escape ``+`` in the ``itemId`` field of *items* for human-readable markdown output.
 
     ``+`` characters in Exchange item IDs can be interpreted as italic / underline
@@ -960,7 +960,7 @@ def escape_hr_item_ids(items: list[dict] | dict) -> list[dict] | dict:
     """
 
     def _escape_single(item: dict) -> dict:
-        if ITEM_ID in item:
+        if isinstance(item, dict) and isinstance(item.get(ITEM_ID), str):
             item[ITEM_ID] = item[ITEM_ID].replace("+", "\\+")
         return item
 
