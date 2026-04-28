@@ -18,7 +18,7 @@ def ip_enrichment_script(
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
     args: dict[str, Any] = {},
-    mark_mismatched_type_as_invalid: bool = False,
+    mark_mismatched_type_as_invalid: bool = True,
 ) -> CommandResults:
     """
     Enrich IP indicators.
