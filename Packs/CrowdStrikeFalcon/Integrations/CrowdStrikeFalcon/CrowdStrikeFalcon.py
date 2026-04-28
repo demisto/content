@@ -4677,11 +4677,13 @@ async def get_all_device_ids_async(client: ContentClient) -> list[str]:
             
             log_falcon_assets(f"Fetched {len(device_ids)} device IDs so far...", "debug")
 
-            # Get next offset token for continuous pagination
-            offset_token = response_data.get("meta", {}).get("pagination", {}).get("offset")
+            # Get next pagination token for continuous pagination
+            # Combined devices API uses "next" field for pagination token
+            offset_token = response_data.get("meta", {}).get("pagination", {}).get("next")
             
-            # If no offset token, we've reached the end
+            # If no next token, we've reached the end
             if not offset_token:
+                log_falcon_assets(f"No more pages. Total devices fetched: {len(device_ids)}", "debug")
                 break
 
         log_falcon_assets(f"Successfully fetched {len(device_ids)} total device IDs", "info")
@@ -4802,7 +4804,11 @@ async def process_device_vulnerabilities_parallel(
         batch_end = min(batch_start + batch_size, len(device_ids))
         device_batch = device_ids[batch_start:batch_end]
 
-        log_falcon_assets(f"Processing device batch {batch_start}-{batch_end} of {len(device_ids)}", "info")
+        log_falcon_assets(
+            f"Processing device batch {batch_start}-{batch_end} of {len(device_ids)}... "
+            f"Vulnerabilities collected so far: {total_vulnerabilities}",
+            "info"
+        )
 
         # Fetch vulnerabilities for this batch of devices in parallel
         tasks = [fetch_vulnerabilities_for_device(client, device_id, semaphore) for device_id in device_batch]
