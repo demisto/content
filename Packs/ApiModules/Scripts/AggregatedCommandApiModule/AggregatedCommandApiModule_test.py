@@ -2394,7 +2394,7 @@ def test_create_and_extract_indicators_batch_no_matching_type(mocker):
     )
     instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
     assert instances == []
-    assert isinstance(hr, str) 
+    assert isinstance(hr, str)
     assert hr
 
 
@@ -2411,7 +2411,7 @@ def test_create_and_extract_indicators_batch_extract_fails(mocker):
 
     instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
     assert instances == []
-    assert isinstance(hr, str) 
+    assert isinstance(hr, str)
     assert hr
 
 
