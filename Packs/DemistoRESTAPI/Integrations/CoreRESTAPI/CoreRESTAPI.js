@@ -187,64 +187,84 @@ var addPlaybookMetadataToRequest = function(body, command) {
 
 var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
     var requestUrl = getRequestURL(uri);
-    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
-    if (key == ''){
+
+    var key = params.apikey ? params.apikey : (params.creds_apikey ? params.creds_apikey.password : '');
+    if (key == '') {
         throw 'API Key must be provided.';
     }
-    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
-    var headers = {}
-    // in case the integration was installed before auth_method was added, the auth_method param will be empty so
-    // we will use the standard auth method
-    if (!params.auth_method || params.auth_method == 'Standard'){
-        headers = getStandardAuthMethodHeaders(key, auth_id, 'application/json')
-    }
-    else if (params.auth_method == 'Advanced') {
+
+    var auth_id = params.auth_id ? params.auth_id : (params.creds_apikey ? params.creds_apikey.identifier : '');
+
+    var headers = {};
+    if (!params.auth_method || params.auth_method == 'Standard') {
+        headers = getStandardAuthMethodHeaders(key, auth_id, 'application/json');
+    } else if (params.auth_method == 'Advanced') {
         if (!auth_id) {
             throw 'Core REST APIs - please choose "Standard Authentication method" or provide the API Key ID.';
         }
-        headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
+        headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json');
     }
-    if (requestUrl.includes("start_xql_query") && method === 'POST' ) {
+
+    if (requestUrl.includes("start_xql_query") && method === 'POST') {
         body = addPlaybookMetadataToRequest(body, command);
     }
 
-    logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
-    var res = http(
-        requestUrl,
-        {
-            Method: method,
-            Headers: headers,
-            Body: body,
-            SaveToFile: raw
-        },
-        params.insecure,
-        params.proxy,
-        undefined,
-        undefined,
-        timeout
-    );
+    var res;
+    var tries = 0;
+    var maxTries = 3;
+
+    do {
+        logDebug('Calling http() from sendRequest, try number ' + tries);
+
+        res = http(
+            requestUrl,
+            {
+                Method: method,
+                Headers: headers,
+                Body: body,
+                SaveToFile: raw
+            },
+            params.insecure,
+            params.proxy,
+            undefined,
+            undefined,
+            timeout
+        );
+
+        logDebug(
+            'Result of http() requestUrl = ' + requestUrl +
+            ' status = ' + res.Status);
+
+        tries++;
+
+    } while (tries < maxTries && res.Status && res.Status.startsWith('timeout'));
+
+    logDebug("Ran http() " + tries + " time(s)");
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        logDebug('http() request to requestUrl = ' + requestUrl + ' failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.');
-        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        logDebug('http() request failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res));
+        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl +
+              ' Failed.\nStatus code: ' + res.StatusCode +
+              '.\nBody: ' + JSON.stringify(res);
     }
-    else {
-        logDebug('http() request to requestUrl = ' + requestUrl + ' was successful.');
-    }
+
+    logDebug('http() request was successful.');
+
     if (raw) {
         return res;
-    } else {
+    }
+
+    try {
+        var response = res.Body;
         try {
-            var response = res.Body;
-            try {
-                response = JSON.parse(res.Body);
-            } catch (ex) {
-                // do nothing, already handled prior the try/catch
-            }
-            return {response: response};
+            response = JSON.parse(res.Body);
         } catch (ex) {
-            throw 'Core REST APIs - Error parsing response - http() request to requestUrl = ' + requestUrl + '\nError: ' + ex + '\nBody:' + res.Body;
+            // keep raw body if not JSON
         }
+        return { response: response };
+    } catch (ex) {
+        throw 'Core REST APIs - Error parsing response - http() request to requestUrl = ' +
+              requestUrl + '\nError: ' + ex + '\nBody:' + res.Body;
     }
 };
 

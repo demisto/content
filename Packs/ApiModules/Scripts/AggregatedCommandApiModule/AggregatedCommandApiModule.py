@@ -1014,7 +1014,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         indicator_values = " or ".join(
             {
-                f"value:{indicator_instance.extracted_value}"
+                f'value:"{indicator_instance.extracted_value}"'
                 for indicator_instance in self.indicator_instances
                 if indicator_instance.extracted_value
             }
