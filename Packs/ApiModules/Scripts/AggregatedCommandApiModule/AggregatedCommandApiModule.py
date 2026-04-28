@@ -1605,7 +1605,7 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
             f"{len(data)} inputs took {batch_extract_elapsed:.3f}s"
         )
     except Exception as ex:
-        raise DemistoException("Failed to validate input using extractIndicators.") from ex
+        raise DemistoException(f"Failed to validate input using extractIndicators: {ex}") from ex
 
     if not results:
         demisto.debug(

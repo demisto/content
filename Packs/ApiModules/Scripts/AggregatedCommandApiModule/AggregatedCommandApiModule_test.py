@@ -2404,11 +2404,15 @@ def test_create_and_extract_indicators_batch_extract_exception(mocker):
     When:
         - Calling create_and_extract_indicators_batch.
     Then:
-        - Raises DemistoException with a validation failure message.
+        - Raises DemistoException whose message includes both the validation failure
+          prefix and the original underlying error message.
     """
     mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=Exception("connection error"))
 
-    with pytest.raises(DemistoException, match="Failed to validate input using extractIndicators."):
+    with pytest.raises(
+        DemistoException,
+        match=r"Failed to validate input using extractIndicators: connection error",
+    ):
         create_and_extract_indicators_batch(["1.1.1.1"], "IP")
 
 
