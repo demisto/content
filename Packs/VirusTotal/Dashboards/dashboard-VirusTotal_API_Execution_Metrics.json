@@ -766,5 +766,9 @@
     ],
     "fromVersion": "6.8.0",
     "description": "Provides insight into API usage for the VirusTotal (API v3) integration.",
-    "isPredefined": true
+    "isPredefined": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
