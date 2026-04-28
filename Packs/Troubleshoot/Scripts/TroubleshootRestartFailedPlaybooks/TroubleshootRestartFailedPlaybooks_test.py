@@ -153,6 +153,23 @@ class TestExtractFailedTasks:
         assert len(result) == 2
         assert all(t.get("state") == "Error" for t in result)
 
+    def test_stamps_top_level_playbook_name(self):
+        """
+        GIVEN:
+            A playbook response with a top-level `name` and failed tasks.
+
+        WHEN:
+            _extract_failed_tasks is called.
+
+        THEN:
+            Each returned task should be stamped with `_playbookName` equal to
+            the top-level playbook name, so the caller can fall back to it when
+            `ancestors` is empty.
+        """
+        result = _extract_failed_tasks(MOCK_PLAYBOOK_RESPONSE, {"regular"})
+        assert len(result) == 2
+        assert all(t.get("_playbookName") == "Test Playbook" for t in result)
+
     def test_filters_by_type(self):
         """
         GIVEN:
@@ -232,7 +249,7 @@ class TestGetAlertsWithErrors:
             "executeCommand",
             return_value=[{"Contents": {"data": MOCK_ALERTS}, "Type": 1}],
         )
-        result = get_alerts_with_errors(500)
+        result = get_alerts_with_errors(200, 3)
         assert len(result) == 3
 
     def test_returns_empty_when_no_alerts(self, mocker):
@@ -251,7 +268,7 @@ class TestGetAlertsWithErrors:
             "executeCommand",
             return_value=[{"Contents": {"data": None}, "Type": 1}],
         )
-        result = get_alerts_with_errors(500)
+        result = get_alerts_with_errors(200, 3)
         assert result == []
 
     def test_raises_on_error(self, mocker):
@@ -271,7 +288,33 @@ class TestGetAlertsWithErrors:
             return_value=[{"Type": 4, "Contents": "Error occurred"}],
         )
         with pytest.raises(DemistoException, match="Failed to query alerts"):
-            get_alerts_with_errors(500)
+            get_alerts_with_errors(200, 3)
+
+    def test_passes_fromdate_argument(self, mocker):
+        """
+        GIVEN:
+            A days_back value of 5.
+
+        WHEN:
+            get_alerts_with_errors is called.
+
+        THEN:
+            The getIncidents command should be called with a 'fromdate' arg
+            and a 'size' equal to the requested max_alerts.
+        """
+        mock_exec = mocker.patch.object(
+            demisto,
+            "executeCommand",
+            return_value=[{"Contents": {"data": MOCK_ALERTS}, "Type": 1}],
+        )
+        get_alerts_with_errors(50, 5)
+
+        call_args = mock_exec.call_args[0]
+        assert call_args[0] == "getIncidents"
+        sent_args = call_args[1]
+        assert sent_args["query"] == "-status:closed"
+        assert sent_args["size"] == 50
+        assert "fromdate" in sent_args
 
 
 class TestGetFailedTasksForAlert:
@@ -503,6 +546,77 @@ class TestRestartAllFailedTasks:
         assert len(restarted) == 2
         assert len(failed) == 0
 
+    def test_playbook_name_uses_deepest_ancestor(self, mocker):
+        """
+        GIVEN:
+            A failed task whose `ancestors` chain is ["Main PB", "Sub PB"].
+
+        WHEN:
+            restart_all_failed_tasks is called.
+
+        THEN:
+            The reported PlaybookName should be the deepest (innermost)
+            ancestor, "Sub PB".
+        """
+        nested_task = [
+            {
+                "id": "task-301",
+                "type": "regular",
+                "state": "Error",
+                "task": {"name": "Inner Task"},
+                "ancestors": ["Main PB", "Sub PB"],
+            }
+        ]
+        mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.get_failed_tasks_for_alert",
+            return_value=nested_task,
+        )
+        mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.restart_task",
+            return_value={"success": True, "error": ""},
+        )
+
+        restarted, _ = restart_all_failed_tasks(MOCK_ALERTS[:1], group_size=10, sleep_time=0)
+        assert len(restarted) == 1
+        assert restarted[0]["PlaybookName"] == "Sub PB"
+
+    def test_playbook_name_falls_back_to_top_level(self, mocker):
+        """
+        GIVEN:
+            A failed task with empty `ancestors` but with `_playbookName`
+            stamped by _extract_failed_tasks (i.e. a task that lives directly
+            in the alert's main playbook).
+
+        WHEN:
+            restart_all_failed_tasks is called.
+
+        THEN:
+            The reported PlaybookName should be the stamped top-level playbook
+            name rather than an empty string.
+        """
+        top_level_task = [
+            {
+                "id": "task-401",
+                "type": "regular",
+                "state": "Error",
+                "task": {"name": "failed task"},
+                "ancestors": [],
+                "_playbookName": "My Main Playbook",
+            }
+        ]
+        mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.get_failed_tasks_for_alert",
+            return_value=top_level_task,
+        )
+        mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.restart_task",
+            return_value={"success": True, "error": ""},
+        )
+
+        restarted, _ = restart_all_failed_tasks(MOCK_ALERTS[:1], group_size=10, sleep_time=0)
+        assert len(restarted) == 1
+        assert restarted[0]["PlaybookName"] == "My Main Playbook"
+
     def test_tracks_failed_restarts(self, mocker):
         """
         GIVEN:
@@ -595,7 +709,114 @@ class TestMain:
 
         main()
 
-        mock_return.assert_called_once_with("No non-closed alerts were found.")
+        mock_return.assert_called_once_with("No non-closed alerts were found in the last 3 day(s).")
+
+    def test_max_alerts_clamped_to_limit(self, mocker):
+        """
+        GIVEN:
+            A user-supplied max_alerts of 1000 (above the 200 hard cap).
+
+        WHEN:
+            main is called.
+
+        THEN:
+            get_alerts_with_errors should be called with max_alerts=200.
+        """
+        mocker.patch.object(demisto, "args", return_value={"max_alerts": "1000"})
+        mock_get = mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.get_alerts_with_errors",
+            return_value=[],
+        )
+        mocker.patch("TroubleshootRestartFailedPlaybooks.return_results")
+
+        main()
+
+        mock_get.assert_called_once_with(200, 3)
+
+    def test_max_alerts_below_limit_is_honored(self, mocker):
+        """
+        GIVEN:
+            A user-supplied max_alerts of 50 (below the 200 hard cap).
+
+        WHEN:
+            main is called.
+
+        THEN:
+            get_alerts_with_errors should be called with max_alerts=50.
+        """
+        mocker.patch.object(demisto, "args", return_value={"max_alerts": "50"})
+        mock_get = mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.get_alerts_with_errors",
+            return_value=[],
+        )
+        mocker.patch("TroubleshootRestartFailedPlaybooks.return_results")
+
+        main()
+
+        mock_get.assert_called_once_with(50, 3)
+
+    def test_default_max_alerts_is_limit(self, mocker):
+        """
+        GIVEN:
+            No max_alerts argument provided.
+
+        WHEN:
+            main is called.
+
+        THEN:
+            get_alerts_with_errors should be called with the default of 200.
+        """
+        mocker.patch.object(demisto, "args", return_value={})
+        mock_get = mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.get_alerts_with_errors",
+            return_value=[],
+        )
+        mocker.patch("TroubleshootRestartFailedPlaybooks.return_results")
+
+        main()
+
+        mock_get.assert_called_once_with(200, 3)
+
+    def test_custom_days_back_passed_through(self, mocker):
+        """
+        GIVEN:
+            A user-supplied days_back of 7.
+
+        WHEN:
+            main is called.
+
+        THEN:
+            get_alerts_with_errors should be called with days_back=7.
+        """
+        mocker.patch.object(demisto, "args", return_value={"days_back": "7"})
+        mock_get = mocker.patch(
+            "TroubleshootRestartFailedPlaybooks.get_alerts_with_errors",
+            return_value=[],
+        )
+        mocker.patch("TroubleshootRestartFailedPlaybooks.return_results")
+
+        main()
+
+        mock_get.assert_called_once_with(200, 7)
+
+    def test_invalid_days_back(self, mocker):
+        """
+        GIVEN:
+            A days_back of 0.
+
+        WHEN:
+            main is called.
+
+        THEN:
+            return_error should be called with an appropriate message.
+        """
+        mocker.patch.object(demisto, "args", return_value={"days_back": "0"})
+        mock_error = mocker.patch("TroubleshootRestartFailedPlaybooks.return_error")
+
+        main()
+
+        mock_error.assert_called_once()
+        assert "days_back" in mock_error.call_args[0][0]
 
     def test_no_failed_tasks_found(self, mocker):
         """

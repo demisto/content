@@ -1,7 +1,10 @@
 args:
 - name: max_alerts
-  description: Maximum number of non-closed alerts to scan for failed tasks.
-  defaultValue: "500"
+  description: Maximum number of non-closed alerts to scan for failed tasks. The maximum allowed value is 200; any larger value will be clamped to 200.
+  defaultValue: "200"
+- name: days_back
+  description: Only scan non-closed alerts that were modified within this number of days back. Defaults to 3.
+  defaultValue: "3"
 - name: group_size
   description: Number of tasks to restart before pausing. Helps avoid overwhelming the system.
   defaultValue: "10"

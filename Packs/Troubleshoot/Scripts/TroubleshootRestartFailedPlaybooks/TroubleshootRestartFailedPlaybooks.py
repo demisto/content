@@ -2,28 +2,35 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-DEFAULT_MAX_ALERTS = 500
+MAX_ALERTS_LIMIT = 200
+DEFAULT_MAX_ALERTS = 200
+DEFAULT_DAYS_BACK = 3
 DEFAULT_GROUP_SIZE = 10
 DEFAULT_SLEEP_TIME = 10
-PAGE_SIZE = 100
 
 
-def get_alerts_with_errors(max_alerts: int) -> list[dict]:
+def get_alerts_with_errors(max_alerts: int, days_back: int) -> list[dict]:
     """
-    Queries all non-closed alerts and returns them.
+    Queries all non-closed alerts modified within the last `days_back` days
+    and returns them.
 
     Args:
-        max_alerts: Maximum number of alerts to retrieve.
+        max_alerts: Maximum number of alerts to retrieve (capped at MAX_ALERTS_LIMIT).
+        days_back: Only include alerts modified within the last N days.
 
     Returns:
         A list of alert/incident dictionaries.
     """
-    demisto.debug(f"Querying up to {max_alerts} non-closed alerts.")
+    demisto.debug(f"Querying up to {max_alerts} non-closed alerts modified in the last {days_back} day(s).")
+
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days_back)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
     result = demisto.executeCommand(
         "getIncidents",
         {
             "query": "-status:closed",
             "size": max_alerts,
+            "fromdate": from_date,
         },
     )
 
@@ -32,7 +39,7 @@ def get_alerts_with_errors(max_alerts: int) -> list[dict]:
 
     incidents_data = result[0].get("Contents", {}).get("data")
     alerts = incidents_data if incidents_data else []
-    demisto.debug(f"Found {len(alerts)} non-closed alerts.")
+    demisto.debug(f"Found {len(alerts)} non-closed alerts modified in the last {days_back} day(s).")
     return alerts
 
 
@@ -99,6 +106,11 @@ def _extract_failed_tasks(playbook: dict, allowed_types: set[str]) -> list[dict]
     """
     Extracts tasks in Error state from a playbook object.
 
+    Each returned task is stamped with `_playbookName` (the top-level playbook
+    name from the inv-playbook payload) so that callers can report a meaningful
+    PlaybookName even when the task has no `ancestors` (i.e. it lives directly
+    in the alert's main playbook rather than inside a nested sub-playbook).
+
     Args:
         playbook: The full playbook dictionary returned by inv-playbook/{id}.
         allowed_types: Set of task types to include (e.g., {"regular", "condition", "collection"}).
@@ -113,9 +125,15 @@ def _extract_failed_tasks(playbook: dict, allowed_types: set[str]) -> list[dict]
     if not isinstance(tasks, dict):
         return []
 
-    failed_tasks = [
-        task_data for task_data in tasks.values() if task_data.get("state") == "Error" and task_data.get("type") in allowed_types
-    ]
+    top_level_playbook_name = playbook.get("name") or playbook.get("playbookName") or ""
+
+    failed_tasks = []
+    for task_data in tasks.values():
+        if task_data.get("state") == "Error" and task_data.get("type") in allowed_types:
+            # Stamp the top-level playbook name so the caller can fall back to it
+            # when `ancestors` is empty.
+            task_data["_playbookName"] = top_level_playbook_name
+            failed_tasks.append(task_data)
 
     return filter_playbook_failures(failed_tasks) if failed_tasks else []
 
@@ -220,7 +238,12 @@ def restart_all_failed_tasks(
         for task in failed_tasks:
             task_id = task.get("id", "")
             task_name = task.get("task", {}).get("name", "Unknown")
-            playbook_name = task.get("ancestors", [""])[0] if task.get("ancestors") else ""
+            # Prefer the deepest ancestor (the innermost sub-playbook actually
+            # containing the task). Fall back to the top-level playbook name
+            # stamped by _extract_failed_tasks for tasks that have no ancestors
+            # (i.e. they live directly in the alert's main playbook).
+            ancestors = task.get("ancestors") or []
+            playbook_name = ancestors[-1] if ancestors else task.get("_playbookName", "")
 
             if not task_id:
                 continue
@@ -261,17 +284,29 @@ def restart_all_failed_tasks(
 def main() -> None:
     try:
         args = demisto.args()
-        max_alerts = int(args.get("max_alerts", DEFAULT_MAX_ALERTS))
+        requested_max_alerts = int(args.get("max_alerts", DEFAULT_MAX_ALERTS))
+        # Enforce the hard cap: if the user requests more than MAX_ALERTS_LIMIT,
+        # silently clamp to MAX_ALERTS_LIMIT. Anything <= the limit is honored.
+        max_alerts = min(requested_max_alerts, MAX_ALERTS_LIMIT)
+        if requested_max_alerts > MAX_ALERTS_LIMIT:
+            demisto.debug(
+                f"Requested max_alerts={requested_max_alerts} exceeds the hard cap; " f"clamping to {MAX_ALERTS_LIMIT}."
+            )
+
+        days_back = int(args.get("days_back", DEFAULT_DAYS_BACK))
+        if days_back < 1:
+            raise DemistoException("The days_back argument must be 1 or higher.")
+
         group_size = int(args.get("group_size", DEFAULT_GROUP_SIZE))
         sleep_time = int(args.get("sleep_time", DEFAULT_SLEEP_TIME))
 
         if group_size < 1:
             raise DemistoException("The group_size argument must be 1 or higher.")
 
-        # Step 1: Get all non-closed alerts
-        alerts = get_alerts_with_errors(max_alerts)
+        # Step 1: Get all non-closed alerts modified within the last `days_back` days.
+        alerts = get_alerts_with_errors(max_alerts, days_back)
         if not alerts:
-            return return_results("No non-closed alerts were found.")
+            return return_results(f"No non-closed alerts were found in the last {days_back} day(s).")
 
         # Step 2: Restart all failed tasks across all alerts
         restarted_tasks, failed_to_restart = restart_all_failed_tasks(alerts, group_size, sleep_time)
