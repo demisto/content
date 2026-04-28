@@ -4791,10 +4791,10 @@ async def fetch_spotlight_by_severity_parallel(
     for severity, task in severity_tasks:
         try:
             log_falcon_assets(f"Waiting for {severity} severity task to complete...", "info")
-            severity_total, severity_aids, severity_tasks = await task
+            severity_total, severity_aids, severity_tasks_result = await task
             total_vulnerabilities += severity_total
             all_unique_aids.update(severity_aids)
-            all_pending_tasks.update(severity_tasks)
+            all_pending_tasks.update(severity_tasks_result)
             log_falcon_assets(
                 f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info"
             )
@@ -5072,6 +5072,8 @@ async def process_device_vulnerabilities_parallel(
                 log_falcon_assets(f"Device query failed: {result}", "error")
                 continue
 
+            # Type guard ensures result is tuple, not Exception
+            assert not isinstance(result, Exception)
             device_id, vulnerabilities = result
 
             if not vulnerabilities:
@@ -5122,11 +5124,9 @@ async def process_device_vulnerabilities_parallel(
             )
 
         # Convert host_info to asset format and send for devices with vulnerabilities in this batch
-        batch_devices_with_vulns = [
-            device_id
-            for device_id, vulns in results
-            if not isinstance(vulns, Exception) and vulns and device_id not in processed_aids
-        ]
+        # Filter out exceptions before unpacking
+        valid_results = [r for r in results if not isinstance(r, Exception)]
+        batch_devices_with_vulns = [device_id for device_id, vulns in valid_results if vulns and device_id not in processed_aids]
 
         if batch_devices_with_vulns:
             # Convert host_info to asset format in sub-batches
