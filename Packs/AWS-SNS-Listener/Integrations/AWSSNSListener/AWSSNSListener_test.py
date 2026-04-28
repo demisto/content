@@ -193,13 +193,15 @@ def test_create_incident_background_retry_then_success(mocker):
     """
     Given createIncidents raises an exception on the first two attempts and succeeds on the third
     When create_incident_background is invoked
-    Then it should call createIncidents three times and never raise a Module Health alert.
+    Then it should call createIncidents three times, log an error for each failed attempt,
+    and never raise a Module Health alert.
     """
     create_mock = mocker.patch(
         "AWSSNSListener.demisto.createIncidents",
         side_effect=[Exception("transient 1"), Exception("transient 2"), [{"id": "1"}]],
     )
     health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    error_mock = mocker.patch("AWSSNSListener.demisto.error")
     mocker.patch("AWSSNSListener.time.sleep")  # do not actually sleep in tests
     mocker.patch("AWSSNSListener.PARAMS", new={})
 
@@ -207,23 +209,29 @@ def test_create_incident_background_retry_then_success(mocker):
 
     assert create_mock.call_count == 3
     health_mock.assert_not_called()
+    assert error_mock.call_count == 2
+    for call in error_mock.call_args_list:
+        assert "test-msg-id-123" in call.args[0]
+        assert "createIncidents raised" in call.args[0]
 
 
 def test_create_incident_background_exhausts_retries(mocker):
     """
     Given createIncidents fails on every attempt
     When create_incident_background is invoked
-    Then it should call createIncidents RETRY_ATTEMPTS times and call updateModuleHealth
-    exactly once with a message containing the SNS MessageId.
+    Then it should call createIncidents RETRY_ATTEMPTS times, log an error per attempt,
+    and call updateModuleHealth exactly once with a message containing the SNS MessageId.
     """
     create_mock = mocker.patch("AWSSNSListener.demisto.createIncidents", side_effect=Exception("permanent failure"))
     health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    error_mock = mocker.patch("AWSSNSListener.demisto.error")
     mocker.patch("AWSSNSListener.time.sleep")
     mocker.patch("AWSSNSListener.PARAMS", new={})
 
     create_incident_background(SAMPLE_INCIDENT)
 
     assert create_mock.call_count == RETRY_ATTEMPTS
+    assert error_mock.call_count == RETRY_ATTEMPTS
     assert health_mock.call_count == 1
     health_message = health_mock.call_args.args[0]
     assert "test-msg-id-123" in health_message
@@ -233,16 +241,21 @@ def test_create_incident_background_empty_response_triggers_retry_and_health(moc
     """
     Given createIncidents returns falsy (empty list / None) on every attempt
     When create_incident_background is invoked
-    Then it should retry the configured number of times and finally call updateModuleHealth.
+    Then it should retry the configured number of times, log an error per attempt,
+    and finally call updateModuleHealth.
     """
     create_mock = mocker.patch("AWSSNSListener.demisto.createIncidents", return_value=[])
     health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    error_mock = mocker.patch("AWSSNSListener.demisto.error")
     mocker.patch("AWSSNSListener.time.sleep")
     mocker.patch("AWSSNSListener.PARAMS", new={})
 
     create_incident_background(SAMPLE_INCIDENT)
 
     assert create_mock.call_count == RETRY_ATTEMPTS
+    assert error_mock.call_count == RETRY_ATTEMPTS
+    for call in error_mock.call_args_list:
+        assert "createIncidents returned empty" in call.args[0]
     health_mock.assert_called_once()
 
 
@@ -255,6 +268,7 @@ def test_create_incident_background_unparseable_rawjson_uses_unknown_id(mocker):
     bad_incident = dict(SAMPLE_INCIDENT, rawJSON="not-a-json")
     mocker.patch("AWSSNSListener.demisto.createIncidents", side_effect=Exception("boom"))
     health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    error_mock = mocker.patch("AWSSNSListener.demisto.error")
     mocker.patch("AWSSNSListener.time.sleep")
     mocker.patch("AWSSNSListener.PARAMS", new={})
 
@@ -262,6 +276,9 @@ def test_create_incident_background_unparseable_rawjson_uses_unknown_id(mocker):
 
     health_mock.assert_called_once()
     assert "<unknown>" in health_mock.call_args.args[0]
+    assert error_mock.call_count == RETRY_ATTEMPTS
+    for call in error_mock.call_args_list:
+        assert "<unknown>" in call.args[0]
 
 
 def test_create_incident_background_stores_samples_only_when_enabled(mocker):
