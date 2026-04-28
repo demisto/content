@@ -1568,31 +1568,41 @@ def create_and_extract_indicators(
 
     return indicators_instances, "".join(full_hr)
 
-# This function is relevant only for the Agentix enrichment scripts 
-def create_and_extract_indicators_batch(data: list[str], indicator_type: str) -> list[str]:
+
+# This function is relevant only for the Agentix enrichment scripts
+def create_and_extract_indicators_batch(data: list[str], indicator_type: str) -> tuple[list[IndicatorInstance], str]:
     """
-    Extract and validate a batch of indicator values using the `extractIndicators` command.
+    Extract and validate a batch of indicator values using a single `extractIndicators` call,
+    then build IndicatorInstance objects for every valid indicator of the requested type.
 
     Unlike `create_and_extract_indicators`, this function:
-    - Processes the entire list in a single `extractIndicators` call.
-    - Returns only the deduplicated list of valid indicator strings (not IndicatorInstance objects).
-    - Returns an empty list when the input is empty, extractIndicators returns empty/None results,
-      or no valid indicators are found after successful extraction.
+    - Processes the entire list in a single `extractIndicators` call (one round-trip).
+    - Does NOT raise when no valid indicators are found – it returns an empty list of
+      instances along with an explanatory human-readable string.
     - Raises DemistoException only when extractIndicators raises an actual exception.
+
+    `extractIndicators` already deduplicates values per type, so each extracted value is
+    mapped 1:1 to an IndicatorInstance with `raw_input == extracted_value` (matching the
+    shape produced by `create_and_extract_indicators` for valid inputs).
 
     Args:
         data: List of raw string values to validate.
         indicator_type: The expected indicator type (e.g., "IP", "URL", "Domain").
 
     Returns:
-        A deduplicated list of valid extracted indicators matching the requested type.
+        A tuple of:
+          - list[IndicatorInstance]: Default-SUCCESS-state IndicatorInstance objects for every
+            valid extracted indicator matching `indicator_type`. Empty when none are found.
+          - str: Human-readable markdown describing the batch extraction result.
 
     Raises:
         DemistoException: If extractIndicators raises an exception (actual failure).
     """
+    hr_header = f"\n\n### Result for name=extractIndicators (batch) args='text': {data}\n\n"
+
     if not data:
         demisto.debug("[create_and_extract_indicators_batch] Empty data provided, returning empty list.")
-        return []
+        return [], hr_header + "No input data provided."
 
     demisto.debug(f"[create_and_extract_indicators_batch] Validating {len(data)} values for type '{indicator_type}'.")
 
@@ -1611,7 +1621,7 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
         demisto.debug(
             "[create_and_extract_indicators_batch] extractIndicators returned empty/None results, returning empty list."
         )
-        return []
+        return [], hr_header + "extractIndicators returned no results."
 
     extracted_ctx: dict = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
     demisto.debug(f"[create_and_extract_indicators_batch] Extracted context keys: {list(extracted_ctx.keys())}")
@@ -1626,16 +1636,13 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
                 matched_indicators.append(values)
             break
 
-    # Deduplicate while preserving order
-    seen: set[str] = set()
-    deduplicated: list[str] = []
-    for indicator in matched_indicators:
-        if indicator not in seen:
-            seen.add(indicator)
-            deduplicated.append(indicator)
+    indicator_instances = [IndicatorInstance(raw_input=value, extracted_value=value) for value in matched_indicators]
 
-    demisto.debug(f"[create_and_extract_indicators_batch] Found {len(deduplicated)} valid indicators of type '{indicator_type}'.")
-    return deduplicated
+    hr = hr_header + tableToMarkdown(name="Extracted Indicators", t=extracted_ctx)
+    demisto.debug(
+        f"[create_and_extract_indicators_batch] Found {len(indicator_instances)} valid indicators " f"of type '{indicator_type}'."
+    )
+    return indicator_instances, hr
 
 
 def _process_single_input(

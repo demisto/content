@@ -2342,10 +2342,13 @@ def test_create_and_extract_indicators_batch_empty_data():
     When:
         - Calling create_and_extract_indicators_batch.
     Then:
-        - Returns an empty list without calling extractIndicators.
+        - Returns an empty list of IndicatorInstance objects and a non-empty HR string,
+          without calling extractIndicators.
     """
-    result = create_and_extract_indicators_batch([], "IP")
-    assert result == []
+    instances, hr = create_and_extract_indicators_batch([], "IP")
+    assert instances == []
+    assert isinstance(hr, str)
+    assert "extractIndicators" in hr
 
 
 def test_create_and_extract_indicators_batch_valid_ips(mocker):
@@ -2355,14 +2358,25 @@ def test_create_and_extract_indicators_batch_valid_ips(mocker):
     When:
         - Calling create_and_extract_indicators_batch with indicator_type="IP".
     Then:
-        - Returns the list of valid IPs extracted by extractIndicators.
+        - Returns one IndicatorInstance per extracted IP, with raw_input == extracted_value
+          and the default SUCCESS state, plus a non-empty HR string.
     """
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
         return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "8.8.8.8"]}}}],
     )
-    result = create_and_extract_indicators_batch(["1.1.1.1", "8.8.8.8"], "IP")
-    assert result == ["1.1.1.1", "8.8.8.8"]
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1", "8.8.8.8"], "IP")
+
+    assert len(instances) == 2
+    assert all(isinstance(i, IndicatorInstance) for i in instances)
+    assert [i.extracted_value for i in instances] == ["1.1.1.1", "8.8.8.8"]
+    assert [i.raw_input for i in instances] == ["1.1.1.1", "8.8.8.8"]
+    # Default state for valid extracted indicators
+    assert all(i.final_status == Status.SUCCESS for i in instances)
+    assert all(i.created is False for i in instances)
+    assert all(i.enriched is False for i in instances)
+    assert all(i.tim_context is None for i in instances)
+    assert isinstance(hr, str) and hr
 
 
 def test_create_and_extract_indicators_batch_no_matching_type(mocker):
@@ -2372,14 +2386,15 @@ def test_create_and_extract_indicators_batch_no_matching_type(mocker):
     When:
         - Calling create_and_extract_indicators_batch with indicator_type="Domain".
     Then:
-        - Returns an empty list (no matching type found).
+        - Returns an empty list of IndicatorInstance objects (no matching type found).
     """
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
         return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}],
     )
-    result = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
-    assert result == []
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
+    assert instances == []
+    assert isinstance(hr, str) and hr
 
 
 def test_create_and_extract_indicators_batch_extract_fails(mocker):
@@ -2389,12 +2404,13 @@ def test_create_and_extract_indicators_batch_extract_fails(mocker):
     When:
         - Calling create_and_extract_indicators_batch.
     Then:
-        - Returns an empty list (no exception raised).
+        - Returns an empty list of IndicatorInstance objects (no exception raised) and an HR.
     """
     mocker.patch("AggregatedCommandApiModule.execute_command", return_value=None)
 
-    result = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
-    assert result == []
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+    assert instances == []
+    assert isinstance(hr, str) and hr
 
 
 def test_create_and_extract_indicators_batch_extract_exception(mocker):
@@ -2416,18 +2432,74 @@ def test_create_and_extract_indicators_batch_extract_exception(mocker):
         create_and_extract_indicators_batch(["1.1.1.1"], "IP")
 
 
-def test_create_and_extract_indicators_batch_deduplication(mocker):
+def test_create_and_extract_indicators_batch_case_insensitive_type_key(mocker):
     """
     Given:
-        - Input contains duplicate values and extractIndicators returns duplicates.
+        - extractIndicators returns the matched type under a key with different casing
+          than the requested indicator_type (e.g. "ip" vs "IP").
     When:
         - Calling create_and_extract_indicators_batch.
     Then:
-        - Returns a deduplicated list of valid indicators.
+        - The matching is case-insensitive and IndicatorInstance objects are returned for
+          every value under that key.
     """
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "1.1.1.1"]}}}],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"ip": ["1.1.1.1", "8.8.8.8"]}}}],
     )
-    result = create_and_extract_indicators_batch(["1.1.1.1", "1.1.1.1"], "IP")
-    assert result == ["1.1.1.1"]
+    instances, _ = create_and_extract_indicators_batch(["1.1.1.1", "8.8.8.8"], "IP")
+
+    assert len(instances) == 2
+    assert all(isinstance(i, IndicatorInstance) for i in instances)
+    assert {i.extracted_value for i in instances} == {"1.1.1.1", "8.8.8.8"}
+
+
+def test_create_and_extract_indicators_batch_string_value(mocker):
+    """
+    Given:
+        - extractIndicators returns the matched type as a single string (not a list).
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - A single IndicatorInstance is created for that string value.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": "1.1.1.1"}}}],
+    )
+    instances, _ = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+
+    assert len(instances) == 1
+    assert isinstance(instances[0], IndicatorInstance)
+    assert instances[0].extracted_value == "1.1.1.1"
+    assert instances[0].raw_input == "1.1.1.1"
+
+
+def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
+    """
+    Given:
+        - extractIndicators returns multiple indicator types but we request only one.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Only IndicatorInstances for the requested type are returned.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "IP": ["1.1.1.1"],
+                        "URL": ["https://example.com"],
+                        "Domain": ["example.com"],
+                    }
+                }
+            }
+        ],
+    )
+    instances, _ = create_and_extract_indicators_batch(["1.1.1.1", "https://example.com"], "URL")
+
+    assert len(instances) == 1
+    assert isinstance(instances[0], IndicatorInstance)
+    assert instances[0].extracted_value == "https://example.com"
