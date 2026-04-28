@@ -92,7 +92,7 @@ The `workflow_state.py` script manages the workflow tracking columns (columns 7â
 
 ### Workflow Columns
 
-| Column | Type | Description |
+Responsible| Column | Type | Description |
 |--------|------|-------------|
 | `assignee` | Free text | Who is working on this integration |
 Judah| `Auth Details` | Free text (JSON) | Details of the auth of the integration (Auth Detail JSON Schema)|
