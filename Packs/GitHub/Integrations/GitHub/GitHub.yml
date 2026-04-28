@@ -7328,6 +7328,14 @@ script:
     - contextPath: GitHub.File.deleted
       description: True if the file was deleted.
       type: boolean
+  - arguments:
+    - description: A comma-separated list of GitHub credential tokens to revoke. Supported prefixes are ghp_, github_pat_, gho_, ghu_, ghr_. Maximum 1000 per request.
+      isArray: true
+      name: credentials
+      required: true
+      secret: true
+    description: Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API. This endpoint is unauthenticated by design and does not use the configured token. Limited to 60 unauthenticated requests per hour.
+    name: github-revoke-credentials
   dockerimage: demisto/auth-utils:1.0.0.7837600
   isfetch: true
   runonce: false

@@ -592,3 +592,70 @@ def test_remove_bom_no_bom():
 
     # Clean up temporary files
     Path(temp_file_path).unlink()
+
+
+def test_html_unescape_decodes_entities():
+    """
+    Given:
+        - An HTML string containing HTML-encoded entities (e.g. '&amp;' in href attributes)
+    When:
+        - Calling html_unescape()
+    Then:
+        - All HTML entities are decoded (e.g. '&amp;' becomes '&')
+        - URLs in href attributes are properly formed for indicator extraction
+    """
+    from ParseEmailFilesV2 import html_unescape
+
+    raw_html = '<a href="https://example.com/page?foo=bar&amp;baz=1">link</a>'
+    result = html_unescape(raw_html)
+
+    assert "&amp;" not in result
+    assert "https://example.com/page?foo=bar&baz=1" in result
+
+
+def test_html_unescape_populated_in_context(mocker):
+    """
+    Given:
+        - An EML file whose HTML body contains HTML-encoded entities (e.g. '&amp;' in href URLs)
+    When:
+        - Running the ParseEmailFilesV2 script
+    Then:
+        - The Email context contains an 'HTMLUnescape' key
+        - The 'HTMLUnescape' value has HTML entities decoded (e.g. '&amp;' → '&')
+        - The original 'HTML' key is unchanged
+    """
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"entryid": "test"},
+    )
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=exec_command_for_file(
+            "html_with_entities.eml",
+            info="RFC 822 mail text, with CRLF line terminators",
+        ),
+    )
+    mocker.patch.object(demisto, "context")
+    mocker.patch.object(
+        demisto,
+        "dt",
+        return_value=["RFC 822 mail text, with CRLF line terminators"],
+    )
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    email_context = results[0]["EntryContext"]["Email"]
+
+    # HTMLUnescape must be present and have entities decoded
+    assert "HTMLUnescape" in email_context
+    html_text = email_context["HTMLUnescape"]
+    assert "&amp;" not in html_text, "HTML entities were not decoded in HTMLUnescape"
+    assert "https://example.com/page?foo=bar&baz=1" in html_text
+
+    # Original HTML key must still be present (unchanged)
+    assert "HTML" in email_context

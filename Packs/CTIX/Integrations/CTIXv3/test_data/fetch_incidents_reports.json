@@ -1,0 +1,68 @@
+{
+  "next": null,
+  "page_size": 50,
+  "previous": null,
+  "results": [
+    {
+      "id": "report-001-aaaa-bbbb-cccc-ddddeeee0001",
+      "name": "APT29 Campaign Analysis",
+      "description": "Detailed analysis of APT29 phishing campaign targeting government entities.",
+      "type": "report",
+      "created": 1700000000,
+      "modified": 1700000100,
+      "ctix_created": 1700000001,
+      "ctix_modified": 1700000101,
+      "confidence_score": 85,
+      "risk_severity": "HIGH",
+      "tlp": "AMBER",
+      "tags": [
+        {"id": "tag-001", "name": "apt29"},
+        {"id": "tag-002", "name": "phishing"}
+      ],
+      "sources": [
+        {"id": "src-001", "name": "ThreatFeed Alpha", "source_type": "RSS_FEED"}
+      ],
+      "is_deprecated": false,
+      "is_revoked": false
+    },
+    {
+      "id": "report-002-aaaa-bbbb-cccc-ddddeeee0002",
+      "name": "Ransomware Trend Report Q4",
+      "description": "Quarterly ransomware trends and IOC summary.",
+      "type": "report",
+      "created": 1700000200,
+      "modified": 1700000300,
+      "ctix_created": 1700000201,
+      "ctix_modified": 1700000301,
+      "confidence_score": 60,
+      "risk_severity": "MEDIUM",
+      "tlp": "GREEN",
+      "tags": [
+        {"id": "tag-003", "name": "ransomware"}
+      ],
+      "sources": [
+        {"id": "src-002", "name": "Internal SOC", "source_type": "MISCELLANEOUS"}
+      ],
+      "is_deprecated": false,
+      "is_revoked": false
+    },
+    {
+      "id": "report-003-aaaa-bbbb-cccc-ddddeeee0003",
+      "name": "Low Confidence Observation",
+      "description": null,
+      "type": "report",
+      "created": 1700000400,
+      "modified": 1700000500,
+      "ctix_created": 1700000401,
+      "ctix_modified": 1700000501,
+      "confidence_score": 10,
+      "risk_severity": "UNKNOWN",
+      "tlp": "WHITE",
+      "tags": [],
+      "sources": [],
+      "is_deprecated": false,
+      "is_revoked": false
+    }
+  ],
+  "total": 3
+}
