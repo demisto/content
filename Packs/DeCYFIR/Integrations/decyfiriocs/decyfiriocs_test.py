@@ -203,3 +203,13 @@ def test_decyfir_file_indicator_command(mocker):
     data = decyfir_hash_indicator_command(client=client, decyfir_api_key="api_key")
 
     assert data[0]["value"] == "dbe51eabebf9d4ef9581ef99844a2944"
+
+
+def test_command_results(mocker):
+    from decyfiriocs import Client, command_results
+
+    raw_data = util_load_json("test_data/iocs_ti.json")
+
+    data = command_results(raw_data["file"], "File")
+
+    assert data[0]["value"] == "dbe51eabebf9d4ef9581ef99844a2944"
