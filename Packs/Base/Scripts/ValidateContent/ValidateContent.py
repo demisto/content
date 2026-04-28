@@ -19,7 +19,7 @@ import git
 import requests
 from CommonServerPython import *  # noqa: F401
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
-from demisto_sdk.commands.common.logger import DEFAULT_CONSOLE_THRESHOLD, logging_setup
+from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from importlib.metadata import version
