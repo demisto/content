@@ -4,3 +4,5 @@ id: Avaya_Aura_Communication_Manager_ModelingRule
 tags:
 rules: ''
 schema: ''
+supportedModules:
+- xsiam
