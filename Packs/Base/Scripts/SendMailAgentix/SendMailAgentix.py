@@ -1,9 +1,6 @@
 import re
-
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
 import markdown
 
 
@@ -32,10 +29,10 @@ def send_email(args: dict):
 
     # If htmlBody is provided and contains Markdown (not HTML), convert it to HTML
     if html_body and not is_html(html_body):
-        demisto.debug("SendEmailAgentix: htmlBody contains Markdown, converting to HTML")
+        demisto.debug("SendMailAgentix: htmlBody contains Markdown, converting to HTML")
         args["htmlBody"] = markdown_to_html(html_body)
     elif html_body:
-        demisto.debug("SendEmailAgentix: htmlBody is valid HTML, passing through")
+        demisto.debug("SendMailAgentix: htmlBody is valid HTML, passing through")
 
     # Pass all arguments through to send-mail unchanged
     return demisto.executeCommand("send-mail", args=args)
@@ -44,12 +41,12 @@ def send_email(args: dict):
 def main():
     try:
         args = demisto.args()
-        demisto.debug(f"Calling SendEmailAgentix with args: {list(args.keys())}")
+        demisto.debug(f"Calling SendMailAgentix with args: {list(args.keys())}")
 
         return_results(send_email(args))
 
     except Exception as ex:
-        return_error(f"Failed to execute SendEmailAgentix. Error: {str(ex)}")
+        return_error(f"Failed to execute SendMailAgentix. Error: {str(ex)}")
 
 
 """ ENTRY POINT """

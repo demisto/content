@@ -5,9 +5,19 @@ args:
 - description: The subject of the email.
   name: subject
   required: true
-- description: The email body content. Accepts HTML, Markdown, or plain text. Markdown and plain text are automatically converted to HTML for proper rendering in email clients.
+- description: The plain-text or HTML body of the email.
+  name: body
+  required: false
+- description: >-
+    The email body in HTML format. Accepts HTML, Markdown, or plain text.
+    Markdown is automatically converted to HTML for proper rendering in email clients.
   name: htmlBody
-  required: true
+  required: false
+- description: >-
+    Whether message response body type is text or HTML.
+    Options are HTML or Text.
+  name: bodyType
+  required: false
 - description: Comma-separated list of CC email addresses.
   name: cc
   required: false
@@ -24,11 +34,13 @@ args:
   name: templateParams
   required: false
 comment: |
-  Sends an email with automatic Markdown-to-HTML conversion. Accepts email body in any format (HTML, Markdown, or plain text) and ensures it is properly rendered as HTML in all email clients. Wraps the send-mail command.
+  Sends an email with automatic Markdown-to-HTML conversion. Accepts email body in any format
+  (HTML, Markdown, or plain text) and ensures it is properly rendered as HTML in all email clients.
+  Wraps the send-mail command.
 commonfields:
-  id: SendEmailAgentix
+  id: SendMailAgentix
   version: -1
-name: SendEmailAgentix
+name: SendMailAgentix
 enabled: true
 script: ''
 scripttarget: 0
