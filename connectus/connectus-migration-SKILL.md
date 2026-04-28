@@ -40,7 +40,7 @@ The status output shows:
 - **Assignee** — who is working on it
 - **Support Level** — `xsoar`, `partner`, or `community`
 - **Provider** — the vendor
-- **Auth Class** — authentication class and detail
+- **Auth Detail** — authentication detail JSON (with embedded `config` expression)
 - **Workflow Progress** — which steps are done, which remain
 - **Current step** — what to work on next
 
@@ -54,7 +54,7 @@ python3 connectus/workflow_state.py set-assignee "<Integration Name>" "<Name>"
 
 ### Step 1: Verify Auth Classification
 
-**Before starting any migration work**, rigorously verify that the Auth Class and Auth Detail for this integration are correct. The automated classifier analyzed YML param metadata (widget types) and has systematic errors — a manual review of 148 integrations found **71 corrections** (48% error rate). Every integration MUST be validated before proceeding.
+**Before starting any migration work**, rigorously verify that the Auth Detail for this integration is correct. The automated classifier analyzed YML param metadata (widget types) and has systematic errors — a manual review of 148 integrations found **71 corrections** (48% error rate). Every integration MUST be validated before proceeding.
 
 #### Validation Checklist
 
@@ -78,7 +78,7 @@ Follow this checklist for EVERY integration. Do not skip any step.
 python3 connectus/workflow_state.py status "<Integration Name>"
 ```
 
-Note the **Auth Class** and **Auth Detail** values from the output. These are what you will validate.
+Note the **Auth Detail** value from the output (its `config` field is the Auth Config Expression). This is what you will validate.
 
 ---
 
@@ -298,12 +298,11 @@ Before any code generation, you must define the script inputs as valid JSON. Thi
 python3 connectus/workflow_state.py set-inputs "<Integration Name>" '<JSON>'
 ```
 
-The JSON should describe the parameters the integration needs. Derive these from the **Auth Class** and **Auth Detail** columns in the status output and from examining the integration's existing YAML configuration.
+The JSON should describe the parameters the integration needs. Derive these from the **Auth Detail** column in the status output and from examining the integration's existing YAML configuration.
 
-- **Auth Class** column — contains a two-part format: `Type(params) | Type2(params) — EXPR`
-- **Auth Detail** column — contains JSON with keys: `auth_types`, `config`, `params`, `notes`
+- **Auth Detail** column — contains JSON with keys: `auth_types`, `config`, `params`, `notes`. The `config` field uses the Auth Config Expression Format: `Type(params) | Type2(params) — EXPR`.
 
-Example: For an integration with Auth Class `Plain(credentials) — REQUIRED`:
+Example: For an integration whose Auth Detail `config` is `Plain(credentials) — REQUIRED`:
 ```bash
 python3 connectus/workflow_state.py set-inputs "MyIntegration" '{"credentials": {"type": "type9", "required": true, "auth_class": "Plain"}}'
 ```
@@ -469,11 +468,11 @@ python3 connectus/workflow_state.py list-by-assignee "<assignee name>"
 python3 connectus/workflow_state.py set-auth "<Integration Name>" '<Auth Detail JSON>'
 ```
 
-## Auth Class Reference
+## Auth Type Reference
 
-When analyzing an integration's authentication, use these enum values:
+When analyzing an integration's authentication, use these enum values (the `type` field inside Auth Detail's `auth_types` and `params`):
 
-| Auth Class Enum | Description |
+| Auth Type Enum | Description |
 |---|---|
 | `OAuth2AuthCode` | OAuth 2.0 Authorization Code flow |
 | `OAuth2ClientCreds` | OAuth 2.0 Client Credentials flow |

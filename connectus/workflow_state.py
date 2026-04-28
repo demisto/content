@@ -87,6 +87,7 @@ import io
 import json
 import os
 import sys
+import tempfile
 from typing import Optional
 
 # ---------------------------------------------------------------------------
@@ -175,7 +176,12 @@ def load_csv() -> list[dict[str, str]]:
 
 
 def save_csv(rows: list[dict[str, str]]) -> None:
-    """Write rows back to CSV, preserving column order."""
+    """Write rows back to CSV atomically, preserving column order.
+
+    Writes to a temp file in the same directory as ``CSV_PATH`` and then
+    uses ``os.replace`` for an atomic rename. If the write fails partway,
+    the temp file is removed and the original CSV is left unchanged.
+    """
     if not rows:
         return
 
@@ -191,8 +197,27 @@ def save_csv(rows: list[dict[str, str]]) -> None:
     writer.writeheader()
     writer.writerows(rows)
 
-    with open(CSV_PATH, "w", encoding="utf-8") as f:
-        f.write(output.getvalue())
+    target_dir = os.path.dirname(CSV_PATH) or "."
+    tmp_path: Optional[str] = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=target_dir,
+            prefix=".integrations_report.",
+            suffix=".tmp",
+            delete=False,
+        ) as tmp:
+            tmp_path = tmp.name
+            tmp.write(output.getvalue())
+        os.replace(tmp_path, CSV_PATH)
+        tmp_path = None
+    finally:
+        if tmp_path is not None and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
 
 
 def find_row(rows: list[dict[str, str]], integration_name: str) -> Optional[int]:

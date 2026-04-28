@@ -1,3 +1,9 @@
+> **⚠️ STATUS: Design Proposal — Not Yet Implemented**
+>
+> This document describes a planned tool. The referenced files
+> (`connectus/check_command_params.py` and `connectus/capture_proxy.py`)
+> do not exist yet. This is a design proposal only.
+
 # Design: Integration Command Parameter Usage Analyzer
 
 ## Purpose

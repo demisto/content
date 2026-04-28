@@ -9,6 +9,9 @@ without touching the real CSV file.
 import copy
 import pytest
 
+import os
+
+import workflow_state
 from workflow_state import (
     CHECK,
     CHECKPOINT_COLUMNS,
@@ -23,8 +26,10 @@ from workflow_state import (
     get_step_index,
     is_checked,
     list_by_assignee,
+    load_csv,
     markpass_step,
     reset_from_step,
+    save_csv,
     set_integration_auth,
     validate_auth_detail,
 )
@@ -1236,3 +1241,72 @@ class TestShadowedCommandStep:
         msg = markpass_step(row, "auth parity test passes")
         assert "ERROR" in msg
         assert "shadowed command test passes" in msg
+
+
+# ---------------------------------------------------------------------------
+# Atomic save_csv
+# ---------------------------------------------------------------------------
+
+class TestAtomicSaveCsv:
+    """Verify save_csv writes atomically (tempfile + os.replace)."""
+
+    def _sample_rows(self) -> list[dict[str, str]]:
+        rows = []
+        for i in range(3):
+            row = _make_row(name=f"Integration{i}")
+            rows.append(row)
+        return rows
+
+    def test_round_trip_preserves_rows(self, tmp_path, monkeypatch) -> None:
+        """Normal save + load round-trip preserves rows and column order."""
+        csv_file = tmp_path / "integrations_report.csv"
+        monkeypatch.setattr(workflow_state, "CSV_PATH", str(csv_file))
+
+        rows = self._sample_rows()
+        save_csv(rows)
+
+        assert csv_file.exists()
+        loaded = load_csv()
+        assert len(loaded) == len(rows)
+        for orig, got in zip(rows, loaded):
+            assert orig["Integration Name"] == got["Integration Name"]
+            assert orig["Auth Detail"] == got["Auth Detail"]
+        # Column order preserved
+        assert list(loaded[0].keys()) == list(rows[0].keys())
+
+    def test_failed_write_leaves_original_unchanged(
+        self, tmp_path, monkeypatch
+    ) -> None:
+        """If write fails mid-way, the original CSV must be unchanged and
+        no temp file should be left behind."""
+        csv_file = tmp_path / "integrations_report.csv"
+        monkeypatch.setattr(workflow_state, "CSV_PATH", str(csv_file))
+
+        # Seed an initial known-good CSV.
+        original_rows = self._sample_rows()
+        save_csv(original_rows)
+        original_bytes = csv_file.read_bytes()
+
+        # Now patch os.replace inside workflow_state to raise after the temp
+        # file has been written, simulating a kill / disk error mid-rename.
+        def _boom(src, dst):
+            raise OSError("simulated mid-write failure")
+
+        monkeypatch.setattr(workflow_state.os, "replace", _boom)
+
+        new_rows = self._sample_rows()
+        new_rows[0]["Integration Name"] = "MUTATED"
+
+        with pytest.raises(OSError, match="simulated mid-write failure"):
+            save_csv(new_rows)
+
+        # Original CSV must be byte-for-byte unchanged.
+        assert csv_file.read_bytes() == original_bytes
+
+        # No leftover temp files in the directory.
+        leftovers = [
+            p
+            for p in os.listdir(tmp_path)
+            if p.startswith(".integrations_report.") and p.endswith(".tmp")
+        ]
+        assert leftovers == [], f"Temp files leaked: {leftovers}"
