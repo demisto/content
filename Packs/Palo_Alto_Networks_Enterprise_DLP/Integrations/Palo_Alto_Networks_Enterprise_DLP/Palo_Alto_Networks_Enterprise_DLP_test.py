@@ -21,6 +21,7 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     get_start_end_time_intervals,
     START_TIMESTAMP_KEY,
     LAST_IDS_KEY,
+    END_TIME_BUFFER,
 )
 
 
@@ -409,7 +410,7 @@ def test_create_incident(incident_type_input, expected_type):
             {"id1": 1000, "id2": 2000, "id3": 2000, "id4": 1500},
             {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: ["old_id"]},
             2000,
-            {"id2", "id3"},
+            {"id2", "id3"},  # Both have timestamp 2000, within buffer
             id="multiple_incidents_different_timestamps",
         ),
         pytest.param(
@@ -426,6 +427,20 @@ def test_create_incident(incident_type_input, expected_type):
             {"id1"},
             id="single_incident",
         ),
+        pytest.param(
+            {"id1": 2000, "id2": 2000 - END_TIME_BUFFER, "id3": 2000 - END_TIME_BUFFER - 1, "id4": 2000 - 15},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            2000,
+            {"id1", "id2", "id4"},  # id3 excluded (outside buffer: 2000-30-1=1969 < 1970)
+            id="buffer_window_filtering",
+        ),
+        pytest.param(
+            {"id1": 2000, "id2": 1999, "id3": 1998, "id4": 1971, "id5": 1970, "id6": 1969},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            2000,
+            {"id1", "id2", "id3", "id4", "id5"},  # id6 excluded (1969 < 1970 which is 2000-30)
+            id="exact_buffer_boundary",
+        ),
     ],
 )
 def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp, expected_ids):
@@ -435,7 +450,7 @@ def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp,
     When:
         - Calling compute_next_run.
     Then:
-        - Ensure it returns the correct timestamp and IDs.
+        - Ensure it returns the correct timestamp and IDs within the buffer window.
     """
     result = compute_next_run(incident_ids_timestamps, last_run)
 
