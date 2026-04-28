@@ -780,7 +780,7 @@ def main():
             # Setup Demisto SDK's logging.
             logging_setup(
                 calling_function="ValidateContent",
-                console_threshold="DEBUG" if is_debug_mode() else DEFAULT_CONSOLE_THRESHOLD,
+                console_threshold="DEBUG" if is_debug_mode() else "ERROR",
                 propagate=True,
             )
             demisto.debug("Finished setting logger.")
