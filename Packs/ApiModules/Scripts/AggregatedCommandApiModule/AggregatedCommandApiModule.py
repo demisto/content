@@ -1568,7 +1568,7 @@ def create_and_extract_indicators(
 
     return indicators_instances, "".join(full_hr)
 
-
+# This function is relevant only for the Agentix enrichment scripts 
 def create_and_extract_indicators_batch(data: list[str], indicator_type: str) -> list[str]:
     """
     Extract and validate a batch of indicator values using the `extractIndicators` command.
