@@ -59,6 +59,42 @@
     "toAddresses": {
       "type": "string",
       "is_array": false
+    },
+    "recipientAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "attachmentNames": {
+      "type": "string",
+      "is_array": false
+    },
+    "subject": {
+      "type": "string",
+      "is_array": false
+    },
+    "ccEmails": {
+      "type": "string",
+      "is_array": false
+    },
+    "fromAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "returnPath": {
+      "type": "string",
+      "is_array": false
+    },
+    "internetMessageId": {
+      "type": "string",
+      "is_array": false
+    },
+    "senderIpAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "urls": {
+      "type": "string",
+      "is_array": false
     }
   }
 }
