@@ -1622,13 +1622,11 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
     expected_type_lower = indicator_type.lower()
     matched_indicators, _ = _split_expected_and_other_types(extracted_ctx, expected_type_lower)
     hr = hr_header + tableToMarkdown(name="Extracted Indicators", t=extracted_ctx)
-    
+
     if not matched_indicators:
-        demisto.debug(
-            "[create_and_extract_indicators_batch] extractIndicators No valid indicators returned."
-        )
+        demisto.debug("[create_and_extract_indicators_batch] extractIndicators No valid indicators returned.")
         return [], hr
-    
+
     indicator_instances = [IndicatorInstance(raw_input=value, extracted_value=value) for value in matched_indicators]
 
     demisto.debug(
