@@ -66,8 +66,6 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
-  supportedModules:
-  - "xsiam"
 - display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
@@ -75,8 +73,6 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
   section: Collect
-  supportedModules:
-  - "xsiam"
 - display: Akamai Page size
   name: page_size
   type: 0
@@ -87,15 +83,13 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
   advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
   section: Collect
-  supportedModules:
-  - "xsiam"
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -115,8 +109,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  supportedModules:
-  - "xsiam"
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
@@ -125,7 +117,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
   defaultvalue: '1'
   advanced: true
 - display: Fetch Events
@@ -136,7 +128,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
   additionalinfo: Make sure this feature is not used with long running configured in the integration params and that there's no config ID used for 2 different instances / features.
 - display: Skip events decoding
   name: should_skip_decode_events
@@ -147,7 +139,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Long running instance
   name: longRunning
   additionalinfo: This is a beta feature for high performance fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features.
@@ -156,7 +148,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
   section: Collect
 - display: Page Size - high performance mode
   name: beta_page_size
@@ -168,7 +160,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Max allowed concurrent tasks
   name: max_concurrent_tasks
   type: 0
@@ -179,7 +171,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
