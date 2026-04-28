@@ -136,15 +136,15 @@ class Client(BaseClient):
             target_data.get(LABEL_TYPE),
         )
 
-    def add_tags(self, in_ti: Dict, data: Optional[List | str]):
-        if not data:
-            return
+    # def add_tags(self, in_ti: Dict, data: Optional[List | str]):
+    #     if not data:
+    #         return
 
-        if isinstance(data, str):
-            data = [data]
+    #     if isinstance(data, str):
+    #         data = [data]
 
-        data = [item for item in data if item not in {"unknown", "Unknown"}]
-        in_ti["fields"]["tags"].extend(data)
+    #     data = [item for item in data if item not in {"unknown", "Unknown"}]
+    #     in_ti["fields"]["tags"].extend(data)
 
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
         try:
@@ -191,14 +191,15 @@ class Client(BaseClient):
             ti_fields = ti_data_obj["fields"]
 
             if intel_type == FeedIndicatorType.CVE:
-                ti_data_obj["fields"]["verdict"] = verdict
-                ti_data_obj["fields"]["score"] = cve_score
+                ti_fields["verdict"] = verdict
+                ti_fields["score"] = cve_score
                 ti_fields["cvedescription"] = data.get("description", "")
                 ti_fields["cvemodified"] = data.get("modified")
 
             if data.get("labels"):
-                self.add_tags(ti_data_obj, data.get("labels"))
-            ti_data_obj["fields"]["aliases"].append(data.get("aliases", "")) if data.get("aliases") else None
+                ti_fields["tags"].extend(data.get("labels"))
+
+            ti_fields["aliases"].append(data.get("aliases", "")) if data.get("aliases") else None
 
             if intel_type is ThreatIntel.ObjectsNames.MALWARE:
                 ti_data_obj["fields"].update(
@@ -373,7 +374,7 @@ class Client(BaseClient):
         feed_tags: Optional[List],
         is_data_save: bool,
     ) -> List:
-        return_data = []
+        return_data: List[Dict] = []
         threat_actors_cache: Dict[str, List[Dict]] = {}
 
         for ioc in decyfir_iocs:
@@ -453,17 +454,19 @@ class Client(BaseClient):
                     },
                 }
 
+                ioc_fields = cast(Dict[str, Any], ioc_data["fields"])
+
                 if file_hash_values:
-                    for key_ in file_hash_values:
-                        ioc_data["fields"][key_] = file_hash_values.get(key_)
+                    for key1_, val1_ in file_hash_values.items():
+                        ioc_fields[key1_] = val1_
 
                 if feed_tags:
-                    self.add_tags(ioc_data, feed_tags)
+                    ioc_fields["tags"].extend(feed_tags)
 
                 ioc_labels = ioc.get("labels", [])
 
                 if ioc_labels:
-                    self.add_tags(ioc_data, ioc_labels)
+                    ioc_fields["tags"].extend(ioc_labels)
 
                 if is_data_save:
                     tas = [
@@ -508,6 +511,7 @@ class Client(BaseClient):
                 return_data.append(ioc_data)
             except Exception as e:
                 demisto.debug(f"Error occurred while processing the IOC: {ioc.get('id', 'Unknown ID')}. Error: {e}")
+
         return return_data
 
     def fetch_indicators(
@@ -573,11 +577,10 @@ def extract_value(pattern: str) -> str:
     return match.group(1) if match else ""
 
 
-def command_results(indicators: List[Dict], indicator_type: str, title: str) -> CommandResults:
+def command_results(indicators: List[Dict], indicator_type: str) -> List:
     if not indicators:
-        return CommandResults(readable_output="For current request no indicators found.")
+        return []
 
-    table_data = []
     outputs = []
 
     for ind in indicators:
@@ -587,75 +590,48 @@ def command_results(indicators: List[Dict], indicator_type: str, title: str) -> 
 
         ext = next(iter(ind.get("extensions", cast(Dict[str, Any], {})).values()))
         vendors = ext.get("security_vendors", {})
-
         confidence = ind.get("confidence", 0)
-        score = 1
 
-        if confidence >= 80:
-            score = 3
-        elif confidence >= 50:
-            score = 2
-
-        # -------- Human Readable Row --------
         row = {
-            "Value": value,
-            "Type": ioc_type,
-            "Score": score,
-            "Country": ext.get("country", ""),
-            "Threat Actor": ext.get("threat_actors", ""),
-            "Action": ext.get("recommended_actions"),
-            "Role": ext.get("roles"),
-            "Confidence": confidence,
-            "Description": ind.get("description"),
+            "value": value,
+            "type": ioc_type,
+            "description": ind.get("description"),
+            "country": ext.get("country", ""),
+            "threat_actor": ext.get("threat_actors", ""),
+            "action": ext.get("recommended_actions"),
+            "role": ext.get("roles"),
+            "confidences": confidence,
+            "risk_score": ext.get("exposure_score", 0),
             "vendors": vendors,
+            "rawJSON": ind,
         }
+        outputs.append(row)
 
-        table_data.append(row)
-
-        # -------- Context Output --------
-        outputs.append(
-            {
-                "value": value,
-                "type": ioc_type,
-                "score": score,
-                "country": ext.get("country", ""),
-                "threat_actor": ext.get("threat_actors", ""),
-            }
-        )
-
-    human_readable = tableToMarkdown(title, table_data, removeNull=True)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix="CYFIRMA.Indicators",
-        outputs_key_field="value",
-        outputs=outputs,
-        raw_response=indicators,
-    )
+    return outputs
 
 
 # The below function is used to fetch the IP type indicators from DeCYFIR feed.
 def decyfir_ip_indicator_command(client: Client, decyfir_api_key: str):
     ip_indicators = client.fetch_indicators_by_type(decyfir_api_key, "ip")
-    return command_results(ip_indicators, "IP", "IP Indicators from DeCYFIR Feed:")
+    return command_results(ip_indicators, "IP")
 
 
 # The below function is used to fetch the domain type indicators from DeCYFIR feed.
 def decyfir_domain_indicator_command(client: Client, decyfir_api_key: str):
     domain_indicators = client.fetch_indicators_by_type(decyfir_api_key, "domain")
-    return command_results(domain_indicators, "Domain", "Domain Indicators from DeCYFIR Feed:")
+    return command_results(domain_indicators, "Domain")
 
 
 # The below function is used to fetch the URL type indicators from DeCYFIR feed.
 def decyfir_url_indicator_command(client: Client, decyfir_api_key: str):
     url_indicators = client.fetch_indicators_by_type(decyfir_api_key, "url")
-    return command_results(url_indicators, "URL", "URL Indicators from DeCYFIR Feed:")
+    return command_results(url_indicators, "URL")
 
 
 # The below function is used to fetch the hash type indicators (MD5, SHA-1 and SHA-256) from DeCYFIR feed.
 def decyfir_hash_indicator_command(client: Client, decyfir_api_key: str):
     hashIndicators = client.fetch_indicators_by_type(decyfir_api_key, "hashes")
-    return command_results(hashIndicators, "File", "File Hash Indicators from DeCYFIR Feed:")
+    return command_results(hashIndicators, "File")
 
 
 def fetch_indicators_command(
@@ -668,7 +644,7 @@ def decyfir_get_indicators_command(
     client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str], feed_tags: Optional[List]
 ):
     indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
-    return command_results(indicators, "Indicator", "Indicators from DeCYFIR Feeds")
+    return command_results(indicators, "Indicator")
 
 
 def main():  # pragma: no cover

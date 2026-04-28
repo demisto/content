@@ -1,28 +1,188 @@
 {
     "iocs": [
         {
-            "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
             "type": "indicator",
             "name": "0.0.0.0",
-            "description": "Sample Testing",
-            "created": "2023-07-11T06:21:42.110Z",
-            "modified": "2023-07-11T06:21:42.110Z",
+            "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+            "description": "",
+            "created": "2016-04-16T19:23:04.000Z",
+            "modified": "2016-04-16T19:23:04.000Z",
             "indicator_types": [
                 "attribution"
             ],
             "pattern": "[ipv4-addr:value = '0.0.0.0']",
             "pattern_type": "stix",
-            "valid_from": "2023-07-11T06:21:42.110Z",
+            "valid_from": "2016-04-16T19:23:04.000Z",
+            "confidence": 100,
             "spec_version": "2.1",
             "labels": [
-                "feedTags",
-                "group 83",
-                "macdownloader",
-                "parastoo",
-                "Charming Kitten"
+                "CYFIRMA-IOC",
+                "recommended_actions: Block",
+                "source: CYFIRMA",
+                "threat_actors: Static Spider"
             ],
-            "first_seen": "2022-06-06T00:00:00.000Z",
-            "last_seen": "2022-12-16T00:00:00.000Z"
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {
+                            "AlphaSOC": "suspicious",
+                            "Webroot": "malicious",
+                            "SOCRadar": "malware",
+                            "CyRadar": "malicious",
+                            "alphaMountain.ai": "suspicious"
+                        },
+                        "continent": "EU",
+                        "threat_score_history": {
+                            "2026-03-02": 8,
+                            "2026-04-02": 10
+                        },
+                        "country": "DE",
+                        "recommended_actions": "Block",
+                        "asn_owner": "4830.org e. V.",
+                        "sources": "IOC sourced from 2 sources",
+                        "roles": "",
+                        "correlations": {},
+                        "country_code": "DE",
+                        "threat_actors": "Static Spider",
+                        "exposure_score": 10,
+                        "ip_abuse_categories": [],
+                        "asn": "206813"
+                    }
+                }
+            }
+        }
+    ],
+    "url": [
+        {
+            "type": "indicator",
+            "name": "http://acme[.]xyz/",
+            "id": "indicator--69f03f0b-0d3e-40c5-823b-a92d5465a202",
+            "description": "",
+            "created": "2026-04-28T05:00:59.548Z",
+            "modified": "2026-04-28T05:00:59.548Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value = 'http://acme[.]xyz/']",
+            "pattern_type": "stix",
+            "valid_from": "2026-04-28T05:00:59.548Z",
+            "confidence": 40,
+            "spec_version": "2.1",
+            "labels": [
+                "CYFIRMA-IOC",
+                "recommended_actions: Monitor",
+                "source: CYFIRMA"
+            ],
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {},
+                        "continent": "",
+                        "threat_score_history": {
+                            "2026-04-28": 4
+                        },
+                        "country": "",
+                        "recommended_actions": "Monitor",
+                        "asn_owner": "",
+                        "sources": "IOC sourced from 1 sources",
+                        "roles": "",
+                        "correlations": {},
+                        "country_code": "",
+                        "threat_actors": "",
+                        "exposure_score": 4,
+                        "asn": ""
+                    }
+                }
+            }
+        }
+    ],
+    "domain": [
+        {
+            "type": "indicator",
+            "name": "mel8xo.cfd",
+            "id": "indicator--69efeb73-d2ab-40c5-823b-661a9eccd188",
+            "description": "",
+            "created": "2026-04-27T22:58:49.000Z",
+            "modified": "2026-04-27T22:58:49.000Z",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[domain-name:value = 'mel8xo.cfd']",
+            "pattern_type": "stix",
+            "valid_from": "2026-04-27T22:58:49.000Z",
+            "confidence": 50,
+            "spec_version": "2.1",
+            "labels": [
+                "CYFIRMA-IOC",
+                "recommended_actions: Monitor",
+                "source: CYFIRMA"
+            ],
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {},
+                        "continent": "",
+                        "threat_score_history": {
+                            "2026-04-27": 5
+                        },
+                        "country": "",
+                        "recommended_actions": "Monitor",
+                        "asn_owner": "",
+                        "sources": "IOC sourced from 1 sources",
+                        "roles": "",
+                        "correlations": {},
+                        "country_code": "",
+                        "threat_actors": "",
+                        "exposure_score": 5,
+                        "asn": ""
+                    }
+                }
+            }
+        }
+    ],
+    "file": [
+        {
+            "type": "indicator",
+            "name": "File SHA-256 hash '9a10e1faa86a5d39417cae44da5adf38824dfb9a16432e34df766aa1dc9e3525'",
+            "id": "indicator--69ef5c93-926e-40c5-823b-0f3574a33f8d",
+            "description": "PCA - Fast16 Malware Targets High-Value Systems With Sabotage Capabilities",
+            "created": "2026-04-27T00:00:00.000Z",
+            "modified": "2026-04-28T05:27:26.104Z",
+            "indicator_types": [
+                "attribution"
+            ],
+            "pattern": "[file:hashes.md5 = 'dbe51eabebf9d4ef9581ef99844a2944' OR file:hashes.'SHA-1' = 'de584703c78a60a56028f9834086facd1401b355' OR file:hashes.'SHA-256' = '9a10e1faa86a5d39417cae44da5adf38824dfb9a16432e34df766aa1dc9e3525']",
+            "pattern_type": "stix",
+            "valid_from": "2026-04-27T00:00:00.000Z",
+            "confidence": 100,
+            "spec_version": "2.1",
+            "labels": [
+                "CYFIRMA-IOC",
+                "recommended_actions: Block",
+                "source: CYFIRMA",
+                "roles: Trojan",
+                "threat_actors: Unknown"
+            ],
+            "extensions": {
+                "extension-definition--8e1c4b7d-9a2f-4d63-b5e0-3c7a1f9d2b44": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "security_vendors": {},
+                        "threat_score_history": {
+                            "2026-04-27": 10
+                        },
+                        "threat_actors": "Unknown",
+                        "recommended_actions": "Block",
+                        "sources": "IOC sourced from 3 sources",
+                        "exposure_score": 10,
+                        "roles": "Trojan",
+                        "correlations": {}
+                    }
+                }
+            }
         }
     ],
     "threat_actors": [
@@ -37,7 +197,6 @@
                 "Gibberish Panda"
             ],
             "labels": [
-                "feedTags",
                 "sample"
             ],
             "name": "Gibberish Panda",
@@ -49,30 +208,32 @@
         {
             "type": "threat-actor",
             "spec_version": "2.1",
-            "id": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
-            "created": "2023-07-17T11:27:42.558Z",
-            "modified": "2023-07-17T11:27:42.558Z",
-            "description": "Chinese threat actor that uses PlugX",
-            "labels": [
-                {
-                    "origin-of-country": "China",
-                    "target-technologies": [
-                        "Office Suites Software",
-                        "Web Application",
-                        "Operating System"
-                    ],
-                    "target-industries": [
-                        "Software",
-                        "IT Services"
-                    ],
-                    "target-countries": []
-                }
+            "id": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
+            "created": "2023-07-17T14:20:31.646Z",
+            "modified": "2023-07-17T14:20:31.646Z",
+            "description": "We believe this shift indicates",
+            "aliases": [
+                "Primitive Bear",
+                "Shuckworm",
+                "Trident Ursa"
             ],
-            "name": "Pale Panda",
+            "name": "Gamaredon",
             "threat_actor_types": [
                 "crime-syndicate"
             ],
-            "primary_motivation": "personal-gain"
+            "primary_motivation": "personal-gain",
+            "extensions": {
+                "extension-definition--d3f7a1c9-6b2e-4a58-9d0c-5e1b7a3f8c92": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "origin-of-country": "Russia",
+                        "target-technologies": " ",
+                        "target-industries": "Aerospace & Defense,Cryptocurrency,Software and Services,Education",
+                        "target-countries": "Myanmar,United States,Hongkong,Thailand"
+                    }
+                }
+            },
+            "confidence": 100
         }
     ],
     "ta_relationships": [
@@ -92,53 +253,68 @@
             "threat_actor_types": [
                 "crime-syndicate"
             ],
-            "primary_motivation": "personal-gain"
-        },
-        {
-            "id": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
-            "type": "vulnerability",
-            "name": "CVE-2021-40444",
-            "description": "Microsoft MSHTML Remote Code Execution",
-            "created": "2021-09-15T12:15:00.000Z",
-            "modified": "2022-10-14T11:49:00.000Z",
-            "spec_version": "2.1",
-            "labels": [
-                {
-                    "cvss_version": "3.1",
-                    "cvss_score": "7.8",
-                    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
-                    "cvss_metrics_data": {
-                        "attack_complexity": "LOW",
-                        "integrity_impact": "HIGH",
-                        "impact_score": 5.9,
-                        "access_vector": "NETWORK",
-                        "attack_vector": "LOCAL",
-                        "privileges_required": "NONE",
-                        "products": [
-                            "windows server"
-                        ],
-                        "availability_impact": "HIGH",
-                        "technologies": [
-                            "microsoft"
-                        ],
-                        "user_interaction": "REQUIRED",
-                        "scope": "UNCHANGED",
-                        "confidentiality_impact": "HIGH",
-                        "vendors": [
-                            "microsoft"
-                        ],
-                        "access_complexity": "MEDIUM",
-                        "exploitability_score": 1.8,
-                        "authentication": "NONE"
+            "primary_motivation": "personal-gain",
+            "extensions": {
+                "extension-definition--d3f7a1c9-6b2e-4a58-9d0c-5e1b7a3f8c92": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "origin-of-country": "Russia",
+                        "target-technologies": " ",
+                        "target-industries": "Aerospace & Defense,Cryptocurrency,Software and Services,Education",
+                        "target-countries": "Myanmar,United States,Hongkong,Thailand"
                     }
                 }
-            ],
+            },
+            "confidence": 100
+        },
+        {
+            "type": "vulnerability",
+            "name": "CVE-2021-40444",
+            "id": "vulnerability--61322aa2-9e80-40c5-823b-4913eb64b4f7",
+            "description": "Microsoft MSHTML Remote Code Execution",
+            "created": "2021-09-15T12:15:16.467Z",
+            "modified": "2025-10-30T19:16:25.180Z",
+            "spec_version": "2.1",
+            "labels": [],
             "external_references": [
                 {
                     "source_name": "cve",
                     "external_id": "CVE-2021-40444"
                 }
-            ]
+            ],
+            "extensions": {
+                "extension-definition--c9e2b7f4-1a5d-4c83-9f6a-3d7b0e2c8a11": {
+                    "extension_type": "property-extension",
+                    "properties": {
+                        "cvss_score": "8.8",
+                        "integrity_impact": "HIGH",
+                        "impact_score": "5.3",
+                        "access_vector": "NETWORK",
+                        "privileges_required": "NONE",
+                        "products": "windows 10 20h2 (Versions- -10.0.19042.1236), windows 10 21h1 (Versions- -10.0.19043.1236), windows server 2012, windows server 2022 (Versions- -10.0.20348.229), windows 10 1507 (Versions- -10.0.10240.19059), windows 10 2004 (Versions- -10.0.19041.1236), windows 7, windows server 20h2 (Versions- -10.0.19042.1236), windows 10 1809 (Versions- -10.0.17763.2182), windows 8 1, windows 10 1909 (Versions- -10.0.18363.1800), windows rt 8 1, windows server 2008 (Versions- r2), windows server 2019 (Versions- -10.0.17763.2182), windows 10 1607 (Versions- -10.0.14393.4650), windows server 2016 (Versions- -10.0.14393.4650), windows server 2004 (Versions- -10.0.19041.1236)",
+                        "availability_impact": "LOW",
+                        "servers": "",
+                        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:H/A:L",
+                        "scope": "CHANGED",
+                        "confidentiality_impact": "LOW",
+                        "vendors": "microsoft",
+                        "access_complexity": "MEDIUM",
+                        "authentication": "NONE",
+                        "cyfirma_risk_score": 9,
+                        "severity": "Critical",
+                        "attack_complexity": "LOW",
+                        "vulnerability_type": "Code Execution",
+                        "attack_vector": "NETWORK",
+                        "ips": "",
+                        "technologies": "microsoft, operating system, sp1, sp2, x64, r2, defender, authentication systems, browser, microsoft windows",
+                        "cvss_version": "3.1",
+                        "user_interaction": "REQUIRED",
+                        "vulnerability_category": "ASSET_VULNERABILITY",
+                        "exploitability_score": "2.8"
+                    }
+                }
+            },
+            "confidence": 90
         },
         {
             "source_ref": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
