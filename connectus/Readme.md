@@ -56,11 +56,9 @@ Special case: `NoneRequired` (no auth params)
 
 | # | Column | Description |
 |---|---|---|
-| 1 | `assignee` | Who is working on this integration |
-| 2 | `Integration Name` | Display name of the integration |
-| 3 | `Support Level` | `xsoar` or `partner` |
-| 4 | `Provider` | Vendor name |
-| 5 | `Auth Detail` | JSON object with per-param auth mapping and notes (the inner `config` field uses the Auth Config Expression Format described above) |
+| 1 | `Integration ID` | ID of the integration |
+| 2 | `Integration File Path` |  |
+| 3 | `Connector ID` | The ID of the Connector |
 
 #### Auth Detail JSON Schema
 
@@ -97,17 +95,17 @@ The `workflow_state.py` script manages the workflow tracking columns (columns 7�
 | Column | Type | Description |
 |--------|------|-------------|
 | `assignee` | Free text | Who is working on this integration |
-| `auth params set` | Checkpoint ✅ | Manual verification that Auth Detail is correct |
-| `script inputs` | Free text (JSON) | The inputs/arguments for the script |
-| `params required for test` | Free text (JSON) | Parameters needed for testing |
-| `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
-| `wrote code` | Checkpoint ✅ | Python code has been written |
-| `validations passed` | Checkpoint ✅ | `demisto-sdk validate` passes |
-| `unit tests passed` | Checkpoint ✅ | Unit tests pass |
-| `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-| `shadowed command test passes` | Checkpoint ✅ | Verify no conflicting commands in the same connector |
-| `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
-| `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
+Judah| `Auth Details` | Free text (JSON) | Details of the auth of the integration (Auth Detail JSON Schema)|
+Judah| `Params to Commands` | Free text (JSON) | The inputs/arguments for the script |
+Judah| `Params for test with default in code` | Free text list of param ids | Parameters that have a default in the code.... |
+Yuval| `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated | 
+Joey| `wrote/checked code` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
+Joey| `write tests` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
+Joey| `shadowed command test passes` | Checkpoint ✅ | Verify no conflicting commands in the same connector |
+Judah| `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
+Judah| `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
+Joey| `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
+Yuval| `precommit passed` | Checkpoint ✅ | Unit tests pass |
 | `code reviewed` | Checkpoint ✅ | Code review completed |
 | `code merged` | Checkpoint ✅ | Code merged to branch |
 

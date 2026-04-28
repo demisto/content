@@ -18,10 +18,12 @@ from workflow_state import (
     NA_MARK,
     VALID_AUTH_TYPES,
     WORKFLOW_COLUMNS,
+    cmd_show_step,
     find_row,
     format_by_assignee,
     format_dashboard_row,
     format_status,
+    format_step_value,
     get_current_step,
     get_step_index,
     is_checked,
@@ -1310,3 +1312,160 @@ class TestAtomicSaveCsv:
             if p.startswith(".integrations_report.") and p.endswith(".tmp")
         ]
         assert leftovers == [], f"Temp files leaked: {leftovers}"
+
+
+# ---------------------------------------------------------------------------
+# show-step (format_step_value + cmd_show_step)
+# ---------------------------------------------------------------------------
+
+class TestFormatStepValue:
+    """Tests for the format_step_value display helper."""
+
+    def test_pretty_prints_json_script_inputs(self) -> None:
+        row = _make_row(name="IntA", script_inputs='{"key":"val","n":1}')
+        output = format_step_value(row, "script inputs")
+        # Header includes integration name and step name
+        assert "IntA" in output
+        assert "script inputs" in output
+        # JSON should be pretty-printed (multi-line, with indentation)
+        assert '"key": "val"' in output
+        assert '"n": 1' in output
+        assert "\n" in output
+
+    def test_pretty_prints_json_params_for_test(self) -> None:
+        row = _make_row(name="IntA", params_for_test='{"api_key":"test123"}')
+        output = format_step_value(row, "params required for test")
+        assert "IntA" in output
+        assert "params required for test" in output
+        assert '"api_key": "test123"' in output
+
+    def test_pretty_prints_auth_detail(self) -> None:
+        row = _make_row(name="IntA")
+        output = format_step_value(row, "Auth Detail")
+        assert "IntA" in output
+        assert "Auth Detail" in output
+        # Default Auth Detail has APIKey type
+        assert '"APIKey"' in output
+        # Should be multi-line pretty JSON
+        assert output.count("\n") > 3
+
+    def test_displays_checkpoint_value(self) -> None:
+        row = _make_row(name="IntA", auth_params_set=CHECK)
+        output = format_step_value(row, "auth params set")
+        assert "IntA" in output
+        assert "auth params set" in output
+        assert CHECK in output
+
+    def test_displays_not_set_for_empty(self) -> None:
+        row = _make_row(name="IntA")
+        output = format_step_value(row, "wrote code")
+        assert "IntA" in output
+        assert "wrote code" in output
+        assert "(not set)" in output
+
+    def test_displays_not_set_for_whitespace_only(self) -> None:
+        row = _make_row(name="IntA", overrides={"wrote code": "   "})
+        output = format_step_value(row, "wrote code")
+        assert "(not set)" in output
+
+    def test_displays_flag_value(self) -> None:
+        row = _make_row(name="IntA", overrides={"requires auth parity test": "YES"})
+        output = format_step_value(row, "requires auth parity test")
+        assert "IntA" in output
+        assert "requires auth parity test" in output
+        assert "YES" in output
+
+    def test_invalid_json_falls_back_to_raw(self) -> None:
+        # script inputs that aren't valid JSON should still display as raw text
+        row = _make_row(name="IntA", script_inputs="not really json")
+        output = format_step_value(row, "script inputs")
+        assert "IntA" in output
+        assert "not really json" in output
+
+
+class TestCmdShowStep:
+    """Tests for the show-step CLI command."""
+
+    def _patch_csv(self, monkeypatch, rows: list[dict[str, str]]) -> None:
+        """Make load_csv return ``rows`` without touching the real CSV."""
+        monkeypatch.setattr(workflow_state, "load_csv", lambda: rows)
+
+    # --- Happy path ---
+
+    def test_show_step_happy_path_json(self, monkeypatch, capsys) -> None:
+        rows = [_make_row(name="MyInt", script_inputs='{"foo":"bar"}')]
+        self._patch_csv(monkeypatch, rows)
+
+        cmd_show_step(["MyInt", "script inputs"])
+
+        out = capsys.readouterr().out
+        assert "MyInt" in out
+        assert "script inputs" in out
+        # Pretty-printed JSON
+        assert '"foo": "bar"' in out
+
+    def test_show_step_happy_path_checkpoint(self, monkeypatch, capsys) -> None:
+        rows = [_make_row(name="MyInt", auth_params_set=CHECK)]
+        self._patch_csv(monkeypatch, rows)
+
+        cmd_show_step(["MyInt", "auth params set"])
+
+        out = capsys.readouterr().out
+        assert "MyInt" in out
+        assert "auth params set" in out
+        assert CHECK in out
+
+    def test_show_step_happy_path_case_insensitive_name(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = [_make_row(name="Cisco Spark", script_inputs='{"k":"v"}')]
+        self._patch_csv(monkeypatch, rows)
+
+        cmd_show_step(["cisco spark", "script inputs"])
+
+        out = capsys.readouterr().out
+        assert "Cisco Spark" in out
+        assert '"k": "v"' in out
+
+    # --- Error paths ---
+
+    def test_show_step_missing_integration(self, monkeypatch, capsys) -> None:
+        rows = [_make_row(name="OtherInt")]
+        self._patch_csv(monkeypatch, rows)
+
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_show_step(["NonExistent", "script inputs"])
+
+        assert exc_info.value.code == 1
+        out = capsys.readouterr().out
+        assert "ERROR" in out
+        assert "NonExistent" in out
+        assert "not found" in out
+
+    def test_show_step_unknown_step(self, monkeypatch, capsys) -> None:
+        rows = [_make_row(name="MyInt")]
+        self._patch_csv(monkeypatch, rows)
+
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_show_step(["MyInt", "totally bogus step"])
+
+        assert exc_info.value.code == 1
+        out = capsys.readouterr().out
+        assert "ERROR" in out
+        assert "totally bogus step" in out
+        assert "Valid steps" in out
+
+    def test_show_step_missing_args_prints_usage(self, capsys) -> None:
+        with pytest.raises(SystemExit) as exc_info:
+            cmd_show_step([])
+
+        assert exc_info.value.code == 1
+        out = capsys.readouterr().out
+        assert "Usage" in out
+        assert "show-step" in out
+
+    def test_show_step_command_registered(self) -> None:
+        """show-step is wired into the COMMANDS dispatcher."""
+        from workflow_state import COMMANDS
+        assert "show-step" in COMMANDS
+        assert COMMANDS["show-step"] is cmd_show_step

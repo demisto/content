@@ -80,6 +80,9 @@ Usage:
 
   # List all integrations assigned to a specific person
   python workflow_state.py list-by-assignee "John Doe"
+
+  # Show the data stored for a specific step of an integration
+  python workflow_state.py show-step "Cisco Spark" "script inputs"
 """
 
 import csv
@@ -1002,6 +1005,79 @@ def cmd_list_by_assignee(args: list[str]) -> None:
     print(format_by_assignee(matches, assignee_name))
 
 
+def format_step_value(row: dict[str, str], step_name: str) -> str:
+    """Format the value stored at ``step_name`` for ``row`` for display.
+
+    JSON-valued steps (``script inputs``, ``params required for test``,
+    and the ``Auth Detail`` data column) are pretty-printed when the
+    stored value is valid JSON. Checkpoint steps display the raw value
+    or ``(not set)`` when empty. The output always begins with a header
+    line identifying the integration and step.
+    """
+    name = row["Integration Name"]
+    raw = row.get(step_name, "")
+    value = raw.strip()
+
+    header = (
+        f"\n{'=' * 60}\n"
+        f"  {name} — {step_name}\n"
+        f"{'=' * 60}"
+    )
+
+    json_valued_steps = {
+        "script inputs",
+        "params required for test",
+        "Auth Detail",
+    }
+
+    if not value:
+        return f"{header}\n  (not set)"
+
+    if step_name in json_valued_steps:
+        try:
+            parsed = json.loads(value)
+            pretty = json.dumps(parsed, indent=2, sort_keys=False)
+            return f"{header}\n{pretty}"
+        except json.JSONDecodeError:
+            # Fall through to raw display if not valid JSON
+            return f"{header}\n  {value}"
+
+    return f"{header}\n  {value}"
+
+
+def cmd_show_step(args: list[str]) -> None:
+    """Show the data stored for an integration at a specific step.
+
+    The step may be any workflow column (e.g. 'auth params set',
+    'script inputs', 'wrote code') or the 'Auth Detail' data column.
+    JSON-valued steps are pretty-printed when possible.
+    """
+    if len(args) < 2:
+        print("Usage: workflow_state.py show-step <integration_name> <step_name>")
+        print(f"\nValid steps:")
+        for col in WORKFLOW_COLUMNS:
+            print(f"  - {col}")
+        print(f"  - Auth Detail")
+        sys.exit(1)
+
+    name = args[0]
+    step = " ".join(args[1:])
+
+    rows = load_csv()
+    idx = find_row(rows, name)
+    if idx is None:
+        print(f"ERROR: Integration '{name}' not found.")
+        sys.exit(1)
+
+    valid_steps = set(WORKFLOW_COLUMNS) | {"Auth Detail"}
+    if step not in valid_steps:
+        print(f"ERROR: Unknown step '{step}' for integration '{rows[idx]['Integration Name']}'.")
+        print(f"Valid steps: {', '.join(WORKFLOW_COLUMNS)}, Auth Detail")
+        sys.exit(1)
+
+    print(format_step_value(rows[idx], step))
+
+
 def cmd_help(_args: list[str]) -> None:
     """Show help."""
     print(__doc__)
@@ -1169,6 +1245,7 @@ COMMANDS = {
     "at-step": cmd_at_step,
     "list": cmd_list,
     "list-by-assignee": cmd_list_by_assignee,
+    "show-step": cmd_show_step,
     "help": cmd_help,
 }
 

@@ -13,7 +13,11 @@ Determine which YML configuration parameters are used by each command in an XSOA
 ## Usage
 
 ```bash
-python3 connectus/check_command_params.py <integration_path> [--commands cmd1 cmd2 ...] [--static-only]
+python3 connectus/check_command_params.py <integration_path> \
+    [--commands cmd1 cmd2 ...] \
+    [--static-only] \
+    [--ignore-params PARAM [PARAM ...]] \
+    [--ignore-params-file PATH]
 ```
 
 The `integration_path` is relative to the content repo root and points to the integration directory (e.g., `Packs/QRadar/Integrations/QRadar_v3`).
@@ -30,7 +34,28 @@ python3 connectus/check_command_params.py Packs/QRadar/Integrations/QRadar_v3 --
 
 # Combine both
 python3 connectus/check_command_params.py Packs/HelloWorld/Integrations/HelloWorldV2 --commands test-module --static-only
+
+# Exclude specific params from analysis (passed inline)
+python3 connectus/check_command_params.py Packs/QRadar/Integrations/QRadar_v3 \
+    --ignore-params proxy insecure longRunning
+
+# Exclude params from a file (recommended for batch runs)
+python3 connectus/check_command_params.py Packs/QRadar/Integrations/QRadar_v3 \
+    --ignore-params-file path/to/ignore_list.txt
 ```
+
+### `--ignore-params` and `--ignore-params-file`
+
+Both flags **exclude params from analysis entirely**. Excluded params are not statically traced and are not included in the dynamic param-removal loop, which directly reduces the cost of dynamic analysis (see [Performance & Scaling](#performance--scaling)). They simply do not appear in the per-command output.
+
+```text
+--ignore-params PARAM [PARAM ...]    Skip analysis for these params (they will not appear in output)
+--ignore-params-file PATH            Read ignore list from a file (one param per line, # comments allowed)
+```
+
+If both flags are supplied, the lists are unioned. Passing many params on every CLI call is unwieldy in batch operations, so `--ignore-params-file` is the preferred form when running across many integrations.
+
+This tool intentionally does **not** ship with a built-in default ignore list. Curating which params are "framework / infrastructure" (e.g., `proxy`, `insecure`, `longRunning`, feed framework params) is the responsibility of an upstream pipeline stage or the caller — the tool only consumes the list it is given.
 
 ### Command Discovery
 
@@ -88,7 +113,110 @@ JSON to stdout. Output is keyed by command:
 }
 ```
 
-Each param is `true` (relevant to the command) or `false` (not relevant). The tool merges results from both static and dynamic analysis internally — if either method detects usage, the param is `true`.
+Each param is `true` (relevant to the command) or `false` (not relevant). The tool merges results from both static and dynamic analysis internally — if either method detects usage, the param is `true`. Params passed via `--ignore-params` / `--ignore-params-file` are omitted from the output entirely.
+
+---
+
+## Performance & Scaling
+
+Dynamic analysis is by far the most expensive part of this tool. The naive design has a quadratic cost that does not scale to the full content backlog. This section documents the cost honestly and lays out the optimization strategies that bring it back into a practical budget.
+
+### The cost problem
+
+Let **N** = number of YML params on an integration and **C** = number of commands being analyzed. With each integration re-run taking roughly **5 seconds** (cold import, content prep, command dispatch, proxy round-trips), the dynamic phase costs:
+
+| Strategy                                                      | Re-runs per command | Per command (5s/run) | Per integration (C=10) |
+|---------------------------------------------------------------|---------------------|----------------------|------------------------|
+| Single-pass per-param removal — O(N)                          | N                   | 5N seconds           | 50N seconds            |
+| Pairwise dependency detection (current design, lines 437–447) | up to N²            | 5N² seconds          | 50N² seconds           |
+
+For an integration with **N = 30**:
+
+- Per-param removal alone: 30 × 5 = **150 seconds** per command.
+- Full pairwise dependency detection: 900 × 5 = **75 minutes** per command.
+
+For the full **982-integration backlog** at the pairwise rate, that is roughly **51 days** of wall time on a single machine. This is not acceptable as a default.
+
+### Optimization strategies
+
+The following strategies are presented independently. Most can be combined.
+
+#### Strategy 1: `--ignore-params`
+
+Reduce N by excluding well-known infrastructure params curated upstream. Costs scale with N², so any reduction compounds. Example: if 8 of 20 params on a typical integration are framework-owned, N drops from 20 → 12 and pairwise re-runs drop from 400 → 144 (**~64% reduction** in dynamic cost for that integration).
+
+#### Strategy 2: Cap dependency-detection scope
+
+Pairwise dependency detection is the dominant cost driver. Most real param dependencies in practice involve a small number of params (e.g., `first_fetch` depends on `isFetch`). Cap the number of params for which the pairwise pass runs — for example, only the first **K** params that triggered an exception in the single-pass phase, with K = 5 as a reasonable default. This caps the pairwise cost at **K × N** instead of **N × N**.
+
+#### Strategy 3: Skip params that never appear in static analysis output
+
+If static analysis reports that a param is not referenced by any command in the integration, it is almost certainly framework-owned (consumed by `BaseClient` / API modules) and dynamic analysis will not yield new information. Skip it.
+
+This catches `proxy`, `insecure`, and similar params automatically — even when the caller did not list them in `--ignore-params`. Combine with `--ignore-params` for explicit, deterministic control.
+
+#### Strategy 4: Batch dynamic runs per command, not per param
+
+The current design re-runs the entire integration for each removed param. A faster pattern is to permute params **within a single integration startup** if the integration supports re-invocation without re-import.
+
+**Caveat:** many integrations have module-level side effects (`Client(...)` constructed at import time, network calls during module init), so this only works for integrations using lazy initialization. Document as a future-only optimization, gated behind detection of import-time purity.
+
+#### Strategy 5: Parallelism
+
+The capture proxy is already session-based — multiple sessions can run concurrently without contaminating each other. Spawn **W** worker processes, each with its own session ID, running param-removal experiments in parallel.
+
+- On a typical CI machine: 4–8× speedup with 8 workers.
+- **Caveat:** each worker needs its own copy of the unified Python file imported in isolation. Use `multiprocessing` (separate interpreters), **not** `threading` (shared module state would cause cross-talk).
+
+#### Strategy 6: Caching by integration version
+
+Hash the integration's `.py` + `.yml` files (and the unified-content build inputs). Cache analysis results keyed by that hash. Re-running on unchanged integrations is free, which makes incremental backlog passes cheap and makes CI integration practical.
+
+#### Strategy 7: Skip dynamic verification for params already proven by static analysis
+
+If static analysis says "param X is used in command Y", dynamic analysis will only confirm it. Only run the dynamic check on:
+
+1. Params where static says "not used" (to catch false negatives), and
+2. Non-Python integrations (where static analysis does not run at all).
+
+In practice this eliminates roughly 80% of dynamic re-runs, since most params in standard integrations are caught by the AST trace.
+
+#### Strategy 8: Sentinel-driven differential (single-run analysis) — biggest win
+
+Instead of re-running the integration once per param, do this:
+
+1. Set every param to a **unique sentinel value**, e.g. `SENTINEL_PARAM_<name>`.
+2. Run the command **once**.
+3. Capture all outgoing HTTP requests via the proxy.
+4. Grep request URLs / headers / bodies for each sentinel string. Each hit tells you exactly which params flowed into the request.
+
+This collapses the dynamic phase from **O(N) re-runs** to **O(1) re-runs per command** — a massive win and the single biggest optimization available to this tool.
+
+**Caveat:** sentinels only catch params that flow into HTTP traffic. They do not catch params that affect *behavior* without flowing into a request — for example, `isFetch` toggling a validation branch inside `test-module`. For those cases, fall back to per-param removal (which is now a small targeted set, not the whole list).
+
+**Recommendation:** make sentinel-based differential the **default** dynamic mode.
+
+### Recommended optimization stack
+
+In priority order, the recommended layering is:
+
+1. **Static-only by default** — fast, ~90% accurate, zero dynamic cost.
+2. **Sentinel-based differential** when dynamic analysis is enabled — single-run per command.
+3. **`--ignore-params`** to drop framework / infrastructure params before either phase.
+4. **Result caching by integration hash** for repeated runs and CI.
+5. **Process-level parallelism** for batch jobs over the backlog.
+6. **Pairwise dependency detection** opt-in only via an explicit flag — never the default.
+
+### Realistic time budget after optimization
+
+| Mode                                                          | Per integration   | Full 982-integration backlog                |
+|---------------------------------------------------------------|-------------------|---------------------------------------------|
+| Static-only                                                   | 1–3 seconds       | ~15–50 minutes serial                       |
+| Sentinel-based dynamic + ignore-list + caching                | 5–15 seconds      | ~30 minutes with parallelism (W=8)          |
+| Single-pass per-param removal (no sentinels)                  | minutes           | hours to a day                              |
+| Pairwise dependency detection (current naïve design)          | up to ~75 min     | ~51 days                                    |
+
+The tool should default to the cheapest mode that still satisfies the caller's accuracy requirement and require explicit opt-in for anything more expensive.
 
 ---
 
@@ -403,7 +531,9 @@ proxy.stop()
 
 #### Accuracy
 
-~99% — the only things it can't detect are params that affect behavior without changing HTTP requests (e.g., `isFetch` which controls whether fetch-incidents validation runs inside test-module, but doesn't change the HTTP call itself). Static analysis catches those.
+~99%[^sentinel-accuracy] — the only things it can't detect are params that affect behavior without changing HTTP requests (e.g., `isFetch` which controls whether fetch-incidents validation runs inside test-module, but doesn't change the HTTP call itself). Static analysis catches those.
+
+[^sentinel-accuracy]: This figure assumes either single-pass per-param removal **or** the sentinel-based differential mode described in [Performance & Scaling](#performance--scaling). Sentinel mode achieves comparable accuracy at a fraction of the cost for params that flow into HTTP traffic; behavior-only params still depend on the static or per-param-removal fallback.
 
 #### Limitations
 
@@ -452,7 +582,7 @@ This produces a dependency graph: "first_fetch is only relevant when isFetch is 
 
 ## Implementation Plan
 
-### 1. Capture Proxy (`connectus/capture_proxy.py`)
+### 1. Capture Proxy ([`connectus/capture_proxy.py`](connectus/capture_proxy.py))
 - Reusable standalone HTTP capture server
 - Python stdlib only: `http.server`, `json`, `threading`, `argparse`
 - Session-based request storage with unique session IDs
@@ -462,33 +592,46 @@ This produces a dependency graph: "first_fetch is only relevant when isFetch is 
 - Dual usage: programmatic (`CaptureProxy` class) and standalone (`python3 capture_proxy.py --port 18080`)
 - No external dependencies
 
-### 2. Static Analysis Module (`connectus/check_command_params.py`)
+### 2. Static Analysis Module ([`connectus/check_command_params.py`](connectus/check_command_params.py))
 - Python stdlib only: `ast`, `yaml`, `json`, `argparse`, `pathlib`, `glob`
 - No external dependencies
 - Accepts integration path + optional command filter
 - Discovers all commands from YML if no filter provided
+- Honors `--ignore-params` / `--ignore-params-file`: excluded params are dropped from the static trace before per-command output is emitted
 - Loops over each command, runs AST analysis per command
 
-### 3. Dynamic Analysis Module (in `connectus/check_command_params.py`)
-- Uses `CaptureProxy` from `capture_proxy.py`
+### 3. Dynamic Analysis Module (in [`connectus/check_command_params.py`](connectus/check_command_params.py))
+- Uses `CaptureProxy` from [`connectus/capture_proxy.py`](connectus/capture_proxy.py)
 - Content preparation pipeline:
   1. Prepend `demistomock.py` from `Packs/Base/Scripts/CommonServerPython/`
   2. Prepend `CommonServerPython.py` from `Packs/Base/Scripts/CommonServerPython/`
   3. Run `demisto-sdk prepare-content -i <path>` to attach API modules
   4. Produce a single unified `.py` file
+- Honors `--ignore-params` / `--ignore-params-file`: excluded params are skipped in the param-removal loop entirely (this is the primary lever for keeping dynamic cost bounded — see [Performance & Scaling](#performance--scaling))
 - For each command:
   - Create baseline session → run with all params → capture requests
-  - For each param: create new session → remove param → run again
+  - For each param **not in the ignore list**: create new session → remove param → run again
   - Exception before HTTP call → param is relevant
   - Exception after HTTP call → ignore (proxy already captured)
   - Request diff → param is relevant
   - No change → param is not relevant
   - Clean up sessions after each comparison
-- Detect param dependencies via pairwise removal
+- Pairwise dependency detection is **opt-in** (off by default); see Strategy 2 / Strategy 6 in [Performance & Scaling](#performance--scaling) for why
 - For JS/PowerShell: execute via subprocess with `HTTP_PROXY` env var
 
-### 4. Merging Results
+### 4. Recommended optimization stack (implementation order)
+The performance section above lays out the full menu. Initial implementation should target, in order:
+
+1. Static-only as the default mode.
+2. `--ignore-params` / `--ignore-params-file` plumbing through both static and dynamic phases.
+3. Sentinel-based differential as the default dynamic strategy (single-run per command).
+4. Result caching keyed by a hash of the integration's `.py` + `.yml`.
+5. Process-level parallelism (`multiprocessing`) for batch runs.
+6. Pairwise dependency detection only behind an explicit opt-in flag.
+
+### 5. Merging Results
 - Static result: `{param: bool}` per command
 - Dynamic result: `{param: bool}` per command
 - Final: `param = static_result OR dynamic_result` (union — if either says relevant, it's relevant)
+- Params in the ignore list are excluded from both phases and omitted from the output
 - Output: `{commands: {command: {param: true/false}}}` JSON to stdout
