@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the context path of 'Assign Managed Identity to Web App quick action to the suffix 'Azure.AppService.WebApp'."
+}
