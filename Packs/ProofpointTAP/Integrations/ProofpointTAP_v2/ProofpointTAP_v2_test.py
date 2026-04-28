@@ -348,23 +348,27 @@ def test_fetch_with_look_back_buffer(requests_mock, mocker):
     When:
      - fetch_incidents is called with look_back_minutes=2
     Then:
-     - Ensure the fetch queries up to (now - 2 minutes) = 2010-01-01T00:03:00Z
+     - Ensure the fetch start is shifted back by 2 minutes to 2009-12-31T23:58:00Z
+     - Ensure the fetch end is current time 2010-01-01T00:05:00Z
      - Ensure incidents are fetched correctly
-     - Ensure next_run checkpoint is set to the buffered time
+     - Ensure next_run checkpoint is set to the end of the last interval (now)
     """
     from ProofpointTAP_v2 import fetch_incidents
 
     last_fetch_time = "2010-01-01T00:00:00Z"
     current_time = "2010-01-01T00:05:00Z"
-    # With 2-minute buffer, effective end time should be 00:03:00Z
-    expected_end_time = "2010-01-01T00:03:00Z"
+    # With 2-minute look-back, effective start shifts back: 00:00:00 - 2min = 23:58:00 previous day
+    expected_start_time = "2009-12-31T23:58:00Z"
+    # End time is now
+    expected_end_time = current_time
 
     mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
 
-    # Mock API call with the expected buffered interval (single interval since < 59 minutes)
+    # Mock API call with the expected look-back interval (single interval since < 59 minutes)
+    start_encoded = expected_start_time.replace(":", "%3A")
+    end_encoded = expected_end_time.replace(":", "%3A")
     requests_mock.get(
-        MOCK_URL
-        + f"/v2/siem/all?format=json&interval={last_fetch_time.replace(':', '%3A')}%2F{expected_end_time.replace(':', '%3A')}",
+        MOCK_URL + f"/v2/siem/all?format=json&interval={start_encoded}%2F{end_encoded}",
         json=MOCK_ALL_EVENTS,
     )
 
@@ -385,7 +389,7 @@ def test_fetch_with_look_back_buffer(requests_mock, mocker):
 
     # Verify incidents were fetched
     assert len(incidents) == 4
-    # Verify checkpoint is set to the buffered time (not current time)
+    # Verify checkpoint is set to the end of the last interval (current time)
     assert next_run["last_fetch"] == expected_end_time
 
 

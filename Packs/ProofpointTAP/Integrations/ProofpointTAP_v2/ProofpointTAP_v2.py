@@ -36,24 +36,25 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
     """Remove event IDs outside the lookback window. Apply hard cap if needed.
 
     Args:
-        seen_ids: Mapping of event_id → event_time_str for deduplication.
+        seen_ids: Mapping of event_id → interval_end_str (the end of the fetch interval
+                  in which the event was first seen) for deduplication.
         look_back_minutes: The lookback window in minutes.
 
     Returns:
-        Pruned dict with only IDs within the lookback window + 30min margin.
+        Pruned dict with only IDs whose interval_end is within the lookback window + 30min margin.
     """
     if not seen_ids or look_back_minutes <= 0:
         return seen_ids
 
     cutoff = (get_now() - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
-    pruned = {event_id: event_time for event_id, event_time in seen_ids.items() if event_time >= cutoff}
+    pruned = {event_id: interval_end for event_id, interval_end in seen_ids.items() if interval_end >= cutoff}
 
     if len(pruned) > MAX_SEEN_IDS:
         demisto.info(f"seen_ids exceeded {MAX_SEEN_IDS}, pruning oldest 25%")
         sorted_ids = sorted(pruned.items(), key=lambda x: x[1])
-        pruned = dict(sorted_ids[len(sorted_ids) // 4:])
+        pruned = dict(sorted_ids[len(sorted_ids) // 4 :])
 
-    demisto.debug(f"Pruned seen_ids: {len(seen_ids)} → {len(pruned)}")
+    demisto.debug(f"Pruned seen_ids: {len(seen_ids)=}, {len(pruned)=}")
     return pruned
 
 
@@ -73,7 +74,7 @@ def get_fetch_times(last_fetch, look_back_minutes: int = 0):
                                Each interval is ≤59 minutes and ≥30 seconds.
                                Returns empty list if no valid intervals can be created.
     """
-    now = get_now()  # Real time — no longer subtracting look_back_minutes
+    now = get_now()
     time_format = DATE_FORMAT
 
     if isinstance(last_fetch, str):
@@ -82,11 +83,11 @@ def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     # Shift start backward to catch late-indexed events
     effective_start = last_fetch - timedelta(minutes=look_back_minutes) if look_back_minutes > 0 else last_fetch
 
-    # Clamp to 7-day API limit
-    seven_days_ago = now - timedelta(days=7) + timedelta(minutes=1)
-    if effective_start < seven_days_ago:
-        effective_start = seven_days_ago
-        demisto.debug(f"Clamped effective_start to 7-day limit: {effective_start}")
+    # # Clamp to 7-day API limit
+    # seven_days_ago = now - timedelta(days=7) + timedelta(minutes=1)
+    # if effective_start < seven_days_ago:
+    #     effective_start = seven_days_ago
+    #     demisto.debug(f"Clamped effective_start to 7-day limit: {effective_start}")
 
     # Guard against invalid intervals
     if effective_start >= now:
@@ -666,7 +667,7 @@ def fetch_incidents(
     dedup_count = 0
 
     for interval_start, interval_end in fetch_intervals:
-        demisto.debug(f"Fetching interval: {interval_start} → {interval_end}")
+        demisto.debug(f"Fetching interval: {interval_start} / {interval_end}")
         raw_events = client.get_events(
             interval=interval_start + "/" + interval_end,
             event_type_filter=event_type_filter,
@@ -685,6 +686,10 @@ def fetch_incidents(
 
                 # Skip if already seen (dedup)
                 if dedup_key and dedup_key in seen_ids:
+                    demisto.debug(
+                        f"Dedup: skipping event {dedup_key} ({response_key}) — "
+                        f"already seen in interval ended by {seen_ids[dedup_key]}"
+                    )
                     dedup_count += 1
                     continue
 
@@ -698,9 +703,9 @@ def fetch_incidents(
                 incident = _build_incident(raw_event, event_type_label, occurred, raw_json_encoding)
                 incidents.append(incident)
 
-                # Track this event for dedup
+                # Track this event for dedup — store the end of the fetch interval
                 if dedup_key:
-                    seen_ids[dedup_key] = occurred
+                    seen_ids[dedup_key] = interval_end
 
     if dedup_count > 0:
         demisto.debug(f"Deduplicated {dedup_count} events")
