@@ -1,5 +1,6 @@
 import contextlib
 import io
+import os
 import shutil
 import tarfile
 from collections.abc import Callable
@@ -380,8 +381,15 @@ def create_relationship(name: str, entities: tuple, types: tuple) -> list[Entity
 
 
 def test_module():
-    if wildfire_upload_url("https://www.demisto.com")[1]:
-        demisto.results("ok")
+    """Test API connectivity by querying a well-known hash via /get/verdict."""
+    test_hash = "dca86121cc7427e375fd24fe5871d727"
+    try:
+        wildfire_get_verdict(file_hash=test_hash)
+    except NotFoundError:
+        # Hash not found is still a valid API response —
+        # connectivity and authentication are working.
+        pass
+    return "ok"
 
 
 @logger
@@ -393,7 +401,7 @@ def wildfire_upload_file(upload):
     body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)["path"]
-    file_name = demisto.getFilePath(upload)["name"]
+    file_name = os.path.basename(demisto.getFilePath(upload)["name"])
 
     try:
         shutil.copy(file_path, file_name)
@@ -405,7 +413,8 @@ def wildfire_upload_file(upload):
         with open(file_name, "rb") as file:
             result = http_request(upload_file_uri, "POST", body=body, files={"file": file})
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(file_name)
 
     upload_file_data = result["wildfire"]["upload-file-info"]
 
@@ -1331,8 +1340,7 @@ def wildfire_get_url_report(url: str) -> tuple:
 
     finally:
         command_results = CommandResults(
-            outputs_prefix="WildFire.Report",
-            outputs_key_field="url",
+            outputs_prefix=WILDFIRE_REPORT_DT_FILE,
             outputs=report,
             readable_output=human_readable,
             raw_response=report,
@@ -1523,15 +1531,20 @@ def assert_upload_argument(args: dict):
         raise ValueError("Please specify the item you wish to upload using the 'upload' argument.")
 
 
-def get_agent(api_key_source: str, platform: str, token: str) -> str:
+def get_agent(api_key_source: str, token: str) -> str:
     # Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
     # within XSOAR (both on-prem and cloud).
-    if len(token) == 32:
-        return ""
+    # Explicit source selection always takes priority.
     if api_key_source in ["pcc", "prismaaccessapi", "xsoartim", "xdr"]:
         return api_key_source
-    if (platform == "x2" or is_demisto_version_ge("8")) and not api_key_source:
+    # Auto-detect on XSIAM / XSOAR 8+ platforms — XDR license tokens may be 32 chars
+    # but still require agent=xdr.
+    if (is_xsiam() or is_demisto_version_ge("8")) and not api_key_source:
         return "xdr"
+    # NGFW / WF portal keys are 32 chars and need no agent header.
+    # This check is intentionally after platform detection to avoid masking XDR license tokens.
+    if len(token) == 32:
+        return ""
     # we have an 'other' api key that requires no additional api key headers for agent
     return ""
 
@@ -1555,7 +1568,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-    platform = get_demisto_version().get("platform")  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
     demisto.info(f"command is {command}")
 
     try:
@@ -1590,7 +1602,7 @@ def main():  # pragma: no cover
                 sys.exit()
 
         # update the default headers with the correct agent version based on the selection in the instance config.
-        agent_value = get_agent(params.get("credentials_source"), platform, token)
+        agent_value = get_agent(params.get("credentials_source"), token)
 
         # if the apikey is longer than 32 characters agent is not set, and we're not in XSIAM or XSOAR SaaS, send exception
         # otherwise API calls will fail.
@@ -1602,8 +1614,13 @@ def main():  # pragma: no cover
             )
         set_http_params(token, agent_value)
 
+        # Log diagnostic info for troubleshooting credential/agent issues.
+        token_type = type(token).__name__
+        token_length = len(token) if isinstance(token, str) else "N/A"
+        demisto.info(f"WildFire_v2: using agent_value={agent_value}, token_type={token_type}, token_length={token_length}")
+
         if command == "test-module":
-            test_module()
+            return_results(test_module())
 
         elif command == "wildfire-upload":
             if args.get("polling") == "true":

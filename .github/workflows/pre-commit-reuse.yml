@@ -57,8 +57,9 @@ jobs:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
+        PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels) }}
       run: |
-        LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        LABEL_NAMES=$(echo "$PR_LABELS_JSON" | jq -r '.[].name')
         if echo "$LABEL_NAMES" | grep -q "Contribution"; then
             echo "Label 'Contribution' found!"
             export DEMISTO_SDK_XSOAR_LINTER_WARNING_ANNOTATIONS=true
