@@ -242,6 +242,23 @@ def test_decyfir_ip_indicator_command(mocker):
     assert data[0]["type"] == "IP"
 
 
+def test_decyfir_get_indicators_command(mocker):
+    from decyfiriocs import Client, decyfir_get_indicators_command
+
+    raw_data = util_load_json("test_data/iocs_ti.json")
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+    )
+    mocker.patch.object(Client, "fetch_indicators", return_value=raw_data["iocs"])
+    data = decyfir_get_indicators_command(
+        client=client, decyfir_api_key="api_key", reputation="feedReputation", tlp_color="tlp_color", feed_tags=["feedTags"]
+    )
+
+    assert data[0]["value"] == "0.0.0.0"
+
+
 def test_command_results(mocker):
     from decyfiriocs import command_results
 
