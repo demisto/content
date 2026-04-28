@@ -1,4 +1,5 @@
 import base64
+import threading
 from collections import deque
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
@@ -6,7 +7,7 @@ from traceback import format_exc
 
 import uvicorn
 from CommonServerPython import *  # noqa: F401
-from fastapi import Depends, FastAPI, Request, Response, status
+from fastapi import BackgroundTasks, Depends, FastAPI, Request, Response, status
 from fastapi.openapi.models import APIKey
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKeyHeader
@@ -16,6 +17,12 @@ from CommonServerUserPython import *
 
 PARAMS: dict = demisto.params()
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
+
+# Async incident creation tunables.
+RETRY_ATTEMPTS = 3
+RETRY_BACKOFF_SEC = 2
+# Caps how many demisto.createIncidents() calls run in parallel across all
+INCIDENT_CREATE_SEMAPHORE = threading.BoundedSemaphore(20)
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
@@ -190,23 +197,73 @@ def store_samples(incident):  # pragma: no cover
         demisto.error(f"Failed storing sample events - {e}")
 
 
+def _extract_message_id(incident: dict) -> str:
+    """
+    Best-effort extraction of the SNS MessageId from an incident dict for
+    log/Module-Health correlation. Returns '<unknown>' if it can't be parsed.
+    """
+    try:
+        raw = json.loads(incident.get("rawJSON") or "{}")
+        return raw.get("MessageId", "<unknown>") or "<unknown>"
+    except Exception:
+        return "<unknown>"
+
+
+def create_incident_background(incident: dict) -> None:
+    """
+    Create the XSOAR incident in the background, after AWS has already received
+    its HTTP 200. Retries up to RETRY_ATTEMPTS times with linear backoff before
+    giving up and raising a Module Health alert so the operator sees the loss.
+
+    Concurrency is bounded by INCIDENT_CREATE_SEMAPHORE to protect the server
+    from SNS burst overload.
+
+    Args:
+        incident (dict): Incident payload as produced by handle_notification().
+    """
+    message_id = _extract_message_id(incident)
+    with INCIDENT_CREATE_SEMAPHORE:
+        for attempt in range(1, RETRY_ATTEMPTS + 1):
+            try:
+                data = demisto.createIncidents(incidents=[incident])
+                if data:
+                    demisto.debug(f"SNS msg {message_id}: created incident on attempt {attempt}")
+                    if PARAMS.get("store_samples"):
+                        store_samples(incident)
+                    return
+                demisto.error(f"SNS msg {message_id}: createIncidents returned empty " f"(attempt {attempt}/{RETRY_ATTEMPTS})")
+            except Exception as e:
+                demisto.error(f"SNS msg {message_id}: createIncidents raised " f"(attempt {attempt}/{RETRY_ATTEMPTS}): {e}")
+            time.sleep(RETRY_BACKOFF_SEC * attempt)
+
+    demisto.updateModuleHealth(f"AWS-SNS message {message_id} lost after {RETRY_ATTEMPTS} retries")
+
+
 @app.post(f'/{PARAMS.get("endpoint","")}')
 async def handle_post(
-    request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth), token: APIKey = Depends(token_auth)
+    request: Request,
+    background_tasks: BackgroundTasks,
+    credentials: HTTPBasicCredentials = Depends(basic_auth),
+    token: APIKey = Depends(token_auth),
 ):  # pragma: no cover
     """
     Handles incoming AWS-SNS POST requests.
     Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
 
+    For Notification messages, incident creation is scheduled as a background
+    task so that AWS receives HTTP 200 within the strict 15-second SNS delivery
+    SLA, even during high-volume bursts.
+
     Args:
         request (Request): The incoming HTTP request.
+        background_tasks (BackgroundTasks): FastAPI background task runner used
+            to defer incident creation after the 200 response is sent.
         credentials (HTTPBasicCredentials): Basic authentication credentials.
         token (APIKey): API key for authentication.
 
     Returns:
         Union[Response, str]: Response data or error message.
     """
-    data = ""
     request_headers = dict(request.headers)
     is_valid_credentials = False
     try:
@@ -241,14 +298,8 @@ async def handle_post(
         return response
     elif type == "Notification":
         incident = handle_notification(payload, raw_json)
-        data = demisto.createIncidents(incidents=[incident])
-        demisto.debug(f"Created incident: {incident}")
-        if PARAMS.get("store_samples"):
-            store_samples(incident)
-        if not data:
-            demisto.error("Failed creating incident")
-            data = "Failed creating incident"
-        return data
+        background_tasks.add_task(create_incident_background, incident)
+        return Response(status_code=status.HTTP_200_OK)
     elif type == "UnsubscribeConfirmation":
         message = payload["Message"]
         demisto.debug(f"UnsubscribeConfirmation request msg: {message}")

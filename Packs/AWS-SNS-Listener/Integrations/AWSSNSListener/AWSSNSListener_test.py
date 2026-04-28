@@ -1,8 +1,15 @@
+import json
 from unittest.mock import patch
 
 import pytest
 import requests
-from AWSSNSListener import SNSCertificateManager, handle_notification, is_valid_integration_credentials
+from AWSSNSListener import (
+    RETRY_ATTEMPTS,
+    SNSCertificateManager,
+    create_incident_background,
+    handle_notification,
+    is_valid_integration_credentials,
+)
 
 VALID_PAYLOAD = {
     "Type": "Notification",
@@ -109,3 +116,144 @@ def test_invalid_credentials(mock_httpBasicCredentials, mock_params):
     token = "sometoken"
     result, header_name = is_valid_integration_credentials(mock_httpBasicCredentials, request_headers, token)
     assert result is False
+
+
+# ---------------------------------------------------------------------------
+# Tests for the async incident creation path (BackgroundTasks-based fix).
+# ---------------------------------------------------------------------------
+
+SAMPLE_INCIDENT = {
+    "name": "NotificationSubject",
+    "labels": [],
+    "rawJSON": json.dumps({"MessageId": "test-msg-id-123"}),
+    "occurred": "2024-02-13T18:03:27.239Z",
+    "details": "ExternalID:test-msg-id-123 TopicArn:topicarn Message:NotificationMessage",
+    "type": "AWS-SNS Notification",
+}
+
+
+def test_create_incident_background_success(mocker):
+    """
+    Given demisto.createIncidents returns a truthy result on the first attempt
+    When create_incident_background is invoked
+    Then it should call createIncidents exactly once and never call updateModuleHealth.
+    """
+    create_mock = mocker.patch("AWSSNSListener.demisto.createIncidents", return_value=[{"id": "1"}])
+    health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    sleep_mock = mocker.patch("AWSSNSListener.time.sleep")
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    assert create_mock.call_count == 1
+    health_mock.assert_not_called()
+    sleep_mock.assert_not_called()
+
+
+def test_create_incident_background_retry_then_success(mocker):
+    """
+    Given createIncidents raises an exception on the first two attempts and succeeds on the third
+    When create_incident_background is invoked
+    Then it should call createIncidents three times and never raise a Module Health alert.
+    """
+    create_mock = mocker.patch(
+        "AWSSNSListener.demisto.createIncidents",
+        side_effect=[Exception("transient 1"), Exception("transient 2"), [{"id": "1"}]],
+    )
+    health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")  # do not actually sleep in tests
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    assert create_mock.call_count == 3
+    health_mock.assert_not_called()
+
+
+def test_create_incident_background_exhausts_retries(mocker):
+    """
+    Given createIncidents fails on every attempt
+    When create_incident_background is invoked
+    Then it should call createIncidents RETRY_ATTEMPTS times and call updateModuleHealth
+    exactly once with a message containing the SNS MessageId.
+    """
+    create_mock = mocker.patch("AWSSNSListener.demisto.createIncidents", side_effect=Exception("permanent failure"))
+    health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    assert create_mock.call_count == RETRY_ATTEMPTS
+    assert health_mock.call_count == 1
+    health_message = health_mock.call_args.args[0]
+    assert "test-msg-id-123" in health_message
+
+
+def test_create_incident_background_empty_response_triggers_retry_and_health(mocker):
+    """
+    Given createIncidents returns falsy (empty list / None) on every attempt
+    When create_incident_background is invoked
+    Then it should retry the configured number of times and finally call updateModuleHealth.
+    """
+    create_mock = mocker.patch("AWSSNSListener.demisto.createIncidents", return_value=[])
+    health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    assert create_mock.call_count == RETRY_ATTEMPTS
+    health_mock.assert_called_once()
+
+
+def test_create_incident_background_unparseable_rawjson_uses_unknown_id(mocker):
+    """
+    Given an incident whose rawJSON is not valid JSON
+    When create_incident_background fails all retries
+    Then the Module Health message should fall back to '<unknown>' for the MessageId.
+    """
+    bad_incident = dict(SAMPLE_INCIDENT, rawJSON="not-a-json")
+    mocker.patch("AWSSNSListener.demisto.createIncidents", side_effect=Exception("boom"))
+    health_mock = mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+
+    create_incident_background(bad_incident)
+
+    health_mock.assert_called_once()
+    assert "<unknown>" in health_mock.call_args.args[0]
+
+
+def test_create_incident_background_stores_samples_only_when_enabled(mocker):
+    """
+    Given store_samples is enabled in PARAMS
+    When create_incident_background succeeds
+    Then store_samples should be called exactly once with the incident.
+    """
+    mocker.patch("AWSSNSListener.demisto.createIncidents", return_value=[{"id": "1"}])
+    mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")
+    store_mock = mocker.patch("AWSSNSListener.store_samples")
+    mocker.patch("AWSSNSListener.PARAMS", new={"store_samples": True})
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    store_mock.assert_called_once_with(SAMPLE_INCIDENT)
+
+
+def test_create_incident_background_skips_samples_when_disabled(mocker):
+    """
+    Given store_samples is disabled (default)
+    When create_incident_background succeeds
+    Then store_samples should not be called.
+    """
+    mocker.patch("AWSSNSListener.demisto.createIncidents", return_value=[{"id": "1"}])
+    mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")
+    store_mock = mocker.patch("AWSSNSListener.store_samples")
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    store_mock.assert_not_called()
