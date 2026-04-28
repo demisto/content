@@ -66,6 +66,8 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
+  supportedModules:
+  - "xsiam"
 - display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
@@ -73,6 +75,8 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
   section: Collect
+  supportedModules:
+  - "xsiam"
 - display: Akamai Page size
   name: page_size
   type: 0
@@ -90,6 +94,8 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - "xsiam"
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -109,6 +115,8 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - "xsiam"
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
@@ -282,5 +290,3 @@ script:
 tests:
 - Akamai_WAF_SIEM-Test
 fromversion: 5.0.0
-supportedModules:
-- xsiam
