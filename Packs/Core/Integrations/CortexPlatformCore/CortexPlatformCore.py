@@ -1158,7 +1158,7 @@ class Client(CoreClient):
                     },
                 ],
                 "full_alert_fields": True,
-                "fields_to_exclude": ["network_artifacts", "file_artifacts"],
+                # "fields_to_exclude": ["network_artifacts", "file_artifacts"],
             }
         }
         demisto.debug(f"Calling get_multiple_incidents_extra_data with case_ids={case_ids}")
@@ -1774,34 +1774,24 @@ def get_case_extra_data(client, args):
 
 def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     """
-    Parse a single case's extra data from the bulk API response into the standard CaseExtraData format.
+    Parse a single case's extra data from the bulk API response into the CaseExtraData format.
 
     The bulk endpoint returns each case as:
         {"incident": {...}, "alerts": {"total_count": N, "data": [...]}, "network_artifacts": ..., "file_artifacts": ...}
 
-    This function transforms it into the same output structure as the old per-case enrichment:
-        {"issue_ids": [...], "network_artifacts": ..., "file_artifacts": ..., "notes": ..., ...}
+    After preprocessing, keys are renamed (incident→case, alert→issue) and the full processed
+    data is returned with an additional ``issue_ids`` convenience field.
 
     Args:
         case_incident_data: A single case entry from the bulk response's 'incidents' list.
 
     Returns:
-        dict: Parsed extra data in the standard CaseExtraData format.
+        dict: The full processed extra data with renamed keys and an ``issue_ids`` list.
     """
     processed = preprocess_get_case_extra_data_outputs(case_incident_data)
-    case_data = processed.get("case", {})
     issue_ids = extract_ids(processed)
-
-    return {
-        "issue_ids": issue_ids,
-        "network_artifacts": processed.get("network_artifacts"),
-        "file_artifacts": processed.get("file_artifacts"),
-        "notes": case_data.get("notes"),
-        "detection_time": case_data.get("detection_time"),
-        "xdr_url": case_data.get("xdr_url"),
-        "starred_manually": case_data.get("starred_manually"),
-        "manual_description": processed.get("manual_description") or case_data.get("manual_description"),
-    }
+    processed["issue_ids"] = issue_ids
+    return processed
 
 
 def add_cases_extra_data(client: Client, cases_list: list) -> list:

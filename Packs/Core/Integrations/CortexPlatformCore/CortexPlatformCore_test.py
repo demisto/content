@@ -3895,7 +3895,11 @@ def test_add_cases_extra_data_single_case(mocker: MockerFixture):
 
     assert len(result) == 1
     assert result[0]["case_id"] == "123"
-    assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
+    extra = result[0]["CaseExtraData"]
+    assert extra["issue_ids"] == ["a1"]
+    assert extra["case"]["xdr_url"] == "https://example.com"
+    assert extra["issues"]["data"] == [{"issue_id": "a1"}]
+    assert extra["network_artifacts"] == {"total_count": 0, "data": []}
     mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123"])
 
 
