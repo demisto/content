@@ -399,8 +399,7 @@ class BatchExecutor:
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
         batch_elapsed = time.perf_counter() - batch_start
         demisto.debug(
-            f"[Timing][execute_batch] demisto.executeCommandBatch for commands {command_names} "
-            f"took {batch_elapsed:.3f}s"
+            f"[Timing][execute_batch] demisto.executeCommandBatch for commands {command_names} " f"took {batch_elapsed:.3f}s"
         )
         demisto.debug("Batch returned [" + ", ".join(str(len(r)) for r in results) + "] results before processing")
         return self.process_results(results, commands, verbose)
@@ -1551,8 +1550,7 @@ def create_and_extract_indicators(
         )
         single_elapsed = time.perf_counter() - single_start
         demisto.debug(
-            f"[Timing][create_and_extract_indicators] extractIndicators for input '{raw}' "
-            f"took {single_elapsed:.3f}s"
+            f"[Timing][create_and_extract_indicators] extractIndicators for input '{raw}' " f"took {single_elapsed:.3f}s"
         )
         indicators_instances.extend(instances_for_raw)
         full_hr.append(hr)
@@ -1607,10 +1605,12 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
             f"{len(data)} inputs took {batch_extract_elapsed:.3f}s"
         )
     except Exception as ex:
-        raise DemistoException(f"Failed to validate input using extractIndicators.") from ex
+        raise DemistoException("Failed to validate input using extractIndicators.") from ex
 
     if not results:
-        demisto.debug("[create_and_extract_indicators_batch] extractIndicators returned empty/None results, returning empty list.")
+        demisto.debug(
+            "[create_and_extract_indicators_batch] extractIndicators returned empty/None results, returning empty list."
+        )
         return []
 
     extracted_ctx: dict = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
@@ -1634,9 +1634,7 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
             seen.add(indicator)
             deduplicated.append(indicator)
 
-    demisto.debug(
-        f"[create_and_extract_indicators_batch] Found {len(deduplicated)} valid indicators of type '{indicator_type}'."
-    )
+    demisto.debug(f"[create_and_extract_indicators_batch] Found {len(deduplicated)} valid indicators of type '{indicator_type}'.")
     return deduplicated
 
 
