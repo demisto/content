@@ -5,3 +5,5 @@ name: Cohesity Helios Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
