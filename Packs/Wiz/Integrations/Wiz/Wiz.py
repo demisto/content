@@ -1655,6 +1655,42 @@ DEFAULT_RESOLUTION_REASON = "WONT_FIX"
 
 WIZ_MIRRORED_FIELDS = ["status", "notes", "dueAt", "resolutionReason"]
 
+# XSOAR's built-in `closeReason` singleSelect values → Wiz `resolutionReason` enum.
+# The outgoing mapper declares `resolutionReason <- resolutionReason`, but the Wiz Issue
+# incident type has no XSOAR field by that name, so the mapper alone never carries the
+# analyst's chosen reason. We translate XSOAR's `closeReason` (always populated on close)
+# as a fallback so the user-selected close intent reaches Wiz instead of defaulting to WONT_FIX.
+XSOAR_CLOSE_REASON_TO_WIZ = {
+    "Resolved": "ISSUE_FIXED",
+    "False Positive": "FALSE_POSITIVE",
+    "Duplicate": "WONT_FIX",
+    "Other": "WONT_FIX",
+}
+
+
+def _resolve_wiz_reason(delta, data=None):
+    """Resolve Wiz `resolutionReason` from a mirror delta, with `closeReason` fallback.
+
+    Order of precedence:
+      1. `delta.resolutionReason` — wins if a future XSOAR config adds the proper field.
+      2. `data.closeReason` (then `delta.closeReason`) — translated via XSOAR_CLOSE_REASON_TO_WIZ.
+      3. None — caller falls back to DEFAULT_RESOLUTION_REASON.
+    """
+    if delta:
+        explicit = delta.get("resolutionReason")
+        if explicit:
+            return explicit
+
+    close_reason = None
+    if data:
+        close_reason = data.get("closeReason")
+    if not close_reason and delta:
+        close_reason = delta.get("closeReason")
+
+    if not close_reason:
+        return None
+    return XSOAR_CLOSE_REASON_TO_WIZ.get(close_reason)
+
 
 def set_authentication_endpoint(auth_endpoint):
     global AUTH_E
@@ -2892,10 +2928,10 @@ def update_remote_system_command(args):
     incident_closed = parsed_args.inc_status == IncidentStatus.DONE
 
     if parsed_args.incident_changed and parsed_args.delta:
-        _handle_field_changes(remote_id, parsed_args.delta, skip_status=incident_closed)
+        _handle_field_changes(remote_id, parsed_args.delta, data=parsed_args.data, skip_status=incident_closed)
 
     if incident_closed:
-        resolution_reason = parsed_args.delta.get("resolutionReason") if parsed_args.delta else None
+        resolution_reason = _resolve_wiz_reason(parsed_args.delta, parsed_args.data)
         _handle_incident_closed(remote_id, resolution_reason=resolution_reason)
 
     if parsed_args.entries:
@@ -2904,11 +2940,11 @@ def update_remote_system_command(args):
     return remote_id
 
 
-def _handle_field_changes(remote_id, delta, skip_status=False):
+def _handle_field_changes(remote_id, delta, data=None, skip_status=False):
     """Push field-level changes (status, due date) to Wiz."""
     new_status = delta.get("status")
     if new_status and not skip_status:
-        _mirror_status_to_wiz(remote_id, new_status, delta)
+        _mirror_status_to_wiz(remote_id, new_status, delta, data=data)
 
     if "dueAt" in delta:
         new_due_date = delta.get("dueAt")
@@ -2923,16 +2959,16 @@ def _handle_field_changes(remote_id, delta, skip_status=False):
             clear_issue_due_date(issue_id=remote_id)
 
 
-def _mirror_status_to_wiz(issue_id, xsoar_status, delta):
+def _mirror_status_to_wiz(issue_id, xsoar_status, delta, data=None):
     """Map XSOAR status string to Wiz issue status mutation."""
     status_lower = str(xsoar_status).lower()
 
     try:
         if status_lower in ("resolved", "done", "closed"):
-            resolution_reason = delta.get("resolutionReason", DEFAULT_RESOLUTION_REASON)
+            resolution_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
             reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
         elif status_lower in ("rejected",):
-            reject_reason = delta.get("resolutionReason", DEFAULT_RESOLUTION_REASON)
+            reject_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
             reject_or_resolve_issue(issue_id, reject_reason, "Status mirrored from Cortex XSOAR", "REJECTED")
         elif status_lower in ("active", "open", "reopened"):
             reopen_issue(issue_id=issue_id, reopen_note="")

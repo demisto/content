@@ -2246,6 +2246,111 @@ def test_update_remote_system_open_incident_with_delta(mock_field_changes, mock_
     mock_closed.assert_not_called()
 
 
+# ===== closeReason fallback (v2.0.4 fix for round-3 mapper gap) =====
+# The outgoing mapper declares `resolutionReason <- resolutionReason` but no XSOAR
+# incident field by that name exists, so the mapper alone never carries the analyst's
+# chosen close reason. _resolve_wiz_reason translates `closeReason` (built-in, always
+# populated on close) so the user intent reaches Wiz instead of defaulting to WONT_FIX.
+
+
+def test_resolve_wiz_reason_explicit_resolution_reason_wins():
+    """Explicit delta.resolutionReason wins over data.closeReason (forward-compat)."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({"resolutionReason": "EXCEPTION"}, {"closeReason": "Resolved"}) == "EXCEPTION"
+
+
+def test_resolve_wiz_reason_translates_xsoar_close_reasons():
+    """closeReason on `data` translates via XSOAR_CLOSE_REASON_TO_WIZ when delta lacks resolutionReason."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({}, {"closeReason": "Resolved"}) == "ISSUE_FIXED"
+    assert _resolve_wiz_reason({}, {"closeReason": "False Positive"}) == "FALSE_POSITIVE"
+    assert _resolve_wiz_reason({}, {"closeReason": "Duplicate"}) == "WONT_FIX"
+    assert _resolve_wiz_reason({}, {"closeReason": "Other"}) == "WONT_FIX"
+
+
+def test_resolve_wiz_reason_unknown_close_reason_returns_none():
+    """Unknown closeReason returns None so caller applies DEFAULT_RESOLUTION_REASON."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({}, {"closeReason": "SomeCustomReason"}) is None
+    assert _resolve_wiz_reason(None, None) is None
+    assert _resolve_wiz_reason({}, {}) is None
+
+
+def test_resolve_wiz_reason_falls_back_to_delta_close_reason():
+    """If data is missing but delta carries closeReason (mapper-supplied), still translate."""
+    from Wiz import _resolve_wiz_reason
+
+    assert _resolve_wiz_reason({"closeReason": "Resolved"}, None) == "ISSUE_FIXED"
+
+
+@patch("Wiz._handle_outgoing_entries")
+@patch("Wiz._handle_incident_closed")
+@patch("Wiz._handle_field_changes")
+def test_update_remote_system_close_reason_fallback_to_issue_fixed(mock_field_changes, mock_closed, mock_entries):
+    """REGRESSION (v2.0.4): closing an XSOAR incident with closeReason='Resolved' but no
+    resolutionReason in delta must still send ISSUE_FIXED to Wiz, not the WONT_FIX default."""
+    from Wiz import update_remote_system_command
+
+    args = {
+        "remoteId": "11111111-1111-1111-1111-111111111111",
+        "data": {"closeReason": "Resolved", "closeNotes": "All cleaned up"},
+        "entries": [],
+        "incidentChanged": True,
+        "delta": {"closingUserId": "admin"},  # mapper put nothing useful in delta
+        "status": 2,  # IncidentStatus.DONE
+    }
+
+    update_remote_system_command(args)
+
+    mock_closed.assert_called_once_with("11111111-1111-1111-1111-111111111111", resolution_reason="ISSUE_FIXED")
+
+
+@patch("Wiz._handle_outgoing_entries")
+@patch("Wiz._handle_incident_closed")
+@patch("Wiz._handle_field_changes")
+def test_update_remote_system_close_explicit_reason_overrides_close_reason(
+    mock_field_changes, mock_closed, mock_entries
+):
+    """Explicit resolutionReason in delta wins over closeReason in data."""
+    from Wiz import update_remote_system_command
+
+    args = {
+        "remoteId": "11111111-1111-1111-1111-111111111111",
+        "data": {"closeReason": "False Positive"},
+        "entries": [],
+        "incidentChanged": True,
+        "delta": {"resolutionReason": "EXCEPTION"},
+        "status": 2,
+    }
+
+    update_remote_system_command(args)
+
+    mock_closed.assert_called_once_with("11111111-1111-1111-1111-111111111111", resolution_reason="EXCEPTION")
+
+
+@patch("Wiz.reject_or_resolve_issue")
+def test_mirror_status_to_wiz_resolved_uses_close_reason_fallback(mock_reject_resolve):
+    """_mirror_status_to_wiz on 'resolved' status path also respects the closeReason fallback."""
+    from Wiz import _mirror_status_to_wiz
+
+    _mirror_status_to_wiz(
+        "11111111-1111-1111-1111-111111111111",
+        "resolved",
+        delta={"status": "resolved"},
+        data={"closeReason": "False Positive"},
+    )
+
+    mock_reject_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111",
+        "FALSE_POSITIVE",
+        "Status mirrored from Cortex XSOAR",
+        "RESOLVED",
+    )
+
+
 # ===== GAP #6: get_remote_data_command with service account notes =====
 
 
