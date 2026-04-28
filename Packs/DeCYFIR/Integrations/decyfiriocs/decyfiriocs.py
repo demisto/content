@@ -153,6 +153,9 @@ class Client(BaseClient):
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
         try:
             intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
+            if not intel_type:
+                return {}
+
             confidence: int = data.get("confidence", 0)
 
             verdict: str = "Unknown"
@@ -271,8 +274,7 @@ class Client(BaseClient):
 
             return ti_data_obj
         except Exception as e:
-            val = data.get("name", "")
-            demisto.debug(f"Error occurred while building the threat intelligence data object ({val}). Error: {e}")
+            demisto.debug(f"Error occurred while building the threat intelligence data object. Error: {e}")
             return {}
 
     def build_ta_relationships_data(

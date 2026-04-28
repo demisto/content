@@ -34,11 +34,8 @@ def test_build_ioc_relationship_obj(mocker):
     assert da["entityB"] == "Gibberish Panda"
     assert da["name"] == "indicator-of"
 
-def test_build_ioc_relationship_obj_fail(mocker):
-    raw_iocs_ti_data = util_load_json("test_data/iocs.json")
-    ta_data = raw_iocs_ti_data["IN_DATA_3"]
-    iocs_data = raw_iocs_ti_data["IN_DATA_1"]
 
+def test_build_ioc_relationship_obj_fail(mocker):
     client = Client(
         base_url="test_url",
         verify=False,
@@ -48,11 +45,38 @@ def test_build_ioc_relationship_obj_fail(mocker):
     assert da is None
 
 
+def test_build_ioc_relationship_obj_CVE(mocker):
+    raw_data = util_load_json("test_data/iocs_ti.json")
+    raw_cve_data = raw_data["cve"]
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+        proxy=False,
+    )
+    da_re = client.build_threat_intel_indicator_obj(data=raw_cve_data[0], tlp_color="tlp_color", feed_tags=["feedTags"])
+    assert da_re["type"] == "CVE"
+    assert da_re["name"] == "CVE-2025-61882"
+    assert ("rawJSON" in da_re) is True
+
+
+def test_build_ioc_relationship_obj_malware(mocker):
+    raw_data = util_load_json("test_data/iocs_ti.json")
+    raw_malware_data = raw_data["malware"]
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+        proxy=False,
+    )
+    da_re = client.build_threat_intel_indicator_obj(data=raw_malware_data[0], tlp_color="tlp_color", feed_tags=["feedTags"])
+    assert da_re["value"] == "Lokibot "
+    assert da_re["type"] == "Malware"
+    assert ("rawJSON" in da_re) is True
+
+
 def test_build_threat_intel_indicator_obj(mocker):
     raw_ti_data = util_load_json("test_data/iocs_ti.json")
-
-    # raw_iocs_data = util_load_json("test_data/iocs.json")
-    # ta_data = raw_iocs_data["IN_DATA_3"]
 
     client = Client(
         base_url="test_url",
@@ -68,12 +92,22 @@ def test_build_threat_intel_indicator_obj(mocker):
     assert ("rawJSON" in da_re) is True
 
 
+def test_build_threat_intel_indicator_obj_fail(mocker):
+    raw_ti_data = util_load_json("test_data/iocs_ti.json")
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+        proxy=False,
+    )
+
+    da_re = client.build_threat_intel_indicator_obj(data=raw_ti_data["iocs"][0], tlp_color="tlp_color", feed_tags=["feedTags"])
+    assert da_re == {}
+
+
 def test_build_ta_relationships_data(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
     raw_ti_data = raw_iocs_ti_data["ta_relationships"]
-
-    # iocs_data = util_load_json("test_data/iocs.json")
-    # ta_data = iocs_data["IN_DATA_7"]
 
     client = Client(
         base_url="test_url",
@@ -105,7 +139,6 @@ def test_build_threat_actor_relationship_obj(mocker):
     )
 
     source_data = client.build_threat_intel_indicator_obj(data=raw_ti_data[0], tlp_color="tlp_color", feed_tags=["feedTags"])
-
     target_data = client.build_threat_intel_indicator_obj(data=raw_ti_data[1], tlp_color="tlp_color", feed_tags=["feedTags"])
     da_re = client.build_threat_actor_relationship_obj(source_data=source_data, target_data=target_data)
 
