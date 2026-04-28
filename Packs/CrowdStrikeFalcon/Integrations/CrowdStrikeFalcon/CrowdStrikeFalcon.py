@@ -4997,7 +4997,7 @@ async def fetch_spotlight_assets():
             context_store=context_store,
             spotlight_state=spotlight_state,
             snapshot_id=snapshot_id,
-            max_concurrent=20,  # Process 20 devices concurrently
+            max_concurrent=10,  # Process 20 devices concurrently
         )
 
         # Step 3: Wait for all background send tasks
