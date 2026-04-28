@@ -142,7 +142,7 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version, cust
         # For establishing a secure connection via SSL/TLS protocol - use the 'SSL' option.
         # For establishing a secure connection via Start TLS - use the 'Start TLS' option.
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        tls = get_tls_object(unsecure, ssl_version)
+        tls = get_tls_object(unsecure, ssl_version, custom_ca_certificate)
         if port:
             return Server(host, port=port, use_ssl=True, tls=tls)
         return Server(host, use_ssl=True, tls=tls)
