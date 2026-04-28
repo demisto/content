@@ -2456,25 +2456,76 @@ def test_create_and_extract_indicators_batch_case_insensitive_type_key(mocker):
     assert {i.extracted_value for i in instances} == {"1.1.1.1", "8.8.8.8"}
 
 
-def test_create_and_extract_indicators_batch_string_value(mocker):
+def test_create_and_extract_indicators_batch_empty_extracted_ctx(mocker):
     """
     Given:
-        - extractIndicators returns the matched type as a single string (not a list).
+        - extractIndicators returns a result whose ExtractedIndicators dict is empty.
     When:
         - Calling create_and_extract_indicators_batch.
     Then:
-        - A single IndicatorInstance is created for that string value.
+        - Returns an empty list of IndicatorInstance objects and a non-empty HR string,
+          taking the new "no matched indicators" early-return path without raising.
     """
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": "1.1.1.1"}}}],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {}}}],
     )
-    instances, _ = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
 
-    assert len(instances) == 1
-    assert isinstance(instances[0], IndicatorInstance)
-    assert instances[0].extracted_value == "1.1.1.1"
-    assert instances[0].raw_input == "1.1.1.1"
+    assert instances == []
+    assert isinstance(hr, str)
+    assert "extractIndicators" in hr
+
+
+def test_create_and_extract_indicators_batch_missing_extracted_indicators_key(mocker):
+    """
+    Given:
+        - extractIndicators returns a result whose EntryContext does not contain the
+          "ExtractedIndicators" key at all.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list of IndicatorInstance objects and a non-empty HR string
+          (defensive `or {}` fallback path).
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {}}],
+    )
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+
+    assert instances == []
+    assert isinstance(hr, str)
+    assert "extractIndicators" in hr
+
+
+def test_create_and_extract_indicators_batch_no_matching_type_logs_debug(mocker):
+    """
+    Given:
+        - extractIndicators returns indicators only for a non-requested type.
+    When:
+        - Calling create_and_extract_indicators_batch with a different indicator_type.
+    Then:
+        - The new "No valid indicators returned" debug log is emitted on the early-return
+          path, an empty list is returned, and the HR contains the extracted-indicators
+          table built from extracted_ctx (which is non-empty).
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}],
+    )
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
+
+    assert instances == []
+    assert isinstance(hr, str)
+    # The HR should still include the table built from extracted_ctx
+    assert "Extracted Indicators" in hr
+    assert "1.1.1.1" in hr
+    # The new early-return debug log should have been emitted
+    debug_messages = [call.args[0] for call in debug_mock.call_args_list if call.args]
+    assert any("No valid indicators returned" in msg for msg in debug_messages)
 
 
 def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
