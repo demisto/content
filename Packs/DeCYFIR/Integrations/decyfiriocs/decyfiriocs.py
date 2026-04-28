@@ -129,6 +129,9 @@ class Client(BaseClient):
         return None
 
     def build_ioc_relationship_obj(self, ioc_data: Dict, target_data: Dict):
+        if not (ioc_data and target_data):
+            return None
+
         return self.build_relationships(
             EntityRelationship.Relationships.INDICATOR_OF,
             ioc_data.get(LABEL_VALUE),

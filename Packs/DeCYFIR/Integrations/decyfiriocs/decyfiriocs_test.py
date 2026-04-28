@@ -28,10 +28,24 @@ def test_build_ioc_relationship_obj(mocker):
         proxy=False,
     )
     da = client.build_ioc_relationship_obj(iocs_data[0], ta_data[0])
+    assert da is not None
     assert raw_iocs_ti_data["IN_DATA_5"][0] == da
     assert da["entityA"] == "0.0.0.0"
     assert da["entityB"] == "Gibberish Panda"
     assert da["name"] == "indicator-of"
+
+def test_build_ioc_relationship_obj_fail(mocker):
+    raw_iocs_ti_data = util_load_json("test_data/iocs.json")
+    ta_data = raw_iocs_ti_data["IN_DATA_3"]
+    iocs_data = raw_iocs_ti_data["IN_DATA_1"]
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+        proxy=False,
+    )
+    da = client.build_ioc_relationship_obj({}, {})
+    assert da is None
 
 
 def test_build_threat_intel_indicator_obj(mocker):
