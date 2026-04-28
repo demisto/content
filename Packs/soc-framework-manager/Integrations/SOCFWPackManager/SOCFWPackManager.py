@@ -1,9 +1,14 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 import json
 import os
 import shutil
 import tempfile
 import zipfile
+from pathlib import Path
+
+import requests
 
 
 INTEGRATION_NAME = "SOCFWPackManager"
@@ -11,11 +16,11 @@ INTEGRATION_NAME = "SOCFWPackManager"
 
 def _set_sdk_env(base_url: str, api_key: str, api_id: str):
     """Set env vars required by demisto-sdk upload_content_entity."""
-    api_base = base_url.rstrip('/')
-    if '://api-' not in api_base:
-        api_base = api_base.replace('://', '://api-', 1)
-    os.environ["DEMISTO_API_KEY"]  = api_key
-    os.environ["XSIAM_AUTH_ID"]    = str(api_id)
+    api_base = base_url.rstrip("/")
+    if "://api-" not in api_base:
+        api_base = api_base.replace("://", "://api-", 1)
+    os.environ["DEMISTO_API_KEY"] = api_key
+    os.environ["XSIAM_AUTH_ID"] = str(api_id)
     os.environ["DEMISTO_BASE_URL"] = api_base
     os.environ["DEMISTO_SDK_IGNORE_CONTENT_WARNING"] = "1"
     os.environ["DEMISTO_SDK_SKIP_LOGGER_SETUP"] = "yes"
@@ -32,7 +37,7 @@ def unzip_and_flatten(zip_path: str, filename: str) -> str:
     """
     pack_name = filename.replace(".zip", "")
     packs_path = os.path.join(os.getcwd(), "Packs")
-    pack_path  = os.path.join(packs_path, pack_name)
+    pack_path = os.path.join(packs_path, pack_name)
     os.makedirs(packs_path, exist_ok=True)
 
     if not zipfile.is_zipfile(zip_path):
@@ -61,13 +66,14 @@ def unzip_and_flatten(zip_path: str, filename: str) -> str:
         root_dir = os.path.join(pack_path, parts[0])
         for item in os.listdir(root_dir):
             shutil.move(os.path.join(root_dir, item), os.path.join(pack_path, item))
-        os.rmdir(root_dir)
+        Path(root_dir).rmdir()
 
     return pack_path
 
 
-def post_system_content_bundle(base_url: str, api_key: str, api_id: str,
-                                pack_path: str) -> dict:
+def post_system_content_bundle(
+    base_url: str, api_key: str, api_id: str, pack_path: str
+) -> dict:
     """
     Upload pack directory via demisto-sdk upload_content_entity(xsiam=True).
     Mirrors Client.post_system_content_bundle() from POV_XSIAM_Content_Management.
@@ -76,6 +82,7 @@ def post_system_content_bundle(base_url: str, api_key: str, api_id: str,
     _set_sdk_env(base_url, api_key, api_id)
 
     from demisto_sdk.commands.common.logger import logging_setup
+
     logging_setup("SOCFWPackManager", console_threshold="CRITICAL", propagate=True)
     from demisto_sdk.commands.upload.upload import upload_content_entity
 
@@ -100,11 +107,11 @@ def command_install_pack(params: dict, args: dict) -> None:
     Credentials come from integration instance params — never exposed.
     """
     base_url = (params.get("url") or "").rstrip("/")
-    creds    = params.get("credentials") or {}
-    api_id   = str(creds.get("identifier") or "")
-    api_key  = creds.get("password") or ""
+    creds = params.get("credentials") or {}
+    api_id = str(creds.get("identifier") or "")
+    api_key = creds.get("password") or ""
 
-    url      = (args.get("url") or "").strip()
+    url = (args.get("url") or "").strip()
     filename = (args.get("filename") or "").strip()
 
     if not url:
@@ -118,7 +125,7 @@ def command_install_pack(params: dict, args: dict) -> None:
     if dl.status_code != 200:
         raise Exception(f"Download failed HTTP {dl.status_code}: {url}")
 
-    tmp_dir  = tempfile.mkdtemp()
+    tmp_dir = tempfile.mkdtemp()
     zip_path = os.path.join(tmp_dir, filename)
     try:
         with open(zip_path, "wb") as fh:
@@ -133,11 +140,18 @@ def command_install_pack(params: dict, args: dict) -> None:
             pack_path=pack_path,
         )
 
-        return_results(CommandResults(
-            outputs_prefix="SOCFramework.PackInstall",
-            outputs={"filename": filename, "url": url, "status": "success", "response": result},
-            readable_output=f"Pack **{filename}** installed successfully.",
-        ))
+        return_results(
+            CommandResults(
+                outputs_prefix="SOCFramework.PackInstall",
+                outputs={
+                    "filename": filename,
+                    "url": url,
+                    "status": "success",
+                    "response": result,
+                },
+                readable_output=f"Pack **{filename}** installed successfully.",
+            )
+        )
     finally:
         if os.path.exists(zip_path):
             os.unlink(zip_path)
@@ -145,10 +159,10 @@ def command_install_pack(params: dict, args: dict) -> None:
 
 def command_test_module(params: dict) -> None:
     base_url = (params.get("url") or "").rstrip("/")
-    creds    = params.get("credentials") or {}
-    api_id   = str(creds.get("identifier") or "")
-    api_key  = creds.get("password") or ""
-    verify   = not params.get("insecure", False)
+    creds = params.get("credentials") or {}
+    api_id = str(creds.get("identifier") or "")
+    api_key = creds.get("password") or ""
+    verify = not params.get("insecure", False)
 
     if not base_url:
         raise Exception("Server URL is required.")
@@ -157,21 +171,22 @@ def command_test_module(params: dict) -> None:
 
     # Light check — hit the tenant API keys endpoint
     # public_api endpoints need the api- prefix URL
-    api_base = base_url.rstrip('/')
-    if '://api-' not in api_base:
-        api_base = api_base.replace('://', '://api-', 1)
+    api_base = base_url.rstrip("/")
+    if "://api-" not in api_base:
+        api_base = api_base.replace("://", "://api-", 1)
     url = f"{api_base}/public_api/v1/xql/get_datasets"
     headers = {"x-xdr-auth-id": api_id, "Authorization": api_key}
-    resp = requests.post(url, headers=headers, json={"request_data": {}},
-                         verify=verify, timeout=15)
+    resp = requests.post(
+        url, headers=headers, json={"request_data": {}}, verify=verify, timeout=15
+    )
     if resp.status_code not in (200, 207):
         raise Exception(f"Connection test failed HTTP {resp.status_code}")
     return_results("ok")
 
 
 def main():
-    params  = demisto.params()
-    args    = demisto.args()
+    params = demisto.params()
+    args = demisto.args()
     command = demisto.command()
 
     try:

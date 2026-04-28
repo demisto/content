@@ -1,6 +1,7 @@
 import json
 import time
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 import requests
 
@@ -215,14 +216,30 @@ def _md_link(name: str, url: str) -> str:
     return f"- [{n}]({u})"
 
 def _github_blob_to_raw(url: str) -> str:
+    """
+    Convert a github.com /blob/ URL to its raw.githubusercontent.com equivalent.
+    Pass-through for already-raw URLs and anything we don't recognize.
+
+    Hostname comparison is exact (not substring) to prevent URLs like
+    https://attacker.com/?x=raw.githubusercontent.com from masquerading as
+    trusted GitHub URLs.
+    """
     u = (url or "").strip()
     if not u:
         return u
-    if "raw.githubusercontent.com" in u:
+    try:
+        parsed = urlparse(u)
+    except ValueError:
         return u
-    if u.startswith("https://github.com/") and "/blob/" in u:
-        rest = u[len("https://github.com/"):]
-        parts = rest.split("/")
+    if parsed.scheme not in ("http", "https"):
+        return u
+    host = (parsed.hostname or "").lower()
+    # Already a raw GitHub URL — pass through unchanged
+    if host == "raw.githubusercontent.com":
+        return u
+    # Convert https://github.com/<org>/<repo>/blob/<branch>/<path...> to raw URL
+    if host == "github.com":
+        parts = (parsed.path or "").lstrip("/").split("/")
         if len(parts) >= 5 and parts[2] == "blob":
             org = parts[0]
             repo = parts[1]

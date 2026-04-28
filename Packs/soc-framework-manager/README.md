@@ -94,16 +94,19 @@ Version state is stored in the `SOCFWTagsVersion` XSIAM List (visible at Setting
 ## Recommended Installation Order
 
 1. Install the base framework:
+
    ```
    !SOCFWPackManager action=apply pack_id=soc-optimization-unified
    ```
 
 2. Install the NIST IR lifecycle pack:
+
    ```
    !SOCFWPackManager action=apply pack_id=soc-framework-nist-ir
    ```
 
 3. Install product enhancement packs for your environment:
+
    ```
    !SOCFWPackManager action=apply pack_id=SocFrameworkMicrosoftDefender
    !SOCFWPackManager action=apply pack_id=SocFrameworkProofPointTap
@@ -111,6 +114,7 @@ Version state is stored in the `SOCFWTagsVersion` XSIAM List (visible at Setting
    ```
 
 4. Sync the value_tags lookup:
+
    ```
    !SOCFWPackManager action=sync-tags
    ```

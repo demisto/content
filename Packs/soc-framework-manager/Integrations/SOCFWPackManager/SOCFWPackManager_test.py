@@ -1,9 +1,9 @@
 """
-SOCFWPackManager_integration_test.py
+SOCFWPackManager_test.py
 
 Unit tests for the SOCFWPackManager integration.
 Run:
-    pytest Packs/soc-framework-manager/Integrations/SOCFWPackManager/SOCFWPackManager_integration_test.py -v
+    pytest Packs/soc-framework-manager/Integrations/SOCFWPackManager/SOCFWPackManager_test.py -v
 """
 
 import importlib
@@ -18,20 +18,20 @@ import zipfile
 import pytest
 
 
-MODULE_NAME = "SOCFWPackManager_integration"
+MODULE_NAME = "SOCFWPackManager"
 
 
 def load_integration(params=None, args=None):
     dm = types.SimpleNamespace()
-    dm._params  = params or {}
-    dm._args    = args   or {}
+    dm._params = params or {}
+    dm._args = args or {}
     dm._results = []
 
-    dm.params  = lambda: dm._params
-    dm.args    = lambda: dm._args
+    dm.params = lambda: dm._params
+    dm.args = lambda: dm._args
     dm.command = lambda: dm._args.get("__command__", "socfw-install-pack")
-    dm.debug   = lambda x: None
-    dm.error   = lambda x: None
+    dm.debug = lambda x: None
+    dm.error = lambda x: None
 
     def return_results(value):
         dm._results.append(value)
@@ -43,7 +43,7 @@ def load_integration(params=None, args=None):
 
     common = types.ModuleType("CommonServerPython")
     common.return_results = return_results
-    common.return_error   = return_error
+    common.return_error = return_error
     common.CommandResults = lambda **kw: kw
     sys.modules["CommonServerPython"] = common
 
@@ -56,44 +56,57 @@ def load_integration(params=None, args=None):
     # importlib-loaded modules lose these bindings when sys.modules is swapped,
     # so we inject them directly into the module namespace.
     import requests as _requests
-    module.requests        = _requests
-    module.return_results  = return_results
-    module.return_error    = return_error
-    module.CommandResults  = lambda **kw: kw
-    module.tempfile        = __import__("tempfile")
+
+    module.requests = _requests
+    module.return_results = return_results
+    module.return_error = return_error
+    module.CommandResults = lambda **kw: kw
+    module.tempfile = __import__("tempfile")
 
     return module, dm
 
 
 # ── _set_sdk_env ──────────────────────────────────────────────────────────────
 
+
 def test_set_sdk_env_uses_api_prefix():
     mod, _ = load_integration()
     mod._set_sdk_env("https://tenant.xdr.us.paloaltonetworks.com", "my-key", "3")
-    assert os.environ["DEMISTO_BASE_URL"] == "https://api-tenant.xdr.us.paloaltonetworks.com"
-    assert os.environ["DEMISTO_API_KEY"]  == "my-key"
-    assert os.environ["XSIAM_AUTH_ID"]    == "3"
+    assert (
+        os.environ["DEMISTO_BASE_URL"]
+        == "https://api-tenant.xdr.us.paloaltonetworks.com"
+    )
+    assert os.environ["DEMISTO_API_KEY"] == "my-key"
+    assert os.environ["XSIAM_AUTH_ID"] == "3"
 
 
 def test_set_sdk_env_preserves_existing_api_prefix():
     mod, _ = load_integration()
     mod._set_sdk_env("https://api-tenant.xdr.us.paloaltonetworks.com", "k", "5")
-    assert os.environ["DEMISTO_BASE_URL"] == "https://api-tenant.xdr.us.paloaltonetworks.com"
+    assert (
+        os.environ["DEMISTO_BASE_URL"]
+        == "https://api-tenant.xdr.us.paloaltonetworks.com"
+    )
 
 
 # ── unzip_and_flatten ─────────────────────────────────────────────────────────
+
 
 def _make_test_zip(tmp_dir, nested=True):
     zip_path = os.path.join(tmp_dir, "TestPack.zip")
     with zipfile.ZipFile(zip_path, "w") as zf:
         if nested:
-            zf.writestr("TestPack/pack_metadata.json",
-                        json.dumps({"name": "TestPack", "currentVersion": "1.0.0"}))
+            zf.writestr(
+                "TestPack/pack_metadata.json",
+                json.dumps({"name": "TestPack", "currentVersion": "1.0.0"}),
+            )
             zf.writestr("TestPack/README.md", "# Test")
             zf.writestr("TestPack/CorrelationRules/rule.yml", "id: test-rule\n")
         else:
-            zf.writestr("pack_metadata.json",
-                        json.dumps({"name": "TestPack", "currentVersion": "1.0.0"}))
+            zf.writestr(
+                "pack_metadata.json",
+                json.dumps({"name": "TestPack", "currentVersion": "1.0.0"}),
+            )
     return zip_path
 
 
@@ -159,14 +172,17 @@ def test_unzip_and_flatten_rejects_missing_pack_metadata():
 
 # ── command_install_pack ──────────────────────────────────────────────────────
 
+
 def test_command_install_pack_calls_download_and_sdk(tmp_path):
     mod, dm = load_integration()
 
     # Build a real valid zip
     zip_path = str(tmp_path / "Pack-v1.0.0.zip")
     with zipfile.ZipFile(zip_path, "w") as zf:
-        zf.writestr("Pack-v1.0.0/pack_metadata.json",
-                    json.dumps({"name": "Pack", "currentVersion": "1.0.0"}))
+        zf.writestr(
+            "Pack-v1.0.0/pack_metadata.json",
+            json.dumps({"name": "Pack", "currentVersion": "1.0.0"}),
+        )
     with open(zip_path, "rb") as f:
         zip_bytes = f.read()
 
@@ -182,10 +198,14 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
     try:
         os.chdir(str(tmp_path))
         mod.command_install_pack(
-            params={"url": "https://tenant.xdr.us.paloaltonetworks.com",
-                    "credentials": {"identifier": "3", "password": "my-key"}},
-            args={"url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
-                  "filename": "Pack-v1.0.0.zip"},
+            params={
+                "url": "https://tenant.xdr.us.paloaltonetworks.com",
+                "credentials": {"identifier": "3", "password": "my-key"},
+            },
+            args={
+                "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
+                "filename": "Pack-v1.0.0.zip",
+            },
         )
     finally:
         os.chdir(orig)
@@ -201,8 +221,10 @@ def test_command_install_pack_404_raises():
     )
     with pytest.raises(Exception, match="Download failed HTTP 404"):
         mod.command_install_pack(
-            params={"url": "https://tenant.xdr.us.paloaltonetworks.com",
-                    "credentials": {"identifier": "3", "password": "my-key"}},
+            params={
+                "url": "https://tenant.xdr.us.paloaltonetworks.com",
+                "credentials": {"identifier": "3", "password": "my-key"},
+            },
             args={"url": "https://github.com/example/does-not-exist.zip"},
         )
 
@@ -223,9 +245,13 @@ def test_command_install_pack_derives_filename_from_url():
 
     with pytest.raises(RuntimeError, match="stop_here"):
         mod.command_install_pack(
-            params={"url": "https://t.xdr.us.paloaltonetworks.com",
-                    "credentials": {"identifier": "1", "password": "k"}},
-            args={"url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip"},
+            params={
+                "url": "https://t.xdr.us.paloaltonetworks.com",
+                "credentials": {"identifier": "1", "password": "k"},
+            },
+            args={
+                "url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip"
+            },
         )
 
     assert derived == ["Pack-v2.0.0.zip"]
@@ -247,10 +273,12 @@ def test_command_install_pack_appends_zip_if_missing():
 
     with pytest.raises(Exception):
         mod.command_install_pack(
-            params={"url": "https://t.xdr.us.paloaltonetworks.com",
-                    "credentials": {"identifier": "1", "password": "k"}},
-            args={"url": "https://example.com/Pack-v1.0.0",
-                  "filename": "Pack-v1.0.0"},
+            params={
+                "url": "https://t.xdr.us.paloaltonetworks.com",
+                "credentials": {"identifier": "1", "password": "k"},
+            },
+            args={"url": "https://example.com/Pack-v1.0.0", "filename": "Pack-v1.0.0"},
         )
 
-    assert derived and derived[0].endswith(".zip")
+    assert derived
+    assert derived[0].endswith(".zip")
