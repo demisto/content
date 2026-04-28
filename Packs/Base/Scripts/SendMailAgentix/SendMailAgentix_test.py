@@ -1,6 +1,5 @@
 from CommonServerPython import *
 from SendMailAgentix import send_email, is_html, markdown_to_html
-import pytest
 import demistomock as demisto
 
 
@@ -219,4 +218,3 @@ def test_send_email_no_htmlbody_raises():
     """
     # This test verifies the script doesn't crash when htmlBody is empty
     # The actual send-mail command will handle validation
-    pass
