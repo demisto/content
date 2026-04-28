@@ -3,8 +3,7 @@
         {
             "Reputation": "feedReputation",
             "fields": {
-                "aliases": [
-                ],
+                "aliases": [],
                 "description": "Sample Testing",
                 "firstseenbysource": "2023-07-11T06:21:42.110Z",
                 "geocountry": "United States",
@@ -13,7 +12,7 @@
                 "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
                 "tags": [
                     "feedTags",
-                   "sample"
+                    "sample"
                 ],
                 "trafficlightprotocol": "tlp_color"
             },
@@ -40,23 +39,20 @@
                 "type": "indicator",
                 "valid_from": "2023-07-11T06:21:42.110Z"
             },
-            "relationships": [
-            ],
+            "relationships": [],
             "service": "DeCYFIR",
             "type": "IP",
             "value": "0.0.0.0"
         },
         {
-            "relationships": [
-            ]
+            "relationships": []
         }
     ],
     "IN_DATA_2": [
         {
             "Reputation": "feedReputation",
             "fields": {
-                "aliases": [
-                ],
+                "aliases": [],
                 "description": "Sample Testing",
                 "firstseenbysource": "2023-07-11T06:21:42.110Z",
                 "geocountry": "United States",
@@ -80,11 +76,8 @@
                 "indicator_types": [
                     "attribution"
                 ],
-                "kill_chain_phases  ": [
-                   
-                ],
-                "labels": [
-                ],
+                "kill_chain_phases  ": [],
+                "labels": [],
                 "last_seen": "2022-12-16T00:00:00.000Z",
                 "modified": "2023-07-11T06:21:42.110Z",
                 "name": "0.0.0.0",
@@ -120,7 +113,9 @@
                 "labels": [
                     "sample"
                 ],
-                "tags":["sample"],
+                "tags": [
+                    "sample"
+                ],
                 "name": "Gibberish Panda",
                 "threat_actor_types": [
                     "crime-syndicate"
@@ -136,7 +131,9 @@
                 "aliases": [
                     "Gibberish Panda"
                 ],
-                "tags":["sample"],
+                "tags": [
+                    "sample"
+                ],
                 "primary_motivation": "Cyber Crime",
                 "secondary_motivations": "personal-gain",
                 "sophistication": "advanced",
@@ -144,8 +141,7 @@
                 "threatactortypes": [
                     "crime-syndicate"
                 ],
-                "killchainphases": [
-                ],
+                "killchainphases": [],
                 "geocountry": "China",
                 "targetindustries": [
                     "Software",
@@ -182,8 +178,7 @@
                 "firstseenbysource": "2023-07-17T11:27:42.558Z",
                 "modified": "2023-07-17T11:27:42.558Z",
                 "trafficlightprotocol": "tlp_color",
-                "aliases": [
-                ],
+                "aliases": [],
                 "tags": [
                     "feedTags"
                 ],
@@ -194,8 +189,7 @@
                 "threatactortypes": [
                     "crime-syndicate"
                 ],
-                "killchainphases": [
-                ],
+                "killchainphases": [],
                 "geocountry": "China",
                 "targetindustries": [
                     "Software",
@@ -208,8 +202,7 @@
         {
             "Reputation": "feedReputation",
             "fields": {
-                "aliases": [
-                ],
+                "aliases": [],
                 "description": "Sample Testing",
                 "firstseenbysource": "2016-04-16T19:23:04.000Z",
                 "geocountry": "United States",
@@ -217,10 +210,10 @@
                 "modified": "2016-04-16T19:23:04.000Z",
                 "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
                 "tags": [
-                  	"CYFIRMA-IOC",
-			"recommended_actions: Block",
-			"source: CYFIRMA",
-			"threat_actors: Static Spider"
+                    "CYFIRMA-IOC",
+                    "recommended_actions: Block",
+                    "source: CYFIRMA",
+                    "threat_actors: Static Spider"
                 ],
                 "trafficlightprotocol": "tlp_color"
             },
@@ -232,12 +225,11 @@
                 "indicator_types": [
                     "attribution"
                 ],
-                
                 "labels": [
                     "CYFIRMA-IOC",
-			"recommended_actions: Block",
-			"source: CYFIRMA",
-			"threat_actors: Static Spider"
+                    "recommended_actions: Block",
+                    "source: CYFIRMA",
+                    "threat_actors: Static Spider"
                 ],
                 "last_seen": "2016-04-16T19:23:04.000Z",
                 "modified": "2016-04-16T19:23:04.000Z",
@@ -264,8 +256,7 @@
             "entityB": "Gibberish Panda",
             "entityBFamily": "Indicator",
             "entityBType": "Threat Actor",
-            "fields": {
-            }
+            "fields": {}
         }
     ],
     "IN_DATA_6": [
@@ -279,8 +270,7 @@
             "entityB": "Gamaredon Group",
             "entityBFamily": "Indicator",
             "entityBType": "Intrusion Set",
-            "fields": {
-            }
+            "fields": {}
         }
     ],
     "IN_DATA_7": [
@@ -316,8 +306,7 @@
                     "entityB": "CVE-2021-40444",
                     "entityBFamily": "Indicator",
                     "entityBType": "CVE",
-                    "fields": {
-                    }
+                    "fields": {}
                 }
             ],
             "fields": {
@@ -326,8 +315,7 @@
                 "firstseenbysource": "2021-09-15T12:15:00.000Z",
                 "modified": "2022-10-14T11:49:00.000Z",
                 "trafficlightprotocol": "tlp_color",
-                "aliases": [
-                ],
+                "aliases": [],
                 "tags": [
                     "CVE-2021-40444",
                     "feedTags"
@@ -339,8 +327,7 @@
                 "threatactortypes": "",
                 "cvedescription": "Microsoft MSHTML Remote Code Execution",
                 "cvemodified": "2022-10-14T11:49:00.000Z",
-                "killchainphases": [
-                ],
+                "killchainphases": [],
                 "cvssscore": "7.8",
                 "cvssvector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
                 "cvssversion": "3.1",
@@ -435,8 +422,7 @@
                     "entityB": "CVE-2021-40444",
                     "entityBFamily": "Indicator",
                     "entityBType": "CVE",
-                    "fields": {
-                    }
+                    "fields": {}
                 }
             ],
             "fields": {
@@ -457,9 +443,8 @@
                 "threatactortypes": [
                     "crime-syndicate"
                 ],
-        
                 "geocountry": "Russia",
-                "targetcountries":  "Myanmar,United States,Hongkong,Thailand",
+                "targetcountries": "Myanmar,United States,Hongkong,Thailand",
                 "targetindustries": "Aerospace & Defense,Cryptocurrency,Software and Services,Education"
             }
         }

@@ -31,34 +31,7 @@ def test_build_ioc_relationship_obj(mocker):
     assert raw_iocs_ti_data["IN_DATA_5"][0] == da
     assert da["entityA"] == "0.0.0.0"
     assert da["entityB"] == "Gibberish Panda"
-
-
-# def test_build_ioc_relationship_obj(mocker):
-#     raw_data = util_load_json("test_data/iocs_ti.json")
-
-
-#     client = Client(
-#         base_url="test_url",
-#         verify=False,
-#         proxy=False,
-#     )
-
-#     source_data = client.convert_decyfir_ioc_to_indicators_formats(
-#         decyfir_api_key="api_key",
-#         decyfir_iocs=raw_data["iocs"],
-#         tlp_color="tlp_color",
-#         feed_tags=["feedTags"],
-#         reputation="feedReputation",
-#         is_data_save=False,
-#     )
-
-#     target_data = client.build_threat_intel_indicator_obj(
-#         data=raw_data["threat_actors"][0], tlp_color="tlp_color", feed_tags=["feedTags"]
-#     )
-
-#     da = client.build_ioc_relationship_obj(source_data[0], target_data)
-#     assert da["entityA"] ==  "0.0.0.0"
-#     assert da["entityB"] == "Gamaredon"
+    assert da["name"] == "indicator-of"
 
 
 def test_build_threat_intel_indicator_obj(mocker):
@@ -77,6 +50,8 @@ def test_build_threat_intel_indicator_obj(mocker):
         data=raw_ti_data["threat_actors"][0], tlp_color="tlp_color", feed_tags=["feedTags"]
     )
     assert da_re["value"] == "Gamaredon"
+    assert da_re["type"] == "Threat Actor"
+    assert ("rawJSON" in da_re) is True
 
 
 def test_build_ta_relationships_data(mocker):
@@ -102,10 +77,7 @@ def test_build_ta_relationships_data(mocker):
         feed_tags=["feedTags"],
     )
     assert ta_source_obj["name"] == "Gamaredon"
-    # ta_source_obj["relationships"] = src_ti_relationships_data
-    # return_data.append(ta_source_obj)
-    # assert return_data[]["name"] == "CVE-2021-40444"
-    # assert ("rawJSON" in ta_source_obj) is True
+    assert ("rawJSON" in ta_source_obj) is True
 
 
 def test_build_threat_actor_relationship_obj(mocker):
@@ -125,7 +97,10 @@ def test_build_threat_actor_relationship_obj(mocker):
 
     assert da_re is not None
     assert da_re["entityA"] == "Gamaredon"
+    assert da_re["entityAType"] == "Threat Actor"
     assert da_re["entityB"] == "CVE-2021-40444"
+    assert da_re["entityBType"] == "CVE"
+    assert da_re["name"] == "targets"
 
 
 def test_convert_decyfir_ioc_to_indicators_formats(mocker):
@@ -148,26 +123,27 @@ def test_convert_decyfir_ioc_to_indicators_formats(mocker):
 
     assert ("rawJSON" in ti_data_out[0]) is True
     assert ti_data_out[0]["value"] == "0.0.0.0"
-    # assert ti_data_out[0] == raw_ti_data["IN_DATA_4"][0]
+    assert ti_data_out[0]["type"] == "IP"
 
 
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
 
-    mock_response1 = util_load_json("test_data/iocs_ti.json")
+    raw_data = util_load_json("test_data/iocs_ti.json")
     # mock_response2 = util_load_json("test_data/iocs.json")
 
     client = Client(
         base_url="test_url",
         verify=False,
     )
-    mocker.patch.object(Client, "get_decyfir_api_ti_data", return_value=mock_response1["iocs"])
+    mocker.patch.object(Client, "get_decyfir_api_ti_data", return_value=raw_data["iocs"])
 
     data = fetch_indicators_command(
         client=client, decyfir_api_key="api_key", tlp_color="tlp_color", reputation="feedReputation", feed_tags=["feedTags"]
     )
     assert ("rawJSON" in data[0]) is True
     assert data[0]["value"] == "0.0.0.0"
+    assert data[0]["type"] == "IP"
 
 
 def test_get_indicator_type(mocker):
@@ -179,6 +155,12 @@ def test_get_indicator_type(mocker):
     )
     da = client.get_indicator_or_threatintel_type("[ipv4-addr:value = '0.0.0.0']")
     assert da == "IP"
+    da = client.get_indicator_or_threatintel_type("[domain-name:value = 'mel8xo.cfd']")
+    assert da == "Domain"
+    da = client.get_indicator_or_threatintel_type("[url:value = 'http://acme[.]xyz/']")
+    assert da == "URL"
+    da = client.get_indicator_or_threatintel_type("[file:hashes.'SHA-256' = 'dbe51eabebf9d4ef9581ef99844a2944']")
+    assert da == "File"
 
 
 def test_decyfir_url_indicator_command(mocker):
