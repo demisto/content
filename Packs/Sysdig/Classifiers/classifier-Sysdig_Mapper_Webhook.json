@@ -1,51 +1,175 @@
 {
-    "description": "Maps Sysdig Runtime Event fields for use in Integration Playbooks.",
+    "description": "Maps Sysdig Secure V2 webhook payload fields to Sysdig Runtime Event incident fields.",
+    "feed": false,
     "id": "Sysdig Mapper Runtime Event",
+    "name": "Sysdig Mapper Runtime Event",
+    "type": "mapping-incoming",
+    "defaultIncidentType": "Sysdig Runtime Event",
     "mapping": {
         "Sysdig Runtime Event": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Sysdig Container ID": {
+                "name": {
+                    "simple": "entities.[0].policyEvents.[0].ruleName"
+                },
+                "severity": {
                     "complex": {
+                        "root": "alert.severity",
                         "filters": [],
-                        "root": "containerId",
-                        "transformers": []
+                        "transformers": [
+                            {
+                                "operator": "MapValuesTransformer",
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0,1,2,3,4,5,6,7"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4,4,3,3,2,2,1,1"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
                     }
+                },
+                "occurred": {
+                    "complex": {
+                        "root": "timestamp",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "details": {
+                    "simple": "alert.body"
+                },
+                "dbotMirrorId": {
+                    "simple": "entities.[0].policyEvents.[0].id"
                 },
                 "Source Hostname": {
-                    "complex": {
-                        "accessor": "host\\.hostName",
-                        "filters": [],
-                        "root": "labels",
-                        "transformers": []
-                    }
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.host\\.hostName"
                 },
                 "MAC Address": {
-                    "complex": {
-                        "filters": [],
-                        "root": "machineId",
-                        "transformers": []
-                    }
+                    "simple": "entities.[0].policyEvents.[0].hostMac"
                 },
-                "Sysdig Agent ID": {
-                    "complex": {
-                        "filters": [],
-                        "root": "agentId",
-                        "transformers": []
-                    }
+                "Sysdig Event ID": {
+                    "simple": "entities.[0].policyEvents.[0].id"
                 },
-                "Sysdig Customer ID": {
-                    "complex": {
-                        "filters": [],
-                        "root": "customerId",
-                        "transformers": []
-                    }
+                "Sysdig Container ID": {
+                    "simple": "entities.[0].policyEvents.[0].containerId"
+                },
+                "Sysdig Rule Name": {
+                    "simple": "entities.[0].policyEvents.[0].ruleName"
+                },
+                "Sysdig Rule Type": {
+                    "simple": "entities.[0].policyEvents.[0].ruleType"
+                },
+                "Sysdig Policy ID": {
+                    "simple": "entities.[0].policyEvents.[0].policyId"
+                },
+                "Sysdig Policy Name": {
+                    "simple": "entities.[0].policies.[0].name"
+                },
+                "Sysdig Policy Version": {
+                    "simple": "entities.[0].policyEvents.[0].policyVersion"
+                },
+                "Sysdig Falco Output": {
+                    "simple": "entities.[0].policyEvents.[0].output"
+                },
+                "Sysdig Event URL": {
+                    "simple": "event.url"
+                },
+                "Sysdig Source": {
+                    "simple": "source"
+                },
+                "Sysdig Origin": {
+                    "simple": "entities.[0].policyEvents.[0].origin"
+                },
+                "Sysdig Aggregated": {
+                    "simple": "entities.[0].policyEvents.[0].isAggregated"
+                },
+                "Sysdig Container Name": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.container\\.name"
+                },
+                "Sysdig Container Image": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.container\\.image\\.repo"
+                },
+                "Sysdig Container Image Tag": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.container\\.image\\.tag"
+                },
+                "Sysdig Container Image ID": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.container\\.image\\.id"
+                },
+                "Sysdig Host ID": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.host\\.id"
+                },
+                "Sysdig Agent Version": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.agent\\.version"
+                },
+                "Sysdig Agent Variant": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.agent\\.variant"
+                },
+                "K8s Cluster Name": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.cluster\\.name"
+                },
+                "K8s Namespace": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.namespace\\.name"
+                },
+                "K8s Pod Name": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.pod\\.name"
+                },
+                "K8s Node Name": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.node\\.name"
+                },
+                "K8s Workload Name": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.workload\\.name"
+                },
+                "K8s Workload Type": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.workload\\.type"
+                },
+                "AWS Account ID": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.aws\\.accountId"
+                },
+                "AWS Region": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.aws\\.region"
+                },
+                "AWS Instance ID": {
+                    "simple": "entities.[0].policyEvents.[0].eventLabels.aws\\.instanceId"
+                },
+                "Sysdig Process Name": {
+                    "simple": "entities.[0].policyEvents.[0].fields.proc\\.name"
+                },
+                "Sysdig Process Cmdline": {
+                    "simple": "entities.[0].policyEvents.[0].fields.proc\\.cmdline"
+                },
+                "Sysdig Process CWD": {
+                    "simple": "entities.[0].policyEvents.[0].fields.proc\\.cwd"
+                },
+                "Sysdig Process SHA256": {
+                    "simple": "entities.[0].policyEvents.[0].fields.proc\\.hash\\.sha256"
+                },
+                "Sysdig Process Parent Name": {
+                    "simple": "entities.[0].policyEvents.[0].fields.proc\\.pname"
+                },
+                "Sysdig Event Type": {
+                    "simple": "entities.[0].policyEvents.[0].fields.evt\\.type"
+                },
+                "Sysdig Username": {
+                    "simple": "entities.[0].policyEvents.[0].fields.user\\.name"
                 }
             }
         }
     },
-    "name": "Sysdig Mapper Runtime Event",
-    "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
 }

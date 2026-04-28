@@ -46,15 +46,7 @@ tasks:
       id: 358fe5fe-ccab-40e2-8001-7c6c05544a69
       version: -1
       name: Should we trigger a system capture?
-      description: |-
-        Condition to trigger or not a system capture based on the Incident fields.
-
-        Check if the following fields are part of the incident:
-        * Sysdig Agent ID
-        * Sysdig Container ID
-        * Sysdig Customer ID
-        * Host Name
-        * Machine ID
+      description: Manual decision to trigger or skip the system capture.
       type: condition
       iscommand: false
       brand: ""
@@ -79,7 +71,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": -60
+          "y": 100
         }
       }
     note: false
@@ -108,15 +100,15 @@ tasks:
       - "7"
     scriptarguments:
       agent_id:
-        simple: ${incident.sysdigagentid}
+        simple: ${Sysdig.Agent.agentId}
       capture_name:
         simple: xsoar-capture-${incident.id}
       container_id:
         simple: ${incident.sysdigcontainerid}
       customer_id:
-        simple: ${incident.sysdigcustomerid}
+        simple: ${Sysdig.Agent.customerId}
       host_name:
-        simple: ${incident.sourcehostname}
+        simple: ${Sysdig.Agent.hostName}
       machine_id:
         simple: ${incident.macaddress}
       scan_duration:
@@ -127,7 +119,7 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 100
+          "y": 260
         }
       }
     note: false
@@ -166,7 +158,7 @@ tasks:
       {
         "position": {
           "x": -490,
-          "y": 360
+          "y": 520
         }
       }
     note: false
@@ -194,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 510
+          "y": 680
         }
       }
     note: false
@@ -212,7 +204,7 @@ tasks:
       id: 05365e6b-d46d-46f2-ab1f-00481dda4cd0
       version: -1
       name: Check Sysdig fields
-      description: Check Sysdig fields
+      description: Validates the MAC address is present (minimum required field to resolve agent info via API).
       type: condition
       iscommand: false
       brand: ""
@@ -220,31 +212,11 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "1"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: incident.sysdigagentid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: incident.sysdigcontainerid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: incident.sysdigcustomerid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: incident.sourcehostname
-            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
@@ -284,11 +256,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          Required incident fields to trigger a system capture are not present. Current fields:
-          * Sysdig Agent ID: ${incident.sysdigagentid}
-          * Sysdig Container ID: ${incident.sysdigcontainerid}
-          * Sysdig Customer ID: ${incident.sysdigcustomerid}
-          * Event Source Hostname: ${incident.sourcehostname}
+          Required incident fields to trigger a system capture are not present. MAC Address is required to resolve agent info.
           * Event MAC Address: ${incident.macaddress}
     separatecontext: false
     continueonerrortype: ""
@@ -329,7 +297,42 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 200
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a3c1f2d4-7e89-4b56-9c12-d4e5f6a7b8c9
+    type: regular
+    task:
+      id: a3c1f2d4-7e89-4b56-9c12-d4e5f6a7b8c9
+      version: -1
+      name: Get Sysdig Agent Info
+      description: Resolves host MAC address to agent ID, customer ID, and hostname via Sysdig API (cached).
+      script: SysdigResponseActions|||sysdig-get-agent-info
+      type: regular
+      iscommand: true
+      brand: SysdigResponseActions
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      machine_id:
+        simple: ${incident.macaddress}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -60
         }
       }
     note: false
@@ -348,7 +351,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 920,
+        "height": 1090,
         "width": 1090,
         "x": -490,
         "y": -350

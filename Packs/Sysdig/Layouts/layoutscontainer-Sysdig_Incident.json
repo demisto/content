@@ -80,73 +80,6 @@
                         "y": 0
                     },
                     {
-                        "h": 2,
-                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Notes",
-                        "static": false,
-                        "type": "notes",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Work Plan",
-                        "static": false,
-                        "type": "workplan",
-                        "w": 1,
-                        "x": 1,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Evidence",
-                        "static": false,
-                        "type": "evidence",
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Team Members",
-                        "static": false,
-                        "type": "team",
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Indicators",
-                        "query": "",
-                        "queryType": "input",
-                        "static": false,
-                        "type": "indicators",
-                        "w": 2,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
                         "displayType": "CARD",
                         "h": 2,
                         "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
@@ -206,35 +139,314 @@
                         "y": 2
                     },
                     {
-                        "description": "Sysdig related incidents fields",
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "description": "Sysdig event identification and rule details",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-8ed3472f-aac3-4b0f-9145-32dd37e92d42",
+                        "i": "caseinfoid-sysdig-event-info",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "sysdigagentid",
+                                "fieldId": "sysdigeventid",
                                 "height": 26,
-                                "id": "113b0c67-f44b-4fcb-9985-12849ed8cdda",
+                                "id": "sysdig-event-id-field",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sysdigcontainerid",
+                                "fieldId": "sysdigrulename",
                                 "height": 26,
-                                "id": "9c2b9d95-a57c-41c9-b578-6836d5df3e59",
+                                "id": "sysdig-rule-name-field",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sysdigcustomerid",
+                                "fieldId": "sysdigruletype",
                                 "height": 26,
-                                "id": "e53563c8-91b6-4648-91cd-ac8c776eff99",
+                                "id": "sysdig-rule-type-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigpolicyname",
+                                "height": 26,
+                                "id": "sysdig-policy-name-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigpolicyid",
+                                "height": 26,
+                                "id": "sysdig-policy-id-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigsource",
+                                "height": 26,
+                                "id": "sysdig-source-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigorigin",
+                                "height": 26,
+                                "id": "sysdig-origin-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigeventurl",
+                                "height": 26,
+                                "id": "sysdig-event-url-field",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Sysdig Event Info",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "Container and host identification",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-sysdig-container-host",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcontainerid",
+                                "height": 26,
+                                "id": "sysdig-container-id-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcontainername",
+                                "height": 26,
+                                "id": "sysdig-container-name-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcontainerimage",
+                                "height": 26,
+                                "id": "sysdig-container-image-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcontainerimagetag",
+                                "height": 26,
+                                "id": "sysdig-container-image-tag-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcontainerimageid",
+                                "height": 26,
+                                "id": "sysdig-container-image-id-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdighostid",
+                                "height": 26,
+                                "id": "sysdig-host-id-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcehostname",
+                                "height": 26,
+                                "id": "sysdig-source-hostname-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "macaddress",
+                                "height": 26,
+                                "id": "sysdig-mac-address-field",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigagentversion",
+                                "height": 26,
+                                "id": "sysdig-agent-version-field",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigagentvariant",
+                                "height": 26,
+                                "id": "sysdig-agent-variant-field",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Container & Host",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "description": "Kubernetes context",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-sysdig-k8s-context",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "k8sclustername",
+                                "height": 26,
+                                "id": "sysdig-k8s-cluster-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "k8snamespace",
+                                "height": 26,
+                                "id": "sysdig-k8s-namespace-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "k8spodname",
+                                "height": 26,
+                                "id": "sysdig-k8s-pod-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "k8snodename",
+                                "height": 26,
+                                "id": "sysdig-k8s-node-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "k8sworkloadname",
+                                "height": 26,
+                                "id": "sysdig-k8s-workload-name-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "k8sworkloadtype",
+                                "height": 26,
+                                "id": "sysdig-k8s-workload-type-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Kubernetes Context",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "description": "Cloud provider context",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-sysdig-cloud-context",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "awsaccountid",
+                                "height": 26,
+                                "id": "sysdig-aws-account-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awsregion",
+                                "height": 26,
+                                "id": "sysdig-aws-region-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awsinstanceid",
+                                "height": 26,
+                                "id": "sysdig-aws-instance-field",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -243,11 +455,207 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Sysdig Incident Information",
+                        "name": "Cloud Context",
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 4
+                    },
+                    {
+                        "description": "Process details from Falco event",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-sysdig-process-details",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigprocessname",
+                                "height": 26,
+                                "id": "sysdig-proc-name-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigprocesscmdline",
+                                "height": 26,
+                                "id": "sysdig-proc-cmdline-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigprocesscwd",
+                                "height": 26,
+                                "id": "sysdig-proc-cwd-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigprocesssha256",
+                                "height": 26,
+                                "id": "sysdig-proc-sha256-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigprocessparentname",
+                                "height": 26,
+                                "id": "sysdig-proc-parent-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigeventtype",
+                                "height": 26,
+                                "id": "sysdig-evt-type-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigusername",
+                                "height": 26,
+                                "id": "sysdig-username-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Process Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "description": "Full Falco rule output",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-sysdig-falco-output",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigfalcooutput",
+                                "height": 26,
+                                "id": "sysdig-falco-output-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Falco Rule Output",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "description": "Legacy Sysdig fields (populated via API enrichment)",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-sysdig-legacy-fields",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigagentid",
+                                "height": 26,
+                                "id": "sysdig-legacy-agent-id-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcustomerid",
+                                "height": 26,
+                                "id": "sysdig-legacy-customer-id-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Legacy Sysdig Fields",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -281,7 +689,10 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2",
+        "xsoar_saas",
+        "platform"
     ],
     "description": ""
 }

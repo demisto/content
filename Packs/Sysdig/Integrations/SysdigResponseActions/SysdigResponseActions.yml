@@ -162,6 +162,52 @@ script:
     - contextPath: get_action_execution.Output
       description: Output of the action execution info.
       type: Dict
+  - arguments:
+    - description: The MAC address (machineId) of the host to look up.
+      name: machine_id
+      type: String
+      required: true
+    - description: Force refresh the cached agent info from the Sysdig API.
+      name: force_refresh
+      type: Boolean
+      required: false
+      defaultValue: 'false'
+    description: Resolve a host MAC address to its Sysdig agent details (agent ID, customer ID, hostname). Result is cached per MAC address.
+    name: sysdig-get-agent-info
+    outputs:
+    - contextPath: Sysdig.Agent.agentId
+      description: The Sysdig agent ID.
+      type: String
+    - contextPath: Sysdig.Agent.customerId
+      description: The Sysdig customer ID.
+      type: String
+    - contextPath: Sysdig.Agent.hostName
+      description: The agent hostname.
+      type: String
+    - contextPath: Sysdig.Agent.machineId
+      description: The host MAC address.
+      type: String
+    - contextPath: Sysdig.Agent.hostId
+      description: The opaque host identifier.
+      type: String
+    - contextPath: Sysdig.Agent.clusterName
+      description: The Kubernetes cluster name.
+      type: String
+  - arguments:
+    - description: Force refresh the cached customer info from the Sysdig API.
+      name: force_refresh
+      type: Boolean
+      required: false
+      defaultValue: 'false'
+    description: Get the Sysdig customer ID and name. Result is cached per integration instance.
+    name: sysdig-get-customer-info
+    outputs:
+    - contextPath: Sysdig.Customer.customerId
+      description: The Sysdig customer ID.
+      type: String
+    - contextPath: Sysdig.Customer.customerName
+      description: The Sysdig customer name.
+      type: String
   dockerimage: demisto/python3:3.12.11.3982393
   isfetch: true
   isFetchSamples: true

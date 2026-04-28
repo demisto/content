@@ -1,0 +1,123 @@
+{
+    "alert": {
+        "name": "Policy V2 7770001: Sysdig Runtime Activity Logs",
+        "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+        "severity": 7,
+        "severityLabel": "Info",
+        "subject": "Sysdig Runtime Activity Logs triggered at 04/28/2026 10:46 AM UTC",
+        "body": "Policy event triggered at 04/28/2026 10:46 AM UTC\n\nPolicy:             Sysdig Runtime Activity Logs\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770001\nDescription:        This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.\n\nTimestamp:          04/28/2026 10:46 AM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000005\nRule:               Launch Ingress Remote File Copy Tools in Container\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/Launch%20Ingress%20Remote%20File%20Copy%20Tools%20in%20Container\nSeverity:           Info\nScope:\n    kubernetes.pod.name:      pygoat-cronjob-29622856-wjsl4\n    kubernetes.workload.type:      cronjob\n    kubernetes.node.name:      ip-10-0-0-1.ec2.internal\n    kubernetes.job.name:      pygoat-cronjob-29622856\n    host.id:      bbbb000011112222333344445555666677778888999900001111222233334444\n    cloudProvider.name:      aws\n    host.hostName:      ip-10-0-0-1.ec2.internal\n    agent.version:      14.3.1\n    container.label.io.kubernetes.container.name:      client\n    kubernetes.cronJob.name:      pygoat-cronjob\n    aws.accountId:      111122223333\n    container.image.id:      bbb000000002\n    container.image.tag:      1.3\n    kubernetes.namespace.name:      pygoat\n    host.mac:      aa:bb:cc:dd:ee:02\n    cloudProvider.region:      us-east-1\n    kubernetes.workload.name:      pygoat-cronjob\n    aws.instanceId:      i-0aaa1111bbbb22222\n    container.image.digest:      sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff\n    orchestrator.type:      k8s\n    aws.region:      us-east-1\n    process.name:      wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2\n    container.name:      client\n    container.image.repo:      docker.io/example/test-app\n    cloudProvider.account.id:      111122223333\n    agent.variant:      traditional\n    kubernetes.cluster.name:      demo-eks-cluster\n    container.label.io.kubernetes.pod.namespace:      pygoat\n    container.label.io.kubernetes.pod.name:      pygoat-cronjob-29622856-wjsl4\nActions:            No actions performed\nDetails:            Ingress remote file copy tool wget launched in container client having image docker.io/example/test-app and parent sh under user root (proc.exepath=/usr/bin/wget proc.name=wget proc.pname=sh gparent=python ggparent=runc gggparent=containerd-shim image=docker.io/example/test-app proc.cmdline=wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2 connection=<NA> user.name=root user.loginuid=-1 container.id=aaa000000005 evt.type=execve evt.res=SUCCESS proc.pid=1351113 proc.cwd=/ proc.ppid=1351112 proc.pcmdline=sh -c wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2 proc.sid=1 user.uid=0 user.loginname=<NA> group.gid=0 group.name=root container.name=client proc.pid.ts=1777373163731248257 proc.ppid.ts=1777373163724888500 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000002)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777373103&to=1777373164"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777373163732998,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000005",
+                    "containerId": "aaa000000005",
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "severity": 7,
+                    "policyId": 7770001,
+                    "output": "Ingress remote file copy tool wget launched in container client having image docker.io/example/test-app and parent sh under user root (proc.exepath=/usr/bin/wget proc.name=wget proc.pname=sh gparent=python ggparent=runc gggparent=containerd-shim image=docker.io/example/test-app proc.cmdline=wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2 connection=<NA> user.name=root user.loginuid=-1 container.id=aaa000000005 evt.type=execve evt.res=SUCCESS proc.pid=1351113 proc.cwd=/ proc.ppid=1351112 proc.pcmdline=sh -c wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2 proc.sid=1 user.uid=0 user.loginname=<NA> group.gid=0 group.name=root container.name=client proc.pid.ts=1777373163731248257 proc.ppid.ts=1777373163724888500 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000002)",
+                    "ruleName": "Launch Ingress Remote File Copy Tools in Container",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "proc.pname": "sh",
+                        "evt.type": "execve",
+                        "proc.cmdline": "wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2",
+                        "proc.ppid": "1351112",
+                        "user.name": "root",
+                        "proc.sid": "1",
+                        "proc.aname[2]": "python",
+                        "proc.pid": "1351113",
+                        "container.id": "aaa000000005",
+                        "proc.aname[4]": "containerd-shim",
+                        "proc.hash.sha256": "aaa0000000000000000000000000000000000000000000000000000000000002",
+                        "container.name": "client",
+                        "proc.name": "wget",
+                        "group.gid": "0",
+                        "proc.aname": "<NA>",
+                        "proc.acmdline": "<NA>",
+                        "proc.pcmdline": "sh -c wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2",
+                        "fd.name": "<NA>",
+                        "group.name": "root",
+                        "user.uid": "0",
+                        "proc.cwd": "/",
+                        "proc.exepath": "/usr/bin/wget",
+                        "proc.pid.ts": "1777373163731248257",
+                        "proc.aname[3]": "runc",
+                        "user.loginuid": "-1",
+                        "container.image.repository": "docker.io/example/test-app",
+                        "proc.ppid.ts": "1777373163724888500",
+                        "user.loginname": "<NA>",
+                        "evt.res": "SUCCESS"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "ip-10-0-0-1.ec2.internal",
+                        "kubernetes.workload.name": "pygoat-cronjob",
+                        "container.image.tag": "1.3",
+                        "host.mac": "aa:bb:cc:dd:ee:02",
+                        "kubernetes.workload.type": "cronjob",
+                        "container.name": "client",
+                        "container.image.repo": "docker.io/example/test-app",
+                        "kubernetes.pod.name": "pygoat-cronjob-29622856-wjsl4",
+                        "cloudProvider.region": "us-east-1",
+                        "cloudProvider.name": "aws",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "container.label.io.kubernetes.pod.namespace": "pygoat",
+                        "host.id": "bbbb000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000002",
+                        "kubernetes.namespace.name": "pygoat",
+                        "agent.variant": "traditional",
+                        "kubernetes.cronJob.name": "pygoat-cronjob",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "demo-eks-cluster",
+                        "kubernetes.job.name": "pygoat-cronjob-29622856",
+                        "process.name": "wget -O /opt/nmap.tar.bz2 https://nmap.org/dist/nmap-7.92.tar.bz2",
+                        "aws.region": "us-east-1",
+                        "aws.accountId": "111122223333",
+                        "container.label.io.kubernetes.pod.name": "pygoat-cronjob-29622856-wjsl4",
+                        "container.image.digest": "sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+                        "host.hostName": "ip-10-0-0-1.ec2.internal",
+                        "agent.version": "14.3.1",
+                        "aws.instanceId": "i-0aaa1111bbbb22222",
+                        "cloudProvider.account.id": "111122223333"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 65,
+                    "origin": "Sysdig",
+                    "timestamp": 1777373163732998,
+                    "hostMac": "aa:bb:cc:dd:ee:02",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 7,
+                    "enabled": false,
+                    "id": 7770001
+                }
+            ]
+        }
+    ]
+}

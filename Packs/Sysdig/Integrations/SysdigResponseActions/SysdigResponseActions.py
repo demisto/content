@@ -6,6 +6,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 import re
+import time
 from typing import Any
 import urllib3
 
@@ -296,6 +297,92 @@ def get_capture_file_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _cache_is_valid(entry: dict | None, ttl: int = 3600) -> bool:
+    if not entry or "cached_at" not in entry:
+        return False
+    return (time.time() - entry["cached_at"]) < ttl
+
+
+def get_agent_by_mac_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    machine_id = args.get("machine_id")
+    if not machine_id:
+        raise ValueError("machine_id (MAC address) is required.")
+
+    ctx = demisto.getIntegrationContext()
+    cache_key = f"agent_{machine_id}"
+    cached = ctx.get(cache_key)
+    force = argToBoolean(args.get("force_refresh", "false"))
+
+    if _cache_is_valid(cached) and not force:
+        agent = cached["data"]
+    else:
+        result: dict = client.call_sysdig_api("GET", url_suffix="/api/agents/connected")
+        agents = result.get("agents", result) if isinstance(result, dict) else result
+        agent = None
+        for a in agents:
+            if a.get("machineId") == machine_id:
+                agent = {
+                    "agentId": str(a.get("id", "")),
+                    "customerId": str(a.get("customer", "")),
+                    "hostName": a.get("hostName", ""),
+                    "machineId": a.get("machineId", ""),
+                    "hostId": a.get("opaqueUid", ""),
+                    "clusterName": a.get("attributes", {}).get("clusterName", ""),
+                }
+                ctx[cache_key] = {"data": agent, "cached_at": time.time()}
+                demisto.setIntegrationContext(ctx)
+                break
+
+        if not agent:
+            raise ValueError(f"No connected agent found with machineId (MAC) '{machine_id}'.")
+
+    return CommandResults(
+        outputs_prefix="Sysdig.Agent",
+        outputs_key_field="machineId",
+        outputs=agent,
+        readable_output=(
+            f"**Agent ID:** {agent['agentId']}\n"
+            f"**Customer ID:** {agent['customerId']}\n"
+            f"**Hostname:** {agent['hostName']}\n"
+            f"**Host ID:** {agent['hostId']}\n"
+            f"**Cluster:** {agent['clusterName']}"
+        ),
+    )
+
+
+def get_customer_info_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    ctx = demisto.getIntegrationContext()
+    cached = ctx.get("customer_info")
+    force = argToBoolean(args.get("force_refresh", "false"))
+
+    if _cache_is_valid(cached) and not force:
+        customer_id = cached["data"]["customer_id"]
+        customer_name = cached["data"].get("customer_name", "")
+    else:
+        result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")
+        user: dict = result.get("user", {})
+        customer = user.get("customer", {})
+        customer_id = customer.get("id") or user.get("customerId")
+        customer_name = customer.get("name") or user.get("customerName", "")
+        if customer_id:
+            ctx["customer_info"] = {
+                "data": {"customer_id": str(customer_id), "customer_name": customer_name},
+                "cached_at": time.time(),
+            }
+            demisto.setIntegrationContext(ctx)
+
+    if not customer_id:
+        raise ValueError("Could not retrieve customer ID from Sysdig API.")
+
+    output = {"customerId": str(customer_id), "customerName": customer_name}
+    return CommandResults(
+        outputs_prefix="Sysdig.Customer",
+        outputs_key_field="customerId",
+        outputs=output,
+        readable_output=f"**Sysdig Customer ID:** {customer_id}\n**Customer Name:** {customer_name}",
+    )
+
+
 def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
@@ -351,6 +438,10 @@ def main():  # pragma: no cover
             result = get_capture_file_command(client, args)
         elif command == "get-action-execution":
             result = get_action_execution_command(client, args)
+        elif command == "sysdig-get-agent-info":
+            result = get_agent_by_mac_command(client, args)
+        elif command == "sysdig-get-customer-info":
+            result = get_customer_info_command(client, args)
         elif command == "test-module":
             result = test_module(client)
         else:
