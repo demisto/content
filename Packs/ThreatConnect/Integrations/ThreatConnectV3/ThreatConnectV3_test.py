@@ -678,3 +678,79 @@ def test_tc_add_file_indicator_with_hash_type_command(mocker):
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
     assert call_args["sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+
+@pytest.mark.parametrize(
+    "args, expected_owner_in_url",
+    [
+        # No owners arg and no defaultOrg — should query all owners (no ownerName filter in TQL)
+        ({}, False),
+        # Explicit owners arg — should filter by that owner
+        ({"owners": "MyOrg"}, True),
+    ],
+)
+def test_get_indicator_reputation_owner_filter(mocker, args, expected_owner_in_url):
+    """
+    Given:
+        - get_indicator_reputation is called with or without an explicit 'owners' argument
+        - The defaultOrg integration parameter is set to 'DefaultOrg'
+    When:
+        - Running a reputation command (e.g. !ip)
+    Then:
+        - When no 'owners' arg is provided, the TQL query must NOT contain an ownerName filter
+          (all accessible owners are queried, consistent with tc-get-indicator behavior)
+        - When an explicit 'owners' arg is provided, the TQL query must contain that ownerName filter
+    """
+    import urllib.parse
+
+    mocker.patch.object(demisto, "params", return_value={"defaultOrg": "DefaultOrg", "rating": "3", "confidence": "3"})
+    mock_request = mocker.patch.object(Client, "make_request", return_value={"data": []})
+    mocker.patch("ThreatConnectV3.return_results")
+
+    args = {**args, "ip": "1.2.3.4"}
+    get_indicator_reputation(client, "ip", "Address", args)
+
+    called_url = mock_request.call_args[0][1]
+    tql_encoded = called_url.split("tql=")[1].split("&")[0]
+    tql_decoded = urllib.parse.unquote(tql_encoded)
+
+    if expected_owner_in_url:
+        assert "ownerName" in tql_decoded
+        assert "MyOrg" in tql_decoded
+    else:
+        assert "ownerName" not in tql_decoded
+        assert "DefaultOrg" not in tql_decoded
+
+
+@pytest.mark.parametrize(
+    "args_type, type_name, indicator_value, expected_header_fragment",
+    [
+        ("ip", "Address", "1.2.3.4", "ThreatConnect Address Reputation for: 1.2.3.4"),
+        ("url", "URL", "http://example.com", "ThreatConnect URL Reputation for: http://example.com"),
+        ("domain", "Host", "example.com", "ThreatConnect Host Reputation for: example.com"),
+        (
+            "file",
+            "File",
+            "d41d8cd98f00b204e9800998ecf8427e",
+            "ThreatConnect File Reputation for: d41d8cd98f00b204e9800998ecf8427e",
+        ),
+    ],
+)
+def test_get_indicator_reputation_header(mocker, args_type, type_name, indicator_value, expected_header_fragment):
+    """
+    Given:
+        - get_indicator_reputation is called for different indicator types
+    When:
+        - Running !ip, !url, !domain, or !file reputation commands
+    Then:
+        - The human-readable table title must reflect the actual indicator type, not a hardcoded 'URL Reputation'
+    """
+    mocker.patch.object(demisto, "params", return_value={"defaultOrg": "DefaultOrg", "rating": "3", "confidence": "3"})
+    mocker.patch.object(Client, "make_request", return_value={"data": []})
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    args = {args_type: indicator_value}
+    get_indicator_reputation(client, args_type, type_name, args)
+
+    returned_entry = return_results_mock.call_args[0][0]
+    assert expected_header_fragment in returned_entry["HumanReadable"]
