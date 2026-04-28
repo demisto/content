@@ -16,6 +16,8 @@ EMAIL_INTEGRATIONS = [
     "SecurityAndCompliance",
     "SecurityAndComplianceV2",
 ]
+# RFC 5322 msg-id is <id-left@id-right> with a constrained charset
+MESSAGE_ID_REGEX = re.compile(r"<[^\s<>]+@[^\s<>]+>")
 seconds = time.time()
 
 
@@ -378,8 +380,7 @@ def get_search_args(args: dict):
     incident_info = demisto.incident()
     custom_fields = incident_info.get("CustomFields", {})
     message_id = custom_fields.get("reportedemailmessageid") or ""
-    # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
-    if message_id and not re.fullmatch(r"<[^\s<>]+@[^\s<>]+>", message_id):
+    if message_id and not MESSAGE_ID_REGEX.fullmatch(message_id):
         raise DemistoException(f"Refusing suspicious Message-ID: {message_id!r}")
     user_id = custom_fields.get("reportedemailto")
     email_subject = custom_fields.get("reportedemailsubject")
