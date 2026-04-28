@@ -34,6 +34,7 @@
         "cloud_posture",
         "xsiam",
         "edr",
-        "agentix_xsiam"
+        "agentix_xsiam",
+        "tim"
     ]
 }
