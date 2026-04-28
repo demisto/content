@@ -2246,7 +2246,7 @@ def test_update_remote_system_open_incident_with_delta(mock_field_changes, mock_
     mock_closed.assert_not_called()
 
 
-# ===== closeReason fallback (v2.0.4 fix for round-3 mapper gap) =====
+# ===== closeReason fallback (round-3 mapper gap) =====
 # The outgoing mapper declares `resolutionReason <- resolutionReason` but no XSOAR
 # incident field by that name exists, so the mapper alone never carries the analyst's
 # chosen close reason. _resolve_wiz_reason translates `closeReason` (built-in, always
@@ -2290,7 +2290,7 @@ def test_resolve_wiz_reason_falls_back_to_delta_close_reason():
 @patch("Wiz._handle_incident_closed")
 @patch("Wiz._handle_field_changes")
 def test_update_remote_system_close_reason_fallback_to_issue_fixed(mock_field_changes, mock_closed, mock_entries):
-    """REGRESSION (v2.0.4): closing an XSOAR incident with closeReason='Resolved' but no
+    """REGRESSION: closing an XSOAR incident with closeReason='Resolved' but no
     resolutionReason in delta must still send ISSUE_FIXED to Wiz, not the WONT_FIX default."""
     from Wiz import update_remote_system_command
 
@@ -2988,7 +2988,7 @@ def test_fetch_all_issue_nodes_completes_within_budget(mock_check_api):
 
 
 # ===== Schema-consistency: mirror fields ↔ outgoing mapper ↔ pack IncidentFields =====
-# These tests catch the bug class behind the v2.0.4 fix: declaring a mirror source field
+# These tests catch the bug class behind the close-reason mirror fix: declaring a mirror source field
 # (in WIZ_MIRRORED_FIELDS or in the outgoing mapper's `simple:` source) that does not
 # exist as either an XSOAR system field or a pack-defined custom field. When that
 # happens, XSOAR populates nothing in the mirror delta and the field silently
@@ -3083,7 +3083,7 @@ def _iter_outgoing_mapper_sources():
 
 
 def test_outgoing_mapper_sources_resolve_to_real_fields():
-    """REGRESSION (v2.0.4): every `simple:` source in the outgoing mapper must be either
+    """REGRESSION: every `simple:` source in the outgoing mapper must be either
     an XSOAR system field, a pack-defined custom field cliName, or a documented
     phantom backstopped at runtime. The original bug declared
     `resolutionReason <- resolutionReason` against a non-existent source field;
@@ -3111,7 +3111,7 @@ def test_outgoing_mapper_sources_resolve_to_real_fields():
 
 
 def test_wiz_mirrored_fields_resolve_to_real_fields():
-    """REGRESSION (v2.0.4): every name in WIZ_MIRRORED_FIELDS (advertised to XSOAR via
+    """REGRESSION: every name in WIZ_MIRRORED_FIELDS (advertised to XSOAR via
     get_mapping_fields_command) must be either an XSOAR system field, a pack-defined
     custom field cliName, or a documented phantom. Listing a phantom name here
     misleads admins who try to map it in the UI."""
