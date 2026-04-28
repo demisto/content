@@ -11,9 +11,7 @@ enabled: true
 args:
 - name: indicator_values
   description: |
-    The indicator values to create or associate.
-    This argument does not support comma-separated values, because indicator values may contain commas.
-    Pass multiple indicators as an array only.
+    Comma-separated values are not supported because indicator values may contain commas. To pass multiple indicators, provide an array from context.
   isArray: true
 - name: type
   auto: PREDEFINED
