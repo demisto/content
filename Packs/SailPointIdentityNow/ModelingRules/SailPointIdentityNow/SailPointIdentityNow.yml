@@ -4,3 +4,5 @@ name: SailPoint IdentityNow Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
