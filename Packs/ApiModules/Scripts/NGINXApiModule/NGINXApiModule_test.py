@@ -196,7 +196,7 @@ def nginx_cleanup(monkeypatch, tmp_path):
     monkeypatch.setattr(module, "NGINX_SERVER_ERROR_LOG", nginx_test_error_log)
 
     # Wrap start_nginx_server to use our custom main config via -c flag
-    def _patched_start_nginx_server(port: int, params: dict = {}) -> subprocess.Popen:
+    def _patched_start_nginx_server(port: int, params: dict | None = None) -> subprocess.Popen:
         params = params if params else demisto.params()
         module.create_nginx_server_conf(module.NGINX_SERVER_CONF_FILE, port, params)
         nginx_global_directives = "daemon off;"
@@ -244,7 +244,8 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
             f.write("server {bad_stuff test;}")
 
     # Override create_nginx_server_conf to write bad config, but keep the patched start_nginx_server
-    def _start_with_bad_conf(port: int, params: dict = {}) -> subprocess.Popen:
+    def _start_with_bad_conf(port: int, params: dict | None = None) -> subprocess.Popen:
+        params = params if params is not None else {}
         nginx_bad_conf(module.NGINX_SERVER_CONF_FILE, port, params)
         nginx_global_directives = "daemon off;"
         directive_args = ["-g", nginx_global_directives]

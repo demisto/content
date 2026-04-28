@@ -318,13 +318,23 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
 
 
 def parse_nginx_time_to_seconds(time_str: str) -> int:
-    """Parses an NGINX time string (e.g., '3600', '1h', '30m', '60s') into seconds.
+    """Parses an NGINX time string into seconds.
+
+    NGINX uses suffixes to denote time units (e.g., ``"3600"``, ``"1h"``,
+    ``"30m"``, ``"60s"``). Supported suffixes are ``s`` (seconds), ``m``
+    (minutes), ``h`` (hours), ``d`` (days), ``w`` (weeks), ``M`` (30 days),
+    and ``y`` (years). If no suffix is supplied, the value is treated as
+    seconds.
 
     Args:
         time_str (str): The NGINX time string to parse.
 
     Returns:
-        int: The time in seconds. If no unit is provided, seconds are assumed.
+        int: The time converted to seconds.
+
+    Raises:
+        DemistoException: If ``time_str`` is empty, whitespace-only, ``None``,
+            or otherwise cannot be parsed as a valid NGINX time value.
     """
     if not time_str or not (time_str := time_str.strip()):
         raise DemistoException(f"Invalid NGINX time format: {time_str}")
