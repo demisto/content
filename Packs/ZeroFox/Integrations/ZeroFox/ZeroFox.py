@@ -1643,7 +1643,7 @@ def submit_threat_command(client: ZFClient, args: dict[str, Any]) -> CommandResu
     alert_type: str = args.get("alert_type", "")
     violation: str = args.get("violation", "")
     entity_id: str = args.get("entity_id", "")
-    request_takedown: bool = args.get("request_takedown", False)
+    request_takedown: bool = argToBoolean(args.get("request_takedown", False))
     response_content = client.submit_threat(
         source,
         alert_type,
