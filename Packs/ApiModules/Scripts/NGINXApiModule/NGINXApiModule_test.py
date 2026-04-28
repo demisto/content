@@ -197,7 +197,7 @@ def nginx_cleanup(monkeypatch, tmp_path):
 
     # Wrap start_nginx_server to use our custom main config via -c flag
     def _patched_start_nginx_server(port: int, params: dict | None = None) -> subprocess.Popen:
-        params = params if params else demisto.params()
+        params = params if params is not None else demisto.params()
         module.create_nginx_server_conf(module.NGINX_SERVER_CONF_FILE, port, params)
         nginx_global_directives = "daemon off;"
         global_directives_conf = params.get("nginx_global_directives")
