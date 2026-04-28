@@ -14,6 +14,7 @@ KEY_VALUE = "value"
 MAX_FIND_INDICATOR_RETRIES = 10
 SLEEP_TIME = 2
 
+CHUNK_SIZE = 1100
 
 def find_existing_indicators_by_value(indicator_values: list[str]) -> dict[str, dict[str, Any]]:
     """
@@ -28,18 +29,21 @@ def find_existing_indicators_by_value(indicator_values: list[str]) -> dict[str, 
     escaped_normalized_indicators = {indicator_value.replace('"', r"\"") for indicator_value in indicator_values}
     if not escaped_normalized_indicators:
         return {}
-
-    query = " or ".join(f'value:"{indicator_value}"' for indicator_value in escaped_normalized_indicators)
-    demisto.debug(f"Searching for existing indicators with query: {query}")
-
-    searcher = IndicatorsSearcher(query=query)
+    
     existing_indicators_by_value: dict[str, dict[str, Any]] = {}
+    
+    for i in range(0, len(escaped_normalized_indicators), CHUNK_SIZE):
+        chunk = list(escaped_normalized_indicators)[i:i + CHUNK_SIZE]
+        query = " or ".join(f'value:"{indicator_value}"' for indicator_value in chunk)
+        demisto.debug(f"Searching for existing indicators with query: {query}")
 
-    for page_result in searcher:
-        for indicator in page_result.get("iocs") or []:
-            indicator_value = indicator.get(KEY_VALUE)
-            if indicator_value:
-                existing_indicators_by_value.setdefault(str(indicator_value).casefold(), indicator)
+        searcher = IndicatorsSearcher(query=query)
+        
+        for page_result in searcher:
+            for indicator in page_result.get("iocs") or []:
+                indicator_value = indicator.get(KEY_VALUE)
+                if indicator_value:
+                    existing_indicators_by_value.setdefault(str(indicator_value).casefold(), indicator)
 
     demisto.debug(f"Found {len(existing_indicators_by_value)} existing indicators")
     return existing_indicators_by_value
