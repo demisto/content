@@ -1543,6 +1543,69 @@ def create_and_extract_indicators(
     return indicators_instances, "".join(full_hr)
 
 
+def create_and_extract_indicators_batch(data: list[str], indicator_type: str) -> list[str]:
+    """
+    Extract and validate a batch of indicator values using the `extractIndicators` command.
+
+    Unlike `create_and_extract_indicators`, this function:
+    - Processes the entire list in a single `extractIndicators` call.
+    - Returns only the deduplicated list of valid indicator strings (not IndicatorInstance objects).
+    - Returns an empty list when the input is empty, extractIndicators returns empty/None results,
+      or no valid indicators are found after successful extraction.
+    - Raises DemistoException only when extractIndicators raises an actual exception.
+
+    Args:
+        data: List of raw string values to validate.
+        indicator_type: The expected indicator type (e.g., "IP", "URL", "Domain").
+
+    Returns:
+        A deduplicated list of valid extracted indicators matching the requested type.
+
+    Raises:
+        DemistoException: If extractIndicators raises an exception (actual failure).
+    """
+    if not data:
+        demisto.debug("[create_and_extract_indicators_batch] Empty data provided, returning empty list.")
+        return []
+
+    demisto.debug(f"[create_and_extract_indicators_batch] Validating {len(data)} values for type '{indicator_type}'.")
+
+    try:
+        results = execute_command("extractIndicators", {"text": data}, extract_contents=False)
+    except Exception as ex:
+        raise DemistoException(f"Failed to validate input using extractIndicators.") from ex
+
+    if not results:
+        demisto.debug("[create_and_extract_indicators_batch] extractIndicators returned empty/None results, returning empty list.")
+        return []
+
+    extracted_ctx: dict = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
+    demisto.debug(f"[create_and_extract_indicators_batch] Extracted context keys: {list(extracted_ctx.keys())}")
+
+    expected_type_lower = indicator_type.lower()
+    matched_indicators: list[str] = []
+    for key, values in extracted_ctx.items():
+        if key.lower() == expected_type_lower:
+            if isinstance(values, list):
+                matched_indicators.extend(values)
+            elif isinstance(values, str):
+                matched_indicators.append(values)
+            break
+
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    deduplicated: list[str] = []
+    for indicator in matched_indicators:
+        if indicator not in seen:
+            seen.add(indicator)
+            deduplicated.append(indicator)
+
+    demisto.debug(
+        f"[create_and_extract_indicators_batch] Found {len(deduplicated)} valid indicators of type '{indicator_type}'."
+    )
+    return deduplicated
+
+
 def _process_single_input(
     raw: str,
     expected_type_lower: str,

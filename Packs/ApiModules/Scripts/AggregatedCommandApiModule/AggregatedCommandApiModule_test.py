@@ -2328,3 +2328,102 @@ def test_map_command_context_indicator_flag(module_factory, mapping, entry, is_i
         assert result["AdditionalFields"] == expected["AdditionalFields"]
     else:
         assert "AdditionalFields" not in result
+
+
+# -------------------------------------------------------------------------------------------------
+# -- Tests for create_and_extract_indicators_batch
+# -------------------------------------------------------------------------------------------------
+
+
+def test_create_and_extract_indicators_batch_empty_data():
+    """
+    Given:
+        - An empty data list.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list without calling extractIndicators.
+    """
+    result = create_and_extract_indicators_batch([], "IP")
+    assert result == []
+
+
+def test_create_and_extract_indicators_batch_valid_ips(mocker):
+    """
+    Given:
+        - A list of valid IP addresses.
+    When:
+        - Calling create_and_extract_indicators_batch with indicator_type="IP".
+    Then:
+        - Returns the list of valid IPs extracted by extractIndicators.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "8.8.8.8"]}}}],
+    )
+    result = create_and_extract_indicators_batch(["1.1.1.1", "8.8.8.8"], "IP")
+    assert result == ["1.1.1.1", "8.8.8.8"]
+
+
+def test_create_and_extract_indicators_batch_no_matching_type(mocker):
+    """
+    Given:
+        - extractIndicators returns indicators but none match the requested type.
+    When:
+        - Calling create_and_extract_indicators_batch with indicator_type="Domain".
+    Then:
+        - Returns an empty list (no matching type found).
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}],
+    )
+    result = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
+    assert result == []
+
+
+def test_create_and_extract_indicators_batch_extract_fails(mocker):
+    """
+    Given:
+        - execute_command('extractIndicators', ...) returns None/empty.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list (no exception raised).
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=None)
+
+    result = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+    assert result == []
+
+
+def test_create_and_extract_indicators_batch_extract_exception(mocker):
+    """
+    Given:
+        - execute_command('extractIndicators', ...) raises an exception.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Raises DemistoException with a validation failure message.
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=Exception("connection error"))
+
+    with pytest.raises(DemistoException, match="Failed to validate input using extractIndicators."):
+        create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+
+
+def test_create_and_extract_indicators_batch_deduplication(mocker):
+    """
+    Given:
+        - Input contains duplicate values and extractIndicators returns duplicates.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns a deduplicated list of valid indicators.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "1.1.1.1"]}}}],
+    )
+    result = create_and_extract_indicators_batch(["1.1.1.1", "1.1.1.1"], "IP")
+    assert result == ["1.1.1.1"]
