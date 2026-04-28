@@ -1,0 +1,540 @@
+category: Utilities
+sectionOrder:
+- Connect
+- Defaults
+commonfields:
+  id: BrowserUse
+  version: -1
+name: BrowserUse
+display: Browser Use
+description: AI-powered browser automation via the Browser Use Cloud API (v3). Dispatch natural-language tasks to a stealth Chromium browser driven by an LLM agent (Claude / Gemini), inspect agent steps and screenshots, manage persistent profiles and per-session workspaces.
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.browser-use.com
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: Browser Use Cloud API base URL. The integration always targets the v3 API.
+- display: ''
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+  additionalinfo: Browser Use API key (starts with `bu_`). Generate one at https://cloud.browser-use.com/settings?tab=api-keys.
+- display: Default model
+  name: default_model
+  defaultvalue: claude-sonnet-4.6
+  type: 15
+  required: false
+  section: Defaults
+  options:
+  - bu-mini
+  - bu-max
+  - bu-ultra
+  - gemini-3-flash
+  - claude-sonnet-4.6
+  - claude-opus-4.6
+  additionalinfo: Default agent model used by `browser-use-task-run` when no `model` argument is supplied. Per the Browser Use docs, `bu-mini`/`gemini-3-flash` is fastest, `claude-opus-4.6` is the most capable.
+- display: Default max cost per task (USD)
+  name: default_max_cost_usd
+  defaultvalue: '1.0'
+  type: 0
+  required: false
+  section: Defaults
+  additionalinfo: Default safety cap. Tasks are aborted by Browser Use once total session cost reaches this value.
+- display: Default proxy country (ISO 3166-1 alpha-2)
+  name: default_proxy_country
+  defaultvalue: us
+  type: 0
+  required: false
+  section: Defaults
+  additionalinfo: Two-letter country code for the residential proxy used by browser/agent sessions (e.g. `us`, `de`, `gb`). Set to an empty string to disable proxy.
+- display: Default session timeout (minutes)
+  name: default_session_timeout_min
+  defaultvalue: '60'
+  type: 0
+  required: false
+  section: Defaults
+  additionalinfo: Default session timeout in minutes (1-240).
+- display: Wait-for-completion timeout (seconds)
+  name: polling_timeout
+  defaultvalue: '600'
+  type: 0
+  required: false
+  section: Defaults
+  additionalinfo: When `wait=true` is passed to `browser-use-task-run`, the integration polls the API until the task reaches a terminal state or this timeout elapses.
+- display: Polling interval (seconds)
+  name: polling_interval
+  defaultvalue: '10'
+  type: 0
+  required: false
+  section: Defaults
+  additionalinfo: Seconds between polls when waiting for an agent task to complete.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.11.5043948
+  runonce: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  commands:
+  - name: browser-use-account-info
+    description: Returns account billing information — credit balances, rate limit and plan.
+    arguments: []
+    outputs:
+    - contextPath: BrowserUse.Account.Name
+      description: Account / user display name.
+      type: String
+    - contextPath: BrowserUse.Account.ProjectID
+      description: Project ID associated with the API key.
+      type: String
+    - contextPath: BrowserUse.Account.TotalCreditsBalanceUsd
+      description: Total available credits in USD.
+      type: Number
+    - contextPath: BrowserUse.Account.MonthlyCreditsBalanceUsd
+      description: Remaining monthly subscription credits in USD.
+      type: Number
+    - contextPath: BrowserUse.Account.AdditionalCreditsBalanceUsd
+      description: Remaining top-up credits in USD.
+      type: Number
+    - contextPath: BrowserUse.Account.RateLimit
+      description: Account rate limit (concurrent / per-minute, vendor-defined).
+      type: Number
+    - contextPath: BrowserUse.Account.Plan.Name
+      description: Subscription plan name.
+      type: String
+    - contextPath: BrowserUse.Account.Plan.SubscriptionStatus
+      description: Subscription status.
+      type: String
+  - name: browser-use-task-run
+    description: 'Dispatch a natural-language task to a Browser Use agent. Either a new agent session is created, or the task is sent to an existing idle session via `session_id`. Use `wait=true` to block until the agent reaches a terminal state.'
+    arguments:
+    - name: task
+      description: 'Natural-language instruction for the agent (e.g. "Go to https://suspicious.example/login and report whether it is a phishing page; return JSON with is_phishing (bool) and reason (string)").'
+      required: false
+    - name: session_id
+      description: Existing agent session ID to dispatch this task to (if reusing a `keep_alive=true` session).
+      required: false
+    - name: model
+      description: Override the default agent model for this task only.
+      auto: PREDEFINED
+      predefined:
+      - bu-mini
+      - bu-max
+      - bu-ultra
+      - gemini-3-flash
+      - claude-sonnet-4.6
+      - claude-opus-4.6
+    - name: profile_id
+      description: ID of a browser profile (cookies / login state) to load into the session.
+    - name: workspace_id
+      description: ID of a workspace to attach to the session for file storage.
+    - name: keep_alive
+      description: 'If `true`, keep the session alive after the task completes so follow-up tasks can reuse it.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: max_cost_usd
+      description: Maximum total session cost in USD before the task is auto-stopped.
+    - name: proxy_country
+      description: Two-letter ISO country code for the residential proxy (overrides the instance default).
+    - name: session_timeout_min
+      description: Session timeout in minutes (1-240).
+    - name: enable_recording
+      description: 'If `true`, record the browser session — recording URLs become available in `RecordingUrls` once the task ends.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: wait
+      description: 'If `true`, block and poll until the task reaches a terminal status (`stopped`, `timed_out`, or `error`).'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: poll_interval
+      description: Override polling interval (seconds) when `wait=true`.
+    - name: poll_timeout
+      description: Override polling timeout (seconds) when `wait=true`.
+    outputs:
+    - contextPath: BrowserUse.Task.ID
+      description: Agent session ID.
+      type: String
+    - contextPath: BrowserUse.Task.Status
+      description: 'Lifecycle status (`created`, `idle`, `running`, `stopped`, `timed_out`, `error`).'
+      type: String
+    - contextPath: BrowserUse.Task.Model
+      description: Model used.
+      type: String
+    - contextPath: BrowserUse.Task.Title
+      description: Auto-generated short title for the task.
+      type: String
+    - contextPath: BrowserUse.Task.Output
+      description: Final agent output (string or JSON if a structured output schema was used).
+      type: Unknown
+    - contextPath: BrowserUse.Task.IsTaskSuccessful
+      description: Whether the agent reports the task succeeded.
+      type: Boolean
+    - contextPath: BrowserUse.Task.LiveUrl
+      description: URL to watch the live browser session.
+      type: String
+    - contextPath: BrowserUse.Task.RecordingUrls
+      description: List of presigned URLs to download session recordings (after the task ends).
+      type: Unknown
+    - contextPath: BrowserUse.Task.TotalCostUsd
+      description: Total session cost in USD (LLM + browser + proxy).
+      type: String
+    - contextPath: BrowserUse.Task.StepCount
+      description: Number of steps the agent has executed.
+      type: Number
+    - contextPath: BrowserUse.Task.LastStepSummary
+      description: Human-readable summary of the most recent agent step.
+      type: String
+  - name: browser-use-task-get
+    description: Retrieve the current state of an agent task (status, output, costs, recording URLs).
+    arguments:
+    - name: session_id
+      description: Agent session ID.
+      required: true
+    outputs:
+    - contextPath: BrowserUse.Task.ID
+      description: Agent session ID.
+      type: String
+    - contextPath: BrowserUse.Task.Status
+      description: Lifecycle status.
+      type: String
+    - contextPath: BrowserUse.Task.Output
+      description: Final agent output.
+      type: Unknown
+    - contextPath: BrowserUse.Task.IsTaskSuccessful
+      description: Whether the agent reports the task succeeded.
+      type: Boolean
+    - contextPath: BrowserUse.Task.RecordingUrls
+      description: Presigned recording download URLs (if recording was enabled).
+      type: Unknown
+  - name: browser-use-task-list
+    description: List recent agent sessions (paginated).
+    arguments:
+    - name: page
+      description: Page number (1-indexed).
+    - name: page_size
+      description: Number of sessions per page.
+      defaultValue: '50'
+    outputs:
+    - contextPath: BrowserUse.Task.ID
+      description: Agent session ID.
+      type: String
+    - contextPath: BrowserUse.Task.Status
+      description: Lifecycle status.
+      type: String
+    - contextPath: BrowserUse.Task.Title
+      description: Short auto-generated title.
+      type: String
+    - contextPath: BrowserUse.Task.TotalCostUsd
+      description: Total session cost in USD.
+      type: String
+    - contextPath: BrowserUse.Task.CreatedAt
+      description: Creation timestamp (ISO 8601).
+      type: Date
+  - name: browser-use-task-stop
+    description: Stop a running agent task or destroy the entire session.
+    arguments:
+    - name: session_id
+      description: Agent session ID.
+      required: true
+    - name: strategy
+      description: '`task` stops the current task but keeps the session idle for follow-ups; `session` tears the session down entirely.'
+      auto: PREDEFINED
+      predefined:
+      - task
+      - session
+      defaultValue: session
+    outputs:
+    - contextPath: BrowserUse.Task.ID
+      description: Agent session ID.
+      type: String
+    - contextPath: BrowserUse.Task.Status
+      description: New lifecycle status.
+      type: String
+  - name: browser-use-task-messages-list
+    description: List the agent's streaming messages for a session (steps, browser actions, screenshots).
+    arguments:
+    - name: session_id
+      description: Agent session ID.
+      required: true
+    - name: after
+      description: Cursor — return messages created after this message ID.
+    - name: before
+      description: Cursor — return messages created before this message ID.
+    - name: limit
+      description: Maximum number of messages to return.
+    outputs:
+    - contextPath: BrowserUse.TaskMessages.SessionID
+      description: Agent session ID.
+      type: String
+    - contextPath: BrowserUse.TaskMessages.HasMore
+      description: Whether more messages exist beyond this page.
+      type: Boolean
+    - contextPath: BrowserUse.TaskMessages.Messages
+      description: List of message records (id, role, type, summary, screenshotUrl, createdAt).
+      type: Unknown
+  - name: browser-use-task-screenshot-get
+    description: Get a presigned URL to the most recent screenshot of an agent task. URL expires in ~5 minutes.
+    arguments:
+    - name: session_id
+      description: Agent session ID.
+      required: true
+    outputs:
+    - contextPath: BrowserUse.Task.ID
+      description: Agent session ID.
+      type: String
+    - contextPath: BrowserUse.Task.ScreenshotUrl
+      description: Presigned screenshot URL (~5 minute expiry).
+      type: String
+  - name: browser-use-browser-create
+    description: Create a raw stealth browser session (no agent). Returns a `liveUrl` to view it and a `cdpUrl` to drive it via Playwright/Puppeteer/Selenium.
+    arguments:
+    - name: profile_id
+      description: Browser profile ID to load (optional).
+    - name: proxy_country
+      description: Two-letter ISO country code for residential proxy (overrides instance default).
+    - name: timeout_min
+      description: Session timeout in minutes (1-240).
+    - name: screen_width
+      description: Browser viewport width (320-6144).
+    - name: screen_height
+      description: Browser viewport height (320-3456).
+    - name: allow_resizing
+      description: Allow the browser to be resized during the session (reduces stealthiness).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: enable_recording
+      description: Enable session recording.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: BrowserUse.Browser.ID
+      description: Browser session ID.
+      type: String
+    - contextPath: BrowserUse.Browser.Status
+      description: Browser session status (`active` / `stopped`).
+      type: String
+    - contextPath: BrowserUse.Browser.LiveUrl
+      description: URL to watch the browser live.
+      type: String
+    - contextPath: BrowserUse.Browser.CdpUrl
+      description: Chrome DevTools Protocol URL for external automation tools.
+      type: String
+    - contextPath: BrowserUse.Browser.TimeoutAt
+      description: When the session will time out.
+      type: Date
+  - name: browser-use-browser-get
+    description: Get a browser session by ID.
+    arguments:
+    - name: session_id
+      description: Browser session ID.
+      required: true
+    outputs:
+    - contextPath: BrowserUse.Browser.ID
+      description: Browser session ID.
+      type: String
+    - contextPath: BrowserUse.Browser.Status
+      description: Status.
+      type: String
+    - contextPath: BrowserUse.Browser.LiveUrl
+      description: Live preview URL.
+      type: String
+    - contextPath: BrowserUse.Browser.CdpUrl
+      description: CDP URL.
+      type: String
+    - contextPath: BrowserUse.Browser.RecordingUrl
+      description: Presigned recording download URL (after session ends, if recording was enabled).
+      type: String
+  - name: browser-use-browser-list
+    description: List browser sessions (paginated).
+    arguments:
+    - name: page_size
+      description: Page size.
+      defaultValue: '50'
+    - name: page_number
+      description: Page number.
+    - name: filter_by
+      description: Optional API-side filter expression.
+    outputs:
+    - contextPath: BrowserUse.Browser.ID
+      description: Browser session ID.
+      type: String
+    - contextPath: BrowserUse.Browser.Status
+      description: Status.
+      type: String
+  - name: browser-use-browser-stop
+    description: Stop a stealth browser session.
+    arguments:
+    - name: session_id
+      description: Browser session ID.
+      required: true
+    outputs:
+    - contextPath: BrowserUse.Browser.ID
+      description: Browser session ID.
+      type: String
+    - contextPath: BrowserUse.Browser.Status
+      description: Status after stop request.
+      type: String
+  - name: browser-use-profile-list
+    description: List persistent browser profiles (cookies, logins, localStorage).
+    arguments:
+    - name: page_size
+      description: Page size.
+      defaultValue: '50'
+    - name: page_number
+      description: Page number.
+    - name: query
+      description: Optional name fuzzy-search.
+    outputs:
+    - contextPath: BrowserUse.Profile.ID
+      description: Profile ID.
+      type: String
+    - contextPath: BrowserUse.Profile.Name
+      description: Profile name.
+      type: String
+    - contextPath: BrowserUse.Profile.UserID
+      description: Customer-supplied user identifier associated with the profile.
+      type: String
+    - contextPath: BrowserUse.Profile.LastUsedAt
+      description: Last time this profile was used.
+      type: Date
+  - name: browser-use-profile-get
+    description: Get a single browser profile by ID.
+    arguments:
+    - name: profile_id
+      description: Profile ID.
+      required: true
+    outputs:
+    - contextPath: BrowserUse.Profile.ID
+      description: Profile ID.
+      type: String
+    - contextPath: BrowserUse.Profile.Name
+      description: Profile name.
+      type: String
+    - contextPath: BrowserUse.Profile.CookieDomains
+      description: Domains with stored cookies.
+      type: Unknown
+  - name: browser-use-profile-create
+    description: Create a new (empty) browser profile. Cookies/state are populated as agent or browser sessions reference this profile.
+    arguments:
+    - name: name
+      description: Display name for the profile.
+    - name: user_id
+      description: Your internal user identifier to associate the profile with.
+    outputs:
+    - contextPath: BrowserUse.Profile.ID
+      description: New profile ID.
+      type: String
+    - contextPath: BrowserUse.Profile.Name
+      description: Profile name.
+      type: String
+  - name: browser-use-profile-delete
+    description: Delete a browser profile.
+    arguments:
+    - name: profile_id
+      description: Profile ID.
+      required: true
+  - name: browser-use-workspace-list
+    description: List workspaces (per-session file storage).
+    arguments:
+    - name: page_size
+      description: Page size.
+      defaultValue: '50'
+    - name: page_number
+      description: Page number.
+    outputs:
+    - contextPath: BrowserUse.Workspace.ID
+      description: Workspace ID.
+      type: String
+    - contextPath: BrowserUse.Workspace.Name
+      description: Workspace name.
+      type: String
+  - name: browser-use-workspace-get
+    description: Get a workspace by ID.
+    arguments:
+    - name: workspace_id
+      description: Workspace ID.
+      required: true
+    outputs:
+    - contextPath: BrowserUse.Workspace.ID
+      description: Workspace ID.
+      type: String
+    - contextPath: BrowserUse.Workspace.Name
+      description: Workspace name.
+      type: String
+  - name: browser-use-workspace-create
+    description: Create a new workspace.
+    arguments:
+    - name: name
+      description: Display name for the workspace.
+    outputs:
+    - contextPath: BrowserUse.Workspace.ID
+      description: New workspace ID.
+      type: String
+    - contextPath: BrowserUse.Workspace.Name
+      description: Workspace name.
+      type: String
+  - name: browser-use-workspace-delete
+    description: Delete a workspace and all of its files.
+    arguments:
+    - name: workspace_id
+      description: Workspace ID.
+      required: true
+  - name: browser-use-workspace-files-list
+    description: List files stored in a workspace (e.g. files an agent downloaded or generated).
+    arguments:
+    - name: workspace_id
+      description: Workspace ID.
+      required: true
+    - name: prefix
+      description: Optional path prefix.
+    - name: limit
+      description: Maximum number of files to return.
+      defaultValue: '50'
+    - name: include_urls
+      description: 'If `true`, include presigned download URLs (60-second expiry).'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: BrowserUse.Workspace.ID
+      description: Workspace ID.
+      type: String
+    - contextPath: BrowserUse.Workspace.Files
+      description: 'List of files (Path, Size, LastModified, Url).'
+      type: Unknown
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
