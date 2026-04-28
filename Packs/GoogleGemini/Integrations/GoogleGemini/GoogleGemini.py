@@ -1,6 +1,7 @@
 """Integration for Google Gemini AI Assistant.
 
 This integration provides AI-powered analysis and chat capabilities for XSOAR users.
+Supports both Google AI Studio (API key) and Vertex AI (service account) authentication.
 """
 
 import demistomock as demisto
@@ -12,6 +13,9 @@ import json
 from typing import Any
 from uuid import uuid4
 
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
+
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601
 SUPPORTED_MODELS = [
@@ -21,9 +25,9 @@ SUPPORTED_MODELS = [
     "gemini-1.5-flash",
     "gemini-1.5-flash-8b",
     "gemini-1.5-pro",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
     # Preview models
-    "gemini-2.5-flash-preview-05-20",
-    "gemini-2.5-pro-preview-06-05",
     "gemini-2.0-flash-preview-image-generation",
     # Embedding models
     "text-embedding-004",
@@ -31,12 +35,16 @@ SUPPORTED_MODELS = [
     # Other specialized models
     "models/aqa",
 ]
+AUTH_TYPE_AI_STUDIO = "AI Studio API Key"
+AUTH_TYPE_VERTEX_AI = "Vertex AI Service Account"
+VERTEX_AI_BASE_URL = "https://aiplatform.googleapis.com"
+GOOGLE_AUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
 
 
 class Client(BaseClient):
     """Client to interact with the Google Gemini API.
 
-    Handles HTTP requests to the Gemini service for AI-powered analysis.
+    Supports both AI Studio (API key) and Vertex AI (service account) authentication.
     It inherits from BaseClient which handles proxy, SSL verification, etc.
     """
 
@@ -45,37 +53,99 @@ class Client(BaseClient):
         base_url: str,
         verify: bool,
         proxy: bool,
-        api_key: str,
+        auth_type: str,
         model: str = "gemini-2.5-flash-preview-05-20",
         max_tokens: int = 1024,
         temperature: float | None = None,
         top_p: float | None = None,
         top_k: int | None = None,
+        api_key: str | None = None,
+        service_account_json: str | None = None,
+        project_id: str | None = None,
+        location: str = "global",
     ):
         """Initialize Client class.
 
-        :param base_url: The base URL of the Gemini API.
+        :param base_url: The base URL of the API.
         :param verify: Whether to verify SSL certificate.
         :param proxy: Whether to use system proxy settings.
-        :param api_key: The API key for authentication.
+        :param auth_type: Authentication type - AI Studio API Key or Vertex AI Service Account.
         :param model: The default Gemini model to use for requests.
         :param max_tokens: Default maximum tokens for responses.
         :param temperature: Default temperature for response generation.
         :param top_p: Default top-p value for response generation.
         :param top_k: Default top-k value for response generation.
+        :param api_key: API key for AI Studio authentication.
+        :param service_account_json: Service account JSON key for Vertex AI authentication.
+        :param project_id: Google Cloud project ID for Vertex AI.
+        :param location: Google Cloud location for Vertex AI (default: global).
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.api_key = api_key
+        self.auth_type = auth_type
         self.model = model
         self.max_tokens = max_tokens
         self.temperature = temperature
         self.top_p = top_p
         self.top_k = top_k
-        self._headers = {
+
+        if auth_type == AUTH_TYPE_AI_STUDIO:
+            self.api_key = api_key
+            self._headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "x-goog-api-key": self.api_key,
+            }
+        else:
+            self.service_account_info: dict[str, Any] = json.loads(service_account_json) if service_account_json else {}
+            self.project_id = project_id
+            self.location = location or "global"
+            self._credentials = service_account.Credentials.from_service_account_info(
+                self.service_account_info,
+                scopes=[GOOGLE_AUTH_SCOPE],
+            )
+            self._headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+
+    def _get_access_token(self) -> str:
+        """Get a valid access token for Vertex AI using google-auth credentials.
+
+        Refreshes the token automatically when expired.
+
+        :return: Valid OAuth2 access token string.
+        """
+        if not self._credentials.valid:
+            demisto.debug("Refreshing Vertex AI access token")
+            self._credentials.refresh(Request())
+        return self._credentials.token
+
+    def _get_request_headers(self) -> dict[str, str] | None:
+        """Get the appropriate request headers based on auth type.
+
+        For AI Studio, returns None to use the default self._headers (with API key).
+        For Vertex AI, returns headers with a fresh Bearer token.
+
+        :return: Headers dict for Vertex AI, or None for AI Studio.
+        """
+        if self.auth_type == AUTH_TYPE_AI_STUDIO:
+            return None
+        access_token = self._get_access_token()
+        return {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "x-goog-api-key": self.api_key,
+            "Authorization": f"Bearer {access_token}",
         }
+
+    def _get_url_suffix(self, model: str) -> str:
+        """Get the appropriate URL suffix based on auth type and model.
+
+        :param model: The model name to use.
+        :return: URL suffix string for the generateContent endpoint.
+        """
+        if self.auth_type == AUTH_TYPE_AI_STUDIO:
+            return f"/v1beta/models/{model}:generateContent"
+        return f"/v1/projects/{self.project_id}/locations/{self.location}" f"/publishers/google/models/{model}:generateContent"
 
     def send_chat_message(
         self,
@@ -118,7 +188,10 @@ class Client(BaseClient):
         request_body = {"contents": contents, "generationConfig": generation_config}
 
         return self._http_request(
-            method="POST", url_suffix=f"/v1beta/models/{selected_model}:generateContent", json_data=request_body
+            method="POST",
+            url_suffix=self._get_url_suffix(selected_model),
+            json_data=request_body,
+            headers=self._get_request_headers(),
         )
 
 
@@ -236,10 +309,9 @@ def main():
     and calls the appropriate command function.
     """
     params = demisto.params()
-    base_url = params["url"]
+    auth_type = params.get("auth_type", AUTH_TYPE_AI_STUDIO)
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    api_key = params.get("api_key", {}).get("password")
     model = params.get("model", ["gemini-2.5-flash-preview-05-20"])  # use multi select to enable adding custom val
     max_tokens = arg_to_number(params.get("max_tokens", 1024)) or 1024
 
@@ -248,9 +320,32 @@ def main():
     top_p = arg_to_number(params.get("top_p", "").strip())
     top_k = arg_to_number(params.get("top_k", "").strip())
 
-    if not api_key:
-        return_error("API key is not configured. Please configure it in the instance settings.")
-        return
+    # Auth-specific parameters
+    api_key: str | None = None
+    service_account_json: str | None = None
+    project_id: str | None = None
+    location: str = "global"
+
+    if auth_type == AUTH_TYPE_VERTEX_AI:
+        base_url = params.get("url", VERTEX_AI_BASE_URL)
+        # Auto-switch from AI Studio default URL to Vertex AI URL
+        if base_url == "https://generativelanguage.googleapis.com":
+            base_url = VERTEX_AI_BASE_URL
+        service_account_json = params.get("service_account_key", {}).get("password")
+        project_id = params.get("project_id")
+        location = params.get("location", "global") or "global"
+        if not service_account_json:
+            return_error("Service Account Key JSON is required for Vertex AI authentication.")
+            return
+        if not project_id:
+            return_error("Project ID is required for Vertex AI authentication.")
+            return
+    else:
+        base_url = params.get("url", "https://generativelanguage.googleapis.com")
+        api_key = params.get("api_key", {}).get("password")
+        if not api_key:
+            return_error("API key is not configured. Please configure it in the instance settings.")
+            return
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -262,12 +357,16 @@ def main():
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            api_key=api_key,
+            auth_type=auth_type,
             model=model[0],
             max_tokens=max_tokens,
             temperature=temperature,
             top_p=top_p,
             top_k=top_k,
+            api_key=api_key,
+            service_account_json=service_account_json,
+            project_id=project_id,
+            location=location,
         )
         args = demisto.args()
 
