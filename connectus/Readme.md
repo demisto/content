@@ -99,13 +99,14 @@ Judah| `Auth Details` | Free text (JSON) | Details of the auth of the integratio
 Judah| `Params to Commands` | Free text (JSON) | The inputs/arguments for the script |
 Judah| `Params for test with default in code` | Free text list of param ids | Parameters that have a default in the code.... |
 Yuval| `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated | 
+Joey | `run hafutatest` | Make validate |
 Joey| `wrote/checked code` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
-Joey| `write tests` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
 Joey| `shadowed command test passes` | Checkpoint ✅ | Verify no conflicting commands in the same connector |
+Joey| `write tests` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
+Yuval| `precommit/validate/unit tests passed` | Checkpoint ✅ | Preccomit and validate, Yuval will decide what to skip |
 Judah| `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
 Judah| `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
 Joey| `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-Yuval| `precommit passed` | Checkpoint ✅ | Unit tests pass |
 | `code reviewed` | Checkpoint ✅ | Code review completed |
 | `code merged` | Checkpoint ✅ | Code merged to branch |
 
