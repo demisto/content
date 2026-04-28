@@ -224,7 +224,7 @@ def test_parse_dlp_report(mocker):
     assert pattern_results is not None
 
     # Verify MatchedConfidenceLevel is present in DataPatternMatches
-    contents = results["EntryContext"]["DLP.Report(val.DataPatternName == obj.DataPatternName)"]
+    contents = results["EntryContext"]["DLP.Report(val.DataPatternName && val.DataPatternName == obj.DataPatternName)"]
     data_pattern_matches = contents["DataPatternMatches"]
     assert len(data_pattern_matches) > 0
     assert data_pattern_matches[0]["MatchedConfidenceLevel"] == "low"
