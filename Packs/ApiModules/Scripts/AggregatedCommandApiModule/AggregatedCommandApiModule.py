@@ -1,3 +1,4 @@
+import time
 from abc import ABC
 from collections import defaultdict
 from dataclasses import dataclass
@@ -389,8 +390,18 @@ class BatchExecutor:
         """
         brands_to_run = brands_to_run or []
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
-        demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; using-brands={brands_to_run or 'all'}")
+        command_names = [command.name for command in commands]
+        demisto.debug(
+            f"[Timing][execute_batch] Executing batch: {len(commands_to_execute)} commands "
+            f"({command_names}); using-brands={brands_to_run or 'all'}"
+        )
+        batch_start = time.perf_counter()
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
+        batch_elapsed = time.perf_counter() - batch_start
+        demisto.debug(
+            f"[Timing][execute_batch] demisto.executeCommandBatch for commands {command_names} "
+            f"took {batch_elapsed:.3f}s"
+        )
         demisto.debug("Batch returned [" + ", ".join(str(len(r)) for r in results) + "] results before processing")
         return self.process_results(results, commands, verbose)
 
@@ -1022,9 +1033,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         query = f"type:{self.indicator_schema.type} and ({indicator_values})"
         try:
             demisto.debug(f"Executing TIM search with query: {query}")
+            searcher_start = time.perf_counter()
             searcher = IndicatorsSearcher(query=query)
             iocs = flatten_list([res.get("iocs", []) for res in searcher])
-            demisto.debug(f"TIM search returned {len(iocs)} raw IOCs.")
+            searcher_elapsed = time.perf_counter() - searcher_start
+            demisto.debug(
+                f"[Timing][search_indicators_in_tim] IndicatorsSearcher returned {len(iocs)} raw IOCs "
+                f"in {searcher_elapsed:.3f}s"
+            )
 
             if not iocs:
                 return []
@@ -1521,9 +1537,11 @@ def create_and_extract_indicators(
     invalid_set: set[str] = set()
     expected_type_lower = indicator_type.lower()
 
+    total_start = time.perf_counter()
     for raw in data:
         if raw in valid_set or raw in invalid_set:
             continue
+        single_start = time.perf_counter()
         instances_for_raw, hr = _process_single_input(
             raw=raw,
             expected_type_lower=expected_type_lower,
@@ -1531,8 +1549,18 @@ def create_and_extract_indicators(
             valid_set=valid_set,
             invalid_set=invalid_set,
         )
+        single_elapsed = time.perf_counter() - single_start
+        demisto.debug(
+            f"[Timing][create_and_extract_indicators] extractIndicators for input '{raw}' "
+            f"took {single_elapsed:.3f}s"
+        )
         indicators_instances.extend(instances_for_raw)
         full_hr.append(hr)
+    total_elapsed = time.perf_counter() - total_start
+    demisto.debug(
+        f"[Timing][create_and_extract_indicators] Total one-by-one extractIndicators for "
+        f"{len(data)} inputs took {total_elapsed:.3f}s"
+    )
 
     if not valid_set:
         raise ValueError("No valid indicators found in the input data.")
@@ -1571,7 +1599,13 @@ def create_and_extract_indicators_batch(data: list[str], indicator_type: str) ->
     demisto.debug(f"[create_and_extract_indicators_batch] Validating {len(data)} values for type '{indicator_type}'.")
 
     try:
+        batch_extract_start = time.perf_counter()
         results = execute_command("extractIndicators", {"text": data}, extract_contents=False)
+        batch_extract_elapsed = time.perf_counter() - batch_extract_start
+        demisto.debug(
+            f"[Timing][create_and_extract_indicators_batch] extractIndicators batch call for "
+            f"{len(data)} inputs took {batch_extract_elapsed:.3f}s"
+        )
     except Exception as ex:
         raise DemistoException(f"Failed to validate input using extractIndicators.") from ex
 
