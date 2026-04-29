@@ -670,6 +670,8 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 ### taegis-fetch-events
 
+> **Beta Command:** This is a beta command, which lets you implement and test pre-release software. Since the command is beta, it might contain bugs. Updates to the command during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the command to help us identify issues, fix them, and continually improve.
+
 #### Base Command
 
 `taegis-fetch-events`
@@ -678,13 +680,13 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A list of event IDs or comma-separated event IDs to return | False |
-| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head 50` | False |
-| limit | Maximum number of events to return. Injected into the CQL query via `head N` [Default: 50] | False |
-| offset | The number of events to skip before returning results [Default: 0] | False |
-| next | Pagination cursor token returned from a previous `taegis-fetch-events` call. Use this to retrieve the next page of results | False |
-| fields | The fields to return from the query | False |
-| tenant_id | The tenant to run against if an MSP. If no tenant provided, the tenant of the generated credentials is used | False |
+| ids | A comma-separated list of event IDs to return. | False |
+| cql_query | The Taegis CQL query string to use for searching events (e.g. `FROM process EARLIEST=-1d \| head 10`). If not defined, defaults to `FROM * EARLIEST=-1m \| head 50`. | False |
+| limit | The maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., `\| head 100`). Default is 50. | False |
+| offset | The number of events to skip before returning results. Default is 0. | False |
+| next | The pagination cursor token returned from a previous `taegis-fetch-events` call. Use this to retrieve the next page of results. | False |
+| fields | The fields to return from the query. | False |
+| tenant_id | The tenant to run against if using an MSP. If no tenant is provided, the tenant of the generated credentials is used. | False |
 
 #### CQL Query Time Field Reference
 
