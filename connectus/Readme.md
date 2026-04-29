@@ -71,108 +71,106 @@ live in [`connectus/column-schemas.md`](column-schemas.md).
 
 ## Workflow State Machine (`workflow_state.py`)
 
-The [`workflow_state.py`](workflow_state.py) script manages the **16 workflow columns** (columns 5–20) of [`connectus/integrations_report.csv`](integrations_report.csv). It acts as a **state machine** where each integration progresses through ordered steps, and is designed to be used by both humans and AI agents.
+The [`workflow_state.py`](workflow_state.py) script manages the **16 workflow columns** (columns 5–20) of [`connectus/integrations_report.csv`](integrations_report.csv). It models the workflow as a **single linear 16-step sequence**, strictly gated. The current step is always the first step that is not yet done.
 
-The script distinguishes between two kinds of workflow columns:
+State is **purely derived from row contents** — there is no separate "current step" pointer. Re-issuing any `set-*`, `markpass`, or `skip` for a step at-or-behind the current step writes the new value AND clears every step that follows it ("cascade reset"). The ONLY exception is `set-assignee`, which is administrative and never resets later steps.
 
-- **Workflow data columns** (free-text / JSON, columns 5–9): `assignee`,
-  `Auth Details`, `Params to Commands`,
-  `Params for test with default in code`, `Params same in other handlers`.
-  These are set with dedicated CLI commands (`set-assignee`, `set-auth`,
-  `set-params-to-commands`, `set-params-for-test`, `set-shared-params`).
-- **Workflow checkpoint columns** (sequential ✅, columns 10–15 and 17–20):
-  `generated manifest`, `run manifest make validate`, `wrote/checked code`,
-  `shadowed command test passes`, `write tests`,
-  `precommit/validate/unit tests passed`, `auth parity test passes`,
-  `param parity test passes`, `code reviewed`, `code merged`. These are
-  marked passed with `markpass` and follow strict sequential ordering.
+### The 16-Step Sequence
 
-There is also one **workflow flag column** (column 16):
-`requires auth parity test` (`YES` / `NO` / `N/A`), set with `set-auth-flag`.
-It is NOT a checkpoint.
-
-### Workflow Columns
-
-| Responsible | Column | Type | Description |
-|---|---|---|---|
-|  | `assignee` | Free text | Who is working on this integration |
-| Judah | `Auth Details` | Free text (JSON) | Details of the auth of the integration (see [`column-schemas.md`](column-schemas.md#auth-details)) |
-| Judah | `Params to Commands` | Free text (JSON) | Mapping of integration commands to the parameter IDs each command needs (see [`column-schemas.md`](column-schemas.md#params-to-commands)) |
-| Judah | `Params for test with default in code` | Free text (JSON) | Param IDs whose defaults are hardcoded in source (see [`column-schemas.md`](column-schemas.md#params-for-test-with-default-in-code)) |
-| Judah | `Params same in other handlers` | Free text (JSON, optional) | Param IDs shared verbatim with sibling handlers (see [`column-schemas.md`](column-schemas.md#params-same-in-other-handlers-optional)) |
-| Yuval | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
-| Joey | `run manifest make validate` | Checkpoint ✅ | Make validate |
-| Joey | `wrote/checked code` | Checkpoint ✅ | Python/JavaScript/PWSH code has been changed |
-| Joey | `shadowed command test passes` | Checkpoint ✅ | Verify no conflicting commands in the same connector or make the changes if required |
-| Joey | `write tests` | Checkpoint ✅ | Unit tests written |
-| Yuval | `precommit/validate/unit tests passed` | Checkpoint ✅ | Pre-commit and validate (Yuval will decide what to skip) |
-| Judah | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
-| Judah | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
-| Joey | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-|  | `code reviewed` | Checkpoint ✅ | Code review completed |
-|  | `code merged` | Checkpoint ✅ | Code merged to branch |
+| # | Step (== CSV column) | Kind | Optional | Set via |
+|---|---|---|---|---|
+| 1 | `assignee` | data | no | `set-assignee` |
+| 2 | `Auth Details` | data (JSON) | no | `set-auth` |
+| 3 | `Params to Commands` | data (JSON) | no | `set-params-to-commands` |
+| 4 | `Params for test with default in code` | data (JSON) | no | `set-params-for-test` |
+| 5 | `Params same in other handlers` | data (JSON) | **yes** | `set-shared-params` (or `skip`) |
+| 6 | `generated manifest` | checkpoint | no | `markpass` |
+| 7 | `run manifest make validate` | checkpoint | no | `markpass` |
+| 8 | `wrote/checked code` | checkpoint | no | `markpass` |
+| 9 | `shadowed command test passes` | checkpoint | no | `markpass` |
+| 10 | `write tests` | checkpoint | no | `markpass` |
+| 11 | `precommit/validate/unit tests passed` | checkpoint | no | `markpass` |
+| 12 | `requires auth parity test` | flag (`YES`/`NO`/`N/A`) | no | `set-auth-flag` |
+| 13 | `auth parity test passes` | checkpoint | auto-N/A | `markpass` (auto-`N/A` when #12 is `NO`/`N/A`) |
+| 14 | `param parity test passes` | checkpoint | no | `markpass` |
+| 15 | `code reviewed` | checkpoint | no | `markpass` |
+| 16 | `code merged` | checkpoint | no | `markpass` |
 
 ### Rules
 
-1. **Explicit step naming** — You must explicitly name the step you are marking as passed via `markpass`. There is no general "advance" command.
-2. **Sequential order** — Checkpoint columns must be completed in order. You cannot mark `wrote/checked code` before `run manifest make validate` is done. The script will reject the attempt and tell you what the current step is.
-3. **Workflow data columns are not checkpoints** — `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, and `Params same in other handlers` are free-text / JSON columns. Set them with their dedicated commands (`set-assignee`, `set-auth`, `set-params-to-commands`, `set-params-for-test`, `set-shared-params`); do not try to `markpass` them.
-4. **Prerequisites for `generated manifest`** — `Params to Commands` and `Params for test with default in code` must both be set (valid JSON) before you can mark `generated manifest` as passed. Use `set-params-to-commands` and `set-params-for-test` respectively. `Params same in other handlers` is optional and is **not** a prerequisite.
-5. **Setting `Auth Details` resets the workflow** — `set-auth` validates against the [Auth Details schema](column-schemas.md#auth-details), then clears all checkpoints and the auth-parity flag. The integration is reset to the first checkpoint (`generated manifest`).
-6. **Non-checkpoint correction** — If you try to `markpass` a workflow data column or the auth-parity flag, the script tells you the correct setter command to use instead.
-7. **Fail & reset** — When a step fails, use `fail` to reset that step **and all subsequent steps**.
-8. **Reset to stage** — Use `reset-to` to go back to a specific checkpoint, clearing it and everything after it.
-9. **Auth parity flag** — `requires auth parity test` is a flag, not a checkpoint. When set to `NO` or `N/A`, `auth parity test passes` is automatically set to `N/A` and skipped.
+1. **Single linear sequence.** The current step is the first step not yet done.
+2. **Strict ordering.** Any `set-*`/`markpass`/`skip` targeting a step **ahead** of the current step is rejected with a message naming the missing prerequisite.
+3. **Cascade reset.** Re-issuing any `set-*`/`markpass`/`skip` at-or-behind current writes the new value AND clears every step after it.
+4. **`set-assignee` carve-out.** `set-assignee` is the ONLY exception — it updates step #1 in place without cascading. Re-assigning an integration mid-flight does NOT wipe progress.
+5. **Optional step #5.** `Params same in other handlers` may be `skip`-ped; that writes the sentinel `"N/A"` and unblocks step #6. Setting it to a real JSON value later cascade-resets steps #6+.
+6. **Flag step #12 → step #13 auto-N/A.** Setting `requires auth parity test` to `NO` or `N/A` automatically writes `"N/A"` into `auth parity test passes`. Setting it to `YES` leaves #13 empty so the user must `markpass` it.
+7. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
+8. **`fail` and `reset-to`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behavior; `reset-to` is the explicit name, `fail` reads as "this step failed, redo it".
+9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`, `special cases`) are preserved.
 
 ### CLI Commands
 
 All commands take an Integration ID (case-insensitive) as the first argument
-where applicable.
+where applicable. **Every `set-*`/`markpass`/`skip` for a step at-or-behind
+the current step cascade-resets every step after it.** The lone exception is
+`set-assignee`, which never resets later steps.
 
 ```bash
-# Show status of an integration
+# Show status (with [N/16] linear indicator)
 python3 connectus/workflow_state.py status "Cisco Spark"
 
 # Show all integrations with any progress
 python3 connectus/workflow_state.py status-all
 
-# Compact dashboard with progress bars
+# Compact dashboard (16-cell progress bars)
 python3 connectus/workflow_state.py dashboard
 
-# Show the value of a single column for an integration (pretty-prints JSON)
+# Print the literal next action for an integration
+python3 connectus/workflow_state.py next "Cisco Spark"
+
+# Print next action for every in-progress integration assigned to current git user
+python3 connectus/workflow_state.py next
+
+# Print next action for every in-progress integration (all assignees)
+python3 connectus/workflow_state.py next --all
+
+# Show the value of a single column (pretty-prints JSON)
 python3 connectus/workflow_state.py show-step "Cisco Spark" "Auth Details"
 
-# Set the assignee (workflow data column, free text)
+# Set the assignee (admin-only; never cascades)
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
-# Set Auth Details (validates JSON schema, then resets workflow to 'generated manifest')
+# Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
 python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
 
-# Set Params to Commands (must be valid JSON)
+# Set Params to Commands (validates JSON; cascade-resets steps #4-#16)
 python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
 
-# Set Params for test with default in code (must be valid JSON)
+# Set Params for test with default in code (validates JSON; cascade-resets #5-#16)
 python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '["bot_token"]'
 
-# Set Params same in other handlers (optional; must be valid JSON)
+# Set Params same in other handlers (validates JSON; cascade-resets #6-#16)
 python3 connectus/workflow_state.py set-shared-params "Cisco Spark" '[]'
 
-# Mark a checkpoint as passed (must be the current step)
-python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
+# Mark the (optional) step #5 as skipped
+python3 connectus/workflow_state.py skip "Cisco Spark" "Params same in other handlers"
 
-# Fail a checkpoint (resets it + all subsequent checkpoints)
-python3 connectus/workflow_state.py fail "Cisco Spark" "wrote/checked code"
-
-# Set the auth parity flag (YES / NO / N/A)
+# Set the auth parity flag (YES/NO/N/A); NO/N/A auto-N/A's step #13
 python3 connectus/workflow_state.py set-auth-flag "Cisco Spark" YES
 
-# Reset to a specific checkpoint (clears that step and everything after it)
+# Mark a checkpoint as passed (must be at-or-behind current; behind→cascade-resets)
+python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
+
+# Fail a step (clears it + every step after)
+python3 connectus/workflow_state.py fail "Cisco Spark" "wrote/checked code"
+
+# Reset to a specific step (alias for fail; clears it + every step after)
 python3 connectus/workflow_state.py reset-to "Cisco Spark" "wrote/checked code"
 
-# Reset all workflow columns
+# Reset all 16 workflow columns
 python3 connectus/workflow_state.py reset "Cisco Spark"
 
-# List integrations currently at a specific checkpoint
+# List integrations currently at a specific step (any step kind)
 python3 connectus/workflow_state.py at-step "wrote/checked code"
 
 # List all integration IDs
@@ -189,31 +187,35 @@ The script exposes functions that can be imported and called directly:
 ```python
 from connectus.workflow_state import (
     get_integration_status,
+    next_step_for,
     markpass_integration_step,
+    skip_integration_step,
     fail_integration_step,
     reset_integration_to_step,
     set_integration_auth,
 )
 
-# Get status as a dict
+# Get status as a dict (includes current_step_index now)
 status = get_integration_status("Cisco Spark")
-# Returns: {name, current_step, workflow, completed_steps, total_steps, progress_pct, all_complete}
+# Returns: {name, current_step, current_step_index, workflow, completed_steps,
+#           total_steps, progress_pct, all_complete}
 
-# Mark a specific checkpoint as passed (fails if not up to that step)
+# Get the next action for an integration
+nxt = next_step_for("Cisco Spark")
+# Returns: {complete: bool, step_index, step_name, setter, description, message}
+
+# Mark a checkpoint as passed (cascade-resets later steps if at-or-behind current)
 result = markpass_integration_step("Cisco Spark", "generated manifest")
-# Returns: {message, completed_step, current_step} or {error: "..."}
 
-# Fail a checkpoint and reset subsequent ones
+# Skip an optional step (only #5 is optional)
+result = skip_integration_step("Cisco Spark", "Params same in other handlers")
+
+# Fail / reset-to: clear the named step + every step after
 result = fail_integration_step("Cisco Spark", "wrote/checked code")
-# Returns: {message, current_step}
-
-# Reset to a specific checkpoint
 result = reset_integration_to_step("Cisco Spark", "wrote/checked code")
-# Returns: {message, current_step}
 
-# Set Auth Details (validates schema, resets workflow to 'generated manifest')
+# Set Auth Details (validates schema; cascade-resets steps #3-#16)
 result = set_integration_auth("Cisco Spark", '{"auth_types":...}')
-# Returns: {message, current_step} or {error: "..."}
 ```
 
 ### Unit Tests
@@ -235,7 +237,8 @@ the optional `Params same in other handlers`.
 
 ### Example Walkthrough
 
-Below is a full walkthrough showing what each command outputs. This walks through a typical integration lifecycle under the new schema.
+Below is a walkthrough showing what each command outputs under the unified
+16-step sequence.
 
 #### 1. Check initial status
 
@@ -249,41 +252,48 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
   File Path:       (not set)
   Connector ID:    (not set)
 
-  Workflow Data:
+  Workflow ([0/16]):
   ----------------------------------------
-    Auth Details                           : (not set)
-    Params to Commands                     : (not set)
-    Params for test with default in code   : (not set)
-    Params same in other handlers          : (not set)
+  ▶ 1. assignee                               : (not set)
+    2. Auth Details                           : (not set)
+    3. Params to Commands                     : (not set)
+    4. Params for test with default in code   : (not set)
+    5. Params same in other handlers          : (not set)
+    6. generated manifest                     : ⬜
+    7. run manifest make validate             : ⬜
+    8. wrote/checked code                     : ⬜
+    9. shadowed command test passes           : ⬜
+   10. write tests                            : ⬜
+   11. precommit/validate/unit tests passed   : ⬜
+   12. requires auth parity test              : (not set)
+   13. auth parity test passes                : ⬜
+   14. param parity test passes               : ⬜
+   15. code reviewed                          : ⬜
+   16. code merged                            : ⬜
 
-  Workflow Checkpoints:
-  ----------------------------------------
-    generated manifest                     : ⬜
-    run manifest make validate             : ⬜
-    wrote/checked code                     : ⬜
-    shadowed command test passes           : ⬜
-    write tests                            : ⬜
-    precommit/validate/unit tests passed   : ⬜
-    requires auth parity test              : (not set)
-    auth parity test passes                : ⬜
-    param parity test passes               : ⬜
-    code reviewed                          : ⬜
-    code merged                            : ⬜
-
-  ➡️  Current step: generated manifest
+  ➡️  Current step: #1 assignee (run: set-assignee)
 ```
 
-#### 2. Try to markpass without setting Params to Commands first (rejected)
+#### 2. Ask `next` what to do
+
+```
+$ python3 connectus/workflow_state.py next "Cisco Spark"
+
+Cisco Spark — step 1 of 16: assignee
+  Run:    python3 connectus/workflow_state.py set-assignee "Cisco Spark" "<your name>"
+  About:  Assign an owner to drive this integration's migration.
+```
+
+#### 3. Try to markpass ahead of current step (rejected)
 
 ```
 $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
 
-ERROR: Cannot mark 'generated manifest' as passed — 'Params to Commands' must be set first.
-  Use 'set-params-to-commands' to provide the params (JSON).
-  Example: workflow_state.py set-params-to-commands "Cisco Spark" '{}'
+ERROR: Cannot markpass 'generated manifest' (step 6/16) yet — current step is #1 'assignee'.
+  Complete it first via 'set-assignee'.
 ```
 
-#### 3. Try to set-params-to-commands with invalid JSON (rejected)
+#### 4. Try to set-params-to-commands with invalid JSON (rejected)
 
 ```
 $ python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" "not json"
@@ -294,143 +304,66 @@ ERROR: 'Params to Commands' must be valid JSON.
   Example: workflow_state.py set-params-to-commands "Cisco Spark" '{}'
 ```
 
-#### 4. Set Auth Details, Params to Commands, and Params for test
+#### 5. Walk through the linear sequence
 
 ```
+$ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
+Set assignee for 'Cisco Spark' to: John Doe
+  Current step: #2 Auth Details
+
 $ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}},"notes":null}'
+Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
+  Current step: #3 Params to Commands
 
-Set 'Auth Details' for 'Cisco Spark'.
-  Reset workflow to 'generated manifest' (cleared 10 checkpoint(s) and the auth parity flag).
-  Current step: generated manifest
+$ python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{}'
+Set 'Params to Commands' (step 3/16) for 'Cisco Spark'.
+  Current step: #4 Params for test with default in code
 
-$ python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
+$ python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '[]'
+Set 'Params for test with default in code' (step 4/16) for 'Cisco Spark'.
+  Current step: #5 Params same in other handlers
 
-Set 'Params to Commands' for 'Cisco Spark' to: {"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}
+# Step #5 is optional — `skip` writes "N/A" and unblocks step #6
+$ python3 connectus/workflow_state.py skip "Cisco Spark" "Params same in other handlers"
+✓ Skipped step 5 ('Params same in other handlers') for 'Cisco Spark'.
+  Next step: #6 generated manifest
 
-$ python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '["bot_token"]'
-
-Set 'Params for test with default in code' for 'Cisco Spark' to: ["bot_token"]
-```
-
-#### 5. (Optional) Set Params same in other handlers
-
-```
-$ python3 connectus/workflow_state.py set-shared-params "Cisco Spark" '[]'
-
-Set 'Params same in other handlers' for 'Cisco Spark' to: []
-```
-
-This column is optional and never blocks a checkpoint.
-
-#### 6. Mark the first checkpoint as passed
-
-```
 $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
-
-✅ 'generated manifest' marked as passed for 'Cisco Spark'.
-  Next step: run manifest make validate
+✅ 'generated manifest' (step 6/16) marked as passed for 'Cisco Spark'.
+  Next step: #7 run manifest make validate
 ```
 
-#### 7. Try to skip ahead (rejected)
+#### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "write tests"
-
-ERROR: Cannot mark 'write tests' as passed — you are not up to that step yet.
-  Current step: 'run manifest make validate'
-  Prior step 'run manifest make validate' is not yet complete.
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
+  Cleared 4 subsequent step(s): ['Params to Commands', 'Params for test with default in code', 'Params same in other handlers', 'generated manifest']
+  Current step: #3 Params to Commands
 ```
 
-#### 8. Try to markpass a non-checkpoint column (corrected)
+Re-issuing any setter at-or-behind the current step writes the new value AND clears every step after it.
+
+#### 7. `set-assignee` is the carve-out — it never cascades
 
 ```
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "Params to Commands"
-
-ERROR: 'Params to Commands' is not a pass/fail checkpoint.
-  Use 'set-params-to-commands' instead.
-  Example: workflow_state.py set-params-to-commands "Cisco Spark" <value>
+$ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "Jane Smith"
+Set assignee for 'Cisco Spark' to: Jane Smith
+  Current step: #7 run manifest make validate
 ```
 
-```
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "requires auth parity test"
+Re-assigning preserves all migration progress — only the `assignee` cell changes.
 
-ERROR: 'requires auth parity test' is not a pass/fail checkpoint.
-  Use 'set-auth-flag' instead.
-  Example: workflow_state.py set-auth-flag "Cisco Spark" <value>
-```
-
-#### 9. Continue marking checkpoints
+#### 8. Auth parity flag → step #13 auto-N/A
 
 ```
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "run manifest make validate"
-✅ 'run manifest make validate' marked as passed for 'Cisco Spark'.
-  Next step: wrote/checked code
-
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "wrote/checked code"
-✅ 'wrote/checked code' marked as passed for 'Cisco Spark'.
-  Next step: shadowed command test passes
-
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "shadowed command test passes"
-✅ 'shadowed command test passes' marked as passed for 'Cisco Spark'.
-  Next step: write tests
+$ python3 connectus/workflow_state.py set-auth-flag "Cisco Spark" NO
+Set 'requires auth parity test' = NO for 'Cisco Spark'.
+  Auto-set 'auth parity test passes' = N/A.
+  Current step: #14 param parity test passes
 ```
 
-#### 10. Fail a step (resets it and everything after)
-
-```
-$ python3 connectus/workflow_state.py fail "Cisco Spark" "wrote/checked code"
-
-Reset 'wrote/checked code' and 7 subsequent step(s) for 'Cisco Spark'.
-  Current step is now: wrote/checked code
-```
-
-#### 11. Reset to a specific checkpoint
-
-```
-$ python3 connectus/workflow_state.py reset-to "Cisco Spark" "wrote/checked code"
-
-Reset to 'wrote/checked code' for 'Cisco Spark'.
-  Cleared 'wrote/checked code' and 7 subsequent step(s).
-  Current step is now: wrote/checked code
-```
-
-#### 12. Check status after partial progress
-
-```
-$ python3 connectus/workflow_state.py status "Cisco Spark"
-
-============================================================
-  Cisco Spark
-============================================================
-  Assignee:        (unassigned)
-  File Path:       (not set)
-  Connector ID:    (not set)
-
-  Workflow Data:
-  ----------------------------------------
-    Auth Details                           : {"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}},"notes":null}
-    Params to Commands                     : {"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}
-    Params for test with default in code   : ["bot_token"]
-    Params same in other handlers          : []
-
-  Workflow Checkpoints:
-  ----------------------------------------
-    generated manifest                     : ✅
-    run manifest make validate             : ✅
-    wrote/checked code                     : ⬜
-    shadowed command test passes           : ⬜
-    write tests                            : ⬜
-    precommit/validate/unit tests passed   : ⬜
-    requires auth parity test              : (not set)
-    auth parity test passes                : ⬜
-    param parity test passes               : ⬜
-    code reviewed                          : ⬜
-    code merged                            : ⬜
-
-  ➡️  Current step: wrote/checked code
-```
-
-#### 13. Dashboard view (multiple integrations)
+#### 9. Dashboard view (16-cell bar)
 
 ```
 $ python3 connectus/workflow_state.py dashboard
@@ -438,40 +371,20 @@ $ python3 connectus/workflow_state.py dashboard
 ================================================================================
   WORKFLOW DASHBOARD
 ================================================================================
-  Integration ID                                Progress   Step   → Current Step
+  Integration ID                                Progress             → Current Step
   ---------------------------------------------------------------------------
-  Cisco Spark                                   [██░░░░░░░░] 2/10  → wrote/checked code
-  GLPI                                          [████████░░] 8/10  → code reviewed
-  Wiz                                           [██████████] 10/10 → ✅ DONE
+  Cisco Spark                                   [████████████░░░░] 12/16  → param parity test passes
 
-  Summary: 1 complete, 2 in progress, 980 not started
+  Summary: 0 complete, 1 in progress, 981 not started
 ```
 
-#### 14. Set auth flag and auto-skip
+#### 10. `next` for everyone (or just yourself)
 
 ```
-$ python3 connectus/workflow_state.py set-auth-flag "Cisco Spark" NO
-
-Set 'requires auth parity test' = NO and 'auth parity test passes' = N/A for 'Cisco Spark'.
+$ python3 connectus/workflow_state.py next --all
+Cisco Spark — step 14 of 16: param parity test passes
+  Run:    python3 connectus/workflow_state.py markpass "Cisco Spark" "param parity test passes"
+  About:  Run the parameter-parity test.
 ```
 
-When you later reach the `precommit/validate/unit tests passed` step and mark it as passed, `auth parity test passes` is automatically skipped (the next step becomes `param parity test passes`):
-
-```
-$ python3 connectus/workflow_state.py markpass "Cisco Spark" "precommit/validate/unit tests passed"
-
-✅ 'precommit/validate/unit tests passed' marked as passed for 'Cisco Spark'.
-  Auto-skipped 'auth parity test passes' (flag=NO).
-  Next step: param parity test passes
-```
-
-#### 15. List integrations at a specific checkpoint
-
-```
-$ python3 connectus/workflow_state.py at-step "wrote/checked code"
-
-Integrations currently at step 'wrote/checked code' (3):
-  - Cisco Spark
-  - Abnormal Security
-  - CrowdStrike Falcon
-```
+`next` (no args) does the same but only for integrations whose `assignee` matches the current `git config user.name`.
