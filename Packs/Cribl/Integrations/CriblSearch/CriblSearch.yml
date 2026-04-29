@@ -551,9 +551,6 @@ script:
   subtype: python3
   dockerimage: demisto/fastapi:0.125.0.8198656
 fromversion: 6.10.0
-marketplaces:
-- xsoar
-- marketplacev2
 tests:
 - No tests
 sectionorder:
