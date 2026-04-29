@@ -54,14 +54,14 @@ alter
 | alter
     get_outcome = if(
         get_success = "True", XDM_CONST.OUTCOME_SUCCESS,
-        auditCode = "IDP2005" and get_cookie_session != "null", XDM_CONST.OUTCOME_SUCCESS,
+        auditCode = "IDP2005" and get_cookie_session != null, XDM_CONST.OUTCOME_SUCCESS,
         auditCode = "IDP2009", XDM_CONST.OUTCOME_SUCCESS,
         XDM_CONST.OUTCOME_FAILED
     )
 | alter
     xdm.event.type = "authentication",
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
-    xdm.event.id = _id,
+    xdm.event.id = uuid,
     xdm.event.original_event_type = lowercase(message),
     xdm.event.description = action,
     xdm.event.operation = if(
@@ -107,7 +107,7 @@ alter
     xdm.source.location.country = get_country,
     xdm.source.location.latitude = to_float(get_latitude),
     xdm.source.location.longitude = to_float(get_longitude),
-    xdm.target.ipv4 = coalesce(DstHost, ""),
+    xdm.target.ipv4 = "",
     xdm.target.port = to_integer(0),
     xdm.target.resource.name = get_entity_name,
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
@@ -160,11 +160,10 @@ alter
     xdm.event.id = uuid,
     xdm.event.original_event_type = get_message_lower,
     xdm.event.operation = if(
-        get_action_type_lower in ("create", "add"), "CREATE",
-        get_action_type_lower = "delete" or get_message_lower contains "remove", "DELETE",
-        get_action_type_lower in ("edit", "approve", "upgrade"), "MODIFY",
-        get_action_type_lower = "connect", "OTHER",
-        "OTHER"
+        get_action_type_lower in ("create", "add"), XDM_CONST.OPERATION_TYPE_CREATE,
+        get_action_type_lower = "delete" or get_message_lower contains "remove", XDM_CONST.OPERATION_TYPE_DELETE,
+        get_action_type_lower in ("edit", "approve", "upgrade"), XDM_CONST.OPERATION_TYPE_UPDATE,
+        null
     ),
     xdm.event.outcome = if(
         get_level = "Error" or get_status = "NonExist" or get_success = "False" or get_message_lower ~= "fail$", XDM_CONST.OUTCOME_FAILED,
