@@ -1360,7 +1360,7 @@ def test_work_order_update_command(request_id, command_arguments, expected_msg, 
     """
     from BmcITSM import work_order_update_command
 
-    url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrder/{request_id}"
+    url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrderInterface/{request_id}"
     requests_mock.put(url=url, text="")
 
     result = work_order_update_command(mock_client, command_arguments)

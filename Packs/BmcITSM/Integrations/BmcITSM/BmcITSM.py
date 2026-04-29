@@ -1601,7 +1601,7 @@ class Client(BaseClient):
         data = {"values": properties}
         response = self._http_request(
             "PUT",
-            f"arsys/v1/entry/WOI:WorkOrder/{request_id}",
+            f"arsys/v1/entry/WOI:WorkOrderInterface/{request_id}",
             json_data=data,
             resp_type="text",
         )
