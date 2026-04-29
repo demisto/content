@@ -546,7 +546,7 @@ script:
       description: The number of events to skip before returning results.
       defaultValue: "0"
     - name: next
-      description: Pagination cursor token returned from a previous taegis-fetch-events call. Use this to retrieve the next page of results.
+      description: The pagination cursor token returned from a previous taegis-fetch-events call. Use this to retrieve the next page of results.
     - name: fields
       description: The fields to return from the query.
     - name: tenant_id
