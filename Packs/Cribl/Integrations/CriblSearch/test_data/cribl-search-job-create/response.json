@@ -1,0 +1,271 @@
+{
+  "query": "dataset=\"cribl_search_sample\" | limit 5",
+  "isPrivate": true,
+  "user": "EXAMPLECLIENTID0000000000000000@clients",
+  "displayUsername": "example.user@example.com",
+  "userDetails": {
+    "username": "EXAMPLECLIENTID0000000000000000@clients",
+    "displayUsername": "example.user@example.com",
+    "email": "example.user@example.com",
+    "roles": [
+      "search_user",
+      "org_user",
+      "ws_user"
+    ],
+    "ssoGroups": [],
+    "type": "apiCredential",
+    "apiCredential": {
+      "clientId": "EXAMPLECLIENTID0000000000000000@clients",
+      "name": "example.user@example.com",
+      "createdBy": "example.user@example.com"
+    }
+  },
+  "earliest": "-1h",
+  "latest": "now",
+  "status": "queued",
+  "group": "default_search",
+  "id": "1777381220097.F0vzpw",
+  "timeCreated": 1777381220097,
+  "internal": {
+    "email": "example.user@example.com",
+    "roles": [
+      "search_user",
+      "org_user",
+      "ws_user"
+    ],
+    "compiledPolicies": [
+      {
+        "object": "*",
+        "actions": [
+          "*"
+        ]
+      },
+      {
+        "object": "/system/users/EXAMPLECLIENTID0000000000000000@clients",
+        "actions": [
+          "GET"
+        ]
+      },
+      {
+        "object": "/system/users/EXAMPLECLIENTID0000000000000000@clients/info",
+        "actions": [
+          "PATCH"
+        ]
+      }
+    ],
+    "preprocessedQuery": "dataset=\"cribl_search_sample\" | limit 5",
+    "detectedKeyAccesses": {},
+    "maxExecutors": 50,
+    "maxResultsPerSearch": 50000,
+    "maxRunningTimeRange": {
+      "maxSec": 86400
+    }
+  },
+  "setOptions": {},
+  "stages": [
+    {
+      "id": "root",
+      "subQueryText": "dataset=\"cribl_search_sample\" | limit 5",
+      "dependencies": [],
+      "filter": "(dataset == 'cribl_search_sample')",
+      "resolvedDatasetIds": [
+        "cribl_search_sample"
+      ],
+      "searchConfig": {
+        "pipelines": {
+          "Federated": {
+            "id": "root",
+            "conf": {
+              "asyncFuncTimeout": 1000,
+              "description": "Pipeline, generated from Kalipso query",
+              "functions": [
+                {
+                  "id": "drop",
+                  "conf": {},
+                  "description": "dataset=\"cribl_search_sample\"",
+                  "filter": "!(dataset == 'cribl_search_sample')",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": true,
+                  "functionInstanceId": "root:0:9T2o"
+                },
+                {
+                  "id": "limit",
+                  "filter": "true",
+                  "description": "limit 5",
+                  "disabled": false,
+                  "final": false,
+                  "conf": {
+                    "limit": 5
+                  },
+                  "canFullyPushToFederated": false,
+                  "functionInstanceId": "root:1:R5lH"
+                }
+              ]
+            }
+          },
+          "Coordinated": {
+            "id": "root",
+            "conf": {
+              "asyncFuncTimeout": 1000,
+              "description": "Pipeline, generated from Kalipso query",
+              "functions": [
+                {
+                  "id": "limit",
+                  "filter": "true",
+                  "description": "limit 5",
+                  "disabled": false,
+                  "final": false,
+                  "conf": {
+                    "limit": 5
+                  },
+                  "canFullyPushToFederated": false,
+                  "functionInstanceId": "root:2:lYGk"
+                }
+              ]
+            }
+          },
+          "Combined": {
+            "id": "root",
+            "conf": {
+              "asyncFuncTimeout": 1000,
+              "description": "Pipeline, generated from Kalipso query",
+              "functions": [
+                {
+                  "id": "drop",
+                  "conf": {},
+                  "description": "dataset=\"cribl_search_sample\"",
+                  "filter": "!(dataset == 'cribl_search_sample')",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": true,
+                  "functionInstanceId": "root:0:9T2o"
+                },
+                {
+                  "id": "limit",
+                  "filter": "true",
+                  "description": "limit 5",
+                  "disabled": false,
+                  "final": false,
+                  "conf": {
+                    "limit": 5
+                  },
+                  "canFullyPushToFederated": false,
+                  "functionInstanceId": "root:1:R5lH"
+                }
+              ]
+            }
+          }
+        },
+        "logicalPlans": {
+          "Federated": {
+            "root:0:9T2o": [
+              {
+                "condition": {
+                  "operator": "==",
+                  "lhs": {
+                    "columnPath": [
+                      "dataset"
+                    ],
+                    "type": "identifier"
+                  },
+                  "rhs": {
+                    "literal": "cribl_search_sample",
+                    "type": "literal"
+                  },
+                  "caseSensitive": false,
+                  "type": "binaryOperation"
+                },
+                "type": "filter"
+              }
+            ],
+            "root:1:R5lH": [
+              {
+                "limit": 5,
+                "type": "limit"
+              }
+            ]
+          },
+          "Coordinated": {
+            "root:2:lYGk": [
+              {
+                "limit": 5,
+                "type": "limit"
+              }
+            ]
+          },
+          "Combined": {
+            "root:0:9T2o": [
+              {
+                "condition": {
+                  "operator": "==",
+                  "lhs": {
+                    "columnPath": [
+                      "dataset"
+                    ],
+                    "type": "identifier"
+                  },
+                  "rhs": {
+                    "literal": "cribl_search_sample",
+                    "type": "literal"
+                  },
+                  "caseSensitive": false,
+                  "type": "binaryOperation"
+                },
+                "type": "filter"
+              }
+            ],
+            "root:1:R5lH": [
+              {
+                "limit": 5,
+                "type": "limit"
+              }
+            ]
+          }
+        },
+        "datasets": [
+          "cribl_search_sample"
+        ],
+        "searchTerms": [],
+        "useFormattedVisualization": false,
+        "orderedFieldNames": [],
+        "referencedColumnPaths": [
+          [
+            "dataset"
+          ]
+        ],
+        "hasSendOperator": false,
+        "canComputeMetadataDistributively": false
+      },
+      "status": "new",
+      "searchVersionByDatasetId": {}
+    }
+  ],
+  "accelerated": false,
+  "metadata": {
+    "datasets": {
+      "cribl_search_sample": 1
+    },
+    "providers": {
+      "cribl_s3sample_provider": 1
+    },
+    "providerTypes": {
+      "s3": 1
+    },
+    "computeTypes": {
+      "v1": 1
+    },
+    "cloudProvider": "aws",
+    "operators": {
+      "dataset=\"cribl_search_sample\"": 1,
+      "limit": 1
+    },
+    "arguments": {},
+    "functions": {}
+  },
+  "compatibilityChecks": {
+    "datatypes": false
+  },
+  "type": "standard",
+  "usageGroupId": "default"
+}

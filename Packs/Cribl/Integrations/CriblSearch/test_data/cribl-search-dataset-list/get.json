@@ -1,0 +1,21 @@
+{
+  "type": "s3",
+  "breakerRulesets": [
+    "AWS Datatypes",
+    "Apache Datatypes",
+    "Syslog Datatypes",
+    "Cribl Search",
+    "Microsoft Windows Datatypes",
+    "Azure Datatypes",
+    "Microsoft O365 Datatypes",
+    "Microsoft Graph API Datatypes"
+  ],
+  "staleChannelFlushMs": 10000,
+  "filter": "true",
+  "provider": "cribl_s3sample_provider",
+  "description": "Search Cribl provided public sample data",
+  "tags": "cribl:default",
+  "bucket": "cribl-search-example/data/${dataSource}/${_time:%Y}/${_time:%m}/${_time:%d}/${_time:%H}",
+  "region": "us-west-2",
+  "id": "cribl_search_sample"
+}
