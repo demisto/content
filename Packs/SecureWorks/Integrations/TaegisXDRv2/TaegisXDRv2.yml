@@ -550,7 +550,7 @@ script:
     - name: fields
       description: The fields to return from the query.
     - name: tenant_id
-      description: The tenant to run against if an MSP. If no tenant provided, the tenant of the generated credentials is used.
+      description: The tenant to run against if using an MSP. If no tenant is provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Events.id
       description: The unique identifier of the event.
