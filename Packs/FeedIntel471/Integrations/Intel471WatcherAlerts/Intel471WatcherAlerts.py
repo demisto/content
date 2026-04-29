@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime
 from urllib.parse import quote
 
-from functools import reduce
+from functools import reduce, lru_cache
 
 from typing import Any
 from collections.abc import Callable
@@ -159,6 +159,7 @@ class Client(BaseClient):
         response = self._http_request(method="GET", full_url=alert_url, auth=self._auth)
         return response
 
+    @lru_cache
     def search_watcher_group_details_verity471(
         self,
         watcher_group_id: str,
@@ -183,6 +184,7 @@ class Client(BaseClient):
         )
         return response
 
+    @lru_cache
     def search_watcher_details_verity471(
         self,
         watcher_id: str,
@@ -1443,7 +1445,7 @@ def compose_verity471_url(alert_details, _id, document_type):
         return f"https://verity.intel471.com/malware/families/{_id}/report"
 
     def _vulnerability_url():
-        cve_status = deep_get(alert_details, "cve.status", "")
+        cve_status = deep_get(alert_details, "status", "")
         if cve_status:
             return f"https://verity.intel471.com/vulnerabilities/{cve_status}?vulnerabilityId={_id}"
         return ""
@@ -1475,16 +1477,18 @@ def compose_verity471_url(alert_details, _id, document_type):
 def compose_incident_watcher_details_verity471(alert: dict, client) -> tuple[str, str]:
     watcher_group_description: str = ""
     watcher_group_id: str | None = alert.get("watcher_group_id")
-    watcher_description: str = ""
     watcher_id: str = alert.get("watcher_id", "")
+    watcher_description = f"[Watcher ID {watcher_id}] "
     group_details_response = client.search_watcher_group_details_verity471(watcher_group_id).get("watchers_groups")
     if group_details_response:
         watcher_group = group_details_response[0]
-        watcher_group_description = watcher_group.get("description", "")
+        watcher_group_description = f"[Watcher Group ID {watcher_group_id}] " + watcher_group.get("description", "")
     watcher_details_response = client.search_watcher_details_verity471(watcher_id).get("watchers")
     if watcher_details_response:
         watcher_details = watcher_details_response[0]
-        watcher_description = watcher_details.get("description", "")
+        watcher_description += watcher_details.get("description", "")
+    else:
+        watcher_description += "(no description)"
     return watcher_group_description, watcher_description
 
 
