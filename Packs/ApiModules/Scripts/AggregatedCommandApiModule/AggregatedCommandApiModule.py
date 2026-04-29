@@ -819,6 +819,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         verbose: bool = False,
         commands: list[list[Command]] | None = None,
         verbose_outputs: list[str] | None = None,
+        redundant_error_raising: bool = False,
     ):
         """
         Initializes the reputation aggregated command.
@@ -840,11 +841,13 @@ class ReputationAggregatedCommand(AggregatedCommand):
             verbose (bool): Whether to add verbose outputs.
             commands (list[list[Command]]): List of batches of commands to run.
             verbose_outputs (list[str]): verbose outputs to add to this current verbose.
+            redundant_error_raising (bool): will return error results only if all commands failed - for Agentix action only.
         """
         self.external_enrichment = external_enrichment
         self.final_context_path = final_context_path
         self.additional_fields = additional_fields
         self.indicator_instances = indicator_instances
+        self.redundant_error_raising = redundant_error_raising
         # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich
         self.indicator_mapping = {
             indicator_instance.extracted_value: indicator_instance
@@ -1402,10 +1405,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         if not entries:
             return False
-
-        all_failed_or_no_match = all(
-            entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries
-        )
+        if self.redundant_error_raising:
+            all_failed_or_no_match = all(
+                entry.status == Status.FAILURE for entry in entries
+            )
+        else:
+            all_failed_or_no_match = all(
+                entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries
+            )
         any_failure = any(entry.status == Status.FAILURE for entry in entries)
         return all_failed_or_no_match and any_failure
 
