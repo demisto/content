@@ -77,24 +77,24 @@ State is **purely derived from row contents** — there is no separate "current 
 
 ### The 16-Step Sequence
 
-| # | Step (== CSV column) | Kind | Optional | Set via |
-|---|---|---|---|---|
-| 1 | `assignee` | data | no | `set-assignee` |
-| 2 | `Auth Details` | data (JSON) | no | `set-auth` |
-| 3 | `Params to Commands` | data (JSON) | no | `set-params-to-commands` |
-| 4 | `Params for test with default in code` | data (JSON) | no | `set-params-for-test` |
-| 5 | `Params same in other handlers` | data (JSON) | **yes** | `set-shared-params` (or `skip`) |
-| 6 | `generated manifest` | checkpoint | no | `markpass` |
-| 7 | `run manifest make validate` | checkpoint | no | `markpass` |
-| 8 | `wrote/checked code` | checkpoint | no | `markpass` |
-| 9 | `shadowed command test passes` | checkpoint | no | `markpass` |
-| 10 | `write tests` | checkpoint | no | `markpass` |
-| 11 | `precommit/validate/unit tests passed` | checkpoint | no | `markpass` |
-| 12 | `requires auth parity test` | flag (`YES`/`NO`/`N/A`) | no | `set-auth-flag` |
-| 13 | `auth parity test passes` | checkpoint | auto-N/A | `markpass` (auto-`N/A` when #12 is `NO`/`N/A`) |
-| 14 | `param parity test passes` | checkpoint | no | `markpass` |
-| 15 | `code reviewed` | checkpoint | no | `markpass` |
-| 16 | `code merged` | checkpoint | no | `markpass` |
+| # | Step (== CSV column) | Kind | Set via |
+|---|---|---|---|
+| 1 | `assignee` | data | `set-assignee` |
+| 2 | `Auth Details` | data (JSON) | `set-auth` |
+| 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
+| 4 | `Params for test with default in code` | data (JSON) | `set-params-for-test` |
+| 5 | `Params same in other handlers` | data (JSON) | `set-shared-params` (or `skip`) |
+| 6 | `generated manifest` | checkpoint | `markpass` |
+| 7 | `run manifest make validate` | checkpoint | `markpass` |
+| 8 | `wrote/checked code` | checkpoint | `markpass` |
+| 9 | `shadowed command test passes` | checkpoint | `markpass` |
+| 10 | `write tests` | checkpoint | `markpass` |
+| 11 | `precommit/validate/unit tests passed` | checkpoint | `markpass` |
+| 12 | `requires auth parity test` | flag (`YES`/`NO`/`N/A`) | `set-auth-flag` |
+| 13 | `auth parity test passes` | checkpoint | `markpass` (auto-`N/A` when #12 is `NO`/`N/A`) |
+| 14 | `param parity test passes` | checkpoint | `markpass` |
+| 15 | `code reviewed` | checkpoint | `markpass` |
+| 16 | `code merged` | checkpoint | `markpass` |
 
 ### Rules
 
