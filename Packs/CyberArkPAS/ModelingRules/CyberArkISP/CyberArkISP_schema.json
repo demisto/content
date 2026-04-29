@@ -1,0 +1,100 @@
+{
+  "cyberark_isp_raw": {
+    "uuid": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "applicationCode": {
+      "type": "string"
+    },
+    "auditCode": {
+      "type": "string"
+    },
+    "auditType": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "actionType": {
+      "type": "string"
+    },
+    "component": {
+      "type": "string"
+    },
+    "serviceName": {
+      "type": "string"
+    },
+    "accessMethod": {
+      "type": "string"
+    },
+    "accountId": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "sessionId": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "customData": {
+      "type": "string"
+    },
+    "cloudProvider": {
+      "type": "string"
+    },
+    "cloudWorkspacesAndRoles": {
+      "type": "string"
+    },
+    "cloudIdentities": {
+      "type": "string"
+    },
+    "cloudAssets": {
+      "type": "string"
+    },
+    "safe": {
+      "type": "string"
+    },
+    "accountName": {
+      "type": "string"
+    },
+    "targetPlatform": {
+      "type": "string"
+    },
+    "targetAccount": {
+      "type": "string"
+    },
+    "identityType": {
+      "type": "string"
+    },
+    "correlationId": {
+      "type": "string"
+    },
+    "isDr": {
+      "type": "boolean"
+    },
+    "originRegion": {
+      "type": "string"
+    }
+  }
+}
