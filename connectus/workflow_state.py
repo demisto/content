@@ -2,87 +2,73 @@
 """
 Workflow State Machine for integrations_report.csv
 
-This script manages the workflow tracking columns (columns 7-18) in the CSV.
-It acts as a state machine where each integration progresses through ordered steps.
+This script manages the workflow tracking columns in the CSV. It acts as a
+state machine where each integration progresses through ordered steps.
 
-Data columns (not managed by this script):
-  1. assignee
-  2. Integration Name
-  3. Support Level
-  4. Provider
-  5. Auth Detail
+CSV column groups (see connectus/Readme.md and connectus/column-schemas.md):
 
-Workflow columns (in order):
-  6.  auth params set      - ✅ when Auth Detail is verified correct
-  7.  script inputs        - Free text: the inputs/args for the script
-  8.  params required for test - Free text: params needed for testing
-  9.  generated manifest   - ✅ when manifest is generated
-  10. wrote code           - ✅ when code is written
-  11. validations passed   - ✅ when demisto-sdk validate passes
-  12. unit tests passed    - ✅ when unit tests pass
-  13. param parity test passes - ✅ when param parity test passes
-  14. shadowed command test passes - ✅ when shadowed command test passes
-  15. requires auth parity test - YES/NO/N/A (flag, not a checkpoint)
-  16. auth parity test passes   - ✅ when auth parity test passes (or N/A)
-  17. code reviewed        - ✅ when code review is done
-  18. code merged          - ✅ when code is merged
+Data columns (4) — identity / metadata, NOT managed by this script:
+  1. Integration ID            - lookup key (case-insensitive)
+  2. Integration File Path     - path to the integration's source files
+  3. Connector ID              - the ConnectUs connector this integration belongs to
+  4. special cases             - frontend/backend hardcoded special-case notes
+
+Workflow columns (16) — managed by this script:
+
+  Workflow data columns (free-text / JSON, set via dedicated setters):
+    5.  assignee                              - free text, who is working on this
+    6.  Auth Details                          - JSON, see column-schemas.md
+    7.  Params to Commands                    - JSON, see column-schemas.md
+    8.  Params for test with default in code  - JSON, see column-schemas.md
+    9.  Params same in other handlers         - JSON (optional), see column-schemas.md
+
+  Workflow checkpoint columns (sequential ✅ pass/fail):
+    10. generated manifest                    - manifest YAML generated
+    11. run manifest make validate            - `make validate` passed
+    12. wrote/checked code                    - code written/reviewed
+    13. shadowed command test passes          - no shadowed/conflicting commands
+    14. write tests                           - unit tests written
+    15. precommit/validate/unit tests passed  - precommit + validate + unit tests pass
+
+  Workflow flag column (NOT a checkpoint):
+    16. requires auth parity test             - YES / NO / N/A
+
+  More checkpoint columns:
+    17. auth parity test passes               - ✅ (auto N/A when flag is NO/N/A)
+    18. param parity test passes              - ✅
+    19. code reviewed                         - ✅
+    20. code merged                           - ✅
 
 Rules:
   - You must explicitly name the step you are marking as passed.
-  - You cannot mark a step as passed unless all prior steps are complete.
-  - "script inputs" is free text — use set-inputs, not markpass.
-  - "requires auth parity test" is a flag — use set-auth-flag, not markpass.
-  - reset-to <step> clears that step and everything after it.
+  - Checkpoint columns must be completed in order (sequential enforcement).
+  - Workflow data columns are NOT checkpoints — use their dedicated setters.
+  - The flag `requires auth parity test` is NOT a checkpoint — use `set-auth-flag`.
+  - Setting `Auth Details` resets the workflow back to `generated manifest`.
+  - Setting `Params to Commands` and `Params for test with default in code` are
+    prerequisites for marking `generated manifest` as passed.
+  - `Params same in other handlers` is optional and never a prerequisite.
+  - reset-to <step> clears that checkpoint and everything after it.
   - reset clears ALL workflow columns.
 
 Usage:
-  # Show status of an integration
   python workflow_state.py status "Cisco Spark"
-
-  # Show status of all integrations with any progress
   python workflow_state.py status-all
-
-  # Show what step each in-progress integration is on
   python workflow_state.py dashboard
-
-  # Set the assignee
   python workflow_state.py set-assignee "Cisco Spark" "John Doe"
-
-  # Set script inputs (JSON)
-  python workflow_state.py set-inputs "Cisco Spark" '{"api_key": "str"}'
-
-  # Set params required for test (JSON)
-  python workflow_state.py set-params-for-test "Cisco Spark" '{"api_key": "test123"}'
-
-  # Mark a specific step as passed (must be the current step)
-  python workflow_state.py markpass "Cisco Spark" "wrote code"
-
-  # Mark a step as failed (resets it and all subsequent steps)
-  python workflow_state.py fail "Cisco Spark" "unit tests passed"
-
-  # Set auth detail (must match Auth Detail schema) — resets workflow to "auth params set"
-  python workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
-
-  # Set the auth parity flag
+  python workflow_state.py set-auth "Cisco Spark" '<auth-details json>'
+  python workflow_state.py set-inputs "Cisco Spark" '<params-to-commands json>'
+  python workflow_state.py set-params-for-test "Cisco Spark" '<json>'
+  python workflow_state.py set-shared-params "Cisco Spark" '<json>'
+  python workflow_state.py markpass "Cisco Spark" "wrote/checked code"
+  python workflow_state.py fail "Cisco Spark" "write tests"
   python workflow_state.py set-auth-flag "Cisco Spark" YES
-
-  # Reset to a specific stage (clears that step and everything after it)
-  python workflow_state.py reset-to "Cisco Spark" "wrote code"
-
-  # Reset all workflow columns for an integration
+  python workflow_state.py reset-to "Cisco Spark" "wrote/checked code"
   python workflow_state.py reset "Cisco Spark"
-
-  # Batch: show all integrations at a specific step
-  python workflow_state.py at-step "wrote code"
-
-  # List all integration names (for scripting)
+  python workflow_state.py at-step "wrote/checked code"
   python workflow_state.py list
-
-  # List all integrations assigned to a specific person
   python workflow_state.py list-by-assignee "John Doe"
-
-  # Show the data stored for a specific step of an integration
-  python workflow_state.py show-step "Cisco Spark" "script inputs"
+  python workflow_state.py show-step "Cisco Spark" "Params to Commands"
 """
 
 import csv
@@ -100,60 +86,90 @@ from typing import Optional
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSV_PATH = os.path.join(BASE_DIR, "connectus", "integrations_report.csv")
 
-# The original data columns (not managed by this script)
+# Data columns (identity / metadata, not managed by this script).
 DATA_COLUMNS = [
-    "assignee",
-    "Integration Name",
-    "Support Level",
-    "Provider",
-    "Auth Detail",
+    "Integration ID",
+    "Integration File Path",
+    "Connector ID",
+    "special cases",
 ]
 
-# Workflow columns in order. These are the columns this script manages.
-WORKFLOW_COLUMNS = [
-    "auth params set",
-    "script inputs",
-    "params required for test",
+# Workflow data columns (free-text / JSON, set via dedicated setters).
+# These are NOT pass/fail checkpoints.
+WORKFLOW_DATA_COLUMNS = [
+    "assignee",
+    "Auth Details",
+    "Params to Commands",
+    "Params for test with default in code",
+    "Params same in other handlers",
+]
+
+# Workflow checkpoint columns (sequential ✅ markpass/fail).
+# The "requires auth parity test" flag lives between
+# "precommit/validate/unit tests passed" and "auth parity test passes" but
+# is NOT itself a checkpoint.
+CHECKPOINT_COLUMNS = [
     "generated manifest",
-    "wrote code",
-    "validations passed",
-    "unit tests passed",
-    "param parity test passes",
+    "run manifest make validate",
+    "wrote/checked code",
     "shadowed command test passes",
+    "write tests",
+    "precommit/validate/unit tests passed",
+    # "requires auth parity test" -- flag, not a checkpoint
+    "auth parity test passes",
+    "param parity test passes",
+    "code reviewed",
+    "code merged",
+]
+
+# The flag column (YES / NO / N/A); not a checkpoint.
+AUTH_PARITY_FLAG_COLUMN = "requires auth parity test"
+
+# All workflow columns in CSV order. This is what `reset` clears and what the
+# status/dashboard commands iterate over for display.
+WORKFLOW_COLUMNS = [
+    "assignee",
+    "Auth Details",
+    "Params to Commands",
+    "Params for test with default in code",
+    "Params same in other handlers",
+    "generated manifest",
+    "run manifest make validate",
+    "wrote/checked code",
+    "shadowed command test passes",
+    "write tests",
+    "precommit/validate/unit tests passed",
     "requires auth parity test",
     "auth parity test passes",
-    "code reviewed",
-    "code merged",
-]
-
-# Checkpoint columns (sequential, must be done in order via markpass)
-# "script inputs" is free text, "requires auth parity test" is a flag
-CHECKPOINT_COLUMNS = [
-    "auth params set",
-    "generated manifest",
-    "wrote code",
-    "validations passed",
-    "unit tests passed",
     "param parity test passes",
-    "shadowed command test passes",
-    # "requires auth parity test" is a flag, not a checkpoint
-    "auth parity test passes",
     "code reviewed",
     "code merged",
 ]
 
-# Steps that are NOT pass/fail checkpoints — they need a different command
+# Steps that look like they could be markpass'd but actually need a different
+# command. Maps step name -> the correct CLI subcommand to suggest.
 NON_CHECKPOINT_STEPS = {
-    "script inputs": "set-inputs",
-    "params required for test": "set-params-for-test",
+    "assignee": "set-assignee",
+    "Auth Details": "set-auth",
+    "Params to Commands": "set-inputs",
+    "Params for test with default in code": "set-params-for-test",
+    "Params same in other handlers": "set-shared-params",
     "requires auth parity test": "set-auth-flag",
+}
+
+# Workflow data columns that must be valid JSON when set.
+JSON_VALUED_COLUMNS = {
+    "Auth Details",
+    "Params to Commands",
+    "Params for test with default in code",
+    "Params same in other handlers",
 }
 
 CHECK = "✅"
 FAIL_MARK = "❌"
 NA_MARK = "N/A"
 
-# Valid auth type enum values for Auth Detail schema validation
+# Valid auth type enum values for Auth Details schema validation
 VALID_AUTH_TYPES = {
     "OAuth2AuthCode",
     "OAuth2ClientCreds",
@@ -164,7 +180,11 @@ VALID_AUTH_TYPES = {
     "NoneRequired",
 }
 
+# Full ordered column list (for CSV write/validation).
 ALL_COLUMNS = DATA_COLUMNS + WORKFLOW_COLUMNS
+
+# Total expected column count in the CSV (used for row-length sanity checks).
+EXPECTED_COLUMN_COUNT = len(ALL_COLUMNS)
 
 
 # ---------------------------------------------------------------------------
@@ -172,9 +192,25 @@ ALL_COLUMNS = DATA_COLUMNS + WORKFLOW_COLUMNS
 # ---------------------------------------------------------------------------
 
 def load_csv() -> list[dict[str, str]]:
-    """Load the CSV file and return list of row dicts."""
+    """Load the CSV file and return list of row dicts.
+
+    Verifies the header matches ``ALL_COLUMNS`` and warns (without raising)
+    when the column set drifts, so a stale CSV doesn't silently corrupt
+    downstream operations.
+    """
     with open(CSV_PATH, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames or []
+        if fieldnames != ALL_COLUMNS:
+            missing = [c for c in ALL_COLUMNS if c not in fieldnames]
+            extra = [c for c in fieldnames if c not in ALL_COLUMNS]
+            print(
+                "WARNING: CSV header does not match expected schema.\n"
+                f"  Expected {len(ALL_COLUMNS)} columns, got {len(fieldnames)}.\n"
+                f"  Missing: {missing}\n"
+                f"  Extra:   {extra}",
+                file=sys.stderr,
+            )
         return list(reader)
 
 
@@ -223,11 +259,11 @@ def save_csv(rows: list[dict[str, str]]) -> None:
                 pass
 
 
-def find_row(rows: list[dict[str, str]], integration_name: str) -> Optional[int]:
-    """Find the index of a row by integration name (case-insensitive)."""
-    name_lower = integration_name.lower().strip()
+def find_row(rows: list[dict[str, str]], integration_id: str) -> Optional[int]:
+    """Find the index of a row by Integration ID (case-insensitive)."""
+    name_lower = integration_id.lower().strip()
     for i, row in enumerate(rows):
-        if row["Integration Name"].strip().lower() == name_lower:
+        if row.get("Integration ID", "").strip().lower() == name_lower:
             return i
     return None
 
@@ -243,17 +279,17 @@ def is_checked(value: str) -> bool:
 
 
 def get_current_step(row: dict[str, str]) -> Optional[str]:
-    """
-    Get the current step an integration is on (the first uncompleted checkpoint).
-    Returns None if all steps are complete.
+    """Get the current checkpoint step (the first uncompleted one).
+
+    Returns ``None`` if all checkpoints are complete (or all skipped).
     """
     for col in CHECKPOINT_COLUMNS:
         val = row.get(col, "").strip()
         if not is_checked(val):
-            # Special case: if "requires auth parity test" is NO/N/A,
-            # skip "auth parity test passes"
+            # Special case: if the auth parity flag is NO/N/A (or unset),
+            # skip "auth parity test passes".
             if col == "auth parity test passes":
-                flag = row.get("requires auth parity test", "").strip().upper()
+                flag = row.get(AUTH_PARITY_FLAG_COLUMN, "").strip().upper()
                 if flag in ("NO", "N/A", ""):
                     continue
             return col
@@ -272,27 +308,25 @@ def get_step_index(step_name: str) -> int:
 
 
 def reset_from_step(row: dict[str, str], step_name: str) -> None:
-    """Reset a step and all subsequent checkpoint steps."""
+    """Reset a checkpoint and all subsequent checkpoints.
+
+    Also resets the ``requires auth parity test`` flag if we're resetting
+    from at-or-before its position in the workflow.
+    """
     idx = get_step_index(step_name)
     for col in CHECKPOINT_COLUMNS[idx:]:
         row[col] = ""
-    # Also reset the auth flag if we're resetting from before it
-    auth_flag_position = CHECKPOINT_COLUMNS.index("auth parity test passes")
-    if idx <= auth_flag_position:
-        row["requires auth parity test"] = ""
+    # Reset the auth flag too if we cleared "auth parity test passes".
+    if "auth parity test passes" in CHECKPOINT_COLUMNS[idx:]:
+        row[AUTH_PARITY_FLAG_COLUMN] = ""
 
 
 def validate_auth_detail(value: str) -> list[str]:
-    """Validate that a string conforms to the Auth Detail JSON schema.
+    """Validate that a string conforms to the Auth Details JSON schema.
 
     Returns a list of error messages. An empty list means the value is valid.
 
-    Schema requirements:
-      - Must be valid JSON
-      - Top-level keys: auth_types (list), config (str), params (dict), notes (str|null)
-      - Each auth_types entry: {type: <AuthEnum>, name: <str>}
-      - Each params entry: {type: <AuthEnum|list[AuthEnum]>, xsoar_type: <int>, required: <bool>}
-      - All type values must be from VALID_AUTH_TYPES
+    See ``connectus/column-schemas.md`` for the full schema description.
     """
     errors: list[str] = []
 
@@ -382,13 +416,16 @@ def validate_auth_detail(value: str) -> list[str]:
 
 
 def markpass_step(row: dict[str, str], step_name: str) -> str:
-    """
-    Mark a step as passed. Returns a status message.
+    """Mark a checkpoint as passed. Returns a status message.
+
     Validates that:
-      1. The step is a valid checkpoint (not free-text or flag).
-      2. All prior steps are complete.
-      3. The step is the current step (not already done, not skipping ahead).
+      1. The step is a valid checkpoint (not a workflow data column or flag).
+      2. All prior checkpoints are complete (sequential enforcement).
+      3. ``generated manifest`` has its prerequisite JSON columns set.
+      4. ``auth parity test passes`` has the flag set (or auto-N/A's).
     """
+    integration_id = row.get("Integration ID", "")
+
     # Guard: reject non-checkpoint steps with corrective guidance
     if step_name in NON_CHECKPOINT_STEPS:
         correct_cmd = NON_CHECKPOINT_STEPS[step_name]
@@ -396,44 +433,44 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
             f"ERROR: '{step_name}' is not a pass/fail checkpoint.\n"
             f"  Use '{correct_cmd}' instead.\n"
             f"  Example: workflow_state.py {correct_cmd} "
-            f"\"{row['Integration Name']}\" <value>"
+            f"\"{integration_id}\" <value>"
         )
 
     idx = get_step_index(step_name)
 
-    # Check if this step is already done
+    # Already done?
     val = row.get(step_name, "").strip()
     if is_checked(val):
-        return f"'{step_name}' is already marked as passed for '{row['Integration Name']}'."
+        return f"'{step_name}' is already marked as passed for '{integration_id}'."
 
-    # Prerequisite: "generated manifest" requires both inputs to be set
+    # Prerequisite: "generated manifest" needs both Params columns set.
     if step_name == "generated manifest":
-        script_inputs = row.get("script inputs", "").strip()
-        if not script_inputs:
+        params_to_commands = row.get("Params to Commands", "").strip()
+        if not params_to_commands:
             return (
                 f"ERROR: Cannot mark 'generated manifest' as passed — "
-                f"'script inputs' must be set first.\n"
-                f"  Use 'set-inputs' to provide the script inputs (JSON).\n"
+                f"'Params to Commands' must be set first.\n"
+                f"  Use 'set-inputs' to provide the params (JSON).\n"
                 f"  Example: workflow_state.py set-inputs "
-                f"\"{row['Integration Name']}\" '{{}}'"
+                f"\"{integration_id}\" '{{}}'"
             )
-        params_for_test = row.get("params required for test", "").strip()
+        params_for_test = row.get("Params for test with default in code", "").strip()
         if not params_for_test:
             return (
                 f"ERROR: Cannot mark 'generated manifest' as passed — "
-                f"'params required for test' must be set first.\n"
+                f"'Params for test with default in code' must be set first.\n"
                 f"  Use 'set-params-for-test' to provide the params (JSON).\n"
                 f"  Example: workflow_state.py set-params-for-test "
-                f"\"{row['Integration Name']}\" '{{}}'"
+                f"\"{integration_id}\" '[]'"
             )
 
-    # Check all prior steps are complete
+    # Check all prior checkpoints are complete
     for prior_col in CHECKPOINT_COLUMNS[:idx]:
         prior_val = row.get(prior_col, "").strip()
         if not is_checked(prior_val):
             # Special case: auth parity test passes can be skipped
             if prior_col == "auth parity test passes":
-                flag = row.get("requires auth parity test", "").strip().upper()
+                flag = row.get(AUTH_PARITY_FLAG_COLUMN, "").strip().upper()
                 if flag in ("NO", "N/A", ""):
                     continue
             current = get_current_step(row)
@@ -444,9 +481,9 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
                 f"  Prior step '{prior_col}' is not yet complete."
             )
 
-    # Special case: auth parity test passes requires the flag to be set
+    # Special case: auth parity test passes requires the flag to be set.
     if step_name == "auth parity test passes":
-        flag = row.get("requires auth parity test", "").strip().upper()
+        flag = row.get(AUTH_PARITY_FLAG_COLUMN, "").strip().upper()
         if flag in ("NO", "N/A"):
             row[step_name] = NA_MARK
             return f"'{step_name}' set to N/A (auth parity test not required)."
@@ -456,11 +493,11 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
                 f"'requires auth parity test' flag is not set.\n"
                 f"  Use 'set-auth-flag' first.\n"
                 f"  Example: workflow_state.py set-auth-flag "
-                f"\"{row['Integration Name']}\" YES"
+                f"\"{integration_id}\" YES"
             )
 
     row[step_name] = CHECK
-    return f"✅ '{step_name}' marked as passed for '{row['Integration Name']}'."
+    return f"✅ '{step_name}' marked as passed for '{integration_id}'."
 
 
 # ---------------------------------------------------------------------------
@@ -469,80 +506,87 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
 
 def format_status(row: dict[str, str]) -> str:
     """Format the workflow status of a single integration."""
-    name = row["Integration Name"]
-    lines = [f"\n{'=' * 60}", f"  {name}", f"{'=' * 60}"]
+    integration_id = row.get("Integration ID", "")
+    lines = [f"\n{'=' * 60}", f"  {integration_id}", f"{'=' * 60}"]
 
     # Data columns summary
+    file_path = row.get("Integration File Path", "").strip()
+    connector_id = row.get("Connector ID", "").strip()
+    special = row.get("special cases", "").strip()
     assignee = row.get("assignee", "").strip()
-    lines.append(f"  Assignee:      {assignee if assignee else '(unassigned)'}")
-    lines.append(f"  Support Level: {row.get('Support Level', '')}")
-    lines.append(f"  Provider:      {row.get('Provider', '')}")
+
+    lines.append(f"  Assignee:        {assignee if assignee else '(unassigned)'}")
+    lines.append(f"  File Path:       {file_path if file_path else '(not set)'}")
+    lines.append(f"  Connector ID:    {connector_id if connector_id else '(not set)'}")
+    if special:
+        lines.append(f"  Special Cases:   {special}")
     lines.append("")
 
-    # Workflow columns
-    lines.append("  Workflow Progress:")
+    # Workflow data columns (free text / JSON)
+    lines.append("  Workflow Data:")
     lines.append("  " + "-" * 40)
-
-    for col in WORKFLOW_COLUMNS:
+    for col in WORKFLOW_DATA_COLUMNS:
+        if col == "assignee":
+            continue  # already shown above
         val = row.get(col, "").strip()
-        if col in ("script inputs", "params required for test"):
+        display = val if val else "(not set)"
+        lines.append(f"    {col:38s} : {display}")
+    lines.append("")
+
+    # Checkpoint columns
+    lines.append("  Workflow Checkpoints:")
+    lines.append("  " + "-" * 40)
+    # Show flag in the right position too
+    seq: list[str] = []
+    for col in CHECKPOINT_COLUMNS:
+        seq.append(col)
+        if col == "precommit/validate/unit tests passed":
+            seq.append(AUTH_PARITY_FLAG_COLUMN)
+    for col in seq:
+        val = row.get(col, "").strip()
+        if col == AUTH_PARITY_FLAG_COLUMN:
             display = val if val else "(not set)"
-            lines.append(f"    {col:30s} : {display}")
-        elif col == "requires auth parity test":
-            display = val if val else "(not set)"
-            lines.append(f"    {col:30s} : {display}")
+        elif is_checked(val):
+            display = val
+        elif val:
+            display = val
         else:
-            if is_checked(val):
-                display = val
-            elif val:
-                display = val
-            else:
-                display = "⬜"
-            lines.append(f"    {col:30s} : {display}")
+            display = "⬜"
+        lines.append(f"    {col:38s} : {display}")
 
     current = get_current_step(row)
     if current:
         lines.append(f"\n  ➡️  Current step: {current}")
     else:
-        has_any = any(
-            row.get(c, "").strip()
-            for c in WORKFLOW_COLUMNS
-        )
-        if has_any:
-            lines.append(f"\n  🎉 All steps complete!")
+        if has_workflow_progress(row):
+            lines.append("\n  🎉 All checkpoints complete!")
         else:
-            lines.append(f"\n  ⏳ Not started")
+            lines.append("\n  ⏳ Not started")
 
     return "\n".join(lines)
 
 
 def format_dashboard_row(row: dict[str, str]) -> Optional[str]:
     """Format a single row for the dashboard view. Returns None if no progress."""
-    has_progress = any(row.get(c, "").strip() for c in WORKFLOW_COLUMNS)
-    if not has_progress:
+    if not has_workflow_progress(row):
         return None
 
-    name = row["Integration Name"]
+    integration_id = row.get("Integration ID", "")
     current = get_current_step(row)
 
-    # Count completed checkpoints
     completed = sum(
         1 for c in CHECKPOINT_COLUMNS
         if is_checked(row.get(c, "").strip())
     )
     total = len(CHECKPOINT_COLUMNS)
 
-    # Build progress bar
     bar = ""
     for c in CHECKPOINT_COLUMNS:
         val = row.get(c, "").strip()
-        if is_checked(val):
-            bar += "█"
-        else:
-            bar += "░"
+        bar += "█" if is_checked(val) else "░"
 
     status = current if current else "✅ DONE"
-    return f"  {name:45s} [{bar}] {completed}/{total}  → {status}"
+    return f"  {integration_id:45s} [{bar}] {completed}/{total}  → {status}"
 
 
 # ---------------------------------------------------------------------------
@@ -552,7 +596,7 @@ def format_dashboard_row(row: dict[str, str]) -> Optional[str]:
 def cmd_status(args: list[str]) -> None:
     """Show status of one or more integrations."""
     if not args:
-        print("Usage: workflow_state.py status <integration_name> [name2 ...]")
+        print("Usage: workflow_state.py status <integration_id> [id2 ...]")
         sys.exit(1)
 
     rows = load_csv()
@@ -569,8 +613,7 @@ def cmd_status_all(_args: list[str]) -> None:
     rows = load_csv()
     found = False
     for row in rows:
-        has_progress = any(row.get(c, "").strip() for c in WORKFLOW_COLUMNS)
-        if has_progress:
+        if has_workflow_progress(row):
             print(format_status(row))
             found = True
     if not found:
@@ -583,7 +626,7 @@ def cmd_dashboard(_args: list[str]) -> None:
     print(f"\n{'=' * 80}")
     print("  WORKFLOW DASHBOARD")
     print(f"{'=' * 80}")
-    print(f"  {'Integration':45s} {'Progress':10s} {'Step':5s}  → Current Step")
+    print(f"  {'Integration ID':45s} {'Progress':10s} {'Step':5s}  → Current Step")
     print(f"  {'-' * 75}")
 
     in_progress = 0
@@ -606,24 +649,23 @@ def cmd_dashboard(_args: list[str]) -> None:
           f"{not_started} not started")
 
 
-def cmd_set_inputs(args: list[str]) -> None:
-    """Set the script inputs for an integration (must be valid JSON)."""
+def _set_json_column(args: list[str], column: str, setter_cmd: str) -> None:
+    """Shared implementation for setting JSON-valued workflow data columns."""
     if len(args) < 2:
-        print("Usage: workflow_state.py set-inputs <integration_name> '<json>'")
-        print("  The value must be valid JSON (e.g. '{}', '{\"key\": \"val\"}').")
+        print(f"Usage: workflow_state.py {setter_cmd} <integration_id> '<json>'")
+        print(f"  The value must be valid JSON (see connectus/column-schemas.md).")
         sys.exit(1)
 
     name = args[0]
-    inputs = " ".join(args[1:])
+    raw = " ".join(args[1:])
 
-    # Validate JSON
     try:
-        json.loads(inputs)
+        json.loads(raw)
     except json.JSONDecodeError as e:
-        print(f"ERROR: script inputs must be valid JSON.")
-        print(f"  Got: {inputs}")
+        print(f"ERROR: '{column}' must be valid JSON.")
+        print(f"  Got: {raw}")
         print(f"  Parse error: {e}")
-        print(f"  Example: workflow_state.py set-inputs \"{name}\" '{{}}'")
+        print(f"  Example: workflow_state.py {setter_cmd} \"{name}\" '{{}}'")
         sys.exit(1)
 
     rows = load_csv()
@@ -632,55 +674,39 @@ def cmd_set_inputs(args: list[str]) -> None:
         print(f"ERROR: Integration '{name}' not found.")
         sys.exit(1)
 
-    rows[idx]["script inputs"] = inputs
+    rows[idx][column] = raw
     save_csv(rows)
-    print(f"Set 'script inputs' for '{rows[idx]['Integration Name']}' to: {inputs}")
+    print(f"Set '{column}' for '{rows[idx]['Integration ID']}' to: {raw}")
+
+
+def cmd_set_inputs(args: list[str]) -> None:
+    """Set the 'Params to Commands' JSON for an integration."""
+    _set_json_column(args, "Params to Commands", "set-inputs")
 
 
 def cmd_set_params_for_test(args: list[str]) -> None:
-    """Set the params required for test for an integration (must be valid JSON)."""
-    if len(args) < 2:
-        print("Usage: workflow_state.py set-params-for-test <integration_name> '<json>'")
-        print("  The value must be valid JSON (e.g. '{}', '{\"api_key\": \"test123\"}').")
-        sys.exit(1)
+    """Set the 'Params for test with default in code' JSON."""
+    _set_json_column(args, "Params for test with default in code", "set-params-for-test")
 
-    name = args[0]
-    params = " ".join(args[1:])
 
-    # Validate JSON
-    try:
-        json.loads(params)
-    except json.JSONDecodeError as e:
-        print(f"ERROR: params required for test must be valid JSON.")
-        print(f"  Got: {params}")
-        print(f"  Parse error: {e}")
-        print(f"  Example: workflow_state.py set-params-for-test \"{name}\" '{{}}'")
-        sys.exit(1)
-
-    rows = load_csv()
-    idx = find_row(rows, name)
-    if idx is None:
-        print(f"ERROR: Integration '{name}' not found.")
-        sys.exit(1)
-
-    rows[idx]["params required for test"] = params
-    save_csv(rows)
-    print(f"Set 'params required for test' for '{rows[idx]['Integration Name']}' to: {params}")
+def cmd_set_shared_params(args: list[str]) -> None:
+    """Set the (optional) 'Params same in other handlers' JSON."""
+    _set_json_column(args, "Params same in other handlers", "set-shared-params")
 
 
 def cmd_markpass(args: list[str]) -> None:
     """Mark a specific checkpoint step as passed.
 
     The step must be the current step (all prior steps must be complete).
-    Non-checkpoint steps (script inputs, requires auth parity test) are
-    rejected with guidance on the correct command to use.
+    Workflow data columns and the auth parity flag are rejected with guidance
+    on the correct command to use.
     """
     if len(args) < 2:
-        print("Usage: workflow_state.py markpass <integration_name> <step_name>")
-        print(f"\nCheckpoint steps (in order):")
+        print("Usage: workflow_state.py markpass <integration_id> <step_name>")
+        print("\nCheckpoint steps (in order):")
         for i, s in enumerate(CHECKPOINT_COLUMNS, 1):
             print(f"  {i}. {s}")
-        print(f"\nNon-checkpoint steps (use a different command):")
+        print("\nNon-checkpoint columns (use a different command):")
         for step, cmd in NON_CHECKPOINT_STEPS.items():
             print(f"  - '{step}' → use '{cmd}'")
         sys.exit(1)
@@ -700,11 +726,11 @@ def cmd_markpass(args: list[str]) -> None:
     if msg.startswith("ERROR"):
         sys.exit(1)
 
-    # If we just completed a step and the next is auth parity test passes
-    # with flag NO/N/A, auto-advance past it
+    # If the next step is "auth parity test passes" and the flag is NO/N/A,
+    # auto-advance past it.
     next_step = get_current_step(rows[idx])
     if next_step == "auth parity test passes":
-        flag = rows[idx].get("requires auth parity test", "").strip().upper()
+        flag = rows[idx].get(AUTH_PARITY_FLAG_COLUMN, "").strip().upper()
         if flag in ("NO", "N/A"):
             rows[idx]["auth parity test passes"] = NA_MARK
             print(f"  Auto-skipped 'auth parity test passes' (flag={flag}).")
@@ -714,19 +740,14 @@ def cmd_markpass(args: list[str]) -> None:
     if new_step:
         print(f"  Next step: {new_step}")
     else:
-        # Only show completion if we actually have progress
-        has_any = any(
-            rows[idx].get(c, "").strip()
-            for c in WORKFLOW_COLUMNS
-        )
-        if has_any:
-            print(f"  🎉 All steps complete!")
+        if has_workflow_progress(rows[idx]):
+            print("  🎉 All checkpoints complete!")
 
 
 def cmd_fail(args: list[str]) -> None:
     """Mark a step as failed and reset it and all subsequent steps."""
     if len(args) < 2:
-        print("Usage: workflow_state.py fail <integration_name> <step_name>")
+        print("Usage: workflow_state.py fail <integration_id> <step_name>")
         print(f"Valid steps: {', '.join(CHECKPOINT_COLUMNS)}")
         sys.exit(1)
 
@@ -745,7 +766,7 @@ def cmd_fail(args: list[str]) -> None:
         reset_count = len(CHECKPOINT_COLUMNS) - step_idx
         save_csv(rows)
         print(f"Reset '{step}' and {reset_count - 1} subsequent step(s) "
-              f"for '{rows[idx]['Integration Name']}'.")
+              f"for '{rows[idx]['Integration ID']}'.")
         new_step = get_current_step(rows[idx])
         if new_step:
             print(f"  Current step is now: {new_step}")
@@ -757,7 +778,7 @@ def cmd_fail(args: list[str]) -> None:
 def cmd_set_assignee(args: list[str]) -> None:
     """Set the assignee for an integration."""
     if len(args) < 2:
-        print("Usage: workflow_state.py set-assignee <integration_name> <assignee_name>")
+        print("Usage: workflow_state.py set-assignee <integration_id> <assignee_name>")
         sys.exit(1)
 
     name = args[0]
@@ -771,13 +792,13 @@ def cmd_set_assignee(args: list[str]) -> None:
 
     rows[idx]["assignee"] = assignee
     save_csv(rows)
-    print(f"Set assignee for '{rows[idx]['Integration Name']}' to: {assignee}")
+    print(f"Set assignee for '{rows[idx]['Integration ID']}' to: {assignee}")
 
 
 def cmd_set_auth_flag(args: list[str]) -> None:
     """Set the 'requires auth parity test' flag."""
     if len(args) < 2:
-        print("Usage: workflow_state.py set-auth-flag <integration_name> <YES|NO|N/A>")
+        print("Usage: workflow_state.py set-auth-flag <integration_id> <YES|NO|N/A>")
         sys.exit(1)
 
     name = args[0]
@@ -793,44 +814,41 @@ def cmd_set_auth_flag(args: list[str]) -> None:
         print(f"ERROR: Integration '{name}' not found.")
         sys.exit(1)
 
-    rows[idx]["requires auth parity test"] = flag
+    rows[idx][AUTH_PARITY_FLAG_COLUMN] = flag
 
-    # If flag is NO or N/A, auto-set auth parity test passes to N/A
     if flag in ("NO", "N/A"):
         rows[idx]["auth parity test passes"] = NA_MARK
         print(f"Set 'requires auth parity test' = {flag} "
               f"and 'auth parity test passes' = N/A "
-              f"for '{rows[idx]['Integration Name']}'.")
+              f"for '{rows[idx]['Integration ID']}'.")
     else:
-        # If flag is YES and auth parity was N/A, reset it
         if rows[idx].get("auth parity test passes", "").strip() == NA_MARK:
             rows[idx]["auth parity test passes"] = ""
         print(f"Set 'requires auth parity test' = {flag} "
-              f"for '{rows[idx]['Integration Name']}'.")
+              f"for '{rows[idx]['Integration ID']}'.")
 
     save_csv(rows)
 
 
 def cmd_set_auth(args: list[str]) -> None:
-    """Set the Auth Detail for an integration (must match Auth Detail schema).
+    """Set the 'Auth Details' JSON for an integration.
 
-    Validates the value against the Auth Detail JSON schema, then sets the
-    column and resets the workflow back to 'auth params set' (since changing
-    auth invalidates all downstream work).
+    Validates against the Auth Details schema, then sets the column and
+    resets the workflow back to the first checkpoint (``generated manifest``)
+    since changing auth invalidates downstream work.
     """
     if len(args) < 2:
-        print("Usage: workflow_state.py set-auth <integration_name> '<auth_detail_json>'")
-        print("  The value must be valid JSON matching the Auth Detail schema.")
+        print("Usage: workflow_state.py set-auth <integration_id> '<auth_details_json>'")
+        print("  The value must be valid JSON matching the Auth Details schema.")
         print("  Required keys: auth_types, config, params, notes")
         sys.exit(1)
 
     name = args[0]
     auth_json = " ".join(args[1:])
 
-    # Validate against Auth Detail schema
     schema_errors = validate_auth_detail(auth_json)
     if schema_errors:
-        print("ERROR: Auth Detail does not match the required schema.")
+        print("ERROR: Auth Details does not match the required schema.")
         for err in schema_errors:
             print(f"  - {err}")
         sys.exit(1)
@@ -841,32 +859,27 @@ def cmd_set_auth(args: list[str]) -> None:
         print(f"ERROR: Integration '{name}' not found.")
         sys.exit(1)
 
-    rows[idx]["Auth Detail"] = auth_json
+    rows[idx]["Auth Details"] = auth_json
 
-    # Reset workflow from "auth params set" since auth changed
-    step_idx = get_step_index("auth params set")
-    reset_from_step(rows[idx], "auth params set")
-    reset_count = len(CHECKPOINT_COLUMNS) - step_idx
+    # Reset all checkpoints since auth changed.
+    first_step = CHECKPOINT_COLUMNS[0]
+    reset_from_step(rows[idx], first_step)
+    reset_count = len(CHECKPOINT_COLUMNS)
 
     save_csv(rows)
-    print(f"Set 'Auth Detail' for '{rows[idx]['Integration Name']}'.")
-    print(f"  Reset workflow to 'auth params set' "
-          f"(cleared auth params set and {reset_count - 1} subsequent steps).")
+    print(f"Set 'Auth Details' for '{rows[idx]['Integration ID']}'.")
+    print(f"  Reset workflow to '{first_step}' "
+          f"(cleared {reset_count} checkpoint(s) and the auth parity flag).")
     current = get_current_step(rows[idx])
     if current:
         print(f"  Current step: {current}")
 
 
 def cmd_reset_to(args: list[str]) -> None:
-    """Reset to a specific stage: clears that step and everything after it.
-
-    This is the "reset to stage X" command. It puts the integration back
-    to the point just before the named step, so that step and all following
-    columns become empty.
-    """
+    """Reset to a specific stage: clears that step and everything after it."""
     if len(args) < 2:
-        print("Usage: workflow_state.py reset-to <integration_name> <step_name>")
-        print(f"\nThis clears the named step and everything after it.")
+        print("Usage: workflow_state.py reset-to <integration_id> <step_name>")
+        print("\nThis clears the named step and everything after it.")
         print(f"\nValid steps: {', '.join(CHECKPOINT_COLUMNS)}")
         sys.exit(1)
 
@@ -884,7 +897,7 @@ def cmd_reset_to(args: list[str]) -> None:
         reset_from_step(rows[idx], step)
         reset_count = len(CHECKPOINT_COLUMNS) - step_idx
         save_csv(rows)
-        print(f"Reset to '{step}' for '{rows[idx]['Integration Name']}'.")
+        print(f"Reset to '{step}' for '{rows[idx]['Integration ID']}'.")
         print(f"  Cleared '{step}' and {reset_count - 1} subsequent step(s).")
         new_step = get_current_step(rows[idx])
         if new_step:
@@ -897,7 +910,7 @@ def cmd_reset_to(args: list[str]) -> None:
 def cmd_reset(args: list[str]) -> None:
     """Reset all workflow columns for an integration."""
     if not args:
-        print("Usage: workflow_state.py reset <integration_name>")
+        print("Usage: workflow_state.py reset <integration_id>")
         sys.exit(1)
 
     name = args[0]
@@ -911,7 +924,7 @@ def cmd_reset(args: list[str]) -> None:
         rows[idx][col] = ""
 
     save_csv(rows)
-    print(f"Reset all workflow columns for '{rows[idx]['Integration Name']}'.")
+    print(f"Reset all workflow columns for '{rows[idx]['Integration ID']}'.")
 
 
 def cmd_at_step(args: list[str]) -> None:
@@ -922,18 +935,13 @@ def cmd_at_step(args: list[str]) -> None:
         sys.exit(1)
 
     step = " ".join(args)
-    # Validate step name
     if step not in CHECKPOINT_COLUMNS:
         print(f"ERROR: Unknown step '{step}'.")
         print(f"Valid steps: {', '.join(CHECKPOINT_COLUMNS)}")
         sys.exit(1)
 
     rows = load_csv()
-    matches = []
-    for row in rows:
-        current = get_current_step(row)
-        if current == step:
-            matches.append(row["Integration Name"])
+    matches = [row["Integration ID"] for row in rows if get_current_step(row) == step]
 
     if matches:
         print(f"\nIntegrations currently at step '{step}' ({len(matches)}):")
@@ -944,47 +952,41 @@ def cmd_at_step(args: list[str]) -> None:
 
 
 def cmd_list(_args: list[str]) -> None:
-    """List all integration names."""
+    """List all integration IDs."""
     rows = load_csv()
     for row in rows:
-        print(row["Integration Name"])
+        print(row.get("Integration ID", ""))
 
 
 def list_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> list[dict[str, str]]:
-    """Filter rows to those whose assignee matches (case-insensitive).
-
-    Args:
-        rows: All CSV rows.
-        assignee_name: The assignee name to search for.
-
-    Returns:
-        List of row dicts where the assignee column matches.
-    """
+    """Filter rows to those whose assignee matches (case-insensitive)."""
     target = assignee_name.strip().lower()
     return [row for row in rows if row.get("assignee", "").strip().lower() == target]
 
 
-def format_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> str:
-    """Format a list of integrations belonging to an assignee.
+def has_workflow_progress(row: dict[str, str]) -> bool:
+    """Return True if the row has any non-trivial workflow progress.
 
-    Shows each matching integration's name and current workflow step,
-    similar to the at-step output format.
-
-    Args:
-        rows: Filtered rows (already matched by assignee).
-        assignee_name: The assignee name (used in the header).
-
-    Returns:
-        Formatted string for display.
+    Being merely assigned does NOT count as progress; the integration must
+    have at least one populated JSON workflow data column, checkpoint, or
+    flag (anything in WORKFLOW_COLUMNS except ``assignee``).
     """
+    return any(
+        row.get(c, "").strip()
+        for c in WORKFLOW_COLUMNS
+        if c != "assignee"
+    )
+
+
+def format_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> str:
+    """Format a list of integrations belonging to an assignee."""
     if not rows:
         return f"No integrations found for assignee '{assignee_name}'."
 
     lines = [f"\nIntegrations assigned to '{assignee_name}' ({len(rows)}):"]
     for row in rows:
-        name = row["Integration Name"]
-        has_any = any(row.get(c, "").strip() for c in WORKFLOW_COLUMNS)
-        if not has_any:
+        name = row.get("Integration ID", "")
+        if not has_workflow_progress(row):
             step_display = "not started"
         else:
             current = get_current_step(row)
@@ -1008,13 +1010,11 @@ def cmd_list_by_assignee(args: list[str]) -> None:
 def format_step_value(row: dict[str, str], step_name: str) -> str:
     """Format the value stored at ``step_name`` for ``row`` for display.
 
-    JSON-valued steps (``script inputs``, ``params required for test``,
-    and the ``Auth Detail`` data column) are pretty-printed when the
-    stored value is valid JSON. Checkpoint steps display the raw value
-    or ``(not set)`` when empty. The output always begins with a header
+    JSON-valued columns are pretty-printed when the stored value is valid JSON.
+    Empty cells display ``(not set)``. The output always begins with a header
     line identifying the integration and step.
     """
-    name = row["Integration Name"]
+    name = row.get("Integration ID", "")
     raw = row.get(step_name, "")
     value = raw.strip()
 
@@ -1024,40 +1024,34 @@ def format_step_value(row: dict[str, str], step_name: str) -> str:
         f"{'=' * 60}"
     )
 
-    json_valued_steps = {
-        "script inputs",
-        "params required for test",
-        "Auth Detail",
-    }
-
     if not value:
         return f"{header}\n  (not set)"
 
-    if step_name in json_valued_steps:
+    if step_name in JSON_VALUED_COLUMNS:
         try:
             parsed = json.loads(value)
             pretty = json.dumps(parsed, indent=2, sort_keys=False)
             return f"{header}\n{pretty}"
         except json.JSONDecodeError:
-            # Fall through to raw display if not valid JSON
             return f"{header}\n  {value}"
 
     return f"{header}\n  {value}"
 
 
 def cmd_show_step(args: list[str]) -> None:
-    """Show the data stored for an integration at a specific step.
+    """Show the data stored for an integration at a specific column.
 
-    The step may be any workflow column (e.g. 'auth params set',
-    'script inputs', 'wrote code') or the 'Auth Detail' data column.
-    JSON-valued steps are pretty-printed when possible.
+    The column may be any workflow column (data, checkpoint, or flag) OR any
+    data column (Integration ID, Integration File Path, Connector ID, special
+    cases). JSON-valued columns are pretty-printed when possible.
     """
     if len(args) < 2:
-        print("Usage: workflow_state.py show-step <integration_name> <step_name>")
-        print(f"\nValid steps:")
+        print("Usage: workflow_state.py show-step <integration_id> <column_name>")
+        print("\nValid columns:")
+        for col in DATA_COLUMNS:
+            print(f"  - {col} (data)")
         for col in WORKFLOW_COLUMNS:
             print(f"  - {col}")
-        print(f"  - Auth Detail")
         sys.exit(1)
 
     name = args[0]
@@ -1069,10 +1063,10 @@ def cmd_show_step(args: list[str]) -> None:
         print(f"ERROR: Integration '{name}' not found.")
         sys.exit(1)
 
-    valid_steps = set(WORKFLOW_COLUMNS) | {"Auth Detail"}
+    valid_steps = set(WORKFLOW_COLUMNS) | set(DATA_COLUMNS)
     if step not in valid_steps:
-        print(f"ERROR: Unknown step '{step}' for integration '{rows[idx]['Integration Name']}'.")
-        print(f"Valid steps: {', '.join(WORKFLOW_COLUMNS)}, Auth Detail")
+        print(f"ERROR: Unknown column '{step}' for integration '{rows[idx]['Integration ID']}'.")
+        print(f"Valid columns: {', '.join(sorted(valid_steps))}")
         sys.exit(1)
 
     print(format_step_value(rows[idx], step))
@@ -1087,16 +1081,17 @@ def cmd_help(_args: list[str]) -> None:
 # Programmatic API (for use by AI agents / other scripts)
 # ---------------------------------------------------------------------------
 
-def get_integration_status(integration_name: str) -> dict:
-    """
-    Get the full status of an integration as a dict.
-    Returns dict with keys: name, current_step, workflow (dict of col->value),
-    completed_steps, total_steps, progress_pct.
+def get_integration_status(integration_id: str) -> dict:
+    """Get the full status of an integration as a dict.
+
+    Returns a dict with keys: ``name``, ``current_step``, ``workflow``
+    (dict of col→value), ``completed_steps``, ``total_steps``,
+    ``progress_pct``, and ``all_complete``.
     """
     rows = load_csv()
-    idx = find_row(rows, integration_name)
+    idx = find_row(rows, integration_id)
     if idx is None:
-        return {"error": f"Integration '{integration_name}' not found."}
+        return {"error": f"Integration '{integration_id}' not found."}
 
     row = rows[idx]
     current = get_current_step(row)
@@ -1106,7 +1101,7 @@ def get_integration_status(integration_name: str) -> dict:
     )
 
     return {
-        "name": row["Integration Name"],
+        "name": row.get("Integration ID", ""),
         "current_step": current,
         "workflow": {col: row.get(col, "") for col in WORKFLOW_COLUMNS},
         "completed_steps": completed,
@@ -1116,15 +1111,12 @@ def get_integration_status(integration_name: str) -> dict:
     }
 
 
-def markpass_integration_step(integration_name: str, step_name: str) -> dict:
-    """
-    Mark a specific step as passed for an integration. Returns status dict.
-    Fails if the integration is not up to that step yet.
-    """
+def markpass_integration_step(integration_id: str, step_name: str) -> dict:
+    """Mark a specific step as passed for an integration. Returns status dict."""
     rows = load_csv()
-    idx = find_row(rows, integration_name)
+    idx = find_row(rows, integration_id)
     if idx is None:
-        return {"error": f"Integration '{integration_name}' not found."}
+        return {"error": f"Integration '{integration_id}' not found."}
 
     row = rows[idx]
     msg = markpass_step(row, step_name)
@@ -1135,7 +1127,7 @@ def markpass_integration_step(integration_name: str, step_name: str) -> dict:
     # Auto-skip auth parity if not required
     next_step = get_current_step(row)
     if next_step == "auth parity test passes":
-        flag = row.get("requires auth parity test", "").strip().upper()
+        flag = row.get(AUTH_PARITY_FLAG_COLUMN, "").strip().upper()
         if flag in ("NO", "N/A"):
             row["auth parity test passes"] = NA_MARK
 
@@ -1148,14 +1140,12 @@ def markpass_integration_step(integration_name: str, step_name: str) -> dict:
     }
 
 
-def fail_integration_step(integration_name: str, step_name: str) -> dict:
-    """
-    Mark a step as failed and reset subsequent steps. Returns status dict.
-    """
+def fail_integration_step(integration_id: str, step_name: str) -> dict:
+    """Mark a step as failed and reset subsequent steps. Returns status dict."""
     rows = load_csv()
-    idx = find_row(rows, integration_name)
+    idx = find_row(rows, integration_id)
     if idx is None:
-        return {"error": f"Integration '{integration_name}' not found."}
+        return {"error": f"Integration '{integration_id}' not found."}
 
     try:
         reset_from_step(rows[idx], step_name)
@@ -1168,15 +1158,12 @@ def fail_integration_step(integration_name: str, step_name: str) -> dict:
         return {"error": str(e)}
 
 
-def reset_integration_to_step(integration_name: str, step_name: str) -> dict:
-    """
-    Reset to a specific stage (clears that step and everything after it).
-    Returns status dict.
-    """
+def reset_integration_to_step(integration_id: str, step_name: str) -> dict:
+    """Reset to a specific stage (clears that step and everything after it)."""
     rows = load_csv()
-    idx = find_row(rows, integration_name)
+    idx = find_row(rows, integration_id)
     if idx is None:
-        return {"error": f"Integration '{integration_name}' not found."}
+        return {"error": f"Integration '{integration_id}' not found."}
 
     try:
         reset_from_step(rows[idx], step_name)
@@ -1189,38 +1176,28 @@ def reset_integration_to_step(integration_name: str, step_name: str) -> dict:
         return {"error": str(e)}
 
 
-def set_integration_auth(integration_name: str, auth_detail_json: str) -> dict:
+def set_integration_auth(integration_id: str, auth_detail_json: str) -> dict:
+    """Set the 'Auth Details' JSON and reset workflow to first checkpoint.
+
+    Validates the value against the Auth Details schema. On success, sets the
+    column and resets all checkpoints + the auth parity flag.
     """
-    Set the Auth Detail for an integration and reset workflow to 'auth params set'.
-
-    Validates the value against the Auth Detail JSON schema. On success, sets
-    the Auth Detail column and resets all workflow steps from 'auth params set'
-    onward (since changing auth invalidates downstream work).
-
-    Args:
-        integration_name: Name of the integration (case-insensitive).
-        auth_detail_json: JSON string conforming to the Auth Detail schema.
-
-    Returns:
-        Dict with 'message' and 'current_step' on success, or 'error' on failure.
-    """
-    # Validate schema
     schema_errors = validate_auth_detail(auth_detail_json)
     if schema_errors:
-        return {"error": "Auth Detail schema validation failed:\n" + "\n".join(f"  - {e}" for e in schema_errors)}
+        return {"error": "Auth Details schema validation failed:\n" + "\n".join(f"  - {e}" for e in schema_errors)}
 
     rows = load_csv()
-    idx = find_row(rows, integration_name)
+    idx = find_row(rows, integration_id)
     if idx is None:
-        return {"error": f"Integration '{integration_name}' not found."}
+        return {"error": f"Integration '{integration_id}' not found."}
 
     row = rows[idx]
-    row["Auth Detail"] = auth_detail_json
-    reset_from_step(row, "auth params set")
+    row["Auth Details"] = auth_detail_json
+    reset_from_step(row, CHECKPOINT_COLUMNS[0])
     save_csv(rows)
 
     return {
-        "message": f"Set 'Auth Detail' for '{row['Integration Name']}' and reset workflow to 'auth params set'.",
+        "message": f"Set 'Auth Details' for '{row.get('Integration ID', '')}' and reset workflow to '{CHECKPOINT_COLUMNS[0]}'.",
         "current_step": get_current_step(row),
     }
 
@@ -1237,6 +1214,7 @@ COMMANDS = {
     "set-auth": cmd_set_auth,
     "set-inputs": cmd_set_inputs,
     "set-params-for-test": cmd_set_params_for_test,
+    "set-shared-params": cmd_set_shared_params,
     "markpass": cmd_markpass,
     "fail": cmd_fail,
     "set-auth-flag": cmd_set_auth_flag,
