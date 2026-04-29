@@ -5194,3 +5194,22 @@ Cancels a GitHub workflow.
 #### Context Output
 
 There is no context output for this command.
+
+### github-revoke-credentials
+
+***
+Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API. This endpoint is unauthenticated by design and does not use the configured token. Limited to 60 unauthenticated requests per hour.
+
+#### Base Command
+
+`github-revoke-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| credentials | A comma-separated list of GitHub credential tokens to revoke. Supported prefixes are ghp_, github_pat_, gho_, ghu_, ghr_. Maximum 1000 per request. | Required |
+
+#### Context Output
+
+There is no context output for this command.
