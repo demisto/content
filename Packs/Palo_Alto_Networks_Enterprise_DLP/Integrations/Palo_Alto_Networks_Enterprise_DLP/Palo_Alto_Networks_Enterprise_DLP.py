@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
-MAX_SAMPLES = 10
+MAX_LAST_FETCHED_IDS = 200
 DEFAULT_MAX_FETCH = 50
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
@@ -469,10 +469,18 @@ def compute_next_run(incident_ids_committed_timestamps: dict[str, int], last_run
         return last_run
 
     new_last_committed_timestamp = max(incident_ids_committed_timestamps.values())
+    # Filter incidents within buffer window, sort by timestamp (oldest to newest), keep newest MAX_LAST_FETCHED_IDS
+    # 30 seconds buffer taken as a safety margin to account for resolution of filtering start_timestamp
     new_last_incident_ids = [
         _id
-        for _id, _committed_timestamp in incident_ids_committed_timestamps.items()
-        if _committed_timestamp == new_last_committed_timestamp
+        for _id, _ in sorted(
+            (
+                (_id, ts)
+                for _id, ts in incident_ids_committed_timestamps.items()
+                if ts >= new_last_committed_timestamp - END_TIME_BUFFER
+            ),
+            key=lambda x: x[1],
+        )[-MAX_LAST_FETCHED_IDS:]
     ]
 
     return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_KEY: new_last_incident_ids}
@@ -542,6 +550,8 @@ def fetch_notifications(
         incident_id: start_timestamp for incident_id in last_incident_ids
     }
 
+    demisto.debug(f"Starting to fetch incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(f"Deduplicating using {len(last_incident_ids)} IDs: {last_incident_ids}.")
     # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
     for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
         if len(new_incidents) >= max_fetch:
@@ -577,7 +587,8 @@ def fetch_notifications(
             new_incidents.append(incident)
             fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
-    demisto.debug(f"Fetched {len(new_incidents)} incidents: {[inc.get('name') for inc in new_incidents]}.")
+    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(f"Fetched {len(new_incidents)} deduplicated incidents: {[inc.get('name') for inc in new_incidents]}.")
 
     demisto.debug("Updating integration context with access token.")
     demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
