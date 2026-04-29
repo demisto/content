@@ -756,6 +756,21 @@ class TestSearchJobCreateArgs:
 
         assert args.set_options == expected
 
+    def test_set_options_invalid_json_raises(self) -> None:
+        """
+        Given:
+            - set_options as an invalid JSON string.
+        When:
+            - Constructing SearchJobCreateArgs.
+        Then:
+            - DemistoException is raised because the invalid string fails Pydantic's dict type check.
+        """
+        from CommonServerPython import DemistoException
+        from CriblSearch import SearchJobCreateArgs
+
+        with pytest.raises(DemistoException, match="set_options"):
+            SearchJobCreateArgs(query="test", set_options="not-json{broken")  # type: ignore[call-arg]
+
     def test_missing_query_raises(self) -> None:
         """
         Given:
