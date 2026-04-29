@@ -110,7 +110,6 @@ Configure the **CyberArk Identity Security Platform** integration in Cortex XSIA
 | `Use system proxy settings`                | When selected, the integration will use the system proxy settings.                                                                                                                | False    |
 | `Maximum number of audit events per fetch` | Maximum number of events to fetch per collection cycle. Default: `10000`. The API returns at most 1000 events per page.                                                           | False    |
 
-
 #### Inputs
 
 | Argument Name        | Description                                                                                                                                                                                                                | Required |
