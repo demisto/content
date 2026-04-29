@@ -110,17 +110,6 @@ Configure the **CyberArk Identity Security Platform** integration in Cortex XSIA
 | `Use system proxy settings`                | When selected, the integration will use the system proxy settings.                                                                                                                | False    |
 | `Maximum number of audit events per fetch` | Maximum number of events to fetch per collection cycle. Default: `10000`. The API returns at most 1000 events per page.                                                           | False    |
 
-***
-
-## Commands
-
-You can execute the following command from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
-
-### `cyberark-isp-get-events`
-
-Gets audit events from CyberArk Identity Security Platform. This command is intended for **development/debugging only** — use with caution, as it may create duplicate events and consume API quota.
-
-> **Note:** This command is **not** supported in XSOAR.
 
 #### Inputs
 
