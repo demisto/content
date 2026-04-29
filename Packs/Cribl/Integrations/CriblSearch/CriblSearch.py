@@ -463,6 +463,7 @@ def test_module(client: CriblSearchClient) -> str:
         demisto.debug("[Testing] API connectivity test passed")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return f"AuthenticationError: Connection failed. Make sure Server URL and credentials are correctly set. {str(e)}"
 
     demisto.debug("[Testing] All tests passed.")
@@ -1319,6 +1320,7 @@ def main() -> None:
                 raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 

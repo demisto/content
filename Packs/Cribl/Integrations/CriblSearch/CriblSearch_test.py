@@ -1,3 +1,4 @@
+import demistomock as demisto
 import pytest
 from pytest_mock import MockerFixture
 import json
@@ -344,6 +345,8 @@ def test_module_authentication_error(mocker: MockerFixture, client: "CriblSearch
     from CriblSearch import test_module
 
     mocker.patch.object(client, "search_datasets_list", side_effect=ContentClientAuthenticationError("Unauthorized"))
+    # test_module logs the traceback via demisto.error on failure; patch it to keep stdout clean.
+    mocker.patch.object(demisto, "error")
 
     result = test_module(client)
 
