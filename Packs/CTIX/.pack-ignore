@@ -1,6 +1,15 @@
 [file:README.md]
 ignore=RM104
 
+[file:incidentfield-ctixcustomattributes.json]
+ignore=IF113
+
+[file:incidentfield-ctixrelations.json]
+ignore=IF113
+
+[file:incidentfield-ctixcustomscores.json]
+ignore=IF113
+
 [known_words]
 cyware
 ctix
