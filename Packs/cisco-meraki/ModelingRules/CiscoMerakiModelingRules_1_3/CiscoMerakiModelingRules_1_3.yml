@@ -4,3 +4,5 @@ name: Cisco Meraki Modeling Rule
 rules: ''
 schema: ''
 tags: Cisco Meraki
+supportedModules:
+- xsiam

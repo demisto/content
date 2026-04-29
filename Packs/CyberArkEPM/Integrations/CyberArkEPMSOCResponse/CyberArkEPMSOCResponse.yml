@@ -6,25 +6,50 @@ commonfields:
   id: CyberArkEPMSOCResponse
   version: -1
 configuration:
-- additionalinfo: 'Example: https://login.epm.cyberark.com'
-  display: EPM Logon URL
-  name: url
+- name: url
+  display: EPM Region-based tenant URL
   required: true
   type: 0
   section: Connect
-- display: Username
-  name: credentials
+  additionalinfo: The tenant URL for EPM region (e.g., https://api-na.epm.cyberark.cloud).
+- name: identity_url
+  display: Identity URL
+  required: true
+  type: 0
+  section: Connect
+  defaultvalue: "identity_url"
+  additionalinfo: The CyberArk Identity FQDN for OAuth2 authentication (e.g., https://abc1234.id.cyberark.cloud).
+- name: web_app_id
+  display: Web App ID
+  required: true
+  type: 0
+  section: Connect
+  defaultvalue: "my_web_app"
+  additionalinfo: The Application ID of the OAuth2 Server web app configured in Identity Administration.
+- name: client_id
+  display: Client ID
+  required: true
+  type: 0
+  section: Connect
+  defaultvalue: "client_id"
+  additionalinfo: Service username (configured as OAuth confidential client).
+- name: credentials
+  display: Client Secret (Service User Password)
+  displaypassword: Client Secret
   required: true
   type: 9
   section: Connect
-- additionalinfo: 'Required for local(EPM) authentication only. For more information on how to get the application ID, see https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
+  hiddenusername: true
+  additionalinfo: Service user password for OAuth2 authentication.
+- name: application_id
   display: Application ID
-  name: application_id
   required: false
   type: 0
   section: Connect
+  additionalinfo: (Deprecated) Required for local(EPM) authentication only. This parameter is deprecated and no longer used.
+  advanced: true
 description: Use the CyberArk EPM integration to activate and deactivate CyberArk EPM risk plans for specific endpoints.
-display: CyberArk EPM SOC Response (Beta)
+display: CyberArk EPM SOC Response
 name: CyberArkEPMSOCResponse
 script:
   commands:
@@ -35,9 +60,13 @@ script:
     - description: The name of the endpoint to target.
       name: endpoint_name
       required: true
-    - description: The external IP address of the endpoint.
+    - description: Logged in user name.
+      name: logged_in_user
+      required: false
+    - description: (Deprecated) The external IP address of the endpoint. This argument is deprecated and no longer used.
       name: external_ip
       required: false
+      deprecated: true
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
@@ -57,9 +86,13 @@ script:
     - description: The name of the endpoint to target.
       name: endpoint_name
       required: true
-    - description: The external IP address of the endpoint.
+    - description: Logged in user name.
+      name: logged_in_user
+      required: false
+    - description: (Deprecated) The external IP address of the endpoint. This argument is deprecated and no longer used.
       name: external_ip
       required: false
+      deprecated: true
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:
@@ -79,4 +112,3 @@ marketplaces:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
-beta: true
