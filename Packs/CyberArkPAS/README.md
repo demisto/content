@@ -1,6 +1,7 @@
 <~XSIAM>
 
 ## What does this pack do?
+
 ## Overview
 
 The **CyberArk Identity Security Platform** is a unified solution that secures all human and machine identities (workforce, customers, non-human) across hybrid and multi-cloud environments. It is centered on intelligent privilege controls, AI-driven threat detection (CORA AI), and lifecycle automation to enforce least privilege and Zero Trust, providing a single portal for access management, PAM, and endpoint security.
