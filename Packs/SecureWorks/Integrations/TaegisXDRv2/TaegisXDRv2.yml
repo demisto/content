@@ -592,7 +592,7 @@ script:
       description: The network protocol (netflow events).
       type: String
     - contextPath: TaegisXDR.Events.next
-      description: Pagination cursor token for retrieving the next page of results.
+      description: The pagination cursor token for retrieving the next page of results.
       type: String
     description: 'This is a beta command, which lets you implement and test pre-release software. Since the command is beta, it might contain bugs. Updates to the command during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the command to help us identify issues, fix them, and continually improve. Fetches Taegis events using a CQL query string or a list of event IDs. Supports pagination via the next cursor token returned in results. If no cql_query is provided, defaults to "FROM * EARLIEST=-1m | head 50".'
   - name: taegis-add-evidence-to-investigation
