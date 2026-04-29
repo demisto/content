@@ -3682,6 +3682,11 @@ def test_normalize_and_filter_appsec_issue():
             "xdm.repository.name": "my-app",
             "xdm.repository.organization": "my-org",
             "xdm.vulnerability.cvss_score": 9.5,
+            "xdm.vulnerability.fix_versions": ["1.2.3.4"],
+        },
+        "cas_issues_extended_fields": {
+            "package_version": "2.4.0",
+            "repository_is_public": True,
         },
         "cas_sla_status": "IN_SLA",
         "extra_field": "should be removed",
@@ -3698,6 +3703,9 @@ def test_normalize_and_filter_appsec_issue():
     assert normalized_issue["cvss_score"] == 9.5
     assert normalized_issue["is_fixable"] is True
     assert normalized_issue["sla_status"] == "On Track"
+    assert normalized_issue["package_version"] == "2.4.0"
+    assert normalized_issue["fix_versions"] == ["1.2.3.4"]
+    assert normalized_issue["repository_is_public"] is True
     assert "extra_field" not in normalized_issue
 
 
@@ -5424,7 +5432,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         assert call_args[0][0] == "Issue Recommendations for ['issue-1', 'issue-2']"
         assert len(call_args[0][1]) == 2  # readable_recommendations
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5463,6 +5478,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
             "severity",
             "description",
             "remediation",
+            "network_reachability",
             "existing_code_block",
             "suggested_code_block",
             "playbook_suggestions",
@@ -5523,7 +5539,14 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
 
         # Should only have base headers
         call_args = mock_table_to_markdown.call_args
-        assert call_args[1]["headers"] == ["issue_id", "issue_name", "severity", "description", "remediation"]
+        assert call_args[1]["headers"] == [
+            "issue_id",
+            "issue_name",
+            "severity",
+            "description",
+            "remediation",
+            "network_reachability",
+        ]
 
     @patch("CortexPlatformCore.tableToMarkdown")
     @patch("CortexPlatformCore.string_to_table_header")
@@ -5606,7 +5629,7 @@ class TestCreateIssueRecommendationsReadableOutput(unittest.TestCase):
         # Should include headers for the types that exist
         call_args = mock_table_to_markdown.call_args
         headers = call_args[1]["headers"]
-        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+        base_headers = ["issue_id", "issue_name", "severity", "description", "remediation", "network_reachability"]
 
         assert all(h in headers for h in base_headers)
         assert "existing_code_block" in headers
@@ -6598,28 +6621,27 @@ def test_run_script_agentix_command_multiple_scripts_found(mock_list_scripts):
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "First script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": False,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    },
-                    {
-                        "script_uid": "uid2",
-                        "description": "Second script",
-                        "name": "test_script",
-                        "windows_supported": False,
-                        "linux_supported": True,
-                        "macos_supported": False,
-                        "script_inputs": [],
-                    },
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "First script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": False,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                },
+                {
+                    "script_uid": "uid2",
+                    "description": "Second script",
+                    "name": "test_script",
+                    "windows_supported": False,
+                    "linux_supported": True,
+                    "macos_supported": False,
+                    "script_inputs": [],
+                },
+            ],
         ),
         CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
     ]
@@ -6654,8 +6676,8 @@ def test_run_script_agentix_command_no_scripts_found(mock_list_scripts):
 
     mock_scripts_result = Mock()
     mock_scripts_result = [
-        CommandResults(outputs={"Scripts": []}),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs_prefix="Core.Scripts", outputs=[]),
+        CommandResults(outputs={"filtered_count": "0", "returned_count": "0"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6681,21 +6703,20 @@ def test_run_script_agentix_command_script_requires_parameters_but_none_provided
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
     mock_list_scripts.return_value = mock_scripts_result
 
@@ -6747,21 +6768,20 @@ def test_run_script_agentix_command_successful_with_script_name_and_endpoint_ids
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -6798,21 +6818,20 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
     mock_scripts_result = Mock()
     mock_scripts_result = [
         CommandResults(
-            outputs={
-                "Scripts": [
-                    {
-                        "script_uid": "uid1",
-                        "description": "Test script",
-                        "name": "test_script",
-                        "windows_supported": True,
-                        "linux_supported": True,
-                        "macos_supported": True,
-                        "script_inputs": [{"name": "param1"}, {"name": "param2"}],
-                    }
-                ]
-            }
+            outputs_prefix="Core.Scripts",
+            outputs=[
+                {
+                    "script_uid": "uid1",
+                    "description": "Test script",
+                    "name": "test_script",
+                    "windows_supported": True,
+                    "linux_supported": True,
+                    "macos_supported": True,
+                    "script_inputs": [{"name": "param1"}, {"name": "param2"}],
+                }
+            ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
@@ -8746,9 +8765,9 @@ def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
 def test_validate_custom_fields_success(mocker):
     """
     GIVEN:
-        Valid custom fields and client with metadata.
+        Valid custom fields with CLI names and client with metadata.
     WHEN:
-        validate_custom_fields is called.
+        validate_custom_fields is called with CLI names.
     THEN:
         All fields are returned as valid and no error messages.
     """
@@ -8756,18 +8775,20 @@ def test_validate_custom_fields_success(mocker):
 
     client = Client(base_url="", headers={})
 
-    # Mock metadata response
+    # Mock metadata response — CLI name is the machine name users pass
     metadata_response = {
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_NAME": "Field 1",
+                    "CUSTOM_FIELD_CLI_NAME": "field1",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_NAME": "Field 2",
+                    "CUSTOM_FIELD_CLI_NAME": "field2",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8787,7 +8808,7 @@ def test_validate_custom_fields_success(mocker):
 def test_validate_custom_fields_system_field(mocker):
     """
     GIVEN:
-        Custom fields containing a system field.
+        Custom fields containing a system field (looked up by CLI name).
     WHEN:
         validate_custom_fields is called.
     THEN:
@@ -8801,13 +8822,15 @@ def test_validate_custom_fields_system_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_NAME": "System Field",
+                    "CUSTOM_FIELD_CLI_NAME": "system_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "System Field",
                     "CUSTOM_FIELD_IS_SYSTEM": True,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_NAME": "Custom Field",
+                    "CUSTOM_FIELD_CLI_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8843,7 +8866,8 @@ def test_validate_custom_fields_non_existent_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_NAME": "Existing Field",
+                    "CUSTOM_FIELD_CLI_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8860,6 +8884,44 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+    assert "CLI/machine name" in error_messages
+
+
+def test_validate_custom_fields_cli_name_lookup(mocker):
+    """
+    GIVEN:
+        A custom field with display name "ServiceNow Ticket ID" and CLI name "servicenowticketid".
+        User passes the CLI name (machine name) as the field key.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is matched by CLI name and accepted as valid.
+        This is the scenario from XSUP-67819.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_CLI_NAME": "servicenowticketid",
+                    "CUSTOM_FIELD_PRETTY_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"servicenowticketid": "SN12345"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"servicenowticketid": "SN12345"}
+    assert not error_messages
 
 
 def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
@@ -8879,7 +8941,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8915,7 +8978,8 @@ def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8950,7 +9014,8 @@ def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_NAME": "Single Field",
+                    "CUSTOM_FIELD_CLI_NAME": "single_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "shortText",
@@ -9003,7 +9068,8 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_NAME": "My Field",
+                    "CUSTOM_FIELD_CLI_NAME": "my_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "My Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": field_type,

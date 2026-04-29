@@ -29,6 +29,9 @@ alter
 	xdm.target.ipv4 = dst,
 	xdm.target.process.executable.file_type = fileType,
 	xdm.target.sent_bytes = to_integer(`in`),
+    xdm.source.port = to_integer(0),
+    xdm.target.port = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
 	xdm.source.sent_bytes = to_integer(out);
 
 [MODEL: dataset="zscaler_nssfwlog_raw"]
