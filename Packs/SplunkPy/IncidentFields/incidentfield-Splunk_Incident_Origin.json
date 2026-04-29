@@ -1,43 +1,40 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Splunk Finding",
         "Splunk Investigation"
     ],
     "caseInsensitive": true,
-    "cliName": "splunkstatus",
+    "cliName": "splunkincidentorigin",
     "closeForm": false,
     "content": true,
-    "description": "The status from Splunk.",
+    "description": "The incident origin from Splunk Mission Control (e.g. MC Incident).",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_splunkstatus",
+    "id": "incident_splunkincidentorigin",
     "isReadOnly": false,
     "locked": false,
-    "name": "Splunk Status",
+    "name": "Incident Origin",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
     ],
     "required": false,
-    "selectValues": [
-        "New",
-        "In Progress",
-        "Pending",
-        "Resolved",
-        "Closed"
-    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "singleSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
     "supportedModules": [
         "xsiam",
         "agentix"

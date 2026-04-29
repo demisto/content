@@ -1,43 +1,40 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Splunk Finding",
         "Splunk Investigation"
     ],
     "caseInsensitive": true,
-    "cliName": "splunkstatus",
+    "cliName": "splunkintermediatefindingids",
     "closeForm": false,
     "content": true,
-    "description": "The status from Splunk.",
+    "description": "Intermediate finding IDs associated with the Splunk investigation.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_splunkstatus",
+    "id": "incident_splunkintermediatefindingids",
     "isReadOnly": false,
     "locked": false,
-    "name": "Splunk Status",
+    "name": "Intermediate Finding IDs",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
     ],
     "required": false,
-    "selectValues": [
-        "New",
-        "In Progress",
-        "Pending",
-        "Resolved",
-        "Closed"
-    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "singleSelect",
+    "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
     "supportedModules": [
         "xsiam",
         "agentix"
