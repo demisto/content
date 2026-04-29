@@ -540,7 +540,7 @@ script:
     - name: cql_query
       description: The Taegis CQL query string to use for searching events (e.g. "FROM process EARLIEST=-1d | head 10"). If not defined, defaults to "FROM * EARLIEST=-1m | head 50".
     - name: limit
-      description: Maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., "| head 100"). Default is 50.
+      description: The maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., "| head 100").
       defaultValue: "50"
     - name: offset
       description: The number of events to skip before returning results.
