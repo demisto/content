@@ -1406,9 +1406,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         if not entries:
             return False
         if self.redundant_error_raising:
-            all_failed_or_no_match = all(
-                entry.status == Status.FAILURE for entry in entries
-            )
+            all_failed_or_no_match = all(entry.status == Status.FAILURE for entry in entries)
         else:
             all_failed_or_no_match = all(
                 entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries
