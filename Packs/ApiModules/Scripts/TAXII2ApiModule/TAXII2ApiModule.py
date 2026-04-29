@@ -1383,6 +1383,7 @@ class STIX2XSOARParser(BaseClient):
 
         if tlp_color:
             fields["trafficlightprotocol"] = tlp_color
+            obj_to_parse["trafficlightprotocol"] = tlp_color
 
         return fields
 
@@ -2286,6 +2287,9 @@ class STIX2XSOARParser(BaseClient):
         if not fields.get("trafficlightprotocol"):
             tlp_from_marking_refs = self.get_tlp(ioc_obj_copy)
             fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
+
+        if fields.get("trafficlightprotocol"):
+            ioc_obj_copy["trafficlightprotocol"] = fields["trafficlightprotocol"]
 
         if self.update_custom_fields:
             custom_fields, score = self.parse_custom_fields(ioc_obj_copy.get("extensions", {}))
