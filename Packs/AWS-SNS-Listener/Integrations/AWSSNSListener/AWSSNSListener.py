@@ -14,11 +14,11 @@ from fastapi.openapi.models import APIKey
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKeyHeader
 from M2Crypto import X509
-
 from CommonServerUserPython import *
 
 PARAMS: dict = demisto.params()
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
+SAMPLE_STORE_LOCK = threading.Lock()
 
 # Async incident creation tunables.
 RETRY_ATTEMPTS = 3
@@ -235,14 +235,15 @@ def handle_notification(payload, raw_json):
 
 def store_samples(incident):  # pragma: no cover
     try:
-        sample_events_to_store.append(incident)
-        integration_context = get_integration_context()
-        sample_events = deque(json.loads(integration_context.get("sample_events", "[]")), maxlen=20)
-        sample_events += sample_events_to_store
-        integration_context["sample_events"] = list(sample_events)
-        set_to_integration_context_with_retries(integration_context)
+        with SAMPLE_STORE_LOCK:
+            sample_events_to_store.append(incident)
+            integration_context = get_integration_context()
+            sample_events = deque(json.loads(integration_context.get("sample_events", "[]")), maxlen=20)
+            sample_events += sample_events_to_store
+            integration_context["sample_events"] = list(sample_events)
+            set_to_integration_context_with_retries(integration_context)
     except Exception as e:
-        demisto.error(f"Failed storing sample events - {e}")
+        demisto.error(f"Failed storing sample events - {e}\n{format_exc()}")
 
 
 def _extract_message_id(incident: dict) -> str:
