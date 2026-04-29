@@ -53,7 +53,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 
 #### URL
 
-1. In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys**.
+1. In Cortex XDR, navigate to **Settings** &gt; **Configurations** &gt; **API Keys**.
 2. Click **Copy URL** in the top right corner.
 
 #### XDR & XSOAR
