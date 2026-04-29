@@ -57,6 +57,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
   display: Events max fetch
@@ -67,6 +69,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - defaultvalue: '1'
   display: Events Fetch Interval
   name: eventFetchInterval
@@ -76,6 +80,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
   name: assetsFetchInterval
@@ -85,6 +91,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
@@ -1354,5 +1362,3 @@ script:
 tests:
 - Tenable.io test
 fromversion: 5.0.0
-supportedModules:
-- xsiam
