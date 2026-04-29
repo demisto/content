@@ -872,6 +872,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
             # Handle DomainGlob type indicators even when value doesn't start with "*."
             if indicator.startswith("*.") or ioc_type == FeedIndicatorType.DomainGlob:
                 domain = str(indicator.lstrip("*."))
+                indicator = f"*.{indicator}" if not indicator.startswith("*.") else indicator
                 # if we should ignore TLDs and the domain is a TLD
                 if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:
                     log_stats = log_indicator_line(
