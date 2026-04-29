@@ -38,7 +38,10 @@ def _parse_ndjson(response_text: str) -> dict[str, Any]:
     if not lines:
         return {}
     # Parse the first line as the metadata
-    metadata: dict[str, Any] = json.loads(lines[0])
+    try:
+        metadata: dict[str, Any] = json.loads(lines[0])
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Failed to parse Cribl Search response metadata: {e}") from e
     # Parse remaining lines as events
     events: list[dict[str, Any]] = []
     for line in lines[1:]:

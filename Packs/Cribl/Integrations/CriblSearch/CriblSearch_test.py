@@ -102,11 +102,12 @@ def test_parse_ndjson_bad_first_line() -> None:
     When:
         - Calling _parse_ndjson.
     Then:
-        - Raises json.JSONDecodeError because the first line is parsed as the metadata.
+        - Raises DemistoException with a Cribl-specific metadata-parse message,
+          because the first line is parsed as the metadata.
     """
-    from CriblSearch import _parse_ndjson
+    from CriblSearch import _parse_ndjson, DemistoException
 
-    with pytest.raises(json.JSONDecodeError):
+    with pytest.raises(DemistoException, match="Failed to parse Cribl Search response metadata"):
         _parse_ndjson("not-json\n")
 
 
