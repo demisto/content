@@ -372,7 +372,7 @@ class CriblSearchClient(ContentClient):
         items = response.get("items", [])
         return items[0] if items else {}
 
-    def search_job_delete(self, job_id: str) -> dict[str, Any]:
+    def search_job_delete(self, job_id: str) -> str:
         """
         Deletes a search job.
 
@@ -380,7 +380,7 @@ class CriblSearchClient(ContentClient):
             job_id (str): The ID of the search job to delete.
 
         Returns:
-            dict[str, Any]: The deletion response.
+            str: The deletion response text.
         """
         url_suffix = f"/search/jobs/{job_id}"
 
