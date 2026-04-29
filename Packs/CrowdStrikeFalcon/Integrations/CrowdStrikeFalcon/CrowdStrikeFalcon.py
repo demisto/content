@@ -5074,7 +5074,7 @@ async def process_device_vulnerabilities_parallel(
 
             # Type guard ensures result is tuple, not Exception
             assert not isinstance(result, Exception)
-            device_id, vulnerabilities = result
+            device_id, vulnerabilities = result  # type: ignore[misc]
 
             if not vulnerabilities:
                 continue  # Skip devices with no vulnerabilities
@@ -5126,7 +5126,7 @@ async def process_device_vulnerabilities_parallel(
         # Convert host_info to asset format and send for devices with vulnerabilities in this batch
         # Filter out exceptions before unpacking
         valid_results = [r for r in results if not isinstance(r, Exception)]
-        batch_devices_with_vulns = [device_id for device_id, vulns in valid_results if vulns and device_id not in processed_aids]
+        batch_devices_with_vulns = [device_id for device_id, vulns in valid_results if vulns and device_id not in processed_aids]  # type: ignore[misc]
 
         if batch_devices_with_vulns:
             # Convert host_info to asset format in sub-batches
