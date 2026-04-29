@@ -35,6 +35,12 @@ URL_SUFFIX = {
     "EVENTS": "/wiki/rest/api/audit/",
     "BASE": "/wiki",
     "NEXT_LINK_TEMPLATE": "/rest/api/audit/?end_date={}&next=true&limit={}&start={}&startDate={}",
+    # The Confluence Cloud v1 endpoint `GET /wiki/rest/api/content/{id}` is NOT exposed
+    # via Atlassian's OAuth 2.0 (3LO) gateway and returns 401 regardless of granted scopes.
+    # The v2 page endpoint below works for both Basic Auth and OAuth 2.0 authentication
+    # and only requires the granular `read:page:confluence` scope under OAuth.
+    # See https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/
+    "PAGE_V2": "/wiki/api/v2/pages",
 }
 
 MESSAGES = {
@@ -1370,32 +1376,83 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     )
 
 
+def prepare_hr_for_page_get(page: dict[str, Any]) -> str:
+    """
+    Prepare human-readable output for the v2 ``GET /wiki/api/v2/pages/{id}`` response.
+
+    The v2 ``PageSingle`` response shape differs from the v1 ``Content`` shape used by
+    ``prepare_hr_for_content_create``: there is no ``space.name`` or ``history.createdBy``
+    block, and ``body`` is keyed by representation rather than nested in a ``storage`` object
+    with the same shape. This helper renders the fields that are actually present.
+
+    :type page: ``Dict[str, Any]``
+    :param page: The v2 PageSingle response.
+
+    :rtype: ``str``
+    :return: Human readable.
+    """
+    links = page.get("_links", {}) or {}
+    base = links.get("base", "")
+    webui = links.get("webui", "") or links.get("editui", "")
+    title = page.get("title", "")
+    title_md = f"[{title}]({base}{webui})" if base and webui else title
+
+    hr_record = {
+        "ID": page.get("id", ""),
+        "Title": title_md,
+        "Type": "page",
+        "Status": page.get("status", ""),
+        "Space ID": page.get("spaceId", ""),
+        "Parent ID": page.get("parentId", ""),
+        "Author ID": page.get("authorId", ""),
+        "Owner ID": page.get("ownerId", ""),
+        "Version": (page.get("version") or {}).get("number", ""),
+        "Created At": page.get("createdAt", ""),
+    }
+
+    return tableToMarkdown(
+        "Content",
+        hr_record,
+        ["ID", "Title", "Type", "Status", "Space ID", "Parent ID", "Author ID", "Owner ID", "Version", "Created At"],
+        removeNull=True,
+    )
+
+
 def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
-    Execute the confluence-cloud-content-get command. Fetches content details from Confluence Cloud by content ID.
+    Fetch a single Confluence page by ID.
+
+    Implementation note: this command targets the Confluence Cloud **v2** Pages API
+    (``GET /wiki/api/v2/pages/{id}``) rather than the legacy v1 ``/wiki/rest/api/content/{id}``
+    endpoint. The v1 endpoint is not exposed via Atlassian's OAuth 2.0 (3LO) gateway and
+    returns ``401 Unauthorized`` regardless of which scopes are granted to the OAuth app.
+    The v2 endpoint works for both Basic Auth and OAuth 2.0 and only requires the
+    ``read:page:confluence`` granular scope under OAuth.
 
     :type client: ``Client``
     :param client: The client used to send HTTP requests to the Confluence Cloud API.
 
     :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
+    :param args: The command arguments provided by the user. ``content_id`` is required.
 
-    :return: ``CommandResults`` containing the content details.
+    :return: ``CommandResults`` containing the page details.
     :rtype: ``CommandResults``
     """
-
     content_id = args.get("content_id")
     if not content_id:
         raise ValueError(MESSAGES["MISSING_CONTENT_ID"])
-    params = {"expand": "body.storage"}
-    request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
+
+    # v2 uses the `body-format` query parameter (kebab-case) rather than v1's `expand=body.storage`.
+    params = {"body-format": "storage"}
+    request_url = f"{URL_SUFFIX['PAGE_V2']}/{content_id}"
     response = client.http_request(method="GET", url_suffix=request_url, params=params)
     response_json = response.json()
+
     context = remove_empty_elements(response_json)
-    readable_hr = prepare_hr_for_content_create(response_json, "Content")
+    readable_hr = prepare_hr_for_page_get(response_json)
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX.get("CONTENT"),
+        outputs_prefix=OUTPUT_PREFIX["CONTENT"],
         outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,

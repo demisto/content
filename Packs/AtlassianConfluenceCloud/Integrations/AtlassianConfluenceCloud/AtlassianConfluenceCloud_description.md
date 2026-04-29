@@ -31,6 +31,7 @@ OAuth 2.0 provides a more secure authentication method using the Atlassian Devel
    - `read:confluence-groups` — Read group information
    - `write:confluence-content` — Write content
    - `write:confluence-space` — Write space data
+   - `read:page:confluence` — **Required for `confluence-cloud-content-get`** (v2 Pages API)
    - `offline_access` — Enables refresh token for unattended access
 5. Navigate to "Authorization" and configure the callback URL
 6. Navigate to "Settings" to find your Client ID and Client Secret

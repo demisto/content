@@ -36,9 +36,12 @@ OAuth 2.0 provides a more secure authentication method using the [Atlassian Deve
 | `read:confluence-groups` | Read group information |
 | `write:confluence-content` | Write content |
 | `write:confluence-space` | Write space data |
+| `read:page:confluence` | **Required for `confluence-cloud-content-get`** — Read a single page via the v2 Pages API |
 | `offline_access` | Enables refresh token for unattended access |
 
 > **Note**: The `read:audit-log:confluence` scope is specifically required for the event fetching functionality (`fetch-events` and `confluence-cloud-get-events` commands). Without this scope, event collection will fail.
+>
+> **Note**: The `read:page:confluence` granular scope is required for the `confluence-cloud-content-get` command. The legacy v1 `read:confluence-content.summary` / `read:confluence-content.all` scopes alone are **not** sufficient because Atlassian's OAuth 2.0 (3LO) gateway does not expose the v1 `GET /wiki/rest/api/content/{id}` endpoint; the integration uses the v2 Pages API (`GET /wiki/api/v2/pages/{id}`) under OAuth.
 
 ## Commands
 
