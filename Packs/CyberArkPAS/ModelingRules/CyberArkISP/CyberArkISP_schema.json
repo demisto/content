@@ -1,100 +1,132 @@
 {
   "cyberark_isp_raw": {
     "uuid": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "tenantId": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "timestamp": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "username": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "applicationCode": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "auditCode": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "auditType": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "action": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "userId": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "source": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "actionType": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "component": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "serviceName": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "accessMethod": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "accountId": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "target": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "command": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "sessionId": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "message": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "customData": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "cloudProvider": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "cloudWorkspacesAndRoles": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "cloudIdentities": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "cloudAssets": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "safe": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "accountName": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "targetPlatform": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "targetAccount": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "identityType": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "correlationId": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     },
     "isDr": {
-      "type": "boolean"
+      "type": "boolean",
+      "is_array": false
     },
     "originRegion": {
-      "type": "string"
+      "type": "string",
+      "is_array": false
     }
   }
 }
