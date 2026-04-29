@@ -1,3 +1,9 @@
-!ip ip="8.8.8.8"
-!email email="noreply@ipqualityscore.com"
-!url url="https://google.com"
+!ipqs-ip-reputation ip="8.8.8.8"
+!ipqs-email-reputation email="noreply@ipqualityscore.com"
+!ipqs-url-reputation url="https://google.com"
+!ipqs-phone-reputation phone="+91 9000000000"
+!ipqs-username-leaked username="user@123"
+!ipqs-password-leaked password="user123"
+!ipqs-email-leaked email="example123@gmail.com"
+!ipqs-url-file-scan url="http://www.example.com/"
+!ipqs-file-scan entry_id=4953@f2420533-4d0b-4d36-8faf-b8b798f0e451
