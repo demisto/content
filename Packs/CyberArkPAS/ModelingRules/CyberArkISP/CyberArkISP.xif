@@ -5,16 +5,12 @@ alter
         lowercase(message) in (
             "cloud.core.login.multifactorchallenge",
             "cloud.core.login",
-            "cloud.core.o365wstrustlogin",
-            "cloud.core.samlresponsegenerate",
-            "cloud.core.samlresponsevalidate",
             "cloud.core.oauthtoken.create",
-            "cloud.core.startimpersonate",
             "cloud.core.mfasummary",
             "cloud.core.login.multifactorchallenge.multifactorresponse"
         ) or auditCode in (
             "IDP2005", "IDP2008", "IDP2007", "IDP2009",
-            "IDP2013", "IDP2014", "IDP2020", "IDP2101", "IDP6006"
+            "IDP2013", "IDP2014", "IDP6006"
         ), true, false
     );
 
