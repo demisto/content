@@ -2082,6 +2082,63 @@ def test_is_final_result_error(module_factory, entries, expected_is_error):
     assert mod._is_final_result_error(entries) == expected_is_error
 
 
+def test_reputation_aggregated_command_redundant_error_raising_true(module_factory):
+    """
+    Given:
+        - A ReputationAggregatedCommand instance created with redundant_error_raising=True.
+        - A mix of entries: one FAILURE and one SUCCESS with the message "No matching indicators found.".
+    When:
+        - Calling _is_final_result_error.
+    Then:
+        - Returns False, because when redundant_error_raising is True the soft-failure
+          message "No matching indicators found." is NOT treated as a failure, so not
+          all entries are failures.
+    """
+    mod = module_factory(redundant_error_raising=True)
+
+    entries = [
+        make_entry_result("c1", "A", Status.FAILURE, "Error"),
+        make_entry_result("c2", "B", Status.SUCCESS, "No matching indicators found."),
+    ]
+
+    # Sanity: the flag is stored on the instance and defaults to False elsewhere.
+    assert mod.redundant_error_raising is True
+    # Behavior: with the flag on, a mixed result is NOT considered a final error.
+    assert mod._is_final_result_error(entries) is False
+    # And when ALL entries are real failures, it should still be considered an error.
+    all_failures = [
+        make_entry_result("c1", "A", Status.FAILURE, "Error"),
+        make_entry_result("c2", "B", Status.FAILURE, "Error"),
+    ]
+    assert mod._is_final_result_error(all_failures) is True
+
+
+def test_reputation_aggregated_command_redundant_error_raising_false(module_factory):
+    """
+    Given:
+        - A ReputationAggregatedCommand instance created without specifying the flag
+          (so redundant_error_raising defaults to False).
+        - A mix of entries: one FAILURE and one SUCCESS with the message
+          "No matching indicators found.".
+    When:
+        - Calling _is_final_result_error.
+    Then:
+        - Returns True, preserving the legacy behavior where "No matching indicators found."
+          is treated as a soft failure and a mixed result is reported as an error.
+    """
+    mod = module_factory()
+
+    entries = [
+        make_entry_result("c1", "A", Status.FAILURE, "Error"),
+        make_entry_result("c2", "B", Status.SUCCESS, "No matching indicators found."),
+    ]
+
+    # Sanity: the flag defaults to False.
+    assert mod.redundant_error_raising is False
+    # Behavior: with the flag off (legacy), a mixed result IS considered a final error.
+    assert mod._is_final_result_error(entries) is True
+
+
 def test_summarize_command_results_uses_is_error_result_for_entry_type(module_factory, mocker):
     """
     Given:
