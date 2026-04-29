@@ -114,6 +114,19 @@
                     "complex": null,
                     "simple": "entitySnapshot.nativeType"
                 },
+                "severity": {
+                    "complex": null,
+                    "simple": "issue.severity"
+                },
+                "Wiz Issue Resolution Recommendation": {
+                    "complex": {
+                        "accessor": "sourceRule.resolutionRecommendation",
+                        "filters": [],
+                        "root": "sourceRule",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "dbotMirrorDirection": {
                     "complex": null,
                     "simple": "mirror_direction"
@@ -129,19 +142,6 @@
                 "dbotMirrorTags": {
                     "complex": null,
                     "simple": "mirror_tags"
-                },
-                "severity": {
-                    "complex": null,
-                    "simple": "issue.severity"
-                },
-                "Wiz Issue Resolution Recommendation": {
-                    "complex": {
-                        "accessor": "sourceRule.resolutionRecommendation",
-                        "filters": [],
-                        "root": "sourceRule",
-                        "transformers": []
-                    },
-                    "simple": ""
                 }
             }
         },
