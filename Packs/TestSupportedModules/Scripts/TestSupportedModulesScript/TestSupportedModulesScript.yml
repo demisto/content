@@ -1,0 +1,30 @@
+commonfields:
+  id: TestSupportedModulesScript
+  version: -1
+name: TestSupportedModulesScript
+script: ''
+type: python
+tags:
+- Utilities
+comment: A test script to validate BC117 supportedModules validation.
+enabled: true
+args:
+- description: A sample input argument.
+  name: input_value
+outputs:
+- contextPath: TestSupportedModules.status
+  description: The execution status.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+- edr
