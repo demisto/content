@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 of DeCYFIR Feed
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com) |  | True |
+| DeCYFIR Server URL (e.g. <https://decyfir.cyfirma.com>) |  | True |
 | DeCYFIR API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -37,6 +37,74 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
+### ip
+
+***
+Get IP indicators from CYFIRMA.
+
+#### Base Command
+
+`ip`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### domain
+
+***
+Get Domain indicators from CYFIRMA.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### url
+
+***
+Get URL indicators from CYFIRMA.
+
+#### Base Command
+
+`url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### file
+
+***
+Get File Hash indicators from CYFIRMA.
+
+#### Base Command
+
+`file`
+
+#### Input
+
+There are no input arguments for this command.
 
 #### Context Output
 

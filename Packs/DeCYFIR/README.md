@@ -29,7 +29,7 @@ Once configured, the integration periodically fetches event logs from DeCYFIR’
 
 - Each event type (`Access Logs`, `Assets Logs`, `Digital Risk Keywords Logs`) is fetched separately using its own pagination and limit.
 
-- - To prevent duplication, the integration automatically tracks and stores the last fetched timestamp and event IDs.
+  - - To prevent duplication, the integration automatically tracks and stores the last fetched timestamp and event IDs.
 
 ## Configure the DeCYFIR Event Collector Integration in Cortex
 
