@@ -1,4 +1,5 @@
 import mimetypes
+import os
 import re
 from collections.abc import Callable, Iterable
 from urllib.parse import quote
@@ -1710,7 +1711,7 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     file_name = args.get("file_name")
     if not file_name:
         file_data = demisto.getFilePath(file_id)
-        file_name = file_data.get("name")
+        file_name = os.path.basename(file_data.get("name") or "")
 
     result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
 
@@ -1919,12 +1920,18 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
 
+            human_readable = (
+                f"Type: {note.get('element')}\nCreated By: "
+                f"{note.get('sys_created_by')}\nCreated On: "
+                f"{note.get('sys_created_on')}\n{note.get('value')}"
+            )
             entries.append(
                 {
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
-                    "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    "HumanReadable": human_readable,
+                    "Contents": human_readable,
+                    "created": note.get("sys_created_on", ""),
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -3366,7 +3373,7 @@ def update_remote_system_with_entries(client, entries, params, ticket_id, ticket
         # Mirroring files as entries
         if is_entry_type_mirror_supported(entry.get("type")):
             path_res = demisto.getFilePath(entry.get("id"))
-            full_file_name = path_res.get("name")
+            full_file_name = os.path.basename(path_res.get("name") or "")
             file_name, file_extension = os.path.splitext(full_file_name)
             if not file_extension:
                 file_extension = ""
