@@ -57,7 +57,7 @@ select = [
     "AS101", "AS102", "AS103", "AS104", "AS105", "AS107", "AS108", "AS109",
     "MC100"
 ]
-warning = ["PB130", "PB131", "RN116", "BC117", "GR101","PA133", "AS106","MC101"]
+warning = ["PB130", "PB131", "RN116", "GR101","PA133", "AS106","MC101"]
 
 
 [path_based_validations]
