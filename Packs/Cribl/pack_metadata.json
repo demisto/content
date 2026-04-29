@@ -1,6 +1,6 @@
 {
     "name": "Cribl",
-    "description": "Query, retrieve, and manage search jobs, datasets, and saved searches in Cribl Search across your Cribl Cloud deployment. Run synchronous queries, create and manage long-running search jobs, and explore configured datasets and saved searches.",
+    "description": "Query and manage search jobs, datasets, and saved searches in your Cribl Cloud deployment.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
