@@ -553,7 +553,7 @@ There is no context output for this command.
 ### cs-falcon-lift-host-containment
 
 ***
-Lifts containment on the host, which returns its network communications to normal.
+Lifts containment on the host, which returns its network communications to normal. When lift_filesystem_containment_all is set to true, lifts filesystem containment instead.
 
 #### Base Command
 
@@ -564,6 +564,7 @@ Lifts containment on the host, which returns its network communications to norma
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection. | Required |
+| lift_filesystem_containment_all | Whether to lift filesystem containment instead of network containment. When set to true, uses the lift_filesystem_containment_all action to remove filesystem containment from the specified hosts. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1597,6 +1598,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | host_groups | A comma-separated list of host group IDs that the indicator applies to. The list of host group IDs can be retrieved by running the 'cs-falcon-list-host-groups' command. Either applied_globally or host_groups must be provided. | Optional |
 | tags | A comma-separated list of tags to apply to the indicator. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
+| mobile_action | Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity. Possible values are: no_action, allow, detect, prevent. | Optional |
 
 #### Context Output
 
@@ -1617,6 +1619,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. |
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. |
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. |
+| CrowdStrike.IOC.MobileAction | string | Action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
