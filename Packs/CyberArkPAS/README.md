@@ -1,15 +1,17 @@
 <~XSIAM>
 
 ## Overview
+
 The **CyberArk Identity Security Platform** is a unified solution that secures all human and machine identities (workforce, customers, non-human) across hybrid and multi-cloud environments. It is centered on intelligent privilege controls, AI-driven threat detection (CORA AI), and lifecycle automation to enforce least privilege and Zero Trust, providing a single portal for access management, PAM, and endpoint security.
 
 This pack enables ingestion and normalization of CyberArk Identity Security Platform audit events into Cortex XSIAM for security monitoring and compliance.
 
-## This pack includes:
+## This pack includes
 
 Data normalization capabilities:
-  * Modeling Rules for CyberArk Identity Security Platform audit events that are ingested via the CyberArk ISP integration into Cortex XSIAM.
-  * The ingested CyberArk Identity audit events can be queried in XQL Search using the *`cyberark_isp_raw`* dataset.
+
+* Modeling Rules for CyberArk Identity Security Platform audit events that are ingested via the CyberArk ISP integration into Cortex XSIAM.
+* The ingested CyberArk Identity audit events can be queried in XQL Search using the *`cyberark_isp_raw`* dataset.
 
 ## Supported event categories
 
@@ -22,7 +24,7 @@ The pack normalizes two primary categories of CyberArk Identity audit events:
 
 ### Supported timestamp format
 
-- Epoch milliseconds as a string: `"1776674727346"`
+* Epoch milliseconds as a string: `"1776674727346"`
 
 ***
 
@@ -40,13 +42,16 @@ Before configuring the integration in Cortex XSIAM, complete the following prere
 2. In the **Add Web Apps** dialog, click the **Custom** tab, locate the **OAuth2 Server** web app, and click **Add**.
 3. Click **Yes** to add the web app.
 4. In the **Web Apps** page, select the OAuth2 Server app you just added and configure:
-    - **Settings tab** → In **Application ID**, enter a name for the web app (e.g., `xsiamapp`). This is your **Web App ID**.
-    - **Tokens tab** → Set **Token Type** to `jwtRS256`. Under **Auth methods**, ensure **Client Creds** is selected.
-    - **Scope tab** → Click **Add**, enter the following name, and click **Save**:
+    * **Settings tab** → In **Application ID**, enter a name for the web app (e.g., `xsiamapp`). This is your **Web App ID**.
+    * **Tokens tab** → Set **Token Type** to `jwtRS256`. Under **Auth methods**, ensure **Client Creds** is selected.
+    * **Scope tab** → Click **Add**, enter the following name, and click **Save**:
+
       ```
       isp.audit.events:read
       ```
-    - **Advanced tab** → Paste the following script:
+
+    * **Advanced tab** → Paste the following script:
+
       ```
       setClaim('tenant_id', TenantData.Get("CybrTenantID"));
       setClaim('aud', 'cyberark.isp.audit');
@@ -68,10 +73,10 @@ Before configuring the integration in Cortex XSIAM, complete the following prere
 
 1. Go to **Apps & Widgets** → **Web Apps** and select the OAuth2 Server web app.
 2. Select the **Permissions** tab, locate the service user you created, and grant the following:
-    - Grant
-    - View
-    - Run
-    - Automatically Deploy
+    * Grant
+    * View
+    * Run
+    * Automatically Deploy
 3. Click **Save**.
 
 #### Step 4 — Add a SIEM Integration in the Administration Space
