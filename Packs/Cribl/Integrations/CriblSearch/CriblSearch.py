@@ -142,7 +142,7 @@ class CriblSearchClient(ContentClient):
             params.client_secret,
         )
         super().__init__(
-            base_url=f"{params.url}{API_PREFIX}",
+            base_url=urljoin(str(params.url), API_PREFIX),
             verify=params.verify,
             proxy=params.proxy,
             auth_handler=auth_handler,
