@@ -2836,7 +2836,7 @@ def get_modified_remote_data_command(args):
 def get_remote_data_command(args):
     parsed_args = GetRemoteDataArgs(args)
     issue_id = parsed_args.remote_incident_id
-    last_update = args.get("lastUpdate")
+    last_update = parsed_args.last_update
 
     demisto.debug(f"get_remote_data: issue_id={issue_id}, last_update={last_update}")
 

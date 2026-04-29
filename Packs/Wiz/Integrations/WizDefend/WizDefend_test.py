@@ -1363,8 +1363,8 @@ def test_query_api_empty_response(mocker, mock_api_empty_response):
         # Call the function
         result = WizDefend.query_api("test_query", {}, WizApiResponse.DETECTIONS)
 
-        # Verify result is empty dict
-        assert result == {}
+        # Verify result is an empty list (so callers can iterate without a type guard)
+        assert result == []
     finally:
         # Restore original function
         WizDefend.get_entries = orig_get_entries

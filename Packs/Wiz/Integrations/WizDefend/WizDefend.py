@@ -1591,7 +1591,7 @@ def query_api(query, variables, wiz_type, paginate=True, max_fetch=API_MAX_FETCH
     entries, page_info = get_entries(query, variables, wiz_type)
     if not entries:
         demisto.info(f"No {wiz_type}(/s) available to fetch.")
-        entries = {}
+        entries = []
 
     while page_info[WizApiResponse.HAS_NEXT_PAGE] and paginate:
         demisto.debug(f"Successfully pulled {len(entries)} {wiz_type}")
@@ -3218,6 +3218,9 @@ def get_filtered_detections(
     detection_variables = apply_all_detection_filters(detection_variables, validated_values)
 
     wiz_detections = query_detections(variables=detection_variables, paginate=paginate, max_fetch=max_fetch)
+
+    if not isinstance(wiz_detections, list):
+        return wiz_detections
 
     for detection in wiz_detections:
         if add_detection_url:
