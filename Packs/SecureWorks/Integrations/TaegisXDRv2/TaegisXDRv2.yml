@@ -531,7 +531,7 @@ script:
     outputs:
     - contextPath: TaegisXDR.ShareLink
       description: Results from creating the ShareLink.
-    description: Create a ShareLink to a Taegis element, such as an alert or investigation.
+    description: Creates a ShareLink to a Taegis element, such as an alert or investigation.
   - name: taegis-fetch-events
     arguments:
     - name: ids
