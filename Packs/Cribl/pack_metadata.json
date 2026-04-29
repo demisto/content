@@ -1,0 +1,23 @@
+{
+    "name": "Cribl",
+    "description": "Query, retrieve, and manage search jobs, datasets, and saved searches in Cribl Search across your Cribl Cloud deployment. Run synchronous queries, create and manage long-running search jobs, and explore configured datasets and saved searches.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Cribl"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "created": "2026-04-15T10:37:20Z"
+}
