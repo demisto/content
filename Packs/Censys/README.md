@@ -8,9 +8,8 @@ Leveraging industry-leading data accuracy, advanced analytics, and robust search
 
 This Integration facilitates the automatic enrichment of data within Palo Alto with information from our Censys Platform, benefiting threat hunters, incident responders, and threat analysts.
 
-## Use Cases
+## What does this pack do?
 
-What does this pack do?
 The commands in this pack help you retrieve the most accurate and fresh data from Censys Platform helping you navigate Incident Response work faster.
 They also help automate repetitive tasks associated with:
 
@@ -27,3 +26,8 @@ To fully leverage the capabilities of this integration, customers need a Censys 
 ## Dashboard
 
 - **Censys SOAR Dashboard**: This dashboard displays the total number of times the Censys playbook and Censys commands have been executed, including breakdown by execution type.
+
+## Playbooks
+
+- **Indicator Enrichment - Censys**: This playbook enriches the IP addresses, domains, and SHA256 file hashes indicators with Censys threat intelligence data.
+![Indicator Enrichment - Censys](./doc_files/Indicator_Enrichment_-_Censys.png)

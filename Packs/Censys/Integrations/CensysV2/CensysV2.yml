@@ -446,7 +446,7 @@ script:
       type: String
     - contextPath: Censys.Search.parsed.subject.common_name
       description: Common name(s) from the certificate subject.
-      type: Unknown
+      type: String
     - contextPath: Censys.Search.parsed.signature.self_signed
       description: Whether the certificate is self-signed.
       type: Boolean
@@ -589,9 +589,9 @@ script:
       default: true
       type: textArea
     - name: port
-      description: A comma-separated ports associated with the domain.
+      description: A comma-separated list of ports associated with the domain.
       isArray: true
-      defaultValue: "80, 443"
+      defaultValue: "80,443"
     description: Return all related IPs as relationships.
     outputs:
     - contextPath: Censys.Domain.location.postal_code
@@ -965,7 +965,7 @@ script:
       type: String
     - contextPath: Censys.HostEventHistory.extensions
       description: The extensions associated with the host event history.
-      type: Unknown
+      type: String
   - name: cen-rescan
     polling: true
     arguments:
@@ -985,7 +985,7 @@ script:
       required: true
       defaultValue: '443'
     - name: protocol
-      description: "Specify the service protocol.\n\nNote:This argument is required only if the IOC type is Service."
+      description: "Specify the service protocol.\n\nNote: This argument is required only if the IOC type is Service."
       required: false
     - name: transport_protocol
       description: "Specify the transport protocol.\n\nNote: This argument is required only if the IOC type is Service."
@@ -1023,7 +1023,7 @@ script:
       type: Number
     - contextPath: Censys.Rescan.enrichment_data.labels
       description: Labels associated with the host.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.location.continent
       description: The continent of the host's detected location.
       type: String
@@ -1074,7 +1074,7 @@ script:
       type: String
     - contextPath: Censys.Rescan.enrichment_data.whois.network.cidrs
       description: The WHOIS network CIDRs.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.whois.network.created
       description: The creation date of the WHOIS network record.
       type: Date
@@ -1092,13 +1092,13 @@ script:
       type: String
     - contextPath: Censys.Rescan.enrichment_data.whois.organization.abuse_contacts
       description: The WHOIS organization abuse contacts.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.whois.organization.admin_contacts
       description: The WHOIS organization admin contacts.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.services
       description: List of services detected on the host.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.services.port
       description: The port the service was reached at.
       type: Number
@@ -1110,7 +1110,7 @@ script:
       type: String
     - contextPath: Censys.Rescan.enrichment_data.services.software
       description: Software identified on the service.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.services.software.source
       description: The source of the software identification.
       type: String
@@ -1128,16 +1128,16 @@ script:
       type: String
     - contextPath: Censys.Rescan.enrichment_data.services.labels
       description: Labels associated with the service.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.services.labels.value
       description: The value of the service label.
       type: String
     - contextPath: Censys.Rescan.enrichment_data.services.threats
       description: Threats detected on the service.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.services.vulns
       description: Vulnerabilities detected on the service.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.services.ip
       description: The IP address of the service.
       type: String
@@ -1158,13 +1158,13 @@ script:
       type: Date
     - contextPath: Censys.Rescan.enrichment_data.dns.names
       description: DNS names associated with the host.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.dns.forward_dns.names
       description: Forward DNS names for the host.
-      type: Unknown
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.dns.reverse_dns.names
       description: Reverse DNS names for the host.
-      type: Unknown
+      type: String
     - contextPath: IP.Address
       description: The IP address.
       type: String
@@ -1260,7 +1260,7 @@ script:
     - contextPath: Censys.RelatedInfrastructure.ioc_value
       description: The value of the IOC.
       type: String
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

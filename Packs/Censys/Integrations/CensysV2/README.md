@@ -169,7 +169,7 @@ Return previews of hosts matching a specified search query or a list of certific
 | Censys.Search.parsed.validity_period.not_after | Date | Timestamp of when the certificate expires. Time zone is UTC. |
 | Censys.Search.parsed.validity_period.not_before | Date | Timestamp of when the certificate is first valid. Time zone is UTC. |
 | Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. |
-| Censys.Search.parsed.subject.common_name | Unknown | Common name\(s\) from the certificate subject. |
+| Censys.Search.parsed.subject.common_name | String | Common name\(s\) from the certificate subject. |
 | Censys.Search.parsed.signature.self_signed | Boolean | Whether the certificate is self-signed. |
 | Censys.Search.valid_to | String | Timestamp of when the certificate is valid to. |
 | Censys.Search.self_signed | Boolean | Whether the certificate is self-signed. |
@@ -249,7 +249,7 @@ Return all related IPs as relationships.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | A comma-separated list of domains to check. | Required |
-| port | A comma-separated ports associated with the domain. Default is 80, 443. | Optional |
+| port | A comma-separated list of ports associated with the domain. Default is 80,443. | Optional |
 
 #### Context Output
 
@@ -1865,7 +1865,7 @@ Retrieve the event history for a host (IP address).
 | Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.email | String | The email address of the technical contact in WHOIS data. |
 | Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.handle | String | The handle identifier of the technical contact in WHOIS data. |
 | Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.name | String | The name of the technical contact in WHOIS data. |
-| Censys.HostEventHistory.extensions | Unknown | The extensions associated with the host event history. |
+| Censys.HostEventHistory.extensions | String | The extensions associated with the host event history. |
 
 #### Command example
 
@@ -2007,7 +2007,7 @@ Initiate a live rescan for a known host service at a specific IP and port (ip:po
 | ioc_type | Specify the type of IOC. Possible values are: Service, Web Property. Default is Service. | Required |
 | ioc_value | Specify the value of IOC. | Required |
 | port | Specify the port number associated with the IOC. Default is 443. | Required |
-| protocol | Specify the service protocol.<br/><br/>Note:This argument is required only if the IOC type is Service. | Optional |
+| protocol | Specify the service protocol.<br/><br/>Note: This argument is required only if the IOC type is Service. | Optional |
 | transport_protocol | Specify the transport protocol.<br/><br/>Note: This argument is required only if the IOC type is Service. Possible values are: Unknown, TCP, UDP, ICMP, QUIC. Default is Unknown. | Optional |
 
 #### Context Output
@@ -2019,7 +2019,7 @@ Initiate a live rescan for a known host service at a specific IP and port (ip:po
 | Censys.Rescan.is_completed | Boolean | Whether the rescan has completed. |
 | Censys.Rescan.enrichment_data.ip | String | The IP address of the rescanned host. |
 | Censys.Rescan.enrichment_data.service_count | Number | The total number of services detected on the host. |
-| Censys.Rescan.enrichment_data.labels | Unknown | Labels associated with the host. |
+| Censys.Rescan.enrichment_data.labels | String | Labels associated with the host. |
 | Censys.Rescan.enrichment_data.location.continent | String | The continent of the host's detected location. |
 | Censys.Rescan.enrichment_data.location.country | String | The name of the country of the host's detected location. |
 | Censys.Rescan.enrichment_data.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location. |
@@ -2036,37 +2036,37 @@ Initiate a live rescan for a known host service at a specific IP and port (ip:po
 | Censys.Rescan.enrichment_data.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code. |
 | Censys.Rescan.enrichment_data.whois.network.handle | String | The WHOIS network handle identifier. |
 | Censys.Rescan.enrichment_data.whois.network.name | String | The WHOIS network name. |
-| Censys.Rescan.enrichment_data.whois.network.cidrs | Unknown | The WHOIS network CIDRs. |
+| Censys.Rescan.enrichment_data.whois.network.cidrs | String | The WHOIS network CIDRs. |
 | Censys.Rescan.enrichment_data.whois.network.created | Date | The creation date of the WHOIS network record. |
 | Censys.Rescan.enrichment_data.whois.network.updated | Date | The last update date of the WHOIS network record. |
 | Censys.Rescan.enrichment_data.whois.organization.handle | String | The WHOIS organization handle identifier. |
 | Censys.Rescan.enrichment_data.whois.organization.name | String | The WHOIS organization name. |
 | Censys.Rescan.enrichment_data.whois.organization.address | String | The WHOIS organization address. |
-| Censys.Rescan.enrichment_data.whois.organization.abuse_contacts | Unknown | The WHOIS organization abuse contacts. |
-| Censys.Rescan.enrichment_data.whois.organization.admin_contacts | Unknown | The WHOIS organization admin contacts. |
-| Censys.Rescan.enrichment_data.services | Unknown | List of services detected on the host. |
+| Censys.Rescan.enrichment_data.whois.organization.abuse_contacts | String | The WHOIS organization abuse contacts. |
+| Censys.Rescan.enrichment_data.whois.organization.admin_contacts | String | The WHOIS organization admin contacts. |
+| Censys.Rescan.enrichment_data.services | String | List of services detected on the host. |
 | Censys.Rescan.enrichment_data.services.port | Number | The port the service was reached at. |
 | Censys.Rescan.enrichment_data.services.protocol | String | The name of the service on the port. |
 | Censys.Rescan.enrichment_data.services.transport_protocol | String | The transport protocol used to contact this service. |
-| Censys.Rescan.enrichment_data.services.software | Unknown | Software identified on the service. |
+| Censys.Rescan.enrichment_data.services.software | String | Software identified on the service. |
 | Censys.Rescan.enrichment_data.services.software.source | String | The source of the software identification. |
 | Censys.Rescan.enrichment_data.services.software.confidence | Number | The confidence level of the software identification. |
 | Censys.Rescan.enrichment_data.services.software.part | String | The part classification of the software in CPE format. |
 | Censys.Rescan.enrichment_data.services.software.vendor | String | The vendor of the identified software. |
 | Censys.Rescan.enrichment_data.services.software.product | String | The product name of the identified software. |
-| Censys.Rescan.enrichment_data.services.labels | Unknown | Labels associated with the service. |
+| Censys.Rescan.enrichment_data.services.labels | String | Labels associated with the service. |
 | Censys.Rescan.enrichment_data.services.labels.value | String | The value of the service label. |
-| Censys.Rescan.enrichment_data.services.threats | Unknown | Threats detected on the service. |
-| Censys.Rescan.enrichment_data.services.vulns | Unknown | Vulnerabilities detected on the service. |
+| Censys.Rescan.enrichment_data.services.threats | String | Threats detected on the service. |
+| Censys.Rescan.enrichment_data.services.vulns | String | Vulnerabilities detected on the service. |
 | Censys.Rescan.enrichment_data.services.ip | String | The IP address of the service. |
 | Censys.Rescan.enrichment_data.services.scan_time | Date | The time when the service was scanned. |
 | Censys.Rescan.enrichment_data.services.banner | String | The banner returned by the service. |
 | Censys.Rescan.enrichment_data.services.banner_hash_sha256 | String | The SHA-256 hash of the service banner. |
 | Censys.Rescan.enrichment_data.services.banner_hex | String | The hexadecimal representation of the service banner. |
 | Censys.Rescan.enrichment_data.dns.reverse_dns.resolve_time | Date | The time when reverse DNS was resolved. |
-| Censys.Rescan.enrichment_data.dns.names | Unknown | DNS names associated with the host. |
-| Censys.Rescan.enrichment_data.dns.forward_dns.names | Unknown | Forward DNS names for the host. |
-| Censys.Rescan.enrichment_data.dns.reverse_dns.names | Unknown | Reverse DNS names for the host. |
+| Censys.Rescan.enrichment_data.dns.names | String | DNS names associated with the host. |
+| Censys.Rescan.enrichment_data.dns.forward_dns.names | String | Forward DNS names for the host. |
+| Censys.Rescan.enrichment_data.dns.reverse_dns.names | String | Reverse DNS names for the host. |
 | IP.Address | String | The IP address. |
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". |
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. |
@@ -2435,5 +2435,5 @@ Initiate a CensEye (Related Infrastructure) pivot analysis job for a Host, Web P
 >|---|---|---|---|
 >| host.services.banner_hash_sha256 | 0000000000000000000000000000000000000000000000000000000000000001 | 5395 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.banner_hash_sha256+%3D+%220000000000000000000000000000000000000000000000000000000000000001%22) |
 >| host.services.endpoints.banner_hash_sha256 | 0000000000000000000000000000000000000000000000000000000000000001 | 5395 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.banner_hash_sha256+%3D+%220000000000000000000000000000000000000000000000000000000000000001%22) |
->| host.services.endpoints.http.headers.key<br>host.services.endpoints.http.headers.value | Content-Type<br>text/plain | 36216 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Content-Type%22+and+value+%3D+%22text%2Fplain%22%29) |
->| host.services.endpoints.http.headers.key<br>host.services.endpoints.http.headers.value | Connection<br>close | 123620 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Connection%22+and+value+%3D+%22close%22%29) |
+>| host.services.endpoints.http.headers.key<br/>host.services.endpoints.http.headers.value | Content-Type<br/>text/plain | 36216 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Content-Type%22+and+value+%3D+%22text%2Fplain%22%29) |
+>| host.services.endpoints.http.headers.key<br/>host.services.endpoints.http.headers.value | Connection<br/>close | 123620 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Connection%22+and+value+%3D+%22close%22%29) |

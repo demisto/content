@@ -22,8 +22,6 @@ from CensysV2 import (
     ip_command,
     main,
     run_polling_command,
-)
-from CensysV2 import (
     test_module as censys_test_module,
 )
 from CommonServerPython import Common, DemistoException
@@ -1205,10 +1203,7 @@ def test_censys_host_history_list_command_success_with_pagination(client, reques
         - Ensure HR output contains correct headers and data
         - Ensure context output matches expected structure
     """
-    import CensysV2
-
-    # Mock MAX_NUMBER_OF_RECORDS to 8
-    mocker.patch.object(CensysV2, "MAX_NUMBER_OF_RECORDS", 8)
+    mocker.patch("CensysV2.MAX_NUMBER_OF_RECORDS", 8)
 
     # Load test data
     api_responses = util_load_json("host_history_api_response.json")
@@ -1298,10 +1293,7 @@ def test_censys_host_history_list_command_pagination_scanned_to_boundary(client,
         - Ensure partial_data is False
         - Ensure HR output contains correct headers and data
     """
-    import CensysV2
-
-    # Mock MAX_NUMBER_OF_RECORDS to 8
-    mocker.patch.object(CensysV2, "MAX_NUMBER_OF_RECORDS", 10)
+    mocker.patch("CensysV2.MAX_NUMBER_OF_RECORDS", 10)
 
     # Load test data
     api_responses = util_load_json("host_history_api_response.json")
@@ -1858,7 +1850,6 @@ def test_run_polling_command_completed_scan(client, requests_mock):
     result = run_polling_command(client, args, "cen-rescan", censys_rescan_command)
 
     # Should return single CommandResults, not a list
-    assert isinstance(result, type(result))
     assert not isinstance(result, list)
     assert result.outputs.get("is_completed") is True
     assert result.outputs.get("status") == "completed"

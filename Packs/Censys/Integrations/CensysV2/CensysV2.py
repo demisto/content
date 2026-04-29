@@ -146,7 +146,7 @@ class Client(BaseClient):
             if response_type == "json":
                 result = res.json()
             if response_type == "content":
-                result = res.content()
+                result = res.content
             if response_type == "response":
                 result = res
             if response_type == "text":
@@ -229,7 +229,7 @@ class Client(BaseClient):
         Returns:
             API response containing scan ID and status
         """
-        url_suffix = ENDPOINTS["INITIATE_RESCAN"].format(ioc_value, port, protocol)
+        url_suffix = ENDPOINTS["INITIATE_RESCAN"]
         if ioc_type.lower() == "service":
             body = {
                 "target": {
@@ -478,10 +478,9 @@ def get_dbot_score(params: dict, result_labels: list):
 
 
 def trim_spaces_from_args(args: dict) -> dict:
-    """Trim leading/trailing spaces from argument values and normalize comma-separated lists.
+    """Trim leading/trailing spaces from argument values.
 
-    For string values, removes leading and trailing whitespace. For comma-separated values,
-    splits them into a list, trims each item, removes empty items, and rejoins with commas.
+    For string values, removes leading and trailing whitespace.
 
     Args:
         args: Dictionary of command arguments to process.
@@ -490,8 +489,8 @@ def trim_spaces_from_args(args: dict) -> dict:
         The same dictionary with trimmed values (modifies in-place and returns).
 
     Example:
-        >>> trim_spaces_from_args({'key': '  value  ', 'list': 'a, b , c'})
-        {'key': 'value', 'list': 'a,b,c'}
+        >>> trim_spaces_from_args({'key': '  value  '})
+        {'key': 'value'}
     """
     for key, val in args.items():
         if isinstance(val, str):
@@ -1337,7 +1336,7 @@ def domain_command(client: Client, args: dict, params: dict):
             if "webproperty_v1" in hit:
                 resource = demisto.get(hit, "webproperty_v1.resource", {})
                 hostname = resource.get("hostname", "")
-                domain_hits[hostname].append(hit)
+                domain_hits.setdefault(hostname, []).append(hit)
                 found_domains.add(hostname)
                 continue
 
