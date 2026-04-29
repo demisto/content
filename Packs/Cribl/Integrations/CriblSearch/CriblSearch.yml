@@ -196,10 +196,10 @@ script:
       description: The sampling rate for the search (0-1).
     - name: num_events_before
       required: false
-      description: Number of events to include before the target event.
+      description: The number of events to include before the target event.
     - name: num_events_after
       required: false
-      description: Number of events to include after the target event.
+      description: The number of events to include after the target event.
     - name: target_event_time
       required: false
       description: The target event time (epoch seconds).
@@ -215,13 +215,13 @@ script:
       description: The expected output type for the search.
     outputs:
     - contextPath: Cribl.SearchJob.id
-      description: Unique identifier of the search job.
+      description: The unique identifier of the search job.
       type: String
     - contextPath: Cribl.SearchJob.user
-      description: User identifier (client ID) that created the job.
+      description: The user identifier (client ID) that created the job.
       type: String
     - contextPath: Cribl.SearchJob.displayUsername
-      description: Display name of the user who created the job.
+      description: The display name of the user who created the job.
       type: String
     - contextPath: Cribl.SearchJob.group
       description: The search group the job belongs to.
