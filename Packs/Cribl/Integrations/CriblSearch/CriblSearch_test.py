@@ -2,6 +2,7 @@ import demistomock as demisto
 import pytest
 from pytest_mock import MockerFixture
 import json
+from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -19,7 +20,7 @@ def load_mock_response(file_path: str) -> dict | list:
     Returns:
         dict | list: The parsed JSON content.
     """
-    with open(f"test_data/{file_path}") as f:
+    with (Path(__file__).parent / "test_data" / file_path).open() as f:
         return json.load(f)
 
 
