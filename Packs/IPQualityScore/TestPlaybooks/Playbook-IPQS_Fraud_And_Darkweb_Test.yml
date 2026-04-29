@@ -1,0 +1,992 @@
+id: IPQS Fraud and Darkweb Test
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: IPQS Fraud and Darkweb Test
+description: The playbook analyzes IP addresses, URLs, email addresses, and phone
+  numbers using IPQS fraud scoring to assess risk based on reputation, abuse patterns,
+  and fraud signals. It also checks usernames, passwords, and email addresses against
+  IPQS leaked data endpoints to identify potential exposure in known data breaches.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bba28a47-9f41-4c3e-849f-9cdf0ea6048e
+    type: start
+    task:
+      id: bba28a47-9f41-4c3e-849f-9cdf0ea6048e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 90a67b33-ccd8-45a9-8bc8-6da53a04fe3a
+    type: regular
+    task:
+      id: 90a67b33-ccd8-45a9-8bc8-6da53a04fe3a
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "9"
+        - "12"
+        - "15"
+        - "24"
+        - "2"
+        - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 81d34571-8fdc-4f49-88df-a7455fe04c6b
+    type: condition
+    task:
+      id: 81d34571-8fdc-4f49-88df-a7455fe04c6b
+      version: -1
+      name: Has URL?
+      description: commands.local.cmd.extract.indicators
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "10"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: incident.urls
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 40542d43-21c5-4b10-86bb-42bb9355dbcb
+    type: regular
+    task:
+      id: 40542d43-21c5-4b10-86bb-42bb9355dbcb
+      version: -1
+      name: IP Reputation
+      description: Runs reputation on IPs.
+      script: IPQualityScore|||ipqs-ip-reputation
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "6"
+    scriptarguments:
+      ip:
+        simple: ${incident.ip}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b67cb8a9-5258-4d32-8c4e-2f6069060017
+    type: condition
+    task:
+      id: b67cb8a9-5258-4d32-8c4e-2f6069060017
+      version: -1
+      name: Is IP High Risk ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "7"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: IPQualityScore.IP.fraud_score
+                iscontext: true
+              right:
+                value:
+                  simple: "80"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0ce05e6d-2b97-4f9b-8ec1-76ffbeab9dbb
+    type: regular
+    task:
+      id: 0ce05e6d-2b97-4f9b-8ec1-76ffbeab9dbb
+      version: -1
+      name: Set Severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      "#none#":
+        - "28"
+    scriptarguments:
+      severity:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 31d21208-52e5-443e-8174-dce1428e1af4
+    type: condition
+    task:
+      id: 31d21208-52e5-443e-8174-dce1428e1af4
+      version: -1
+      name: Has IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: incident.ip
+                iscontext: true
+              right:
+                value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5a8f4952-2157-476e-8ef5-c80ab2475f14
+    type: regular
+    task:
+      id: 5a8f4952-2157-476e-8ef5-c80ab2475f14
+      version: -1
+      name: URL Reputation
+      description: Runs reputation on URLs.
+      script: IPQualityScore|||ipqs-url-reputation
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "11"
+    scriptarguments:
+      url:
+        simple: ${incident.urls}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e92c7296-8886-4b63-8fba-318c23daf8bf
+    type: condition
+    task:
+      id: e92c7296-8886-4b63-8fba-318c23daf8bf
+      version: -1
+      name: Is URL High Risk?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "7"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: IPQualityScore.Url.risk_score
+                iscontext: true
+              right:
+                value:
+                  simple: "80"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 7e6049d6-6f20-4c21-80ca-84ac58d81e01
+    type: condition
+    task:
+      id: 7e6049d6-6f20-4c21-80ca-84ac58d81e01
+      version: -1
+      name: Has Phone?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "13"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: incident.phonenumber
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: cbc467f0-783c-4e44-8bb0-a7d206ab310f
+    type: regular
+    task:
+      id: cbc467f0-783c-4e44-8bb0-a7d206ab310f
+      version: -1
+      name: Phone Validation & Reputation
+      description: Runs validation and reputation on phone numbers.
+      script: IPQualityScore|||ipqs-phone-reputation
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "14"
+    scriptarguments:
+      phone:
+        simple: ${incident.phonenumber}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 66518189-10b1-46d7-8195-58b23196e26c
+    type: condition
+    task:
+      id: 66518189-10b1-46d7-8195-58b23196e26c
+      version: -1
+      name: Is Phone High Risk?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "7"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: IPQualityScore.Phone.fraud_score
+                iscontext: true
+              right:
+                value:
+                  simple: "80"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: fad1b237-8df0-4f12-84b3-3df68c100f88
+    type: condition
+    task:
+      id: fad1b237-8df0-4f12-84b3-3df68c100f88
+      version: -1
+      name: Has Email?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "16"
+        - "18"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: incident.email
+                iscontext: true
+              right:
+                value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e7b548fd-897e-468c-8cba-e81482348b36
+    type: regular
+    task:
+      id: e7b548fd-897e-468c-8cba-e81482348b36
+      version: -1
+      name: Email Reputation
+      description: Runs reputation on email addresses.
+      script: IPQualityScore|||ipqs-email-reputation
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "17"
+    scriptarguments:
+      email:
+        simple: ${incident.email}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 47f4b01c-d6eb-4cbb-87a1-a5438836807f
+    type: condition
+    task:
+      id: 47f4b01c-d6eb-4cbb-87a1-a5438836807f
+      version: -1
+      name: Is Email High Risk?
+      description: Runs reputation on email addresses.
+      type: condition
+      iscommand: false
+      brand: IPQualityScore
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "7"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: IPQualityScore.Email.fraud_score
+                iscontext: true
+              right:
+                value:
+                  simple: "80"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: dc0cd3dc-7622-4d87-8591-48bf3a22ac74
+    type: regular
+    task:
+      id: dc0cd3dc-7622-4d87-8591-48bf3a22ac74
+      version: -1
+      name: Leaked Email
+      description: Checks if an email has been leaked in known breaches.
+      script: IPQualityScore|||ipqs-email-leaked
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "19"
+    scriptarguments:
+      email:
+        simple: ${incident.email}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: fbcf2b65-f2e3-4c1f-89ff-9bb51a18311c
+    type: condition
+    task:
+      id: fbcf2b65-f2e3-4c1f-89ff-9bb51a18311c
+      version: -1
+      name: Is Email Exposed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "29"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: IPQualityScore.LeakedEmail.exposed
+                iscontext: true
+              right:
+                value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 5d5211cf-4ede-482b-82a1-96e256cb90a9
+    type: condition
+    task:
+      id: 5d5211cf-4ede-482b-82a1-96e256cb90a9
+      version: -1
+      name: Has Username?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "21"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: incident.username
+                iscontext: true
+              right:
+                value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a8c5180d-12f1-4138-8c57-4544cb086db6
+    type: regular
+    task:
+      id: a8c5180d-12f1-4138-8c57-4544cb086db6
+      version: -1
+      name: Leaked Username
+      description: Checks if a username has been leaked in known breaches.
+      script: IPQualityScore|||ipqs-username-leaked
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "22"
+    scriptarguments:
+      username:
+        simple: ${incident.username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7c9b7a4f-362f-4c7c-8457-2cb35e638f99
+    type: condition
+    task:
+      id: 7c9b7a4f-362f-4c7c-8457-2cb35e638f99
+      version: -1
+      name: Is Username Exposed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "29"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: IPQualityScore.Username.exposed
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6f227e59-4d12-40a7-8517-29caec25ca27
+    type: condition
+    task:
+      id: 6f227e59-4d12-40a7-8517-29caec25ca27
+      version: -1
+      name: Has Password?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "25"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: incident.password
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f5e4ca10-21dc-4b1d-82bc-0b3be22e2c43
+    type: regular
+    task:
+      id: f5e4ca10-21dc-4b1d-82bc-0b3be22e2c43
+      version: -1
+      name: Leaked Password
+      description: Checks if a password has been leaked in known breaches.
+      script: IPQualityScore|||ipqs-password-leaked
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      "#none#":
+        - "26"
+    scriptarguments:
+      password:
+        simple: ${incident.password}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ebfa5678-620e-4814-8a01-54ee301933e1
+    type: condition
+    task:
+      id: ebfa5678-620e-4814-8a01-54ee301933e1
+      version: -1
+      name: Is Password Exposed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "28"
+      "yes":
+        - "29"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: IPQualityScore.Password.exposed
+                iscontext: true
+              right:
+                value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: c2e20883-b326-40e7-8814-a56a6485e441
+    type: title
+    task:
+      id: c2e20883-b326-40e7-8814-a56a6485e441
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: cc30c1f4-97fa-4b66-8289-4027b17e447c
+    type: regular
+    task:
+      id: cc30c1f4-97fa-4b66-8289-4027b17e447c
+      version: -1
+      name: Set Severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      "#none#":
+        - "28"
+    scriptarguments:
+      severity:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2275,
+        "width": 2970,
+        "x": -540,
+        "y": -20
+      }
+    }
+  }
+inputs: []
+outputs: []
