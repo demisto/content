@@ -7,7 +7,7 @@ Automation to determine which interface on an EC2 instance has a given public IP
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Cortex XSOAR Version | 6.5.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Dependencies
 

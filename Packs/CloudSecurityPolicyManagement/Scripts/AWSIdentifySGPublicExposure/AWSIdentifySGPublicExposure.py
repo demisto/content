@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any
 import traceback
 
 
@@ -24,12 +23,14 @@ def ec2_instance_info(
             - List of its security groups
             - The AWS integration instance used to retrieve the information
     """
-    cmd_args = {
+    cmd_args: dict[str, str] = {
         "instance_ids": instance_id,
         "region": region,
         "account_id": account_id,
-        "using": integration_instance if integration_instance else None,
+        "using": integration_instance,
     }
+
+    remove_nulls_from_dictionary(cmd_args)
 
     result = demisto.executeCommand("aws-ec2-instances-describe", cmd_args)
 
@@ -48,10 +49,15 @@ def ec2_instance_info(
     else:
         instance_info = result
 
-    if isError(instance_info) or not instance_info:
+    if not instance_info:
+        raise DemistoException(
+            "Error retrieving instance network interface details with command 'aws-ec2-instances-describe'.\n"
+            "Error: No results returned."
+        )
+    if isError(instance_info):
         raise DemistoException(
             f"Error retrieving instance network interface details with command 'aws-ec2-instances-describe'.\n"
-            f"Error: {json.dumps(instance_info[0]['Contents'])}"
+            f"Error: {json.dumps(instance_info[0].get('Contents', ''))}"
         )
 
     interfaces = dict_safe_get(instance_info, (0, "Contents", "Reservations", 0, "Instances", 0, "NetworkInterfaces"))
@@ -61,15 +67,15 @@ def ec2_instance_info(
         for interface in interfaces:
             if interface.get("Association") and interface.get("Association").get("PublicIp") == public_ip:
                 group_list = []
-                for sg in interface["Groups"]:
-                    group_list.append(sg["GroupId"])
-                return interface["NetworkInterfaceId"], group_list, instance_to_use
+                for sg in interface.get("Groups", []):
+                    group_list.append(sg.get("GroupId", ""))
+                return interface.get("NetworkInterfaceId", ""), group_list, instance_to_use
 
     # Raise an error if no interface was found with the given public IP
     raise ValueError("Unable to find interface associated with the given public IP address.")
 
 
-def identify_sgs(args: dict[str, Any]) -> CommandResults:
+def identify_sgs(args: dict[str, str]) -> CommandResults:
     """
     Main command that determines what EC2 network interface has a given public IP address and lists its security groups.
 
@@ -84,30 +90,33 @@ def identify_sgs(args: dict[str, Any]) -> CommandResults:
             - SecurityGroups: List of associated security group IDs
     """
 
-    account_id = args.get("account_id", "")
-    instance_id = args.get("instance_id", "")
-    public_ip = args.get("public_ip", "")
-    region = args.get("region", "")
+    account_id = args["account_id"]
+    instance_id = args["instance_id"]
+    public_ip = args["public_ip"]
+    region = args["region"]
     integration_instance = args.get("integration_instance", "")
 
     ec2_interface, sg_list, instance_to_use = ec2_instance_info(account_id, instance_id, public_ip, region, integration_instance)
 
+    outputs = {
+        "EC2InstanceID": instance_id,
+        "NetworkInterfaceID": ec2_interface,
+        "PublicIP": public_ip,
+        "SecurityGroups": sg_list,
+        "IntegrationInstance": instance_to_use,
+    }
+
     readable_output = (
-        f"EC2 instance {instance_id} has public IP {public_ip} on ENI {ec2_interface}: \r\n"
+        f"EC2 instance {instance_id} has public IP {public_ip} on ENI {ec2_interface}:\n"
         f"Associated Security Groups: {', '.join(sg_list)}."
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_key_field="EC2InstanceID",
-        outputs={
-            "EC2InstanceID": instance_id,
-            "NetworkInterfaceID": ec2_interface,
-            "PublicIP": public_ip,
-            "SecurityGroups": sg_list,
-            "IntegrationInstance": instance_to_use,
-        },
+        outputs=outputs,
         outputs_prefix="AWSPublicExposure.SGAssociations",
+        raw_response=outputs,
     )
 
 

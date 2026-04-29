@@ -3,7 +3,7 @@ import pytest
 import json
 import copy
 import ipaddress
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException  # noqa: F401
 
 
 def util_load_json(path):
@@ -312,6 +312,113 @@ def test_split_rule_all_traffic_preserves_multiple_private_cidrs():
     assert private_rule["Ipv6Ranges"][0]["CidrIpv6"] == "fd00::/8"
 
 
+def test_split_rule_port_zero_from_port():
+    """Tests that split_rule handles port 0 correctly when it is at the start of a range.
+
+    Given:
+        - A rule with FromPort=0 and ToPort=100, and port=0
+    When:
+        - split_rule is called to exclude port 0
+    Then:
+        - The result contains a single rule with FromPort=1 (no invalid ToPort=-1 rule is created)
+    """
+    from AWSRemediateSG import split_rule
+
+    rule = {
+        "IpProtocol": "tcp",
+        "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+        "FromPort": 0,
+        "ToPort": 100,
+    }
+
+    result = split_rule(rule, port=0, protocol="tcp")
+
+    assert len(result) == 1
+    assert result[0]["FromPort"] == 1
+    assert result[0]["ToPort"] == 100
+
+
+def test_split_rule_port_zero_all_traffic():
+    """Tests that split_rule handles port 0 correctly for all-traffic rules.
+
+    Given:
+        - An all-traffic rule (no FromPort) with public CIDRs, and port=0
+    When:
+        - split_rule is called to exclude TCP port 0
+    Then:
+        - No rule with ToPort=-1 is created (the "below port" rule is skipped)
+        - The result contains the "above port" rule (FromPort=1, ToPort=65535) and the opposite protocol rule
+    """
+    from AWSRemediateSG import split_rule
+
+    rule = {
+        "IpProtocol": "-1",
+        "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+    }
+
+    result = split_rule(rule, port=0, protocol="tcp")
+
+    # Should have 2 rules: tcp 1-65535 and udp 0-65535 (no tcp 0 to -1 rule)
+    assert len(result) == 2
+    # First rule: tcp ports above port 0
+    assert result[0]["IpProtocol"] == "tcp"
+    assert result[0]["FromPort"] == 1
+    assert result[0]["ToPort"] == 65535
+    # Second rule: opposite protocol (udp) all ports
+    assert result[1]["IpProtocol"] == "udp"
+    assert result[1]["FromPort"] == 0
+    assert result[1]["ToPort"] == 65535
+    # Verify no rule has a negative port
+    for r in result:
+        assert r.get("FromPort", 0) >= 0
+        assert r.get("ToPort", 0) >= 0
+
+
+def test_split_rule_port_65535_all_traffic():
+    """Tests that split_rule handles port 65535 correctly for all-traffic rules.
+
+    Given:
+        - An all-traffic rule (no FromPort) with public CIDRs, and port=65535
+    When:
+        - split_rule is called to exclude TCP port 65535
+    Then:
+        - No rule with FromPort=65536 is created (the "above port" rule is skipped)
+        - The result contains the "below port" rule (FromPort=0, ToPort=65534) and the opposite protocol rule
+    """
+    from AWSRemediateSG import split_rule
+
+    rule = {
+        "IpProtocol": "-1",
+        "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+    }
+
+    result = split_rule(rule, port=65535, protocol="tcp")
+
+    # Should have 2 rules: tcp 0-65534 and udp 0-65535 (no tcp 65536-65535 rule)
+    assert len(result) == 2
+    # First rule: tcp ports below port 65535
+    assert result[0]["IpProtocol"] == "tcp"
+    assert result[0]["FromPort"] == 0
+    assert result[0]["ToPort"] == 65534
+    # Second rule: opposite protocol (udp) all ports
+    assert result[1]["IpProtocol"] == "udp"
+    assert result[1]["FromPort"] == 0
+    assert result[1]["ToPort"] == 65535
+    # Verify no rule has a port exceeding 65535
+    for r in result:
+        assert r.get("FromPort", 0) <= 65535
+        assert r.get("ToPort", 0) <= 65535
+
+
 def test_fix_excessive_access(mocker):
     """Tests determine_excessive_access helper function.
 
@@ -330,6 +437,11 @@ def test_fix_excessive_access(mocker):
         return {"aws-ec2-security-groups-describe": SG_INFO, "aws-ec2-security-group-create": NEW_SG}.get(name)
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    remediation_ranges = [
+        ipaddress.ip_network("10.0.0.0/8"),
+        ipaddress.ip_network("172.16.0.0/12"),
+        ipaddress.ip_network("192.168.0.0/16"),
+    ]
     args = {
         "account_id": "123456789012",
         "sg_list": ["sg-00000000000000000"],
@@ -337,7 +449,7 @@ def test_fix_excessive_access(mocker):
         "protocol": "tcp",
         "integration_instance": "AWS",
         "region": "us-east-1",
-        "remediation_allow_ranges": "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16",
+        "remediation_allow_ranges": remediation_ranges,
     }
     result = fix_excessive_access(**args)
     assert result == [{"new-sg": "sg-00000000000000001", "old-sg": "sg-00000000000000000"}]
@@ -1324,3 +1436,81 @@ class TestApplyEgressRules:
         )
 
         assert original_egress == original_egress_snapshot
+
+
+def test_aws_recreate_sg_port_out_of_range():
+    """Tests aws_recreate_sg raises ValueError when port is out of valid range.
+
+    Given:
+        - A port value outside the valid range (1-65535)
+    When:
+        - Calling aws_recreate_sg
+    Then:
+        - A ValueError is raised with an appropriate message
+    """
+    from AWSRemediateSG import aws_recreate_sg
+
+    args = {
+        "account_id": "0123456789012",
+        "resource_id": "fake-instance-id",
+        "sg_list": "sg-00000000000000000",
+        "port": "70000",
+        "protocol": "tcp",
+        "region": "us-east-1",
+        "integration_instance": "AWS",
+    }
+
+    with pytest.raises(ValueError, match="Port must be between 1 and 65535"):
+        aws_recreate_sg(args)
+
+
+def test_aws_recreate_sg_port_zero():
+    """Tests aws_recreate_sg raises ValueError when port is 0.
+
+    Given:
+        - Port 0 which is outside the valid TCP/UDP range for security group remediation
+    When:
+        - Calling aws_recreate_sg
+    Then:
+        - A ValueError is raised with an appropriate message
+    """
+    from AWSRemediateSG import aws_recreate_sg
+
+    args = {
+        "account_id": "0123456789012",
+        "resource_id": "fake-instance-id",
+        "sg_list": "sg-00000000000000000",
+        "port": "0",
+        "protocol": "tcp",
+        "region": "us-east-1",
+        "integration_instance": "AWS",
+    }
+
+    with pytest.raises(ValueError, match="Port must be between 1 and 65535"):
+        aws_recreate_sg(args)
+
+
+def test_aws_recreate_sg_port_negative():
+    """Tests aws_recreate_sg raises ValueError when port is negative.
+
+    Given:
+        - A negative port value
+    When:
+        - Calling aws_recreate_sg
+    Then:
+        - A ValueError is raised with an appropriate message
+    """
+    from AWSRemediateSG import aws_recreate_sg
+
+    args = {
+        "account_id": "0123456789012",
+        "resource_id": "fake-instance-id",
+        "sg_list": "sg-00000000000000000",
+        "port": "-1",
+        "protocol": "tcp",
+        "region": "us-east-1",
+        "integration_instance": "AWS",
+    }
+
+    with pytest.raises(ValueError, match="Port must be between 1 and 65535"):
+        aws_recreate_sg(args)

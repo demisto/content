@@ -32,7 +32,7 @@ def _run_command(command: str, args: dict, *, ignore_already_exists: bool = Fals
         if ignore_already_exists and "already exists" in result[0].get("Contents", ""):
             return result
         raise DemistoException(  # noqa: F405
-            f"Error executing '{command}'.\nError: {json.dumps(result[0]['Contents'])}"
+            f"Error executing '{command}'.\nError: {json.dumps(result[0].get('Contents', ''))}"
         )
     return result
 
@@ -57,7 +57,7 @@ def parse_tag_field(tags_string: str | None):
         match_tag = regex.match(tag)
         if match_tag is None:
             raise ValueError(
-                f"Could not parse given tag data: {tag}."
+                f"Could not parse given tag data: {tag}. "
                 "Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
             )
         tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
@@ -89,16 +89,23 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     if "FromPort" in rule:
         # Port of interest is in front or back of range, therefore, edit the rule without the given port.
         # If in the middle, create an additional rule for the upper range.
-        if rule["FromPort"] == port:
+        if rule["FromPort"] == port and rule["ToPort"] == port:
+            # Single-port rule targeting exactly the port of interest — drop it entirely.
+            pass
+        elif rule["FromPort"] == port:
             rule["FromPort"] = port + 1
+            res_list.append(rule)
         elif rule["ToPort"] == port:
             rule["ToPort"] = port - 1
+            if rule["ToPort"] >= rule["FromPort"]:
+                res_list.append(rule)
         else:
             rule_copy = copy.deepcopy(rule)
             rule_copy["FromPort"] = port + 1
             res_list.append(rule_copy)
             rule["ToPort"] = port - 1
-        res_list.append(rule)
+            if rule["ToPort"] >= rule["FromPort"]:
+                res_list.append(rule)
     else:
         # Splitting up "all traffic" rules.  Creates rules for the target protocol that exclude
         # the specified port, plus a rule allowing all ports on the opposite protocol.
@@ -122,28 +129,30 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
             "UserIdGroupPairs": rule.get("UserIdGroupPairs", []),
         }
 
-        # Target protocol: all ports below the excluded port
-        res_list.append(
-            {
-                **preserved_fields,
-                "IpProtocol": protocol,
-                "IpRanges": ipv4_ranges,
-                "Ipv6Ranges": ipv6_ranges,
-                "FromPort": 0,
-                "ToPort": port - 1,
-            }
-        )
-        # Target protocol: all ports above the excluded port
-        res_list.append(
-            {
-                **preserved_fields,
-                "IpProtocol": protocol,
-                "IpRanges": ipv4_ranges,
-                "Ipv6Ranges": ipv6_ranges,
-                "FromPort": port + 1,
-                "ToPort": 65535,
-            }
-        )
+        # Target protocol: all ports below the excluded port (skip if port is 0, since there are no ports below 0)
+        if port > 0:
+            res_list.append(
+                {
+                    **preserved_fields,
+                    "IpProtocol": protocol,
+                    "IpRanges": ipv4_ranges,
+                    "Ipv6Ranges": ipv6_ranges,
+                    "FromPort": 0,
+                    "ToPort": port - 1,
+                }
+            )
+        # Target protocol: all ports above the excluded port (skip if port is 65535, since there are no ports above it)
+        if port < 65535:
+            res_list.append(
+                {
+                    **preserved_fields,
+                    "IpProtocol": protocol,
+                    "IpRanges": ipv4_ranges,
+                    "Ipv6Ranges": ipv6_ranges,
+                    "FromPort": port + 1,
+                    "ToPort": 65535,
+                }
+            )
         # Opposite protocol: all ports
         res_list.append(
             {
@@ -624,7 +633,7 @@ def identify_integration_instance(account_id: str, sg: str, region: str) -> tupl
     if isError(sg_info):  # noqa: F405
         raise DemistoException(  # noqa: F405
             f"Error retrieving security group details with command 'aws-ec2-security-groups-describe'.\n"
-            f"Error: {json.dumps(sg_info[0]['Contents'])}"
+            f"Error: {json.dumps(sg_info[0].get('Contents', ''))}"
         )
 
     instance_to_use = dict_safe_get(sg_info, (0, "Metadata", "instance"))  # noqa: F405
@@ -659,7 +668,9 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
     account_id = args.get("account_id", "")
     resource_id = args.get("resource_id", "")
     sg_list = argToList(args.get("sg_list"), ",")
-    port = int(args.get("port", 0))
+    port = arg_to_number(args.get("port"), required=True) or 0
+    if not (1 <= port <= 65535):
+        raise ValueError(f"Port must be between 1 and 65535, got {port}.")
     protocol = args.get("protocol", "")
     region = args.get("region", "")
     integration_instance = args.get("integration_instance", "")
@@ -700,22 +711,26 @@ def aws_recreate_sg(args: dict[str, Any]) -> CommandResults:
                 index = updated_sg_list.index(old_sg)
                 updated_sg_list[index] = new_sg
 
+        outputs = {
+            "ResourceID": resource_id,
+            "ReplacementSet": replace_list,
+            "UpdatedSGList": updated_sg_list,
+            "RemediationRequired": True,
+        }
         return CommandResults(
             outputs_prefix="AWSPublicExposure.SGReplacements",
             outputs_key_field="ResourceID",
-            outputs={
-                "ResourceID": resource_id,
-                "ReplacementSet": replace_list,
-                "UpdatedSGList": updated_sg_list,
-                "RemediationRequired": True,
-            },
+            outputs=outputs,
+            raw_response=outputs,
         )
     else:
+        outputs = {"ResourceID": resource_id, "ReplacementSet": [], "UpdatedSGList": [], "RemediationRequired": False}
         return CommandResults(
             outputs_prefix="AWSPublicExposure.SGReplacements",
             outputs_key_field="ResourceID",
             readable_output="No security groups required remediation based on the provided inputs.",
-            outputs={"ResourceID": resource_id, "ReplacementSet": [], "UpdatedSGList": "", "RemediationRequired": False},
+            outputs=outputs,
+            raw_response=outputs,
         )
 
 

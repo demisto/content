@@ -7,7 +7,7 @@ Duplicates security groups and modifies rules to remove public exposure for the 
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Cortex XSOAR Version | 6.5.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Dependencies
 

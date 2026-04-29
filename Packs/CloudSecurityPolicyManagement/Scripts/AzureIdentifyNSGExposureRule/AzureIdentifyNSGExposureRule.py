@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any
 import traceback
 import ipaddress
 import json
@@ -48,10 +47,15 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
     else:
         nsg_rules = result
 
-    if isError(nsg_rules) or not nsg_rules:
+    if not nsg_rules:
+        raise DemistoException(
+            "Error retrieving security group details with command 'azure-nsg-security-rules-list'.\n"
+            "Error: No results returned."
+        )
+    if isError(nsg_rules):
         raise DemistoException(
             f"Error retrieving security group details with command 'azure-nsg-security-rules-list'.\n"
-            f"Error: {json.dumps(nsg_rules[0]['Contents'])}"
+            f"Error: {json.dumps(nsg_rules[0].get('Contents', ''))}"
         )
 
     instance_to_use = dict_safe_get(nsg_rules, (0, "Metadata", "instance"))
@@ -210,7 +214,7 @@ def _matches_destination_ip(target_ips: list[ipaddress.IPv4Address | ipaddress.I
     return False
 
 
-def _ip_matches_prefix(target_ip_obj: Any, address_prefix: str) -> bool:
+def _ip_matches_prefix(target_ip_obj: ipaddress.IPv4Address | ipaddress.IPv6Address, address_prefix: str) -> bool:
     """
     Check if an IP address matches an address prefix.
 
@@ -263,7 +267,7 @@ def find_available_priorities(target_rule_priority: int, nsg_rules: list, priori
 
     # Store all used priority values
     for rule in nsg_rules:
-        rule_priorities.append(int(rule.get("properties").get("priority", 0)))
+        rule_priorities.append(int(rule.get("properties", {}).get("priority", 0)))
 
     # Format values as a set for easier evaluation
     rule_priorities_set = set(rule_priorities)
@@ -289,7 +293,7 @@ def find_available_priorities(target_rule_priority: int, nsg_rules: list, priori
     return available_priorities
 
 
-def process_nsg_info(args: dict[str, Any]) -> CommandResults:
+def process_nsg_info(args: dict[str, str]) -> CommandResults:
     """
     Main command function to identify NSG rule causing an exposure.
 
@@ -311,7 +315,7 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
     rg_name = args.get("resource_group_name", "")
     nsg_name = args.get("network_security_group_name", "")
     destination_ip_input = args.get("private_ip_addresses", "")
-    port = int(args.get("port", ""))
+    port = arg_to_number(args.get("port"), required=True) or 0
     protocol = args.get("protocol", "")
     priority_count = arg_to_number(args.get("priority_count"), required=True) or 0
     integration_instance = args.get("integration_instance", "")
@@ -347,15 +351,18 @@ def process_nsg_info(args: dict[str, Any]) -> CommandResults:
     # Identify available priority values to insert new rules ahead of the matched rule
     available_priorities = find_available_priorities(priority, nsg_rules, priority_count)
 
+    outputs = {
+        "MatchingRuleName": matching_rule_name,
+        "MatchingRulePriority": priority,
+        "NextAvailablePriorityValues": available_priorities,
+        "IntegrationInstance": instance_to_use,
+    }
+
     return CommandResults(
         outputs_prefix="AzurePublicExposure",
         outputs_key_field="MatchingRuleName",
-        outputs={
-            "MatchingRuleName": matching_rule_name,
-            "MatchingRulePriority": priority,
-            "NextAvailablePriorityValues": available_priorities,
-            "IntegrationInstance": instance_to_use,
-        },
+        outputs=outputs,
+        raw_response=outputs,
     )
 
 

@@ -324,3 +324,78 @@ def test_ip_matches_prefix_invalid_prefix():
     target_ip_obj = ipaddress.ip_address("10.0.0.5")
     result = _ip_matches_prefix(target_ip_obj, "10.0.0.0/42")
     assert result is False
+
+
+def test_get_nsg_rules_error(mocker):
+    """Tests that get_nsg_rules raises DemistoException when the command returns an error.
+
+    Given:
+        - A mocked error response from azure-nsg-security-rules-list
+    When:
+        - Calling get_nsg_rules
+    Then:
+        - A DemistoException is raised
+    """
+    from AzureIdentifyNSGExposureRule import get_nsg_rules
+
+    error_result = [{"Type": 4, "Contents": "Some error occurred", "ContentsFormat": "text"}]
+    mocker.patch.object(demisto, "executeCommand", return_value=error_result)
+
+    with pytest.raises(DemistoException, match="Error retrieving security group details"):
+        get_nsg_rules("fake-subscription-id", "fake-resource-group", "test-nsg", "")
+
+
+def test_get_nsg_rules_no_inbound_rules(mocker):
+    """Tests that get_nsg_rules raises DemistoException when no inbound rules are found.
+
+    Given:
+        - A valid response from azure-nsg-security-rules-list with only outbound rules
+    When:
+        - Calling get_nsg_rules
+    Then:
+        - A DemistoException is raised indicating no inbound rules were found
+    """
+    from AzureIdentifyNSGExposureRule import get_nsg_rules
+
+    outbound_only_result = [
+        {
+            "Type": 1,
+            "Metadata": {"instance": "azure-instance"},
+            "Contents": [
+                {
+                    "properties": {
+                        "priority": 100,
+                        "direction": "Outbound",
+                        "protocol": "TCP",
+                        "access": "Allow",
+                        "destinationPortRange": "443",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                    },
+                    "name": "AllowOutboundHTTPS",
+                }
+            ],
+        }
+    ]
+    mocker.patch.object(demisto, "executeCommand", return_value=outbound_only_result)
+
+    with pytest.raises(DemistoException, match="No inbound NSG rules found"):
+        get_nsg_rules("fake-subscription-id", "fake-resource-group", "test-nsg", "")
+
+
+def test_get_nsg_rules_empty_result(mocker):
+    """Tests that get_nsg_rules raises DemistoException when the command returns an empty list.
+
+    Given:
+        - An empty list response from azure-nsg-security-rules-list
+    When:
+        - Calling get_nsg_rules
+    Then:
+        - A DemistoException is raised indicating no results returned
+    """
+    from AzureIdentifyNSGExposureRule import get_nsg_rules
+
+    mocker.patch.object(demisto, "executeCommand", return_value=[])
+
+    with pytest.raises(DemistoException, match="No results returned"):
+        get_nsg_rules("fake-subscription-id", "fake-resource-group", "test-nsg", "")
