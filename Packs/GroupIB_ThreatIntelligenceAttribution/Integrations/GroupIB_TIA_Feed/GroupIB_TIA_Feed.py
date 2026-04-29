@@ -16,7 +16,6 @@ urllib3_disable_warnings(InsecureRequestWarning)
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 POLLER_PRODUCT_TYPE = "SOAR"
 POLLER_PRODUCT_NAME = "CortexSOAR"
-POLLER_PRODUCT_VERSION = "unknown"
 POLLER_INTEGRATION_NAME = "Group-IB Threat Intelligence"
 POLLER_INTEGRATION_VERSION = "3.0.0"
 
@@ -920,7 +919,7 @@ class Client(BaseClient):
         self.poller.set_product(
             product_type=POLLER_PRODUCT_TYPE,
             product_name=POLLER_PRODUCT_NAME,
-            product_version=POLLER_PRODUCT_VERSION,
+            product_version=demisto.demistoVersion().get("version", "unknown"),
             integration_name=POLLER_INTEGRATION_NAME,
             integration_version=POLLER_INTEGRATION_VERSION,
         )
