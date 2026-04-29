@@ -21,6 +21,7 @@ The pack normalizes two primary categories of CyberArk Identity audit events:
 | SaaS Audit      | Application/role/policy/device/user lifecycle and configuration changes performed in the platform.   | `auditCode` in the SAAS list (e.g., `IDP2001`, `IDP6001`, `IDP1707`...). |
 
 ### Supported timestamp format
+
 - Epoch milliseconds as a string: `"1776674727346"`
 
 ***
