@@ -9,7 +9,7 @@ comment: |-
 commonfields:
   id: GIBIncidentUpdateAllTypes
   version: -1
-dockerimage: demisto/python3:3.12.13.7444307
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: GIBIncidentUpdateAllTypes
 script: ''
@@ -18,6 +18,6 @@ subtype: python3
 tags:
 - preProcessing
 type: python
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Masked Card"
     ],
     "caseInsensitive": true,
     "cliName": "gibttl",
@@ -29,6 +30,7 @@
     "itemVersion": "1.4.2",
     "openEnded": false,
     "systemAssociatedTypes": [
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Masked Card"
     ]
 }

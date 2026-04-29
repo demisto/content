@@ -86,6 +86,7 @@ configuration:
   options:
   - compromised/account_group
   - compromised/bank_card_group
+  - compromised/masked_card
   - compromised/mule
   - attacks/ddos
   - attacks/deface
@@ -184,6 +185,7 @@ script:
       predefined:
       - compromised/account_group
       - compromised/bank_card_group
+      - compromised/masked_card
       - compromised/mule
       - attacks/ddos
       - attacks/deface
@@ -228,7 +230,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/vendors-sdk:1.0.0.7281773
+  dockerimage: demisto/vendors-sdk:1.0.0.8307504
   feed: true
   runonce: false
   script: '-'

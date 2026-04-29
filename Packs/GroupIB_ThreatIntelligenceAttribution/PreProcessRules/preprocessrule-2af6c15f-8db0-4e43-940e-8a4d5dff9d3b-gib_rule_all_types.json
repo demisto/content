@@ -1,65 +1,55 @@
 {
-	"action": "script",
-	"cacheVersn": 0,
-	"definitionId": "",
-	"enabled": true,
-	"existingEventsFilters": [],
-	"fromServerVersion": "6.10.0",
-	"id": "gib_rule_all_types",
-	"index": 0,
-	"itemVersion": "3.0.0",
-	"linkTo": "oldest",
-	"locked": false,
-	"name": "GIB Rule All Types",
-	"newEventFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "gibid"
-					}
-				},
-				"operator": "isNotEmpty",
-				"right": {
-					"value": {}
-				},
-				"type": "shortText"
-			}
-		]
-	],
-	"packID": "GroupIB_ThreatIntelligenceAttribution",
-	"packName": "Group-IB Threat Intelligence",
-	"packPropagationLabels": [
-		"all"
-	],
-	"period": {
-		"by": "days",
-		"fromValue": 30
-	},
-	"propagationLabels": [],
-	"readyExistingEventsFilters": [],
-	"readyNewEventFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "gibid"
-					}
-				},
-				"operator": "isNotEmpty",
-				"right": {
-					"value": {}
-				},
-				"type": "shortText"
-			}
-		]
-	],
-	"scriptID": "GIBIncidentUpdateAllTypes",
-	"scriptName": "GIBIncidentUpdateAllTypes",
-	"searchClosed": false,
-	"system": true,
-	"toServerVersion": "",
-	"version": -1
+    "action": "script",
+    "enabled": true,
+    "id": "gib_rule_all_types",
+    "index": 0,
+    "itemVersion": "3.0.0",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "GIB Rule All Types",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "packID": "GroupIB_ThreatIntelligenceAttribution",
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "scriptName": "GIBIncidentUpdateAllTypes",
+    "searchClosed": false,
+    "system": true,
+    "toServerVersion": "",
+    "version": -1,
+    "fromVersion": "6.10.0"
 }

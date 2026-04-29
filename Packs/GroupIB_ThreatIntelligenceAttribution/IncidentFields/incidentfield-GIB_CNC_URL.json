@@ -3,7 +3,8 @@
     "associatedTypes": [
         "GIB Malware CNC",
         "GIB Malware",
-        "GIB Attacks DDOS"
+        "GIB Attacks DDOS",
+        "GIB Compromised Masked Card"
     ],
     "caseInsensitive": true,
     "cliName": "gibcncurl",
@@ -26,7 +27,8 @@
     "systemAssociatedTypes": [
         "GIB Malware CNC",
         "GIB Malware",
-        "GIB Attacks DDOS"
+        "GIB Attacks DDOS",
+        "GIB Compromised Masked Card"
     ],
     "threshold": 72,
     "type": "url",

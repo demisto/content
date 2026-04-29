@@ -1,124 +1,207 @@
+"""
+GIBIncidentUpdateAllTypes
+=========================
+
+Pre-Processing Rule script for Group-IB TI integrations.
+
+For each incoming Group-IB incident the script:
+
+1. Extracts the Group-IB business identifier (`gibid`) from the incoming
+   incident in a defensive way (CustomFields -> top-level -> labels -> rawJSON).
+2. Streams already-open XSOAR incidents that share the same `gibid` page by
+   page, never holding more than one page in memory at a time.
+3. Copies all fields from the incoming incident onto every existing duplicate
+   via `setIncident` (with the minimal technical guards required for the call
+   to be well-formed: see `_RESERVED_UPDATE_KEYS`).
+4. Tells XSOAR to drop the incoming incident if at least one real duplicate
+   was found, otherwise keeps it.
+
+Memory & blast-radius are bounded by:
+    * `PAGE_SIZE`     - upper bound on RAM per `getIncidents` call.
+    * `MAX_INCIDENTS` - hard ceiling on how many duplicates one pre-processing
+      call is allowed to touch (circuit-breaker against gibid collisions or
+      misconfigured queries).
+"""
+
+import json
+from collections.abc import Iterator
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def _log(message: str):
-    demisto.debug(message)
-    demisto.info(message)
-    demisto.error(message)
+# `EntryType.ERROR` resolves to 4 in the production XSOAR runtime. The local
+# `CommonServerPython` stub used by `pytest-in-docker` does not expose
+# `EntryType`, so we depend on the numeric literal here. Keep this in sync
+# with `EntryType.ERROR` in CommonServerPython.
+_ENTRY_TYPE_ERROR: int = 4
+
+# `id` is the target identifier for `setIncident`; if it leaked into the
+# update payload, Python's kwargs override would silently redirect the call
+# to the incoming incident instead of the duplicate, breaking deduplication.
+# `CustomFields` is intentionally flattened into top-level kwargs, so we do
+# not pass the container itself a second time.
+_RESERVED_UPDATE_KEYS: frozenset[str] = frozenset({"id", "CustomFields"})
+
+# Hard ceiling: how many duplicate incidents one pre-processing call is
+# allowed to update. Circuit-breaker for `gibid` collisions or misconfigured
+# queries that would otherwise flood the worker with thousands of setIncidents.
+MAX_INCIDENTS: int = 1000
+
+# Page size for `getIncidents`. Streaming RAM cost is O(PAGE_SIZE),
+# independent of MAX_INCIDENTS.
+PAGE_SIZE: int = 200
 
 
-def _extract_incidents_from_query_result(search_incident) -> list[dict]:
+def _normalize(value: Any) -> str | None:
+    """Return a stripped non-empty string representation of `value`, else None."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def get_gibid(incident: dict) -> str | None:
+    """Extract the Group-IB business identifier from the incoming incident.
+
+    Looked up in priority order: CustomFields.gibid -> top-level gibid ->
+    labels[type in {gibid, id}] -> rawJSON.id. Returns None if absent.
     """
-    Parse GetIncidentsByQuery response for different server/script versions.
-    Supported formats:
-      - Contents is list[dict]
-      - Contents is JSON string
-      - Contents is dict with "data" key (defensive fallback)
-    """
-    if not isinstance(search_incident, list) or not search_incident:
-        return []
+    cf = incident.get("CustomFields") or {}
+    if isinstance(cf, dict) and cf.get("gibid"):
+        return _normalize(cf["gibid"])
 
-    first_entry = search_incident[0] if isinstance(search_incident[0], dict) else {}
-    contents = first_entry.get("Contents")
+    if incident.get("gibid"):
+        return _normalize(incident["gibid"])
 
-    if isinstance(contents, list):
-        return [item for item in contents if isinstance(item, dict)]
+    for label in incident.get("labels") or []:
+        if isinstance(label, dict) and label.get("type") in ("gibid", "id") and label.get("value"):
+            return _normalize(label["value"])
 
-    if isinstance(contents, str):
+    raw = incident.get("rawJSON")
+    if isinstance(raw, str) and raw:
         try:
-            parsed = json.loads(contents)
-            return [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
-        except Exception as e:
-            _log(f"[GIBIncidentUpdateAllTypes] Failed to parse Contents JSON string: {e!s}")
-            return []
+            parsed = json.loads(raw)
+            if isinstance(parsed, dict) and parsed.get("id"):
+                return _normalize(parsed["id"])
+        except Exception:
+            # rawJSON may legitimately be missing/malformed; ignore silently.
+            pass
 
-    if isinstance(contents, dict):
-        data = contents.get("data", [])
-        if isinstance(data, list):
-            return [item for item in data if isinstance(item, dict)]
-
-    return []
+    return None
 
 
-def prevent_duplication(current_incident):
+def build_update_fields(incident: dict[str, Any]) -> dict[str, Any]:
+    """Build the kwargs payload for `setIncident` on a duplicate.
+
+    Propagates every field from the incoming incident with only two
+    technical guards:
+
+    * Keys in `_RESERVED_UPDATE_KEYS` are dropped to keep the `setIncident`
+      call well-formed.
+    * `None` values are filtered out so a missing field on the incoming
+      side never wipes a populated value on the duplicate.
     """
-    This script checks if there is an existing incident with the same GIB ID as the incoming incident.
-    If so, the script updates the already existing incident with the fields of the incoming incident, and returns False.
-    If not, the script returns True.
+    base: dict[str, Any] = {k: v for k, v in incident.items() if k not in _RESERVED_UPDATE_KEYS}
+
+    cf = incident.get("CustomFields") or {}
+    if isinstance(cf, dict):
+        # CustomFields are passed as flat named arguments, not as a nested
+        # container; only `id` collisions are stripped.
+        base.update({k: v for k, v in cf.items() if k != "id"})
+
+    return {k: v for k, v in base.items() if v is not None}
+
+
+def iter_existing_incidents(
+    gibid: str,
+    max_total: int = MAX_INCIDENTS,
+    page_size: int = PAGE_SIZE,
+) -> Iterator[dict[str, Any]]:
+    """Stream open XSOAR incidents matching `gibid`, page by page.
+
+    Memory stays at O(page_size) regardless of the total number of duplicates.
+    Iteration stops cleanly on: empty page, partial page (no further pages),
+    XSOAR error response, or `max_total` reached.
     """
-    _log("[GIBIncidentUpdateAllTypes] prevent_duplication: started")
-    result = True
-    custom_fields = current_incident.get("CustomFields", {})
-    _log(
-        f"[GIBIncidentUpdateAllTypes] Incoming incident keys={list(current_incident.keys())}, "
-        f"custom_field_keys={list(custom_fields.keys()) if isinstance(custom_fields, dict) else type(custom_fields)}"
-    )
+    if max_total <= 0 or page_size <= 0:
+        return
 
-    if "CustomFields" in current_incident:
-        _log("[GIBIncidentUpdateAllTypes] Removing 'CustomFields' from incident before update payload")
-        del current_incident["CustomFields"]
-    if "labels" in current_incident:
-        _log("[GIBIncidentUpdateAllTypes] Removing 'labels' from incident before update payload")
-        del current_incident["labels"]
-    if "occurred" in current_incident:
-        _log("[GIBIncidentUpdateAllTypes] Removing 'occurred' from incident before update payload")
-        del current_incident["occurred"]
-    if "sla" in current_incident:
-        _log("[GIBIncidentUpdateAllTypes] Removing 'sla' from incident before update payload")
-        del current_incident["sla"]
-
-    current_incident.update(custom_fields)
-    _log(f"[GIBIncidentUpdateAllTypes] Payload keys after custom fields merge: {list(current_incident.keys())}")
-
-    gibid = custom_fields.get("gibid") if isinstance(custom_fields, dict) else None
-    if not gibid:
-        _log("[GIBIncidentUpdateAllTypes] gibid is empty or missing in CustomFields. Incident will be created.")
-        return True
     query = f"gibid: {gibid} and -status:Closed"
-    _log(f"[GIBIncidentUpdateAllTypes] Searching existing incidents with query: {query}")
-    search_incident = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "limit": 200, "outputFormat": "json"})
-    _log(
-        f"[GIBIncidentUpdateAllTypes] Search command returned type={type(search_incident)}, "
-        f"entries={len(search_incident) if isinstance(search_incident, list) else 'n/a'}"
-    )
+    yielded = 0
+    page = 0
 
-    if search_incident:
-        first_entry = search_incident[0] if isinstance(search_incident[0], dict) else {}
-        first_type = first_entry.get("Type", "n/a")
-        first_brand = first_entry.get("Brand", "n/a")
-        _log(f"[GIBIncidentUpdateAllTypes] Search first entry Type={first_type}, " f"Brand={first_brand}")
-        incidents_data = _extract_incidents_from_query_result(search_incident)
-        total = len(incidents_data)
-        _log(f"[GIBIncidentUpdateAllTypes] Search total incidents found: {total}")
-        if total > 0:
-            result = False
-            incident_id = incidents_data[total - 1].get("id")
-            _log(f"[GIBIncidentUpdateAllTypes] Existing incident found, id={incident_id}. Updating incident in place.")
-            update_args = {"id": incident_id, **current_incident}
-            _log(
-                f"[GIBIncidentUpdateAllTypes] setIncident payload keys={list(update_args.keys())}, "
-                f"fields_count={len(update_args)}"
-            )
-            update_res = demisto.executeCommand("setIncident", update_args)
-            _log(f"[GIBIncidentUpdateAllTypes] setIncident response: {update_res}")
-        else:
-            _log("[GIBIncidentUpdateAllTypes] No matching incidents found. New incident will be created.")
-    else:
-        _log("[GIBIncidentUpdateAllTypes] Search returned empty response. New incident will be created.")
+    while yielded < max_total:
+        res = demisto.executeCommand(
+            "getIncidents",
+            {"query": query, "sort": "created.desc", "size": page_size, "page": page},
+        )
+        if not res or (isinstance(res[0], dict) and res[0].get("Type") == _ENTRY_TYPE_ERROR):
+            demisto.debug(f"[GIB-dedup] getIncidents error or empty on page={page}: {res!r}")
+            return
 
-    _log(f"[GIBIncidentUpdateAllTypes] prevent_duplication: finished with result={result}")
-    return result
+        data = (res[0].get("Contents") or {}).get("data") or []
+        if not data:
+            return
+
+        for existing in data:
+            yield existing
+            yielded += 1
+            if yielded >= max_total:
+                demisto.debug(f"[GIB-dedup] reached max_total={max_total} for gibid={gibid}; " "remaining duplicates skipped")
+                return
+
+        if len(data) < page_size:
+            return
+        page += 1
 
 
-def main():
+def _set_incident(incident_id: str, fields: dict[str, Any]) -> bool:
+    """Invoke `setIncident` for one duplicate; return True on success."""
+    res = demisto.executeCommand("setIncident", {"id": incident_id, **fields})
+    if isinstance(res, list) and res and isinstance(res[0], dict) and res[0].get("Type") == _ENTRY_TYPE_ERROR:
+        demisto.debug(f"[GIB-dedup] setIncident failed for {incident_id}: {res[0].get('Contents')!r}")
+        return False
+    return True
+
+
+def main() -> None:
     try:
-        _log("[GIBIncidentUpdateAllTypes] main: script started")
-        return_results(prevent_duplication(demisto.incident()))
-        _log("[GIBIncidentUpdateAllTypes] main: script finished successfully")
-    except Exception as e:
-        _log(f"[GIBIncidentUpdateAllTypes] main: script failed with error={e!s}")
-        return_error(f"Error: {e!s}")
+        incident = demisto.incident() or {}
+        if not isinstance(incident, dict):
+            raise Exception("Incoming incident is missing from the pre-processing context.")
+
+        gibid = get_gibid(incident)
+        demisto.debug(f"[GIB-dedup] gibid={gibid}")
+
+        if not gibid:
+            return_results(True)
+            return
+
+        update_fields = build_update_fields(incident)
+
+        considered = 0
+        updated = 0
+        for existing in iter_existing_incidents(gibid):
+            existing_id = _normalize(existing.get("id"))
+            if not existing_id:
+                continue
+            considered += 1
+            if update_fields and _set_incident(existing_id, update_fields):
+                updated += 1
+
+        if considered == 0:
+            # No real duplicates -> let XSOAR create the incoming incident.
+            return_results(True)
+            return
+
+        demisto.debug(f"[GIB-dedup] updated {updated}/{considered} existing duplicates")
+        # Real duplicates exist -> drop the incoming incident.
+        return_results(False)
+    except Exception as exc:  # noqa: BLE001 - top-level XSOAR script handler
+        demisto.error(f"[GIB-dedup] failed: {exc}")
+        return_error(f"GIBIncidentUpdateAllTypes failed: {exc}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

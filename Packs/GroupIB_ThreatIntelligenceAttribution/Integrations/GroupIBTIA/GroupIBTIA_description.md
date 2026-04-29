@@ -27,7 +27,7 @@ This section provides step-by-step instructions for configuring the Group-IB Thr
 
 2. **Configure Collection Parameters**
 
-   - **Collections to fetch**: Select the collections you want to fetch incidents from. See the [Collections Overview documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Overview%2FCollections%20Overview).
+   - **Collections to fetch**: Select the collections you want to fetch incidents from. See the [Collections Overview documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Overview%2FCollections%20Overview). `compromised/masked_card` is supported as a dedicated collection.
    - **Incidents first fetch**: Specify the date range for initial data fetch (default: "3 days")
    - **Number of requests per collection**: Number of API requests per collection in each fetch iteration (default: 3)
    - **Skip updated incidents (prevent duplicates)**: Disabled by default. Enable this only when the integration itself should suppress duplicate incidents because Pre-Processing Rules do not work reliably or cannot be used operationally in your environment

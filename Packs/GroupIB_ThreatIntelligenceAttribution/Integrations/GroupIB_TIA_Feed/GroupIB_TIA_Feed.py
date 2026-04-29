@@ -89,6 +89,37 @@ COMMON_MAPPING = {
             "evaluation_tlp": "evaluation.tlp",
         },
     },
+    "compromised/masked_card": {
+        "types": {
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "cnc_url": {
+                "id": "gibid",
+            },
+            "cnc_domain": {
+                "id": "gibid",
+            },
+            "cnc_ipv4_ip": {
+                "id": "gibid",
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "cnc_url": "cnc.url",
+            "cnc_domain": "cnc.domain",
+            "cnc_ipv4_ip": "cnc.ipv4.ip",
+            "cnc_ipv4_asn": "cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "cnc.ipv4.countryName",
+            "cnc_ipv4_region": "cnc.ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
+        },
+    },
     "compromised/mule": {
         "types": {
             "account": "GIB Compromised Mule",
@@ -359,12 +390,13 @@ COMMON_MAPPING = {
             },
             "ipv4_ip": {
                 "id": "gibid",
-                "ipv4_country_name": "geocountry",
+                "ipv4_country_mame": "geocountry",
             },
         },
         "parser_mapping": {
             "id": "id",
             "url": "phishing.url",
+            "phishing_domain_domain": "domain",
             "phishing_domain_registrar": "domainInfo.registrar",
             "ipv4_ip": "phishing.ip.ip",
             "ipv4_country_mame": "phishing.ip.countryName",
@@ -687,6 +719,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "suspicious_ip/scanner": {
@@ -697,7 +730,7 @@ COMMON_MAPPING = {
             "ipv4_ip": {
                 "id": "gibid",
                 "ipv4_asn": "asn",
-                "ipv4_countr_mame": "geocountry",
+                "ipv4_country_mame": "geocountry",
                 "ipv4_region": "geolocation",
             },
         },
@@ -705,7 +738,7 @@ COMMON_MAPPING = {
             "id": "id",
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
-            "ipv4_country_name": "ipv4.countryName",
+            "ipv4_country_mame": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
             "evaluation_tlp": "evaluation.tlp",
         },
@@ -864,7 +897,7 @@ COMMON_MAPPING = {
 COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
     "osi/git_repository",
     "osi/public_leak",
-    "compromised/breacheddb",
+    "compromised/breached",
 ]
 
 
@@ -883,6 +916,7 @@ class Client(BaseClient):
             api_key=self._auth[1],
             api_url=base_url,
         )
+        self._available_collections: frozenset[str] | None = None
         self.poller.set_product(
             product_type=POLLER_PRODUCT_TYPE,
             product_name=POLLER_PRODUCT_NAME,
@@ -891,6 +925,11 @@ class Client(BaseClient):
             integration_version=POLLER_INTEGRATION_VERSION,
         )
         demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
+
+    def get_available_collections_cached(self) -> frozenset[str]:
+        if self._available_collections is None:
+            self._available_collections = frozenset(self.poller.get_available_collections())
+        return self._available_collections
 
     def create_update_generator_proxy_functions(
         self,
@@ -947,7 +986,7 @@ class Client(BaseClient):
         )
 
     def get_available_collections_proxy_function(self) -> list:
-        collections = self.poller.get_available_collections()
+        collections = list(self.get_available_collections_cached())
         demisto.debug(f"[Client.get_available_collections_proxy_function] Available collections: {collections}")
         return collections
 
@@ -959,8 +998,7 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI&A_Feed client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    test = client.get_available_collections_proxy_function()
-    if len(test) == 0:
+    if not client.get_available_collections_cached():
         return "There are no collections available"
     return "ok"
 
@@ -1307,15 +1345,25 @@ def validate_launch_get_indicators_command(limit, collection_name):
 """ Commands """
 
 
-def collection_availability_check(client: Client, collection_name: str) -> None:
-    demisto.debug(f"[collection_availability_check] Checking availability for collection={collection_name}")
-    if collection_name not in client.get_available_collections_proxy_function():
-        raise Exception(
-            f"Collection {collection_name} is not available from you, "
-            "please disable collection on it or contact Group-IB to grant access"
-            f"{client.get_available_collections_proxy_function()}"
+def _validate_indicator_collections(client: Client, indicator_collections: list[str]) -> None:
+    """Validate that requested collections are well-formed and granted to the API user.
+
+    Skips the network round-trip to ``/user/granted_collections`` when the
+    caller passes an empty list: nothing to validate, and dialing out would
+    only add a side-effect (and noise in tests that legitimately pass an
+    empty selection).
+    """
+    if not indicator_collections:
+        return
+
+    available = client.get_available_collections_cached()
+    unknown = [c for c in indicator_collections if c not in available]
+    if unknown:
+        raise DemistoException(
+            f"The following collections are not available for the current credentials: {', '.join(unknown)}. "
+            f"Available collections: {sorted(available)}. "
+            "Either remove unknown collections from instance settings or request access from Group-IB."
         )
-    demisto.debug(f"[collection_availability_check] Collection is available: {collection_name}")
 
 
 def fetch_indicators_command(
@@ -1346,9 +1394,9 @@ def fetch_indicators_command(
     )
     indicators = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
+    _validate_indicator_collections(client=client, indicator_collections=indicator_collections)
 
     for collection_name in indicator_collections:
-        collection_availability_check(client=client, collection_name=collection_name)
         demisto.debug(f"[fetch-indicators] Processing collection={collection_name}")
         mapping: dict = COMMON_MAPPING.get(collection_name, {})
         requests_sent = 0

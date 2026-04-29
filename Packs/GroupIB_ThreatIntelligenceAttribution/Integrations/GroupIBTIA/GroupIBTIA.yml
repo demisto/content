@@ -77,7 +77,8 @@ configuration:
   options:
   - compromised/account_group
   - compromised/bank_card_group
-  - compromised/breacheddb
+  - compromised/masked_card
+  - compromised/breached
   - compromised/spd
   - osi/git_repository
   - osi/public_leak
@@ -180,7 +181,7 @@ configuration:
   type: 8
   required: false
   additionalinfo: To enable the collection of data using hunting rules, please select this parameter.
-description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents directly into Cortex XSOAR. \nThe list of included collections: \nCompromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
+description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents directly into Cortex XSOAR. \nThe list of included collections: \nCompromised Accounts, Compromised Cards, Compromised Masked Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
 detaileddescription: "### Group-IB Threat Intelligence\n  \n  \n- This section explains how to configure the instance of Threat Intelligence in Cortex XSOAR.  \n  \n1. Open Group-IB TI web interface. (It may be either new interface: [https://tap.group-ib.com](https://tap.group-ib.com))  \n2. To generate API key(password):  \n2.1. In the new interface: click on your name in the right upper corner -> choose **Profile** option -> switch to **Security and Access** tab -> click **Personal token** -> follow instructions to generate API token.  \n3. Your server URL is the same as your TI web interface URL.  \n4. Your username is the email that you use to enter in the web interface.\n5. Set classifier and mapper with Group-IB Threat Intelligence classifier and mapper or with your own if needed.\n6. Built-in fetch deduplication is intended for environments where Pre-Processing Rules do not work reliably or cannot be used operationally. **Skip updated incidents** is disabled by default and should be enabled only if you want the integration itself to suppress duplicates when the Group-IB API re-sends the same incident after an update.\n7. **Deduplication lookback (days)** controls how long the integration remembers fetched Group-IB incident IDs while built-in deduplication is enabled. Recommended value is **365 days**.\n8. If you intentionally rely on Pre-Processing Rules to update existing incidents, keep **Skip updated incidents** disabled and configure the `GIBIncidentUpdate`, `GIBIncidentUpdateAllTypes`, or `GIBIncidentUpdateIncludingClosed` script manually. Use `GIBIncidentUpdateAllTypes` when you want the fallback rule to apply without excluding the `GIB Data Breach` incident type.\n9. Don't forget to contact Group-IB to add to allow list your Cortex IP or public IP of a proxy that you are using with Cortex."
 display: Group-IB Threat Intelligence
 name: Group-IB Threat Intelligence & Attribution
@@ -354,7 +355,7 @@ script:
         e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
       name: id
       required: true
-    description: Command performs Group IB event lookup in compromised/breacheddb collection with provided ID.
+    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
     name: gibtia-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
@@ -976,7 +977,8 @@ script:
       predefined:
       - compromised/account_group
       - compromised/bank_card_group
-      - compromised/breacheddb
+      - compromised/masked_card
+      - compromised/breached
       - compromised/mule
       - compromised/spd
       - osi/git_repository
@@ -1360,7 +1362,7 @@ script:
         e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
       name: id
       required: true
-    description: Command performs Group IB event lookup in compromised/breacheddb collection with provided ID.
+    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
     name: gibti-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
@@ -1982,7 +1984,8 @@ script:
       predefined:
       - compromised/account_group
       - compromised/bank_card_group
-      - compromised/breacheddb
+      - compromised/masked_card
+      - compromised/breached
       - compromised/mule
       - compromised/spd
       - osi/git_repository
@@ -2008,6 +2011,10 @@ script:
       description: |-
         Query you want to search.
         e.g.: 8.8.8.8.
+    - name: date_from
+      description: Start date of search session.
+    - name: date_to
+      description: End date of search session.
     - name: requests_limit
       description: |-
         Maximum number of API requests (pages) sent to the collection.
@@ -2065,12 +2072,19 @@ script:
     description: Command performs Group IB event lookup in compromised/bank_card_group collection by provided ID.
     name: gibti-get-compromised-card-group-info
   - arguments:
+    - description: |-
+        GIB event id.
+      name: id
+      required: true
+    description: Command performs Group IB event lookup in compromised/masked_card collection by provided ID.
+    name: gibti-get-compromised-masked-card-info
+  - arguments:
     - description: GIB event id.
       name: id
       required: true
     description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
     name: gibti-get-phishing-group-info
-  dockerimage: demisto/vendors-sdk:1.0.0.7281773
+  dockerimage: demisto/vendors-sdk:1.0.0.8307504
   feed: false
   isfetch: true
   longRunning: false

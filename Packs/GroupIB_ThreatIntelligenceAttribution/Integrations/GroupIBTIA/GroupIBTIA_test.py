@@ -9,13 +9,17 @@ from GroupIBTIA import (
     Client,
     get_available_collections_command,
     local_search_command,
+    BuilderCommandResponses,
     CommonHelpers,
     INCIDENT_CREATED_DATES_MAPPING,
+    IncidentBuilder,
+    MAPPING,
+    PORTAL_LINKS,
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 import GroupIBTIA
-from json import load
+from json import load, loads
 import os
 
 realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
@@ -54,7 +58,7 @@ COLLECTION_NAMES = [
     "apt/threat_actor",
     "malware/malware",
     "osi/public_leak",
-    "compromised/breacheddb",
+    "compromised/breached",
 ]
 
 
@@ -130,6 +134,69 @@ def test_fetch_incidents(mocker, session_fixture):
         client=client, last_run={}, first_fetch_time="3 days", incident_collections=[], max_requests=3, hunting_rules=False
     )
     assert isinstance(incidents, list)
+
+
+def test_fetch_incidents_masked_card_collection(mocker, single_session_fixture):
+    collection_name = "compromised/masked_card"
+    client = single_session_fixture
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = 1592219410029000
+    mock_portion.portion_size = 1
+    mock_portion.count = 1
+    mock_portion.bulk_parse_portion.return_value = [
+        {
+            "id": "e66dbb9b2bdd55d5ecce174318060373f923c427",
+            "name": "000000XXXXXXXXXX",
+            "number": "000000XXXXXXXXXX",
+            "issuer": None,
+            "type": None,
+            "payment_system": None,
+            "validThru": "12/49",
+            "address": None,
+            "email": None,
+            "owner_name": None,
+            "phone": None,
+            "dateDetected": "2020-05-22T17:04:25+00:00",
+            "dateCompromised": "2020-05-15T09:17:45+00:00",
+            "malware_name": "vendeta",
+            "portalLink": "https://tap.group-ib.com/cd/cards?id=e66dbb9b2bdd55d5ecce174318060373f923c427",
+            "evaluation": {
+                "admiraltyCode": "A2",
+                "credibility": 80,
+                "reliability": 90,
+                "severity": "red",
+                "tlp": "red",
+            },
+            "sourceType": "Card shop",
+            "threat_actor_id": None,
+            "threat_actor_name": None,
+            "threat_actor_is_apt": None,
+            "indicators": {
+                "cnc_url": None,
+                "cnc_domain": "kingven.cc",
+                "cnc_ipv4_ip": "11.11.11.11",
+                "cnc_ipv4_asn": "AS63949",
+                "cnc_ipv4_country_name": "United States",
+                "cnc_ipv4_region": "North America",
+            },
+        }
+    ]
+
+    mocker.patch.object(client.poller, "get_available_collections", return_value=[collection_name])
+    mocker.patch.object(client, "create_poll_generator", return_value=([mock_portion], None))
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "e66dbb9b2bdd55d5ecce174318060373f923c427"
+    assert next_run["last_fetch"][collection_name] == "1592219410029000"
 
 
 def test_main_error():
@@ -519,8 +586,8 @@ def test_fetch_incidents_with_combolist_and_unique_parameters(mocker, session_fi
     }
     # Add the appropriate date field for this collection
     mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
-    # For compromised/breacheddb collection, add emails field required for portal link generation
-    if collection_name == "compromised/breacheddb":
+    # For compromised/breached collection, add emails field required for portal link generation
+    if collection_name == "compromised/breached":
         mock_incident_data["emails"] = ["test@example.com"]
     mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
     mock_portions.append(mock_portion)
@@ -588,6 +655,8 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
     }
     # Add the appropriate date field for this collection
     mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    if collection_name == "compromised/breached":
+        mock_incident_data["emails"] = ["test@example.com"]
     mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
     mock_portions.append(mock_portion)
 
@@ -604,11 +673,18 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
         "get_available_collections",
         return_value=[collection_name],
     )
-    mocker.patch.object(
-        client.poller,
-        "create_update_generator",
-        return_value=mock_portions,
-    )
+    if collection_name == "compromised/breached":
+        mocker.patch.object(
+            client.poller,
+            "create_search_generator",
+            return_value=mock_portions,
+        )
+    else:
+        mocker.patch.object(
+            client.poller,
+            "create_update_generator",
+            return_value=mock_portions,
+        )
 
     next_run, incidents = fetch_incidents_command(
         client=client,
@@ -622,8 +698,16 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
         enable_probable_corporate_access=False,
     )
 
-    # Verify get_seq_update_dict was called for sequpdate resolution
-    client.poller.get_seq_update_dict.assert_called_once()
+    if collection_name == "compromised/breached":
+        client.poller.get_seq_update_dict.assert_not_called()
+        client.poller.create_search_generator.assert_called_once()
+        search_call_kwargs = client.poller.create_search_generator.call_args[1]
+        assert search_call_kwargs["date_from"] == "2023-01-01"
+        assert search_call_kwargs["apply_hunting_rules"] == 1
+        assert isinstance(next_run["last_fetch"][collection_name], dict)
+    else:
+        # Verify get_seq_update_dict was called for sequpdate resolution
+        client.poller.get_seq_update_dict.assert_called_once()
     assert isinstance(incidents, list), "Expected incidents to be a list."
 
 
@@ -644,11 +728,18 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
       - Ensures effective_last_fetch is correctly calculated.
     """
     collection_name, client = session_fixture
-    last_fetch_value = 10000
-    sequpdate_value = 15000  # Higher than last_fetch
-
     mock_portions = []
     mock_portion = MagicMock()
+    if collection_name == "compromised/breached":
+        last_fetch_value = {
+            "starting_date_from": "2023-01-01",
+            "starting_date_to": "2023-01-31",
+            "current_date_to": "2023-01-31",
+        }
+        sequpdate_value = None
+    else:
+        last_fetch_value = 10000
+        sequpdate_value = 15000  # Higher than last_fetch
     mock_portion.sequpdate = sequpdate_value
     mock_portion.portion_size = 10
     mock_portion.count = 10
@@ -661,6 +752,8 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
     }
     # Add the appropriate date field for this collection
     mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    if collection_name == "compromised/breached":
+        mock_incident_data["emails"] = ["test@example.com"]
     mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
     mock_portions.append(mock_portion)
 
@@ -670,11 +763,18 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
         "get_available_collections",
         return_value=[collection_name],
     )
-    mocker.patch.object(
-        client,
-        "create_poll_generator",
-        return_value=(mock_portions, last_fetch_value),
-    )
+    if collection_name == "compromised/breached":
+        mocker.patch.object(
+            client.poller,
+            "create_search_generator",
+            return_value=mock_portions,
+        )
+    else:
+        mocker.patch.object(
+            client,
+            "create_poll_generator",
+            return_value=(mock_portions, last_fetch_value),
+        )
 
     next_run, incidents = fetch_incidents_command(
         client=client,
@@ -688,12 +788,18 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
         enable_probable_corporate_access=False,
     )
 
-    # Verify effective_last_fetch is max(last_fetch, sequpdate)
     assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
     effective_last_fetch = next_run["last_fetch"][collection_name]
-    assert int(str(effective_last_fetch)) == max(
-        last_fetch_value, sequpdate_value
-    ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
+    if collection_name == "compromised/breached":
+        client.poller.create_search_generator.assert_called_once()
+        search_call_kwargs = client.poller.create_search_generator.call_args[1]
+        assert search_call_kwargs["date_from"] is None
+        assert search_call_kwargs["date_to"] == last_fetch_value["current_date_to"]
+        assert effective_last_fetch == last_fetch_value
+    else:
+        assert int(str(effective_last_fetch)) == max(
+            last_fetch_value, sequpdate_value
+        ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
 
 
 def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
@@ -916,3 +1022,363 @@ def test_create_poll_generator_sequpdate_resolution_fallback(mocker, single_sess
     call_kwargs = client.poller.create_update_generator.call_args[1]
     assert call_kwargs.get("date_from") is not None, "Expected date_from to be used when sequpdate resolution fails."
     assert call_kwargs.get("sequpdate") is None, "Expected sequpdate to be None when resolution fails."
+
+
+def test_create_poll_generator_compromised_breached_uses_search_generator(mocker, single_session_fixture):
+    client = single_session_fixture
+    collection_name = "compromised/breached"
+    mock_portions = [MagicMock()]
+
+    mocker.patch.object(
+        client.poller,
+        "create_search_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=False,
+        combolist=False,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    client.poller.create_search_generator.assert_called_once()
+    call_kwargs = client.poller.create_search_generator.call_args[1]
+    assert call_kwargs["date_from"] == "2023-01-01"
+    assert call_kwargs["apply_hunting_rules"] == 1
+    assert portions == mock_portions
+    assert last_fetch["starting_date_from"] == "2023-01-01"
+    assert last_fetch["starting_date_to"] == last_fetch["current_date_to"]
+
+
+def test_fetch_incidents_compromised_breached_keeps_date_range_last_fetch(mocker, single_session_fixture):
+    collection_name = "compromised/breached"
+    client = single_session_fixture
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = None
+    mock_portion.portion_size = 1
+    mock_portion.count = 1
+    mock_portion.bulk_parse_portion.return_value = [
+        {
+            "id": "breached-id",
+            "name": ["Email collection"],
+            "emails": ["user@example.com"],
+            "uploadTime": "2024-10-01T01:45:13",
+            "evaluation": {"severity": "green"},
+        }
+    ]
+    expected_last_fetch = {
+        "starting_date_from": "2024-10-01",
+        "starting_date_to": "2024-10-31",
+        "current_date_to": "2024-10-31",
+    }
+
+    mocker.patch.object(client.poller, "get_available_collections", return_value=[collection_name])
+    mocker.patch.object(client, "create_poll_generator", return_value=([mock_portion], expected_last_fetch))
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+    )
+
+    assert len(incidents) == 1
+    assert next_run["last_fetch"][collection_name] == expected_last_fetch
+
+
+def test_build_feed_compromised_breached_generates_portal_link_from_email(mocker, single_session_fixture):
+    client = single_session_fixture
+    collection_name = "compromised/breached"
+    mock_result = MagicMock()
+    mock_result.parse_portion.return_value = {
+        "id": "breached-id",
+        "name": ["Email collection"],
+        "emails": ["user@example.com"],
+        "uploadTime": "2024-10-01T01:45:13",
+        "evaluation": {"severity": "green"},
+        "portalLink": "https://tap.group-ib.com/cd/breached?id=breached-id",
+    }
+
+    mocker.patch.object(client.poller, "search_feed_by_id", return_value=mock_result)
+
+    feed, _, _, _, _ = BuilderCommandResponses(
+        client=client,
+        collection_name=collection_name,
+        args={"id": "breached-id"},
+    ).build_feed()
+
+    assert feed["portalLink"] == f"{PORTAL_LINKS[collection_name]}user@example.com"
+
+
+def test_build_incident_compromised_breached_generates_portal_link_from_email():
+    collection_name = "compromised/breached"
+    incident = {
+        "id": "breached-id",
+        "name": ["Email collection"],
+        "emails": ["user@example.com"],
+        "uploadTime": "2024-10-01T01:45:13",
+        "evaluation": {"severity": "green"},
+        "portalLink": "https://tap.group-ib.com/cd/breached?id=breached-id",
+    }
+
+    built_incident = IncidentBuilder(
+        collection_name=collection_name,
+        incident=incident,
+        mapping=MAPPING[collection_name],
+    ).build_incident()
+    raw_incident = loads(built_incident["rawJSON"])
+
+    assert raw_incident["portalLink"] == f"{PORTAL_LINKS[collection_name]}user@example.com"
+
+
+# ---------------------------------------------------------------------------
+# Deduplication: retention contract for `dedup_lookback_days`
+# ---------------------------------------------------------------------------
+#
+# These tests pin the 1:1 semantics of the user-facing parameter:
+#   * Configured `dedup_lookback_days = N` means "an ID added today is dropped
+#     exactly N days later".
+#   * No hidden multipliers, no "latest ID kept forever" exception.
+#
+# The previous implementation relied on `CommonServerPython.get_found_incident_ids`,
+# which silently doubled the retention window (`look_back * 2`) and pinned the
+# newest ID forever, breaking the contract documented in the integration YAML.
+
+
+SECONDS_PER_DAY = 86_400
+
+
+def test_convert_dedup_lookback_days_to_seconds_basic():
+    assert GroupIBTIA._convert_dedup_lookback_days_to_seconds(1) == SECONDS_PER_DAY
+    assert GroupIBTIA._convert_dedup_lookback_days_to_seconds(365) == 365 * SECONDS_PER_DAY
+
+
+def test_convert_dedup_lookback_days_to_seconds_zero():
+    assert GroupIBTIA._convert_dedup_lookback_days_to_seconds(0) == 0
+
+
+def test_prune_seen_ids_returns_empty_for_zero_retention():
+    cache = {"a": 1000.0, "b": 2000.0}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=0, now=10_000.0)
+    assert pruned == {}
+
+
+def test_prune_seen_ids_returns_empty_for_negative_retention():
+    cache = {"a": 1000.0}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=-1, now=10_000.0)
+    assert pruned == {}
+
+
+def test_prune_seen_ids_keeps_entries_within_window():
+    now = 10_000.0
+    cache = {
+        "fresh": now - 100,
+        "older": now - 500,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {"fresh": now - 100, "older": now - 500}
+
+
+def test_prune_seen_ids_drops_entries_older_than_window():
+    now = 10_000.0
+    cache = {
+        "fresh": now - 100,
+        "stale": now - 5000,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {"fresh": now - 100}
+
+
+def test_prune_seen_ids_threshold_is_inclusive():
+    """An ID exactly at the retention boundary must be kept (>=, not >)."""
+    now = 10_000.0
+    cache = {"boundary": now - 1000}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {"boundary": now - 1000}
+
+
+def test_prune_seen_ids_drops_entries_just_past_threshold():
+    now = 10_000.0
+    cache = {"just_past": now - 1000.001}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {}
+
+
+def test_prune_seen_ids_drops_entries_with_malformed_timestamp():
+    """Defensive: corrupt cache entries are dropped, never raised."""
+    now = 10_000.0
+    cache = {
+        "ok": now - 100,
+        "string_ts": "not-a-number",  # type: ignore[dict-item]
+        "none_ts": None,  # type: ignore[dict-item]
+        "negative": -1,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)  # type: ignore[arg-type]
+    assert pruned == {"ok": now - 100}
+
+
+def test_prune_seen_ids_does_not_mutate_input():
+    cache = {"a": 1.0, "b": 2.0}
+    snapshot = dict(cache)
+    GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1, now=1000.0)
+    assert cache == snapshot
+
+
+def test_prune_seen_ids_drops_latest_id_when_older_than_retention():
+    """
+    Critical regression vs the old CommonServerPython helper, which pinned the
+    newest ID forever via `addition_time == latest_incident_time`.
+
+    With the in-house helper, every entry obeys the retention window without
+    exceptions; otherwise, a single never-re-fetched ID would grow the cache
+    unboundedly across years of operation.
+    """
+    now = 10_000.0
+    cache = {
+        "ancient_but_latest": now - 99_999_999,
+        "ancient_too": now - 99_999_998,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {}
+
+
+def test_update_fetch_seen_ids_cache_noop_for_empty_incidents():
+    state = {"found_incident_ids": {"existing": 1.0}}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[],
+        dedup_lookback_days=365,
+    )
+    assert state == {"found_incident_ids": {"existing": 1.0}}
+
+
+def test_update_fetch_seen_ids_cache_adds_new_ids(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "alpha"}, {"id": "beta"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"alpha": fixed_now, "beta": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_normalizes_non_string_ids(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": 42}, {"id": "alpha"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"42": fixed_now, "alpha": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_skips_incidents_without_id(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": None}, {"name": "no-id"}, {"id": "ok"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"ok": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_prunes_old_entries(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state = {
+        "found_incident_ids": {
+            "stale": fixed_now - (366 * SECONDS_PER_DAY),  # > 365d -> drop
+            "fresh": fixed_now - (10 * SECONDS_PER_DAY),  # well within window
+        }
+    }
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "new"}],
+        dedup_lookback_days=365,
+    )
+    assert "stale" not in state["found_incident_ids"]
+    assert "fresh" in state["found_incident_ids"]
+    assert state["found_incident_ids"]["new"] == fixed_now
+
+
+def test_update_fetch_seen_ids_cache_handles_corrupt_existing_value(mocker):
+    """If `found_incident_ids` was somehow stored as a string, we don't crash."""
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {"found_incident_ids": "this-should-have-been-a-dict"}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "alpha"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"alpha": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_one_to_one_retention_contract(mocker):
+    """
+    THE contract test for `dedup_lookback_days`:
+
+    Configured retention is N days. An ID added exactly N days ago must
+    still be kept. An ID added N days + 1 second ago must be dropped.
+
+    This is the assertion the previous implementation could not satisfy:
+    CommonServerPython would have kept the older ID for 2N days, and pinned
+    the newest one forever.
+    """
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    n_days = 7
+    retention_seconds = n_days * SECONDS_PER_DAY
+
+    state = {
+        "found_incident_ids": {
+            "boundary": fixed_now - retention_seconds,
+            "just_past": fixed_now - retention_seconds - 1,
+        }
+    }
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "today"}],
+        dedup_lookback_days=n_days,
+    )
+
+    cache = state["found_incident_ids"]
+    assert "boundary" in cache, "ID at exactly N days must be retained (>= threshold)"
+    assert "just_past" not in cache, "ID at N days + 1s must be pruned"
+    assert cache["today"] == fixed_now
+
+
+def test_update_fetch_seen_ids_cache_disables_when_retention_is_zero(mocker):
+    """
+    Operational kill-switch: setting `dedup_lookback_days = 0` must drop the
+    entire cache on the next update so customers can fully disable built-in
+    deduplication without manual cleanup.
+    """
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state = {"found_incident_ids": {"old": fixed_now - 10}}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "incoming"}],
+        dedup_lookback_days=0,
+    )
+    assert state["found_incident_ids"] == {}

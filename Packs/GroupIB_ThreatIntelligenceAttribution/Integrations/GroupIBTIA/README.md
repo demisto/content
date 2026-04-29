@@ -79,11 +79,12 @@ Once the configuration is complete, the following collections become available i
 
 | Collection | Description | Recommended Date Range |
 |------------|-------------|----------------------|
-| `compromised/account_group` | The collection contains credentials collected from various phishing resources, botnets, C&C servers, Darkweb, etc., used by hackers. All indicated sources are unique and private. It also includes combolist and corporate accounts. For Public Breaches - please refer to compromised/breacheddb. | 2-4 years |
+| `compromised/account_group` | The collection contains credentials collected from various phishing resources, botnets, C&C servers, Darkweb, etc., used by hackers. All indicated sources are unique and private. It also includes combolist and corporate accounts. For Public Breaches - please refer to compromised/breached. | 2-4 years |
 | `compromised/bank_card_group` | Information about compromised bank cards, sourced from card shops, forums, and public leaks. | 2 years |
+| `compromised/masked_card` | Information about compromised masked bank card records returned as individual card entries, including card, owner, malware, source, and CNC context. | 2 years |
 | `compromised/mule` | Information on compromised accounts used by threat actors for money laundering and fund transfers. | 90 days |
 | `compromised/spd` | Suspicious payment details collected from underground markets, forums, and messaging platforms. | 90 days |
-| `compromised/breacheddb` | Information about publicly leaked databases containing credentials and personal data. **Note:** Hunting rules are on by default here. | 90 days |
+| `compromised/breached` | Information about publicly leaked databases containing credentials and personal data. **Note:** Hunting rules are on by default here. | 90 days |
 | `attacks/ddos` | Data on Distributed Denial of Service (DDoS) attacks, including targeted resources and attack durations. | 5-10 days |
 | `attacks/deface` | Records of defacement attacks, highlighting compromised websites and related actors. | 5-10 days |
 | `attacks/phishing_group` | Information on phishing attacks, including URLs of phishing websites. **Note:** Do not use IPs for detection - it may cause many false positives. Focus only on URLs. | 3-5 days |
@@ -127,7 +128,7 @@ Once the configuration is complete, the following collections become available i
 
 ## Note
 
-Requests to the following collections come with the Hunting Rules parameter by default - and turing it off or on won't make any changes: `osi/git_repository, osi/public_leak, compromised/breacheddb, compromised/messenger, compromised/discord`
+Requests to the following collections come with the Hunting Rules parameter by default - and turing it off or on won't make any changes: `osi/git_repository, osi/public_leak, compromised/breached, compromised/messenger, compromised/discord`
 
 Built-in deduplication should be enabled only when Pre-Processing Rules are not working reliably in your environment. If you rely on Pre-Processing Rules to update existing incidents, keep **Skip updated incidents (prevent duplicates)** disabled.
 
@@ -240,7 +241,8 @@ The following commands are available in this integration:
 - `gibti-get-available-collections` - Returns list of available collections
 - `gibti-get-compromised-account-info` - Performs Group-IB event lookup in compromised/account collection
 - `gibti-get-compromised-card-group-info` - Performs Group-IB event lookup in compromised/card collection
-- `gibti-get-compromised-breached-info` - Performs Group-IB event lookup in compromised/breacheddb collection
+- `gibti-get-compromised-masked-card-info` - Performs Group-IB event lookup in compromised/masked_card collection
+- `gibti-get-compromised-breached-info` - Performs Group-IB event lookup in compromised/breached collection
 - `gibti-get-phishing-group-info` - Performs Group-IB event lookup in attacks/phishing_group collection
 - `gibti-get-phishing-kit-info` - Performs Group-IB event lookup in attacks/phishing_kit collection
 - `gibti-get-osi-git-leak-info` - Performs Group-IB event lookup in osi/git_repository collection
@@ -338,7 +340,7 @@ Command performs Group-IB event lookup in compromised/account collection with pr
 ### gibti-get-compromised-breached-info
 
 ***
-Command performs Group-IB event lookup in compromised/breacheddb collection with provided ID.
+Command performs Group-IB event lookup in compromised/breached collection with provided ID.
 
 #### Base Command
 
@@ -367,7 +369,7 @@ Command performs Group-IB event lookup in compromised/breacheddb collection with
 
 #### Human Readable Output
 
->### Feed from compromised/breacheddb with ID 277c4112d348c91f6dabe9467f0d18ba
+>### Feed from compromised/breached with ID 277c4112d348c91f6dabe9467f0d18ba
 
 >|addInfo|email|evaluation|id|leakName|password|uploadTime|
 >|---|---|---|---|---|---|---|
@@ -419,7 +421,7 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 
 >|account|cnc cnc|cnc domain|cnc ipv4 ip|cnc url|dateAdd|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|hash|id|malware id|malware name|malware stixGuid|oldId|organization name|portalLink|sourceType|stixGuid|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1111111111111111 | <<<<<<<<<<<<<<<<<<<<<<<<http://some.com>>>>>>>>>>>>>>>>>>>>>>>> | some | 11.11.11.11 | http://some.com | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
+>| 1111111111111111 | <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<http://some.com>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> | some | 11.11.11.11 | http://some.com | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
 
 >### URL indicator
 
@@ -738,7 +740,7 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 
 >|date|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|mirrorLink|portalLink|providerDomain|siteUrl|source|targetDomain|targetIp countryName|targetIp ip|threatActor id|threatActor isAPT|threatActor name|tsCreate|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.com/id:-6009637a1135cd001ef46e21>: | <https://group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.com | <<<<<<<<<<<<<<<<<<<<<<<<http://some.com>>>>>>>>>>>>>>>>>>>>>>>> | some.com | some.com | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.com |
+>| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.com/id:-6009637a1135cd001ef46e21>: | <https://group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.com | <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<http://some.com>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> | some.com | some.com | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.com |
 
 >### URL indicator
 
@@ -1113,7 +1115,7 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 >|cnc|dateDetected|dateLastSeen|domain|id|oldId|stixGuid|url|
 >|---|---|---|---|---|---|---|---|
->| <<<<<<<<<<<<<<<<<<<<<<<<https://some.com>>>>>>>>>>>>>>>>>>>>>>>> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.com | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.com |
+>| <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<https://some.com>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.com | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.com |
 
 >### ipv4 table
 

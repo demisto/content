@@ -40,6 +40,7 @@ Once the configuration is complete, the following collections become available i
 |------------|-------------|----------------------|
 | `compromised/account_group` | In your compromised accounts, there CNCs in place which can be used as IOCs. Usually included in IOC Common. | 2-4 years |
 | `compromised/bank_card_group` | In your compromised cards, there CNCs in place which can be used as IOCs. Usually included in IOC Common. | 2 years |
+| `compromised/masked_card` | In masked card records, top-level CNC domain and IP values can be used as IOCs similarly to other compromised card collections. | 2 years |
 | `compromised/mule` | Information on compromised accounts used by threat actors for money laundering and fund transfers. Collection is currently deprecated - only legacy information is available | 90 days |
 | `attacks/ddos` | Data on Distributed Denial of Service (DDoS) attacks, including targeted resources and attack durations. | 5-10 days |
 | `attacks/deface` | Records of defacement attacks, highlighting compromised websites and related actors. | 5-10 days |
@@ -90,7 +91,7 @@ By default, the integration applies a single **Traffic Light Protocol Color** to
 
 **When Use TLP from source is enabled:**
 
-- **Collections that receive TLP from Group-IB** (when the source provides it): `compromised/account_group`, `compromised/bank_card_group`, `attacks/ddos`, `attacks/deface`, `attacks/phishing_kit`, `attacks/phishing_group`, `apt/threat`, `hi/threat`, `osi/vulnerability`, `osi/git_repository`, `suspicious_ip/tor_node`, `suspicious_ip/open_proxy`, `suspicious_ip/socks_proxy`, `suspicious_ip/vpn`, `suspicious_ip/scanner`.
+- **Collections that receive TLP from Group-IB** (when the source provides it): `compromised/account_group`, `compromised/bank_card_group`, `compromised/masked_card`, `attacks/ddos`, `attacks/deface`, `attacks/phishing_kit`, `attacks/phishing_group`, `apt/threat`, `hi/threat`, `osi/vulnerability`, `osi/git_repository`, `suspicious_ip/tor_node`, `suspicious_ip/open_proxy`, `suspicious_ip/socks_proxy`, `suspicious_ip/vpn`, `suspicious_ip/scanner`.
 - **ioc/common**: TLP is always set to **AMBER** (Group-IB does not provide TLP for this collection).
 - If Group-IB does not provide TLP for an indicator, the **Traffic Light Protocol Color** setting is used as fallback for that indicator. So the integration-level TLP applies only when the source has no TLP for the given record.
 
@@ -116,7 +117,7 @@ Get a limited count of indicators for a specified collection and get all indicat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| collection | GIB Collection to get indicators from. Possible values are: compromised/mule, compromised/imei, attacks/ddos, attacks/deface, attacks/phishing, attacks/phishing_kit, hi/threat, apt/threat, osi/vulnerability, suspicious_ip/tor_node, suspicious_ip/open_proxy, suspicious_ip/socks_proxy, malware/cnc. | Required |
+| collection | GIB Collection to get indicators from. Possible values are: compromised/mule, compromised/masked_card, compromised/imei, attacks/ddos, attacks/deface, attacks/phishing, attacks/phishing_kit, hi/threat, apt/threat, osi/vulnerability, suspicious_ip/tor_node, suspicious_ip/open_proxy, suspicious_ip/socks_proxy, malware/cnc. | Required |
 | id | Incident ID to get indicators. If set, all indicators will be provided from the particular incident. | Optional |
 | limit | Limit of indicators to display in War Room. Possible values are: 10, 20, 30, 40, 50. Default is 50. | Optional |
 
