@@ -5699,3 +5699,455 @@ def test_update_investigation_or_finding_partial_fields():
         "public/v2/investigations/finding-abc",
         body=json.dumps({"owner": "admin", "urgency": "high"}),
     )
+
+
+# =================================================================================
+# Phase 3a — Fetch Investigations scaffolding (helpers + model + factory).
+# These tests cover only the new (currently dead-code) pieces added in Phase 3a.
+# Existing fetch behavior is unchanged.
+# =================================================================================
+
+
+# --------------------------- prepare_investigations_query ---------------------------
+
+
+class TestPrepareInvestigationsQuery:
+    """Given the user's `investigations_fetch_query` SPL, when prepare_investigations_query
+    runs, then either the placeholder is substituted or the four managed params are
+    merged into the URL inside `| rest "..."`.
+    """
+
+    DEFAULT_URL = (
+        '/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true'
+        '&CUSTOM_FILTER_PLACEHOLDER'
+    )
+    DEFAULT_QUERY = f'| rest "{DEFAULT_URL}"'
+
+    def test_given_placeholder_when_called_then_substituted_with_all_four_params(self):
+        """Given the default SPL containing CUSTOM_FILTER_PLACEHOLDER,
+        when prepare_investigations_query runs,
+        then the placeholder is replaced and all four managed params appear once."""
+        out = splunk.prepare_investigations_query(
+            user_query=self.DEFAULT_QUERY,
+            create_time_min="2025-01-01T00:00:00Z",
+            create_time_max="2025-01-02T00:00:00Z",
+            limit=50,
+            offset=0,
+        )
+        assert "CUSTOM_FILTER_PLACEHOLDER" not in out
+        for fragment in (
+            "create_time_min=2025-01-01T00:00:00Z",
+            "create_time_max=2025-01-02T00:00:00Z",
+            "limit=50",
+            "offset=0",
+        ):
+            assert out.count(fragment) == 1, f"expected exactly one '{fragment}' in {out!r}"
+
+    def test_given_double_quoted_url_no_query_string_when_called_then_params_appended(self):
+        """Given a `| rest "<url>"` clause with no existing query string,
+        when called, then the four managed params are appended cleanly."""
+        query = '| rest "/path/v2/investigations"'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 5
+        )
+        assert "create_time_min=2025-01-01T00%3A00%3A00Z" in out  # urlencoded
+        assert "limit=10" in out
+        assert "offset=5" in out
+
+    def test_given_unrelated_existing_params_when_called_then_unrelated_preserved(self):
+        """Given a URL with unrelated existing params, when called, then they are preserved
+        and the managed params are added."""
+        query = '| rest "/path?foo=bar&baz=qux"'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        assert "foo=bar" in out
+        assert "baz=qux" in out
+        assert "limit=10" in out
+
+    def test_given_single_quoted_url_when_called_then_quote_style_preserved(self):
+        """Given a `| rest '<url>'` clause with single quotes,
+        when called, then the single-quote style is preserved and params are merged."""
+        query = "| rest '/path/v2/investigations'"
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        # Quotes preserved (single, not double).
+        assert out.startswith("| rest '/")
+        assert out.endswith("'")
+        assert "limit=10" in out
+
+    def test_given_multiline_spl_when_called_then_matches_and_rewrites(self):
+        """Given a multi-line SPL with newline between `| rest` and the quote,
+        when called, then it still matches and rewrites correctly."""
+        query = '| rest\n    "/path/v2/investigations"'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        assert "limit=10" in out
+        assert "/path/v2/investigations?" in out
+
+    def test_given_existing_managed_keys_when_called_then_overridden_with_debug(self, mocker):
+        """Given a URL that already has create_time_min and limit,
+        when called, then both are overridden and a debug log names the overridden keys."""
+        debug_mock = mocker.patch.object(splunk.demisto, "debug")
+        query = '| rest "/path?create_time_min=OLD&limit=999&keep=me"'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        assert "create_time_min=OLD" not in out
+        assert "limit=999" not in out
+        assert "limit=10" in out
+        assert "keep=me" in out
+        # Confirm the debug log naming the overridden keys was emitted.
+        debug_calls = [str(c) for c in debug_mock.call_args_list]
+        assert any("overriding pre-existing URL params" in c for c in debug_calls)
+        assert any("create_time_min" in c and "limit" in c for c in debug_calls)
+
+    def test_given_url_with_fragment_when_called_then_fragment_preserved(self):
+        """Given a URL with a #fragment, when called, then the fragment is preserved."""
+        query = '| rest "/path?foo=bar#section1"'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        assert "#section1" in out
+
+    def test_given_trailing_splunk_args_when_called_then_args_preserved(self):
+        """Given `| rest "URL" splunk_server=local count=0` (extra trailing args),
+        when called, then trailing args are preserved untouched."""
+        query = '| rest "/path/v2/investigations" splunk_server=local count=0'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        assert out.endswith(' splunk_server=local count=0')
+        assert "limit=10" in out
+
+    def test_given_no_rest_clause_when_called_then_raises(self):
+        """Given a query missing the `| rest "..."` clause entirely,
+        when called, then DemistoException is raised."""
+        with pytest.raises(splunk.DemistoException, match="rest"):
+            splunk.prepare_investigations_query(
+                "search index=main", "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+            )
+
+    def test_given_uppercase_rest_when_called_then_matches_case_insensitively(self):
+        """Given `| REST "..."` (uppercase), when called, then the regex matches."""
+        query = '| REST "/path/v2/investigations"'
+        out = splunk.prepare_investigations_query(
+            query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0
+        )
+        assert "limit=10" in out
+
+    def test_given_limit_above_cap_when_called_then_clamped_to_100(self):
+        """Given `limit > 100`, when called, then it is clamped to INVESTIGATIONS_MAX_LIMIT (100)."""
+        out = splunk.prepare_investigations_query(
+            self.DEFAULT_QUERY, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", limit=999, offset=0
+        )
+        assert "limit=100" in out
+        assert "limit=999" not in out
+
+    @pytest.mark.parametrize(
+        "ts_min, ts_max",
+        [
+            ("2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"),
+            ("2026-04-29T10:00:00.3950565Z", "2026-04-30T10:00:00.3950565Z"),
+        ],
+    )
+    def test_given_iso_boundary_strings_when_substituted_then_passed_through(self, ts_min, ts_max):
+        """Given seconds-only and sub-second ISO 8601 inputs (placeholder path),
+        when called, then the strings are inserted as-is (no urlencode mangling)."""
+        out = splunk.prepare_investigations_query(self.DEFAULT_QUERY, ts_min, ts_max, 10, 0)
+        assert f"create_time_min={ts_min}" in out
+        assert f"create_time_max={ts_max}" in out
+
+
+# --------------------------- to_mc_iso8601_utc ---------------------------
+
+
+class TestToMcIso8601Utc:
+    """Given a timestamp string or datetime, when to_mc_iso8601_utc runs,
+    then it returns the canonical Mission Control shape `YYYY-MM-DDTHH:MM:SS[.ffffff]Z`."""
+
+    def test_given_get_fetch_time_window_format_when_normalized_then_z_suffix(self):
+        """Given the format produced by get_fetch_time_window (e.g. '+00:00'),
+        when normalized, then output ends with Z and preserves microseconds."""
+        out = splunk.to_mc_iso8601_utc("2025-12-03T11:53:45.138540+00:00")
+        assert out == "2025-12-03T11:53:45.138540Z"
+
+    @pytest.mark.parametrize(
+        "ts",
+        [
+            "2025-01-01T00:00:00Z",
+            "2026-04-29T10:00:00.3950565Z",
+        ],
+    )
+    def test_given_canonical_input_when_normalized_then_passes_through(self, ts):
+        """Given an already-canonical input, when normalized, then it passes through unchanged."""
+        assert splunk.to_mc_iso8601_utc(ts) == ts
+
+    def test_given_negative_offset_when_normalized_then_converted_to_utc_z(self):
+        """Given a `-05:00` offset, when normalized, then converted to UTC and emitted with Z."""
+        out = splunk.to_mc_iso8601_utc("2025-01-01T00:00:00-05:00")
+        # 00:00 EST → 05:00 UTC
+        assert out == "2025-01-01T05:00:00Z"
+
+    def test_given_subsecond_when_normalized_then_microseconds_preserved(self):
+        """Given a sub-second offset input, when normalized, then microseconds are preserved."""
+        out = splunk.to_mc_iso8601_utc("2025-01-01T00:00:00.123456+00:00")
+        assert out == "2025-01-01T00:00:00.123456Z"
+
+    def test_given_no_subsecond_when_normalized_then_no_fraction_emitted(self):
+        """Given an input without fractional seconds, when normalized, then no fraction is emitted."""
+        out = splunk.to_mc_iso8601_utc("2025-01-01T00:00:00+00:00")
+        assert out == "2025-01-01T00:00:00Z"
+
+    def test_given_naive_string_when_normalized_then_raises(self):
+        """Given a naive ISO string (no tz), when normalized, then DemistoException is raised."""
+        with pytest.raises(splunk.DemistoException, match="naive"):
+            splunk.to_mc_iso8601_utc("2025-01-01T00:00:00")
+
+    def test_given_naive_datetime_when_normalized_then_raises(self):
+        """Given a naive datetime, when normalized, then DemistoException is raised."""
+        with pytest.raises(splunk.DemistoException, match="naive"):
+            splunk.to_mc_iso8601_utc(datetime(2025, 1, 1, 0, 0, 0))
+
+    def test_given_aware_datetime_when_normalized_then_canonical_z(self):
+        """Given a tz-aware datetime, when normalized, then canonical Z output."""
+        from datetime import timezone as _tz
+        dt = datetime(2025, 1, 1, 12, 0, 0, tzinfo=_tz.utc)
+        assert splunk.to_mc_iso8601_utc(dt) == "2025-01-01T12:00:00Z"
+
+
+# --------------------------- FetchHandlerFactory ---------------------------
+
+
+class TestFetchHandlerFactory:
+    """Given a (possibly empty) selection of event types, when FetchHandlerFactory.build runs,
+    then it returns the matching handlers in registration order, ignoring unknowns."""
+
+    def setup_method(self):
+        # Snapshot the live registry so each test starts from a clean state and
+        # can restore afterwards (factory is a class-level singleton).
+        self._registry_snapshot = dict(splunk.FetchHandlerFactory._registry)
+
+    def teardown_method(self):
+        splunk.FetchHandlerFactory._registry = self._registry_snapshot
+
+    def _stub(self, event_type: str):
+        """Define a minimal concrete FetchHandler subclass usable in build()."""
+        class _StubHandler(splunk.FetchHandler):
+            def fetch(self, service, last_run, mapper, params):  # noqa: D401
+                return splunk.FetchResult(incidents=[], last_run_delta={})
+        _StubHandler.event_type = event_type
+        _StubHandler.__name__ = f"Stub{event_type}Handler"
+        return _StubHandler
+
+    def test_given_empty_registry_and_default_selection_then_returns_empty_list(self):
+        """Given an empty registry, when build(None) runs (defaulting to ['Finding']),
+        then no handlers are returned (Phase 3a default)."""
+        splunk.FetchHandlerFactory._registry = {}
+        assert splunk.FetchHandlerFactory.build(None) == []
+
+    def test_given_empty_registry_and_empty_selection_then_returns_empty_list(self):
+        """Given an empty registry and an empty list, when build runs,
+        then no handlers are returned."""
+        splunk.FetchHandlerFactory._registry = {}
+        assert splunk.FetchHandlerFactory.build([]) == []
+
+    def test_given_investigation_only_when_built_then_single_handler(self):
+        """Given a selection of ['Investigation'] and a registered Investigation stub,
+        when build runs, then exactly one handler is returned."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Investigation", self._stub("Investigation"))
+        out = splunk.FetchHandlerFactory.build(["Investigation"])
+        assert len(out) == 1
+        assert out[0].event_type == "Investigation"
+
+    def test_given_both_selected_when_built_then_two_handlers_in_registration_order(self):
+        """Given Finding registered first and Investigation second,
+        when build(['Finding', 'Investigation']) runs,
+        then handlers are returned in the requested selection order."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
+        splunk.FetchHandlerFactory.register("Investigation", self._stub("Investigation"))
+        out = splunk.FetchHandlerFactory.build(["Finding", "Investigation"])
+        assert [h.event_type for h in out] == ["Finding", "Investigation"]
+
+    def test_given_unknown_type_when_built_then_silently_ignored(self):
+        """Given an unknown event type alongside a known one, when build runs,
+        then the unknown is silently ignored."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
+        out = splunk.FetchHandlerFactory.build(["Finding", "Galaxy"])
+        assert [h.event_type for h in out] == ["Finding"]
+
+    def test_given_default_with_finding_registered_then_returns_finding(self):
+        """Given Finding is registered and selection is None,
+        when build runs, then it falls back to ['Finding'] and returns one handler."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
+        out = splunk.FetchHandlerFactory.build(None)
+        assert len(out) == 1 and out[0].event_type == "Finding"
+
+
+# --------------------------- parse_investigation / Investigation ---------------------------
+
+
+def _sample_investigation_row() -> dict:
+    """Build a representative Mission Control v2 investigations row in-line
+    (no fixture file dependency), reflecting the schema in plan §3.7.1."""
+    return {
+        "investigation_guid": "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e",
+        "investigation_id": "ES-00015",
+        "name": "Suspicious lateral movement",
+        "description": "Multiple failed logons followed by privilege escalation.",
+        "create_time": 1777446173.55,
+        "update_time": 1777449999.12,
+        "mc_create_time": 1777446173.55,
+        "incident_origin": "MC Incident",
+        "investigation_type": "default",
+        "disposition": "disposition:6",
+        "disposition_name": "Undetermined",
+        "status": "1",
+        "status_name": "New",
+        "owner": "unassigned",
+        "urgency": "high",
+        "sensitivity": "Unassigned",
+        "findings": {"incident_ids": ["F-1", "F-2"]},
+        "excluded_finding_ids": [],
+        "implicit_finding_ids": ["IMP-1"],
+        "intermediate_finding_ids": [],
+        "consolidated_findings": {"summary": "n/a"},
+        "count_findings": 1,
+        "risk_event_count": 0,
+        "risk_score": 60.0,
+        "risk_object": [],
+        "risk_object_type": [],
+        "src": ["192.168.0.2"],
+        "dest": ["72.44.67.8"],
+        "dvc": [],
+        "orig_host": [],
+        "src_user": ["unknown"],
+        "user": ["tng\\crusher"],  # backslash → must round-trip via json.dumps
+        "is_investigation": True,
+        "is_finding_group": False,
+        "is_search_enriched": True,
+    }
+
+
+class TestParseInvestigation:
+    """Given a Mission Control v2 row, when parse_investigation runs,
+    then it returns a flattened dict tagged for the classifier."""
+
+    def test_given_row_when_parsed_then_event_type_tag_added(self):
+        out = splunk.parse_investigation(_sample_investigation_row())
+        assert out[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+
+    def test_given_row_when_parsed_then_findings_incident_ids_lifted(self):
+        out = splunk.parse_investigation(_sample_investigation_row())
+        assert out["incident_ids"] == ["F-1", "F-2"]
+
+    def test_given_row_when_parsed_then_risk_object_and_risk_object_type_distinct(self):
+        row = _sample_investigation_row()
+        row["risk_object"] = ["host-1"]
+        row["risk_object_type"] = ["system"]
+        out = splunk.parse_investigation(row)
+        assert out["risk_object"] == ["host-1"]
+        assert out["risk_object_type"] == ["system"]
+
+    def test_given_row_when_parsed_then_user_and_src_user_remain_arrays(self):
+        out = splunk.parse_investigation(_sample_investigation_row())
+        assert isinstance(out["user"], list)
+        assert isinstance(out["src_user"], list)
+
+    def test_given_row_when_parsed_then_input_not_mutated(self):
+        row = _sample_investigation_row()
+        original_keys = set(row.keys())
+        splunk.parse_investigation(row)
+        assert set(row.keys()) == original_keys
+        assert splunk.SPLUNK_ES_EVENT_TYPE_FIELD not in row
+
+
+class TestInvestigationModel:
+    """Given a parsed investigation row, when Investigation.to_incident runs,
+    then it produces an XSOAR incident dict that satisfies the Phase 3a contract."""
+
+    def _mapper(self):
+        m = MagicMock()
+        m.should_map = False
+        m.get_xsoar_user_by_splunk.side_effect = lambda u: u
+        return m
+
+    def test_given_happy_path_row_when_to_incident_then_no_type_set(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={"mirror_direction": "Incoming"})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="splunk_inst_1")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        assert "type" not in incident, "Phase 3a forbids the integration setting incident['type']"
+
+    def test_given_happy_path_row_when_to_incident_then_event_type_in_rawjson(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={"mirror_direction": "None"})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="splunk_inst_1")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        raw = json.loads(incident["rawJSON"])
+        assert raw[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+
+    def test_given_happy_path_row_when_to_incident_then_dbot_mirror_id_is_guid(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={"mirror_direction": "None"})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="splunk_inst_1")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        assert incident["dbotMirrorId"] == "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e"
+        assert incident["dbotMirrorInstance"] == "splunk_inst_1"
+        assert incident["dbotMirrorDirection"] is None  # MIRROR_DIRECTION["None"] is None
+
+    def test_given_urgency_when_to_incident_then_severity_derived(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        assert incident["severity"] == splunk.severity_to_level("high")
+
+    def test_given_create_time_when_to_incident_then_occurred_is_rfc3339(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        # RFC 3339 with timezone suffix.
+        assert "T" in incident["occurred"]
+        assert incident["occurred"].endswith("+00:00") or incident["occurred"].endswith("Z")
+
+    def test_given_missing_optional_fields_when_to_incident_then_handled(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        sparse_row = {
+            "investigation_guid": "g-1",
+            "investigation_id": "ES-1",
+            "name": "n",
+            "create_time": 1777446173.0,
+        }
+        inv = splunk.Investigation(splunk.parse_investigation(sparse_row))
+        incident = inv.to_incident(self._mapper())
+        assert incident["name"] == "n"
+        assert "details" not in incident
+        assert "severity" not in incident
+        assert "owner" not in incident
+
+    def test_given_backslash_in_user_when_to_incident_then_round_trips(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        raw = json.loads(incident["rawJSON"])
+        assert raw["user"] == ["tng\\crusher"]
+
+    def test_given_get_id_then_prefers_investigation_id(self):
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        assert inv.get_id() == "ES-00015"
+
+    def test_given_no_investigation_id_when_get_id_then_falls_back_to_guid(self):
+        row = _sample_investigation_row()
+        row.pop("investigation_id")
+        inv = splunk.Investigation(splunk.parse_investigation(row))
+        assert inv.get_id() == "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e"

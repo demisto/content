@@ -6,10 +6,13 @@ import json
 import re
 import time
 import urllib.parse
-from datetime import datetime, timedelta
+from abc import ABC, abstractmethod
+from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import dateparser
-from collections import defaultdict
 
 import pytz
 import requests
@@ -70,6 +73,8 @@ SUBMITTED_FINDINGS = "submitted_findings"
 EVENT_ID = "event_id"
 RULE_ID = "rule_id"
 ISO_FORMAT_TZ_AWARE = "%Y-%m-%dT%H:%M:%S.%f%z"  # e.g '2025-12-03T11:53:45.138540+00:00
+SPLUNK_ES_EVENT_TYPE_FIELD = "splunk_es_event_type"  # tag emitted in rawJSON, consumed by classifier
+INVESTIGATIONS_MAX_LIMIT = 100  # Hard cap enforced by Splunk Mission Control v2 endpoint
 NOT_YET_SUBMITTED_FINDINGS = "not_yet_submitted_findings"
 INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
@@ -935,6 +940,356 @@ class Enrichment:
             query_name=enrichment_dict.get(QUERY_NAME),
             query_search=enrichment_dict.get(QUERY_SEARCH),
         )
+
+
+# =========== Investigations / Mission Control v2 helpers ===========
+# NOTE: All code in this section is part of Phase 3a additive scaffolding for the
+# fetch-investigations feature. It is not wired into any runtime path yet — the
+# FetchHandlerFactory registry is intentionally left empty here. Phase 3b will
+# register handlers and route fetch_incidents() through them. Until then, runtime
+# behavior is bit-identical to before this scaffolding was added.
+
+PLACEHOLDER = "CUSTOM_FILTER_PLACEHOLDER"
+_REST_CLAUSE_RE = re.compile(
+    r'(\|\s*rest\s+)(["\'])(.+?)(\2)',
+    flags=re.IGNORECASE | re.DOTALL,
+)
+_OVERRIDABLE_KEYS = ("create_time_min", "create_time_max", "limit", "offset")
+# Pre-compiled regex matching strings already in the canonical Mission Control
+# shape (`...Z` with optional sub-second fractional digits). Used as a fast path
+# in `to_mc_iso8601_utc` to pass canonical inputs through unchanged.
+_CANONICAL_MC_ISO_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$")
+
+
+def to_mc_iso8601_utc(ts: "str | datetime") -> str:
+    """Normalize a timestamp into the exact shape accepted by the Mission Control v2
+    `investigations` endpoint for `create_time_min` / `create_time_max`:
+    `YYYY-MM-DDTHH:MM:SS[.ffffff]Z` (always UTC, literal `Z` suffix; sub-second optional).
+
+    Behavior:
+      - Already-canonical inputs (ending in `Z`) pass through unchanged.
+      - Numeric offsets (e.g. `+00:00`, `-05:00`) are converted to UTC and emitted with `Z`.
+      - Sub-second precision is preserved when present; omitted when absent.
+      - Naive inputs (no timezone) are rejected — the endpoint rejects them too.
+
+    Args:
+        ts: Either an ISO 8601 string or a timezone-aware ``datetime``.
+
+    Returns:
+        A canonical Mission Control timestamp string of the form
+        ``YYYY-MM-DDTHH:MM:SS[.ffffff]Z``.
+
+    Raises:
+        DemistoException: If the input is a naive datetime, a naive ISO 8601 string,
+            or otherwise unparseable.
+    """
+    # String path
+    if isinstance(ts, str):
+        # Fast-path: already canonical (ends in Z, optional fractional component).
+        if _CANONICAL_MC_ISO_RE.match(ts):
+            return ts
+        try:
+            # `datetime.fromisoformat` (Python 3.10) accepts `+00:00` style offsets
+            # and (3.11+) the literal `Z` suffix as well. Normalize a trailing `Z`
+            # to `+00:00` for broad compatibility.
+            normalized = ts[:-1] + "+00:00" if ts.endswith("Z") else ts
+            dt = datetime.fromisoformat(normalized)
+        except ValueError as e:
+            raise DemistoException(
+                f"to_mc_iso8601_utc: failed to parse ISO 8601 timestamp '{ts}': {e}"
+            ) from e
+    elif isinstance(ts, datetime):
+        dt = ts
+    else:
+        raise DemistoException(
+            f"to_mc_iso8601_utc: unsupported input type {type(ts).__name__}; "
+            "expected str or datetime."
+        )
+
+    if dt.tzinfo is None:
+        raise DemistoException(
+            f"to_mc_iso8601_utc: naive timestamp '{ts}' rejected; "
+            "the Mission Control v2 endpoint requires an explicit timezone."
+        )
+
+    # Convert to UTC.
+    dt_utc = dt.astimezone(timezone.utc)
+    if dt_utc.microsecond:
+        # Preserve sub-second precision (microseconds).
+        return dt_utc.strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+    return dt_utc.strftime("%Y-%m-%dT%H:%M:%S") + "Z"
+
+
+def prepare_investigations_query(
+    user_query: str,
+    create_time_min: str,
+    create_time_max: str,
+    limit: int,
+    offset: int,
+) -> str:
+    """Inject ``create_time_min`` / ``create_time_max`` / ``limit`` / ``offset`` into the
+    URL inside ``| rest "..."`` (or ``'...'``).
+
+    The Mission Control v2 ``investigations`` endpoint does NOT honor the standard
+    Splunk ``earliest`` / ``latest`` parameters; it filters by ``create_time_min`` /
+    ``create_time_max`` instead.
+
+    Behavior:
+      - Placeholder substitution if ``CUSTOM_FILTER_PLACEHOLDER`` is present.
+      - Otherwise, properly merge into the URL's query string using
+        ``urllib.parse``, overriding any pre-existing values for the four
+        managed keys (with a debug log naming each override). Preserves quote
+        style, whitespace, multi-line SPL, fragments, and any extra
+        ``splunk_server=…`` args after the quoted URL.
+      - ``limit`` is clamped to ``INVESTIGATIONS_MAX_LIMIT`` (100).
+
+    Raises:
+        DemistoException: if no ``| rest "<url>"`` / ``'<url>'`` clause is found.
+    """
+    limit = min(int(limit), INVESTIGATIONS_MAX_LIMIT)
+    managed = {
+        "create_time_min": create_time_min,
+        "create_time_max": create_time_max,
+        "limit": str(limit),
+        "offset": str(offset),
+    }
+
+    # Placeholder path.
+    if PLACEHOLDER in user_query:
+        params_str = "&".join(f"{k}={v}" for k, v in managed.items())
+        demisto.debug(
+            f"prepare_investigations_query: placeholder substitution; "
+            f"params={list(managed)}"
+        )
+        return user_query.replace(PLACEHOLDER, params_str)
+
+    # Append / merge path.
+    match = _REST_CLAUSE_RE.search(user_query)
+    if not match:
+        raise DemistoException(
+            'investigations_fetch_query must contain a `| rest "<url>"` (or \'<url>\') clause.'
+        )
+    url = match.group(3)
+
+    parts = urlsplit(url)
+    existing = parse_qsl(parts.query, keep_blank_values=True)
+    existing_keys = {k for k, _ in existing}
+    overridden = [k for k in _OVERRIDABLE_KEYS if k in existing_keys]
+    if overridden:
+        demisto.debug(
+            f"prepare_investigations_query: overriding pre-existing URL params={overridden}"
+        )
+    merged = [(k, v) for k, v in existing if k not in managed] + list(managed.items())
+    new_query_string = urlencode(merged, doseq=True)
+    new_url = urlunsplit(
+        (parts.scheme, parts.netloc, parts.path, new_query_string, parts.fragment)
+    )
+
+    return user_query[: match.start(3)] + new_url + user_query[match.end(3):]
+
+
+# =========== Investigations model ===========
+
+
+def parse_investigation(row: dict[str, Any]) -> dict[str, Any]:
+    """Flatten a Mission Control v2 investigations row per plan §3.7.1.
+
+    Pure transform — does not call any Splunk service.
+
+    The function:
+      - Returns a shallow copy so the caller's row is not mutated.
+      - Lifts the nested ``findings.incident_ids`` array up to top-level
+        ``incident_ids`` for easier classifier/mapper consumption.
+      - Stamps ``splunk_es_event_type = "Investigation"`` for the classifier.
+
+    Args:
+        row: Raw row as returned by the Mission Control v2 endpoint.
+
+    Returns:
+        A new ``dict`` with the parsed/flattened fields.
+    """
+    parsed: dict[str, Any] = dict(row)
+
+    # Lift findings.incident_ids → top-level incident_ids (per §3.7.1).
+    findings = parsed.get("findings")
+    if isinstance(findings, dict) and "incident_ids" in findings:
+        parsed["incident_ids"] = findings.get("incident_ids")
+
+    # Type tag consumed by the classifier (§1.3 / §3.3).
+    parsed[SPLUNK_ES_EVENT_TYPE_FIELD] = Investigation.event_type
+    return parsed
+
+
+class Investigation:
+    """A lightweight model for a Splunk Mission Control v2 investigation row.
+
+    Unlike :class:`Finding`, this model has no enrichment lifecycle and does not
+    interact with any Splunk service. It is responsible only for turning a
+    parsed row into an XSOAR incident dict.
+    """
+
+    event_type: str = "Investigation"
+
+    def __init__(self, parsed: dict[str, Any]) -> None:
+        # `parsed` is expected to be the output of `parse_investigation` —
+        # i.e. it already carries the splunk_es_event_type tag. We accept the
+        # raw row too for ergonomic test/use; re-running parse is idempotent.
+        if parsed.get(SPLUNK_ES_EVENT_TYPE_FIELD) != self.event_type:
+            parsed = parse_investigation(parsed)
+        self.data: dict[str, Any] = parsed
+
+    def get_id(self) -> str:
+        """Return a stable id for dedup/display.
+
+        Order: ``investigation_id`` → ``investigation_guid`` →
+        :func:`create_incident_custom_id` fallback.
+        """
+        if self.data.get("investigation_id"):
+            return str(self.data["investigation_id"])
+        if self.data.get("investigation_guid"):
+            return str(self.data["investigation_guid"])
+        # Final fallback: use the dedup helper that operates on rawJSON.
+        return create_incident_custom_id({"rawJSON": json.dumps(self.data)})
+
+    def get_occurred(self) -> str:
+        """Return an RFC 3339 string built from ``create_time`` (epoch float).
+
+        Falls back to ``mc_create_time`` and finally to ``now()`` if neither
+        is present.
+        """
+        epoch = self.data.get("create_time") or self.data.get("mc_create_time")
+        if epoch is None:
+            return datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE)
+        try:
+            return datetime.fromtimestamp(float(epoch), tz=pytz.UTC).isoformat()
+        except (TypeError, ValueError):
+            return datetime.now(pytz.UTC).strftime(ISO_FORMAT_TZ_AWARE)
+
+    def to_incident(self, mapper: "UserMappingObject") -> dict[str, Any]:
+        """Build an XSOAR incident dict from this investigation.
+
+        Notes:
+            - Does NOT set ``incident["type"]``. The classifier consumes
+              ``rawJSON.splunk_es_event_type`` to route to the right type.
+            - ``dbotMirrorId`` is set to ``investigation_guid`` so the existing
+              mirror-in/mirror-out commands (which talk to the v2 endpoint)
+              keep working without any changes.
+        """
+        params_local = demisto.params()
+        data = self.data
+
+        name = data.get("name") or data.get("investigation_id") or "Splunk Investigation"
+        incident: dict[str, Any] = {
+            "name": name,
+            "occurred": self.get_occurred(),
+        }
+
+        if data.get("description"):
+            incident["details"] = data["description"]
+
+        if data.get("urgency"):
+            incident["severity"] = severity_to_level(data["urgency"])
+
+        owner_value = data.get("owner")
+        if owner_value and mapper.should_map and (mapped := mapper.get_xsoar_user_by_splunk(owner_value)):
+            data["owner"] = mapped
+            incident["owner"] = mapped
+        elif owner_value:
+            incident["owner"] = owner_value
+
+        # Mirror plumbing — same shape as Finding.create_incident:
+        #   - dbotMirror* fields on the incident itself
+        #   - a `mirror_*` mirror block inside rawJSON for downstream consumers
+        mirror_direction = MIRROR_DIRECTION.get(params_local.get("mirror_direction") or "None")
+        mirror_instance = demisto.integrationInstance()
+        if data.get("investigation_guid"):
+            incident["dbotMirrorId"] = data["investigation_guid"]
+        incident["dbotMirrorInstance"] = mirror_instance
+        incident["dbotMirrorDirection"] = mirror_direction
+
+        data.update(
+            {
+                "mirror_instance": mirror_instance,
+                "mirror_direction": mirror_direction,
+                "mirror_tags": [NOTE_TAG_FROM_SPLUNK, NOTE_TAG_TO_SPLUNK],
+            }
+        )
+
+        # Ensure the type tag survives even if a caller built `Investigation`
+        # from a raw (un-parsed) row directly.
+        data[SPLUNK_ES_EVENT_TYPE_FIELD] = self.event_type
+        incident["rawJSON"] = json.dumps(data)
+        return incident
+
+
+# =========== Fetch handler factory (Phase 3a — registry empty) ===========
+
+
+@dataclass
+class FetchResult:
+    """Per-handler fetch result.
+
+    ``incidents`` are merged by the dispatcher (Phase 3b) and emitted via
+    ``demisto.incidents()``. ``last_run_delta`` is merged into the appropriate
+    last-run namespace (top-level for Findings; ``last_run["investigations"]``
+    for Investigations).
+    """
+
+    incidents: list[dict[str, Any]] = field(default_factory=list)
+    last_run_delta: dict[str, Any] = field(default_factory=dict)
+
+
+class FetchHandler(ABC):
+    """Abstract base for per-event-type fetch handlers (Factory pattern, §3.1)."""
+
+    event_type: str = ""               # "Finding" | "Investigation"
+    last_run_key: "str | None" = None  # None = top-level (BC for Findings)
+
+    @abstractmethod
+    def fetch(self, service, last_run, mapper, params) -> FetchResult:  # noqa: D401
+        """Run one fetch cycle for this event type and return a FetchResult."""
+        raise NotImplementedError
+
+
+class FetchHandlerFactory:
+    """Builds an ordered list of :class:`FetchHandler` instances per the
+    user-selected ``fetch_event_types`` parameter.
+
+    Phase 3a leaves the registry empty on purpose — no handlers are
+    instantiated at runtime. Phase 3b will register
+    ``FindingsFetchHandler`` / ``InvestigationsFetchHandler`` and wire the
+    dispatcher.
+    """
+
+    _registry: dict[str, type[FetchHandler]] = {}
+
+    @classmethod
+    def register(cls, event_type: str, handler_cls: type[FetchHandler]) -> None:
+        """Register a handler class under an ``event_type`` key.
+
+        Registration order is preserved by the underlying ``dict`` (Python 3.7+),
+        which the :meth:`build` method relies on for deterministic output.
+        """
+        cls._registry[event_type] = handler_cls
+
+    @classmethod
+    def build(cls, selected_types: "list[str] | None") -> list[FetchHandler]:
+        """Instantiate handlers for ``selected_types``.
+
+        - Empty / ``None`` selection → defaults to ``["Finding"]`` for BC.
+        - Unknown event types are silently ignored.
+        - Output order matches the order in ``selected_types``.
+        """
+        if not selected_types:
+            selected_types = ["Finding"]
+        ignored = [t for t in selected_types if t not in cls._registry]
+        built = [cls._registry[t]() for t in selected_types if t in cls._registry]
+        demisto.debug(
+            "FetchHandlerFactory.build: requested="
+            f"{selected_types}; built={[h.__class__.__name__ for h in built]}; "
+            f"ignored={ignored}"
+        )
+        return built
 
 
 class Finding:

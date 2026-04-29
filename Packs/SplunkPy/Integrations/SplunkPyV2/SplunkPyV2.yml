@@ -67,6 +67,39 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Event types to fetch
+  name: fetch_event_types
+  type: 16
+  section: Collect
+  required: false
+  defaultvalue: Finding
+  options:
+  - Finding
+  - Investigation
+  additionalinfo: Select which Splunk event types to ingest as incidents. Each fetched event is tagged with `splunk_es_event_type` so the classifier can map it to the correct incident type. Default `Finding` preserves existing behavior.
+- display: Investigations fetch query
+  name: investigations_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  defaultvalue: |
+    | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&CUSTOM_FILTER_PLACEHOLDER"
+  additionalinfo: SPL used when `Investigation` is selected in "Event types to fetch". The literal token `CUSTOM_FILTER_PLACEHOLDER` is replaced at runtime with `create_time_min=<ISO8601>&create_time_max=<ISO8601>&limit=...&offset=...` (the Mission Control v2 endpoint does NOT honor `earliest`/`latest`). `create_time_min` / `create_time_max` are sent as ISO 8601 UTC strings of the form `YYYY-MM-DDTHH:MM:SS[.ffffff]Z` (always UTC, `Z` suffix mandatory; sub-second precision optional). The endpoint rejects naked offsets such as `+00:00`, naive timestamps without a timezone suffix, and Splunk-relative tokens like `-7d@d`. If the token is removed, those parameters are appended to the URL inside `| rest "..."`. `limit` is clamped to 100.
+- display: Maximum investigations per fetch
+  name: investigations_max_fetch
+  type: 0
+  section: Collect
+  required: false
+  defaultvalue: '50'
+  advanced: true
+  additionalinfo: Maximum number of investigations to fetch per cycle. Hard-clamped to 100 (Splunk Mission Control v2 endpoint maximum).
+- display: First fetch timestamp (Investigations)
+  name: investigations_first_fetch
+  type: 0
+  section: Collect
+  required: false
+  defaultvalue: 7 days
+  additionalinfo: The amount of time to go back when performing the first investigations fetch (e.g., 12 hours, 7 days, 3 months).
 - display: Extract Fields - CSV fields that will be parsed out of raw finding events
   name: extractFields
   type: 0
