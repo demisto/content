@@ -151,6 +151,7 @@ configuration:
   - yyyy-MM-dd
   - mmm-dd-yyyy
   - yyyy-MMM-dd
+  - dd-MMM-yyyy
   type: 15
   required: false
   section: Collect

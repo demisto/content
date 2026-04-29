@@ -31,6 +31,7 @@ DATE_FORMAT_OPTIONS = {
     "yyyy-MM-dd": "%Y-%m-%d %H:%M:%S",
     "mmm-dd-yyyy": "%b-%d-%Y %H:%M:%S",
     "yyyy-MMM-dd": "%Y-%b-%d %H:%M:%S",
+    "dd-MMM-yyyy": "%d-%b-%Y %H:%M:%S",
 }
 
 TICKET_STATES = {
