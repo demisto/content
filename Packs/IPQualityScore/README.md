@@ -1,20 +1,65 @@
-The IPQualityScore (IPQS) Threat Risk Scoring app provides enterprise-grade threat intelligence for IP addresses, email addresses, URLs, and domains. Identify threats including high risk behavior, phishing & malware, bad actors, and fraudulent activity.
+# IPQualityScore Threat Intelligence
 
-Access real-time threat data from a network of honeypots managed by IPQS, featuring over 5,000 sites on the web that act as traps for bad actors. Detect sophisticated abuse including residential & mobile proxy networks, compromised email accounts, and hijacked domains.
+## Overview
 
-Dark Data™ enhances detection rates and mitigates bad actors with monitoring for stolen user details, compromised accounts, and high risk data on the dark web.
+The **IPQualityScore (IPQS) Threat Intelligence Pack** provides enterprise-grade threat intelligence and risk scoring for multiple indicator types including:
 
-## What does this pack do?
+- IP addresses
+- Email addresses
+- URLs
+- Domains
+- Files
+- Leaked credentials
 
-The playbooks included in this pack analyze threat details in real-time:
+This integration leverages IPQS’s global intelligence network to detect malicious activity, fraud, phishing, malware, and compromised identities in real time.
 
-- Threat hunting with automated analysis.
-- IP address reputation risk analysis and connection details.
-- Detect invalid, abusive, and temporary or disposable email addresses.
-- Phishing, malware, and suspicious URL analysis.
-- Parked domain detection, domain reputation, and domain age calculation.
-- Easy risk scores to identify threat severity.
+---
 
-Simply plug in your IPQS API key to enable real-time scoring with Cortex XSOAR.
+## Enhancements in This Pack
 
-_For more information, please visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/integrations/ip-quality-score)_
+This pack has been extended with:
+
+- **Malware File & URL Scanning**
+- **Dark Web Leak Intelligence (Dark Data™)**
+
+---
+
+## What Does This Pack Do?
+
+This pack enables automated threat analysis and enrichment:
+
+- Performs real-time threat hunting and enrichment
+- Provides IP reputation analysis (proxy, VPN, abuse detection)
+- Detects invalid, disposable, or high-risk email addresses
+- Analyzes URLs and domains for phishing and malware
+- Scans files and URLs for malware using IPQS Malware Scanner
+- Identifies compromised credentials:
+  - Username leaks
+  - Password leaks
+  - Email breaches
+- Evaluates domain reputation (age, parked domains)
+- Assigns risk scores for quick threat prioritization
+
+---
+
+## Use Cases
+
+- Threat intelligence enrichment
+- Fraud detection and prevention
+- Incident response automation
+- Malware analysis workflows
+- Credential exposure monitoring
+- Phishing detection
+
+---
+
+## Getting Started
+
+Simply plug in your **IPQS API key** to enable real-time scoring with Cortex XSOAR.
+
+---
+
+## Additional Information
+
+For more information, please visit:  
+https://xsoar.pan.dev/docs/reference/integrations/ip-quality-score
