@@ -57,7 +57,7 @@ Usage:
   python workflow_state.py dashboard
   python workflow_state.py set-assignee "Cisco Spark" "John Doe"
   python workflow_state.py set-auth "Cisco Spark" '<auth-details json>'
-  python workflow_state.py set-inputs "Cisco Spark" '<params-to-commands json>'
+  python workflow_state.py set-params-to-commands "Cisco Spark" '<params-to-commands json>'
   python workflow_state.py set-params-for-test "Cisco Spark" '<json>'
   python workflow_state.py set-shared-params "Cisco Spark" '<json>'
   python workflow_state.py markpass "Cisco Spark" "wrote/checked code"
@@ -151,7 +151,7 @@ WORKFLOW_COLUMNS = [
 NON_CHECKPOINT_STEPS = {
     "assignee": "set-assignee",
     "Auth Details": "set-auth",
-    "Params to Commands": "set-inputs",
+    "Params to Commands": "set-params-to-commands",
     "Params for test with default in code": "set-params-for-test",
     "Params same in other handlers": "set-shared-params",
     "requires auth parity test": "set-auth-flag",
@@ -450,8 +450,8 @@ def markpass_step(row: dict[str, str], step_name: str) -> str:
             return (
                 f"ERROR: Cannot mark 'generated manifest' as passed — "
                 f"'Params to Commands' must be set first.\n"
-                f"  Use 'set-inputs' to provide the params (JSON).\n"
-                f"  Example: workflow_state.py set-inputs "
+                f"  Use 'set-params-to-commands' to provide the params (JSON).\n"
+                f"  Example: workflow_state.py set-params-to-commands "
                 f"\"{integration_id}\" '{{}}'"
             )
         params_for_test = row.get("Params for test with default in code", "").strip()
@@ -679,9 +679,9 @@ def _set_json_column(args: list[str], column: str, setter_cmd: str) -> None:
     print(f"Set '{column}' for '{rows[idx]['Integration ID']}' to: {raw}")
 
 
-def cmd_set_inputs(args: list[str]) -> None:
+def cmd_set_params_to_commands(args: list[str]) -> None:
     """Set the 'Params to Commands' JSON for an integration."""
-    _set_json_column(args, "Params to Commands", "set-inputs")
+    _set_json_column(args, "Params to Commands", "set-params-to-commands")
 
 
 def cmd_set_params_for_test(args: list[str]) -> None:
@@ -1212,7 +1212,7 @@ COMMANDS = {
     "dashboard": cmd_dashboard,
     "set-assignee": cmd_set_assignee,
     "set-auth": cmd_set_auth,
-    "set-inputs": cmd_set_inputs,
+    "set-params-to-commands": cmd_set_params_to_commands,
     "set-params-for-test": cmd_set_params_for_test,
     "set-shared-params": cmd_set_shared_params,
     "markpass": cmd_markpass,

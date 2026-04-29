@@ -57,9 +57,9 @@ Special case: `NoneRequired` (no auth params)
 | # | Column | Description |
 |---|---|---|
 | 1 | `Integration ID` | ID of the integration |
-| 2 | `Integration File Path` |  |
+| 2 | `Integration File Path` | Path to the integration's source files |
 | 3 | `Connector ID` | The ID of the Connector |
-| 4 | `special cases` Frontend/Backend special hardcoded cases |
+| 4 | `special cases` | Frontend/Backend special hardcoded cases |
 
 #### JSON Column Schemas
 
@@ -79,7 +79,7 @@ The script distinguishes between two kinds of workflow columns:
   `Auth Details`, `Params to Commands`,
   `Params for test with default in code`, `Params same in other handlers`.
   These are set with dedicated CLI commands (`set-assignee`, `set-auth`,
-  `set-inputs`, `set-params-for-test`, `set-shared-params`).
+  `set-params-to-commands`, `set-params-for-test`, `set-shared-params`).
 - **Workflow checkpoint columns** (sequential ✅, columns 10–15 and 17–20):
   `generated manifest`, `run manifest make validate`, `wrote/checked code`,
   `shadowed command test passes`, `write tests`,
@@ -93,32 +93,32 @@ It is NOT a checkpoint.
 
 ### Workflow Columns
 
-Responsible| Column | Type | Description |
-|--------|------|-------------|
-| `assignee` | Free text | Who is working on this integration |
-Judah | `Auth Details` | Free text (JSON) | Details of the auth of the integration (Auth Detail JSON Schema)|
-Judah | `Params to Commands` | Free text (JSON) | The inputs/arguments for the script |
-Judah | `Params for test with default in code` | Free text list of param ids | Parameters that have a default in the code.... |
-Judah | (optional) Params same in other handlers
-Yuval | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated | 
-Joey | `run manifest make validate` | Checkpoint ✅ | Make validate |
-Joey | `wrote/checked code` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
-Joey | `shadowed command test passes` | Checkpoint ✅ | Verify no conflicting commands in the same connector or make the changes if required |
-Joey | `write tests` | Checkpoint ✅ | Python/Jacascript/PWSH code has been changed |
-Yuval | `precommit/validate/unit tests passed` | Checkpoint ✅ | Preccomit and validate, Yuval will decide what to skip |
-Judah | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
-Judah | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
-Joey| `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
-| `code reviewed` | Checkpoint ✅ | Code review completed |
-| `code merged` | Checkpoint ✅ | Code merged to branch |
+| Responsible | Column | Type | Description |
+|---|---|---|---|
+|  | `assignee` | Free text | Who is working on this integration |
+| Judah | `Auth Details` | Free text (JSON) | Details of the auth of the integration (see [`column-schemas.md`](column-schemas.md#auth-details)) |
+| Judah | `Params to Commands` | Free text (JSON) | Mapping of integration commands to the parameter IDs each command needs (see [`column-schemas.md`](column-schemas.md#params-to-commands)) |
+| Judah | `Params for test with default in code` | Free text (JSON) | Param IDs whose defaults are hardcoded in source (see [`column-schemas.md`](column-schemas.md#params-for-test-with-default-in-code)) |
+| Judah | `Params same in other handlers` | Free text (JSON, optional) | Param IDs shared verbatim with sibling handlers (see [`column-schemas.md`](column-schemas.md#params-same-in-other-handlers-optional)) |
+| Yuval | `generated manifest` | Checkpoint ✅ | Manifest YAML has been generated |
+| Joey | `run manifest make validate` | Checkpoint ✅ | Make validate |
+| Joey | `wrote/checked code` | Checkpoint ✅ | Python/JavaScript/PWSH code has been changed |
+| Joey | `shadowed command test passes` | Checkpoint ✅ | Verify no conflicting commands in the same connector or make the changes if required |
+| Joey | `write tests` | Checkpoint ✅ | Unit tests written |
+| Yuval | `precommit/validate/unit tests passed` | Checkpoint ✅ | Pre-commit and validate (Yuval will decide what to skip) |
+| Judah | `requires auth parity test` | Flag | `YES`, `NO`, or `N/A` |
+| Judah | `auth parity test passes` | Checkpoint ✅ | Auth parity test passes (auto `N/A` if flag is `NO`) |
+| Joey | `param parity test passes` | Checkpoint ✅ | Parameter parity test passes |
+|  | `code reviewed` | Checkpoint ✅ | Code review completed |
+|  | `code merged` | Checkpoint ✅ | Code merged to branch |
 
 ### Rules
 
 1. **Explicit step naming** — You must explicitly name the step you are marking as passed via `markpass`. There is no general "advance" command.
 2. **Sequential order** — Checkpoint columns must be completed in order. You cannot mark `wrote/checked code` before `run manifest make validate` is done. The script will reject the attempt and tell you what the current step is.
-3. **Workflow data columns are not checkpoints** — `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, and `Params same in other handlers` are free-text / JSON columns. Set them with their dedicated commands (`set-assignee`, `set-auth`, `set-inputs`, `set-params-for-test`, `set-shared-params`); do not try to `markpass` them.
-4. **Prerequisites for `generated manifest`** — `Params to Commands` and `Params for test with default in code` must both be set (valid JSON) before you can mark `generated manifest` as passed. Use `set-inputs` and `set-params-for-test` respectively. `Params same in other handlers` is optional and is **not** a prerequisite.
-5. **Setting `Auth Details` resets the workflow** — `set-auth` validates against the [Auth Details schema](column-schemas.md), then clears all checkpoints and the auth-parity flag. The integration is reset to the first checkpoint (`generated manifest`).
+3. **Workflow data columns are not checkpoints** — `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, and `Params same in other handlers` are free-text / JSON columns. Set them with their dedicated commands (`set-assignee`, `set-auth`, `set-params-to-commands`, `set-params-for-test`, `set-shared-params`); do not try to `markpass` them.
+4. **Prerequisites for `generated manifest`** — `Params to Commands` and `Params for test with default in code` must both be set (valid JSON) before you can mark `generated manifest` as passed. Use `set-params-to-commands` and `set-params-for-test` respectively. `Params same in other handlers` is optional and is **not** a prerequisite.
+5. **Setting `Auth Details` resets the workflow** — `set-auth` validates against the [Auth Details schema](column-schemas.md#auth-details), then clears all checkpoints and the auth-parity flag. The integration is reset to the first checkpoint (`generated manifest`).
 6. **Non-checkpoint correction** — If you try to `markpass` a workflow data column or the auth-parity flag, the script tells you the correct setter command to use instead.
 7. **Fail & reset** — When a step fails, use `fail` to reset that step **and all subsequent steps**.
 8. **Reset to stage** — Use `reset-to` to go back to a specific checkpoint, clearing it and everything after it.
@@ -149,7 +149,7 @@ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
 
 # Set Params to Commands (must be valid JSON)
-python3 connectus/workflow_state.py set-inputs "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
+python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
 
 # Set Params for test with default in code (must be valid JSON)
 python3 connectus/workflow_state.py set-params-for-test "Cisco Spark" '["bot_token"]'
@@ -279,19 +279,19 @@ $ python3 connectus/workflow_state.py status "Cisco Spark"
 $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest"
 
 ERROR: Cannot mark 'generated manifest' as passed — 'Params to Commands' must be set first.
-  Use 'set-inputs' to provide the params (JSON).
-  Example: workflow_state.py set-inputs "Cisco Spark" '{}'
+  Use 'set-params-to-commands' to provide the params (JSON).
+  Example: workflow_state.py set-params-to-commands "Cisco Spark" '{}'
 ```
 
-#### 3. Try to set-inputs with invalid JSON (rejected)
+#### 3. Try to set-params-to-commands with invalid JSON (rejected)
 
 ```
-$ python3 connectus/workflow_state.py set-inputs "Cisco Spark" "not json"
+$ python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" "not json"
 
 ERROR: 'Params to Commands' must be valid JSON.
   Got: not json
   Parse error: Expecting value: line 1 column 1 (char 0)
-  Example: workflow_state.py set-inputs "Cisco Spark" '{}'
+  Example: workflow_state.py set-params-to-commands "Cisco Spark" '{}'
 ```
 
 #### 4. Set Auth Details, Params to Commands, and Params for test
@@ -303,7 +303,7 @@ Set 'Auth Details' for 'Cisco Spark'.
   Reset workflow to 'generated manifest' (cleared 10 checkpoint(s) and the auth parity flag).
   Current step: generated manifest
 
-$ python3 connectus/workflow_state.py set-inputs "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
+$ python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
 
 Set 'Params to Commands' for 'Cisco Spark' to: {"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}
 
@@ -347,8 +347,8 @@ ERROR: Cannot mark 'write tests' as passed — you are not up to that step yet.
 $ python3 connectus/workflow_state.py markpass "Cisco Spark" "Params to Commands"
 
 ERROR: 'Params to Commands' is not a pass/fail checkpoint.
-  Use 'set-inputs' instead.
-  Example: workflow_state.py set-inputs "Cisco Spark" <value>
+  Use 'set-params-to-commands' instead.
+  Example: workflow_state.py set-params-to-commands "Cisco Spark" <value>
 ```
 
 ```

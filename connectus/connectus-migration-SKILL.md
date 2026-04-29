@@ -321,7 +321,7 @@ See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions.
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
 
 ```bash
-python3 connectus/workflow_state.py set-inputs "<Integration ID>" '<JSON>'
+python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
 ```
 
 Derive the contents from the integration's existing YAML `configuration` and `script.commands` sections, plus any per-command param usage in the Python code.
@@ -329,7 +329,7 @@ Derive the contents from the integration's existing YAML `configuration` and `sc
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-inputs "QRadar v3" '{"integration":"QRadar v3","commands":{"test-module":["url","credentials"],"qradar-offenses-list":["max_fetch","longRunning"]}}'
+python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"QRadar v3","commands":{"test-module":["url","credentials"],"qradar-offenses-list":["max_fetch","longRunning"]}}'
 ```
 
 **Validation:** The command rejects invalid JSON with the parse error.

@@ -61,7 +61,7 @@ Validation rules:
 8. `required` values must match the YML param `required` field.
 
 Setter:
-[`workflow_state.py set-auth "<Integration ID>" '<json>'`](workflow_state.py:1).
+[`workflow_state.py set-auth "<Integration ID>" '<json>'`](workflow_state.py:833).
 Setting this value resets the workflow back to the first checkpoint
 (`generated manifest`).
 
@@ -103,7 +103,7 @@ Notes:
   `commands`.
 
 Setter:
-[`workflow_state.py set-inputs "<Integration ID>" '<json>'`](workflow_state.py:1).
+[`workflow_state.py set-params-to-commands "<Integration ID>" '<json>'`](workflow_state.py:682).
 Must be valid JSON. Required before `generated manifest` can be marked passed.
 
 ---
@@ -135,39 +135,17 @@ Notes:
 - Must be valid JSON.
 
 Setter:
-[`workflow_state.py set-params-for-test "<Integration ID>" '<json>'`](workflow_state.py:1).
+[`workflow_state.py set-params-for-test "<Integration ID>" '<json>'`](workflow_state.py:687).
 Required before `generated manifest` can be marked passed.
 
 ---
 
 ## `Params same in other handlers` (optional)
-
-For multi-handler integrations, the list of parameter IDs that are shared
-verbatim with sibling handlers (i.e. the same param appears in another
-integration's handler with identical semantics). Used to spot duplication
-opportunities and avoid redundant manifest entries.
-
-Recommended shape — a JSON array of strings:
-
-```json
-["param_id_1", "param_id_2"]
-```
-
-Alternative shape — keyed by sibling integration ID:
-
 ```json
 {
-  "<other Integration ID>": ["param_id_1", "param_id_2"],
-  "<other Integration ID>": ["param_id_3"]
+    "paramname" :  {"otherintegrationID1" : "paramname", "otherintegrationID2" : "paramnamedifferent" },
+    "param2name" :  {"integrationID1" : ""},
+
 }
+Must be valid JSON when set. Not a prerequisite for any checkpoint.
 ```
-
-Notes:
-
-- This column is **optional**. Leave empty if not applicable (single-handler
-  integration, or no shared params identified).
-- Must be valid JSON when set.
-- Not a prerequisite for any checkpoint.
-
-Setter:
-[`workflow_state.py set-shared-params "<Integration ID>" '<json>'`](workflow_state.py:1).

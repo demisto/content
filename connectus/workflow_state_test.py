@@ -152,7 +152,7 @@ class TestSchemaConstants:
         assert NON_CHECKPOINT_STEPS == {
             "assignee": "set-assignee",
             "Auth Details": "set-auth",
-            "Params to Commands": "set-inputs",
+            "Params to Commands": "set-params-to-commands",
             "Params for test with default in code": "set-params-for-test",
             "Params same in other handlers": "set-shared-params",
             "requires auth parity test": "set-auth-flag",
@@ -404,7 +404,7 @@ class TestMarkpassStep:
         row = _make_row()
         msg = markpass_step(row, "Params to Commands")
         assert "ERROR" in msg
-        assert "set-inputs" in msg
+        assert "set-params-to-commands" in msg
 
     def test_rejects_params_for_test(self) -> None:
         row = _make_row()
@@ -443,7 +443,7 @@ class TestMarkpassStep:
         msg = markpass_step(row, "generated manifest")
         assert "ERROR" in msg
         assert "Params to Commands" in msg
-        assert "set-inputs" in msg
+        assert "set-params-to-commands" in msg
 
     def test_generated_manifest_requires_params_for_test(self) -> None:
         row = _make_row(params_to_commands="{}", params_for_test="")
