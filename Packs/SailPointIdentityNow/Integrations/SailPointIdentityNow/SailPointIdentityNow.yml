@@ -3,38 +3,55 @@ provider: SailPoint Technologies
 commonfields:
   id: SailPointIdentityNow
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: The FQDN/IP of the IdentityNow server to connect
   display: IdentityNow Server URL (e.g. https://org.api.identitynow.com)
   name: identitynow_url
   required: true
   type: 12
+  section: Connect
 - additionalinfo: Client Id for OAuth 2.0
   display: Client Id (for OAuth 2.0)
   name: client_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Client Secret for OAuth 2.0
   display: Client Secret (for OAuth 2.0)
   name: client_secret
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+- defaultvalue: '60'
+  display: Request timeout (in seconds)
+  name: request_timeout
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 description: The SailPoint Identity Security platform can be configured either on-prem/single tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS, multi-tenant solution, IdentityNow.
 display: SailPoint IdentityNow
 name: SailPointIdentityNow
@@ -70,10 +87,10 @@ script:
       description: Email address of the Identity.
       type: String
     - contextPath: SailPointIdentityNow.Identity.created
-      description: Timestamp when the identity was created.
+      description: 'Timestamp when the identity was created. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Identity.modified
-      description: Timestamp when the identity was last modified.
+      description: 'Timestamp when the identity was last modified. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Identity.inactive
       description: Indicates whether the identity is active.
@@ -156,10 +173,10 @@ script:
       description: Source id that maps this account.
       type: String
     - contextPath: SailPointIdentityNow.Account.created
-      description: Timestamp when the account was created.
+      description: 'Timestamp when the account was created. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Account.modified
-      description: Timestamp when the account was last modified.
+      description: 'Timestamp when the account was last modified. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Account.attributes
       description: Map of variable number of attributes unique to this account.
@@ -210,13 +227,13 @@ script:
       description: Name of the account activity.
       type: String
     - contextPath: SailPointIdentityNow.AccountActivity.created
-      description: Timestamp when the account activity was created.
+      description: 'Timestamp when the account activity was created. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.AccountActivity.modified
-      description: Timestamp when the account activity was last modified.
+      description: 'Timestamp when the account activity was last modified. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.AccountActivity.completed
-      description: Timestamp when the account activity was completed.
+      description: 'Timestamp when the account activity was completed. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.AccountActivity.completionStatus
       description: Completion status of the activity.
@@ -272,13 +289,13 @@ script:
       description: Number of entitlements included in the access profile.
       type: Number
     - contextPath: SailPointIdentityNow.AccessProfile.created
-      description: Date when the access profile was created.
+      description: 'Date when the access profile was created. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.AccessProfile.modified
-      description: Date when the access profile was last modified.
+      description: 'Date when the access profile was last modified. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.AccessProfile.synced
-      description: Date when the access profile was last synced.
+      description: 'Date when the access profile was last synced. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.AccessProfile.enabled
       description: Indicates whether the access profile is active (true/false).
@@ -328,13 +345,13 @@ script:
       description: Number indicated how many access profiles are attached to this role.
       type: Number
     - contextPath: SailPointIdentityNow.Role.created
-      description: Timestamp when this role was created.
+      description: 'Timestamp when this role was created. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Role.modified
-      description: Timestamp when this role was last modified.
+      description: 'Timestamp when this role was last modified. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Role.synced
-      description: Timestamp when this role was last synced.
+      description: 'Timestamp when this role was last synced. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Role.enabled
       description: Indicates whether this role is enabled.
@@ -381,10 +398,10 @@ script:
       description: Description of the entitlement.
       type: String
     - contextPath: SailPointIdentityNow.Entitlement.modified
-      description: Timestamp when the entitlement was last modified.
+      description: 'Timestamp when the entitlement was last modified. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Entitlement.synced
-      description: Timestamp when the entitlement was last synced.
+      description: 'Timestamp when the entitlement was last synced. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Entitlement.source
       description: Source from which this entitlement was aggregated.
@@ -434,10 +451,10 @@ script:
       description: Component that triggered the event.
       type: String
     - contextPath: SailPointIdentityNow.Event.created
-      description: Timestamp when the event was created.
+      description: 'Timestamp when the event was created. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: Date
     - contextPath: SailPointIdentityNow.Event.synced
-      description: Timestamp when the event was last synced.
+      description: 'Timestamp when the event was last synced. ISO8601 format: 2020-01-01T00:11:22Z.'
       type: String
     - contextPath: SailPointIdentityNow.Event.objects
       description: Array of object types that were the target of this event.
@@ -511,7 +528,7 @@ script:
       name: comment
     description: Revoke access request for a single object(access profile or role) for a single user.
     name: identitynow-request-revoke
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3
