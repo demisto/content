@@ -186,11 +186,13 @@ IOC_KEY_MAP = {
     "action": "Action",
     "severity": "Severity",
     "tags": "Tags",
+    "mobile_action": "MobileAction",
 }
 
 IOC_HEADERS = [
     "ID",
     "Action",
+    "MobileAction",
     "Severity",
     "Type",
     "Value",
