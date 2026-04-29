@@ -4,3 +4,5 @@ name: Microsoft DNS Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

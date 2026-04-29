@@ -45,7 +45,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
@@ -66,7 +66,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Maximum Incidents Per Fetch
   additionalinfo: This value should not exceed 3,000 due to product's API limitations.
   name: max_fetch  # for fetch-incidents on XSOAR
@@ -84,7 +84,7 @@ configuration:
   hidden:
     - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Fetch query
   additionalinfo: 'In the `key:value` format. For example: `NOT stage:"CLOSED"`.'
   name: fetch_query
@@ -679,5 +679,3 @@ fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
 defaultmapperin: "Exabeam Platform - Incoming Mapper"
-supportedModules:
-- xsiam
