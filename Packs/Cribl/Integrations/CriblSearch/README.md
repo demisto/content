@@ -1,0 +1,2758 @@
+Cribl Search is a search solution that allows you to query, retrieve, and manage search jobs, datasets, and saved searches across your Cribl Cloud deployment.
+This integration was integrated and tested with version 4.17.0 of Cribl API.
+
+## Configure CriblSearch in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL | The base URL assigned to your organization: https://\$\{workspaceName\}-\$\{organizationId\}.cribl.cloud | True |
+| Client ID |  | True |
+| Client Secret |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### cribl-search-query
+
+***
+Runs a search query against Cribl Search and returns results.
+
+#### Base Command
+
+`cribl-search-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_id | The ID of a saved query to execute. | Optional |
+| job_id | The ID of an existing search job to retrieve results from. | Optional |
+| query | The search query string to execute. | Optional |
+| earliest | The earliest time boundary for the search (relative time or epoch seconds). | Optional |
+| latest | The latest time boundary for the search (relative time or epoch seconds). | Optional |
+| sample_rate | The sampling rate for the search (0-1). | Optional |
+| force | Whether to force execution of a scheduled query. | Optional |
+| page | The page number for pagination. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchQuery.events | Unknown | List of events returned by the search \(parsed from the NDJSON response\). May be empty when the job is still queued/running. |
+| Cribl.SearchQuery.isFinished | Boolean | Whether the search query has finished executing. |
+| Cribl.SearchQuery.job | Object | Search job metadata associated with this query. |
+| Cribl.SearchQuery.job.id | String | Unique identifier of the search job that produced these results. |
+| Cribl.SearchQuery.job.query | String | The search query string executed by the job. |
+| Cribl.SearchQuery.job.status | String | Current status of the search job \(e.g., queued, running, completed\). |
+| Cribl.SearchQuery.job.timeCreated | Number | Epoch \(ms\) when the search job was created. |
+| Cribl.SearchQuery.offset | Number | Offset within the result set used for pagination. |
+| Cribl.SearchQuery.persistedEventCount | Number | Number of events persisted in the result set. |
+| Cribl.SearchQuery.totalEventCount | Number | Total number of events matched by the query. |
+
+#### Command example
+
+```!cribl-search-query query="dataset=\"cribl_search_sample\" | project method, source, status, url | take 5" earliest="-24h" latest="now" limit=3```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchQuery": {
+            "events": [],
+            "isFinished": false,
+            "job": {
+                "earliest": "-24h",
+                "id": "1777447153600.MgWe3v",
+                "latest": "now",
+                "query": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5",
+                "status": "queued",
+                "timeCreated": 1777447153600
+            },
+            "limit": 3,
+            "offset": 0,
+            "persistedEventCount": 0,
+            "totalEventCount": 0
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Query - Job Info
+>
+>|Is Finished|Job ID|Status|Query|Earliest|Latest|Total Events|
+>|---|---|---|---|---|---|---|
+>| false | 1777447153600.MgWe3v | queued | dataset="cribl_search_sample" \| project method, source, status, url \| take 5 | -24h | now | 0 |
+
+### cribl-search-status
+
+***
+Retrieves the status of a specific search job.
+
+#### Base Command
+
+`cribl-search-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The unique identifier of the search job. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchStatus.pendingComputeNodeStatuses | Object | Counts of pending compute nodes \(warm/cold\) for the job. |
+| Cribl.SearchStatus.status | String | Current status of the search job \(e.g., queued, running, completed\). |
+| Cribl.SearchStatus.timeCreated | Number | Epoch \(ms\) when the search job was created. |
+| Cribl.SearchStatus.timeStarted | Number | Epoch \(ms\) when the search job started executing. Commonly but not always present \(only set once the job leaves the queued state\). |
+| Cribl.SearchStatus.timeCompleted | Number | Epoch \(ms\) when the search job completed. Commonly but not always present \(only set after the job finishes\). |
+
+#### Command example
+
+```!cribl-search-status job_id="1777207943198.pb0ZZ0"```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchStatus": {
+            "cacheStatusesByStageId": {
+                "root": {
+                    "cribl_search_sample": {
+                        "cacheStatus": "miss",
+                        "computeType": "v1",
+                        "reason": "Not a Lake Dataset",
+                        "usedCache": false
+                    }
+                }
+            },
+            "pendingComputeNodeStatuses": {
+                "countCold": 0,
+                "countWarm": 0
+            },
+            "status": "completed",
+            "timeCompleted": 1777207949675,
+            "timeCreated": 1777207943198,
+            "timeNow": 1777447157205,
+            "timeStarted": 1777207943675
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Job 1777207943198.pb0ZZ0 Status
+>
+>|Status|Time Started|Time Created|Time Completed|
+>|---|---|---|---|
+>| completed | 1777207943675 | 1777207943198 | 1777207949675 |
+
+### cribl-search-result
+
+***
+Retrieves the results of a completed search job.
+
+#### Base Command
+
+`cribl-search-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The unique identifier of the search job. | Required |
+| lower_bound | The lower time bound for results (inclusive, epoch). | Optional |
+| upper_bound | The upper time bound for results (exclusive, epoch). | Optional |
+| page | The page number for pagination. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchResult.events | Unknown | List of events returned by the search \(parsed from the NDJSON response\). Each element is a free-form event object whose shape depends on the dataset and the query's projection. |
+| Cribl.SearchResult.isFinished | Boolean | Whether the search job has finished executing. |
+| Cribl.SearchResult.job | Object | Search job metadata associated with these results. |
+| Cribl.SearchResult.job.id | String | Unique identifier of the search job. |
+| Cribl.SearchResult.job.query | String | The search query string executed by the job. |
+| Cribl.SearchResult.job.status | String | Current status of the search job \(e.g., queued, running, completed\). |
+| Cribl.SearchResult.job.timeCreated | Number | Epoch \(ms\) when the search job was created. |
+| Cribl.SearchResult.offset | Number | Offset within the result set used for pagination. |
+| Cribl.SearchResult.persistedEventCount | Number | Number of events persisted in the result set. |
+| Cribl.SearchResult.totalEventCount | Number | Total number of events matched by the search job. |
+
+#### Command example
+
+```!cribl-search-result job_id="1777207943198.pb0ZZ0" limit=5```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchResult": {
+            "events": [
+                {
+                    "source": "s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0RRoVn.2.raw.gz"
+                },
+                {
+                    "source": "s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0ZBHzD.2.raw.gz"
+                },
+                {
+                    "source": "s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-2w9JEP.2.raw.gz"
+                },
+                {
+                    "source": "s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0RRoVn.2.raw.gz"
+                },
+                {
+                    "source": "s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0ZBHzD.2.raw.gz"
+                }
+            ],
+            "isFinished": true,
+            "job": {
+                "earliest": "-24h",
+                "id": "1777207943198.pb0ZZ0",
+                "latest": "now",
+                "query": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5",
+                "status": "completed",
+                "timeCompleted": 1777207949675,
+                "timeCreated": 1777207943198,
+                "timeStarted": 1777207943675
+            },
+            "limit": 5,
+            "offset": 0,
+            "persistedEventCount": 5,
+            "totalEventCount": 5
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Job 1777207943198.pb0ZZ0 Results - Job Info
+>
+>|Is Finished|Job ID|Status|Query|Earliest|Latest|Total Events|
+>|---|---|---|---|---|---|---|
+>| true | 1777207943198.pb0ZZ0 | completed | dataset="cribl_search_sample" \| project method, source, status, url \| take 5 | -24h | now | 5 |
+>
+>### Search Job 1777207943198.pb0ZZ0 Results - Events
+>
+>|source|
+>|---|
+>| s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0RRoVn.2.raw.gz |
+>| s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0ZBHzD.2.raw.gz |
+>| s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-2w9JEP.2.raw.gz |
+>| s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0RRoVn.2.raw.gz |
+>| s3://cribl-search-example/data/vpcflowlogs/2026/04/26/12/CriblOut-0ZBHzD.2.raw.gz |
+
+### cribl-search-job-create
+
+***
+Creates a new search job in Cribl Search.
+
+#### Base Command
+
+`cribl-search-job-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The search query string. | Required |
+| earliest | The earliest time boundary (epoch seconds). | Optional |
+| latest | The latest time boundary (epoch seconds). | Optional |
+| sample_rate | The sampling rate for the search (0-1). | Optional |
+| num_events_before | Number of events to include before the target event. | Optional |
+| num_events_after | Number of events to include after the target event. | Optional |
+| target_event_time | The target event time (epoch seconds). | Optional |
+| is_private | Whether the search job is private. Default is True. | Optional |
+| set_options | A JSON string of additional search options. | Optional |
+| expected_output_type | The expected output type for the search. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchJob.id | String | Unique identifier of the search job. |
+| Cribl.SearchJob.user | String | User identifier \(client ID\) that created the job. |
+| Cribl.SearchJob.displayUsername | String | Display name of the user who created the job. |
+| Cribl.SearchJob.group | String | Search group the job belongs to. |
+| Cribl.SearchJob.query | String | The search query string executed by the job. |
+| Cribl.SearchJob.status | String | Current status of the search job \(e.g., queued, running, completed\). |
+| Cribl.SearchJob.timeCreated | Number | Epoch \(ms\) when the search job was created. |
+| Cribl.SearchJob.type | String | Type of search job \(e.g., standard, dashboard\). |
+| Cribl.SearchJob.usageGroupId | String | Identifier of the usage group the job is billed against. |
+| Cribl.SearchJob.isPrivate | Boolean | Whether the search job is marked private. |
+| Cribl.SearchJob.accelerated | Boolean | Whether the search job uses acceleration. |
+| Cribl.SearchJob.earliest | String | Earliest time boundary for the search \(relative time string or epoch seconds\). |
+| Cribl.SearchJob.latest | String | Latest time boundary for the search \(relative time string or epoch seconds\). |
+| Cribl.SearchJob.compatibilityChecks | Object | Compatibility check flags evaluated for the job. |
+| Cribl.SearchJob.metadata | Object | Metadata about the query \(datasets, providers, operators, functions, etc.\). |
+| Cribl.SearchJob.setOptions | Object | Additional search options provided when creating the job. |
+| Cribl.SearchJob.stages | Unknown | Stages of the search job's execution plan. |
+| Cribl.SearchJob.internal | Object | Internal job state \(compiled policies, role-derived limits, preprocessed query, etc.\). Returned on create; not normally returned by list/update. |
+| Cribl.SearchJob.userDetails | Object | Details about the user/credential that created the job. |
+| Cribl.SearchJob.userDetails.email | String | Email address of the user who created the job. |
+| Cribl.SearchJob.userDetails.username | String | Username of the user \(or client ID, for API-credential users\) who created the job. |
+| Cribl.SearchJob.userDetails.displayUsername | String | Display name of the user who created the job. |
+| Cribl.SearchJob.userDetails.type | String | Type of user identity \(e.g., apiCredential, sso\). |
+| Cribl.SearchJob.userDetails.roles | Unknown | Roles assigned to the user. |
+
+#### Command example
+
+```!cribl-search-job-create query="dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr"```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchJob": {
+            "accelerated": false,
+            "compatibilityChecks": {
+                "datatypes": false
+            },
+            "displayUsername": "example.user@example.com",
+            "earliest": "-1h",
+            "group": "default_search",
+            "id": "1777447149939.xPWbOm",
+            "internal": {
+                "compiledPolicies": [
+                    {
+                        "actions": [
+                            "*"
+                        ],
+                        "object": "*"
+                    },
+                    {
+                        "actions": [
+                            "GET"
+                        ],
+                        "object": "/system/users/EXAMPLECLIENTID0000000000000000@clients"
+                    },
+                    {
+                        "actions": [
+                            "PATCH"
+                        ],
+                        "object": "/system/users/EXAMPLECLIENTID0000000000000000@clients/info"
+                    }
+                ],
+                "detectedKeyAccesses": {},
+                "email": "example.user@example.com",
+                "maxExecutors": 50,
+                "maxResultsPerSearch": 50000,
+                "maxRunningTimeRange": {
+                    "maxSec": 86400
+                },
+                "preprocessedQuery": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr",
+                "roles": [
+                    "search_user",
+                    "org_user",
+                    "ws_user"
+                ]
+            },
+            "isPrivate": true,
+            "latest": "now",
+            "metadata": {
+                "arguments": {},
+                "cloudProvider": "aws",
+                "computeTypes": {
+                    "v1": 1
+                },
+                "datasets": {
+                    "cribl_search_sample": 1
+                },
+                "functions": {
+                    "count": 1
+                },
+                "operators": {
+                    "dataset=\"cribl_search_sample\"": 1,
+                    "summarize": 1
+                },
+                "providerTypes": {
+                    "s3": 1
+                },
+                "providers": {
+                    "cribl_s3sample_provider": 1
+                }
+            },
+            "query": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr",
+            "setOptions": {},
+            "stages": [
+                {
+                    "dependencies": [],
+                    "filter": "(dataset == 'cribl_search_sample')",
+                    "id": "root",
+                    "resolvedDatasetIds": [
+                        "cribl_search_sample"
+                    ],
+                    "searchConfig": {
+                        "canComputeMetadataDistributively": false,
+                        "datasets": [
+                            "cribl_search_sample"
+                        ],
+                        "hasSendOperator": false,
+                        "logicalPlans": {
+                            "Combined": {
+                                "root:0:2uw2": [
+                                    {
+                                        "condition": {
+                                            "caseSensitive": false,
+                                            "lhs": {
+                                                "columnPath": [
+                                                    "dataset"
+                                                ],
+                                                "type": "identifier"
+                                            },
+                                            "operator": "==",
+                                            "rhs": {
+                                                "literal": "cribl_search_sample",
+                                                "type": "literal"
+                                            },
+                                            "type": "binaryOperation"
+                                        },
+                                        "type": "filter"
+                                    }
+                                ],
+                                "root:1:tTTC": [
+                                    {
+                                        "aggregates": [
+                                            {
+                                                "assignee": {
+                                                    "columnPath": [
+                                                        "cnt"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operation": {
+                                                    "functionType": "aggregation",
+                                                    "name": "count",
+                                                    "parameters": [],
+                                                    "type": "function"
+                                                },
+                                                "type": "assign"
+                                            }
+                                        ],
+                                        "aggregationType": "summarize",
+                                        "canDistributeAggregation": false,
+                                        "groupBy": [
+                                            {
+                                                "columnPath": [
+                                                    "srcaddr"
+                                                ],
+                                                "type": "identifier"
+                                            }
+                                        ],
+                                        "isPreviewableOperation": true,
+                                        "location": "coordinated",
+                                        "type": "aggregate"
+                                    }
+                                ],
+                                "root:3:uDgk": [
+                                    {
+                                        "type": "noop"
+                                    }
+                                ]
+                            },
+                            "Coordinated": {
+                                "root:2:mpMe": [
+                                    {
+                                        "aggregates": [
+                                            {
+                                                "assignee": {
+                                                    "columnPath": [
+                                                        "cnt"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operation": {
+                                                    "functionType": "aggregation",
+                                                    "name": "count",
+                                                    "parameters": [],
+                                                    "type": "function"
+                                                },
+                                                "type": "assign"
+                                            }
+                                        ],
+                                        "aggregationType": "summarize",
+                                        "canDistributeAggregation": true,
+                                        "groupBy": [
+                                            {
+                                                "columnPath": [
+                                                    "srcaddr"
+                                                ],
+                                                "type": "identifier"
+                                            }
+                                        ],
+                                        "isPreviewableOperation": true,
+                                        "location": "coordinated",
+                                        "type": "aggregate"
+                                    }
+                                ],
+                                "root:3:uDgk": [
+                                    {
+                                        "type": "noop"
+                                    }
+                                ]
+                            },
+                            "Federated": {
+                                "root:0:2uw2": [
+                                    {
+                                        "condition": {
+                                            "caseSensitive": false,
+                                            "lhs": {
+                                                "columnPath": [
+                                                    "dataset"
+                                                ],
+                                                "type": "identifier"
+                                            },
+                                            "operator": "==",
+                                            "rhs": {
+                                                "literal": "cribl_search_sample",
+                                                "type": "literal"
+                                            },
+                                            "type": "binaryOperation"
+                                        },
+                                        "type": "filter"
+                                    }
+                                ],
+                                "root:1:tTTC": [
+                                    {
+                                        "aggregates": [
+                                            {
+                                                "assignee": {
+                                                    "columnPath": [
+                                                        "cnt"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operation": {
+                                                    "functionType": "aggregation",
+                                                    "name": "count",
+                                                    "parameters": [],
+                                                    "type": "function"
+                                                },
+                                                "type": "assign"
+                                            }
+                                        ],
+                                        "aggregationType": "summarize",
+                                        "canDistributeAggregation": true,
+                                        "groupBy": [
+                                            {
+                                                "columnPath": [
+                                                    "srcaddr"
+                                                ],
+                                                "type": "identifier"
+                                            }
+                                        ],
+                                        "isPreviewableOperation": true,
+                                        "location": "federated",
+                                        "type": "aggregate"
+                                    }
+                                ]
+                            }
+                        },
+                        "orderedFieldNames": [
+                            "srcaddr",
+                            "cnt"
+                        ],
+                        "pipelines": {
+                            "Combined": {
+                                "conf": {
+                                    "asyncFuncTimeout": 1000,
+                                    "description": "Pipeline, generated from Kalipso query",
+                                    "functions": [
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {},
+                                            "description": "dataset=\"cribl_search_sample\"",
+                                            "disabled": false,
+                                            "filter": "!(dataset == 'cribl_search_sample')",
+                                            "final": false,
+                                            "functionInstanceId": "root:0:2uw2",
+                                            "id": "drop"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": false,
+                                            "conf": {
+                                                "aggregations": [
+                                                    "count().as(cnt)"
+                                                ],
+                                                "cumulative": true,
+                                                "flushOnInputClose": false,
+                                                "groupbys": [
+                                                    "srcaddr"
+                                                ],
+                                                "metricsMode": false,
+                                                "preserveGroupBys": true,
+                                                "printUndefineds": true,
+                                                "searchAggMode": "Coordinated",
+                                                "sufficientStatsOnly": false,
+                                                "timeWindow": "1s"
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:1:tTTC",
+                                            "id": "aggregation"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {
+                                                "keep": [
+                                                    "cnt",
+                                                    "cnt.*",
+                                                    "srcaddr",
+                                                    "srcaddr.*"
+                                                ],
+                                                "printUndefineds": true,
+                                                "remove": [
+                                                    "*"
+                                                ]
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:3:uDgk",
+                                            "id": "eval"
+                                        }
+                                    ]
+                                },
+                                "id": "root"
+                            },
+                            "Coordinated": {
+                                "conf": {
+                                    "asyncFuncTimeout": 1000,
+                                    "description": "Pipeline, generated from Kalipso query",
+                                    "functions": [
+                                        {
+                                            "canFullyPushToFederated": false,
+                                            "conf": {
+                                                "aggregations": [
+                                                    "count().as(cnt)"
+                                                ],
+                                                "cumulative": true,
+                                                "flushOnInputClose": false,
+                                                "groupbys": [
+                                                    "srcaddr"
+                                                ],
+                                                "metricsMode": false,
+                                                "preserveGroupBys": true,
+                                                "printUndefineds": true,
+                                                "searchAggMode": "DistributedCoordinated",
+                                                "sufficientStatsOnly": false,
+                                                "timeWindow": "1s"
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:2:mpMe",
+                                            "id": "aggregation"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {
+                                                "keep": [
+                                                    "cnt",
+                                                    "cnt.*",
+                                                    "srcaddr",
+                                                    "srcaddr.*"
+                                                ],
+                                                "printUndefineds": true,
+                                                "remove": [
+                                                    "*"
+                                                ]
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:3:uDgk",
+                                            "id": "eval"
+                                        }
+                                    ]
+                                },
+                                "id": "root"
+                            },
+                            "Federated": {
+                                "conf": {
+                                    "asyncFuncTimeout": 1000,
+                                    "description": "Pipeline, generated from Kalipso query",
+                                    "functions": [
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {},
+                                            "description": "dataset=\"cribl_search_sample\"",
+                                            "disabled": false,
+                                            "filter": "!(dataset == 'cribl_search_sample')",
+                                            "final": false,
+                                            "functionInstanceId": "root:0:2uw2",
+                                            "id": "drop"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": false,
+                                            "conf": {
+                                                "aggregations": [
+                                                    "count().as(cnt)"
+                                                ],
+                                                "cumulative": true,
+                                                "flushOnInputClose": false,
+                                                "groupbys": [
+                                                    "srcaddr"
+                                                ],
+                                                "metricsMode": false,
+                                                "preserveGroupBys": true,
+                                                "printUndefineds": true,
+                                                "searchAggMode": "Federated",
+                                                "sufficientStatsOnly": true,
+                                                "timeWindow": "1s"
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:1:tTTC",
+                                            "id": "aggregation"
+                                        }
+                                    ]
+                                },
+                                "id": "root"
+                            }
+                        },
+                        "referencedColumnPaths": [
+                            [
+                                "cnt"
+                            ],
+                            [
+                                "srcaddr"
+                            ]
+                        ],
+                        "searchTerms": [],
+                        "useFormattedVisualization": true
+                    },
+                    "searchVersionByDatasetId": {},
+                    "status": "new",
+                    "subQueryText": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr"
+                }
+            ],
+            "status": "queued",
+            "timeCreated": 1777447149939,
+            "type": "standard",
+            "usageGroupId": "default",
+            "user": "EXAMPLECLIENTID0000000000000000@clients",
+            "userDetails": {
+                "apiCredential": {
+                    "clientId": "EXAMPLECLIENTID0000000000000000@clients",
+                    "createdBy": "example.user@example.com",
+                    "name": "example.user@example.com"
+                },
+                "displayUsername": "example.user@example.com",
+                "email": "example.user@example.com",
+                "roles": [
+                    "search_user",
+                    "org_user",
+                    "ws_user"
+                ],
+                "ssoGroups": [],
+                "type": "apiCredential",
+                "username": "EXAMPLECLIENTID0000000000000000@clients"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Job Created
+>
+>|User|ID|Is Private|Type|Status|
+>|---|---|---|---|---|
+>| EXAMPLECLIENTID0000000000000000@clients | 1777447149939.xPWbOm | true | standard | queued |
+
+### cribl-search-job-list
+
+***
+Retrieves a list of search jobs or details of a specific search job.
+
+#### Base Command
+
+`cribl-search-job-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The unique identifier of a specific search job to retrieve. | Optional |
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchJob.id | String | Unique identifier of the search job. |
+| Cribl.SearchJob.user | String | User identifier \(client ID\) that created the job. |
+| Cribl.SearchJob.displayUsername | String | Display name of the user who created the job. |
+| Cribl.SearchJob.group | String | Search group the job belongs to. |
+| Cribl.SearchJob.query | String | The search query string executed by the job. |
+| Cribl.SearchJob.status | String | Current status of the search job \(e.g., queued, running, completed\). |
+| Cribl.SearchJob.timeCreated | Number | Epoch \(ms\) when the search job was created. |
+| Cribl.SearchJob.timeStarted | Number | Epoch \(ms\) when the search job started executing. |
+| Cribl.SearchJob.timeCompleted | Number | Epoch \(ms\) when the search job completed. |
+| Cribl.SearchJob.type | String | Type of search job \(e.g., standard, dashboard\). |
+| Cribl.SearchJob.isPrivate | Boolean | Whether the search job is marked private. |
+| Cribl.SearchJob.accelerated | Boolean | Whether the search job uses acceleration. |
+| Cribl.SearchJob.earliest | String | Earliest time boundary for the search \(relative time string or epoch seconds\). |
+| Cribl.SearchJob.earliestEpoch | Number | Resolved earliest time boundary in epoch milliseconds. |
+| Cribl.SearchJob.latest | String | Latest time boundary for the search \(relative time string or epoch seconds\). |
+| Cribl.SearchJob.latestEpoch | Number | Resolved latest time boundary in epoch milliseconds. |
+| Cribl.SearchJob.cpuMetrics | Object | CPU usage metrics for the executed job \(billable seconds, per-executor breakdown, totals\). |
+| Cribl.SearchJob.compatibilityChecks | Object | Compatibility check flags evaluated for the job. |
+| Cribl.SearchJob.metadata | Object | Metadata about the query \(datasets, providers, operators, functions, etc.\). |
+| Cribl.SearchJob.setOptions | Object | Additional search options provided when creating the job. |
+| Cribl.SearchJob.stages | Unknown | Stages of the search job's execution plan, including per-stage cache status and search config. |
+
+#### Command example
+
+```!cribl-search-job-list limit=3```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchJob": [
+            {
+                "accelerated": false,
+                "compatibilityChecks": {
+                    "datatypes": false
+                },
+                "cpuMetrics": {
+                    "billableCPUSeconds": 24.78200000000004,
+                    "executorsCPUSeconds": {
+                        "23ywr3HV": 0.621,
+                        "2C3c5u1h": 0.619,
+                        "2G7pjwPk": 0.6,
+                        "4P3qNcSw": 0.65,
+                        "4rbT36o1": 0.631,
+                        "7NlooPdm": 0.693,
+                        "7zjwB2Ze": 0.603,
+                        "AMJMqtah": 0.675,
+                        "COORDINATOR": 5.817,
+                        "Dzq6WMkN": 0.65,
+                        "Gik6lBOH": 0.679,
+                        "HS3p6AGG": 0.644,
+                        "JPxAsCv0": 0.621,
+                        "Jk9WvFKE": 0.622,
+                        "M2IxA8qn": 0.648,
+                        "MXmzT5sC": 0.607,
+                        "PunHKiNz": 0.742,
+                        "R3XnuFtU": 0.732,
+                        "RA5Ox2m5": 0.609,
+                        "RMD9XwiS": 0.132,
+                        "UDd0ff8s": 0.613,
+                        "f5bqEyAI": 0.72,
+                        "ghNlKGzM": 0.639,
+                        "iV82egQh": 0.679,
+                        "jdh9dgrB": 0.68,
+                        "kYJ5LAgv": 0.669,
+                        "mFHbJHIi": 0.619,
+                        "oPMEQJDj": 0.623,
+                        "qB7QOgBM": 0.647,
+                        "skfX5eO4": 0.658,
+                        "uPQYk0E4": 0.64
+                    },
+                    "totalCPUSeconds": 24.78200000000004,
+                    "totalExecCPUSeconds": 24.78200000000004
+                },
+                "displayUsername": "example.user@example.com",
+                "earliest": "-24h",
+                "earliestEpoch": 1777121543198,
+                "group": "default_search",
+                "id": "1777207943198.pb0ZZ0",
+                "isPrivate": true,
+                "latest": "now",
+                "latestEpoch": 1777207943198,
+                "metadata": {
+                    "arguments": {},
+                    "cloudProvider": "aws",
+                    "computeTypes": {
+                        "v1": 1
+                    },
+                    "datasets": {
+                        "cribl_search_sample": 1
+                    },
+                    "functions": {},
+                    "operators": {
+                        "dataset=\"cribl_search_sample\"": 1,
+                        "project": 1,
+                        "take": 1
+                    },
+                    "providerTypes": {
+                        "s3": 1
+                    },
+                    "providers": {
+                        "cribl_s3sample_provider": 1
+                    }
+                },
+                "query": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5",
+                "setOptions": {},
+                "stages": [
+                    {
+                        "cacheStatusByDatasetId": {
+                            "cribl_search_sample": {
+                                "cacheStatus": "miss",
+                                "computeType": "v1",
+                                "reason": "Not a Lake Dataset",
+                                "usedCache": false
+                            }
+                        },
+                        "dependencies": [],
+                        "filter": "(dataset == 'cribl_search_sample')",
+                        "id": "root",
+                        "resolvedDatasetIds": [
+                            "cribl_search_sample"
+                        ],
+                        "searchConfig": {
+                            "canComputeMetadataDistributively": false,
+                            "datasets": [
+                                "cribl_search_sample"
+                            ],
+                            "hasSendOperator": false,
+                            "logicalPlans": {
+                                "Combined": {
+                                    "root:0:HEER": [
+                                        {
+                                            "condition": {
+                                                "caseSensitive": false,
+                                                "lhs": {
+                                                    "columnPath": [
+                                                        "dataset"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operator": "==",
+                                                "rhs": {
+                                                    "literal": "cribl_search_sample",
+                                                    "type": "literal"
+                                                },
+                                                "type": "binaryOperation"
+                                            },
+                                            "type": "filter"
+                                        }
+                                    ],
+                                    "root:1:UBPo": [
+                                        {
+                                            "add": [
+                                                {
+                                                    "columnPath": [
+                                                        "method"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "source"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "status"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "url"
+                                                    ],
+                                                    "type": "identifier"
+                                                }
+                                            ],
+                                            "removeOthers": true,
+                                            "type": "project"
+                                        }
+                                    ],
+                                    "root:3:Xm06": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                },
+                                "Coordinated": {
+                                    "root:3:Xm06": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                },
+                                "Federated": {
+                                    "root:0:HEER": [
+                                        {
+                                            "condition": {
+                                                "caseSensitive": false,
+                                                "lhs": {
+                                                    "columnPath": [
+                                                        "dataset"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operator": "==",
+                                                "rhs": {
+                                                    "literal": "cribl_search_sample",
+                                                    "type": "literal"
+                                                },
+                                                "type": "binaryOperation"
+                                            },
+                                            "type": "filter"
+                                        }
+                                    ],
+                                    "root:1:UBPo": [
+                                        {
+                                            "add": [
+                                                {
+                                                    "columnPath": [
+                                                        "method"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "source"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "status"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "url"
+                                                    ],
+                                                    "type": "identifier"
+                                                }
+                                            ],
+                                            "removeOthers": true,
+                                            "type": "project"
+                                        }
+                                    ],
+                                    "root:2:7eCg": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                }
+                            },
+                            "orderedFieldNames": [
+                                "method",
+                                "source",
+                                "status",
+                                "url"
+                            ],
+                            "pipelines": {
+                                "Combined": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {},
+                                                "description": "dataset=\"cribl_search_sample\"",
+                                                "disabled": false,
+                                                "filter": "!(dataset == 'cribl_search_sample')",
+                                                "final": false,
+                                                "functionInstanceId": "root:0:HEER",
+                                                "id": "drop"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:3:Xm06",
+                                                "id": "limit"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {
+                                                    "keep": [
+                                                        "method",
+                                                        "method.*",
+                                                        "source",
+                                                        "source.*",
+                                                        "status",
+                                                        "status.*",
+                                                        "url",
+                                                        "url.*"
+                                                    ],
+                                                    "printUndefineds": true,
+                                                    "remove": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "description": "project method, source, status, url",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:1:UBPo",
+                                                "id": "eval"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                },
+                                "Coordinated": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:3:Xm06",
+                                                "id": "limit"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                },
+                                "Federated": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {},
+                                                "description": "dataset=\"cribl_search_sample\"",
+                                                "disabled": false,
+                                                "filter": "!(dataset == 'cribl_search_sample')",
+                                                "final": false,
+                                                "functionInstanceId": "root:0:HEER",
+                                                "id": "drop"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:2:7eCg",
+                                                "id": "limit"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {
+                                                    "keep": [
+                                                        "method",
+                                                        "method.*",
+                                                        "source",
+                                                        "source.*",
+                                                        "status",
+                                                        "status.*",
+                                                        "url",
+                                                        "url.*"
+                                                    ],
+                                                    "printUndefineds": true,
+                                                    "remove": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "description": "project method, source, status, url",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:1:UBPo",
+                                                "id": "eval"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                }
+                            },
+                            "referencedColumnPaths": [
+                                [
+                                    "method"
+                                ],
+                                [
+                                    "source"
+                                ],
+                                [
+                                    "status"
+                                ],
+                                [
+                                    "url"
+                                ]
+                            ],
+                            "searchTerms": [],
+                            "useFormattedVisualization": true
+                        },
+                        "searchVersionByDatasetId": {},
+                        "status": "completed",
+                        "subQueryText": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5"
+                    }
+                ],
+                "status": "completed",
+                "timeCompleted": 1777207949675,
+                "timeCreated": 1777207943198,
+                "timeStarted": 1777207943675,
+                "type": "dashboard",
+                "user": "EXAMPLECLIENTID0000000000000000@clients"
+            },
+            {
+                "accelerated": false,
+                "compatibilityChecks": {
+                    "datatypes": false
+                },
+                "cpuMetrics": {
+                    "billableCPUSeconds": 38.310999999999936,
+                    "executorsCPUSeconds": {
+                        "2yb7h0o9": 0.723,
+                        "3OYuJc1s": 0.771,
+                        "6kFPNRCA": 0.687,
+                        "7o9xuCLZ": 0.756,
+                        "8Uug2gX3": 0.634,
+                        "93lo5TkS": 0.661,
+                        "9G2yHjQR": 0.794,
+                        "9Pt1F0Tg": 0.636,
+                        "CCe3SNZn": 0.649,
+                        "COORDINATOR": 2.394,
+                        "Fz5HaQV8": 0.837,
+                        "GJohxLAH": 0.783,
+                        "Hf02h8mS": 0.65,
+                        "IFFVjogZ": 0.615,
+                        "IzAGLccL": 0.655,
+                        "Jf7ExvCe": 0.623,
+                        "LugHZcc1": 0.647,
+                        "Lxv66yK7": 0.823,
+                        "MLsOBZBK": 0.652,
+                        "N52fbQK6": 0.794,
+                        "NnQz5iUo": 0.791,
+                        "O243r2tw": 0.784,
+                        "ORZu2oEw": 0.776,
+                        "Ohr7LYzQ": 0.776,
+                        "OoVAajog": 0.804,
+                        "PMndygnu": 0.65,
+                        "TudzAEg2": 0.677,
+                        "U1JQo5Lm": 0.684,
+                        "VISQSoUn": 0.837,
+                        "WdmtKgft": 0.623,
+                        "XVsqbh8a": 0.725,
+                        "arx5m77E": 0.637,
+                        "azE6WRau": 0.828,
+                        "eWMKj2Tr": 0.812,
+                        "f4ACM3uM": 0.779,
+                        "fGoy3KHz": 0.734,
+                        "fSOLAMue": 0.71,
+                        "hr68ZUs6": 0.783,
+                        "jBKMtCZ6": 0.628,
+                        "lyY6qBJP": 0.813,
+                        "nuOxdi8E": 0.761,
+                        "oNvrycNh": 0.644,
+                        "pasNdCQW": 0.775,
+                        "q69vzVIL": 0.654,
+                        "qMIL394o": 0.657,
+                        "tFOseOL6": 0.678,
+                        "ug16esHd": 0.678,
+                        "v3QfCmiu": 0.792,
+                        "xZLv078f": 0.744,
+                        "xt33ZO2E": 0.639,
+                        "xtiXZOks": 0.654
+                    },
+                    "totalCPUSeconds": 38.310999999999936,
+                    "totalExecCPUSeconds": 38.310999999999936
+                },
+                "displayUsername": "example.user@example.com",
+                "earliest": "-24h",
+                "earliestEpoch": 1777121615306,
+                "group": "default_search",
+                "id": "1777208015306.F0hxMo",
+                "isPrivate": true,
+                "latest": "now",
+                "latestEpoch": 1777208015306,
+                "metadata": {
+                    "arguments": {},
+                    "cloudProvider": "aws",
+                    "computeTypes": {
+                        "v1": 1
+                    },
+                    "datasets": {
+                        "cribl_search_sample": 1
+                    },
+                    "functions": {},
+                    "operators": {
+                        "dataset=\"cribl_search_sample\"": 1,
+                        "project": 1,
+                        "take": 1
+                    },
+                    "providerTypes": {
+                        "s3": 1
+                    },
+                    "providers": {
+                        "cribl_s3sample_provider": 1
+                    }
+                },
+                "query": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5",
+                "setOptions": {},
+                "stages": [
+                    {
+                        "cacheStatusByDatasetId": {
+                            "cribl_search_sample": {
+                                "cacheStatus": "miss",
+                                "computeType": "v1",
+                                "reason": "Not a Lake Dataset",
+                                "usedCache": false
+                            }
+                        },
+                        "dependencies": [],
+                        "filter": "(dataset == 'cribl_search_sample')",
+                        "id": "root",
+                        "resolvedDatasetIds": [
+                            "cribl_search_sample"
+                        ],
+                        "searchConfig": {
+                            "canComputeMetadataDistributively": false,
+                            "datasets": [
+                                "cribl_search_sample"
+                            ],
+                            "hasSendOperator": false,
+                            "logicalPlans": {
+                                "Combined": {
+                                    "root:0:abu6": [
+                                        {
+                                            "condition": {
+                                                "caseSensitive": false,
+                                                "lhs": {
+                                                    "columnPath": [
+                                                        "dataset"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operator": "==",
+                                                "rhs": {
+                                                    "literal": "cribl_search_sample",
+                                                    "type": "literal"
+                                                },
+                                                "type": "binaryOperation"
+                                            },
+                                            "type": "filter"
+                                        }
+                                    ],
+                                    "root:1:uxTr": [
+                                        {
+                                            "add": [
+                                                {
+                                                    "columnPath": [
+                                                        "method"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "source"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "status"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "url"
+                                                    ],
+                                                    "type": "identifier"
+                                                }
+                                            ],
+                                            "removeOthers": true,
+                                            "type": "project"
+                                        }
+                                    ],
+                                    "root:3:zSrh": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                },
+                                "Coordinated": {
+                                    "root:3:zSrh": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                },
+                                "Federated": {
+                                    "root:0:abu6": [
+                                        {
+                                            "condition": {
+                                                "caseSensitive": false,
+                                                "lhs": {
+                                                    "columnPath": [
+                                                        "dataset"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operator": "==",
+                                                "rhs": {
+                                                    "literal": "cribl_search_sample",
+                                                    "type": "literal"
+                                                },
+                                                "type": "binaryOperation"
+                                            },
+                                            "type": "filter"
+                                        }
+                                    ],
+                                    "root:1:uxTr": [
+                                        {
+                                            "add": [
+                                                {
+                                                    "columnPath": [
+                                                        "method"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "source"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "status"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "url"
+                                                    ],
+                                                    "type": "identifier"
+                                                }
+                                            ],
+                                            "removeOthers": true,
+                                            "type": "project"
+                                        }
+                                    ],
+                                    "root:2:Kidv": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                }
+                            },
+                            "orderedFieldNames": [
+                                "method",
+                                "source",
+                                "status",
+                                "url"
+                            ],
+                            "pipelines": {
+                                "Combined": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {},
+                                                "description": "dataset=\"cribl_search_sample\"",
+                                                "disabled": false,
+                                                "filter": "!(dataset == 'cribl_search_sample')",
+                                                "final": false,
+                                                "functionInstanceId": "root:0:abu6",
+                                                "id": "drop"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:3:zSrh",
+                                                "id": "limit"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {
+                                                    "keep": [
+                                                        "method",
+                                                        "method.*",
+                                                        "source",
+                                                        "source.*",
+                                                        "status",
+                                                        "status.*",
+                                                        "url",
+                                                        "url.*"
+                                                    ],
+                                                    "printUndefineds": true,
+                                                    "remove": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "description": "project method, source, status, url",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:1:uxTr",
+                                                "id": "eval"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                },
+                                "Coordinated": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:3:zSrh",
+                                                "id": "limit"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                },
+                                "Federated": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {},
+                                                "description": "dataset=\"cribl_search_sample\"",
+                                                "disabled": false,
+                                                "filter": "!(dataset == 'cribl_search_sample')",
+                                                "final": false,
+                                                "functionInstanceId": "root:0:abu6",
+                                                "id": "drop"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:2:Kidv",
+                                                "id": "limit"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {
+                                                    "keep": [
+                                                        "method",
+                                                        "method.*",
+                                                        "source",
+                                                        "source.*",
+                                                        "status",
+                                                        "status.*",
+                                                        "url",
+                                                        "url.*"
+                                                    ],
+                                                    "printUndefineds": true,
+                                                    "remove": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "description": "project method, source, status, url",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:1:uxTr",
+                                                "id": "eval"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                }
+                            },
+                            "referencedColumnPaths": [
+                                [
+                                    "method"
+                                ],
+                                [
+                                    "source"
+                                ],
+                                [
+                                    "status"
+                                ],
+                                [
+                                    "url"
+                                ]
+                            ],
+                            "searchTerms": [],
+                            "useFormattedVisualization": true
+                        },
+                        "searchVersionByDatasetId": {},
+                        "status": "completed",
+                        "subQueryText": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5"
+                    }
+                ],
+                "status": "completed",
+                "timeCompleted": 1777208018459,
+                "timeCreated": 1777208015306,
+                "timeStarted": 1777208015780,
+                "type": "dashboard",
+                "user": "EXAMPLECLIENTID0000000000000000@clients"
+            },
+            {
+                "accelerated": false,
+                "compatibilityChecks": {
+                    "datatypes": false
+                },
+                "cpuMetrics": {
+                    "billableCPUSeconds": 38.07599999999999,
+                    "executorsCPUSeconds": {
+                        "1JRqpmnC": 0.788,
+                        "1N7rxF7v": 0.82,
+                        "1yPWuhij": 0.795,
+                        "3xzrHnnh": 0.873,
+                        "4FgUCHdg": 0.68,
+                        "4Pv57Fmy": 0.811,
+                        "52TZLNTG": 0.676,
+                        "5Z1clTik": 0.66,
+                        "6EuOd0qm": 0.807,
+                        "8zXrSaOE": 0.675,
+                        "9m7aZaBC": 0.79,
+                        "AQnAguYt": 0.811,
+                        "AUBTBf2f": 0.742,
+                        "COORDINATOR": 2.453,
+                        "EH87IViY": 0.776,
+                        "EM5YuvU9": 0.746,
+                        "FAN0l18z": 0.643,
+                        "FjjrXhix": 0.772,
+                        "Ljzsviug": 0.65,
+                        "Lp4lSj6H": 0.667,
+                        "NHKxAvAL": 0.655,
+                        "OQLeLgZg": 0.635,
+                        "QJ5MtQAr": 0.644,
+                        "Qwq9S4Dk": 0.691,
+                        "S7qGj0j7": 0.867,
+                        "UEbrQQke": 0.666,
+                        "WIMoZMwx": 0.805,
+                        "YLygfIrW": 0.638,
+                        "Z7otuMYg": 0.819,
+                        "ZYXPRlmC": 0.659,
+                        "ZbyIC77H": 0.776,
+                        "ZfbRMozJ": 0.638,
+                        "ZusQgKyC": 0.642,
+                        "apy7q40K": 0.697,
+                        "bB8XJU3Q": 0.666,
+                        "c3pQr6rA": 0.776,
+                        "fjViu3PU": 0.653,
+                        "gsu5mVrF": 0.729,
+                        "hAe2CprW": 0.653,
+                        "i15KcEWk": 0.663,
+                        "jvg8Efmh": 0.811,
+                        "kVCKQhmR": 0.824,
+                        "ljRCdRWw": 0.796,
+                        "mqIpOxxO": 0.659,
+                        "n4X8HEnp": 0.794,
+                        "rDMcOOBL": 0.747,
+                        "tDt5PDlg": 0.693,
+                        "u1tBnXv7": 0.658,
+                        "vtev7Vmy": 0.806,
+                        "zez8YCov": 0.681
+                    },
+                    "totalCPUSeconds": 38.07599999999999,
+                    "totalExecCPUSeconds": 38.07599999999999
+                },
+                "displayUsername": "example.user@example.com",
+                "earliest": "-24h",
+                "earliestEpoch": 1777121886161,
+                "group": "default_search",
+                "id": "1777208286161.tTkDeJ",
+                "isPrivate": true,
+                "latest": "now",
+                "latestEpoch": 1777208286161,
+                "metadata": {
+                    "arguments": {},
+                    "cloudProvider": "aws",
+                    "computeTypes": {
+                        "v1": 1
+                    },
+                    "datasets": {
+                        "cribl_search_sample": 1
+                    },
+                    "functions": {},
+                    "operators": {
+                        "dataset=\"cribl_search_sample\"": 1,
+                        "project": 1,
+                        "take": 1
+                    },
+                    "providerTypes": {
+                        "s3": 1
+                    },
+                    "providers": {
+                        "cribl_s3sample_provider": 1
+                    }
+                },
+                "query": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5",
+                "setOptions": {},
+                "stages": [
+                    {
+                        "cacheStatusByDatasetId": {
+                            "cribl_search_sample": {
+                                "cacheStatus": "miss",
+                                "computeType": "v1",
+                                "reason": "Not a Lake Dataset",
+                                "usedCache": false
+                            }
+                        },
+                        "dependencies": [],
+                        "filter": "(dataset == 'cribl_search_sample')",
+                        "id": "root",
+                        "resolvedDatasetIds": [
+                            "cribl_search_sample"
+                        ],
+                        "searchConfig": {
+                            "canComputeMetadataDistributively": false,
+                            "datasets": [
+                                "cribl_search_sample"
+                            ],
+                            "hasSendOperator": false,
+                            "logicalPlans": {
+                                "Combined": {
+                                    "root:0:08Xr": [
+                                        {
+                                            "condition": {
+                                                "caseSensitive": false,
+                                                "lhs": {
+                                                    "columnPath": [
+                                                        "dataset"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operator": "==",
+                                                "rhs": {
+                                                    "literal": "cribl_search_sample",
+                                                    "type": "literal"
+                                                },
+                                                "type": "binaryOperation"
+                                            },
+                                            "type": "filter"
+                                        }
+                                    ],
+                                    "root:1:Nn7E": [
+                                        {
+                                            "add": [
+                                                {
+                                                    "columnPath": [
+                                                        "method"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "source"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "status"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "url"
+                                                    ],
+                                                    "type": "identifier"
+                                                }
+                                            ],
+                                            "removeOthers": true,
+                                            "type": "project"
+                                        }
+                                    ],
+                                    "root:3:aRyO": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                },
+                                "Coordinated": {
+                                    "root:3:aRyO": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                },
+                                "Federated": {
+                                    "root:0:08Xr": [
+                                        {
+                                            "condition": {
+                                                "caseSensitive": false,
+                                                "lhs": {
+                                                    "columnPath": [
+                                                        "dataset"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operator": "==",
+                                                "rhs": {
+                                                    "literal": "cribl_search_sample",
+                                                    "type": "literal"
+                                                },
+                                                "type": "binaryOperation"
+                                            },
+                                            "type": "filter"
+                                        }
+                                    ],
+                                    "root:1:Nn7E": [
+                                        {
+                                            "add": [
+                                                {
+                                                    "columnPath": [
+                                                        "method"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "source"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "status"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                {
+                                                    "columnPath": [
+                                                        "url"
+                                                    ],
+                                                    "type": "identifier"
+                                                }
+                                            ],
+                                            "removeOthers": true,
+                                            "type": "project"
+                                        }
+                                    ],
+                                    "root:2:dbWw": [
+                                        {
+                                            "limit": 5,
+                                            "type": "limit"
+                                        }
+                                    ]
+                                }
+                            },
+                            "orderedFieldNames": [
+                                "method",
+                                "source",
+                                "status",
+                                "url"
+                            ],
+                            "pipelines": {
+                                "Combined": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {},
+                                                "description": "dataset=\"cribl_search_sample\"",
+                                                "disabled": false,
+                                                "filter": "!(dataset == 'cribl_search_sample')",
+                                                "final": false,
+                                                "functionInstanceId": "root:0:08Xr",
+                                                "id": "drop"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:3:aRyO",
+                                                "id": "limit"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {
+                                                    "keep": [
+                                                        "method",
+                                                        "method.*",
+                                                        "source",
+                                                        "source.*",
+                                                        "status",
+                                                        "status.*",
+                                                        "url",
+                                                        "url.*"
+                                                    ],
+                                                    "printUndefineds": true,
+                                                    "remove": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "description": "project method, source, status, url",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:1:Nn7E",
+                                                "id": "eval"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                },
+                                "Coordinated": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:3:aRyO",
+                                                "id": "limit"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                },
+                                "Federated": {
+                                    "conf": {
+                                        "asyncFuncTimeout": 1000,
+                                        "description": "Pipeline, generated from Kalipso query",
+                                        "functions": [
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {},
+                                                "description": "dataset=\"cribl_search_sample\"",
+                                                "disabled": false,
+                                                "filter": "!(dataset == 'cribl_search_sample')",
+                                                "final": false,
+                                                "functionInstanceId": "root:0:08Xr",
+                                                "id": "drop"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": false,
+                                                "conf": {
+                                                    "limit": 5
+                                                },
+                                                "description": "take 5",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:2:dbWw",
+                                                "id": "limit"
+                                            },
+                                            {
+                                                "canFullyPushToFederated": true,
+                                                "conf": {
+                                                    "keep": [
+                                                        "method",
+                                                        "method.*",
+                                                        "source",
+                                                        "source.*",
+                                                        "status",
+                                                        "status.*",
+                                                        "url",
+                                                        "url.*"
+                                                    ],
+                                                    "printUndefineds": true,
+                                                    "remove": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "description": "project method, source, status, url",
+                                                "disabled": false,
+                                                "filter": "true",
+                                                "final": false,
+                                                "functionInstanceId": "root:1:Nn7E",
+                                                "id": "eval"
+                                            }
+                                        ]
+                                    },
+                                    "id": "root"
+                                }
+                            },
+                            "referencedColumnPaths": [
+                                [
+                                    "method"
+                                ],
+                                [
+                                    "source"
+                                ],
+                                [
+                                    "status"
+                                ],
+                                [
+                                    "url"
+                                ]
+                            ],
+                            "searchTerms": [],
+                            "useFormattedVisualization": true
+                        },
+                        "searchVersionByDatasetId": {},
+                        "status": "completed",
+                        "subQueryText": "dataset=\"cribl_search_sample\" | project method, source, status, url | take 5"
+                    }
+                ],
+                "status": "completed",
+                "timeCompleted": 1777208289290,
+                "timeCreated": 1777208286161,
+                "timeStarted": 1777208286620,
+                "type": "dashboard",
+                "user": "EXAMPLECLIENTID0000000000000000@clients"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Jobs List
+>
+>|User|ID|Is Private|Type|Status|
+>|---|---|---|---|---|
+>| EXAMPLECLIENTID0000000000000000@clients | 1777207943198.pb0ZZ0 | true | dashboard | completed |
+>| EXAMPLECLIENTID0000000000000000@clients | 1777208015306.F0hxMo | true | dashboard | completed |
+>| EXAMPLECLIENTID0000000000000000@clients | 1777208286161.tTkDeJ | true | dashboard | completed |
+
+### cribl-search-job-update
+
+***
+Updates a search job's status or privacy setting. At least one of status or is_private must be provided.
+
+#### Base Command
+
+`cribl-search-job-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The unique identifier of the search job to update. | Required |
+| status | The new status for the search job (e.g., completed, canceled). | Optional |
+| is_private | Whether the search job should be private. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchJob.id | String | Unique identifier of the search job. |
+| Cribl.SearchJob.user | String | User identifier \(client ID\) that created the job. |
+| Cribl.SearchJob.displayUsername | String | Display name of the user who created the job. |
+| Cribl.SearchJob.group | String | Search group the job belongs to. |
+| Cribl.SearchJob.query | String | The search query string executed by the job. |
+| Cribl.SearchJob.status | String | Current status of the search job \(e.g., queued, running, completed\). |
+| Cribl.SearchJob.timeCreated | Number | Epoch \(ms\) when the search job was created. |
+| Cribl.SearchJob.timeStarted | Number | Epoch \(ms\) when the search job started executing. |
+| Cribl.SearchJob.timeCompleted | Number | Epoch \(ms\) when the search job completed. |
+| Cribl.SearchJob.type | String | Type of search job \(e.g., standard, dashboard\). |
+| Cribl.SearchJob.isPrivate | Boolean | Whether the search job is marked private. |
+| Cribl.SearchJob.accelerated | Boolean | Whether the search job uses acceleration. |
+| Cribl.SearchJob.earliest | String | Earliest time boundary for the search \(relative time string or epoch seconds\). |
+| Cribl.SearchJob.earliestEpoch | Number | Resolved earliest time boundary in epoch milliseconds. |
+| Cribl.SearchJob.latest | String | Latest time boundary for the search \(relative time string or epoch seconds\). |
+| Cribl.SearchJob.latestEpoch | Number | Resolved latest time boundary in epoch milliseconds. |
+| Cribl.SearchJob.compatibilityChecks | Object | Compatibility check flags evaluated for the job. |
+| Cribl.SearchJob.metadata | Object | Metadata about the query \(datasets, providers, operators, functions, etc.\). |
+| Cribl.SearchJob.setOptions | Object | Additional search options provided when creating the job. |
+| Cribl.SearchJob.stages | Unknown | Stages of the search job's execution plan, including per-stage cache status and search config. |
+| Cribl.SearchJob.userDetails | Object | Details about the user/credential that created the job. |
+| Cribl.SearchJob.userDetails.email | String | Email address of the user who created the job. |
+| Cribl.SearchJob.userDetails.username | String | Username of the user \(or client ID, for API-credential users\) who created the job. |
+| Cribl.SearchJob.userDetails.displayUsername | String | Display name of the user who created the job. |
+| Cribl.SearchJob.userDetails.type | String | Type of user identity \(e.g., apiCredential, sso\). |
+| Cribl.SearchJob.userDetails.roles | Unknown | Roles assigned to the user. |
+
+#### Command example
+
+```!cribl-search-job-update job_id="1777446985069.KSZQ5h" is_private=true```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchJob": {
+            "accelerated": false,
+            "compatibilityChecks": {
+                "datatypes": false
+            },
+            "displayUsername": "example.user@example.com",
+            "earliest": "-1h",
+            "earliestEpoch": 1777443385069,
+            "group": "default_search",
+            "id": "1777446985069.KSZQ5h",
+            "isPrivate": true,
+            "latest": "now",
+            "latestEpoch": 1777446985069,
+            "metadata": {
+                "arguments": {},
+                "cloudProvider": "aws",
+                "computeTypes": {
+                    "v1": 1
+                },
+                "datasets": {
+                    "cribl_search_sample": 1
+                },
+                "functions": {
+                    "count": 1
+                },
+                "operators": {
+                    "dataset=\"cribl_search_sample\"": 1,
+                    "summarize": 1
+                },
+                "providerTypes": {
+                    "s3": 1
+                },
+                "providers": {
+                    "cribl_s3sample_provider": 1
+                }
+            },
+            "query": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr",
+            "setOptions": {},
+            "stages": [
+                {
+                    "cacheStatusByDatasetId": {
+                        "cribl_search_sample": {
+                            "cacheStatus": "miss",
+                            "computeType": "v1",
+                            "reason": "Not a Lake Dataset",
+                            "usedCache": false
+                        }
+                    },
+                    "dependencies": [],
+                    "filter": "(dataset == 'cribl_search_sample')",
+                    "id": "root",
+                    "resolvedDatasetIds": [
+                        "cribl_search_sample"
+                    ],
+                    "searchConfig": {
+                        "canComputeMetadataDistributively": false,
+                        "datasets": [
+                            "cribl_search_sample"
+                        ],
+                        "hasSendOperator": false,
+                        "logicalPlans": {
+                            "Combined": {
+                                "root:0:R25N": [
+                                    {
+                                        "condition": {
+                                            "caseSensitive": false,
+                                            "lhs": {
+                                                "columnPath": [
+                                                    "dataset"
+                                                ],
+                                                "type": "identifier"
+                                            },
+                                            "operator": "==",
+                                            "rhs": {
+                                                "literal": "cribl_search_sample",
+                                                "type": "literal"
+                                            },
+                                            "type": "binaryOperation"
+                                        },
+                                        "type": "filter"
+                                    }
+                                ],
+                                "root:1:TFOw": [
+                                    {
+                                        "aggregates": [
+                                            {
+                                                "assignee": {
+                                                    "columnPath": [
+                                                        "cnt"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operation": {
+                                                    "functionType": "aggregation",
+                                                    "name": "count",
+                                                    "parameters": [],
+                                                    "type": "function"
+                                                },
+                                                "type": "assign"
+                                            }
+                                        ],
+                                        "aggregationType": "summarize",
+                                        "canDistributeAggregation": false,
+                                        "groupBy": [
+                                            {
+                                                "columnPath": [
+                                                    "srcaddr"
+                                                ],
+                                                "type": "identifier"
+                                            }
+                                        ],
+                                        "isPreviewableOperation": true,
+                                        "location": "coordinated",
+                                        "type": "aggregate"
+                                    }
+                                ],
+                                "root:3:zikB": [
+                                    {
+                                        "type": "noop"
+                                    }
+                                ]
+                            },
+                            "Coordinated": {
+                                "root:2:Dzcy": [
+                                    {
+                                        "aggregates": [
+                                            {
+                                                "assignee": {
+                                                    "columnPath": [
+                                                        "cnt"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operation": {
+                                                    "functionType": "aggregation",
+                                                    "name": "count",
+                                                    "parameters": [],
+                                                    "type": "function"
+                                                },
+                                                "type": "assign"
+                                            }
+                                        ],
+                                        "aggregationType": "summarize",
+                                        "canDistributeAggregation": true,
+                                        "groupBy": [
+                                            {
+                                                "columnPath": [
+                                                    "srcaddr"
+                                                ],
+                                                "type": "identifier"
+                                            }
+                                        ],
+                                        "isPreviewableOperation": true,
+                                        "location": "coordinated",
+                                        "type": "aggregate"
+                                    }
+                                ],
+                                "root:3:zikB": [
+                                    {
+                                        "type": "noop"
+                                    }
+                                ]
+                            },
+                            "Federated": {
+                                "root:0:R25N": [
+                                    {
+                                        "condition": {
+                                            "caseSensitive": false,
+                                            "lhs": {
+                                                "columnPath": [
+                                                    "dataset"
+                                                ],
+                                                "type": "identifier"
+                                            },
+                                            "operator": "==",
+                                            "rhs": {
+                                                "literal": "cribl_search_sample",
+                                                "type": "literal"
+                                            },
+                                            "type": "binaryOperation"
+                                        },
+                                        "type": "filter"
+                                    }
+                                ],
+                                "root:1:TFOw": [
+                                    {
+                                        "aggregates": [
+                                            {
+                                                "assignee": {
+                                                    "columnPath": [
+                                                        "cnt"
+                                                    ],
+                                                    "type": "identifier"
+                                                },
+                                                "operation": {
+                                                    "functionType": "aggregation",
+                                                    "name": "count",
+                                                    "parameters": [],
+                                                    "type": "function"
+                                                },
+                                                "type": "assign"
+                                            }
+                                        ],
+                                        "aggregationType": "summarize",
+                                        "canDistributeAggregation": true,
+                                        "groupBy": [
+                                            {
+                                                "columnPath": [
+                                                    "srcaddr"
+                                                ],
+                                                "type": "identifier"
+                                            }
+                                        ],
+                                        "isPreviewableOperation": true,
+                                        "location": "federated",
+                                        "type": "aggregate"
+                                    }
+                                ]
+                            }
+                        },
+                        "orderedFieldNames": [
+                            "srcaddr",
+                            "cnt"
+                        ],
+                        "pipelines": {
+                            "Combined": {
+                                "conf": {
+                                    "asyncFuncTimeout": 1000,
+                                    "description": "Pipeline, generated from Kalipso query",
+                                    "functions": [
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {},
+                                            "description": "dataset=\"cribl_search_sample\"",
+                                            "disabled": false,
+                                            "filter": "!(dataset == 'cribl_search_sample')",
+                                            "final": false,
+                                            "functionInstanceId": "root:0:R25N",
+                                            "id": "drop"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": false,
+                                            "conf": {
+                                                "aggregations": [
+                                                    "count().as(cnt)"
+                                                ],
+                                                "cumulative": true,
+                                                "flushOnInputClose": false,
+                                                "groupbys": [
+                                                    "srcaddr"
+                                                ],
+                                                "metricsMode": false,
+                                                "preserveGroupBys": true,
+                                                "printUndefineds": true,
+                                                "searchAggMode": "Coordinated",
+                                                "sufficientStatsOnly": false,
+                                                "timeWindow": "1s"
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:1:TFOw",
+                                            "id": "aggregation"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {
+                                                "keep": [
+                                                    "cnt",
+                                                    "cnt.*",
+                                                    "srcaddr",
+                                                    "srcaddr.*"
+                                                ],
+                                                "printUndefineds": true,
+                                                "remove": [
+                                                    "*"
+                                                ]
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:3:zikB",
+                                            "id": "eval"
+                                        }
+                                    ]
+                                },
+                                "id": "root"
+                            },
+                            "Coordinated": {
+                                "conf": {
+                                    "asyncFuncTimeout": 1000,
+                                    "description": "Pipeline, generated from Kalipso query",
+                                    "functions": [
+                                        {
+                                            "canFullyPushToFederated": false,
+                                            "conf": {
+                                                "aggregations": [
+                                                    "count().as(cnt)"
+                                                ],
+                                                "cumulative": true,
+                                                "flushOnInputClose": false,
+                                                "groupbys": [
+                                                    "srcaddr"
+                                                ],
+                                                "metricsMode": false,
+                                                "preserveGroupBys": true,
+                                                "printUndefineds": true,
+                                                "searchAggMode": "DistributedCoordinated",
+                                                "sufficientStatsOnly": false,
+                                                "timeWindow": "1s"
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:2:Dzcy",
+                                            "id": "aggregation"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {
+                                                "keep": [
+                                                    "cnt",
+                                                    "cnt.*",
+                                                    "srcaddr",
+                                                    "srcaddr.*"
+                                                ],
+                                                "printUndefineds": true,
+                                                "remove": [
+                                                    "*"
+                                                ]
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:3:zikB",
+                                            "id": "eval"
+                                        }
+                                    ]
+                                },
+                                "id": "root"
+                            },
+                            "Federated": {
+                                "conf": {
+                                    "asyncFuncTimeout": 1000,
+                                    "description": "Pipeline, generated from Kalipso query",
+                                    "functions": [
+                                        {
+                                            "canFullyPushToFederated": true,
+                                            "conf": {},
+                                            "description": "dataset=\"cribl_search_sample\"",
+                                            "disabled": false,
+                                            "filter": "!(dataset == 'cribl_search_sample')",
+                                            "final": false,
+                                            "functionInstanceId": "root:0:R25N",
+                                            "id": "drop"
+                                        },
+                                        {
+                                            "canFullyPushToFederated": false,
+                                            "conf": {
+                                                "aggregations": [
+                                                    "count().as(cnt)"
+                                                ],
+                                                "cumulative": true,
+                                                "flushOnInputClose": false,
+                                                "groupbys": [
+                                                    "srcaddr"
+                                                ],
+                                                "metricsMode": false,
+                                                "preserveGroupBys": true,
+                                                "printUndefineds": true,
+                                                "searchAggMode": "Federated",
+                                                "sufficientStatsOnly": true,
+                                                "timeWindow": "1s"
+                                            },
+                                            "description": "summarize cnt=count() by srcaddr",
+                                            "disabled": false,
+                                            "filter": "true",
+                                            "final": false,
+                                            "functionInstanceId": "root:1:TFOw",
+                                            "id": "aggregation"
+                                        }
+                                    ]
+                                },
+                                "id": "root"
+                            }
+                        },
+                        "referencedColumnPaths": [
+                            [
+                                "cnt"
+                            ],
+                            [
+                                "srcaddr"
+                            ]
+                        ],
+                        "searchTerms": [],
+                        "useFormattedVisualization": true
+                    },
+                    "searchVersionByDatasetId": {},
+                    "status": "completed",
+                    "subQueryText": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr"
+                }
+            ],
+            "status": "completed",
+            "timeCompleted": 1777446992662,
+            "timeCreated": 1777446985069,
+            "timeStarted": 1777446985598,
+            "type": "standard",
+            "user": "EXAMPLECLIENTID0000000000000000@clients",
+            "userDetails": {
+                "apiCredential": {
+                    "clientId": "EXAMPLECLIENTID0000000000000000@clients",
+                    "createdBy": "example.user@example.com",
+                    "name": "example.user@example.com"
+                },
+                "displayUsername": "example.user@example.com",
+                "email": "example.user@example.com",
+                "roles": [
+                    "search_user",
+                    "org_user",
+                    "ws_user"
+                ],
+                "ssoGroups": [],
+                "type": "apiCredential",
+                "username": "EXAMPLECLIENTID0000000000000000@clients"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The job 1777446985069.KSZQ5h has been successfully updated.
+
+### cribl-search-job-delete
+
+***
+Deletes a specific search job.
+
+#### Base Command
+
+`cribl-search-job-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The unique identifier of the search job to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cribl-search-job-delete job_id="1777446985069.KSZQ5h"```
+
+#### Human Readable Output
+
+>The job 1777446985069.KSZQ5h has been successfully deleted.
+
+### cribl-search-dataset-list
+
+***
+Retrieves a list of available datasets or details of a specific dataset.
+
+#### Base Command
+
+`cribl-search-dataset-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| dataset_id | The unique identifier of a specific dataset to retrieve. | Optional |
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SearchDataset.id | String | Unique identifier of the dataset. |
+| Cribl.SearchDataset.type | String | Dataset provider type \(e.g., s3, azure_blob, gcs\). |
+| Cribl.SearchDataset.provider | String | Identifier of the provider configuration backing the dataset. |
+| Cribl.SearchDataset.region | String | Cloud region where the dataset's underlying storage resides \(when applicable\). |
+| Cribl.SearchDataset.bucket | String | Bucket/path template that locates the dataset's underlying objects. |
+| Cribl.SearchDataset.description | String | Human-readable description of the dataset. |
+| Cribl.SearchDataset.filter | String | Filter expression applied to the dataset \(default "true" for no filter\). |
+| Cribl.SearchDataset.tags | Unknown | Tags assigned to the dataset \(string or array of strings\). |
+| Cribl.SearchDataset.breakerRulesets | Unknown | Event breaker rulesets associated with the dataset. |
+| Cribl.SearchDataset.storageClasses | Unknown | Storage classes the dataset is configured to read from. |
+| Cribl.SearchDataset.staleChannelFlushMs | Number | Milliseconds after which a stale channel is flushed during ingestion. |
+
+#### Command example
+
+```!cribl-search-dataset-list limit=3```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SearchDataset": {
+            "breakerRulesets": [
+                "AWS Datatypes",
+                "Apache Datatypes",
+                "Syslog Datatypes",
+                "Cribl Search",
+                "Microsoft Windows Datatypes",
+                "Azure Datatypes",
+                "Microsoft O365 Datatypes",
+                "Microsoft Graph API Datatypes"
+            ],
+            "bucket": "cribl-search-example/data/${dataSource}/${_time:%Y}/${_time:%m}/${_time:%d}/${_time:%H}",
+            "description": "Search Cribl provided public sample data",
+            "filter": "true",
+            "id": "cribl_search_sample",
+            "provider": "cribl_s3sample_provider",
+            "region": "us-west-2",
+            "staleChannelFlushMs": 10000,
+            "storageClasses": [
+                "STANDARD",
+                "INTELLIGEN",
+                "STANDARD_I",
+                "ONEZONE_IA",
+                "GLACIER_IR",
+                "REDUCED_RE",
+                "_RESTORED"
+            ],
+            "tags": "cribl:default",
+            "type": "s3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Datasets List
+>
+>|ID|Provider|Type|Region|
+>|---|---|---|---|
+>| cribl_search_sample | cribl_s3sample_provider | s3 | us-west-2 |
+
+### cribl-saved-search-list
+
+***
+Retrieves a list of saved searches or details of a specific saved search.
+
+#### Base Command
+
+`cribl-saved-search-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The unique identifier of a specific saved search to retrieve. | Optional |
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cribl.SavedSearch.id | String | Unique identifier of the saved search. |
+| Cribl.SavedSearch.name | String | Display name of the saved search. |
+| Cribl.SavedSearch.query | String | The search query string defined by the saved search. |
+
+#### Command example
+
+```!cribl-saved-search-list limit=3```
+
+#### Context Example
+
+```json
+{
+    "Cribl": {
+        "SavedSearch": [
+            {
+                "description": "Searches finished in the last 1h",
+                "earliest": "-1h",
+                "id": "cribl_search_finished_1h",
+                "latest": "now",
+                "lib": "cribl",
+                "name": "cribl_search_finished_1h",
+                "query": "cribl dataset=\"cribl_internal_logs\" source=*searches.log message=\"search finished\" | summarize count(), elapsedMS=sum(stats.elapsedMs), eventsFound=sum(stats.eventsFound) by user=coalesce(stats.userDisplayName, stats.user)"
+            },
+            {
+                "description": "Searches started in the last 1h",
+                "earliest": "-1h",
+                "id": "cribl_search_started_1h",
+                "latest": "now",
+                "lib": "cribl",
+                "name": "cribl_search_started_1h",
+                "query": "cribl dataset=\"cribl_internal_logs\" source=*searches.log message=\"search started\" | summarize count() by user=coalesce(stats.userDisplayName, stats.user)"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Saved Searches List
+>
+>|ID|Description|Name|Query|
+>|---|---|---|---|
+>| cribl_search_finished_1h | Searches finished in the last 1h | cribl_search_finished_1h | cribl dataset="cribl_internal_logs" source=*searches.log message="search finished" \| summarize count(), elapsedMS=sum(stats.elapsedMs), eventsFound=sum(stats.eventsFound) by user=coalesce(stats.userDisplayName, stats.user) |
+>| cribl_search_started_1h | Searches started in the last 1h | cribl_search_started_1h | cribl dataset="cribl_internal_logs" source=*searches.log message="search started" \| summarize count() by user=coalesce(stats.userDisplayName, stats.user) |
