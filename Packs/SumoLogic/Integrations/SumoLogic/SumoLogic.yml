@@ -4,6 +4,7 @@ commonfields:
 name: SumoLogic
 display: SumoLogic
 category: Analytics & SIEM
+provider: Francisco Partners
 description: Cloud-based service for logs & metrics management.
 sectionorder:
 - Connect

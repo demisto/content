@@ -1,4 +1,5 @@
 category: Case Management
+provider: Atlassian
 sectionorder:
 - Connect
 - Collect
@@ -47,7 +48,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-description: Interact with the Trello task manager
+description: Interact with the Trello task manager.
 display: Trello
 name: Trello
 script:
@@ -56,10 +57,10 @@ script:
     name: trello-list-boards
     outputs:
     - contextPath: Trello.Boards.Id
-      description: The board ID
+      description: The board ID.
       type: Unknown
     - contextPath: Trello.Boards.Name
-      description: Board name
+      description: Board name.
       type: Unknown
     - contextPath: Trello.Boards.Closed
       description: Bool - True if board closed.
@@ -68,30 +69,30 @@ script:
       description: The last time this board was updated.
       type: Unknown
   - arguments:
-    - description: 'Optional - the ID of  the board to query, if not provided will use configured '
+    - description: 'Optional - the ID of  the board to query, if not provided will use configured.'
       name: board_id
     description: List all the lists associated with the trello board.
     name: trello-list-lists
     outputs:
     - contextPath: Trello.Lists.Id
-      description: List ID
+      description: List ID.
       type: Unknown
     - contextPath: Trello.Lists.Name
-      description: List Name
+      description: List Name.
       type: Unknown
     - contextPath: Trello.Lists.Closed
-      description: Bool - True if list is closed
+      description: Bool - True if list is closed.
       type: Unknown
     - contextPath: Trello.Lists.IdBoard
-      description: ID Of the board this list belongs to
+      description: ID Of the board this list belongs to.
       type: Unknown
   - arguments:
-    - description: Card name
+    - description: Card name.
       name: name
       required: true
-    - description: Card Description - Markdown Compatible
+    - description: Card Description - Markdown Compatible.
       name: desc
-    - description: ID of list to create card within
+    - description: ID of list to create card within.
       name: list_id
       required: true
     - description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels command to display.
@@ -100,19 +101,19 @@ script:
     name: trello-create-card
     outputs:
     - contextPath: Trello.CreatedCard.Id
-      description: ID of created card
+      description: ID of created card.
       type: Unknown
     - contextPath: Trello.CreatedCard.Name
-      description: Name of created card
+      description: Name of created card.
       type: Unknown
     - contextPath: Trello.CreatedCard.Url
-      description: URL Of created card
+      description: URL Of created card.
       type: Unknown
     - contextPath: Trello.CreatedCard.IdList
-      description: ID of list this card belongs to
+      description: ID of list this card belongs to.
       type: Unknown
   - arguments:
-    - description: ID of card to be updated
+    - description: ID of card to be updated.
       name: card_id
       required: true
     - auto: PREDEFINED
@@ -121,7 +122,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: CSV Of Trello Label IDs to add to card
+    - description: CSV Of Trello Label IDs to add to card.
       name: idLabels
     - description: ID Of list to move card to.
       name: idList
@@ -129,18 +130,18 @@ script:
     name: trello-update-card
     outputs:
     - contextPath: Trello.UpdatedCard.Id
-      description: ID of Updated Card
+      description: ID of Updated Card.
       type: Unknown
     - contextPath: Trello.UpdatedCard.Name
-      description: Name of updated card
+      description: Name of updated card.
       type: Unknown
   - arguments:
-    - description: ID of card to delete
+    - description: ID of card to delete.
       name: card_id
     description: Delete a card
     name: trello-delete-card
   - arguments:
-    - description: 'Optional - the ID of  the board to query, if not provided will use configured '
+    - description: 'Optional - the ID of  the board to query, if not provided will use configured.'
       name: board_id
     - auto: PREDEFINED
       description: CSV of action types used to filter response.
@@ -214,54 +215,54 @@ script:
       - updateMember
       - updateOrganization
       - voteOnCard
-    - description: First action time
+    - description: First action time.
       name: since
-    - description: Last action time
+    - description: Last action time.
       name: before
     description: List all actions on a board, such as card updates, additions, and deletes.
     name: trello-list-actions
     outputs:
     - contextPath: Trello.Actions.Id
-      description: Action ID
+      description: Action ID.
       type: Unknown
     - contextPath: Trello.Actions.Type
-      description: Type of action
+      description: Type of action.
       type: Unknown
     - contextPath: Trello.Actions.Date
-      description: Date of action
+      description: Date of action.
       type: Date
     - contextPath: Trello.Actions.ListId
-      description: List ID - Null if not card or list action
+      description: List ID - Null if not card or list action.
       type: Unknown
     - contextPath: Trello.Actions.CardId
-      description: Card ID - Null if not card action
+      description: Card ID - Null if not card action.
       type: Unknown
     - contextPath: Trello.Actions.BoardId
-      description: Board ID
+      description: Board ID.
       type: Unknown
   - arguments:
-    - description: Optional - Board ID
+    - description: Optional - Board ID.
       name: board_id
     description: List all the labels in a given board
     name: trello-list-labels
     outputs:
     - contextPath: Trello.Labels.Id
-      description: Label ID
+      description: Label ID.
       type: Unknown
     - contextPath: Trello.Labels.Name
-      description: Label Name
+      description: Label Name.
       type: Unknown
     - contextPath: Trello.Labels.Color
-      description: Label Color
+      description: Label Color.
       type: Unknown
   - arguments:
-    - description: Optional - Board ID
+    - description: Optional - Board ID.
       name: board_id
-    - description: Name of Label
+    - description: Name of Label.
       name: name
       required: true
     - auto: PREDEFINED
-      description: Label Color
+      description: Label Color.
       name: color
       predefined:
       - yellow
@@ -278,55 +279,55 @@ script:
     name: trello-create-label
     outputs:
     - contextPath: Trello.CreatedLabel.Id
-      description: ID Of created label
+      description: ID Of created label.
       type: Unknown
     - contextPath: Trello.CreatedLabel.Name
-      description: Name of created label
+      description: Name of created label.
       type: Unknown
   - arguments:
     - description: Comment to add.
       name: text
       required: true
-    - description: Card to add comment to
+    - description: Card to add comment to.
       name: card_id
     description: Add a comment to a Trello card
     name: trello-add-comment
     outputs:
     - contextPath: Trello.AddedComment.Id
-      description: ID Of comment action
+      description: ID Of comment action.
       type: Unknown
     - contextPath: Trello.AddedComment.Date
-      description: Date of comment
+      description: Date of comment.
       type: Unknown
   - arguments:
-    - description: ID of list containing cards
+    - description: ID of list containing cards.
       name: list_id
     description: List all the trello cards
     name: trello-list-cards
     outputs:
     - contextPath: Trello.Cards.Id
-      description: Card ID
+      description: Card ID.
       type: Unknown
     - contextPath: Trello.Cards.Name
-      description: Card Name
+      description: Card Name.
       type: Unknown
     - contextPath: Trello.Cards.IdList
-      description: ID of parent list
+      description: ID of parent list.
       type: Unknown
     - contextPath: Trello.Cards.Due
-      description: Due date of card
+      description: Due date of card.
       type: Date
     - contextPath: Trello.Cards.Labels
-      description: List of labels associated with card
+      description: List of labels associated with card.
       type: Unknown
     - contextPath: Trello.Cards.Desc
-      description: Card description
+      description: Card description.
       type: Unknown
     - contextPath: Trello.Cards.Start
-      description: Card Start date
+      description: Card Start date.
       type: Date
     - contextPath: Trello.Cards.Labels.id
-      description: Label ID
+      description: Label ID.
       type: Unknown
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
@@ -335,3 +336,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+tests:
+- No tests

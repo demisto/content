@@ -4,11 +4,11 @@ args:
   isArray: true
   name: value
   required: true
-comment: "Gets the minimum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"10\"\n "
+comment: "Gets the minimum value from list\ne.g. [\"25\", \"10\", \"25\"] =>  \"10\"."
 commonfields:
   id: MinList
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: MinList
 runas: DBotWeakRole

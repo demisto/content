@@ -5043,3 +5043,267 @@ def test_earliest_time_exists_in_query(query, expected):
     from SplunkPy import earliest_time_exists_in_query
 
     assert earliest_time_exists_in_query(query) == expected
+
+
+def test_splunk_get_indexes_command_success(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - The REST API query for indexes succeeds.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure the command returns the expected indexes from the REST API query.
+        - Ensure the fallback mechanism (service.indexes) is NOT used.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service and the oneshot job results
+    service = mocker.MagicMock()
+    mock_result = {"name": "main", "count": "100"}
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[mock_result])
+
+    # Mock return_results to capture the output
+    return_results_mock = mocker.patch("SplunkPy.return_results")
+
+    # Call the function
+    splunk_get_indexes_command(service, "search")
+
+    # Verify results
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+    assert results.raw_response == json.dumps([mock_result])
+
+    # Verify oneshot was called
+    service.jobs.oneshot.assert_called_once()
+
+
+def test_splunk_get_indexes_command_fallback(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - The REST API query for indexes fails.
+        - The direct API (service.indexes) succeeds.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure the command returns the expected indexes from the direct API.
+        - Ensure the error is logged and fallback is attempted.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service
+    service = mocker.MagicMock()
+
+    # Mock oneshot to raise an exception
+    service.jobs.oneshot.side_effect = Exception("REST API Failed")
+
+    # Mock service.indexes to return a list of indexes
+    mock_index = mocker.MagicMock()
+    mock_index.name = "history"
+    # Mocking dictionary access for the index object since the code uses index["totalEventCount"]
+    mock_index.__getitem__.return_value = "50"
+
+    service.indexes = [mock_index]
+
+    # Mock logging and return_results
+    error_mock = mocker.patch("demistomock.error")
+    debug_mock = mocker.patch("demistomock.debug")
+    return_results_mock = mocker.patch("SplunkPy.return_results")
+
+    # Call the function
+    splunk_get_indexes_command(service, "search")
+
+    # Verify error was logged
+    assert error_mock.call_count == 1
+    assert "Failed to get indexes using REST API query approach" in error_mock.call_args[0][0]
+
+    # Verify fallback was attempted (debug log)
+    fallback_log_found = False
+    for call in debug_mock.call_args_list:
+        if "Falling back to direct API approach" in call[0][0]:
+            fallback_log_found = True
+            break
+    assert fallback_log_found
+
+    # Verify results
+    expected_result = [{"name": "history", "count": "50"}]
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+    assert results.raw_response == json.dumps(expected_result)
+
+
+def test_splunk_get_indexes_command_failure(mocker):
+    """
+    Given:
+        - A Splunk service object.
+        - Both the REST API query and the direct API fail.
+    When:
+        - calling splunk_get_indexes_command.
+    Then:
+        - Ensure a DemistoException is raised with details from both errors.
+    """
+    from SplunkPy import splunk_get_indexes_command
+
+    # Mock the service
+    service = mocker.MagicMock()
+
+    # Mock oneshot to raise an exception
+    service.jobs.oneshot.side_effect = Exception("REST API Failed")
+
+    # Mock service.indexes to raise an exception (property access raises exception)
+    type(service).indexes = mocker.PropertyMock(side_effect=Exception("Direct API Failed"))
+
+    # Mock logging
+    error_mock = mocker.patch("demistomock.error")
+
+    # Call the function and expect DemistoException
+    with pytest.raises(DemistoException) as e:
+        splunk_get_indexes_command(service, "search")
+
+    assert "Failed to retrieve indexes using both methods" in str(e.value)
+    assert "REST API error: REST API Failed" in str(e.value)
+    assert "Direct API error: Direct API Failed" in str(e.value)
+
+    # Verify errors were logged
+    assert error_mock.call_count >= 2  # One for REST failure, one for Direct failure
+
+
+# ========== ResponseSizeValidator Tests ==========
+
+
+def test_response_size_validator_no_warning_below_threshold(mocker):
+    """
+    Given:
+        - Data size below the 20 MB threshold
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - return_results is not called
+        - validated flag is set to True
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPy.return_results")
+
+    # Create data below threshold (1 MB) - as list of dicts
+    small_data = [{"data": "x" * (1 * 1024 * 1024)}]
+
+    validator.validate_and_report(small_data)
+
+    mock_return_results.assert_not_called()
+    assert validator.validated is True
+
+
+def test_response_size_validator_warning_above_threshold(mocker):
+    """
+    Given:
+        - Data size above the 20 MB threshold (e.g., 25 MB)
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - return_results is called with warning message
+        - validated flag is set to True
+        - Warning message contains "WARNING" prefix
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPy.return_results")
+
+    # Create data above threshold (25 MB) - as list of dicts
+    large_data = [{"data": "x" * (25 * 1024 * 1024)}]
+
+    validator.validate_and_report(large_data)
+
+    mock_return_results.assert_called_once()
+    warning = mock_return_results.call_args[0][0]
+    assert "WARNING" in warning
+    assert "25." in warning  # Size will be around 25 MB
+    assert "20" in warning
+    assert "normal usage size" in warning
+    assert validator.validated is True
+
+
+def test_response_size_validator_warning_shown_only_once(mocker):
+    """
+    Given:
+        - Multiple batches of data, all above threshold
+    When:
+        - ResponseSizeValidator validates each batch
+    Then:
+        - return_results is called only on the first validation
+        - Subsequent validations don't call return_results
+        - validated flag remains True after first validation
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPy.return_results")
+
+    # Create data above threshold (25 MB) - as list of dicts
+    large_data = [{"data": "x" * (25 * 1024 * 1024)}]
+
+    # First validation should call return_results
+    validator.validate_and_report(large_data)
+    assert mock_return_results.call_count == 1
+    assert validator.validated is True
+
+    # Second validation should not call return_results (already validated)
+    validator.validate_and_report(large_data)
+    assert mock_return_results.call_count == 1
+    assert validator.validated is True
+
+    # Third validation should also not call return_results
+    validator.validate_and_report(large_data)
+    assert mock_return_results.call_count == 1
+    assert validator.validated is True
+
+
+def test_response_size_validator_just_above_threshold(mocker):
+    """
+    Given:
+        - Data size just above the 20 MB threshold (20 MB + 1 byte)
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - return_results is called with warning message
+        - validated flag is set to True
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPy.return_results")
+
+    # Create data just above threshold (20 MB + 1 byte) - as list of dicts
+    just_above_data = [{"data": "x" * (20 * 1024 * 1024 + 1)}]
+
+    validator.validate_and_report(just_above_data)
+
+    mock_return_results.assert_called_once()
+    warning = mock_return_results.call_args[0][0]
+    assert "WARNING" in warning
+    assert validator.validated is True
+
+
+def test_response_size_validator_message_format(mocker):
+    """
+    Given:
+        - Data size of 30 MB (above threshold)
+    When:
+        - ResponseSizeValidator validates the data
+    Then:
+        - Warning message contains all required elements:
+          * "WARNING" prefix
+          * Actual size in MB
+          * Threshold size in MB
+          * "normal usage size" phrase
+    """
+    validator = splunk.ResponseSizeValidator()
+    mock_return_results = mocker.patch("SplunkPy.return_results")
+
+    # Create data of 30 MB - as list of dicts
+    data_30mb = [{"data": "x" * (30 * 1024 * 1024)}]
+
+    validator.validate_and_report(data_30mb)
+
+    mock_return_results.assert_called_once()
+    warning = mock_return_results.call_args[0][0]
+    assert warning.startswith("WARNING:")
+    assert "30." in warning  # Size will be around 30 MB
+    assert "20" in warning
+    assert "normal usage size" in warning
+    assert "exceeds" in warning.lower()

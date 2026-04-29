@@ -921,3 +921,7 @@ tests:
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- edr

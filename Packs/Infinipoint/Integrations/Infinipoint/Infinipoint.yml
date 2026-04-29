@@ -4,6 +4,7 @@ commonfields:
 name: Infinipoint
 display: Infinipoint
 category: Network Security
+provider: Infinipoint
 description: Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time.
 configuration:
 - display: Access Key

@@ -1755,9 +1755,7 @@ def main():  # pragma: no cover
     except Exception as e:
         err_msg = str(e)
         if "[401]" in err_msg:
-            return_error(
-                "Encountered an issue accessing the API. Please make sure you entered the right Helix ID and API Token."
-            )
+            return_error("Encountered an issue accessing the API. Please make sure you entered the right Helix ID and API Token.")
         elif "requests.exceptions" in err_msg:
             return_error(
                 "Encountered an error reaching the endpoint, please verify that the server URL parameter"

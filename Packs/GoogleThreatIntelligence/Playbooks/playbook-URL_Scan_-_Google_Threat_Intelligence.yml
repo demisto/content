@@ -1,0 +1,351 @@
+id: URL Scan - Google Threat Intelligence
+version: -1
+name: URL Scan - Google Threat Intelligence
+description: This playbook scans URLs using GTI private scanning and evaluates the results against GTI assessment parameters, including Threat Score, Severity, and Verdict. URLs that meet the defined high-risk criteria are returned for further action.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac025ded-2db8-49a3-8fd1-2ad00939e89b
+    type: start
+    task:
+      id: ac025ded-2db8-49a3-8fd1-2ad00939e89b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 48db3320-f969-4d38-86b1-432770c39f66
+    type: regular
+    task:
+      id: 48db3320-f969-4d38-86b1-432770c39f66
+      version: -1
+      name: Private URL scan and Analysis
+      description: Scan and get the analysis of a private URL submitted to GoogleThreatIntelligence.
+      script: '|||gti-private-url-scan-and-analysis-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: abca7d40-d8ed-48c5-882e-5c57bf710d08
+    type: regular
+    task:
+      id: abca7d40-d8ed-48c5-882e-5c57bf710d08
+      version: -1
+      name: Get Reputation of the Scanned Private URL
+      description: Get the reputation of the scanned private URL using the GTI private URL scanning command.
+      script: '|||gti-privatescanning-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: url_data=data.attributes
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c20fb343-b7d4-412f-87a2-7284fc8aeff2
+    type: title
+    task:
+      id: c20fb343-b7d4-412f-87a2-7284fc8aeff2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 84a5b606-ab1a-4f49-861e-3be0ab7c2e08
+    type: condition
+    task:
+      id: 84a5b606-ab1a-4f49-861e-3be0ab7c2e08
+      version: -1
+      name: For URL,are any GTI parameters meets high-risk criteria?
+      description: |-
+        Check whether the Private URLs enrichment data meets the following conditions by evaluating the GTI assessment parameters:
+        - Severity is SEVERITY_HIGH
+        - Threat Score is greater than or equal to 90
+        - Verdict is VERDICT_MALICIOUS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: url_data
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.gti_assessment
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.gti_assessment.severity
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.gti_assessment.verdict
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: url_data.gti_assessment.threat_score
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: url_data.gti_assessment.severity.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SEVERITY_HIGH
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: url_data.gti_assessment.verdict.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VERDICT_MALICIOUS
+                  - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: url_data.gti_assessment.threat_score.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "90"
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: url
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2c517841-2649-4771-83f0-1f9dfda22a15
+    type: regular
+    task:
+      id: 2c517841-2649-4771-83f0-1f9dfda22a15
+      version: -1
+      name: Set the high-risk URL value for blocking
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: url_output_list
+      value:
+        complex:
+          root: url_data
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.gti_assessment
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.gti_assessment.verdict
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.gti_assessment.threat_score
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: url_data.gti_assessment.severity
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: url_data.gti_assessment.verdict.value
+                iscontext: true
+              right:
+                value:
+                  simple: VERDICT_MALICIOUS
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: url_data.gti_assessment.threat_score.value
+                iscontext: true
+              right:
+                value:
+                  simple: "90"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: url_data.gti_assessment.severity.value
+                iscontext: true
+              right:
+                value:
+                  simple: SEVERITY_HIGH
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: url
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 965,
+        "width": 380,
+        "x": 550,
+        "y": 170
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: Provide url for Private Scanning.
+  playbookInputQuery:
+outputs:
+- contextPath: url_output_list
+  description: Return the list of high-risk URLs.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

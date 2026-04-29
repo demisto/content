@@ -1,4 +1,5 @@
 category: Messaging and Conferencing
+provider: Open Source
 commonfields:
   id: Kafka V2
   version: -1

@@ -51,10 +51,9 @@ class Client(BaseClient):
     ):
         if not proxy:
             try:
-                del os.environ["HTTP_PROXY"]
-                del os.environ["HTTPS_PROXY"]
-                del os.environ["http_proxy"]
-                del os.environ["https_proxy"]
+                # Remove proxy environment variables if they exist
+                for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+                    os.environ.pop(proxy_var, None)
             except Exception as e:
                 demisto.debug(f"encountered the following issue: {e}")
 

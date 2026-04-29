@@ -74,9 +74,7 @@ class Client(BaseClient):
     # Get "params" to generalize all token types.
     # Said argument must be a dictionary or json with the data corresponding to the token to be registered
     def create_user_token(self, username, post_params) -> Dict[str, Any]:
-        return self._http_request(
-            method="POST", url_suffix=f"/user/{username}/devices/", json_data=post_params, resp_type="text"
-        )
+        return self._http_request(method="POST", url_suffix=f"/user/{username}/devices/", json_data=post_params, resp_type="text")
 
     def update_user_token(self, username, token_devicetype, token_serialnumber, post_params) -> Dict[str, Any]:
         return self._http_request(

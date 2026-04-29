@@ -1172,7 +1172,7 @@ class BMCContainer(Generic[AnyStr]):
                             self.pal = True
                             t_bmp = self.PALETTE + self.bdat[len(t_hdr) : len(t_hdr) + cf * t_width * t_height]
                         else:
-                            self.b_log("error", False, f"Unexpected bpp {8*cf} found during processing; aborting.")
+                            self.b_log("error", False, f"Unexpected bpp {8 * cf} found during processing; aborting.")
                     bl = cf * 64 * 64
             if len(t_bmp) > 0:
                 self.bmps.append(t_bmp)

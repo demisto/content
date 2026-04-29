@@ -161,7 +161,7 @@ class DFIRIrisAPI:
 
         if response.status_code == 200:
             cases = response.json()
-            if cases:   # noqa: RET503
+            if cases:  # noqa: RET503
                 return cases["data"]
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Open Source
 commonfields:
   id: MISP V3
   version: -1
@@ -2861,7 +2862,7 @@ script:
     - contextPath: MISP.Warninglist.Attributes
       description: The attribute types for this warninglist.
       type: string
-  dockerimage: demisto/pymisp2:2.5.17.1.4892767
+  dockerimage: demisto/pymisp2:2.5.17.3.6007072
   runonce: false
   script: ''
   subtype: python3

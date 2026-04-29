@@ -4,6 +4,7 @@ commonfields:
 name: OPNSense
 display: OPNSense
 category: Network Security
+provider: Deciso B.V.
 description: >-
   Manage OPNsense Firewall. 
 

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Palo Alto Networks
 sectionorder:
 - Connect
 - Collect
@@ -14,6 +15,7 @@ configuration:
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - display: URL
   name: url
   defaultvalue: https://api.threatvault.paloaltonetworks.com/
@@ -110,6 +112,14 @@ configuration:
   type: 19
   required: false
   section: Collect
+- display: Page Size Limit
+  name: limit
+  defaultvalue: '200'
+  type: 0
+  required: false
+  additionalinfo: Maximum number of indicators to fetch per API request (pagination). Default is 200, maximum is 1000. If you encounter timeout issues, consider reducing this limit.
+  section: Collect
+  advanced: true
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -162,7 +172,7 @@ script:
       description: Count of entries.
       type: number
     description: Retrieves indicators from Threat Vault.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6391686
   feed: true
   runonce: false
   subtype: python3

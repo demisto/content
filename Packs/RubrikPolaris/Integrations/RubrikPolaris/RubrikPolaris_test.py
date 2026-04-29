@@ -8,21 +8,21 @@ from unittest.mock import patch
 import pytest
 from CommonServerPython import remove_empty_elements
 from RubrikPolaris import (
+    ANOMALY_TYPE_ENUM,
+    DEFAULT_EVENT_TYPES,
     ERROR_MESSAGES,
+    FALSE_POSITIVE_TYPE_ENUM,
+    HUNT_STATUSES,
+    IOC_MATCHES,
     IOC_TYPE_ENUM,
+    MAX_INT_VALUE,
+    MAX_LONG_VALUE,
     MAXIMUM_PAGINATION_LIMIT,
     MESSAGES,
     OUTPUT_PREFIX,
+    QUERANTINE_STATUS,
     TOKEN_EXPIRY_BUFFER_TIME,
     TOKEN_EXPIRY_TIME_SPAN,
-    DEFAULT_EVENT_TYPES,
-    ANOMALY_TYPE_ENUM,
-    FALSE_POSITIVE_TYPE_ENUM,
-    IOC_MATCHES,
-    QUERANTINE_STATUS,
-    HUNT_STATUSES,
-    MAX_INT_VALUE,
-    MAX_LONG_VALUE,
 )
 
 BASE_URL = "https://demo.my.rubrik.com/api"
@@ -353,10 +353,10 @@ def test_object_search_success(client, requests_mock):
     response = rubrik_polaris_object_search_command(client, args)
 
     assert response.raw_response == object_search_response.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["GLOBAL_SEARCH"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['GLOBAL_SEARCH']}(val.id == obj.id)") == remove_empty_elements(
         object_search_response.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_GLOBAL_SEARCH"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_GLOBAL_SEARCH']}(val.name == obj.name)") == remove_empty_elements(
         object_search_response.get("page_token")
     )
     assert response.readable_output == object_search_response_hr
@@ -386,10 +386,10 @@ def test_object_search_with_token_hr_success(client, requests_mock):
     response = rubrik_polaris_object_search_command(client, args)
 
     assert response.raw_response == object_search_response.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["GLOBAL_SEARCH"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['GLOBAL_SEARCH']}(val.id == obj.id)") == remove_empty_elements(
         object_search_response.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_GLOBAL_SEARCH"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_GLOBAL_SEARCH']}(val.name == obj.name)") == remove_empty_elements(
         object_search_response.get("page_token")
     )
     assert response.readable_output == object_search_response_hr
@@ -556,10 +556,10 @@ def test_vm_objects_list_success(client, requests_mock):
     response = rubrik_polaris_vm_objects_list_command(client, args={"limit": 2})
 
     assert response.raw_response == objects_list_response.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["VM_OBJECT"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['VM_OBJECT']}(val.id == obj.id)") == remove_empty_elements(
         objects_list_response.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_VM_OBJECT"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_VM_OBJECT']}(val.name == obj.name)") == remove_empty_elements(
         objects_list_response.get("page_token")
     )
     assert response.readable_output == objects_list_response_hr
@@ -1544,7 +1544,7 @@ def test_gps_vm_host_list_success(client, requests_mock, empty_response):
         response = rubrik_gps_vm_host_list_command(client, args={})
 
         assert response.raw_response == vm_host_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_VM_HOSTS"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['GPS_VM_HOSTS']}(val.id == obj.id)") == remove_empty_elements(
             vm_host_list_response.get("outputs")
         )
         assert response.readable_output == vm_host_list_response_hr
@@ -1586,10 +1586,10 @@ def test_gps_vm_datastore_list_success(client, requests_mock, empty_response):
         response = rubrik_gps_vm_datastore_list_command(client, args=args)
 
         assert response.raw_response == vm_datastore_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_VM_HOSTS"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['GPS_VM_HOSTS']}(val.id == obj.id)") == remove_empty_elements(
             vm_datastore_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_VM_HOSTS"]}(val.name == obj.name)') == {
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_VM_HOSTS']}(val.name == obj.name)") == {
             "Datastore": remove_empty_elements(vm_datastore_list_response.get("page_token"))
         }
         assert response.readable_output == vm_datastore_list_response_hr
@@ -1765,10 +1765,10 @@ def test_event_list_success(client, requests_mock, empty_response):
         response = rubrik_event_list_command(client, args=args)
 
         assert response.raw_response == event_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["EVENT"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['EVENT']}(val.id == obj.id)") == remove_empty_elements(
             event_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_EVENT"]}(val.name == obj.name)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_EVENT']}(val.name == obj.name)") == remove_empty_elements(
             event_list_response.get("page_token")
         )
         assert response.readable_output == event_list_response_hr
@@ -1903,10 +1903,10 @@ def test_object_list_success(client, requests_mock, empty_response):
         response = rubrik_polaris_object_list_command(client, args=args)
 
         assert response.raw_response == object_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["OBJECT"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['OBJECT']}(val.id == obj.id)") == remove_empty_elements(
             object_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_OBJECT"]}(val.name == obj.name)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_OBJECT']}(val.name == obj.name)") == remove_empty_elements(
             object_list_response.get("page_token")
         )
         assert response.readable_output == object_list_response_hr
@@ -1972,10 +1972,10 @@ def test_polaris_object_snapshot_list_success(client, requests_mock, empty_respo
         response = rubrik_polaris_object_snapshot_list_command(client, args=args)
 
         assert response.raw_response == object_snapshot_list_response.get("raw_response")
-        assert response.outputs.get(f'{OUTPUT_PREFIX["OBJECT"]}(val.id == obj.id)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['OBJECT']}(val.id == obj.id)") == remove_empty_elements(
             object_snapshot_list_response.get("outputs")
         )
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_OBJECT"]}(val.name == obj.name)') == remove_empty_elements(
+        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_OBJECT']}(val.name == obj.name)") == remove_empty_elements(
             object_snapshot_list_response.get("page_token")
         )
         assert response.readable_output == object_snapshot_list_response_hr
@@ -2583,10 +2583,10 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, li
     page_token = response_data.get(f"page_token_{limit}_{page_number}")
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         outputs
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)") == remove_empty_elements(
         page_token
     )
     assert response.readable_output == hr_data
@@ -2618,7 +2618,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_invalid_user_email(c
         response.readable_output
         == MESSAGES["NO_RECORDS_FOUND"].format("user accesses") + f"\n\n{MESSAGES['NEXT_PAGE_TOKEN'].format('cursor_2')}"
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)', {}) == page_token
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)", {}) == page_token
 
 
 def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(client, requests_mock):
@@ -2647,10 +2647,10 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     response = rubrik_sonar_user_access_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_when_not_whitelisted")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         response_data.get("outputs_when_not_whitelisted")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)") == remove_empty_elements(
         response_data.get("page_token_2_1")
     )
     assert response.readable_output == hr_data
@@ -2729,7 +2729,7 @@ def test_rubrik_sonar_user_access_get_command_success(client, requests_mock):
     response = rubrik_sonar_user_access_get_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         response_data.get("outputs")
     )
     assert response.readable_output == hr_data
@@ -2759,7 +2759,7 @@ def test_rubrik_sonar_user_access_get_command_success_when_not_whitelisted(clien
     response = rubrik_sonar_user_access_get_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_when_not_whitelisted")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)") == remove_empty_elements(
         response_data.get("outputs_when_not_whitelisted")
     )
     assert response.readable_output == hr_data
@@ -2831,10 +2831,10 @@ def test_rubrik_sonar_file_context_list_command_success(client, requests_mock):
     response = rubrik_sonar_file_context_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['FILE_CONTEXT']}(val.stdPath == obj.stdPath)") == remove_empty_elements(
         response_data.get("outputs")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_FILE_CONTEXT']}(val.name == obj.name)") == remove_empty_elements(
         response_data.get("page_token")
     )
     assert response.readable_output == hr_data
@@ -2872,10 +2872,10 @@ def test_rubrik_sonar_file_context_list_command_success_when_not_whitelisted(cli
     response = rubrik_sonar_file_context_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_when_not_whitelisted")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['FILE_CONTEXT']}(val.stdPath == obj.stdPath)") == remove_empty_elements(
         response_data.get("outputs_when_not_whitelisted")
     )
-    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_FILE_CONTEXT']}(val.name == obj.name)") == remove_empty_elements(
         response_data.get("page_token")
     )
     assert response.readable_output == hr_data
@@ -2970,7 +2970,7 @@ def test_rubrik_radar_suspicious_file_list_command_success(client, requests_mock
     response = rubrik_radar_suspicious_file_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['SUSPICIOUS_FILE']}(val.id == obj.id)") == remove_empty_elements(
         response_data.get("outputs")
     )
     assert response.readable_output == hr_data
@@ -3002,7 +3002,7 @@ def test_rubrik_radar_suspicious_file_list_command_success_when_no_anomalies(cli
     response = rubrik_radar_suspicious_file_list_command(client, args=args)
 
     assert response.raw_response == response_data.get("raw_response_no_anomalies")
-    assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == remove_empty_elements(
+    assert response.outputs.get(f"{OUTPUT_PREFIX['SUSPICIOUS_FILE']}(val.id == obj.id)") == remove_empty_elements(
         response_data.get("outputs_when_no_anomalies")
     )
     assert response.readable_output == hr_data
@@ -3332,7 +3332,7 @@ def test_threat_monitoring_matched_object_get_command_success_when_empty_respons
 
 def test_threat_monitoring_matched_object_get_command_success(client, requests_mock):
     """Tests success for rubrik-threat-monitoring-matched-object-get command."""
-    from RubrikPolaris import rubrik_threat_monitoring_matched_object_get_command, OUTPUT_PREFIX
+    from RubrikPolaris import OUTPUT_PREFIX, rubrik_threat_monitoring_matched_object_get_command
 
     threat_monitoring_get_response = util_load_json(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/threat_monitoring_get_response.json")
@@ -4030,3 +4030,211 @@ def test_rubrik_advance_ioc_scan_invalid_advance_ioc_json(client):
     with pytest.raises(ValueError) as e:
         rubrik_advance_ioc_scan_command(client, args)
     assert str(e.value) == ERROR_MESSAGES["JSON_DECODE"].format("advance_ioc")
+
+
+def test_fetch_incidents_success_with_event_severity_filter_without_last_run(client, requests_mock):
+    """Test fetch_incidents function to return incidents and new last run with provided empty last run."""
+    from RubrikPolaris import fetch_incidents
+
+    fetch_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
+    )
+    fetch_response["data"]["activitySeriesConnection"]["edges"][0]["node"]["severity"] = "Info"
+    incidents = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_incidents.json")
+    )
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": fetch_response},
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
+        client,
+        {},
+        {
+            "first_fetch": f"{first_fetch}",
+            "max_fetch": 2,
+            "event_types": [DEFAULT_EVENT_TYPES[0]],
+            "rsc_fetch_types": "Event",
+            "event_severities": ["SEVERITY_INFO"],
+        },
+    )
+    last_run = {
+        "last_fetch": f"{last_fetch}",
+        "next_page_token": fetch_response["data"]["activitySeriesConnection"]["pageInfo"]["endCursor"],
+    }
+    assert fetch_incidents_last_run == last_run
+    assert fetch_incidents_incidents == incidents
+
+
+@pytest.mark.parametrize(
+    "event_severities, expected_error_message",
+    [
+        (["Invalid_Severity"], MESSAGES["INVALID_FETCH_EVENT_SEVERITIES"]),
+        (["SEVERITY_INFO", "  Invalid_Severity "], MESSAGES["INVALID_FETCH_EVENT_SEVERITIES"]),
+    ],
+)
+def test_fetch_incidents_with_invalid_event_severity_filter(client, event_severities, expected_error_message):
+    """Test fetch_incidents function with various invalid event_severities configurations."""
+    from RubrikPolaris import fetch_incidents
+
+    first_fetch = "2025-07-01T14:55:51.616000Z"
+    params = {"first_fetch": first_fetch, "max_fetch": 2, "rsc_fetch_types": "Event", "event_severities": event_severities}
+
+    with pytest.raises(ValueError) as e:
+        fetch_incidents(client, {}, params)
+
+    assert str(e.value) == expected_error_message
+
+
+@pytest.mark.parametrize("empty_response", [True, False])
+def test_rubrik_anomaly_csv_analysis_v2_initial_request_success(client, requests_mock, empty_response):
+    """Test initial CSV download request (non-polling) returns success status."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": False,
+    }
+
+    if empty_response:
+        response_data = radar_anomaly_v2_response.get("empty_response")
+        requests_mock.post(BASE_URL_GRAPHQL, json=response_data)
+        result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+        assert result[0].readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
+    else:
+        response_data = radar_anomaly_v2_response.get("initial_request_success", {}).get("raw_response")
+        requests_mock.post(BASE_URL_GRAPHQL, json=response_data)
+        result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+        assert len(result) == 1
+        assert result[0].raw_response == radar_anomaly_v2_response.get("initial_request_success", {}).get("raw_response")
+        assert result[0].outputs == remove_empty_elements(
+            radar_anomaly_v2_response.get("initial_request_success", {}).get("outputs")
+        )
+        assert result[0].readable_output == "#### Successfully analyzed the CSV file."
+
+
+def test_rubrik_anomaly_csv_analysis_v2_polling_file_ready(client, requests_mock):
+    """Test polling execution when CSV file is ready - should download and return file."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": True,
+    }
+
+    user_files_response = radar_anomaly_v2_response.get("polling_file_ready", {}).get("raw_response")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/radar_anomaly_csv_analysis_file.csv")) as f:
+        file_data = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+    requests_mock.get("https://demo.my.rubrik.com/file-downloads/external-123", text=file_data, status_code=200)
+
+    result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert len(result) == 2
+    assert result[0].raw_response == radar_anomaly_v2_response.get("polling_file_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(radar_anomaly_v2_response.get("polling_file_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Successfully downloaded the analyzed CSV file."
+    if isinstance(result[1], dict):
+        assert result[1].get("File") == "snapshot_snapshot-456.csv"
+
+
+def test_rubrik_anomaly_csv_analysis_v2_polling_file_not_ready(client, requests_mock):
+    """Test polling execution when CSV file is not ready yet - should return polling status."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": True,
+    }
+
+    user_files_response = radar_anomaly_v2_response.get("polling_file_not_ready", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == radar_anomaly_v2_response.get("polling_file_not_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(radar_anomaly_v2_response.get("polling_file_not_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Polling for CSV file availability. The command will automatically retry..."
+
+
+def test_rubrik_anomaly_csv_analysis_v2_polling_file_failed(client, requests_mock):
+    """Test polling execution when CSV file status is failed."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    radar_anomaly_v2_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/anomaly_csv_analysis_v2_response.json")
+    )
+
+    args = {
+        "cluster_id": "cluster-123",
+        "snapshot_id": "snapshot-456",
+        "object_id": "object-789",
+        "polling": True,
+    }
+
+    user_files_response = radar_anomaly_v2_response.get("polling_file_failed", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == radar_anomaly_v2_response.get("polling_file_failed", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(radar_anomaly_v2_response.get("polling_file_failed", {}).get("outputs"))
+    assert result[0].readable_output == "#### Failed to download the analyzed CSV file."
+
+
+@pytest.mark.parametrize(
+    "args, error_message",
+    [
+        (
+            {"snapshot_id": "snapshot-456", "object_id": "object-789"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("cluster_id"),
+        ),
+        (
+            {"cluster_id": "cluster-123", "object_id": "object-789"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id"),
+        ),
+        (
+            {"cluster_id": "cluster-123", "snapshot_id": "snapshot-456"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id"),
+        ),
+    ],
+)
+def test_rubrik_anomaly_csv_analysis_v2_invalid_arguments_are_provided(client, args, error_message):
+    """Test that missing required arguments raise ValueError."""
+    from RubrikPolaris import rubrik_anomaly_csv_analysis_v2_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_anomaly_csv_analysis_v2_command(client, args)
+
+    assert error_message in str(e.value)

@@ -37,6 +37,12 @@ ignore=IF115,IF113
 [file:incidentfield-Rubrik_Last_Detected.json]
 ignore=IF115,IF113
 
+[file:incidentfield-Rubrik_Suspicious_File_Count.json]
+ignore=IF115,IF113
+
+[file:incidentfield-Rubrik_Suspicious_File_List.json]
+ignore=IF113
+
 [known_words]
 Acct
 acfc

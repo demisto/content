@@ -40,8 +40,8 @@ tasks:
     task:
       id: 14f3f209-501e-4660-8da3-d48e7e02dbf8
       version: -1
-      name: Cortex XDR - quarantine file
-      playbookName: Cortex XDR - quarantine file
+      name: Cortex XDR - Quarantine File v2
+      playbookName: Cortex XDR - Quarantine File v2
       type: playbook
       iscommand: false
       brand: ""
@@ -49,9 +49,9 @@ tasks:
       endpoint_id:
         simple: aeec6a2cc92e46fab3b6f621722e9916
       file_hash:
-        simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       file_path:
-        simple: /home/ec2-user/test_file.txt
+        simple: C:\Users\demisto\Desktop\test.txt
     separatecontext: true
     continueonerrortype: ""
     loop:

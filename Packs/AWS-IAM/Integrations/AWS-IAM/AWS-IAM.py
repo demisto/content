@@ -135,13 +135,28 @@ def delete_user(args, client):  # pragma: no cover
 
 
 def update_login_profile(args, client):  # pragma: no cover
-    response = client.update_login_profile(
-        Password=args.get("newPassword"),
-        UserName=args.get("userName"),
-        PasswordResetRequired=args.get("passwordResetRequired") == "True",
-    )
-    if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-        demisto.results("The user {} Password was changed".format(args.get("userName")))
+    user = args.get("userName")
+    password = args.get("newPassword")
+    reset_required = args.get("passwordResetRequired") == "True"
+
+    request_params = {
+        "UserName": user,
+        "PasswordResetRequired": reset_required,
+    }
+    # Verify if a new password was given
+    if password:
+        request_params["Password"] = password
+
+    response = client.update_login_profile(**request_params)
+
+    # Determine success message
+    if password:
+        success_message = f"The user {user} password was changed"
+    else:
+        success_message = f"The user {user} will be required to change his password."
+
+    if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        demisto.results(success_message)
 
 
 def create_group(args, client):  # pragma: no cover
@@ -1244,7 +1259,7 @@ def main():  # pragma: no cover
             list_groups_for_user(args, client)
         elif command == "aws-iam-create-access-key":
             create_access_key(args, client)
-        elif command == "aws-iam-update-access-key":
+        elif command == "aws-iam-update-access-key" or command == "aws-iam-access-key-update-quick-action":
             update_access_key(args, client)
         elif command == "aws-iam-list-access-keys-for-user":
             list_access_key_for_user(args, client)
@@ -1256,7 +1271,7 @@ def main():  # pragma: no cover
             attach_policy(args, client)
         elif command == "aws-iam-detach-policy":
             detach_policy(args, client)
-        elif command == "aws-iam-delete-login-profile":
+        elif command == "aws-iam-delete-login-profile" or command == "aws-iam-login-profile-delete-quick-action":
             delete_login_profile(args, client)
         elif command == "aws-iam-add-user-to-group":
             add_user_to_group(args, client)
@@ -1333,7 +1348,7 @@ def main():  # pragma: no cover
             get_user_login_profile(args, client)
         elif command == "aws-iam-put-role-policy":
             return_results(put_role_policy_command(args, client))
-        elif command == "aws-iam-put-user-policy":
+        elif command == "aws-iam-put-user-policy" or command == "aws-iam-user-policy-put-quick-action":
             return_results(put_user_policy_command(args, client))
         elif command == "aws-iam-put-group-policy":
             return_results(put_group_policy_command(args, client))

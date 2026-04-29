@@ -128,15 +128,15 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Digital Risk Protection",
-            integration_version="1.0.0",
+            integration_version="1.1.0",
         )
         self.additional_headers = {
             "Accept": "*/*",
             "User-Agent": f"SOAR/CortexSOAR_unknown/Group-IB Digital Risk Protection/{auth[0]}",
         }
 
-    def generate_seq_update(self, first_fetch_time: str) -> str:
-        demisto.debug(f"generate_seq_update first_fetch_time {first_fetch_time}")
+    def generate_seq_update(self, first_fetch_time: str) -> int:
+        demisto.debug(f"Client.generate_seq_update: first_fetch_time='{first_fetch_time}'")
         date_from = dateparser_parse(date_string=first_fetch_time)
         if date_from is None:
             raise DemistoException(
@@ -144,10 +144,20 @@ class Client(BaseClient):
                 f"please use a format such as: 2020-01-01 or January 1 2020 or 3 days. The format given is: {date_from}"
             )
         date_from = date_from.strftime("%Y-%m-%d")
-        demisto.debug(f"generate_seq_update date_from {date_from}")
-        sequpdate = self.poller.get_seq_update_dict(date=date_from, collection=Endpoints.VIOLATIONS.value)
-        demisto.debug(f"generate_seq_update sequpdate {sequpdate}")
-        return sequpdate
+        demisto.debug(f"Client.generate_seq_update: date_from='{date_from}'")
+        raw_seq = self.poller.get_seq_update_dict(date=date_from, collection=Endpoints.VIOLATIONS.value)
+        demisto.debug(f"Client.generate_seq_update: raw_seq(type={type(raw_seq).__name__})={raw_seq!r}")
+
+        # Verify the return type of get_seq_update_dict:
+        # With `collection` provided, the get_seq_update_dict is expected to return an integer seqUpdate.
+        if isinstance(raw_seq, int) and not isinstance(raw_seq, bool):
+            return raw_seq
+
+        raise DemistoException(
+            "DRPPoller.get_seq_update_dict returned unexpected type. "
+            "Expected int seqUpdate when 'collection' is provided. "
+            f"Got type={type(raw_seq).__name__}, value={raw_seq!r}"
+        )
 
     def _get_violation_section_number(self, name: str) -> int:
         normalized_name = name.upper()
@@ -168,11 +178,14 @@ class Client(BaseClient):
         section: str | None = None,
     ):
         last_fetch = last_run.get("last_fetch", None)
-        demisto.debug(f"create_generator last_fetch {last_fetch}")
-        if last_run and last_fetch:
-            sequpdate = last_fetch
-        else:
-            sequpdate = self.generate_seq_update(first_fetch_time)
+        demisto.debug(f"Client.create_generator: last_fetch={last_fetch!r}")
+        use_last_fetch = isinstance(last_fetch, int) and last_fetch > 0
+        sequpdate: int = last_fetch if use_last_fetch else self.generate_seq_update(first_fetch_time)
+        demisto.debug(
+            "Client.create_generator: sequpdate selection - "
+            f"selected={sequpdate} source={'last_run.last_fetch' if use_last_fetch else 'generate_seq_update(first_fetch_time)'} "
+            f"first_fetch_time={first_fetch_time!r}"
+        )
 
         if section:
             section: int = self._get_violation_section_number(section.strip())  # type: ignore[no-redef]
@@ -180,7 +193,11 @@ class Client(BaseClient):
         if brands:
             brands = brands.strip(",")
 
-        demisto.debug(f"create_generator {Endpoints.VIOLATIONS.value} {violation_subtypes} {section} {sequpdate} brands {brands}")
+        demisto.debug(
+            "Client.create_generator: "
+            f"collection={Endpoints.VIOLATIONS.value} subtypes={violation_subtypes} section={section} "
+            f"sequpdate={sequpdate} brands={brands}"
+        )
         try:
             return self.poller.create_update_generator(
                 collection_name=Endpoints.VIOLATIONS.value,
@@ -204,10 +221,10 @@ class Client(BaseClient):
         approve_status = approve_statuses.get(status)
         response = self.poller.search_feed_by_id(feed_id)
         demisto.debug(
-            "change_violation_status",
-            approve_status,
-            response.raw_dict.get("violation", {}).get("status", None),
-            response.raw_dict.get("violation", {}).get("approveState", None),
+            "Client.change_violation_status: "
+            f"id={feed_id} approve={approve_status} "
+            f"current_status={response.raw_dict.get('violation', {}).get('status')} "
+            f"approve_state={response.raw_dict.get('violation', {}).get('approveState')}"
         )
         violation_status = response.raw_dict.get("violation", {}).get("status", None)
         violation_approve_state = response.raw_dict.get("violation", {}).get("approveState", None)
@@ -224,6 +241,12 @@ class Client(BaseClient):
             )
             return response.status_code
         else:
+            demisto.debug(
+                "Client.change_violation_status: cannot change violation status due to current state - "
+                f"id={feed_id} requested={status!r} "
+                f"current_status={violation_status!r} approve_state={violation_approve_state!r} "
+                "expected: status='detected' and approveState='under_review'"
+            )
             return "Can not change the status of the selected feed"
 
     def get_formatted_brands(self) -> list[dict[str, str]]:
@@ -244,7 +267,11 @@ class Client(BaseClient):
             try:
                 return self.poller.get_subscriptions() or []  # type: ignore[attr-defined]
             except Exception as e:
-                demisto.debug(f"get_subscriptions failed: {e}")
+                demisto.debug(
+                    f"DRPPoller.get_subscriptions exception ({type(e).__name__}): {e!s}. "
+                    f"poller={type(self.poller).__name__}, library_version={TechnicalConsts.library_version}. "
+                    "Returning empty list."
+                )
                 return []
         demisto.debug(
             "DRPPoller.get_subscriptions is not available; returning empty list. "
@@ -263,10 +290,20 @@ class Client(BaseClient):
                 headers=self.additional_headers,
                 resp_type="response",
             )
-            data = response.content, CommonHelpers.extract_mime_type(response.headers.get("content-type", ""))
-        except Exception:
+            mime_type = CommonHelpers.extract_mime_type(response.headers.get("content-type", ""))
+            content_len = len(response.content) if hasattr(response, "content") and response.content is not None else 0
+            status_code = getattr(response, "status_code", None)
+            demisto.debug(
+                "Client.get_file: downloaded file - "
+                f"file_sha={file_sha} status_code={status_code} mime_type={mime_type} content_len={content_len}"
+            )
+            data = response.content, mime_type
+        except Exception as e:
             data = None
-            demisto.debug(f"Could not download or the following image is not available: {file_sha}")
+            demisto.debug(
+                "Client.get_file: Could not download or the following image is not available - "
+                f"file_sha={file_sha} error_type={type(e).__name__} error={e!s}\n{format_exc()}"
+            )
         return data
 
     def get_violation_by_id(self, violation_id: str) -> Parser:
@@ -286,7 +323,7 @@ class Client(BaseClient):
                     image_data_and_mime_type = self.get_file(file_sha=image)
                     if image_data_and_mime_type is not None:
                         image_data, mime_type = image_data_and_mime_type
-                        demisto.debug(f"mime_type {mime_type}")
+                        demisto.debug(f"Client.get_formatted_violation_by_id: image mime_type={mime_type}")
                         updated_images.append(
                             {
                                 "file_sha": image,
@@ -498,7 +535,10 @@ class CommonHelpers:
 
     @staticmethod
     def data_pre_cleaning(violation: dict[str, Any]) -> dict[str, Any]:
-        demisto.debug(f"data_pre_cleaning {violation}")
+        demisto.debug(
+            f"CommonHelpers.data_pre_cleaning start: keys={list(violation.keys())}, "
+            f"uri='{violation.get('violation_uri', '')}'"
+        )
         violation_uri: str = violation.get("violation_uri", "")
         if violation_uri.startswith("//"):
             violation_uri = violation_uri[2:]
@@ -511,7 +551,10 @@ class CommonHelpers:
 
         violation["tags"] = tags
 
-        demisto.debug(f"return_data_pre_cleaning {violation}")
+        demisto.debug(
+            f"CommonHelpers.data_pre_cleaning done: uri='{violation_uri}', "
+            f"tags_count={len(tags) if isinstance(tags, list) else 0}, keys={list(violation.keys())}"
+        )
         return violation
 
     @staticmethod
@@ -571,7 +614,10 @@ class IncidentBuilder:
                             else:
                                 score["type"] = "Unknown"
 
-                        demisto.debug(f"clean_data {clean_data} {type(clean_data)}")
+                        demisto.debug(
+                            "IncidentBuilder.transform_fields_to_grid_table: scores normalized "
+                            f"(count={len(clean_data)}, types={[item.get('type') for item in clean_data]})"
+                        )
 
                     incident[field] = clean_data
                 else:
@@ -580,9 +626,11 @@ class IncidentBuilder:
         return incident
 
     def build(self) -> tuple[dict[str, int | Any], list]:
-        next_run: dict[str, int | Any] = {"last_fetch": {}}
-        violations = []
+        previous_last_fetch = self.last_run.get("last_fetch")
+        next_run: dict[str, int | Any] = {"last_fetch": previous_last_fetch}
+        violations: list[dict[str, Any]] = []
         requests_count = 0
+        max_seq_update: int | None = None
 
         portions = self.client.create_generator(
             violation_subtypes=self.violation_subtypes,
@@ -593,8 +641,20 @@ class IncidentBuilder:
             only_typosquatting=self.only_typosquatting,
         )
         for portion in portions:
+            portion_sequpdate = getattr(portion, "sequpdate", None)
+            demisto.debug(
+                "IncidentBuilder.build: processing portion - "
+                f"requests_count={requests_count} max_requests={self.max_requests} "
+                f"portion_sequpdate={portion_sequpdate!r}"
+            )
             sequpdate = portion.sequpdate
             parse_result: list[dict[Any, Any]] = portion.parse_portion(keys=COMMON_VIOLATION_MAPPING, as_json=False)
+            demisto.debug(
+                "IncidentBuilder.build: portion parsed - " f"portion_sequpdate={sequpdate!r} parsed_items={len(parse_result)}"
+            )
+
+            created_before = len(violations)
+            max_seq_before = max_seq_update
 
             for feed in parse_result:
                 feed = CommonHelpers.data_pre_cleaning(violation=feed)
@@ -614,7 +674,7 @@ class IncidentBuilder:
                             image_data = self.client.get_file(file_sha=image)
                             if image_data:
                                 image_bytes, mime_type = image_data
-                                demisto.debug(f"mime_type {mime_type}")
+                                demisto.debug(f"IncidentBuilder.build: image mime_type={mime_type}")
                                 image_base64_uri = f"data:{mime_type};base64,{base64.b64encode(image_bytes).decode('utf-8')}"
                                 image_html = f'<img src="{image_base64_uri}" alt="Violation Incident Image" />'
                                 updated_images.append(image_html)
@@ -644,10 +704,51 @@ class IncidentBuilder:
                         "dbotMirrorId": incident.get("id"),
                     }
                 )
-            next_run["last_fetch"] = sequpdate
+            # Track the highest seqUpdate seen in this run
+            try:
+                if isinstance(sequpdate, int):
+                    current_max = max_seq_update if isinstance(max_seq_update, int) else 0
+                    max_seq_update = max(sequpdate, current_max)
+            except Exception as e:
+                demisto.debug(
+                    "IncidentBuilder.build: failed to compare/track seqUpdate; skipping. "
+                    f"sequpdate={sequpdate!r} max_seq_update={max_seq_update!r} "
+                    f"error_type={type(e).__name__} error={e!s}\n{format_exc()}"
+                )
             requests_count += 1
+            created_after = len(violations)
+            demisto.debug(
+                "IncidentBuilder.build: portion done - "
+                f"portion_sequpdate={sequpdate!r} created_in_portion={created_after - created_before} "
+                f"max_seq_update_before={max_seq_before!r} max_seq_update_after={max_seq_update!r} "
+                f"requests_count={requests_count} max_requests={self.max_requests}"
+            )
             if requests_count > self.max_requests:
+                demisto.debug(
+                    "IncidentBuilder.build: stopping due to max_requests limit - "
+                    f"requests_count={requests_count} max_requests={self.max_requests} "
+                    f"last_portion_sequpdate={sequpdate!r} max_seq_update={max_seq_update!r}"
+                )
                 break
+        # Decide effective next_run.last_fetch
+        effective_last = previous_last_fetch
+        if isinstance(max_seq_update, int) and max_seq_update > 0:
+            if isinstance(previous_last_fetch, int) and previous_last_fetch > 0:
+                effective_last = max(previous_last_fetch, max_seq_update)
+            else:
+                effective_last = max_seq_update
+        else:
+            demisto.debug(
+                "IncidentBuilder.build: not updating last_fetch because no seqUpdate was observed - "
+                f"previous_last_fetch={previous_last_fetch!r} max_seq_update={max_seq_update!r} "
+                f"requests_count={requests_count} created_incidents={len(violations)}"
+            )
+        next_run["last_fetch"] = effective_last
+        demisto.debug(
+            "IncidentBuilder.build: "
+            f"computed next_run.last_fetch={effective_last} "
+            f"(prev={previous_last_fetch}, max_seq={max_seq_update})"
+        )
         return next_run, violations
 
 

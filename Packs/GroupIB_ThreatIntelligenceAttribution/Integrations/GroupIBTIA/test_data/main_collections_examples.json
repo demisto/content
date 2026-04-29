@@ -199,7 +199,7 @@
                                 "provider": null,
                                 "countryCode": null,
                                 "countryName": null,
-                                "ip": "192.168.0.1"
+                                "ip": "1.1.1.1"
                             },
                             "ipv6": null
                         },
@@ -3995,7 +3995,7 @@
                         "Kog Co., Ltd.",
                         "Konkuk University",
                         "LANXESS",
-                        "Lingnan University",
+                        "Test University",
                         "Lion Air",
                         "LivePlex Corp",
                         "MGAME Corp",
@@ -4384,7 +4384,7 @@
                             "datePublished": "2024-09-24",
                             "id": "2f580853070b70a12820e9b5e03f2e3823f5b318",
                             "name": {
-                                "en": "Publication of data allegedly related to Indonesia's Ministry of Education, Culture, Research, and Technology"
+                                "en": "Publication of data allegedly related to Indonesia's Ministry of Testing, Culture, Research, and Technology"
                             }
                         },
                         {
@@ -4392,7 +4392,7 @@
                             "datePublished": "2024-09-11",
                             "id": "07793f6779060b7df96ab0960c0b05ad6b9f94a0",
                             "name": {
-                                "en": "Publication of Capgemini data"
+                                "en": "Publication of TestGemini data"
                             }
                         },
                         {
@@ -4413,8 +4413,8 @@
                         "professional-services:consulting"
                     ],
                     "targetedCompany": [
-                        "Capgemini",
-                        "Ministry of Education, Culture, Research, and Technology (Indonesia)"
+                        "TestGemini",
+                        "Ministry of Testing, Culture, Research, and Technology (Indonesia)"
                     ],
                     "targetedPartnersAndClients": []
                 },
@@ -5659,7 +5659,7 @@
                 "provider": "vulners.com",
                 "published": "2014-07-31T21:00:00+01:00",
                 "references": [],
-                "reporter": "wpvulndb",
+                "reporter": "testvulndb",
                 "seenInTheWild": false,
                 "seqUpdate": 15677944090287,
                 "softwareMixed": [],
@@ -5668,7 +5668,7 @@
                 "timeLineData": [],
                 "title": "ShrimpTest 1.0b2 - plugins/plugin-notification.php Unspecified XSS",
                 "twitter": [],
-                "type": "wpvulndb"
+                "type": "testvulndb"
             },
             {
                 "affectedSoftware": [
@@ -5728,7 +5728,7 @@
                 "provider": "vulners.com",
                 "published": "2014-07-31T21:00:00+01:00",
                 "references": [],
-                "reporter": "wpvulndb",
+                "reporter": "testvulndb",
                 "seenInTheWild": false,
                 "seqUpdate": 15677944269535,
                 "softwareMixed": [],
@@ -5737,7 +5737,7 @@
                 "timeLineData": [],
                 "title": "super-refer-a-friend - Full Path Disclosure",
                 "twitter": [],
-                "type": "wpvulndb"
+                "type": "testvulndb"
             },
             {
                 "affectedSoftware": [
@@ -5797,7 +5797,7 @@
                 "provider": "vulners.com",
                 "published": "2014-07-31T21:00:00+01:00",
                 "references": [],
-                "reporter": "wpvulndb",
+                "reporter": "testvulndb",
                 "seenInTheWild": false,
                 "seqUpdate": 15677944270178,
                 "softwareMixed": [],
@@ -5806,7 +5806,7 @@
                 "timeLineData": [],
                 "title": "ShrimpTest 1.0b2 - plugins/metric-conversion.php Multiple Unspecified XSS",
                 "twitter": [],
-                "type": "wpvulndb"
+                "type": "testvulndb"
             }
         ],
         "seqUpdate": 15677944270178

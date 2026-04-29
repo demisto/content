@@ -1,0 +1,37 @@
+commonfields:
+  id: DiagnoseSyslogCollector
+  version: -1
+name: DiagnoseSyslogCollector
+script: ''
+type: python
+tags:
+- Utilities
+comment: Diagnoses why the syslog collector on a specified Broker VM is failing by checking broker status and collection_auditing logs.
+enabled: true
+args:
+- description: The name of the Broker VM to diagnose.
+  name: broker_vm_name
+  required: true
+- description: Timeframe for error checking (e.g., "24 hours", "7 days").
+  name: timeframe
+  defaultValue: "24 hours"
+outputs:
+- contextPath: Core.SyslogCollectorDiagnostics.status
+  description: The overall status of the syslog collector (HEALTHY, WARNING, or ERROR).
+  type: String
+- contextPath: Core.SyslogCollectorDiagnostics.diagnosis_report
+  description: Detailed diagnosis report with errors and warnings.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.7090913
+fromversion: 8.14.0
+isInternal: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- edr

@@ -13,11 +13,13 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Incident type |  | False |
 | RSC Fetch Types | Select RSC types to fetch as incidents.<br/><br/>Note: Supports the listed options only. If not provided, it will fetch all listed options. | False |
 | Event types to fetch as incidents | Event types to fetch as incidents.<br/>Note: Supports the listed options only. If not provided, it will fetch events for all listed options. Applies only when RSC fetch type is set to "Event". | False |
+| Event severities to fetch as incidents | Event severities to fetch as incidents.<br/>Note: Supports the listed options only. If not provided, it will fetch events for critical severity level. Applies only when RSC fetch type is set to "Event". | False |
 | Threat Monitoring Match Types | Select Threat Monitoring Match Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | Threat Monitoring Object Types | Select Threat Monitoring Object Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
 | Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000.<br/><br/>Note: If both Threat Monitoring objects and events are selected, the limit is split equally to fetch both types optimally. | False |
 | Event Critical Severity Level Mapping | When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| Event Warning Severity Level Mapping | When an event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Threat Monitoring Object Severity Level Mapping | When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
@@ -327,7 +329,7 @@ There are no input arguments for this command.
 
 |ID|Name|Group Type|Analyzers|
 |---|---|---|---|
-| 97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553 | GLBA | GLBA | id: ed30dfa0-334f-55ff-a1b7-03b6bdd7849b, Name: Credit Card, Analyzer Type: CREDIT_CARD<br/><br/>id: 3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f, Name: US Bank Acct, Analyzer Type: US_BANK_ACCT<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN |
+| 97c6a54a-acfc-5ab2-a24a-6a7f3a9a1553 | GLBA | GLBA | id: ed30dfa0-334f-55ff-a1b7-03b6bdd7849b, Name: Credit Card, Analyzer Type: CREDIT_CARD<br/><br/>id: 3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f, Name: Test Bank Acct, Analyzer Type: US_BANK_ACCT<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN |
 | 543dd5e0-c72c-50e2-a3d9-1688343f472c | HIPAA | HIPAA | id: 9da675b3-944b-5da3-a2da-ed149d300075, Name: US/UK Passport, Analyzer Type: PASSPORT<br/><br/>id: 18665533-c28c-5a40-b747-4b6508fecdfa, Name: US NPI, Analyzer Type: US_HEALTHCARE_NPI<br/><br/>id: 03b3dc9e-81c1-561c-8235-17cf2fc1c729, Name: US ITIN, Analyzer Type: US_ITIN<br/><br/>id: d5ce3ae5-f530-562a-85b1-4a84264a350a, Name: US SSN, Analyzer Type: US_SSN<br/><br/>id: 6bcc8e4e-0ec9-5538-b91d-a506dac47ec6, Name: US DEA, Analyzer Type: DEA_NUMBER |
 | 16bd3864-bad6-513b-b38d-a108e648cf4a |  | PCI_DSS |  |
 | c8c8072a-9454-5e68-9a23-bbcb9824838e | U.S. Financials | US_FINANCE | id: bb9a929b-3f29-5d3f-a768-de74e8ee5a9c, Name: n/a, Analyzer Type: CUSIP_NUMBER |
@@ -4154,3 +4156,67 @@ Start a new advance threat hunt.
 #### Human Readable Output
 
 > #### The new advance Threat Hunt started with ID: hunt-abc
+
+### rubrik-anomaly-csv-analysis-v2
+
+***
+Request for the analysis and directly download the anomaly CSV analyzed file.
+
+#### Base Command
+
+`rubrik-anomaly-csv-analysis-v2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster_id | The unique ID of the cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required |
+| snapshot_id | The CDM snapshot ID.<br/><br/>Note: Use the "rubrik-radar-suspicious-file-list" command to retrieve the actual CDM ID from the Anomaly ID.<br/>Example format to get the snapshot CDM ID from Anomaly ID: "&lt;Cluster-ID&gt;:::VirtualMachine:::&lt;Snappable-ID&gt;:::&lt;CDM-ID&gt;". | Required |
+| object_id | The VM object ID (Snappable ID).<br/><br/>Note: Users can retrieve the list of Snappable IDs by executing the "rubrik-polaris-vm-objects-list" command.<br/>Example format to get the Snappable ID: "VirtualMachine:::&lt;Snappable-ID&gt;". | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.AnomalyCSVv2.clusterId | String | The ID of the cluster. |
+| RubrikPolaris.AnomalyCSVv2.snapshotId | String | The ID of the snapshot. |
+| RubrikPolaris.AnomalyCSVv2.objectId | String | The ID of the object. |
+| RubrikPolaris.AnomalyCSVv2.externalId | String | The external ID of the CSV file. |
+| RubrikPolaris.AnomalyCSVv2.isSuccessful | Boolean | Whether the CSV analysis was successful or not. |
+| InfoFile.Name | string | FileName. |
+| InfoFile.EntryID | string | The EntryID of the report. |
+| InfoFile.Size | number | File Size. |
+| InfoFile.Type | string | File type e.g. "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+
+#### Command example
+
+```!rubrik-anomaly-csv-analysis-v2 cluster_id="00000000-0000-0000-0000-000000000000" snapshot_id="00000000-0000-0000-0000-000000000000" object_id="00000000-0000-0000-0000-000000000000-vm-000"```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "10000@00000000-0000-0000-0000-000000000001",
+        "Extension": "csv",
+        "Info": "text/csv; charset=utf-8",
+        "Name": "snapshot_00000000-0000-0000-0000-000000000000.csv",
+        "Size": 1771317,
+        "Type": "ASCII text, with very long lines"
+    },
+    "RubrikPolaris": {
+        "AnomalyCSVv2": {
+            "clusterId": "00000000-0000-0000-0000-000000000000",
+            "externalId": "00000000-0000-0000-0000-000000000000",
+            "isSuccessful": true,
+            "objectId": "00000000-0000-0000-0000-000000000000-vm-000",
+            "snapshotId": "00000000-0000-0000-0000-000000000000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### Successfully downloaded the analyzed CSV file

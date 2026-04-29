@@ -40,7 +40,8 @@ def test_get_access_token(mocker):
 
     mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=PARAMS.get("client_id", ""),
         client_secret=PARAMS.get("client_secret", ""),
@@ -102,7 +103,8 @@ def test_get_access_token_with_automatic_retry(mocker):
     mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
 
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=PARAMS.get("client_id", ""),
         client_secret=PARAMS.get("client_secret", ""),
@@ -120,7 +122,7 @@ def test_get_access_token_with_automatic_retry(mocker):
     result = client.get_access_token()
 
     # Validate that login was called once to regenerate refresh token
-    mock_login.assert_called_once_with(client.username, client.password)
+    mock_login.assert_called_once_with(username=client.username, password=client.password)
 
     # Validate debug message was logged
     assert mock_debug.call_count == 2
@@ -160,10 +162,10 @@ def test_get_access_token_retry_only_once(mocker):
     error_response.status_code = 200
 
     mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
-    mocker.patch("ServiceNowApiModule.return_error", side_effect=Exception("Error occurred while creating an access token"))
 
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=PARAMS.get("client_id", ""),
         client_secret=PARAMS.get("client_secret", ""),
@@ -179,11 +181,12 @@ def test_get_access_token_retry_only_once(mocker):
     mocker.patch.object(BaseClient, "_http_request", return_value=error_response)
 
     # Call get_access_token - should retry once then raise error
-    with pytest.raises(Exception, match="Error occurred while creating an access token"):
+    # After retry, return_error() is called which raises SystemExit
+    with pytest.raises(SystemExit):
         client.get_access_token()
 
     # Validate that login was called exactly once (no infinite loop)
-    mock_login.assert_called_once_with(client.username, client.password)
+    mock_login.assert_called_once_with(username=client.username, password=client.password)
 
 
 def test_separate_client_id_and_refresh_token():
@@ -198,7 +201,8 @@ def test_separate_client_id_and_refresh_token():
     """
     client_id_with_strudel = "client_id@refresh_token"
     client = ServiceNowClient(
-        credentials=PARAMS.get("credentials", {}),
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
         client_id=client_id_with_strudel,
         client_secret=PARAMS.get("client_secret", ""),
@@ -324,13 +328,14 @@ def test_servicenow_client_jwt_init(mocker):
     """
     mocker.patch("jwt.encode", return_value="jwt_token_stub")
     client = ServiceNowClient(
-        credentials=PARAMS["credentials"],
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
-        client_id=PARAMS["client_id"],
-        client_secret=PARAMS["client_secret"],
+        client_id=PARAMS.get("client_id", ""),
+        client_secret=PARAMS.get("client_secret", ""),
         url="https://example.com",
-        verify=PARAMS["insecure"],
-        proxy=PARAMS["proxy"],
+        verify=PARAMS.get("insecure", False),
+        proxy=PARAMS.get("proxy", False),
         headers=None,
         jwt_params=JWT_PARAMS,
     )
@@ -348,13 +353,14 @@ def test_servicenow_client_jwt_none():
     - The client should not have a 'jwt' attribute
     """
     client = ServiceNowClient(
-        credentials=PARAMS["credentials"],
+        username=PARAMS.get("credentials", {}).get("identifier", ""),
+        password=PARAMS.get("credentials", {}).get("password", ""),
         use_oauth=True,
-        client_id=PARAMS["client_id"],
-        client_secret=PARAMS["client_secret"],
+        client_id=PARAMS.get("client_id", ""),
+        client_secret=PARAMS.get("client_secret", ""),
         url="https://example.com",
-        verify=PARAMS["insecure"],
-        proxy=PARAMS["proxy"],
+        verify=PARAMS.get("insecure", False),
+        proxy=PARAMS.get("proxy", False),
         headers=None,
         jwt_params=None,
     )

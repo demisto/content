@@ -1,4 +1,5 @@
 category: Identity and Access Management
+provider: SAP
 commonfields:
   id: SAP-IAM
   version: -1

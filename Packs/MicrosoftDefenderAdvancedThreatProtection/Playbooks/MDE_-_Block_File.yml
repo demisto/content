@@ -1,5 +1,7 @@
 id: MDE - Block File
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: MDE - Block File
 description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in Microsoft Defender for Endpoint. \nThe playbook uses the integration \"Microsoft Defender for Endpoint\"."
 starttaskid: "0"
@@ -101,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ae03f7d2-a316-4255-83fb-87c50a8281fc
+    taskid: 45e92916-27ad-4397-bf9b-dd0350e3b9e8
     type: regular
     task:
-      id: ae03f7d2-a316-4255-83fb-87c50a8281fc
+      id: 45e92916-27ad-4397-bf9b-dd0350e3b9e8
       version: -1
       name: Block Indicators by SHA256
       description: Creates a new indicator.
@@ -131,12 +133,12 @@ tasks:
         simple: FileSha256
       indicator_value:
         complex:
-          root: inputs.SHA256
+          root: inputs.Hash
           filters:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: inputs.SHA256
+                  simple: inputs.Hash
                 iscontext: true
               right:
                 value:
@@ -145,7 +147,7 @@ tasks:
           - operator: uniq
       severity:
         complex:
-          root: 'inputs.Severity '
+          root: inputs.Severity
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -164,10 +166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a42d4ac7-6f1d-4481-8b8d-869e76b71de9
+    taskid: 483c849a-566f-48e9-9c33-554e04ce3784
     type: regular
     task:
-      id: a42d4ac7-6f1d-4481-8b8d-869e76b71de9
+      id: 483c849a-566f-48e9-9c33-554e04ce3784
       version: -1
       name: Block Indicators by MD5
       description: Creates a new indicator.
@@ -194,12 +196,12 @@ tasks:
         simple: FileMd5
       indicator_value:
         complex:
-          root: inputs.MD5
+          root: inputs.Hash
           filters:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: inputs.MD5
+                  simple: inputs.Hash
                 iscontext: true
               right:
                 value:
@@ -208,7 +210,7 @@ tasks:
           - operator: uniq
       severity:
         complex:
-          root: 'inputs.Severity '
+          root: inputs.Severity
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -236,7 +238,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: Check if there are files to block.
     nexttasks:
       '#default#':
       - "3"
@@ -281,7 +283,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: Check if input hash is of type MD5.
     nexttasks:
       '#default#':
       - "3"
@@ -328,7 +330,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: Check if input hash is of type SHA256.
     nexttasks:
       '#default#':
       - "3"
@@ -364,6 +366,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -376,7 +379,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 925,
+        "height": 920,
         "width": 1240,
         "x": 450,
         "y": 50
@@ -384,20 +387,20 @@ view: |-
     }
   }
 inputs:
-- key: 'Severity '
+- key: Severity
   value: {}
   required: false
   description: The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.
   playbookInputQuery:
 - key: IndicatorDescription
   value:
-    simple: Added by Cortex XSOAR
+    simple: Added by Cortex
   required: true
   description: Brief description (100 characters or less) of the threat represented by the indicator.
   playbookInputQuery:
 - key: IndicatorTitle
   value:
-    simple: Added by Cortex XSOAR
+    simple: Added by Cortex
   required: true
   description: The indicator alert title in Defender.
   playbookInputQuery:
@@ -412,6 +415,19 @@ inputs:
   required: false
   description: In this input you can insert either MD5 or SHA256 to block.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - Severity
+  - IndicatorDescription
+  - IndicatorTitle
+  - GenerateAlert
+  - Hash
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests

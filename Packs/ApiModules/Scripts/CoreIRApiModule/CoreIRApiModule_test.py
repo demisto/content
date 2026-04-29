@@ -96,7 +96,10 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 
 @pytest.mark.parametrize(
     argnames="time_to_convert, expected_value",
-    argvalues=[("1322683200000", 1322683200000), ("2018-11-06T08:56:41", 1541494601000)],
+    argvalues=[
+        ("1322683200000", 1322683200000),
+        ("2018-11-06T08:56:41", 1541494601000),
+    ],
 )
 def test_convert_time_to_epoch(time_to_convert, expected_value):
     from CoreIRApiModule import convert_time_to_epoch
@@ -127,7 +130,11 @@ def test_retrieve_all_endpoints(mocker):
     mock_endpoints_page_2 = {"reply": {"endpoints": [{"id": 2, "hostname": "endpoint2"}]}}
     mock_endpoints_page_3 = {"reply": {"endpoints": []}}
     http_request = mocker.patch.object(test_client, "_http_request")
-    http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
+    http_request.side_effect = [
+        mock_endpoints_page_1,
+        mock_endpoints_page_2,
+        mock_endpoints_page_3,
+    ]
 
     endpoints = retrieve_all_endpoints(
         client=test_client,
@@ -166,15 +173,61 @@ def test_get_endpoints_command(mocker):
     """
     from CoreIRApiModule import get_endpoints_command
 
-    mock_endpoints_page_1 = {"reply": {"endpoints": [{"id": 1, "hostname": "endpoint1"}]}}
-    mock_endpoints_page_2 = {"reply": {"endpoints": [{"id": 2, "hostname": "endpoint2"}]}}
+    mock_endpoints_page_1 = {"reply": {"endpoints": [{"endpoint_id": "1", "hostname": "endpoint1"}]}}
+    mock_endpoints_page_2 = {"reply": {"endpoints": [{"endpoint_id": "2", "hostname": "endpoint2"}]}}
     mock_endpoints_page_3 = {"reply": {"endpoints": []}}
     http_request = mocker.patch.object(test_client, "_http_request")
-    http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
+    http_request.side_effect = [
+        mock_endpoints_page_1,
+        mock_endpoints_page_2,
+        mock_endpoints_page_3,
+    ]
     args = {"all_results": "true"}
     result = get_endpoints_command(test_client, args)
-    assert result.readable_output == "### Endpoints\n|hostname|id|\n|---|---|\n| endpoint1 | 1 |\n| endpoint2 | 2 |\n"
-    assert result.raw_response == [{"id": 1, "hostname": "endpoint1"}, {"id": 2, "hostname": "endpoint2"}]
+    assert len(result.raw_response) == 2
+    assert result.raw_response[0]["endpoint_id"] == "1"
+    assert result.raw_response[1]["endpoint_id"] == "2"
+
+
+def test_get_endpoints_command_with_duplicates(mocker):
+    """
+    Given:
+        - API returns duplicate endpoints across pages (simulating pagination issue).
+    When:
+        - get_endpoints_command is called with all_results=true.
+    Then:
+        - Duplicates should be removed and only unique endpoints returned.
+        - Debug log should indicate duplicates were found and removed.
+    """
+    from CoreIRApiModule import get_endpoints_command
+
+    # Simulate API returning duplicates: endpoint1 appears in both page 1 and page 2
+    mock_endpoints_page_1 = {"reply": {"endpoints": [{"endpoint_id": "1111", "hostname": "endpoint1"}]}}
+    mock_endpoints_page_2 = {
+        "reply": {
+            "endpoints": [{"endpoint_id": "1111", "hostname": "endpoint1"}, {"endpoint_id": "2222", "hostname": "endpoint2"}]
+        }
+    }
+    mock_endpoints_page_3 = {"reply": {"endpoints": []}}
+
+    http_request = mocker.patch.object(test_client, "_http_request")
+    http_request.side_effect = [mock_endpoints_page_1, mock_endpoints_page_2, mock_endpoints_page_3]
+
+    info_mock = mocker.patch.object(demisto, "info")
+
+    args = {"all_results": "true"}
+    result = get_endpoints_command(test_client, args)
+
+    # Verify only unique endpoints are returned
+    assert len(result.raw_response) == 2
+    assert result.raw_response == [
+        {"endpoint_id": "1111", "hostname": "endpoint1"},
+        {"endpoint_id": "2222", "hostname": "endpoint2"},
+    ]
+
+    # Verify deduplication was logged
+    info_calls = [str(call) for call in info_mock.call_args_list]
+    assert any("removed 1 duplicate endpoint(s)" in str(call) for call in info_calls)
 
 
 def test_convert_to_hr_timestamps():
@@ -304,7 +357,10 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     args = {"endpoint_id": "1111", "suppress_disconnected_endpoint_error": False}
-    with pytest.raises(ValueError, match="Error: Endpoint 1111 is disconnected and therefore can not be isolated."):
+    with pytest.raises(
+        ValueError,
+        match="Error: Endpoint 1111 is disconnected and therefore can not be isolated.",
+    ):
         isolate_endpoint_command(client, args)
 
 
@@ -317,7 +373,10 @@ def test_unisolate_endpoint(requests_mock):
     )
 
     unisolate_endpoint_response = load_test_data("./test_data/unisolate_endpoint.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/unisolate", json=unisolate_endpoint_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/unisolate",
+        json=unisolate_endpoint_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -336,7 +395,10 @@ def test_unisolate_endpoint_unconnected_machine(requests_mock):
     )
 
     unisolate_endpoint_response = load_test_data("./test_data/unisolate_endpoint.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/unisolate", json=unisolate_endpoint_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/unisolate",
+        json=unisolate_endpoint_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -355,12 +417,18 @@ def test_unisolate_endpoint_pending_isolation(requests_mock):
     )
 
     unisolate_endpoint_response = load_test_data("./test_data/unisolate_endpoint.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/unisolate", json=unisolate_endpoint_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/unisolate",
+        json=unisolate_endpoint_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     args = {"endpoint_id": "1111"}
-    with pytest.raises(ValueError, match="Error: Endpoint 1111 is pending isolation and therefore can not be un-isolated."):
+    with pytest.raises(
+        ValueError,
+        match="Error: Endpoint 1111 is pending isolation and therefore can not be un-isolated.",
+    ):
         unisolate_endpoint_command(client, args)
 
 
@@ -368,7 +436,10 @@ def test_get_distribution_url(requests_mock):
     from CoreIRApiModule import CoreClient, get_distribution_url_command
 
     get_distribution_url_response = load_test_data("./test_data/get_distribution_url.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/distributions/get_dist_url/", json=get_distribution_url_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/distributions/get_dist_url/",
+        json=get_distribution_url_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -396,12 +467,19 @@ def test_download_distribution(requests_mock):
 
     get_distribution_url_response = load_test_data("./test_data/get_distribution_url.json")
     dummy_url = "https://xdrdummyurl.com/11111-distributions/11111/sh"
-    requests_mock.post(f"{Core_URL}/public_api/v1/distributions/get_dist_url/", json=get_distribution_url_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/distributions/get_dist_url/",
+        json=get_distribution_url_response,
+    )
     requests_mock.get(dummy_url, content=b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1")
     installer_file_name = "xdr-agent-install-package.msi"
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-    args = {"distribution_id": "1111", "package_type": "x86", "download_package": "true"}
+    args = {
+        "distribution_id": "1111",
+        "package_type": "x86",
+        "download_package": "true",
+    }
     result = get_distribution_url_command(client, args)
     assert result[0]["File"] == installer_file_name
     assert result[1].readable_output == "Installation package downloaded successfully."
@@ -411,7 +489,10 @@ def test_get_audit_management_logs(requests_mock):
     from CoreIRApiModule import CoreClient, get_audit_management_logs_command
 
     get_audit_management_logs_response = load_test_data("./test_data/get_audit_management_logs.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/audits/management_logs/", json=get_audit_management_logs_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/audits/management_logs/",
+        json=get_audit_management_logs_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -427,7 +508,10 @@ def test_get_audit_agent_reports(requests_mock):
     from CoreIRApiModule import CoreClient, get_audit_agent_reports_command
 
     get_audit_agent_reports_response = load_test_data("./test_data/get_audit_agent_report.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/audits/agents_reports/", json=get_audit_agent_reports_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/audits/agents_reports/",
+        json=get_audit_agent_reports_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -447,7 +531,10 @@ def test_get_distribution_status(requests_mock):
     from CoreIRApiModule import CoreClient, get_distribution_status_command
 
     get_distribution_status_response = load_test_data("./test_data/get_distribution_status.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/distributions/get_status/", json=get_distribution_status_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/distributions/get_status/",
+        json=get_distribution_status_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -464,14 +551,21 @@ def test_get_distribution_versions(requests_mock):
     from CoreIRApiModule import CoreClient, get_distribution_versions_command
 
     get_distribution_versions_response = load_test_data("./test_data/get_distribution_versions.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/distributions/get_versions/", json=get_distribution_versions_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/distributions/get_versions/",
+        json=get_distribution_versions_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     readable_output, outputs, _ = get_distribution_versions_command(client, args={})
 
     assert outputs == {
-        "CoreApiModule.DistributionVersions": {"windows": ["7.0.0.27797"], "linux": ["7.0.0.1915"], "macos": ["7.0.0.1914"]}
+        "CoreApiModule.DistributionVersions": {
+            "windows": ["7.0.0.27797"],
+            "linux": ["7.0.0.1915"],
+            "macos": ["7.0.0.1914"],
+        }
     }
 
 
@@ -479,11 +573,19 @@ def test_create_distribution(requests_mock):
     from CoreIRApiModule import CoreClient, create_distribution_command
 
     create_distribution_response = load_test_data("./test_data/create_distribution.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/distributions/create/", json=create_distribution_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/distributions/create/",
+        json=create_distribution_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
-    args = {"name": "dfslcxe", "platform": "windows", "package_type": "standalone", "agent_version": "7.0.0.28644"}
+    args = {
+        "name": "dfslcxe",
+        "platform": "windows",
+        "package_type": "standalone",
+        "agent_version": "7.0.0.28644",
+    }
 
     readable_output, outputs, _ = create_distribution_command(client, args)
 
@@ -520,7 +622,10 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
         ]
     }
 
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -547,7 +652,10 @@ def test_blocklist_files_command_with_single_file(requests_mock):
             "hash_list"
         ]
     }
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -574,7 +682,10 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
             "hash_list"
         ]
     }
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -601,7 +712,10 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
             "hash_list"
         ]
     }
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -628,7 +742,10 @@ def test_allowlist_files_command_with_single_file(requests_mock):
             "hash_list"
         ]
     }
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -655,7 +772,10 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
             "hash_list"
         ]
     }
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -679,7 +799,10 @@ def test_quarantine_files_command(requests_mock):
     quarantine_files_expected_tesult = {
         "CoreApiModule.quarantineFiles.actionIds(val.actionId === obj.actionId)": test_data["context_data"]
     }
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/quarantine/", json=test_data["api_response"])
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/quarantine/",
+        json=test_data["api_response"],
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -725,7 +848,10 @@ def test_restore_file_command(requests_mock):
     from CoreIRApiModule import CoreClient, restore_file_command
 
     restore_expected_tesult = {"CoreApiModule.restoredFiles.actionId(val.actionId == obj.actionId)": 123}
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/restore/", json={"reply": {"action_id": 123}})
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/restore/",
+        json={"reply": {"action_id": 123}},
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -747,7 +873,12 @@ def test_endpoint_scan_command(requests_mock):
     from CoreIRApiModule import CoreClient, endpoint_scan_command
 
     test_data = load_test_data("test_data/scan_endpoints.json")
-    scan_expected_tesult = {"CoreApiModule.endpointScan(val.actionId == obj.actionId)": {"actionId": 123, "aborted": False}}
+    scan_expected_tesult = {
+        "CoreApiModule.endpointScan(val.actionId == obj.actionId)": {
+            "actionId": 123,
+            "aborted": False,
+        }
+    }
     requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", json={"reply": {"action_id": 123}})
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
@@ -769,7 +900,12 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     from CoreIRApiModule import CoreClient, endpoint_scan_command
 
     test_data = load_test_data("test_data/scan_all_endpoints.json")
-    scan_expected_tesult = {"CoreApiModule.endpointScan(val.actionId == obj.actionId)": {"actionId": 123, "aborted": False}}
+    scan_expected_tesult = {
+        "CoreApiModule.endpointScan(val.actionId == obj.actionId)": {
+            "actionId": 123,
+            "aborted": False,
+        }
+    }
     requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", json={"reply": {"action_id": 123}})
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
@@ -814,7 +950,10 @@ def test_endpoint_scan_abort_command_scan_all_endpoints_no_filters_error(request
     """
     from CoreIRApiModule import CoreClient, endpoint_scan_abort_command
 
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/abort_scan/", json={"reply": {"action_id": 123}})
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/abort_scan/",
+        json={"reply": {"action_id": 123}},
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -840,8 +979,16 @@ def test_endpoint_scan_abort_command(requests_mock):
     from CoreIRApiModule import CoreClient, endpoint_scan_abort_command
 
     test_data = load_test_data("test_data/scan_endpoints.json")
-    scan_expected_tesult = {"CoreApiModule.endpointScan(val.actionId == obj.actionId)": {"actionId": 123, "aborted": True}}
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/abort_scan/", json={"reply": {"action_id": 123}})
+    scan_expected_tesult = {
+        "CoreApiModule.endpointScan(val.actionId == obj.actionId)": {
+            "actionId": 123,
+            "aborted": True,
+        }
+    }
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/abort_scan/",
+        json={"reply": {"action_id": 123}},
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -862,8 +1009,16 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     from CoreIRApiModule import CoreClient, endpoint_scan_abort_command
 
     test_data = load_test_data("test_data/scan_all_endpoints.json")
-    scan_expected_tesult = {"CoreApiModule.endpointScan(val.actionId == obj.actionId)": {"actionId": 123, "aborted": True}}
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/abort_scan/", json={"reply": {"action_id": 123}})
+    scan_expected_tesult = {
+        "CoreApiModule.endpointScan(val.actionId == obj.actionId)": {
+            "actionId": 123,
+            "aborted": True,
+        }
+    }
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/abort_scan/",
+        json={"reply": {"action_id": 123}},
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     client._headers = {}
@@ -942,7 +1097,11 @@ def test_get_update_args_close_incident():
 
     remote_args = UpdateRemoteSystemArgs(
         {
-            "delta": {"closeReason": "Other", "closeNotes": "Not Relevant", "closingUserId": "admin"},
+            "delta": {
+                "closeReason": "Other",
+                "closeNotes": "Not Relevant",
+                "closingUserId": "admin",
+            },
             "data": {"status": "new"},
             "status": 2,
         }
@@ -966,8 +1125,16 @@ def test_get_update_args_owner_sync(mocker):
     from CoreIRApiModule import get_update_args
 
     remote_args = UpdateRemoteSystemArgs({"delta": {"owner": "username"}, "data": {"status": "new"}})
-    mocker.patch.object(demisto, "params", return_value={"sync_owners": True, "mirror_direction": "Incoming"})
-    mocker.patch.object(demisto, "findUser", return_value={"email": "moo@demisto.com", "username": "username"})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"sync_owners": True, "mirror_direction": "Incoming"},
+    )
+    mocker.patch.object(
+        demisto,
+        "findUser",
+        return_value={"email": "moo@demisto.com", "username": "username"},
+    )
 
     update_args = get_update_args(remote_args)
 
@@ -987,9 +1154,15 @@ def test_get_policy(requests_mock):
     """
     from CoreIRApiModule import CoreClient, get_policy_command
 
-    expected_context = {"endpoint_id": "aeec6a2cc92e46fab3b6f621722e9916", "policy_name": "test"}
+    expected_context = {
+        "endpoint_id": "aeec6a2cc92e46fab3b6f621722e9916",
+        "policy_name": "test",
+    }
     run_script_expected_result = {"CoreApiModule.Policy(val.endpoint_id == obj.endpoint_id)": expected_context}
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/get_policy/", json={"reply": {"policy_name": "test"}})
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/get_policy/",
+        json={"reply": {"policy_name": "test"}},
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     args = {"endpoint_id": "aeec6a2cc92e46fab3b6f621722e9916"}
@@ -1010,8 +1183,15 @@ def test_get_endpoint_device_control_violations_command(requests_mock):
     Then:
         - Assert the returned markdown, context data and raw response are as expected.
     """
-    from CommonServerPython import string_to_table_header, tableToMarkdown, timestamp_to_datestring
-    from CoreIRApiModule import CoreClient, get_endpoint_device_control_violations_command
+    from CommonServerPython import (
+        string_to_table_header,
+        tableToMarkdown,
+        timestamp_to_datestring,
+    )
+    from CoreIRApiModule import (
+        CoreClient,
+        get_endpoint_device_control_violations_command,
+    )
 
     get_endpoint_violations_reply = load_test_data("./test_data/get_endpoint_violations.json")
     violations = get_endpoint_violations_reply.get("reply").get("violations")
@@ -1019,8 +1199,22 @@ def test_get_endpoint_device_control_violations_command(requests_mock):
         timestamp = violation.get("timestamp")
         violation["date"] = timestamp_to_datestring(timestamp, "%Y-%m-%dT%H:%M:%S")
     get_endpoint_violations_expected_result = {"CoreApiModule.EndpointViolations(val.violation_id==obj.violation_id)": violations}
-    headers = ["date", "hostname", "platform", "username", "ip", "type", "violation_id", "vendor", "product", "serial"]
-    requests_mock.post(f"{Core_URL}/public_api/v1/device_control/get_violations/", json=get_endpoint_violations_reply)
+    headers = [
+        "date",
+        "hostname",
+        "platform",
+        "username",
+        "ip",
+        "type",
+        "violation_id",
+        "vendor",
+        "product",
+        "serial",
+    ]
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/device_control/get_violations/",
+        json=get_endpoint_violations_reply,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     args = {"violation_id_list": "100"}
@@ -1052,13 +1246,19 @@ def test_retrieve_files_command(requests_mock):
     from CoreIRApiModule import CoreClient, retrieve_files_command
 
     retrieve_expected_result = {"action_id": 1773}
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/file_retrieval/", json={"reply": {"action_id": 1773}})
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/file_retrieval/",
+        json={"reply": {"action_id": 1773}},
+    )
     result = {"action_id": 1773}
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     res = retrieve_files_command(
         client,
-        {"endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916", "windows_file_paths": "C:\\Users\\demisto\\Desktop\\demisto.txt"},
+        {
+            "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+            "windows_file_paths": "C:\\Users\\demisto\\Desktop\\demisto.txt",
+        },
     )
 
     assert res.readable_output == tableToMarkdown(name="Retrieve files", t=result, headerTransform=string_to_table_header)
@@ -1080,7 +1280,10 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     from CoreIRApiModule import CoreClient, retrieve_files_command
 
     retrieve_expected_result = {"action_id": 1773}
-    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/file_retrieval/", json={"reply": {"action_id": 1773}})
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/file_retrieval/",
+        json={"reply": {"action_id": 1773}},
+    )
     result = {"action_id": 1773}
 
     get_endpoints_response = load_test_data("./test_data/get_endpoints.json")
@@ -1089,7 +1292,10 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     res = retrieve_files_command(
         client,
-        {"endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916", "generic_file_path": "C:\\Users\\demisto\\Desktop\\demisto.txt"},
+        {
+            "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+            "generic_file_path": "C:\\Users\\demisto\\Desktop\\demisto.txt",
+        },
     )
 
     assert res.readable_output == tableToMarkdown(name="Retrieve files", t=result, headerTransform=string_to_table_header)
@@ -1097,7 +1303,9 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     assert res.raw_response == {"action_id": 1773}
 
 
-def test_retrieve_files_command_using_general_file_path_without_valid_endpint(requests_mock):
+def test_retrieve_files_command_using_general_file_path_without_valid_endpint(
+    requests_mock,
+):
     """
     Given:
         - endpoint_ids
@@ -1116,7 +1324,10 @@ def test_retrieve_files_command_using_general_file_path_without_valid_endpint(re
     with pytest.raises(ValueError) as error:
         retrieve_files_command(
             client,
-            {"endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916", "generic_file_path": "C:\\Users\\demisto\\Desktop\\demisto.txt"},
+            {
+                "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+                "generic_file_path": "C:\\Users\\demisto\\Desktop\\demisto.txt",
+            },
         )
     assert str(error.value) == "Error: Endpoint aeec6a2cc92e46fab3b6f621722e9916 was not found"
 
@@ -1162,7 +1373,11 @@ def test_get_scripts_command(requests_mock):
     Then:
         - Assert the returned markdown, context data and raw response are as expected.
     """
-    from CommonServerPython import string_to_table_header, tableToMarkdown, timestamp_to_datestring
+    from CommonServerPython import (
+        string_to_table_header,
+        tableToMarkdown,
+        timestamp_to_datestring,
+    )
     from CoreIRApiModule import CoreClient, get_scripts_command
 
     get_scripts_response = load_test_data("./test_data/get_scripts.json")
@@ -1191,7 +1406,11 @@ def test_get_scripts_command(requests_mock):
     hr, context, raw_response = get_scripts_command(client, args)
 
     assert hr == tableToMarkdown(
-        name="Scripts", t=scripts, headers=headers, removeNull=True, headerTransform=string_to_table_header
+        name="Scripts",
+        t=scripts,
+        headers=headers,
+        removeNull=True,
+        headerTransform=string_to_table_header,
     )
     assert context == get_scripts_expected_result
     assert raw_response == get_scripts_response.get("reply")
@@ -1206,7 +1425,11 @@ def test_get_script_metadata_command(requests_mock):
     Then:
         - Assert the returned markdown, context data and raw response are as expected.
     """
-    from CommonServerPython import string_to_table_header, tableToMarkdown, timestamp_to_datestring
+    from CommonServerPython import (
+        string_to_table_header,
+        tableToMarkdown,
+        timestamp_to_datestring,
+    )
     from CoreIRApiModule import CoreClient, get_script_metadata_command
 
     get_script_metadata_response = load_test_data("./test_data/get_script_metadata.json")
@@ -1218,7 +1441,10 @@ def test_get_script_metadata_command(requests_mock):
     script_metadata["modification_date_timestamp"] = timestamp
     script_metadata["modification_date"] = timestamp_to_datestring(timestamp, "%Y-%m-%dT%H:%M:%S")
 
-    requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_metadata/", json=get_script_metadata_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/scripts/get_script_metadata/",
+        json=get_script_metadata_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     args = {"script_uid": "956e8989f67ebcb2c71c4635311e47e4"}
@@ -1226,7 +1452,10 @@ def test_get_script_metadata_command(requests_mock):
     hr, context, raw_response = get_script_metadata_command(client, args)
 
     assert hr == tableToMarkdown(
-        name="Script Metadata", t=script_metadata, removeNull=True, headerTransform=string_to_table_header
+        name="Script Metadata",
+        t=script_metadata,
+        removeNull=True,
+        headerTransform=string_to_table_header,
     )
     assert context == get_scripts_expected_result
     assert raw_response == get_script_metadata_response.get("reply")
@@ -1244,16 +1473,22 @@ def test_get_script_code_command(requests_mock):
     from CoreIRApiModule import CoreClient, get_script_code_command
 
     get_script_code_command_reply = load_test_data("./test_data/get_script_code.json")
-    context = {"script_uid": "548023b6e4a01ec51a495ba6e5d2a15d", "code": get_script_code_command_reply.get("reply")}
+    context = {
+        "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
+        "code": get_script_code_command_reply.get("reply"),
+    }
     get_script_code_command_expected_result = {"CoreApiModule.ScriptCode(val.script_uid == obj.script_uid)": context}
-    requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_code/", json=get_script_code_command_reply)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/scripts/get_script_code/",
+        json=get_script_code_command_reply,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     args = {"script_uid": "548023b6e4a01ec51a495ba6e5d2a15d"}
 
     hr, context, raw_response = get_script_code_command(client, args)
 
-    assert hr == f'### Script code: \n ``` {get_script_code_command_reply.get("reply")!s} ```'
+    assert hr == f"### Script code: \n ``` {get_script_code_command_reply.get('reply')!s} ```"
     assert context == get_script_code_command_expected_result
     assert raw_response == get_script_code_command_reply.get("reply")
 
@@ -1283,13 +1518,20 @@ def test_action_status_get_command(mocker):
 
     action_status_get_command_expected_result = result
 
-    mocker.patch.object(CoreClient, "_http_request", return_value=action_status_get_command_command_reply)
+    mocker.patch.object(
+        CoreClient,
+        "_http_request",
+        return_value=action_status_get_command_command_reply,
+    )
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     args = {"action_id": "1810"}
 
     res = action_status_get_command(client, args)
     assert res.readable_output == tableToMarkdown(
-        name="Get Action Status", t=result, removeNull=True, headers=["action_id", "endpoint_id", "status", "error_description"]
+        name="Get Action Status",
+        t=result,
+        removeNull=True,
+        headers=["action_id", "endpoint_id", "status", "error_description"],
     )
     assert res.outputs == action_status_get_command_expected_result
     assert res.raw_response == result
@@ -1513,7 +1755,13 @@ def test_run_script_command(requests_mock):
         "request_data": {
             "script_uid": script_uid,
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": json.loads(parameters),
         }
@@ -1556,7 +1804,13 @@ def test_run_script_command_empty_params(requests_mock):
         "request_data": {
             "script_uid": script_uid,
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {},
         }
@@ -1595,7 +1849,13 @@ def test_run_snippet_code_script_command_no_incident_id(requests_mock):
     assert requests_mock.request_history[0].json() == {
         "request_data": {
             "snippet_code": snippet_code,
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
         }
     }
 
@@ -1633,7 +1893,13 @@ def test_run_snippet_code_script_command(requests_mock):
     assert requests_mock.request_history[0].json() == {
         "request_data": {
             "snippet_code": snippet_code,
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
         }
     }
@@ -1653,7 +1919,10 @@ def test_get_script_execution_status_command(requests_mock):
     from CoreIRApiModule import CoreClient, get_script_execution_status_command
 
     api_response = load_test_data("./test_data/get_script_execution_status.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_execution_status/", json=api_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/scripts/get_script_execution_status/",
+        json=api_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     action_id = "1"
@@ -1680,7 +1949,10 @@ def test_get_script_execution_results_command(requests_mock):
     from CoreIRApiModule import CoreClient, get_script_execution_results_command
 
     api_response = load_test_data("./test_data/get_script_execution_results.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_execution_results", json=api_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/scripts/get_script_execution_results",
+        json=api_response,
+    )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     action_id = "1"
@@ -1688,7 +1960,10 @@ def test_get_script_execution_results_command(requests_mock):
 
     response = get_script_execution_results_command(client, args)
 
-    expected_output = {"action_id": int(action_id), "results": api_response.get("reply").get("results")}
+    expected_output = {
+        "action_id": int(action_id),
+        "results": api_response.get("reply").get("results"),
+    }
     assert response[0].outputs == expected_output
     assert requests_mock.request_history[0].json() == {"request_data": {"action_id": action_id}}
 
@@ -1719,7 +1994,10 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     request.addfinalizer(cleanup)
     zip_link = "https://download/example-link"
     zip_filename = "file.zip"
-    requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files", json={"reply": {"DATA": zip_link}})
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files",
+        json={"reply": {"DATA": zip_link}},
+    )
     requests_mock.get(
         f"{Core_URL}/public_api/v1/download/example-link",
         content=b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -1794,7 +2072,13 @@ def test_run_script_execute_commands_command(requests_mock):
         "request_data": {
             "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"commands_list": commands.split(",")},
         }
@@ -1835,7 +2119,13 @@ def test_run_script_delete_file_command(requests_mock):
         "request_data": {
             "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"file_path": args.get("file_path")},
         }
@@ -1876,7 +2166,13 @@ def test_run_script_delete_multiple_files_command(requests_mock):
         "request_data": {
             "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"file_path": "my_file.txt"},
         }
@@ -1885,7 +2181,13 @@ def test_run_script_delete_multiple_files_command(requests_mock):
         "request_data": {
             "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"file_path": "test.txt"},
         }
@@ -1926,7 +2228,13 @@ def test_run_script_file_exists_command(requests_mock):
         "request_data": {
             "script_uid": "414763381b5bfb7b05796c9fe690df46",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"path": args.get("file_path")},
         }
@@ -1967,7 +2275,13 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
         "request_data": {
             "script_uid": "414763381b5bfb7b05796c9fe690df46",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"path": "my_file.txt"},
         }
@@ -1976,7 +2290,13 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
         "request_data": {
             "script_uid": "414763381b5bfb7b05796c9fe690df46",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"path": "test.txt"},
         }
@@ -2017,7 +2337,13 @@ def test_run_script_kill_process_command(requests_mock):
         "request_data": {
             "script_uid": "fd0a544a99a9421222b4f57a11839481",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"process_name": process_name},
         }
@@ -2058,7 +2384,13 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
         "request_data": {
             "script_uid": "fd0a544a99a9421222b4f57a11839481",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"process_name": "process1.exe"},
         }
@@ -2067,20 +2399,48 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
         "request_data": {
             "script_uid": "fd0a544a99a9421222b4f57a11839481",
             "timeout": int(timeout),
-            "filters": [{"field": "endpoint_id_list", "operator": "in", "value": endpoint_ids.split(",")}],
+            "filters": [
+                {
+                    "field": "endpoint_id_list",
+                    "operator": "in",
+                    "value": endpoint_ids.split(","),
+                }
+            ],
             "incident_id": 4,
             "parameters_values": {"process_name": "process2.exe"},
         }
     }
 
 
-CONNECTED_STATUS = {"endpoint_status": "Connected", "is_isolated": "Isolated", "host_name": "TEST", "ip": "1.1.1.1"}
+CONNECTED_STATUS = {
+    "endpoint_status": "Connected",
+    "is_isolated": "Isolated",
+    "host_name": "TEST",
+    "ip": "1.1.1.1",
+}
 
 NO_STATUS = {"is_isolated": "Isolated", "host_name": "TEST", "ip": "1.1.1.1"}
 
-OFFLINE_STATUS = {"endpoint_status": "Offline", "is_isolated": "Isolated", "host_name": "TEST", "ip": "1.1.1.1"}
-PUBLIC_IP = {"endpoint_status": "Connected", "is_isolated": "Isolated", "host_name": "TEST", "ip": [], "public_ip": ["1.1.1.1"]}
-NO_IP = {"endpoint_status": "Connected", "is_isolated": "Isolated", "host_name": "TEST", "ip": [], "public_ip": []}
+OFFLINE_STATUS = {
+    "endpoint_status": "Offline",
+    "is_isolated": "Isolated",
+    "host_name": "TEST",
+    "ip": "1.1.1.1",
+}
+PUBLIC_IP = {
+    "endpoint_status": "Connected",
+    "is_isolated": "Isolated",
+    "host_name": "TEST",
+    "ip": [],
+    "public_ip": ["1.1.1.1"],
+}
+NO_IP = {
+    "endpoint_status": "Connected",
+    "is_isolated": "Isolated",
+    "host_name": "TEST",
+    "ip": [],
+    "public_ip": [],
+}
 
 
 @pytest.mark.parametrize(
@@ -2131,7 +2491,10 @@ def test_remove_blocklist_files_command(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     remove_blocklist_files_response = load_test_data("./test_data/remove_blocklist_files.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/", json=remove_blocklist_files_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/",
+        json=remove_blocklist_files_response,
+    )
     hash_list = [
         "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
         "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565",
@@ -2139,7 +2502,10 @@ def test_remove_blocklist_files_command(requests_mock):
     res = remove_blocklist_files_command(client=client, args={"hash_list": hash_list, "comment": "", "incident_id": 606})
     markdown_data = [{"removed_hashes": file_hash} for file_hash in hash_list]
     assert res.readable_output == tableToMarkdown(
-        "Blocklist Files Removed", markdown_data, headers=["removed_hashes"], headerTransform=pascalToSpace
+        "Blocklist Files Removed",
+        markdown_data,
+        headers=["removed_hashes"],
+        headerTransform=pascalToSpace,
     )
 
 
@@ -2157,13 +2523,22 @@ def test_blocklist_files_command_with_detailed_response(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     blocklist_files_response = load_test_data("./test_data/add_blocklist_files_detailed_response.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/", json=blocklist_files_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        json=blocklist_files_response,
+    )
     hash_list = [
         "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
         "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565",
     ]
     res = blocklist_files_command(
-        client=client, args={"hash_list": hash_list, "comment": "", "incident_id": 606, "detailed_response": "true"}
+        client=client,
+        args={
+            "hash_list": hash_list,
+            "comment": "",
+            "incident_id": 606,
+            "detailed_response": "true",
+        },
     )
     assert res.readable_output == tableToMarkdown("Blocklist Files", res.raw_response)
 
@@ -2182,7 +2557,10 @@ def test_remove_allowlist_files_command(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     remove_allowlist_files_response = load_test_data("./test_data/remove_blocklist_files.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/", json=remove_allowlist_files_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/",
+        json=remove_allowlist_files_response,
+    )
     hash_list = [
         "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
         "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565",
@@ -2190,7 +2568,10 @@ def test_remove_allowlist_files_command(requests_mock):
     res = remove_allowlist_files_command(client=client, args={"hash_list": hash_list, "comment": "", "incident_id": 606})
     markdown_data = [{"removed_hashes": file_hash} for file_hash in hash_list]
     assert res.readable_output == tableToMarkdown(
-        "Allowlist Files Removed", markdown_data, headers=["removed_hashes"], headerTransform=pascalToSpace
+        "Allowlist Files Removed",
+        markdown_data,
+        headers=["removed_hashes"],
+        headerTransform=pascalToSpace,
     )
 
 
@@ -2208,13 +2589,22 @@ def test_allowlist_files_command_with_detailed_response(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     allowlist_files_response = load_test_data("./test_data/add_blocklist_files_detailed_response.json")
-    requests_mock.post(f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/", json=allowlist_files_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/allowlist/",
+        json=allowlist_files_response,
+    )
     hash_list = [
         "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
         "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565",
     ]
     res = allowlist_files_command(
-        client=client, args={"hash_list": hash_list, "comment": "", "incident_id": 606, "detailed_response": "true"}
+        client=client,
+        args={
+            "hash_list": hash_list,
+            "comment": "",
+            "incident_id": 606,
+            "detailed_response": "true",
+        },
     )
     assert res.readable_output == tableToMarkdown("Allowlist Files", res.raw_response)
 
@@ -2463,7 +2853,10 @@ def test_delete_exclusion_command(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
     delete_exclusion_response = load_test_data("./test_data/delete_exclusion_response.json")
     alert_exclusion_id = 42
-    requests_mock.post(f"{Core_URL}/public_api/v1/alerts_exclusion/delete/", json=delete_exclusion_response)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/alerts_exclusion/delete/",
+        json=delete_exclusion_response,
+    )
     res = delete_exclusion_command(client=client, args={"alert_exclusion_id": alert_exclusion_id})
     assert res.readable_output == f"Successfully deleted the following exclusion: {alert_exclusion_id}"
 
@@ -2654,7 +3047,10 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/",
+            json=api_response,
+        )
         request_data_log = mocker.patch.object(demisto, "debug")
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
         args = {
@@ -2685,7 +3081,10 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/",
+            json=api_response,
+        )
         request_data_log = mocker.patch.object(demisto, "debug")
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
         args = {"alert_action_status": "detected (scanned)"}
@@ -2712,7 +3111,10 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/",
+            json=api_response,
+        )
         request_data_log = mocker.patch.object(demisto, "debug")
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
         args = {
@@ -2742,7 +3144,10 @@ class TestGetAlertByFilter:
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/",
+            json=api_response,
+        )
         request_data_log = mocker.patch.object(demisto, "debug")
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
         args = {"alert_source": "first,second", "user_name": "N/A"}
@@ -2780,9 +3185,16 @@ class TestGetAlertByFilter:
             '{"SEARCH_FIELD": "severity","SEARCH_TYPE": "EQ","SEARCH_VALUE": "SEV_040_HIGH"}]}'
         )
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/",
+            json=api_response,
+        )
         request_data_log = mocker.patch.object(demisto, "debug")
-        mocker.patch.object(dateparser, "parse", return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        mocker.patch.object(
+            dateparser,
+            "parse",
+            return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0),
+        )
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
         args = {"custom_filter": custom_filter, "time_frame": "2 days"}
         get_alerts_by_filter_command(client, args)
@@ -2817,9 +3229,16 @@ class TestGetAlertByFilter:
 
         custom_filter = '{"OR": [{"SEARCH_FIELD": "actor_process_image_sha256","SEARCH_TYPE": "EQ","SEARCH_VALUE": "222"}]}'
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/",
+            json=api_response,
+        )
         request_data_log = mocker.patch.object(demisto, "debug")
-        mocker.patch.object(dateparser, "parse", return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        mocker.patch.object(
+            dateparser,
+            "parse",
+            return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0),
+        )
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
         args = {"custom_filter": custom_filter, "time_frame": "2 days"}
         get_alerts_by_filter_command(client, args)
@@ -2831,6 +3250,137 @@ class TestGetAlertByFilter:
             "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ',"
             " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]
         )
+
+
+class TestGetIssueByFilter:
+    @freeze_time("2022-05-03 11:00:00 GMT")
+    def test_get_alert_by_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - timeframe, start_time, end_time
+        When:
+            - Running get_alerts_by_filter command
+        Then:
+            - Verify expected output
+            - Ensure request filter sent as expected
+        """
+        from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+        api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+        args = {
+            "start_time": "2018-11-06T08:56:41",
+            "end_time": "2018-11-06T08:56:41",
+            "limit": "2",
+        }
+        response = get_issues_by_filter_command(client, args)
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
+
+    def test_get_issues_by_alert_action_status_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - Alert with action status of SCANNED
+        When:
+            - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
+        Then:
+            - Verify the alert in the output contains alert_action_status and alert_action_status_readable
+            - Ensure request filter contains the alert_action_status as SCANNED
+        """
+        from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+        api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+        request_data_log = mocker.patch.object(demisto, "debug")
+
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+        args = {"issue_action_status": "detected (scanned)"}
+
+        response = get_issues_by_filter_command(client, args)
+
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
+        assert response[0].outputs[0].get("alert_action_status", {}) == "SCANNED"
+        assert response[0].outputs[0].get("alert_action_status_readable", {}) == "detected (scanned)"
+
+        # Verify the request data was logged and contains the correct filter
+        assert request_data_log.call_count > 0
+        logged_request = request_data_log.call_args_list[0][0][0]
+        assert "SEARCH_FIELD': 'alert_action_status'" in logged_request
+        assert "SEARCH_TYPE': 'EQ'" in logged_request
+        assert "SEARCH_VALUE': 'SCANNED'" in logged_request
+
+    def test_get_issues_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - alert_source
+        When:
+            - Running get_alerts_by_filter command
+        Then:
+            - Verify expected output
+            - Ensure request filter sent as expected (connected with OR operator)
+        """
+        from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+        api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+        request_data_log = mocker.patch.object(demisto, "debug")
+
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+        args = {"issue_source": "first,second"}
+
+        response = get_issues_by_filter_command(client, args)
+
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
+        # Verify the request data was logged and contains the correct filter
+        assert request_data_log.call_count > 0
+        logged_request = request_data_log.call_args_list[0][0][0]
+        assert "'SEARCH_FIELD': 'alert_source'" in logged_request
+        assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
+        assert "'SEARCH_VALUE': 'first'" in logged_request
+        assert "'SEARCH_VALUE': 'second'" in logged_request
+
+    def test_get_issues_by_filter_command_multiple_args(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - alert_source
+            - user_name
+        When:
+            - Running get_alerts_by_filter command
+        Then:
+            - Verify expected output
+            - Ensure request filter sent as expected (connected with AND operator)
+        """
+        from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+        api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+        request_data_log = mocker.patch.object(demisto, "debug")
+
+        client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+        args = {"issue_source": "first,second", "user_name": "N/A"}
+
+        response = get_issues_by_filter_command(client, args)
+
+        assert response[0].outputs[0].get("internal_id", {}) == 33333
+
+        # Verify the request data was logged and contains the correct filter
+        assert request_data_log.call_count > 0
+        logged_request = request_data_log.call_args_list[0][0][0]
+
+        # Check for source filter
+        assert "'SEARCH_FIELD': 'alert_source'" in logged_request
+        assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
+        assert "'SEARCH_VALUE': 'first'" in logged_request
+        assert "'SEARCH_VALUE': 'second'" in logged_request
+
+        # Check for user name filter
+        assert "'SEARCH_FIELD': 'actor_effective_username'" in logged_request
+        assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
+        assert "'SEARCH_VALUE': 'N/A'" in logged_request
 
 
 class TestPollingCommands:
@@ -2901,15 +3451,28 @@ class TestPollingCommands:
 
         client = CoreClient(base_url="https://test_api.com/public_api/v1", headers={})
 
-        mocker.patch.object(client, "_http_request", side_effect=self.create_mocked_responses(status_count))
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=self.create_mocked_responses(status_count),
+        )
         mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
         command_result = script_run_polling_command({"endpoint_ids": "1", "script_uid": "1"}, client)
 
         assert command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
-        assert command_result.outputs == {"action_id": 1, "endpoints_count": 1, "status": 1}
+        assert command_result.outputs == {
+            "action_id": 1,
+            "endpoints_count": 1,
+            "status": 1,
+        }
 
-        polling_args = {"endpoint_ids": "1", "script_uid": "1", "action_id": "1", "hide_polling_output": True}
+        polling_args = {
+            "endpoint_ids": "1",
+            "script_uid": "1",
+            "action_id": "1",
+            "hide_polling_output": True,
+        }
 
         command_result = script_run_polling_command(polling_args, client)
         # if scheduled_command is set, it means that command should still poll
@@ -2955,7 +3518,12 @@ class TestPollingCommands:
             "Successfully added tag test to endpoint(s) ['1', '2']",
         ),
         (
-            {"endpoint_ids": "1,2", "tag": "test", "hostname": "hostname", "group_name": "test_group"},
+            {
+                "endpoint_ids": "1,2",
+                "tag": "test",
+                "hostname": "hostname",
+                "group_name": "test_group",
+            },
             [
                 {"field": "group_name", "operator": "in", "value": ["test_group"]},
                 {"field": "hostname", "operator": "in", "value": ["hostname"]},
@@ -2979,7 +3547,12 @@ class TestPollingCommands:
             "Successfully removed tag test from endpoint(s) ['1', '2']",
         ),
         (
-            {"endpoint_ids": "1,2", "tag": "test", "isolate": "isolated", "alias_name": "alias_name"},
+            {
+                "endpoint_ids": "1,2",
+                "tag": "test",
+                "isolate": "isolated",
+                "alias_name": "alias_name",
+            },
             [
                 {"field": "alias", "operator": "in", "value": ["alias_name"]},
                 {"field": "isolate", "operator": "in", "value": ["isolated"]},
@@ -3020,7 +3593,10 @@ excepted_output_1 = {
     "filters": [{"field": "endpoint_status", "operator": "IN", "value": ["connected"]}],
     "new_alias_name": "test",
 }
-excepted_output_2 = {"filters": [{"field": "endpoint_status", "operator": "IN", "value": ["connected"]}], "new_alias_name": ""}
+excepted_output_2 = {
+    "filters": [{"field": "endpoint_status", "operator": "IN", "value": ["connected"]}],
+    "new_alias_name": "",
+}
 
 
 @pytest.mark.parametrize("input, expected_output", [("test", excepted_output_1), ('""', excepted_output_2)])
@@ -3154,7 +3730,12 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
     ],
 )
 def test_list_risky_users_or_hosts_command(
-    mocker, command: str, func_http: str, args: dict[str, str], excepted_calls: dict[str, int], path_test_data: str
+    mocker,
+    command: str,
+    func_http: str,
+    args: dict[str, str],
+    excepted_calls: dict[str, int],
+    path_test_data: str,
 ):
     """
     Test case to verify the behavior of the 'list_risky_users_or_hosts_command' function.
@@ -3255,7 +3836,8 @@ def test_list_risky_users_hosts_command_no_license_warning(mocker: MockerFixture
         client,
         client_func,
         side_effect=DemistoException(
-            message="An error occurred while processing XDR public API, No identity threat", res=MockException(500)
+            message="An error occurred while processing XDR public API, No identity threat",
+            res=MockException(500),
         ),
     )
     import CoreIRApiModule
@@ -3311,8 +3893,16 @@ def test_list_user_groups_command(mocker):
                 "source": "Custom",
             },
             [
-                {"User email": "dummy1@gmail.com", "Group Name": "Group2", "Group Description": None},
-                {"User email": "dummy2@gmail.com", "Group Name": "Group2", "Group Description": None},
+                {
+                    "User email": "dummy1@gmail.com",
+                    "Group Name": "Group2",
+                    "Group Description": None,
+                },
+                {
+                    "User email": "dummy2@gmail.com",
+                    "Group Name": "Group2",
+                    "Group Description": None,
+                },
             ],
         )
     ],
@@ -3336,7 +3926,10 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
 @pytest.mark.parametrize(
     "test_data, excepted_error",
     [
-        ({"group_names": "test"}, "Error: Group test was not found. Full error message: Group 'test' was not found"),
+        (
+            {"group_names": "test"},
+            "Error: Group test was not found. Full error message: Group 'test' was not found",
+        ),
         (
             {"group_names": "test, test2"},
             "Error: Group test was not found. Note: If you sent more than one group name, "
@@ -3456,14 +4049,21 @@ def test_list_roles_command(mocker, role_data: dict[str, str]) -> None:
         ),
         (
             "set_user_role",
-            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {
+                "user_emails": "test1@example.com,test2@example.com",
+                "role_name": "admin",
+            },
             {"reply": {"update_count": "2"}},
             "Role was updated successfully for 2 users.",
         ),
     ],
 )
 def test_change_user_role_command_happy_path(
-    mocker, func: str, args: dict[str, str], update_count: dict[str, dict[str, str]], expected_output: str
+    mocker,
+    func: str,
+    args: dict[str, str],
+    update_count: dict[str, dict[str, str]],
+    expected_output: str,
 ):
     """
     Given:
@@ -3495,14 +4095,21 @@ def test_change_user_role_command_happy_path(
         ),
         (
             "set_user_role",
-            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {
+                "user_emails": "test1@example.com,test2@example.com",
+                "role_name": "admin",
+            },
             {"reply": {"update_count": 0}},
             "No user role has been updated.",
         ),
     ],
 )
 def test_change_user_role_command_with_raise(
-    mocker, func: str, args: dict[str, str], update_count: dict[str, dict[str, int]], expected_output: str
+    mocker,
+    func: str,
+    args: dict[str, str],
+    update_count: dict[str, dict[str, int]],
+    expected_output: str,
 ):
     client = CoreClient("test", {})
     mocker.patch.object(CoreClient, func, return_value=update_count)
@@ -3553,10 +4160,15 @@ def test_generate_files_dict(mocker):
     )
 
     res = test_client.generate_files_dict(
-        endpoint_id_list=["1", "2", "3"], file_path_list=["fake\\path1", "fake\\path2", "fake\\path3"]
+        endpoint_id_list=["1", "2", "3"],
+        file_path_list=["fake\\path1", "fake\\path2", "fake\\path3"],
     )
 
-    assert res == {"macos": ["fake\\path1"], "linux": ["fake\\path2"], "windows": ["fake\\path3"]}
+    assert res == {
+        "macos": ["fake\\path1"],
+        "linux": ["fake\\path2"],
+        "windows": ["fake\\path3"],
+    }
 
 
 def test_get_script_execution_result_files(mocker):
@@ -3569,7 +4181,9 @@ def test_get_script_execution_result_files(mocker):
     - Validate that the url_suffix generated correctly
     """
     http_request = mocker.patch.object(
-        test_client, "_http_request", return_value={"reply": {"DATA": "https://test_api/public_api/v1/download/test"}}
+        test_client,
+        "_http_request",
+        return_value={"reply": {"DATA": "https://test_api/public_api/v1/download/test"}},
     )
     test_client.get_script_execution_result_files(action_id="1", endpoint_id="1")
     http_request.assert_called_with(method="GET", url_suffix="download/test", resp_type="response")
@@ -3641,7 +4255,10 @@ class TestGetIncidents:
         """
 
         get_incidents_list_response = load_test_data("./test_data/get_incidents_list.json")
-        requests_mock.post(f"{Core_URL}/public_api/v1/incidents/get_incidents/", json=get_incidents_list_response)
+        requests_mock.post(
+            f"{Core_URL}/public_api/v1/incidents/get_incidents/",
+            json=get_incidents_list_response,
+        )
 
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
@@ -3676,7 +4293,15 @@ class TestGetIncidents:
 
     @freeze_time("2024-01-15 17:00:00 UTC")
     @pytest.mark.parametrize(
-        "starred, expected_starred", [(True, True), (False, False), ("true", True), ("false", False), (None, None), ("", None)]
+        "starred, expected_starred",
+        [
+            (True, True),
+            (False, False),
+            ("true", True),
+            ("false", False),
+            (None, None),
+            ("", None),
+        ],
     )
     def test_get_starred_incident_list_from_get(self, mocker, requests_mock, starred, expected_starred):
         """
@@ -3687,19 +4312,28 @@ class TestGetIncidents:
 
         get_incidents_list_response = load_test_data("./test_data/get_starred_incidents_list.json")
         get_incidents_request = requests_mock.post(
-            f"{Core_URL}/public_api/v1/incidents/get_incidents/", json=get_incidents_list_response
+            f"{Core_URL}/public_api/v1/incidents/get_incidents/",
+            json=get_incidents_list_response,
         )
         mocker.patch.object(demisto, "command", return_value="get-incidents")
 
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
-        args = {"incident_id_list": "1 day", "starred": starred, "starred_incidents_fetch_window": "3 days"}
+        args = {
+            "incident_id_list": "1 day",
+            "starred": starred,
+            "starred_incidents_fetch_window": "3 days",
+        }
 
         starred_filter_true = {"field": "starred", "operator": "eq", "value": True}
 
         starred_filter_false = {"field": "starred", "operator": "eq", "value": False}
 
-        starred_fetch_window_filter = {"field": "creation_time", "operator": "gte", "value": 1705078800000}
+        starred_fetch_window_filter = {
+            "field": "creation_time",
+            "operator": "gte",
+            "value": 1705078800000,
+        }
 
         _, outputs, _ = get_incidents_command(client, args)
 
@@ -3729,18 +4363,27 @@ class TestGetIncidents:
         get_incidents_list_response = load_test_data("./test_data/get_starred_incidents_list.json")
         mocker.patch.object(demisto, "command", return_value="fetch-incidents")
         get_incidents_request = requests_mock.post(
-            f"{Core_URL}/public_api/v1/incidents/get_incidents/", json=get_incidents_list_response
+            f"{Core_URL}/public_api/v1/incidents/get_incidents/",
+            json=get_incidents_list_response,
         )
 
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
-        args = {"incident_id_list": "1 day", "starred": starred, "starred_incidents_fetch_window": "3 days"}
+        args = {
+            "incident_id_list": "1 day",
+            "starred": starred,
+            "starred_incidents_fetch_window": "3 days",
+        }
 
         starred_filter_true = {"field": "starred", "operator": "eq", "value": True}
 
         starred_filter_false = {"field": "starred", "operator": "eq", "value": False}
 
-        starred_fetch_window_filter = {"field": "creation_time", "operator": "gte", "value": 1705078800000}
+        starred_fetch_window_filter = {
+            "field": "creation_time",
+            "operator": "gte",
+            "value": 1705078800000,
+        }
 
         _, outputs, _ = get_incidents_command(client, args)
 
@@ -3762,16 +4405,26 @@ class TestGetIncidents:
         get_incidents_list_response = load_test_data("./test_data/get_starred_incidents_list.json")
         mocker.patch.object(demisto, "command", return_value="fetch-incidents")
         handle_fetch_starred_mock = mocker.patch.object(
-            CoreClient, "handle_fetch_starred_incidents", return_value=get_incidents_list_response["reply"]["incidents"]
+            CoreClient,
+            "handle_fetch_starred_incidents",
+            return_value=get_incidents_list_response["reply"]["incidents"],
         )
 
         client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
-        args = {"incident_id_list": "1 day", "starred": starred, "starred_incidents_fetch_window": "3 days"}
+        args = {
+            "incident_id_list": "1 day",
+            "starred": starred,
+            "starred_incidents_fetch_window": "3 days",
+        }
 
         starred_filter_true = {"field": "starred", "operator": "eq", "value": True}
 
-        starred_fetch_window_filter = {"field": "creation_time", "operator": "gte", "value": 1705078800000}
+        starred_fetch_window_filter = {
+            "field": "creation_time",
+            "operator": "gte",
+            "value": 1705078800000,
+        }
 
         _, outputs, _ = get_incidents_command(client, args)
 
@@ -3946,13 +4599,23 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     from CoreIRApiModule import handle_outgoing_issue_closure
 
     mocker.patch.object(
-        demisto, "params", return_value={"mirror_direction": "Both", "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping}
+        demisto,
+        "params",
+        return_value={
+            "mirror_direction": "Both",
+            "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping,
+        },
     )
 
     possible_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ["CUSTOM_CLOSE_REASON"]
     for i, close_reason in enumerate(possible_xsoar_close_reasons):
         remote_args = UpdateRemoteSystemArgs(
-            {"delta": {"closeReason": close_reason}, "status": 2, "inc_status": 2, "data": {"status": "other"}}
+            {
+                "delta": {"closeReason": close_reason},
+                "status": 2,
+                "inc_status": 2,
+                "data": {"status": "other"},
+            }
         )
         # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr When: improper mapping is provided).
         with capfd.disabled():
@@ -3964,7 +4627,13 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
 @pytest.mark.parametrize(
     "data, expected_result",
-    [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}), (b"XXXXXXX", b"XXXXXXX")],
+    [
+        (
+            '{"reply": {"container": ["1.1.1.1"]}}',
+            {"reply": {"container": ["1.1.1.1"]}},
+        ),
+        (b"XXXXXXX", b"XXXXXXX"),
+    ],
 )
 def test_http_request_demisto_call(mocker, data, expected_result):
     """
@@ -3987,7 +4656,11 @@ def test_http_request_demisto_call(mocker, data, expected_result):
     mocker.patch.object(
         demisto,
         "_apiCall",
-        return_value={"name": "/api/webapp/public_api/v1/distributions/get_versions/", "status": 200, "data": data},
+        return_value={
+            "name": "/api/webapp/public_api/v1/distributions/get_versions/",
+            "status": 200,
+            "data": data,
+        },
     )
     res = client._http_request(method="POST", url_suffix="/distributions/get_versions/")
     assert expected_result == res
@@ -4008,7 +4681,11 @@ def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
     """
     import base64
 
-    from CoreIRApiModule import ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM, ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, CoreClient
+    from CoreIRApiModule import (
+        ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM,
+        ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
+        CoreClient,
+    )
 
     test_bin_data = b"test bin data"
     client = CoreClient(
@@ -4070,7 +4747,10 @@ def test_terminate_process_command(mocker):
         ],
     )
 
-    result = terminate_process_command(client=client, args={"agent_id": "1", "instance_id": ["instance_id_1", "instance_id_2"]})
+    result = terminate_process_command(
+        client=client,
+        args={"agent_id": "1", "instance_id": ["instance_id_1", "instance_id_2"]},
+    )
     assert result.readable_output == (
         "### Action terminate process created on instance ids:"
         " instance_id_1, instance_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n"
@@ -4115,7 +4795,8 @@ def test_terminate_causality_command(mocker):
     )
 
     result = terminate_causality_command(
-        client=client, args={"agent_id": "1", "causality_id": ["causality_id_1", "causality_id_2"]}
+        client=client,
+        args={"agent_id": "1", "causality_id": ["causality_id_1", "causality_id_2"]},
     )
     assert result.readable_output == (
         "### Action terminate causality created on causality_id_1,causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n"
@@ -4139,7 +4820,12 @@ def test_run_polling_command_values_raise_error(mocker):
     from CommonServerPython import DemistoException, ScheduledCommand
     from CoreIRApiModule import run_polling_command
 
-    polling_args = {"endpoint_ids": "1", "command_decision_field": "action_id", "action_id": "1", "hide_polling_output": True}
+    polling_args = {
+        "endpoint_ids": "1",
+        "command_decision_field": "action_id",
+        "action_id": "1",
+        "hide_polling_output": True,
+    }
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
     client = Mock()
     mock_command_results = Mock()
@@ -4167,7 +4853,10 @@ def test_run_polling_command_values_raise_error(mocker):
     "exception_instance, command, expected_result",
     [
         (
-            DemistoException("An error occurred while processing XDR public API: No identity threat", res=Mock(status_code=500)),
+            DemistoException(
+                "An error occurred while processing XDR public API: No identity threat",
+                res=Mock(status_code=500),
+            ),
             "user",
             (
                 "Please confirm the XDR Identity Threat Module is enabled.\nFull error message: "
@@ -4187,11 +4876,18 @@ def test_run_polling_command_values_raise_error(mocker):
             "user",
             "The user test_user was not found",
         ),
-        (Exception("\"err_code\": 500: The id 'test_user' was not found"), "user", "The user test_user was not found"),
+        (
+            Exception("\"err_code\": 500: The id 'test_user' was not found"),
+            "user",
+            "The user test_user was not found",
+        ),
         (DemistoException("Some other error", res=Mock(status_code=500)), "user", None),
         (Exception("Some other error"), "user", None),
         (
-            DemistoException("An error occurred while processing XDR public API: No identity threat", res=Mock(status_code=500)),
+            DemistoException(
+                "An error occurred while processing XDR public API: No identity threat",
+                res=Mock(status_code=500),
+            ),
             "host",
             (
                 "Please confirm the XDR Identity Threat Module is enabled.\nFull error message:"
@@ -4213,7 +4909,11 @@ def test_run_polling_command_values_raise_error(mocker):
             "host",
             "The host test_host was not found",
         ),
-        (Exception("\"err_code\": 500: The id 'test_host' was not found"), "host", "The host test_host was not found"),
+        (
+            Exception("\"err_code\": 500: The id 'test_host' was not found"),
+            "host",
+            "The host test_host was not found",
+        ),
     ],
 )
 def test_list_risky_users_or_host_command(exception_instance, command, expected_result):
@@ -4356,17 +5056,867 @@ def test_create_filter_from_args():
         "AND": [
             {
                 "OR": [
-                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_1"},
-                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_2"},
-                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_3"},
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "test_1",
+                    },
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "test_2",
+                    },
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "test_3",
+                    },
                 ]
             },
             {
                 "AND": [
-                    {"SEARCH_FIELD": "status.progress", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "STATUS_020_UNDER_INVESTIGATION"},
-                    {"SEARCH_FIELD": "status.progress", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "STATUS_010_NEW"},
+                    {
+                        "SEARCH_FIELD": "status.progress",
+                        "SEARCH_TYPE": "NEQ",
+                        "SEARCH_VALUE": "STATUS_020_UNDER_INVESTIGATION",
+                    },
+                    {
+                        "SEARCH_FIELD": "status.progress",
+                        "SEARCH_TYPE": "NEQ",
+                        "SEARCH_VALUE": "STATUS_010_NEW",
+                    },
                 ]
             },
         ]
     }
     assert expected_result == query
+
+
+class TestFilterBuilder:
+    def test_add_field_without_mapper(self):
+        """
+        Given:
+            A FilterBuilder instance and field parameters without a mapper.
+        When:
+            The add_field method is called with name, type, and values.
+        Then:
+            A new Field should be added to filter_fields with the original values.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        values = ["value1", "value2"]
+
+        filter_builder.add_field("test_field", FilterType.EQ, values)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert field.field_name == "test_field"
+        assert field.filter_type == FilterType.EQ
+        assert field.values == values
+
+    def test_add_field_with_mapper_list_values(self):
+        """
+        Given:
+            A FilterBuilder instance, field parameters with a mapper, and list values.
+        When:
+            The add_field method is called with values that exist in the mapper.
+        Then:
+            A new Field should be added with mapped values only.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        values = ["low", "high", "unknown"]
+        mapper = {"low": "SEV_040_LOW", "high": "SEV_060_HIGH"}
+
+        filter_builder.add_field("severity", FilterType.EQ, values, mapper)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert field.field_name == "severity"
+        assert field.filter_type == FilterType.EQ
+        assert field.values == ["SEV_040_LOW", "SEV_060_HIGH"]
+
+    def test_add_field_with_mapper_single_value(self):
+        """
+        Given:
+            A FilterBuilder instance, field parameters with a mapper, and a single value.
+        When:
+            The add_field method is called with a single value that exists in the mapper.
+        Then:
+            The single value should be converted to a list and mapped correctly.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        value = "medium"
+        mapper = {"medium": "SEV_050_MEDIUM", "high": "SEV_060_HIGH"}
+
+        filter_builder.add_field("severity", FilterType.EQ, value, mapper)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert field.field_name == "severity"
+        assert field.filter_type == FilterType.EQ
+        assert field.values == ["SEV_050_MEDIUM"]
+
+    def test_add_field_with_mapper_no_matching_values(self):
+        """
+        Given:
+            A FilterBuilder instance, field parameters with a mapper, and values not in the mapper.
+        When:
+            The add_field method is called with values that don't exist in the mapper.
+        Then:
+            A new Field should be added with an empty list of processed values.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        values = ["unknown", "invalid"]
+        mapper = {"low": "SEV_040_LOW", "high": "SEV_060_HIGH"}
+
+        filter_builder.add_field("severity", FilterType.EQ, values, mapper)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert field.field_name == "severity"
+        assert field.filter_type == FilterType.EQ
+        assert field.values == []
+
+    def test_add_field_with_mappings_single_mapped_value(self):
+        """
+        Given: A FilterBuilder instance and a single mapped value that exists in the mappings dictionary.
+        When: The add_field_with_mappings method is called with a mapped value.
+        Then: A MappedValuesField should be added to the filter_fields list with the correct parameters.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        mappings = {
+            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
+            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
+        }
+
+        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, "unassigned", mappings)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert isinstance(field, FilterBuilder.MappedValuesField)
+        assert field.field_name == "assignee"
+        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
+        assert field.values == "unassigned"
+        assert field.mappings == mappings
+
+    def test_add_field_with_mappings_multiple_mapped_values(self):
+        """
+        Given: A FilterBuilder instance and multiple values that exist in the mappings dictionary.
+        When: The add_field_with_mappings method is called with a list of mapped values.
+        Then: A MappedValuesField should be added with the list of values and correct mappings.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        mappings = {
+            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
+            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
+            "pending": FilterBuilder.FilterType.CONTAINS,
+        }
+        values = ["unassigned", "assigned"]
+
+        filter_builder.add_field_with_mappings("status", FilterBuilder.FilterType.EQ, values, mappings)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert isinstance(field, FilterBuilder.MappedValuesField)
+        assert field.field_name == "status"
+        assert field.filter_type == FilterBuilder.FilterType.EQ
+        assert field.values == values
+        assert field.mappings == mappings
+
+    def test_add_field_with_mappings_unmapped_value(self):
+        """
+        Given: A FilterBuilder instance and a value that does not exist in the mappings dictionary.
+        When: The add_field_with_mappings method is called with an unmapped value.
+        Then: A MappedValuesField should be added with the default filter type for unmapped values.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        mappings = {
+            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
+            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
+        }
+
+        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, "john.doe", mappings)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert isinstance(field, FilterBuilder.MappedValuesField)
+        assert field.field_name == "assignee"
+        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
+        assert field.values == "john.doe"
+        assert field.mappings == mappings
+
+    def test_add_field_with_mappings_mixed_values(self):
+        """
+        Given: A FilterBuilder instance and a list containing both mapped and unmapped values.
+        When: The add_field_with_mappings method is called with mixed value types.
+        Then: A MappedValuesField should be added containing all values with their respective mappings.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        mappings = {
+            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
+            "assigned": FilterBuilder.FilterType.NIS_EMPTY,
+        }
+        values = ["unassigned", "john.doe", "assigned"]
+
+        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, values, mappings)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert isinstance(field, FilterBuilder.MappedValuesField)
+        assert field.field_name == "assignee"
+        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
+        assert field.values == values
+        assert field.mappings == mappings
+
+    def test_add_field_with_mappings_empty_mappings(self):
+        """
+        Given: A FilterBuilder instance and an empty mappings dictionary.
+        When: The add_field_with_mappings method is called with empty mappings.
+        Then: A MappedValuesField should be added with the empty mappings dictionary.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        mappings = {}
+
+        filter_builder.add_field_with_mappings("field", FilterBuilder.FilterType.EQ, "value", mappings)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert isinstance(field, FilterBuilder.MappedValuesField)
+        assert field.field_name == "field"
+        assert field.filter_type == FilterBuilder.FilterType.EQ
+        assert field.values == "value"
+        assert field.mappings == {}
+
+    def test_add_field_with_mappings_none_value(self):
+        """
+        Given: A FilterBuilder instance and None as the value parameter.
+        When: The add_field_with_mappings method is called with None value.
+        Then: A MappedValuesField should be added with None as the values.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        mappings = {
+            "unassigned": FilterBuilder.FilterType.IS_EMPTY,
+        }
+
+        filter_builder.add_field_with_mappings("assignee", FilterBuilder.FilterType.CONTAINS, None, mappings)
+
+        assert len(filter_builder.filter_fields) == 1
+        field = filter_builder.filter_fields[0]
+        assert isinstance(field, FilterBuilder.MappedValuesField)
+        assert field.field_name == "assignee"
+        assert field.filter_type == FilterBuilder.FilterType.CONTAINS
+        assert field.values is None
+        assert field.mappings == mappings
+
+    def test_add_time_range_field_with_valid_start_and_end_time(self, mocker: MockerFixture):
+        """
+        Given: A FilterBuilder instance and valid start_time and end_time strings.
+        When: add_time_range_field is called with both start and end times.
+        Then: The method should add a RANGE field with from and to values to the filter.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        # Arrange
+        filter_builder = FilterBuilder()
+        mock_prepare_time_range = mocker.patch.object(
+            filter_builder,
+            "_prepare_time_range",
+            return_value=(1640995200000, 1641081600000),
+        )
+        mock_add_field = mocker.patch.object(filter_builder, "add_field")
+
+        # Act
+        filter_builder.add_time_range_field("test_field", "2022-01-01T00:00:00", "2022-01-02T00:00:00")
+
+        # Assert
+        mock_prepare_time_range.assert_called_once_with("2022-01-01T00:00:00", "2022-01-02T00:00:00")
+        mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 1640995200000, "to": 1641081600000})
+
+    def test_add_time_range_field_with_none_start_time(self, mocker: MockerFixture):
+        """
+        Given: A FilterBuilder instance with None start_time and valid end_time.
+        When: add_time_range_field is called with start_time as None.
+        Then: The method should not add any field to the filter since start is None.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        # Arrange
+        filter_builder = FilterBuilder()
+        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(0, 1641081600000))
+        mock_add_field = mocker.patch.object(filter_builder, "add_field")
+
+        # Act
+        filter_builder.add_time_range_field("test_field", None, "2022-01-02T00:00:00")
+
+        # Assert
+        mock_prepare_time_range.assert_called_once_with(None, "2022-01-02T00:00:00")
+        mock_add_field.assert_called_once_with("test_field", FilterType.RANGE, {"from": 0, "to": 1641081600000})
+
+    def test_add_time_range_field_with_none_end_time(self, mocker: MockerFixture):
+        """
+        Given: A FilterBuilder instance with valid start_time and None end_time.
+        When: add_time_range_field is called with end_time as None.
+        Then: The method should not add any field to the filter since end is None.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        # Arrange
+        filter_builder = FilterBuilder()
+        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(1640995200000, None))
+        mock_add_field = mocker.patch.object(filter_builder, "add_field")
+
+        # Act
+        filter_builder.add_time_range_field("test_field", "2022-01-01T00:00:00", None)
+
+        # Assert
+        mock_prepare_time_range.assert_called_once_with("2022-01-01T00:00:00", None)
+        mock_add_field.assert_not_called()
+
+    def test_add_time_range_field_with_both_none_times(self, mocker: MockerFixture):
+        """
+        Given: A FilterBuilder instance with both start_time and end_time as None.
+        When: add_time_range_field is called with both times as None.
+        Then: The method should not add any field to the filter since both values are None.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        # Arrange
+        filter_builder = FilterBuilder()
+        mock_prepare_time_range = mocker.patch.object(filter_builder, "_prepare_time_range", return_value=(None, None))
+        mock_add_field = mocker.patch.object(filter_builder, "add_field")
+
+        # Act
+        filter_builder.add_time_range_field("test_field", None, None)
+
+        # Assert
+        mock_prepare_time_range.assert_called_once_with(None, None)
+        mock_add_field.assert_not_called()
+
+    def test_to_dict_empty_filter_fields(self):
+        """
+        Given: A FilterBuilder instance with no filter fields.
+        When: The to_dict method is called.
+        Then: An empty dictionary should be returned.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        filter_builder = FilterBuilder()
+        result = filter_builder.to_dict()
+        assert result == {}
+
+    def test_to_dict_single_field_single_value(self):
+        """
+        Given: A FilterBuilder with one field containing a single non-list value.
+        When: The to_dict method is called.
+        Then: A properly structured filter dictionary with one search object should be returned.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        filter_builder.add_field("test_field", FilterType.EQ, "test_value")
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "test_field",
+                    FilterBuilder.TYPE: FilterType.EQ.value,
+                    FilterBuilder.VALUE: "test_value",
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_single_field_multiple_values(self):
+        """
+        Given: A FilterBuilder with one field containing multiple values in a list.
+        When: The to_dict method is called.
+        Then: A filter dictionary with OR operator grouping multiple search values should be returned.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        filter_builder.add_field("test_field", FilterType.EQ, ["value1", "value2"])
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterType.EQ.operator: [
+                        {
+                            FilterBuilder.FIELD: "test_field",
+                            FilterBuilder.TYPE: FilterType.EQ.value,
+                            FilterBuilder.VALUE: "value1",
+                        },
+                        {
+                            FilterBuilder.FIELD: "test_field",
+                            FilterBuilder.TYPE: FilterType.EQ.value,
+                            FilterBuilder.VALUE: "value2",
+                        },
+                    ]
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_multiple_fields(self):
+        """
+        Given: A FilterBuilder with multiple fields each containing different values.
+        When: The to_dict method is called.
+        Then: A filter dictionary with AND operator containing all field filters should be returned.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        filter_builder.add_field("field1", FilterType.EQ, "value1")
+        filter_builder.add_field("field2", FilterType.CONTAINS, "value2")
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "field1",
+                    FilterBuilder.TYPE: FilterType.EQ.value,
+                    FilterBuilder.VALUE: "value1",
+                },
+                {
+                    FilterBuilder.FIELD: "field2",
+                    FilterBuilder.TYPE: FilterType.CONTAINS.value,
+                    FilterBuilder.VALUE: "value2",
+                },
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_with_none_values_filtered_out(self):
+        """
+        Given: A FilterBuilder with fields containing None values mixed with valid values.
+        When: The to_dict method is called.
+        Then: None values should be filtered out and only valid values should appear in the result.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        filter_builder.add_field("test_field", FilterType.EQ, [None, "valid_value", None])
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "test_field",
+                    FilterBuilder.TYPE: FilterType.EQ.value,
+                    FilterBuilder.VALUE: "valid_value",
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_with_all_none_values(self):
+        """
+        Given: A FilterBuilder with fields containing only None values.
+        When: The to_dict method is called.
+        Then: An empty dictionary should be returned since all values are filtered out.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        filter_builder.add_field("test_field", FilterType.EQ, [None, None])
+
+        result = filter_builder.to_dict()
+        assert result == {}
+
+    def test_to_dict_with_mapped_values_field_normal_value(self):
+        """
+        Given: A MappedValuesField with a value that is not in the mappings dictionary.
+        When: The to_dict method is called.
+        Then: The default filter type should be used for the unmapped value.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        mappings = {"special": FilterType.IS_EMPTY}
+        filter_builder.add_field_with_mappings("test_field", FilterType.EQ, "normal_value", mappings)
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "test_field",
+                    FilterBuilder.TYPE: FilterType.EQ.value,
+                    FilterBuilder.VALUE: "normal_value",
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_with_mapped_values_field_is_empty(self):
+        """
+        Given: A MappedValuesField with a value mapped to IS_EMPTY filter type.
+        When: The to_dict method is called.
+        Then: The mapped filter type should be used and value should be set to "<No Value>".
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        mappings = {"unassigned": FilterType.IS_EMPTY}
+        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, "unassigned", mappings)
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "assignee",
+                    FilterBuilder.TYPE: FilterType.IS_EMPTY.value,
+                    FilterBuilder.VALUE: "<No Value>",
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_with_mapped_values_field_nis_empty(self):
+        """
+        Given: A MappedValuesField with a value mapped to NIS_EMPTY filter type.
+        When: The to_dict method is called.
+        Then: The mapped filter type should be used and value should be set to "<No Value>".
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        mappings = {"assigned": FilterType.NIS_EMPTY}
+        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, "assigned", mappings)
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "assignee",
+                    FilterBuilder.TYPE: FilterType.NIS_EMPTY.value,
+                    FilterBuilder.VALUE: "<No Value>",
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_with_mixed_mapped_and_normal_values(self):
+        """
+        Given: A MappedValuesField with both mapped and unmapped values in the same field.
+        When: The to_dict method is called.
+        Then: Each value should use its appropriate filter type and the results should be grouped with OR operator.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        mappings = {"unassigned": FilterType.IS_EMPTY}
+        filter_builder.add_field_with_mappings("assignee", FilterType.EQ, ["unassigned", "john.doe"], mappings)
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterType.EQ.operator: [
+                        {
+                            FilterBuilder.FIELD: "assignee",
+                            FilterBuilder.TYPE: FilterType.IS_EMPTY.value,
+                            FilterBuilder.VALUE: "<No Value>",
+                        },
+                        {
+                            FilterBuilder.FIELD: "assignee",
+                            FilterBuilder.TYPE: FilterType.EQ.value,
+                            FilterBuilder.VALUE: "john.doe",
+                        },
+                    ]
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_to_dict_converts_non_list_values_to_list(self):
+        """
+        Given: A FilterBuilder with field values that are not initially in list format.
+        When: The to_dict method is called.
+        Then: The non-list values should be converted to lists internally for processing.
+        """
+        from CoreIRApiModule import FilterBuilder, FilterType
+
+        filter_builder = FilterBuilder()
+        # Directly create a field with non-list value
+        field = FilterBuilder.Field("test_field", FilterType.EQ, "single_value")
+        filter_builder.filter_fields = [field]
+
+        result = filter_builder.to_dict()
+        expected = {
+            FilterBuilder.AND: [
+                {
+                    FilterBuilder.FIELD: "test_field",
+                    FilterBuilder.TYPE: FilterType.EQ.value,
+                    FilterBuilder.VALUE: "single_value",
+                }
+            ]
+        }
+        assert result == expected
+
+    def test_prepare_time_range_both_valid_times(self, mocker: MockerFixture):
+        """
+        Given: Valid start_time and end_time strings that can be parsed by dateparser.
+        When: _prepare_time_range is called with both valid time strings.
+        Then: Both timestamps should be converted to milliseconds and returned as a tuple.
+        """
+        from CoreIRApiModule import FilterBuilder
+        from datetime import datetime
+
+        # Mock dateparser.parse to return known datetime objects
+        start_dt = datetime(2023, 1, 1, 10, 0, 0)
+        end_dt = datetime(2023, 1, 2, 15, 30, 0)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
+        mock_parse.side_effect = [start_dt, end_dt]
+
+        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
+
+        assert start_time == int(start_dt.timestamp() * 1000)
+        assert end_time == int(end_dt.timestamp() * 1000)
+        assert mock_parse.call_count == 2
+
+    def test_prepare_time_range_only_start_time_provided(self, mocker: MockerFixture):
+        """
+        Given: A valid start_time string and None as end_time.
+        When: _prepare_time_range is called with only start_time provided.
+        Then: start_time should be converted to milliseconds and end_time should be set to current time.
+        """
+        from CoreIRApiModule import FilterBuilder
+        from datetime import datetime
+
+        # Mock dateparser.parse for start_time
+        start_dt = datetime(2023, 1, 1, 10, 0, 0)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=start_dt)
+
+        # Mock datetime.now for end_time calculation
+        current_dt = datetime(2023, 1, 3, 12, 0, 0)
+        mock_now = mocker.patch("CoreIRApiModule.datetime")
+        mock_now.now.return_value = current_dt
+
+        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", None)
+
+        assert start_time == int(start_dt.timestamp() * 1000)
+        assert end_time == int(current_dt.timestamp() * 1000)
+        mock_parse.assert_called_once_with("2023-01-01T10:00:00")
+
+    def test_prepare_time_range_both_none_times(self):
+        """
+        Given: Both start_time_str and end_time_str parameters as None.
+        When: _prepare_time_range is called with both parameters as None.
+        Then: Both returned timestamps should be None without any parsing attempts.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        start_time, end_time = FilterBuilder._prepare_time_range(None, None)
+
+        assert start_time is None
+        assert end_time is None
+
+    def test_prepare_time_range_invalid_start_time_raises_value_error(self, mocker: MockerFixture):
+        """
+        Given: An invalid start_time string that cannot be parsed by dateparser.
+        When: _prepare_time_range is called with an unparseable start_time.
+        Then: A ValueError should be raised with the invalid start_time in the error message.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        # Mock dateparser.parse to return None for invalid input
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=None)
+
+        with pytest.raises(ValueError, match="Could not parse start_time: invalid_start_time"):
+            FilterBuilder._prepare_time_range("invalid_start_time", None)
+
+        mock_parse.assert_called_once_with("invalid_start_time")
+
+    def test_prepare_time_range_invalid_end_time_raises_value_error(self, mocker: MockerFixture):
+        """
+        Given: A valid start_time and an invalid end_time string that cannot be parsed.
+        When: _prepare_time_range is called with valid start_time but unparseable end_time.
+        Then: A ValueError should be raised with the invalid end_time in the error message.
+        """
+        from CoreIRApiModule import FilterBuilder
+        from datetime import datetime
+
+        # Mock dateparser.parse to return valid datetime for start_time and None for end_time
+        start_dt = datetime(2023, 1, 1, 10, 0, 0)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
+        mock_parse.side_effect = [start_dt, None]
+
+        with pytest.raises(ValueError, match="Could not parse end_time: invalid_end_time"):
+            FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "invalid_end_time")
+
+        assert mock_parse.call_count == 2
+
+    def test_prepare_time_range_string_conversion_for_start_time(self, mocker: MockerFixture):
+        """
+        Given: A non-string start_time parameter that needs string conversion.
+        When: _prepare_time_range is called with start_time that requires str() conversion.
+        Then: The start_time should be converted to string before parsing and processed correctly.
+        """
+        from CoreIRApiModule import FilterBuilder
+        from datetime import datetime
+
+        # Mock dateparser.parse to return a valid datetime
+        start_dt = datetime(2023, 1, 1, 10, 0, 0)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse", return_value=start_dt)
+
+        # Pass an integer that should be converted to string
+        start_time, end_time = FilterBuilder._prepare_time_range(20230101, None)
+
+        # Verify that str() was called on the parameter
+        mock_parse.assert_called_with("20230101")
+        assert start_time == int(start_dt.timestamp() * 1000)
+
+    def test_prepare_time_range_string_conversion_for_end_time(self, mocker: MockerFixture):
+        """
+        Given: A non-string end_time parameter along with valid start_time.
+        When: _prepare_time_range is called with end_time that requires str() conversion.
+        Then: The end_time should be converted to string before parsing and both times processed correctly.
+        """
+        from CoreIRApiModule import FilterBuilder
+        from datetime import datetime
+
+        # Mock dateparser.parse to return valid datetimes
+        start_dt = datetime(2023, 1, 1, 10, 0, 0)
+        end_dt = datetime(2023, 1, 2, 15, 30, 0)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
+        mock_parse.side_effect = [start_dt, end_dt]
+
+        # Pass integers that should be converted to strings
+        start_time, end_time = FilterBuilder._prepare_time_range(20230101, 20230102)
+
+        # Verify that str() was called on both parameters
+        assert mock_parse.call_args_list[0][0][0] == "20230101"
+        assert mock_parse.call_args_list[1][0][0] == "20230102"
+        assert start_time == int(start_dt.timestamp() * 1000)
+        assert end_time == int(end_dt.timestamp() * 1000)
+
+    def test_prepare_time_range_millisecond_conversion_precision(self, mocker: MockerFixture):
+        """
+        Given: Valid datetime objects returned from dateparser with specific timestamp values.
+        When: _prepare_time_range converts the timestamps to milliseconds.
+        Then: The conversion should multiply by 1000 and convert to integer with correct precision.
+        """
+        from CoreIRApiModule import FilterBuilder
+        from datetime import datetime
+
+        # Create datetime with known timestamp
+        start_dt = datetime(2023, 1, 1, 10, 0, 0)
+        end_dt = datetime(2023, 1, 2, 15, 30, 0)
+        mock_parse = mocker.patch("CoreIRApiModule.dateparser.parse")
+        mock_parse.side_effect = [start_dt, end_dt]
+
+        start_time, end_time = FilterBuilder._prepare_time_range("2023-01-01T10:00:00", "2023-01-02T15:30:00")
+
+        # Verify precise millisecond conversion
+        expected_start = int(start_dt.timestamp() * 1000)
+        expected_end = int(end_dt.timestamp() * 1000)
+        assert start_time == expected_start
+        assert end_time == expected_end
+        assert isinstance(start_time, int)
+        assert isinstance(end_time, int)
+
+
+class TestDetermineEmailOrName:
+    def test_determine_email_or_name_empty_list(self):
+        """
+        Given: An empty list is passed to determine_email_or_name.
+        When: The function is called with an empty assignee list.
+        Then: Should return an empty string.
+        """
+        from CoreIRApiModule import determine_email_or_name
+
+        result = determine_email_or_name([])
+        assert result == ""
+
+    def test_determine_email_or_name_with_valid_email(self):
+        """
+        Given: A list containing a valid email address.
+        When: determine_email_or_name is called with an email in the assignee list.
+        Then: Should return "email" indicating the input format is email.
+        """
+        from CoreIRApiModule import determine_email_or_name
+
+        assignee_list = ["user@example.com"]
+        result = determine_email_or_name(assignee_list)
+        assert result == "email"
+
+    def test_determine_email_or_name_with_username(self):
+        """
+        Given: A list containing a username (non-email format).
+        When: determine_email_or_name is called with a username in the assignee list.
+        Then: Should return "name" indicating the input format is a username.
+        """
+        from CoreIRApiModule import determine_email_or_name
+
+        assignee_list = ["john_doe"]
+        result = determine_email_or_name(assignee_list)
+        assert result == "name"
+
+
+def test_get_issues_by_filter_custom_filter_valid_json(requests_mock):
+    """
+    Given:
+        - Core client
+        - Valid JSON custom_filter with agent_id
+    When:
+        - Running get_alerts_by_filter command
+    Then:
+        - Verify the JSON is parsed correctly without any fixes applied
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+    api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    # Valid JSON with agent_id
+    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "1.2.3.4"}]}'
+    args = {"custom_filter": custom_filter}
+
+    response = get_issues_by_filter_command(client, args)
+    assert response[0].outputs[0].get("internal_id", {}) == 33333
+
+
+def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
+    """
+    Given:
+        - Core client
+        - Malformed JSON custom_filter with agent_id containing array-like string values
+    When:
+        - Running get_alerts_by_filter command
+    Then:
+        - Verify the malformed JSON is automatically fixed and parsed correctly
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+    api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    # Malformed JSON with agent_id - array values as string with unescaped quotes
+    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "[1.2.3.4, 5.6.7.8]"}]}'
+    args = {"custom_filter": custom_filter}
+
+    response = get_issues_by_filter_command(client, args)
+    assert response[0].outputs[0].get("internal_id", {}) == 33333

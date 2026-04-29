@@ -25,7 +25,8 @@ def domain_enrichment_script(
         CommandResults: The results of the command.
     """
     demisto.debug("Extracting indicators")
-    domain_list = extract_indicators(domain_list, "domain")
+    domain_instances, extract_verbose = create_and_extract_indicators(domain_list, "domain")
+    valid_inputs = [domain_instance.extracted_value for domain_instance in domain_instances if domain_instance.extracted_value]
     demisto.debug(f"Data list after extract_indicators: {domain_list}")
     # Mapping for the final indicator objects (what you want to surface on each result)
     indicator_mapping = {
@@ -36,7 +37,7 @@ def domain_enrichment_script(
         "Brand": "Brand",
     }
 
-    domain_indicator = Indicator(
+    domain_indicator_schema = IndicatorSchema(
         type="domain",
         value_field="Name",
         context_path_prefix="Domain",
@@ -48,7 +49,7 @@ def domain_enrichment_script(
     command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
-            args={"indicator_values": domain_list, "type": "Domain"},
+            args={"indicator_values": valid_inputs, "type": "Domain"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
@@ -62,7 +63,7 @@ def domain_enrichment_script(
         command_batch2.append(
             Command(
                 name="core-get-domain-analytics-prevalence",
-                args={"domain_name": domain_list},
+                args={"domain_name": valid_inputs},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",  # keep the brand you use elsewhere
                 context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
@@ -72,7 +73,7 @@ def domain_enrichment_script(
     command_batch2.append(
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": domain_list},
+            args={"indicatorsValues": valid_inputs},
             command_type=CommandType.EXTERNAL,
         )
     )
@@ -97,8 +98,9 @@ def domain_enrichment_script(
         external_enrichment=external_enrichment,
         final_context_path="DomainEnrichment",
         args=demisto.args(),
-        data=domain_list,
-        indicator=domain_indicator,
+        indicator_instances=domain_instances,
+        indicator_schema=domain_indicator_schema,
+        verbose_outputs=[extract_verbose],
     )
     return domain_reputation.run()
 

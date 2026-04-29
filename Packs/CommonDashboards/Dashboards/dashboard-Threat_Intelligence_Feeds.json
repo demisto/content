@@ -308,5 +308,8 @@
     "version": -1,
     "fromVersion": "6.2.0",
     "description": "",
-    "isPredefined": true
+    "isPredefined": true,
+    "marketplaces": [
+        "xsoar"
+    ]
 }

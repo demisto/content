@@ -7,6 +7,7 @@ import re
 import traceback
 from copy import deepcopy
 from datetime import date
+from collections.abc import Callable
 
 import jwt
 import urllib3
@@ -113,6 +114,7 @@ DAILY_HITS_CHANGE = "Daily Hits Change"
 DEFAULT_EVENT_TYPES = ["ANOMALY", "THREAT_MONITORING"]
 DEFAULT_ACTIVITY_STATUSES = ["SUCCESS", "PARTIAL_SUCCESS"]
 DEFAULT_SEVERITIES = ["SEVERITY_CRITICAL"]
+DEFAULT_EVENT_SEVERITIES = ["SEVERITY_CRITICAL", "SEVERITY_WARNING", "SEVERITY_INFO"]
 START_CURSOR = "Start Cursor"
 END_CURSOR = "End Cursor"
 HAS_NEXT_PAGE = "Has Next Page"
@@ -130,6 +132,8 @@ QUERANTINE_STATUS = ["QUARANTINED_MATCHES", "NO_QUARANTINED_MATCHES"]
 HUNT_STATUSES = ["ABORTED", "CANCELED", "CANCELING", "FAILED", "IN_PROGRESS", "PARTIALLY_SUCCEEDED", "PENDING", "SUCCEEDED"]
 MAX_INT_VALUE = 2**31 - 1
 MAX_LONG_VALUE = 2**63 - 1 - 512
+DEFAULT_POLLING_NEXT_RUN_IN_SECONDS = 30
+DEFAULT_POLLING_TIMEOUT = 300
 
 MESSAGES = {
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -146,6 +150,7 @@ MESSAGES = {
     "NO_OBJECT_FOUND": "No Objects Found",
     "INVALID_FETCH_EVENT_TYPE": f"Only the following event types are supported: {', '.join(DEFAULT_EVENT_TYPES)}",
     "INVALID_FETCH_TYPE": f"Only the following fetch types are supported: {', '.join(DEFAULT_FETCH_TYPE)}",
+    "INVALID_FETCH_EVENT_SEVERITIES": f"Only the following event severities are supported: {', '.join(DEFAULT_EVENT_SEVERITIES)}",
 }
 
 OUTPUT_PREFIX = {
@@ -195,6 +200,7 @@ OUTPUT_PREFIX = {
     "PAGE_TOKEN_IOC_SCAN": "RubrikPolaris.PageToken.IOCScan",
     "TURBO_IOC_SCAN": "RubrikPolaris.TurboIOCScan",
     "ADVANCE_IOC_SCAN": "RubrikPolaris.AdvanceIOCScan",
+    "ANOMALY_CSV_ANALYSIS_V2": "RubrikPolaris.AnomalyCSVv2",
 }
 
 ERROR_MESSAGES = {
@@ -1145,6 +1151,34 @@ START_ADVANCE_THREAT_HUNT_MUTATION = """mutation StartAdvanceThreatHuntMutation(
 }
 """
 
+DOWNLOAD_ANOMALY_DETAILS_CSV_MUTATION = """
+mutation DownloadAnomalyDetailsCsvMutation($input: DownloadAnomalyDetailsCsvInput!) {
+    downloadAnomalyDetailsCsv(input: $input) {
+        isSuccessful
+        __typename
+    }
+}
+"""
+
+ALL_USER_DOWNLOADS_FILES_QUERY = """
+query DownloadBarQuery {
+  allUserFiles {
+    downloads {
+      externalId
+      createdAt
+      expiresAt
+      completedAt
+      creator
+      filename
+      type
+      state
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
 
 class MyClient(PolarisClient):
     """Client class."""
@@ -1482,13 +1516,13 @@ def convert_bytes(bytes_val: int):
             return count
 
         if count_digit(bytes_val) >= 12:
-            return f"{bytes_val / (10 ** 12)} TB"
+            return f"{bytes_val / (10**12)} TB"
         elif count_digit(bytes_val) >= 9:
-            return f"{bytes_val / (10 ** 9)} GB"
+            return f"{bytes_val / (10**9)} GB"
         elif count_digit(bytes_val) >= 6:
-            return f"{bytes_val / (10 ** 6)} MB"
+            return f"{bytes_val / (10**6)} MB"
         elif count_digit(bytes_val) >= 3:
-            return f"{bytes_val / (10 ** 3)} KB"
+            return f"{bytes_val / (10**3)} KB"
         else:
             return f"{bytes_val} B"
     return None
@@ -3428,11 +3462,20 @@ def fetch_events(client: PolarisClient, last_run: dict, params: dict, max_fetch:
     :rtype: ``tuple[dict, list]``
     """
     event_types = argToList(params.get("event_types"), transform=lambda s: s.strip())
+    event_severities = argToList(params.get("event_severities"), transform=lambda s: s.strip())
+
     event_types = [event_type.upper() for event_type in event_types if event_type]
+    event_severities = [event_severity.upper() for event_severity in event_severities if event_severity]
+
     if not event_types:
         event_types = DEFAULT_EVENT_TYPES
     elif any(event_type not in DEFAULT_EVENT_TYPES for event_type in event_types):
         raise ValueError(MESSAGES["INVALID_FETCH_EVENT_TYPE"])
+
+    if not event_severities:
+        event_severities = DEFAULT_SEVERITIES
+    elif any(event_severity not in DEFAULT_EVENT_SEVERITIES for event_severity in event_severities):
+        raise ValueError(MESSAGES["INVALID_FETCH_EVENT_SEVERITIES"])
 
     event_last_run = last_run
     last_run_time = event_last_run.get("last_fetch", None)
@@ -3450,7 +3493,7 @@ def fetch_events(client: PolarisClient, last_run: dict, params: dict, max_fetch:
         evnet_next_run["last_fetch"] = last_run_time
     # removed manual fetch interval as this feature is built in XSOAR 6.0.0 and onwards
 
-    filters = {"lastActivityStatus": DEFAULT_ACTIVITY_STATUSES, "severity": DEFAULT_SEVERITIES}
+    filters = {"lastActivityStatus": DEFAULT_ACTIVITY_STATUSES, "severity": event_severities}
 
     events = client.list_event_series(
         activity_type=",".join(event_types),
@@ -3500,7 +3543,7 @@ def fetch_events(client: PolarisClient, last_run: dict, params: dict, max_fetch:
 
         incidents.append(
             {
-                "name": f'Rubrik Radar Anomaly - {processed_incident.get("objectName", "")}',
+                "name": f"Rubrik Radar Anomaly - {processed_incident.get('objectName', '')}",
                 "occurred": processed_incident.get("lastUpdated", ""),
                 "rawJSON": json.dumps(processed_incident),
                 "severity": processed_incident["severity"],
@@ -3622,7 +3665,7 @@ def fetch_threat_monitoring_objects(
 
         incidents.append(
             {
-                "name": f'Rubrik Radar Threat Monitoring Object - {processed_incident.get("objectName", "")}',
+                "name": f"Rubrik Radar Threat Monitoring Object - {processed_incident.get('objectName', '')}",
                 "occurred": processed_incident.get("lastDetection", ""),
                 "rawJSON": json.dumps(processed_incident),
                 "severity": processed_incident.get("severity"),
@@ -5869,7 +5912,7 @@ def rubrik_threat_monitoring_matched_file_list_command(client: PolarisClient, ar
         }
     )
 
-    outputs = {f'{OUTPUT_PREFIX["PAGE_TOKEN_THREAT_MONITORING_FILE"]}(val.name == obj.name)': page_cursor}
+    outputs = {f"{OUTPUT_PREFIX['PAGE_TOKEN_THREAT_MONITORING_FILE']}(val.name == obj.name)": page_cursor}
 
     if not edges:
         return CommandResults(
@@ -6204,6 +6247,179 @@ def rubrik_advance_ioc_scan_command(client: PolarisClient, args: Dict[str, Any])
     )
 
 
+def rubrik_anomaly_csv_analysis_v2_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Scheduled polling command to download anomaly details CSV file.
+
+    This command implements a three-step polling workflow:
+    1. First execution: Triggers CSV download using downloadAnomalyDetailsCsv mutation.
+    2. Polling iterations: Polls allUserFiles query until file status becomes READY.
+    3. Final step: Downloads the file data using external_id through REST API and returns the CSV file.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args: Command arguments obtained from demisto.args().
+
+    :rtype: ``List[CommandResults]``
+    :return: List of CommandResults.
+    """
+    cluster_id = validate_required_arg("cluster_id", args.get("cluster_id"))
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+
+    polling = argToBoolean(args.get("polling", False))
+
+    is_successful = True
+    if not polling:
+        input_data = {
+            "clusterUuid": cluster_id,
+            "snapshotId": snapshot_id,
+            "workloadId": object_id,
+        }
+
+        response = client._query_raw(
+            raw_query=DOWNLOAD_ANOMALY_DETAILS_CSV_MUTATION,
+            operation_name="DownloadAnomalyDetailsCsvMutation",
+            variables={"input": input_data},
+            timeout=60,
+        )
+
+        data = response.get("data", {})
+        download_data = data.get("downloadAnomalyDetailsCsv", {})
+        if not download_data:
+            return [CommandResults(readable_output=f"#### {MESSAGES['NO_RESPONSE']}", outputs={})]
+        is_successful = download_data.get("isSuccessful", False)
+
+        outputs = {
+            "clusterId": cluster_id,
+            "snapshotId": snapshot_id,
+            "objectId": object_id,
+            "isSuccessful": is_successful,
+        }
+
+        hr = "#### Successfully analyzed the CSV file." if is_successful else "#### Failed to analyze the CSV file."
+
+        result = [
+            CommandResults(
+                outputs_prefix=OUTPUT_PREFIX["ANOMALY_CSV_ANALYSIS_V2"],
+                outputs_key_field=["clusterId", "snapshotId", "objectId"],
+                outputs=outputs,
+                readable_output=hr,
+                raw_response=response,
+            )
+        ]
+
+    target_file_name = f"snapshot_{snapshot_id}"
+    external_id = ""
+
+    if polling:
+        user_files_response = client._query_raw(
+            raw_query=ALL_USER_DOWNLOADS_FILES_QUERY,
+            operation_name="DownloadBarQuery",
+            variables={},
+            timeout=60,
+        )
+
+        data = user_files_response.get("data", {})
+        user_files = data.get("allUserFiles", [])
+
+        for user_file in user_files:
+            downloaded_files = user_file.get("downloads", [])
+            downloaded_files = downloaded_files[::-1]
+            for file_info in downloaded_files:
+                if file_info.get("filename") == target_file_name:
+                    file_state = file_info.get("state", "").lower()
+                    if file_state == "ready":
+                        external_id = file_info.get("externalId", "")
+                        break
+                    if file_state == "failed":
+                        is_successful = False
+                        break
+
+        # Attempt to download the file if external_id is available
+        file_result = None
+        if external_id:
+            base_url = str(client._baseurl).removesuffix("api")
+            download_url = urljoin(base_url, f"file-downloads/{external_id}")
+            response = requests.get(
+                download_url,
+                headers=client.prepare_headers(),
+                verify=client._verify,
+                proxies=client._proxies,
+                timeout=60,
+            )
+            response.raise_for_status()
+
+            file_result = fileResult(
+                filename=f"{target_file_name}.csv", data=response.content, file_type=EntryType.ENTRY_INFO_FILE
+            )
+
+        # Determine human-readable message based on status
+        if not is_successful:
+            hr = "#### Failed to download the analyzed CSV file."
+        elif file_result:
+            hr = "#### Successfully downloaded the analyzed CSV file."
+        else:
+            hr = "#### Polling for CSV file availability. The command will automatically retry..."
+
+        # Prepare outputs and results
+        outputs = {
+            "clusterId": cluster_id,
+            "snapshotId": snapshot_id,
+            "objectId": object_id,
+            "isSuccessful": is_successful,
+            "externalId": external_id,
+        }
+
+        result = [
+            CommandResults(
+                outputs_prefix=OUTPUT_PREFIX["ANOMALY_CSV_ANALYSIS_V2"],
+                outputs_key_field=["clusterId", "snapshotId", "objectId"],
+                outputs=outputs,
+                readable_output=hr,
+                raw_response=user_files_response,
+            )
+        ]
+
+        if file_result:
+            result.append(file_result)
+
+    return result
+
+
+def run_polling_command(client, args: dict, command_name: str, search_function: Callable) -> List[CommandResults]:
+    """
+    For Scheduling command.
+
+    :param client: Rubrik Polaris client to use.
+    :param args: Command arguments.
+    :param command_name: Name of the command.
+    :param search_function: Callable object of command.
+    :return: List of CommandResults.
+    """
+    result = search_function(client, args)
+    outputs = result[0].outputs or {}
+
+    if not outputs.get("isSuccessful"):
+        return result
+
+    if not outputs.get("externalId"):
+        polling_args = {"polling": True, **args}
+        scheduled_command = ScheduledCommand(
+            command=command_name,
+            next_run_in_seconds=DEFAULT_POLLING_NEXT_RUN_IN_SECONDS,
+            args=polling_args,
+            timeout_in_seconds=DEFAULT_POLLING_TIMEOUT,
+        )
+        command_results = CommandResults(scheduled_command=scheduled_command)
+
+        return [result, command_results]
+
+    return result
+
+
 def trim_spaces_from_args(args):
     """
     Trim spaces from values of the args dict.
@@ -6351,6 +6567,18 @@ def main() -> None:
                 remove_nulls_from_dictionary(trim_spaces_from_args(args))
 
                 return_results(COMMAND_TO_FUNCTION[demisto.command()](client, args))
+            elif demisto.command() == "rubrik-anomaly-csv-analysis-v2":
+                args = demisto.args()
+                remove_nulls_from_dictionary(trim_spaces_from_args(args))
+
+                return_results(
+                    run_polling_command(
+                        client=client,
+                        args=args,
+                        search_function=rubrik_anomaly_csv_analysis_v2_command,
+                        command_name="rubrik-anomaly-csv-analysis-v2",
+                    )
+                )
             else:
                 raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     # Log exceptions and return errors

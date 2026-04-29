@@ -5,6 +5,7 @@ commonfields:
 name: OpenAI
 display: OpenAI (Deprecated)
 category: Utilities
+provider: OpenAI
 description: "Deprecated. Use `OpenAI GPT` instead."
 configuration:
 - display: OpenAI API URL(e.g. https://api.openai.com/)
