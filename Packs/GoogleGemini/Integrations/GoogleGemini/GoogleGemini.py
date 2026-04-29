@@ -29,6 +29,9 @@ SUPPORTED_MODELS = [
     "gemini-2.5-pro",
     # Preview models
     "gemini-2.0-flash-preview-image-generation",
+    "gemini-3-flash-preview",
+    "gemini-3.1-pro-preview",
+    "gemini-3.1-flash-lite-preview",
     # Embedding models
     "text-embedding-004",
     "models/embedding-001",
