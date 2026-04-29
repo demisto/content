@@ -535,7 +535,7 @@ script:
   - name: taegis-fetch-events
     arguments:
     - name: ids
-      description: A list of event IDs or string of comma-separated event IDs to return.
+      description: A comma-separated list of event IDs to return.
       isArray: true
     - name: cql_query
       description: The Taegis CQL query string to use for searching events (e.g. "FROM process EARLIEST=-1d | head 10"). If not defined, defaults to "FROM * EARLIEST=-1m | head 50".
