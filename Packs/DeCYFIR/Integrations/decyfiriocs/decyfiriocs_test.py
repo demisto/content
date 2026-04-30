@@ -1,4 +1,4 @@
-from decyfiriocs import Client, extract_value, command_results,test_module_command
+from decyfiriocs import Client, extract_value, command_results, test_module_command
 import json
 from unittest.mock import MagicMock, patch
 
@@ -7,18 +7,21 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
+
 def test_command_results_empty():
     result = command_results([], "IP")
     assert result == []
+
 
 def test_extract_ioc_value(mocker):
     result = extract_value("[ipv4-addr:value = '1.2.3.4']")
     assert result == "1.2.3.4"
 
- 
+
 def test_extract_value_empty_string():
     result = extract_value("")
     assert result == ""
+
 
 def test_get_indicator_or_threatintel_type(mocker):
     client = Client(
@@ -34,56 +37,55 @@ def test_get_indicator_or_threatintel_type_none():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type(None)
     assert result == ""
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_unknown():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("something-unrecognized")
     assert result == ""
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_email():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("[email:value = 'foo@bar.com']")
     assert result == "Email"
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_vulnerability():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("vulnerability")
     assert result == "CVE"
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_threat_actor():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("threat-actor")
     assert result == "Threat Actor"
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_campaign():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("campaign")
     assert result == "Campaign"
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_malware():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("malware")
     assert result == "Malware"
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_attack_pattern():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("attack-pattern")
     assert result == "Attack Pattern"
- 
- 
+
+
 def test_get_indicator_or_threatintel_type_intrusion_set():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.get_indicator_or_threatintel_type("intrusion-set")
     assert result == "Intrusion Set"
- 
- 
+
 
 def test_module_command_ok(mocker):
     client = Client(base_url="test_url", verify=False, proxy=False)
@@ -92,8 +94,8 @@ def test_module_command_ok(mocker):
     mocker.patch.object(client, "_http_request", return_value=mock_resp)
     result = test_module_command(client, "test_api_key")
     assert result == "ok"
- 
- 
+
+
 def test_module_command_unauthorized(mocker):
     client = Client(base_url="test_url", verify=False, proxy=False)
     mock_resp = MagicMock()
@@ -117,7 +119,6 @@ def test_fetch_indicators_by_type_error(mocker):
     mocker.patch.object(client, "_http_request", side_effect=Exception("network error"))
     result = client.fetch_indicators_by_type("api_key", "ip")
     assert result == []
- 
 
 
 def test_build_ioc_relationship_obj(mocker):
@@ -277,7 +278,7 @@ def test_convert_decyfir_ioc_to_indicators_formats(mocker):
     assert ti_data_out[0]["fields"] is not None
     fields = ti_data_out[0]["fields"]
     assert fields["verdict"] == "Malicious"
-    
+
 
 def test_convert_decyfir_ioc_to_indicators_formats_fail(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
@@ -411,7 +412,9 @@ def test_decyfir_get_indicators_command(mocker):
     )
     mocker.patch.object(Client, "fetch_indicators", return_value=raw_data["iocs"])
     data = decyfir_get_indicators_command(
-        client=client, decyfir_api_key="api_key", reputation="feedReputation", tlp_color="tlp_color", feed_tags=["feedTags"]
+        client=client, decyfir_api_key="api_key", 
+        reputation="feedReputation", 
+        tlp_color="tlp_color", feed_tags=["feedTags"]
     )
 
     assert data[0]["value"] == "0.0.0.0"
@@ -423,14 +426,113 @@ def test_command_results(mocker):
     assert data[0]["value"] == "dbe51eabebf9d4ef9581ef99844a2944"
 
 
+def test_get_decyfir_api_ti_data_non_200(mocker):
+    client = Client(base_url="test_url", verify=False, proxy=False)
+    mock_resp = MagicMock()
+    mock_resp.status_code = 403
+    mock_resp.content = b""
+    mocker.patch.object(client, "_http_request", return_value=mock_resp)
+    result = client.get_decyfir_api_ti_data("/some/path")
+    assert result == []
+ 
+ 
+def test_get_decyfir_api_ti_data_200_empty_body(mocker):
+    client = Client(base_url="test_url", verify=False, proxy=False)
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.content = b""
+    mocker.patch.object(client, "_http_request", return_value=mock_resp)
+    result = client.get_decyfir_api_ti_data("/some/path")
+    assert result == []
+ 
+
+
+def test_convert_ioc_with_is_data_save_true_cached_ta(mocker):
+    """
+    When is_data_save=True the code fetches TA data via the API.
+    We mock get_decyfir_api_ti_data to return a minimal TA bundle.
+    On the second iteration the same TA comes from the cache path.
+    """
+    raw_data = util_load_json("test_data/iocs_ti.json")
+    ioc = raw_data["iocs"][0].copy()
+    # Inject a recognisable threat actor name so the TA lookup branch fires.
+    ioc["extensions"] = {
+        list(ioc["extensions"].keys())[0]: {
+            **list(ioc["extensions"].values())[0],
+            "threat_actors": "Gamaredon",
+        }
+    }
+
+    ta_bundle = raw_data["ta_relationships"]
+
+    client = Client(base_url="test_url", verify=False)
+    mocker.patch.object(client, "get_decyfir_api_ti_data", return_value=ta_bundle)
+
+    result = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="api_key",
+        decyfir_iocs=[ioc, ioc],   # same IOC twice → second hit uses cache
+        tlp_color="GREEN",
+        feed_tags=["tag1"],
+        reputation="Good",
+        is_data_save=True,
+    )
+
+    assert any(r.get("value") == "0.0.0.0" for r in result)
+
+
+def test_convert_ioc_with_is_data_save_true_no_ta(mocker):
+    """is_data_save=True but threat_actors is empty → skips TA lookup."""
+    raw_data = util_load_json("test_data/iocs_ti.json")
+    ioc = raw_data["iocs"][0].copy()
+    ext_key = list(ioc["extensions"].keys())[0]
+    ioc["extensions"] = {ext_key: {**list(ioc["extensions"].values())[0], "threat_actors": ""}}
+
+    client = Client(base_url="test_url", verify=False)
+    mock_get = mocker.patch.object(client, "get_decyfir_api_ti_data", return_value=[])
+
+    result = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="api_key",
+        decyfir_iocs=[ioc],
+        tlp_color="GREEN",
+        feed_tags=[],
+        reputation="Good",
+        is_data_save=True,
+    )
+
+    mock_get.assert_not_called()
+    assert len(result) == 1
+
+
+def test_convert_ioc_with_is_data_save_true_unknown_ta(mocker):
+    """Threat actor value is 'Unknown' — should be filtered out, no API call."""
+    raw_data = util_load_json("test_data/iocs_ti.json")
+    ioc = raw_data["iocs"][0].copy()
+    ext_key = list(ioc["extensions"].keys())[0]
+    ioc["extensions"] = {ext_key: {**list(ioc["extensions"].values())[0], "threat_actors": "Unknown"}}
+
+    client = Client(base_url="test_url", verify=False)
+    mock_get = mocker.patch.object(client, "get_decyfir_api_ti_data", return_value=[])
+
+    result = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="api_key",
+        decyfir_iocs=[ioc],
+        tlp_color=None,
+        feed_tags=None,
+        reputation=None,
+        is_data_save=True,
+    )
+
+    mock_get.assert_not_called()
+    assert len(result) == 1
+
 
 def test_fetch_indicators_is_data_save_true(mocker):
     from decyfiriocs import fetch_indicators_command
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     client = Client(base_url="test_url", verify=False)
     mocker.patch.object(client, "get_decyfir_api_ti_data", return_value=raw_data["iocs"])
- 
+
     result = fetch_indicators_command(
         client=client,
         decyfir_api_key="api_key",
@@ -438,16 +540,16 @@ def test_fetch_indicators_is_data_save_true(mocker):
         reputation="Good",
         feed_tags=["tag1"],
     )
- 
+
     assert len(result) > 0
     assert result[0]["value"] == "0.0.0.0"
- 
- 
+
+
 def test_fetch_indicators_exception(mocker):
     """fetch_indicators returns [] when get_decyfir_api_ti_data raises."""
     client = Client(base_url="test_url", verify=False)
     mocker.patch.object(client, "get_decyfir_api_ti_data", side_effect=Exception("API error"))
- 
+
     result = client.fetch_indicators(
         decyfir_api_key="api_key",
         reputation="Good",
@@ -455,15 +557,16 @@ def test_fetch_indicators_exception(mocker):
         feed_tags=[],
         is_data_save=True,
     )
- 
+
     assert result == []
+
 
 def test_build_ioc_relationship_obj_none_ioc():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.build_ioc_relationship_obj({}, {"type": "Threat Actor", "value": "X"})
     assert result is None
- 
- 
+
+
 def test_build_ioc_relationship_obj_none_ta():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.build_ioc_relationship_obj({"type": "IP", "value": "1.2.3.4"}, {})
@@ -479,8 +582,8 @@ def test_build_threat_actor_relationship_obj_source_fallback():
     # Intrusion Set maps to ATTRIBUTED_TO
     assert result is not None
     assert result["name"] == "attributed-to"
- 
- 
+
+
 def test_build_threat_actor_relationship_obj_no_mapping():
     """Neither source nor target type has a mapping → returns None."""
     client = Client(base_url="test_url", verify=False, proxy=False)
@@ -500,11 +603,11 @@ def _base_params():
         "tlp_color": "GREEN",
         "feedReputation": "Good",
     }
- 
- 
+
+
 def test_main_test_module(mocker):
     from decyfiriocs import main
- 
+
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="test-module")
     mocker.patch("demistomock.info")
@@ -514,114 +617,114 @@ def test_main_test_module(mocker):
         "_http_request",
         return_value=MagicMock(status_code=200),
     )
- 
+
     main()
     mock_results.assert_called_once_with("ok")
- 
- 
+
+
 def test_main_fetch_indicators(mocker):
     from decyfiriocs import main
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="fetch-indicators")
     mocker.patch("demistomock.info")
     mocker.patch.object(Client, "get_decyfir_api_ti_data", return_value=raw_data["iocs"])
     mock_create = mocker.patch("demistomock.createIndicators")
- 
+
     main()
     assert mock_create.called
- 
- 
+
+
 def test_main_decyfir_get_indicators(mocker):
     from decyfiriocs import main
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="decyfir-get-indicators")
     mocker.patch("demistomock.info")
     mocker.patch.object(Client, "fetch_indicators", return_value=raw_data["iocs"])
     mock_return = mocker.patch("decyfiriocs.return_results")
- 
+
     main()
     assert mock_return.called
- 
- 
+
+
 def test_main_ip_command(mocker):
     from decyfiriocs import main
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="ip")
     mocker.patch("demistomock.info")
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["iocs"])
     mock_return = mocker.patch("decyfiriocs.return_results")
- 
+
     main()
     assert mock_return.called
- 
- 
+
+
 def test_main_domain_command(mocker):
     from decyfiriocs import main
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="domain")
     mocker.patch("demistomock.info")
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["domain"])
     mock_return = mocker.patch("decyfiriocs.return_results")
- 
+
     main()
     assert mock_return.called
- 
- 
+
+
 def test_main_url_command(mocker):
     from decyfiriocs import main
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="url")
     mocker.patch("demistomock.info")
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["url"])
     mock_return = mocker.patch("decyfiriocs.return_results")
- 
+
     main()
     assert mock_return.called
- 
- 
+
+
 def test_main_file_command(mocker):
     from decyfiriocs import main
- 
+
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="file")
     mocker.patch("demistomock.info")
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["file"])
     mock_return = mocker.patch("decyfiriocs.return_results")
- 
+
     main()
     assert mock_return.called
- 
- 
+
+
 def test_main_unknown_command(mocker):
     from decyfiriocs import main
- 
+
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="not-a-real-command")
     mocker.patch("demistomock.info")
     mock_error = mocker.patch("decyfiriocs.return_error")
- 
+
     main()
     assert mock_error.called
- 
- 
+
+
 def test_main_exception_in_setup(mocker):
     """If params() raises, main catches and calls return_error."""
     from decyfiriocs import main
- 
+
     mocker.patch("demistomock.params", side_effect=Exception("bad params"))
     mocker.patch("demistomock.command", return_value="test-module")
     mock_error = mocker.patch("decyfiriocs.return_error")
- 
+
     main()
     assert mock_error.called
