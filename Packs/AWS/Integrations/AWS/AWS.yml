@@ -14219,7 +14219,7 @@ script:
       description: The last port in the range. Required if specifying tcp or udp for the protocol parameter.
       required: false
 
-  - name: aws-cloudwatch-log-group-create
+  - name: aws-logs-log-group-create
     arguments:
     - name: log_group_name
       required: true
@@ -14248,7 +14248,7 @@ script:
     description: Creates a log group with the specified name.
     execution: true
 
-  - name: aws-cloudwatch-log-stream-create
+  - name: aws-logs-log-stream-create
     arguments:
     - name: log_group_name
       required: true
@@ -14265,7 +14265,7 @@ script:
     description: Creates a log stream for the specified log group.
     execution: true
 
-  - name: aws-cloudwatch-log-group-delete
+  - name: aws-logs-log-group-delete
     arguments:
     - name: log_group_name
       required: true
@@ -14279,7 +14279,7 @@ script:
     description: Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
     execution: true
 
-  - name: aws-cloudwatch-log-stream-delete
+  - name: aws-logs-log-stream-delete
     arguments:
     - name: log_group_name
       required: true
@@ -14296,7 +14296,7 @@ script:
     description: Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
     execution: true
 
-  - name: aws-cloudwatch-log-events-filter
+  - name: aws-logs-log-events-filter
     arguments:
     - name: log_group_name
       required: true
@@ -14351,7 +14351,7 @@ script:
       type: string
     description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
 
-  - name: aws-cloudwatch-log-groups-describe
+  - name: aws-logs-log-groups-describe
     arguments:
     - name: log_group_name_prefix
       description: The prefix to match. logGroupNamePrefix and logGroupNamePattern are mutually exclusive. Only one of these parameters can be passed.
@@ -14408,13 +14408,12 @@ script:
       type: string
     description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
 
-  - name: aws-cloudwatch-log-streams-describe
+  - name: aws-logs-log-streams-describe
     arguments:
     - name: log_group_name
-      required: true
-      description: The name of the log group.
+      description: The name of the log group. You must include either log_group_name or log_group_identifier, but not both.
     - name: log_group_identifier
-      description: Specify either the name or ARN of the log group. You must include either logGroupIdentifier or logGroupName, but not both.
+      description: Specify either the name or ARN of the log group. You must include either log_group_name or log_group_identifier, but not both.
     - name: log_stream_name_prefix
       description: The prefix to match. If orderBy is LastEventTime, you cannot specify this parameter.
     - name: order_by
@@ -14472,7 +14471,7 @@ script:
       type: string
     description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
 
-  - name: aws-cloudwatch-retention-policy-put
+  - name: aws-logs-retention-policy-put
     arguments:
     - name: log_group_name
       required: true
@@ -14508,7 +14507,7 @@ script:
     description: Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
     execution: true
 
-  - name: aws-cloudwatch-retention-policy-delete
+  - name: aws-logs-retention-policy-delete
     arguments:
     - name: log_group_name
       required: true
@@ -14522,7 +14521,7 @@ script:
     description: Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
     execution: true
 
-  - name: aws-cloudwatch-log-events-put
+  - name: aws-logs-log-events-put
     arguments:
     - name: log_group_name
       required: true
@@ -14536,8 +14535,6 @@ script:
     - name: message
       required: true
       description: The raw event message.
-    - name: sequence_token
-      description: The sequence token obtained from the response of the previous PutLogEvents call. An upload in a newly created log stream does not require a sequence token.
     - name: region
       required: true
       description: The AWS Region.
@@ -14545,13 +14542,16 @@ script:
       required: true
       description: The AWS account ID.
     outputs:
-    - contextPath: AWS.CloudWatchLogs.PutLogEvents.NextSequenceToken
-      description: The next sequence token.
-      type: string
+    - contextPath: AWS.CloudWatchLogs.PutLogEvents.rejectedLogEventsInfo
+      description: Information about rejected log events, including the reason for rejection.
+      type: Unknown
+    - contextPath: AWS.CloudWatchLogs.PutLogEvents.rejectedEntityInfo
+      description: Information about rejected entity, including the reason for rejection.
+      type: Unknown
     description: Uploads a batch of log events to the specified log stream.
     execution: true
 
-  - name: aws-cloudwatch-metric-filter-put
+  - name: aws-logs-metric-filter-put
     arguments:
     - name: log_group_name
       required: true
@@ -14574,7 +14574,7 @@ script:
     - name: default_value
       description: The value to emit when a filter pattern does not match a log event. This value can be null.
     - name: dimensions
-      description: "The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Format: JSON object, e.g. {\"EventType\": \"$.eventType\"}."
+      description: "The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Must be separated by a semicolon (;) and specified using the format \"key=DimensionName,value=DimensionValueSource;key=DimensionName2,value=DimensionValueSource2\"."
     - name: unit
       auto: PREDEFINED
       predefined:
@@ -14621,7 +14621,7 @@ script:
     description: Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
     execution: true
 
-  - name: aws-cloudwatch-metric-filter-delete
+  - name: aws-logs-metric-filter-delete
     arguments:
     - name: log_group_name
       required: true
@@ -14638,7 +14638,7 @@ script:
     description: Deletes the specified metric filter.
     execution: true
 
-  - name: aws-cloudwatch-metric-filters-describe
+  - name: aws-logs-metric-filters-describe
     arguments:
     - name: log_group_name
       description: The name of the log group.

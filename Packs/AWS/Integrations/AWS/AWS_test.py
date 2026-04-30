@@ -14805,18 +14805,18 @@ def test_log_events_filter_command_success(mocker):
     result = CloudWatchLogs.log_events_filter_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    events = result.outputs["AWS.CloudWatchLogs.Events(val.EventId && val.EventId == obj.EventId)"]
+    events = result.outputs["AWS.CloudWatchLogs.Events(val.eventId && val.eventId == obj.eventId)"]
     assert len(events) == 1
-    assert events[0]["LogStreamName"] == "stream-1"
-    assert events[0]["Message"] == "Test log message"
-    assert events[0]["EventId"] == "event-123"
+    assert events[0]["logStreamName"] == "stream-1"
+    assert events[0]["message"] == "Test log message"
+    assert events[0]["eventId"] == "event-123"
 
 
 def test_log_events_filter_command_with_pagination(mocker):
     """
     Given: A mocked CloudWatch Logs client that returns events with a nextToken.
     When: log_events_filter_command is called.
-    Then: It should include the nextToken in outputs and readable output.
+    Then: It should include the nextToken in outputs.
     """
     from AWS import CloudWatchLogs
 
@@ -14840,7 +14840,6 @@ def test_log_events_filter_command_with_pagination(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs["AWS.CloudWatchLogs(true)"]["EventsNextToken"] == "abc123token"
-    assert "Next Page Token: abc123token" in result.readable_output
 
 
 def test_log_events_filter_command_no_events(mocker):
@@ -14931,12 +14930,12 @@ def test_log_groups_describe_command_success(mocker):
     result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName)"]
+    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName)"]
     assert len(data) == 1
-    assert data[0]["LogGroupName"] == "my-log-group"
-    assert data[0]["RetentionInDays"] == 30
-    assert data[0]["MetricFilterCount"] == 2
-    assert data[0]["StoredBytes"] == 1024
+    assert data[0]["logGroupName"] == "my-log-group"
+    assert data[0]["retentionInDays"] == 30
+    assert data[0]["metricFilterCount"] == 2
+    assert data[0]["storedBytes"] == 1024
 
 
 def test_log_groups_describe_command_with_pagination(mocker):
@@ -14958,7 +14957,6 @@ def test_log_groups_describe_command_with_pagination(mocker):
     result = CloudWatchLogs.log_groups_describe_command(mock_client, args)
 
     assert result.outputs["AWS.CloudWatchLogs(true)"]["LogGroupsNextToken"] == "next-page-token"
-    assert "Next Page Token: next-page-token" in result.readable_output
 
 
 def test_log_groups_describe_command_no_results(mocker):
@@ -15009,13 +15007,12 @@ def test_log_streams_describe_command_success(mocker):
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName).LogStreams"]
+    data = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName).LogStreams"]
     assert len(data) == 1
-    assert data[0]["LogStreamName"] == "my-stream"
-    assert data[0]["LogGroupName"] == "my-group"
-    assert data[0]["FirstEventTimestamp"] == 1609459200000
-    assert data[0]["StoredBytes"] == 512
-    assert data[0]["UploadSequenceToken"] == "token-abc"
+    assert data[0]["logStreamName"] == "my-stream"
+    assert data[0]["firstEventTimestamp"] == 1609459200000
+    assert data[0]["storedBytes"] == 512
+    assert data[0]["uploadSequenceToken"] == "token-abc"
 
 
 def test_log_streams_describe_command_with_pagination(mocker):
@@ -15089,12 +15086,12 @@ def test_log_events_put_command_success(mocker):
     """
     Given: A mocked CloudWatch Logs client and valid log event arguments.
     When: log_events_put_command is called.
-    Then: It should return CommandResults with the next sequence token.
+    Then: It should return CommandResults with a success message.
     """
     from AWS import CloudWatchLogs
 
     mock_client = mocker.Mock()
-    mock_client.put_log_events.return_value = {"nextSequenceToken": "next-token-abc"}
+    mock_client.put_log_events.return_value = {}
 
     args = {
         "account_id": "123456789012",
@@ -15108,7 +15105,7 @@ def test_log_events_put_command_success(mocker):
     result = CloudWatchLogs.log_events_put_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["NextSequenceToken"] == "next-token-abc"
+    assert "Successfully created event!" in result.readable_output
     call_kwargs = mock_client.put_log_events.call_args[1]
     assert call_kwargs["logGroupName"] == "my-log-group"
     assert call_kwargs["logStreamName"] == "my-log-stream"
@@ -15116,16 +15113,18 @@ def test_log_events_put_command_success(mocker):
     assert call_kwargs["logEvents"][0]["message"] == "Test log event"
 
 
-def test_log_events_put_command_with_sequence_token(mocker):
+def test_log_events_put_command_with_rejected_info(mocker):
     """
-    Given: A mocked CloudWatch Logs client with a sequence token argument.
-    When: log_events_put_command is called with a sequence_token.
-    Then: It should include the sequenceToken in the API call.
+    Given: A mocked CloudWatch Logs client that returns rejected log events info.
+    When: log_events_put_command is called.
+    Then: It should include the rejected info in outputs.
     """
     from AWS import CloudWatchLogs
 
     mock_client = mocker.Mock()
-    mock_client.put_log_events.return_value = {"nextSequenceToken": "next-token-def"}
+    mock_client.put_log_events.return_value = {
+        "rejectedLogEventsInfo": {"tooNewLogEventStartIndex": 1},
+    }
 
     args = {
         "account_id": "123456789012",
@@ -15134,13 +15133,12 @@ def test_log_events_put_command_with_sequence_token(mocker):
         "log_stream_name": "my-log-stream",
         "timestamp": "1609459200000",
         "message": "Test",
-        "sequence_token": "prev-token-abc",
     }
 
-    CloudWatchLogs.log_events_put_command(mock_client, args)
+    result = CloudWatchLogs.log_events_put_command(mock_client, args)
 
-    call_kwargs = mock_client.put_log_events.call_args[1]
-    assert call_kwargs["sequenceToken"] == "prev-token-abc"
+    assert isinstance(result, CommandResults)
+    assert result.outputs["rejectedLogEventsInfo"] == {"tooNewLogEventStartIndex": 1}
 
 
 def test_metric_filter_put_command_success(mocker):
@@ -15197,7 +15195,7 @@ def test_metric_filter_put_command_with_optional_params(mocker):
         "metric_namespace": "MyApp",
         "metric_value": "1",
         "default_value": "0",
-        "dimensions": '{"EventType": "$.eventType"}',
+        "dimensions": "key=EventType,value=$.eventType",
         "unit": "Count",
         "apply_on_transformed_logs": "true",
     }
@@ -15265,7 +15263,7 @@ def test_metric_filters_describe_command_success(mocker):
     result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    raw = result.outputs["AWS.CloudWatchLogs.MetricFilters(val.FilterName && val.FilterName == obj.FilterName)"]
+    raw = result.outputs["AWS.CloudWatchLogs.MetricFilters(val.filterName && val.filterName == obj.filterName)"]
     assert len(raw) == 1
     assert raw[0]["filterName"] == "ErrorFilter"
 
@@ -15296,7 +15294,6 @@ def test_metric_filters_describe_command_with_pagination(mocker):
     result = CloudWatchLogs.metric_filters_describe_command(mock_client, args)
 
     assert result.outputs["AWS.CloudWatchLogs(true)"]["MetricFiltersNextToken"] == "metric-next-token"
-    assert "Next Page Token: metric-next-token" in result.readable_output
 
 
 def test_metric_filters_describe_command_no_results(mocker):

@@ -4980,14 +4980,14 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 | AWS.EC2.TrafficMirrorSessions.Description | string | The description of the Traffic Mirror session. |
 | AWS.EC2.TrafficMirrorSessions.Tags | array | The tags assigned to the Traffic Mirror session. |
 
-### aws-cloudwatch-log-group-create
+### aws-logs-log-group-create
 
 ***
 Creates a log group with the specified name.
 
 #### Base Command
 
-`aws-cloudwatch-log-group-create`
+`aws-logs-log-group-create`
 
 #### Input
 
@@ -5005,14 +5005,14 @@ Creates a log group with the specified name.
 
 There is no context output for this command.
 
-### aws-cloudwatch-log-stream-create
+### aws-logs-log-stream-create
 
 ***
 Creates a log stream for the specified log group.
 
 #### Base Command
 
-`aws-cloudwatch-log-stream-create`
+`aws-logs-log-stream-create`
 
 #### Input
 
@@ -5027,14 +5027,14 @@ Creates a log stream for the specified log group.
 
 There is no context output for this command.
 
-### aws-cloudwatch-log-group-delete
+### aws-logs-log-group-delete
 
 ***
 Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
 
 #### Base Command
 
-`aws-cloudwatch-log-group-delete`
+`aws-logs-log-group-delete`
 
 #### Input
 
@@ -5048,14 +5048,14 @@ Deletes the specified log group and permanently deletes all the archived log eve
 
 There is no context output for this command.
 
-### aws-cloudwatch-log-stream-delete
+### aws-logs-log-stream-delete
 
 ***
 Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
 
 #### Base Command
 
-`aws-cloudwatch-log-stream-delete`
+`aws-logs-log-stream-delete`
 
 #### Input
 
@@ -5070,14 +5070,14 @@ Deletes the specified log stream and permanently deletes all the archived log ev
 
 There is no context output for this command.
 
-### aws-cloudwatch-log-events-filter
+### aws-logs-log-events-filter
 
 ***
 Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
 
 #### Base Command
 
-`aws-cloudwatch-log-events-filter`
+`aws-logs-log-events-filter`
 
 #### Input
 
@@ -5107,14 +5107,14 @@ Lists log events from the specified log group. You can list all the log events o
 | AWS.CloudWatchLogs.Events.EventId | string | The ID of the event. |
 | AWS.CloudWatchLogs.EventsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
-### aws-cloudwatch-log-groups-describe
+### aws-logs-log-groups-describe
 
 ***
 Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
 
 #### Base Command
 
-`aws-cloudwatch-log-groups-describe`
+`aws-logs-log-groups-describe`
 
 #### Input
 
@@ -5143,14 +5143,14 @@ Lists the specified log groups. You can list all your log groups or filter the r
 | AWS.CloudWatchLogs.LogGroups.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the CMK to use when encrypting log data. |
 | AWS.CloudWatchLogs.LogGroupsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
-### aws-cloudwatch-log-streams-describe
+### aws-logs-log-streams-describe
 
 ***
 Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
 
 #### Base Command
 
-`aws-cloudwatch-log-streams-describe`
+`aws-logs-log-streams-describe`
 
 #### Input
 
@@ -5181,14 +5181,14 @@ Lists the log streams for the specified log group. You can list all the log stre
 | AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes | number | The number of bytes stored. |
 | AWS.CloudWatchLogs.LogStreamsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
-### aws-cloudwatch-retention-policy-put
+### aws-logs-retention-policy-put
 
 ***
 Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
 
 #### Base Command
 
-`aws-cloudwatch-retention-policy-put`
+`aws-logs-retention-policy-put`
 
 #### Input
 
@@ -5203,14 +5203,14 @@ Sets the retention of the specified log group. A retention policy allows you to 
 
 There is no context output for this command.
 
-### aws-cloudwatch-retention-policy-delete
+### aws-logs-retention-policy-delete
 
 ***
 Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
 
 #### Base Command
 
-`aws-cloudwatch-retention-policy-delete`
+`aws-logs-retention-policy-delete`
 
 #### Input
 
@@ -5224,14 +5224,14 @@ Deletes the specified retention policy. Log events do not expire if they belong 
 
 There is no context output for this command.
 
-### aws-cloudwatch-log-events-put
+### aws-logs-log-events-put
 
 ***
 Uploads a batch of log events to the specified log stream.
 
 #### Base Command
 
-`aws-cloudwatch-log-events-put`
+`aws-logs-log-events-put`
 
 #### Input
 
@@ -5241,7 +5241,6 @@ Uploads a batch of log events to the specified log stream.
 | log_stream_name | The name of the log stream. | Required |
 | timestamp | The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). | Required |
 | message | The raw event message. | Required |
-| sequence_token | The sequence token obtained from the response of the previous PutLogEvents call. An upload in a newly created log stream does not require a sequence token. | Optional |
 | region | The AWS Region. | Required |
 | account_id | The AWS account ID. | Required |
 
@@ -5249,16 +5248,17 @@ Uploads a batch of log events to the specified log stream.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.PutLogEvents.NextSequenceToken | string | The next sequence token. |
+| AWS.CloudWatchLogs.PutLogEvents.rejectedLogEventsInfo | Unknown | Information about rejected log events, including the reason for rejection. |
+| AWS.CloudWatchLogs.PutLogEvents.rejectedEntityInfo | Unknown | Information about rejected entity, including the reason for rejection. |
 
-### aws-cloudwatch-metric-filter-put
+### aws-logs-metric-filter-put
 
 ***
 Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
 
 #### Base Command
 
-`aws-cloudwatch-metric-filter-put`
+`aws-logs-metric-filter-put`
 
 #### Input
 
@@ -5281,14 +5281,14 @@ Creates or updates a metric filter and associates it with the specified log grou
 
 There is no context output for this command.
 
-### aws-cloudwatch-metric-filter-delete
+### aws-logs-metric-filter-delete
 
 ***
 Deletes the specified metric filter.
 
 #### Base Command
 
-`aws-cloudwatch-metric-filter-delete`
+`aws-logs-metric-filter-delete`
 
 #### Input
 
@@ -5303,14 +5303,14 @@ Deletes the specified metric filter.
 
 There is no context output for this command.
 
-### aws-cloudwatch-metric-filters-describe
+### aws-logs-metric-filters-describe
 
 ***
 Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
 
 #### Base Command
 
-`aws-cloudwatch-metric-filters-describe`
+`aws-logs-metric-filters-describe`
 
 #### Input
 

@@ -7962,17 +7962,17 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
+        tags = args.get("tags")
+        deletion_protection = args.get("deletion_protection_enabled")
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),
+            "kmsKeyId": args.get("kms_key_id"),
+            "logGroupClass": args.get("log_group_class"),
+            "tags": {tag["Key"]: tag["Value"] for tag in parse_tag_field(tags)} if tags else None,
+            "deletionProtectionEnabled": argToBoolean(deletion_protection) if deletion_protection is not None else None,
         }
-        if kms_key_id := args.get("kms_key_id"):
-            kwargs["kmsKeyId"] = kms_key_id
-        if log_group_class := args.get("log_group_class"):
-            kwargs["logGroupClass"] = log_group_class
-        if tags := args.get("tags"):
-            kwargs["tags"] = {tag["Key"]: tag["Value"] for tag in parse_tag_field(tags)}
-        if (deletion_protection := args.get("deletion_protection_enabled")) is not None:
-            kwargs["deletionProtectionEnabled"] = argToBoolean(deletion_protection)
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
 
         response = client.create_log_group(**kwargs)
 
@@ -8004,6 +8004,7 @@ class CloudWatchLogs:
             "logGroupName": args.get("log_group_name"),
             "logStreamName": args.get("log_stream_name"),
         }
+        demisto.debug(f"{kwargs=}")
 
         response = client.create_log_stream(**kwargs)
 
@@ -8032,15 +8033,14 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
-        kwargs: dict[str, Any] = {
-            "logGroupName": args.get("log_group_name"),
-        }
+        log_group_name = args.get("log_group_name")
+        demisto.debug(f"{log_group_name=}")
 
-        response = client.delete_log_group(**kwargs)
+        response = client.delete_log_group(logGroupName=log_group_name)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             return CommandResults(
-                readable_output=f"Successfully deleted log group: {args.get('log_group_name')}",
+                readable_output=f"Successfully deleted log group: {log_group_name}",
                 raw_response=response,
             )
         return AWSErrorHandler.handle_response_error(response)
@@ -8067,6 +8067,7 @@ class CloudWatchLogs:
             "logGroupName": args.get("log_group_name"),
             "logStreamName": args.get("log_stream_name"),
         }
+        demisto.debug(f"{kwargs=}")
 
         response = client.delete_log_stream(**kwargs)
 
@@ -8104,50 +8105,42 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
+        log_stream_names = args.get("log_stream_names")
+        unmask = args.get("unmask")
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),
+            "logGroupIdentifier": args.get("log_group_identifier"),
+            "logStreamNames": argToList(log_stream_names) if log_stream_names else None,
+            "logStreamNamePrefix": args.get("log_stream_name_prefix"),
+            "startTime": arg_to_number(args.get("start_time")),
+            "endTime": arg_to_number(args.get("end_time")),
+            "filterPattern": args.get("filter_pattern"),
+            "unmask": argToBoolean(unmask) if unmask is not None else None,
         }
-
-        if log_group_identifier := args.get("log_group_identifier"):
-            kwargs["logGroupIdentifier"] = log_group_identifier
-        if log_stream_names := args.get("log_stream_names"):
-            kwargs["logStreamNames"] = argToList(log_stream_names)
-        if log_stream_name_prefix := args.get("log_stream_name_prefix"):
-            kwargs["logStreamNamePrefix"] = log_stream_name_prefix
-        if start_time := arg_to_number(args.get("start_time")):
-            kwargs["startTime"] = start_time
-        if end_time := arg_to_number(args.get("end_time")):
-            kwargs["endTime"] = end_time
-        if filter_pattern := args.get("filter_pattern"):
-            kwargs["filterPattern"] = filter_pattern
-        if limit := arg_to_number(args.get("limit")):
-            kwargs["limit"] = limit
-        if next_token := args.get("next_token"):
-            kwargs["nextToken"] = next_token
-        if (unmask := args.get("unmask")) is not None:
-            kwargs["unmask"] = argToBoolean(unmask)
+        kwargs.update(build_pagination_kwargs(args, next_token_name="nextToken", limit_name="limit", max_limit=10000))
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
 
         response = client.filter_log_events(**kwargs)
 
-        events = []
-        for event in response.get("events", []):
-            events.append(
-                {
-                    "LogStreamName": event.get("logStreamName"),
-                    "Timestamp": event.get("timestamp"),
-                    "Message": event.get("message"),
-                    "IngestionTime": event.get("ingestionTime"),
-                    "EventId": event.get("eventId"),
-                }
+        events = response.get("events", [])
+
+        if not events:
+            return CommandResults(
+                readable_output="No events were found.",
             )
 
-        readable = tableToMarkdown("AWS CloudWatch Logs Events", events) if events else "No events were found."
+        readable = tableToMarkdown(
+            "AWS CloudWatch Logs Events",
+            events,
+            headers=["logStreamName", "timestamp", "message", "ingestionTime", "eventId"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
         next_token = response.get("nextToken")
-        if next_token:
-            readable = f"Next Page Token: {next_token}\n\n" + readable
 
         outputs = {
-            "AWS.CloudWatchLogs.Events(val.EventId && val.EventId == obj.EventId)": events,
+            "AWS.CloudWatchLogs.Events(val.eventId && val.eventId == obj.eventId)": events,
             "AWS.CloudWatchLogs(true)": {"EventsNextToken": next_token},
         }
 
@@ -8179,49 +8172,40 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
-        kwargs: dict[str, Any] = {}
-
-        if prefix := args.get("log_group_name_prefix"):
-            kwargs["logGroupNamePrefix"] = prefix
-        if pattern := args.get("log_group_name_pattern"):
-            kwargs["logGroupNamePattern"] = pattern
-        if account_identifiers := args.get("account_identifiers"):
-            kwargs["accountIdentifiers"] = argToList(account_identifiers)
-        if (include_linked := args.get("include_linked_accounts")) is not None:
-            kwargs["includeLinkedAccounts"] = argToBoolean(include_linked)
-        if log_group_class := args.get("log_group_class"):
-            kwargs["logGroupClass"] = log_group_class
-        if limit := arg_to_number(args.get("limit")):
-            kwargs["limit"] = limit
-        if next_token := args.get("next_token"):
-            kwargs["nextToken"] = next_token
+        account_identifiers = args.get("account_identifiers")
+        include_linked = args.get("include_linked_accounts")
+        kwargs: dict[str, Any] = {
+            "logGroupNamePrefix": args.get("log_group_name_prefix"),
+            "logGroupNamePattern": args.get("log_group_name_pattern"),
+            "accountIdentifiers": argToList(account_identifiers) if account_identifiers else None,
+            "includeLinkedAccounts": argToBoolean(include_linked) if include_linked is not None else None,
+            "logGroupClass": args.get("log_group_class"),
+            "limit": arg_to_number(args.get("limit")),
+            "nextToken": args.get("next_token"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
 
         response = client.describe_log_groups(**kwargs)
 
-        data = []
-        for log_group in response.get("logGroups", []):
-            entry: dict[str, Any] = {
-                "LogGroupName": log_group.get("logGroupName"),
-                "CreationTime": log_group.get("creationTime"),
-                "Arn": log_group.get("arn"),
-            }
-            if "retentionInDays" in log_group:
-                entry["RetentionInDays"] = log_group["retentionInDays"]
-            if "metricFilterCount" in log_group:
-                entry["MetricFilterCount"] = log_group["metricFilterCount"]
-            if "storedBytes" in log_group:
-                entry["StoredBytes"] = log_group["storedBytes"]
-            if "kmsKeyId" in log_group:
-                entry["KmsKeyId"] = log_group["kmsKeyId"]
-            data.append(entry)
+        data = response.get("logGroups", [])
 
-        readable = tableToMarkdown("AWS CloudWatch Log Groups", data) if data else "No log groups were found."
+        if not data:
+            return CommandResults(
+                readable_output="No log groups were found.",
+            )
+
+        readable = tableToMarkdown(
+            "AWS CloudWatch Log Groups",
+            data,
+            headers=["logGroupName", "creationTime", "arn", "retentionInDays", "metricFilterCount", "storedBytes", "kmsKeyId"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
         next_token = response.get("nextToken")
-        if next_token:
-            readable = f"Next Page Token: {next_token}\n\n" + readable
 
         outputs = {
-            "AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName)": data,
+            "AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName)": data,
             "AWS.CloudWatchLogs(true)": {"LogGroupsNextToken": next_token},
         }
 
@@ -8253,52 +8237,54 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
-        kwargs: dict[str, Any] = {
-            "logGroupName": args.get("log_group_name"),
-        }
+        log_group_name = args.get("log_group_name")
+        log_group_identifier = args.get("log_group_identifier")
+        if not log_group_name and not log_group_identifier:
+            raise DemistoException("You must provide either log_group_name or log_group_identifier.")
+        if log_group_name and log_group_identifier:
+            raise DemistoException("You must provide either log_group_name or log_group_identifier, but not both.")
 
-        if log_group_identifier := args.get("log_group_identifier"):
-            kwargs["logGroupIdentifier"] = log_group_identifier
-        if prefix := args.get("log_stream_name_prefix"):
-            kwargs["logStreamNamePrefix"] = prefix
-        if limit := arg_to_number(args.get("limit")):
-            kwargs["limit"] = limit
-        if order_by := args.get("order_by"):
-            kwargs["orderBy"] = order_by
-        if (descending := args.get("descending")) is not None:
-            kwargs["descending"] = argToBoolean(descending)
-        if next_token := args.get("next_token"):
-            kwargs["nextToken"] = next_token
+        descending = args.get("descending")
+        kwargs: dict[str, Any] = {
+            "logGroupName": log_group_name,
+            "logGroupIdentifier": log_group_identifier,
+            "logStreamNamePrefix": args.get("log_stream_name_prefix"),
+            "orderBy": args.get("order_by"),
+            "descending": argToBoolean(descending) if descending is not None else None,
+        }
+        kwargs.update(build_pagination_kwargs(args, next_token_name="nextToken", limit_name="limit"))
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
 
         response = client.describe_log_streams(**kwargs)
 
-        data = []
-        for log_stream in response.get("logStreams", []):
-            entry: dict[str, Any] = {
-                "LogGroupName": args.get("log_group_name"),
-                "LogStreamName": log_stream.get("logStreamName"),
-                "CreationTime": log_stream.get("creationTime"),
-                "Arn": log_stream.get("arn"),
-            }
-            if "firstEventTimestamp" in log_stream:
-                entry["FirstEventTimestamp"] = log_stream["firstEventTimestamp"]
-            if "lastEventTimestamp" in log_stream:
-                entry["LastEventTimestamp"] = log_stream["lastEventTimestamp"]
-            if "storedBytes" in log_stream:
-                entry["StoredBytes"] = log_stream["storedBytes"]
-            if "lastIngestionTime" in log_stream:
-                entry["LastIngestionTime"] = log_stream["lastIngestionTime"]
-            if "uploadSequenceToken" in log_stream:
-                entry["UploadSequenceToken"] = log_stream["uploadSequenceToken"]
-            data.append(entry)
+        data = response.get("logStreams", [])
 
-        readable = tableToMarkdown("AWS CloudWatch Log Streams", data) if data else "No log streams were found."
+        if not data:
+            return CommandResults(
+                readable_output="No log streams were found.",
+            )
+
+        readable = tableToMarkdown(
+            "AWS CloudWatch Log Streams",
+            data,
+            headers=[
+                "logStreamName",
+                "creationTime",
+                "arn",
+                "firstEventTimestamp",
+                "lastEventTimestamp",
+                "storedBytes",
+                "lastIngestionTime",
+                "uploadSequenceToken",
+            ],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
         next_token = response.get("nextToken")
-        if next_token:
-            readable = f"Next Page Token: {next_token}\n\n" + readable
 
         outputs = {
-            "AWS.CloudWatchLogs.LogGroups(val.LogGroupName && val.LogGroupName == obj.LogGroupName).LogStreams": data,
+            "AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName).LogStreams": data,
             "AWS.CloudWatchLogs(true)": {"LogStreamsNextToken": next_token},
         }
 
@@ -8329,6 +8315,7 @@ class CloudWatchLogs:
             "logGroupName": args.get("log_group_name"),
             "retentionInDays": arg_to_number(args.get("retention_in_days")),
         }
+        demisto.debug(f"{kwargs=}")
 
         response = client.put_retention_policy(**kwargs)
 
@@ -8357,11 +8344,13 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
-        response = client.delete_retention_policy(logGroupName=args.get("log_group_name"))
+        log_group_name = args.get("log_group_name")
+        demisto.debug(f"{log_group_name=}")
+        response = client.delete_retention_policy(logGroupName=log_group_name)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             return CommandResults(
-                readable_output=f"Successfully deleted retention policy for log group: {args.get('log_group_name')}",
+                readable_output=f"Successfully deleted retention policy for log group: {log_group_name}",
                 raw_response=response,
             )
         return AWSErrorHandler.handle_response_error(response)
@@ -8378,10 +8367,9 @@ class CloudWatchLogs:
                 - log_stream_name: The name of the log stream (required).
                 - timestamp: The time the event occurred in milliseconds since epoch (required).
                 - message: The raw event message (required).
-                - sequence_token: The sequence token from a previous PutLogEvents call (optional).
 
         Returns:
-            CommandResults: Results containing the next sequence token.
+            CommandResults: Results of the operation.
 
         Raises:
             DemistoException: If the AWS API call fails.
@@ -8396,15 +8384,18 @@ class CloudWatchLogs:
                 }
             ],
         }
-        if sequence_token := args.get("sequence_token"):
-            kwargs["sequenceToken"] = sequence_token
+
+        demisto.debug(f"{kwargs=}")
 
         response = client.put_log_events(**kwargs)
 
-        data = {"NextSequenceToken": response.get("nextSequenceToken")}
+        data = {
+            "rejectedLogEventsInfo": response.get("rejectedLogEventsInfo"),
+            "rejectedEntityInfo": response.get("rejectedEntityInfo"),
+        }
+        remove_nulls_from_dictionary(data)
 
-        readable = tableToMarkdown("AWS CloudWatch Log Put Log Events", data)
-        readable = "Successfully created event!\n" + readable
+        readable = "Successfully created event!\n"
 
         return CommandResults(
             outputs_prefix="AWS.CloudWatchLogs.PutLogEvents",
@@ -8438,27 +8429,28 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
+        default_value = args.get("default_value")
+        dimensions = args.get("dimensions")
+        apply_on_transformed = args.get("apply_on_transformed_logs")
         metric_transformation: dict[str, Any] = {
             "metricName": args.get("metric_name"),
             "metricNamespace": args.get("metric_namespace"),
             "metricValue": args.get("metric_value"),
+            "defaultValue": float(default_value) if default_value else None,
+            "dimensions": {tag["Key"]: tag["Value"] for tag in parse_tag_field(dimensions)} if dimensions else None,
+            "unit": args.get("unit"),
         }
-        if default_value := args.get("default_value"):
-            metric_transformation["defaultValue"] = float(default_value)
-        if dimensions := args.get("dimensions"):
-            metric_transformation["dimensions"] = json.loads(dimensions) if isinstance(dimensions, str) else dimensions
-        if unit := args.get("unit"):
-            metric_transformation["unit"] = unit
+        remove_nulls_from_dictionary(metric_transformation)
 
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),
             "filterName": args.get("filter_name"),
             "filterPattern": args.get("filter_pattern"),
             "metricTransformations": [metric_transformation],
+            "applyOnTransformedLogs": argToBoolean(apply_on_transformed) if apply_on_transformed is not None else None,
         }
-
-        if (apply_on_transformed := args.get("apply_on_transformed_logs")) is not None:
-            kwargs["applyOnTransformedLogs"] = argToBoolean(apply_on_transformed)
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
 
         response = client.put_metric_filter(**kwargs)
 
@@ -8492,6 +8484,8 @@ class CloudWatchLogs:
             "filterName": args.get("filter_name"),
         }
 
+        demisto.debug(f"{kwargs=}")
+
         response = client.delete_metric_filter(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
@@ -8523,49 +8517,37 @@ class CloudWatchLogs:
         Raises:
             DemistoException: If the AWS API call fails.
         """
-        kwargs: dict[str, Any] = {}
-
-        if log_group_name := args.get("log_group_name"):
-            kwargs["logGroupName"] = log_group_name
-        if filter_name_prefix := args.get("filter_name_prefix"):
-            kwargs["filterNamePrefix"] = filter_name_prefix
-        if metric_name := args.get("metric_name"):
-            kwargs["metricName"] = metric_name
-        if metric_namespace := args.get("metric_namespace"):
-            kwargs["metricNamespace"] = metric_namespace
-        if limit := arg_to_number(args.get("limit")):
-            kwargs["limit"] = limit
-        if next_token := args.get("next_token"):
-            kwargs["nextToken"] = next_token
+        kwargs: dict[str, Any] = {
+            "logGroupName": args.get("log_group_name"),
+            "filterNamePrefix": args.get("filter_name_prefix"),
+            "metricName": args.get("metric_name"),
+            "metricNamespace": args.get("metric_namespace"),
+        }
+        kwargs.update(build_pagination_kwargs(args, next_token_name="nextToken", limit_name="limit"))
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"{kwargs=}")
 
         response = client.describe_metric_filters(**kwargs)
 
-        data = []
-        for metric in response.get("metricFilters", []):
-            data.append(
-                {
-                    "FilterName": metric.get("filterName"),
-                    "FilterPattern": metric.get("filterPattern"),
-                    "CreationTime": metric.get("creationTime"),
-                    "LogGroupName": metric.get("logGroupName"),
-                }
-            )
+        metric_filters = response.get("metricFilters", [])
+        if not metric_filters:
+            return CommandResults(readable_output="No metric filters were found.")
 
-        raw = json.loads(json.dumps(response.get("metricFilters", []), cls=DatetimeEncoder))
-
-        readable = tableToMarkdown("AWS CloudWatch Metric Filters", data) if data else "No metric filters were found."
+        raw = serialize_response_with_datetime_encoding(response).get("metricFilters", [])
         next_token = response.get("nextToken")
-        if next_token:
-            readable = f"Next Page Token: {next_token}\n\n" + readable
-
-        outputs = {
-            "AWS.CloudWatchLogs.MetricFilters(val.FilterName && val.FilterName == obj.FilterName)": raw,
-            "AWS.CloudWatchLogs(true)": {"MetricFiltersNextToken": next_token},
-        }
 
         return CommandResults(
-            outputs=outputs,
-            readable_output=readable,
+            outputs={
+                "AWS.CloudWatchLogs.MetricFilters(val.filterName && val.filterName == obj.filterName)": raw,
+                "AWS.CloudWatchLogs(true)": {"MetricFiltersNextToken": next_token},
+            },
+            readable_output=tableToMarkdown(
+                "AWS CloudWatch Metric Filters",
+                metric_filters,
+                headers=["filterName", "filterPattern", "creationTime", "logGroupName"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
             raw_response=response,
         )
 
@@ -8747,19 +8729,19 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-hosts-allocate": EC2.allocate_hosts_command,
     "aws-ec2-hosts-release": EC2.release_hosts_command,
     "aws-ec2-traffic-mirror-session-create": EC2.create_traffic_mirror_session_command,
-    "aws-cloudwatch-log-group-create": CloudWatchLogs.log_group_create_command,
-    "aws-cloudwatch-log-stream-create": CloudWatchLogs.log_stream_create_command,
-    "aws-cloudwatch-log-group-delete": CloudWatchLogs.log_group_delete_command,
-    "aws-cloudwatch-log-stream-delete": CloudWatchLogs.log_stream_delete_command,
-    "aws-cloudwatch-log-events-filter": CloudWatchLogs.log_events_filter_command,
-    "aws-cloudwatch-log-groups-describe": CloudWatchLogs.log_groups_describe_command,
-    "aws-cloudwatch-log-streams-describe": CloudWatchLogs.log_streams_describe_command,
-    "aws-cloudwatch-retention-policy-put": CloudWatchLogs.retention_policy_put_command,
-    "aws-cloudwatch-retention-policy-delete": CloudWatchLogs.retention_policy_delete_command,
-    "aws-cloudwatch-log-events-put": CloudWatchLogs.log_events_put_command,
-    "aws-cloudwatch-metric-filter-put": CloudWatchLogs.metric_filter_put_command,
-    "aws-cloudwatch-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
-    "aws-cloudwatch-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
+    "aws-logs-log-group-create": CloudWatchLogs.log_group_create_command,
+    "aws-logs-log-stream-create": CloudWatchLogs.log_stream_create_command,
+    "aws-logs-log-group-delete": CloudWatchLogs.log_group_delete_command,
+    "aws-logs-log-stream-delete": CloudWatchLogs.log_stream_delete_command,
+    "aws-logs-log-events-filter": CloudWatchLogs.log_events_filter_command,
+    "aws-logs-log-groups-describe": CloudWatchLogs.log_groups_describe_command,
+    "aws-logs-log-streams-describe": CloudWatchLogs.log_streams_describe_command,
+    "aws-logs-retention-policy-put": CloudWatchLogs.retention_policy_put_command,
+    "aws-logs-retention-policy-delete": CloudWatchLogs.retention_policy_delete_command,
+    "aws-logs-log-events-put": CloudWatchLogs.log_events_put_command,
+    "aws-logs-metric-filter-put": CloudWatchLogs.metric_filter_put_command,
+    "aws-logs-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
+    "aws-logs-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -8926,19 +8908,19 @@ COMMAND_SERVICE_MAP = {
     "aws-billing-forecast-list": "ce",
     "aws-billing-budgets-list": "budgets",
     "aws-billing-budget-notification-list": "budgets",
-    "aws-cloudwatch-log-group-create": "logs",
-    "aws-cloudwatch-log-stream-create": "logs",
-    "aws-cloudwatch-log-group-delete": "logs",
-    "aws-cloudwatch-log-stream-delete": "logs",
-    "aws-cloudwatch-log-events-filter": "logs",
-    "aws-cloudwatch-log-groups-describe": "logs",
-    "aws-cloudwatch-log-streams-describe": "logs",
-    "aws-cloudwatch-retention-policy-put": "logs",
-    "aws-cloudwatch-retention-policy-delete": "logs",
-    "aws-cloudwatch-log-events-put": "logs",
-    "aws-cloudwatch-metric-filter-put": "logs",
-    "aws-cloudwatch-metric-filter-delete": "logs",
-    "aws-cloudwatch-metric-filters-describe": "logs",
+    "aws-logs-log-group-create": "logs",
+    "aws-logs-log-stream-create": "logs",
+    "aws-logs-log-group-delete": "logs",
+    "aws-logs-log-stream-delete": "logs",
+    "aws-logs-log-events-filter": "logs",
+    "aws-logs-log-groups-describe": "logs",
+    "aws-logs-log-streams-describe": "logs",
+    "aws-logs-retention-policy-put": "logs",
+    "aws-logs-retention-policy-delete": "logs",
+    "aws-logs-log-events-put": "logs",
+    "aws-logs-metric-filter-put": "logs",
+    "aws-logs-metric-filter-delete": "logs",
+    "aws-logs-metric-filters-describe": "logs",
 }
 
 
