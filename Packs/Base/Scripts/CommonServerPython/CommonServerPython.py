@@ -2713,13 +2713,15 @@ def sanitize_html_output(value, allow_tags=None):
     # type: (str, Optional[Set[str]]) -> str
     """Escape HTML for safe rendering in ContentsFormat:'html' outputs.
 
-    Args:
-        value: Raw string that may contain attacker-controlled content.
-        allow_tags: Optional set of allowed HTML tag names (e.g. {'b','i','a','br','p','table','tr','td','th'}).
-                    If None, escapes everything.
+    :type value: ``str``
+    :param value: Raw string that may contain attacker-controlled content.
 
-    Returns:
-        HTML-safe string.
+    :type allow_tags: ``Optional[Set[str]]``
+    :param allow_tags: Optional set of allowed HTML tag names
+        (e.g. ``{'b','i','a','br','p','table','tr','td','th'}``). If ``None``, escapes everything.
+
+    :return: HTML-safe string.
+    :rtype: ``str``
     """
     import html as _html_mod
     if allow_tags is None:
@@ -2738,11 +2740,11 @@ def getFilePathSafe(entry_id):
 
     Prevents path traversal when callers use the returned name as a filesystem destination.
 
-    Args:
-        entry_id: The entry ID of the file.
+    :type entry_id: ``str``
+    :param entry_id: The entry ID of the file.
 
-    Returns:
-        dict with 'id', 'path', and 'name' keys, where 'name' is basenamed.
+    :return: dict with ``'id'``, ``'path'``, and ``'name'`` keys, where ``'name'`` is basenamed.
+    :rtype: ``dict``
     """
     result = demisto.getFilePath(entry_id)
     if not result:

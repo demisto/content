@@ -180,7 +180,7 @@ def _sanitize_html(html_body: str) -> str:
 
 def main():
     incident = demisto.incident()
-    html_body = (demisto.get(incident, "CustomFields.emailhtml") or demisto.get(incident, "CustomFields.emailbody") or "")
+    html_body = demisto.get(incident, "CustomFields.emailhtml") or demisto.get(incident, "CustomFields.emailbody") or ""
 
     if 'src="cid' in html_body:
         context = demisto.context()

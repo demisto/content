@@ -294,10 +294,10 @@ def main():
         # Remove symlinks before uploading - use pure Python to avoid dependency on 'find' command
         for root, dirs, files_in_dir in os.walk(dir_path):
             for name in files_in_dir + dirs:
-                full_path = os.path.join(root, name)
-                if os.path.islink(full_path):
+                full_path = Path(root) / name
+                if full_path.is_symlink():
                     try:
-                        os.unlink(full_path)
+                        full_path.unlink()
                         demisto.debug(f"Removed symlink: {full_path}")
                     except OSError:
                         demisto.debug(f"Failed to remove symlink: {full_path}")
