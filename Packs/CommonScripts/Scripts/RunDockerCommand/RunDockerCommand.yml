@@ -12,9 +12,9 @@ enabled: true
 args:
 - name: cmd
   default: true
-  description: Enter Command
+  description: Enter Command.
 - name: sysargs
-  description: enter sysargs
+  description: enter sysargs.
 outputs:
 - contextPath: CommandResults.Command
   description: This will contain the command line tool name and arguments that were ran.
