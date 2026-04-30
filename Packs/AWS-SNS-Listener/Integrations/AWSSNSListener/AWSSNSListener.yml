@@ -45,6 +45,13 @@ configuration:
   type: 8
   section: Connect
   required: false
+- additionalinfo: "Enable only when high-volume SNS bursts cause the integration to exceed the AWS SNS 15-second delivery SLA, leading to duplicate incidents from AWS retries. When enabled, notifications are acknowledged with HTTP 200 immediately and incident creation runs in the background. This is not a recommended default — keep it disabled unless your environment specifically requires parallel processing, since running concurrent background tasks increases container memory and CPU usage."
+  display: Process notifications and fetch in parallel
+  name: parallel_processing
+  defaultvalue: 'false'
+  type: 8
+  section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8

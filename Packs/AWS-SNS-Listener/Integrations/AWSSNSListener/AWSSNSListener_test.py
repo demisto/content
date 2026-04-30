@@ -313,3 +313,26 @@ def test_create_incident_background_skips_samples_when_disabled(mocker):
     create_incident_background(SAMPLE_INCIDENT)
 
     store_mock.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Tests for semaphore behavior (only used by the async/background path).
+# ---------------------------------------------------------------------------
+
+
+def test_create_incident_background_acquires_semaphore(mocker):
+    """
+    Given the asynchronous (parallel) path is used
+    When create_incident_background is invoked
+    Then the INCIDENT_CREATE_SEMAPHORE SHOULD be acquired to cap concurrency.
+    """
+    mocker.patch("AWSSNSListener.demisto.createIncidents", return_value=[{"id": "1"}])
+    mocker.patch("AWSSNSListener.demisto.updateModuleHealth")
+    mocker.patch("AWSSNSListener.time.sleep")
+    mocker.patch("AWSSNSListener.PARAMS", new={})
+    semaphore_mock = mocker.patch("AWSSNSListener.INCIDENT_CREATE_SEMAPHORE")
+
+    create_incident_background(SAMPLE_INCIDENT)
+
+    semaphore_mock.__enter__.assert_called_once()
+    semaphore_mock.__exit__.assert_called_once()

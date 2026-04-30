@@ -24,7 +24,14 @@ SAMPLE_STORE_LOCK = threading.Lock()
 RETRY_ATTEMPTS = 3
 RETRY_BACKOFF_SEC = 2
 # Caps how many demisto.createIncidents() calls run in parallel across all
+# background tasks within a single container. Only used when PARALLEL_PROCESSING
 INCIDENT_CREATE_SEMAPHORE = threading.BoundedSemaphore(20)
+# Opt-in flag: when True, Notification handling returns HTTP 200 immediately
+# and incident creation runs in a FastAPI BackgroundTasks worker thread.
+# When False (default), incident creation runs synchronously inside the request
+# handler, preserving the legacy behavior. See the YAML parameter
+# `parallel_processing` for the user-facing toggle.
+PARALLEL_PROCESSING = argToBoolean(PARAMS.get("parallel_processing", False))
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
@@ -235,15 +242,14 @@ def handle_notification(payload, raw_json):
 
 def store_samples(incident):  # pragma: no cover
     try:
-        with SAMPLE_STORE_LOCK:
-            sample_events_to_store.append(incident)
-            integration_context = get_integration_context()
-            sample_events = deque(json.loads(integration_context.get("sample_events", "[]")), maxlen=20)
-            sample_events += sample_events_to_store
-            integration_context["sample_events"] = list(sample_events)
-            set_to_integration_context_with_retries(integration_context)
+        sample_events_to_store.append(incident)
+        integration_context = get_integration_context()
+        sample_events = deque(json.loads(integration_context.get("sample_events", "[]")), maxlen=20)
+        sample_events += sample_events_to_store
+        integration_context["sample_events"] = list(sample_events)
+        set_to_integration_context_with_retries(integration_context)
     except Exception as e:
-        demisto.error(f"Failed storing sample events - {e}\n{format_exc()}")
+        demisto.error(f"Failed storing sample events - {e}")
 
 
 def _extract_message_id(incident: dict) -> str:
@@ -267,6 +273,9 @@ def create_incident_background(incident: dict) -> None:
     Concurrency is bounded by INCIDENT_CREATE_SEMAPHORE to protect the server
     from SNS burst overload.
 
+    Only invoked when the `parallel_processing` configuration parameter is
+    enabled.
+
     Args:
         incident (dict): Incident payload as produced by handle_notification().
     """
@@ -278,11 +287,14 @@ def create_incident_background(incident: dict) -> None:
                 if data:
                     demisto.debug(f"SNS msg {message_id}: created incident on attempt {attempt}")
                     if PARAMS.get("store_samples"):
-                        store_samples(incident)
+                        # store_samples() writes to the shared integration context;
+                        # serialize concurrent background threads with SAMPLE_STORE_LOCK.
+                        with SAMPLE_STORE_LOCK:
+                            store_samples(incident)
                     return
-                demisto.error(f"SNS msg {message_id}: createIncidents returned empty " f"(attempt {attempt}/{RETRY_ATTEMPTS})")
+                demisto.error(f"SNS msg {message_id}: createIncidents returned empty (attempt {attempt}/{RETRY_ATTEMPTS})")
             except Exception as e:
-                demisto.error(f"SNS msg {message_id}: createIncidents raised " f"(attempt {attempt}/{RETRY_ATTEMPTS}): {e}")
+                demisto.error(f"SNS msg {message_id}: createIncidents raised (attempt {attempt}/{RETRY_ATTEMPTS}): {e}")
             time.sleep(RETRY_BACKOFF_SEC * attempt)
 
     demisto.updateModuleHealth(f"AWS-SNS message {message_id} lost after {RETRY_ATTEMPTS} retries")
@@ -347,8 +359,21 @@ async def handle_post(
         return response
     elif type == "Notification":
         incident = handle_notification(payload, raw_json)
-        background_tasks.add_task(create_incident_background, incident)
-        return Response(status_code=status.HTTP_200_OK)
+        if PARALLEL_PROCESSING:
+            # Async path (opt-in via `parallel_processing`): ack AWS immediately,
+            # create the incident in the background with retries + Module Health.
+            background_tasks.add_task(create_incident_background, incident)
+            return Response(status_code=status.HTTP_200_OK)
+        # Legacy synchronous path (default): byte-equivalent to the original
+        # pre-fix behavior. No retries, no Module Health, no semaphore.
+        data = demisto.createIncidents(incidents=[incident])
+        demisto.debug(f"Created incident: {incident}")
+        if PARAMS.get("store_samples"):
+            store_samples(incident)
+        if not data:
+            demisto.error("Failed creating incident")
+            data = "Failed creating incident"
+        return data
     elif type == "UnsubscribeConfirmation":
         message = payload["Message"]
         demisto.debug(f"UnsubscribeConfirmation request msg: {message}")
