@@ -566,11 +566,9 @@ class Client(BaseClient):
             return []
 
 
-# The below function is used to test the connectivity with DeCYFIR API using the ping API.
-def test_module_command(client, decyfir_api_key):
+def test_module_command(client: Client, decyfir_api_key: str):  # pragma: no cover
     url = API_TEST_PATH_SUFFIX.format(decyfir_api_key)
-    response = client.get_decyfir_api_ti_data(url)
-    # response = client._http_request(url_suffix=url, method="GET", resp_type="response")
+    response = client._http_request(url_suffix=url, method="GET", resp_type="response")
     if response.status_code == 200:
         return "ok"
     elif response.status_code in [401, 403]:
@@ -672,6 +670,7 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             result = test_module_command(client, decyfir_api_key)
             demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags)

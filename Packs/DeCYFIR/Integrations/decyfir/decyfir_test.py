@@ -12,6 +12,7 @@ def util_load_json(path):
 
 def _client():
     from decyfir import Client
+
     return Client(base_url="test_url", verify=False, proxy=False)
 
 
@@ -21,10 +22,7 @@ def test_fetch_incidents(mocker):
     date_format = "%Y-%m-%dT%H:%M:%SZ"
     raw_mock_response = util_load_json("test_data/raw_alerts.json")
 
-    client = Client(
-        base_url="test_url",
-        verify=False,
-    )
+    client = _client()
     mocker.patch.object(Client, "request_decyfir_api", return_value=raw_mock_response["alerts"])
     last_fetch = (datetime.now() - timedelta(days=80)).strftime(date_format)
     last_run = {"last_fetch": last_fetch}
@@ -50,10 +48,7 @@ def test_get_take_down_list(mocker):
     mock_response = util_load_json("test_data/take_down_list.json")
 
     raw_mock_response = util_load_json("test_data/raw_take_down_list.json")
-    client = Client(
-        base_url="test_url",
-        verify=False,
-    )
+    client = _client()
     mocker.patch.object(Client, "take_down_list_data", return_value=raw_mock_response)
     da = get_take_down_list(client=client, decyfir_api_key="api_key", args={"size": "1"})
     assert da[0] == mock_response["take_down_list"]
@@ -63,45 +58,45 @@ def test_initiate_take_down_request(mocker):
     from decyfir import Client, initiate_take_down_request
 
     mock_response = util_load_json("test_data/raw_init_take_down.json")
-    client = Client(
-        base_url="test_url",
-        verify=False,
-    )
+    client = _client()
 
     mocker.patch.object(Client, "initiate_take_down", return_value=mock_response)
     da = initiate_take_down_request(client=client, decyfir_api_key="api_key", args={"uid": "63ac266713b0752aa7865100"})
 
     assert ("Error" in da) is False
 
-    # assert da[0] == "Take Down Request Created Successfully - TIcket ID: T00001"
-
 
 def test_get_severity_critical():
     from decyfir import IncidentSeverity
+
     client = _client()
     assert client.get_severity(9) == IncidentSeverity.CRITICAL
 
 
 def test_get_severity_high():
     from decyfir import IncidentSeverity
+
     client = _client()
     assert client.get_severity(6) == IncidentSeverity.HIGH
 
 
 def test_get_severity_medium():
     from decyfir import IncidentSeverity
+
     client = _client()
     assert client.get_severity(4) == IncidentSeverity.MEDIUM
 
 
 def test_get_severity_low():
     from decyfir import IncidentSeverity
+
     client = _client()
     assert client.get_severity(1) == IncidentSeverity.LOW
 
 
 def test_get_severity_unknown():
     from decyfir import IncidentSeverity
+
     client = _client()
     assert client.get_severity(0) == IncidentSeverity.UNKNOWN
 
@@ -179,6 +174,7 @@ def test_initiate_take_down_empty_content(mocker):
 
 def test_initiate_take_down_request_no_data(mocker):
     from decyfir import initiate_take_down_request
+
     client = _client()
     mocker.patch.object(client, "initiate_take_down", return_value={})
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
@@ -187,6 +183,7 @@ def test_initiate_take_down_request_no_data(mocker):
 
 def test_initiate_take_down_request_error_flag(mocker):
     from decyfir import initiate_take_down_request
+
     client = _client()
     mocker.patch.object(client, "initiate_take_down", return_value={"error": True, "response": {}})
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
@@ -194,8 +191,8 @@ def test_initiate_take_down_request_error_flag(mocker):
 
 
 def test_initiate_take_down_request_empty_response_key(mocker):
-    """data has no error but response dict is empty → error message."""
     from decyfir import initiate_take_down_request
+
     client = _client()
     mocker.patch.object(client, "initiate_take_down", return_value={"error": False, "response": {}})
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
@@ -204,6 +201,7 @@ def test_initiate_take_down_request_empty_response_key(mocker):
 
 def test_initiate_take_down_request_success(mocker):
     from decyfir import initiate_take_down_request
+
     client = _client()
     mocker.patch.object(
         client,
@@ -217,6 +215,7 @@ def test_initiate_take_down_request_success(mocker):
 
 def test_get_take_down_list_empty(mocker):
     from decyfir import get_take_down_list
+
     client = _client()
     mocker.patch.object(client, "take_down_list_data", return_value=[])
     result = get_take_down_list(client, "api_key", {})
@@ -224,8 +223,8 @@ def test_get_take_down_list_empty(mocker):
 
 
 def test_fetch_incidents_no_last_run(mocker):
-    """No last_run → uses first_fetch string via dateparser."""
     from decyfir import Client, fetch_incidents
+
     client = _client()
     mocker.patch.object(Client, "request_decyfir_api", return_value=[])
     last_fetch, incidents = fetch_incidents(
@@ -241,8 +240,8 @@ def test_fetch_incidents_no_last_run(mocker):
 
 
 def test_fetch_incidents_with_last_run(mocker):
-    """last_run provided → uses last_fetch timestamp."""
     from decyfir import Client, fetch_incidents
+
     client = _client()
     mocker.patch.object(Client, "request_decyfir_api", return_value=[])
     last_run = {"last_fetch": "2024-01-01T00:00:00Z"}
@@ -259,12 +258,10 @@ def test_fetch_incidents_with_last_run(mocker):
 
 
 def test_fetch_incidents_forbidden_exception(mocker):
-    """Forbidden in exception message → returns auth error string."""
     from decyfir import Client, fetch_incidents
+
     client = _client()
-    mocker.patch.object(
-        Client, "get_decyfir_data", side_effect=Exception("403 Forbidden access denied")
-    )
+    mocker.patch.object(Client, "get_decyfir_data", side_effect=Exception("403 Forbidden access denied"))
     result = fetch_incidents(
         client=client,
         last_run={"last_fetch": "2024-01-01T00:00:00Z"},
@@ -277,12 +274,10 @@ def test_fetch_incidents_forbidden_exception(mocker):
 
 
 def test_fetch_incidents_generic_exception(mocker):
-    """Non-Forbidden exception is re-raised."""
     from decyfir import Client, fetch_incidents
+
     client = _client()
-    mocker.patch.object(
-        Client, "get_decyfir_data", side_effect=Exception("network timeout")
-    )
+    mocker.patch.object(Client, "get_decyfir_data", side_effect=Exception("network timeout"))
     with pytest.raises(Exception, match="network timeout"):
         fetch_incidents(
             client=client,
@@ -295,8 +290,8 @@ def test_fetch_incidents_generic_exception(mocker):
 
 
 def test_fetch_incidents_all_incident_types(mocker):
-    """No incident_type → all 4 category branches run."""
     from decyfir import Client, fetch_incidents
+
     client = _client()
     mock_req = mocker.patch.object(Client, "request_decyfir_api", return_value=[])
     fetch_incidents(
@@ -309,3 +304,82 @@ def test_fetch_incidents_all_incident_types(mocker):
     )
     # 6 AS + 4 II + 3 DB + 5 SPE = 18 calls
     assert mock_req.call_count == 18
+
+
+def test_take_down_list_data_none_sub_category(mocker):
+    client = _client()
+    mocker.patch.object(client, "decyfir_api_request", return_value=[])
+    result = client.take_down_list_data("api_key", None, "0", "50")
+    assert result == []
+
+
+def test_get_decyfir_data_attack_surface(mocker):
+    from decyfir import LABEL_ATTACK_SURFACE
+
+    client = _client()
+    mocker.patch.object(client, "request_decyfir_api", return_value=[])
+    result = client.get_decyfir_data(0, "api_key", LABEL_ATTACK_SURFACE, "10")
+    # All 6 attack surface sub-types should be keys
+    assert "open-ports" in result
+    assert "ip-vulnerability" in result
+    assert "configuration" in result
+    assert "cloud-weakness" in result
+    assert "ip-reputation" in result
+    assert "certificates" in result
+
+
+def test_get_decyfir_data_impersonation(mocker):
+    from decyfir import LABEL_DIGITAL_RISK_IM_IN
+
+    client = _client()
+    mocker.patch.object(client, "request_decyfir_api", return_value=[])
+    result = client.get_decyfir_data(0, "api_key", LABEL_DIGITAL_RISK_IM_IN, "10")
+    assert "domain-it-asset" in result
+    assert "executive-people" in result
+    assert "product-solution" in result
+    assert "social-handlers" in result
+
+
+def test_get_decyfir_data_data_breach(mocker):
+    from decyfir import LABEL_DIGITAL_RISK_DB_WM
+
+    client = _client()
+    mocker.patch.object(client, "request_decyfir_api", return_value=[])
+    result = client.get_decyfir_data(0, "api_key", LABEL_DIGITAL_RISK_DB_WM, "10")
+    assert "phishing" in result
+    assert "ransomware" in result
+    assert "dark-web" in result
+
+
+def test_get_decyfir_data_social_exposure(mocker):
+    from decyfir import LABEL_DIGITAL_RISK_S_PE
+
+    client = _client()
+    mocker.patch.object(client, "request_decyfir_api", return_value=[])
+    result = client.get_decyfir_data(0, "api_key", LABEL_DIGITAL_RISK_S_PE, "10")
+    assert "source-code" in result
+    assert "malicious-mobile-apps" in result
+    assert "confidential-files" in result
+    assert "dumps-pii-cii" in result
+    assert "social-threat" in result
+
+
+def test_get_decyfir_data_no_incident_type_fetches_all(mocker):
+    client = _client()
+    mock_req = mocker.patch.object(client, "request_decyfir_api", return_value=[])
+    client.get_decyfir_data(0, "api_key", "", None)
+    # 6 AS + 4 II + 3 DBWM + 5 SPE = 18 total calls
+    assert mock_req.call_count == 18
+
+
+def test_get_decyfir_data_uses_max_fetch(mocker):
+    client = _client()
+    from decyfir import LABEL_ATTACK_SURFACE
+
+    mock_req = mocker.patch.object(client, "request_decyfir_api", return_value=[])
+    client.get_decyfir_data(12345, "api_key", LABEL_ATTACK_SURFACE, "42")
+    # Verify that the api_param_query contains size=42 and after=12345
+    call_args = mock_req.call_args_list[0]
+    query_str = call_args[0][2]  # third positional arg
+    assert "size=42" in query_str
+    assert "after=12345" in query_str
