@@ -303,6 +303,73 @@ def test_convert_decyfir_ioc_to_indicators_formats_fail(mocker):
     assert ti_data_out[0]["type"] != "Domain"
 
 
+def _make_ta_obj(confidence, name="Test Actor"):
+    """Minimal threat-actor dict that passes build_threat_intel_indicator_obj."""
+    return {
+        "type": "threat-actor",
+        "id": "threat-actor--001",
+        "name": name,
+        "confidence": confidence,
+        "description": "desc",
+        "created": "2024-01-01T00:00:00Z",
+        "modified": "2024-06-01T00:00:00Z",
+        "extensions": {
+            "extension-definition--abc": {
+                "origin-of-country": "RU",
+                "target-countries": ["US"],
+                "target-industries": ["Finance"],
+            }
+        },
+    }
+ 
+ 
+def test_build_threat_intel_indicator_obj_suspicious():
+    client = Client(base_url="test_url", verify=False, proxy=False)
+    result = client.build_threat_intel_indicator_obj(
+        data=_make_ta_obj(60), tlp_color="GREEN", feed_tags=[]
+    )
+    assert result["value"] == "Test Actor"
+    assert result["fields"]["confidence"] == 60
+ 
+ 
+def test_build_threat_intel_indicator_obj_benign():
+    client = Client(base_url="test_url", verify=False, proxy=False)
+    result = client.build_threat_intel_indicator_obj(
+        data=_make_ta_obj(20), tlp_color="GREEN", feed_tags=[]
+    )
+    assert result["value"] == "Test Actor"
+    assert result["fields"]["confidence"] == 20
+ 
+ 
+def test_build_threat_intel_indicator_obj_no_extensions():
+    """Object with no extensions key — should not raise, returns obj."""
+    obj = {
+        "type": "threat-actor",
+        "id": "threat-actor--002",
+        "name": "Ghost",
+        "confidence": 90,
+        "description": "",
+        "created": "2024-01-01T00:00:00Z",
+        "modified": "2024-06-01T00:00:00Z",
+        "extensions": {},
+    }
+    client = Client(base_url="test_url", verify=False, proxy=False)
+    # extensions is empty dict → next(iter(...)) raises StopIteration → caught → returns {}
+    result = client.build_threat_intel_indicator_obj(data=obj, tlp_color=None, feed_tags=[])
+    assert result == {}
+ 
+
+
+def test_build_threat_intel_indicator_obj_with_aliases_and_labels():
+    obj = _make_ta_obj(85)
+    obj["aliases"] = ["AKA1", "AKA2"]
+    obj["labels"] = ["apt", "espionage"]
+    client = Client(base_url="test_url", verify=False, proxy=False)
+    result = client.build_threat_intel_indicator_obj(data=obj, tlp_color="RED", feed_tags=["tag1"])
+    assert "tag1" in result["fields"]["tags"]
+    assert "apt" in result["fields"]["tags"]
+
+
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
 
@@ -728,3 +795,109 @@ def test_main_exception_in_setup(mocker):
 
     main()
     assert mock_error.called
+
+
+def test_convert_ioc_file_hash_sha256(mocker):
+    """Covers the SHA-256 hash normalisation branch."""
+    client = Client(base_url="test_url", verify=False, proxy=False)
+ 
+    ioc = {
+        "type": "indicator",
+        "id": "indicator--sha256",
+        "name": "File SHA-256 hash 'abc123'",
+        "confidence": 90,
+        "description": "",
+        "created": "2024-01-01T00:00:00Z",
+        "modified": "2024-06-01T00:00:00Z",
+        "pattern": "[file:hashes.'SHA-256' = 'abc123']",
+        "labels": [],
+        "extensions": {
+            "ext-1": {
+                "threat_actors": "",
+                "recommended_actions": "",
+                "roles": "",
+                "asn": "",
+                "country_code": "",
+            }
+        },
+    }
+    result = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="key",
+        decyfir_iocs=[ioc],
+        reputation=None,
+        tlp_color=None,
+        feed_tags=None,
+        is_data_save=False,
+    )
+    assert any(r.get("type") == "File" for r in result)
+ 
+ 
+def test_convert_ioc_file_hash_sha1(mocker):
+    """Covers the SHA-1 hash normalisation branch."""
+    client = Client(base_url="test_url", verify=False, proxy=False)
+ 
+    ioc = {
+        "type": "indicator",
+        "id": "indicator--sha1",
+        "name": "File SHA-1 hash 'deadbeef'",
+        "confidence": 55,
+        "description": "",
+        "created": "2024-01-01T00:00:00Z",
+        "modified": "2024-06-01T00:00:00Z",
+        "pattern": "[file:hashes.'SHA-1' = 'deadbeef']",
+        "labels": [],
+        "extensions": {
+            "ext-1": {
+                "threat_actors": "",
+                "recommended_actions": "monitor",
+                "roles": "",
+                "asn": "",
+                "country_code": "",
+            }
+        },
+    }
+    result = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="key",
+        decyfir_iocs=[ioc],
+        reputation=None,
+        tlp_color=None,
+        feed_tags=None,
+        is_data_save=False,
+    )
+    assert any(r.get("type") == "File" for r in result)
+ 
+ 
+def test_convert_ioc_file_hash_md5(mocker):
+    """Covers the MD5 hash normalisation branch."""
+    client = Client(base_url="test_url", verify=False, proxy=False)
+ 
+    ioc = {
+        "type": "indicator",
+        "id": "indicator--md5",
+        "name": "File MD5 hash 'cafebabe'",
+        "confidence": 30,
+        "description": "",
+        "created": "2024-01-01T00:00:00Z",
+        "modified": "2024-06-01T00:00:00Z",
+        "pattern": "[file:hashes.MD5 = 'cafebabe']",
+        "labels": [],
+        "extensions": {
+            "ext-1": {
+                "threat_actors": "",
+                "recommended_actions": "",
+                "roles": "",
+                "asn": "",
+                "country_code": "",
+            }
+        },
+    }
+    result = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="key",
+        decyfir_iocs=[ioc],
+        reputation=None,
+        tlp_color=None,
+        feed_tags=None,
+        is_data_save=False,
+    )
+    assert any(r.get("type") == "File" for r in result)
+ 
