@@ -6,7 +6,7 @@ args:
   isArray: true
   name: values_to_compare
   required: true
-- description: "Time format of the times you entered. By default, the script uses automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z"
+- description: "Time format of the times you entered. By default, the script uses automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z."
   name: time_format
 comment: Compares a single timestamp to a list of timestamps.
 commonfields:
@@ -15,10 +15,10 @@ commonfields:
 name: TimeStampCompare
 outputs:
 - contextPath: TimeStampCompare.TestedTime
-  description: The tested time
+  description: The tested time.
   type: Date
 - contextPath: TimeStampCompare.ComapredTime
-  description: The compared time
+  description: The compared time.
   type: Date
 - contextPath: TimeStampCompare.Result
   description: Whether the tested time was before, after, or equal to the comapred time.
@@ -30,3 +30,5 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
