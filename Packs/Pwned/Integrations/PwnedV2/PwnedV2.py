@@ -9,6 +9,8 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+""" GLOBALS/PARAMS """
+
 params = demisto.params()
 VENDOR = "Have I Been Pwned? V2"
 MAX_RETRY_ALLOWED = params.get("max_retry_time", -1)
@@ -18,9 +20,6 @@ BASE_URL = "https://haveibeenpwned.com/api/v3"
 DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get("default_dbot_score_email") == "SUSPICIOUS" else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get("default_dbot_score_domain") == "SUSPICIOUS" else 3
 
-""" GLOBALS/PARAMS """
-
-VENDOR = "Have I Been Pwned? V2"
 SUFFIXES = {
     "email": "/breachedaccount/",
     "domain": "/breaches?domain=",
