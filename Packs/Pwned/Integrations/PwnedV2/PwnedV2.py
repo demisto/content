@@ -20,6 +20,12 @@ BASE_URL = "https://haveibeenpwned.com/api/v3"
 DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get("default_dbot_score_email") == "SUSPICIOUS" else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get("default_dbot_score_domain") == "SUSPICIOUS" else 3
 
+PACK_VERSION = get_pack_version()
+DEMISTO_VERSION = demisto.demistoVersion()
+USER_AGENT = (
+    f"Have I Been Pwned V2 Pack/{PACK_VERSION} " f"Palo Alto XSOAR/{DEMISTO_VERSION['version']}.{DEMISTO_VERSION['buildNumber']}"
+)
+
 SUFFIXES = {
     "email": "/breachedaccount/",
     "domain": "/breaches?domain=",
@@ -46,7 +52,7 @@ def error_handler(res):
 def http_request(method, url_suffix, params=None, data=None):
     headers = {
         "hibp-api-key": API_KEY,
-        "user-agent": "DBOT-API",
+        "user-agent": USER_AGENT,
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
