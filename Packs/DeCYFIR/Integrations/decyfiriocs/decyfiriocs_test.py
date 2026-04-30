@@ -171,6 +171,10 @@ def test_convert_decyfir_ioc_to_indicators_formats(mocker):
     assert ("rawJSON" in ti_data_out[0]) is True
     assert ti_data_out[0]["value"] == "0.0.0.0"
     assert ti_data_out[0]["type"] == "IP"
+    assert ti_data_out[0]["fields"] is not None
+    fields = ti_data_out[0]["fields"]
+    assert fields["verdict"] == "Malicious"
+    
 
 
 def test_convert_decyfir_ioc_to_indicators_formats_fail(mocker):
@@ -194,7 +198,7 @@ def test_convert_decyfir_ioc_to_indicators_formats_fail(mocker):
     assert ("rawJSON" in ti_data_out[0]) is True
     assert ti_data_out[0]["value"] != "acme.com"
     assert ti_data_out[0]["type"] != "Domain"
-    
+
 
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
