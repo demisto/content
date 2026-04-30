@@ -1,0 +1,1073 @@
+{
+    "raw_response": {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000002",
+                "fileResultConnection": {
+                    "edges": [
+                        {
+                            "cursor": "cursor_1",
+                            "node": {
+                                "nativePath": "/Sales Department/fileName.txt",
+                                "stdPath": "/Sales Department/fileName.txt",
+                                "filename": "fileName.txt",
+                                "mode": "FILE",
+                                "size": 67615,
+                                "lastAccessTime": 0,
+                                "lastModifiedTime": 1684957676,
+                                "creationTime": 0,
+                                "lastScanTime": 1775406966,
+                                "directory": "/Sales Department",
+                                "createdBy": "",
+                                "modifiedBy": "",
+                                "numDescendantFiles": 0,
+                                "numDescendantErrorFiles": 0,
+                                "numDescendantSkippedExtFiles": 0,
+                                "numDescendantSkippedSizeFiles": 0,
+                                "errorCode": "NOERROR",
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 3022,
+                                    "violationsDelta": 0,
+                                    "totalHitsDelta": 0,
+                                    "__typename": "Hits"
+                                },
+                                "filesWithHits": {
+                                    "totalHits": 0,
+                                    "violations": 1,
+                                    "__typename": "Hits"
+                                },
+                                "openAccessFilesWithHits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "staleFilesWithHits": {
+                                    "totalHits": 0,
+                                    "violations": 1,
+                                    "__typename": "Hits"
+                                },
+                                "analyzerGroupResults": [
+                                    {
+                                        "analyzerGroup": {
+                                            "groupType": "CUSTOM",
+                                            "id": "00000000-0000-0000-0000-000000000008",
+                                            "name": "Personal",
+                                            "__typename": "AnalyzerGroup"
+                                        },
+                                        "analyzerResults": [
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000003",
+                                                    "name": "Italy Passport Number",
+                                                    "analyzerType": "UNDEFINED",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            },
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000004",
+                                                    "name": "ITIN",
+                                                    "analyzerType": "US_ITIN",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            }
+                                        ],
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 1533,
+                                            "violationsDelta": 0,
+                                            "totalHitsDelta": 0,
+                                            "__typename": "Hits"
+                                        },
+                                        "__typename": "AnalyzerGroupResult"
+                                    },
+                                    {
+                                        "analyzerGroup": {
+                                            "groupType": "CUSTOM",
+                                            "id": "00000000-0000-0000-0000-000000000007",
+                                            "name": "Geographical",
+                                            "__typename": "AnalyzerGroup"
+                                        },
+                                        "analyzerResults": [
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000005",
+                                                    "name": "Country",
+                                                    "analyzerType": "UNDEFINED",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            },
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000006",
+                                                    "name": "County",
+                                                    "analyzerType": "UNDEFINED",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            }
+                                        ],
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 1489,
+                                            "violationsDelta": 0,
+                                            "totalHitsDelta": 0,
+                                            "__typename": "Hits"
+                                        },
+                                        "__typename": "AnalyzerGroupResult"
+                                    }
+                                ],
+                                "sensitiveFiles": {
+                                    "highRiskFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 0,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "mediumRiskFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 1,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "lowRiskFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 0,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "noRiskFileCount": null,
+                                    "totalFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 0,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "__typename": "SensitiveFiles"
+                                },
+                                "sensitiveHits": {
+                                    "highRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "mediumRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 1533,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "lowRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "noRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 1489,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "__typename": "SensitiveHits"
+                                },
+                                "analyzerRiskHits": {
+                                    "highRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "mediumRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 1533,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "lowRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "noRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "__typename": "AnalyzerHits"
+                                },
+                                "analyzerResults": [
+                                    {
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 758,
+                                            "__typename": "Hits"
+                                        },
+                                        "analyzer": {
+                                            "id": "00000000-0000-0000-0000-000000000013",
+                                            "name": "First Name",
+                                            "analyzerType": "UNDEFINED",
+                                            "__typename": "Analyzer"
+                                        },
+                                        "__typename": "AnalyzerResult"
+                                    },
+                                    {
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 9,
+                                            "__typename": "Hits"
+                                        },
+                                        "analyzer": {
+                                            "id": "00000000-0000-0000-0000-000000000009",
+                                            "name": "EU Country",
+                                            "analyzerType": "UNDEFINED",
+                                            "__typename": "Analyzer"
+                                        },
+                                        "__typename": "AnalyzerResult"
+                                    },
+                                    {
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 765,
+                                            "__typename": "Hits"
+                                        },
+                                        "analyzer": {
+                                            "id": "00000000-0000-0000-0000-000000000010",
+                                            "name": "City",
+                                            "analyzerType": "UNDEFINED",
+                                            "__typename": "Analyzer"
+                                        },
+                                        "__typename": "AnalyzerResult"
+                                    },
+                                    {
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 715,
+                                            "__typename": "Hits"
+                                        },
+                                        "analyzer": {
+                                            "id": "00000000-0000-0000-0000-000000000011",
+                                            "name": "US State",
+                                            "analyzerType": "UNDEFINED",
+                                            "__typename": "Analyzer"
+                                        },
+                                        "__typename": "AnalyzerResult"
+                                    },
+                                    {
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 775,
+                                            "__typename": "Hits"
+                                        },
+                                        "analyzer": {
+                                            "id": "00000000-0000-0000-0000-000000000012",
+                                            "name": "Last Name",
+                                            "analyzerType": "UNDEFINED",
+                                            "__typename": "Analyzer"
+                                        },
+                                        "__typename": "AnalyzerResult"
+                                    }
+                                ],
+                                "openAccessType": "UNKNOWN_ACCESS",
+                                "stalenessType": "IS_STALE",
+                                "numActivities": 0,
+                                "numActivitiesDelta": 0,
+                                "exposureSummary": [],
+                                "dbEntityType": "UNDEFINED_ENTITY",
+                                "mipLabelsSummary": [],
+                                "documentTypesSummary": [],
+                                "__typename": "FileResult"
+                            },
+                            "__typename": "FileResultEdge"
+                        },
+                        {
+                            "node": {
+                                "nativePath": "/Sales Department/fileName1.txt",
+                                "stdPath": "/Sales Department/fileName1.txt",
+                                "filename": "fileName1.txt",
+                                "mode": "FILE",
+                                "size": 25653,
+                                "lastAccessTime": 0,
+                                "lastModifiedTime": 1684957355,
+                                "creationTime": 0,
+                                "lastScanTime": 1775406966,
+                                "directory": "/Sales Department",
+                                "createdBy": "",
+                                "modifiedBy": "",
+                                "numDescendantFiles": 0,
+                                "numDescendantErrorFiles": 0,
+                                "numDescendantSkippedExtFiles": 0,
+                                "numDescendantSkippedSizeFiles": 0,
+                                "errorCode": "NOERROR",
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 790,
+                                    "violationsDelta": 0,
+                                    "totalHitsDelta": 0,
+                                    "__typename": "Hits"
+                                },
+                                "filesWithHits": {
+                                    "totalHits": 0,
+                                    "violations": 1,
+                                    "__typename": "Hits"
+                                },
+                                "openAccessFilesWithHits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "staleFilesWithHits": {
+                                    "totalHits": 0,
+                                    "violations": 1,
+                                    "__typename": "Hits"
+                                },
+                                "analyzerGroupResults": [
+                                    {
+                                        "analyzerGroup": {
+                                            "groupType": "CUSTOM",
+                                            "id": "00000000-0000-0000-0000-000000000007",
+                                            "name": "Geographical",
+                                            "__typename": "AnalyzerGroup"
+                                        },
+                                        "analyzerResults": [
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 21,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000005",
+                                                    "name": "Country",
+                                                    "analyzerType": "UNDEFINED",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            },
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000006",
+                                                    "name": "County",
+                                                    "analyzerType": "UNDEFINED",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            }
+                                        ],
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 397,
+                                            "violationsDelta": 0,
+                                            "totalHitsDelta": 0,
+                                            "__typename": "Hits"
+                                        },
+                                        "__typename": "AnalyzerGroupResult"
+                                    },
+                                    {
+                                        "analyzerGroup": {
+                                            "groupType": "CUSTOM",
+                                            "id": "00000000-0000-0000-0000-000000000008",
+                                            "name": "Personal",
+                                            "__typename": "AnalyzerGroup"
+                                        },
+                                        "analyzerResults": [
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000003",
+                                                    "name": "Italy Passport Number",
+                                                    "analyzerType": "UNDEFINED",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            },
+                                            {
+                                                "hits": {
+                                                    "totalHits": 0,
+                                                    "violations": 0,
+                                                    "__typename": "Hits"
+                                                },
+                                                "analyzer": {
+                                                    "id": "00000000-0000-0000-0000-000000000004",
+                                                    "name": "ITIN",
+                                                    "analyzerType": "US_ITIN",
+                                                    "__typename": "Analyzer"
+                                                },
+                                                "__typename": "AnalyzerResult"
+                                            }
+                                        ],
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 393,
+                                            "violationsDelta": 0,
+                                            "totalHitsDelta": 0,
+                                            "__typename": "Hits"
+                                        },
+                                        "__typename": "AnalyzerGroupResult"
+                                    }
+                                ],
+                                "sensitiveFiles": {
+                                    "highRiskFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 0,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "mediumRiskFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 1,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "lowRiskFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 0,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "noRiskFileCount": null,
+                                    "totalFileCount": {
+                                        "totalCount": 0,
+                                        "violatedCount": 0,
+                                        "__typename": "SummaryCount"
+                                    },
+                                    "__typename": "SensitiveFiles"
+                                },
+                                "sensitiveHits": {
+                                    "highRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "mediumRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 393,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "lowRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "noRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 397,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "__typename": "SensitiveHits"
+                                },
+                                "analyzerRiskHits": {
+                                    "highRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "mediumRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 393,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "lowRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "noRiskHits": {
+                                        "totalHits": 0,
+                                        "violatedHits": 0,
+                                        "__typename": "SummaryHits"
+                                    },
+                                    "__typename": "AnalyzerHits"
+                                },
+                                "analyzerResults": [
+                                    {
+                                        "hits": {
+                                            "totalHits": 0,
+                                            "violations": 192,
+                                            "__typename": "Hits"
+                                        },
+                                        "analyzer": {
+                                            "id": "00000000-0000-0000-0000-000000000010",
+                                            "name": "City",
+                                            "analyzerType": "UNDEFINED",
+                                            "__typename": "Analyzer"
+                                        },
+                                        "__typename": "AnalyzerResult"
+                                    }
+                                ],
+                                "openAccessType": "UNKNOWN_ACCESS",
+                                "stalenessType": "IS_STALE",
+                                "numActivities": 0,
+                                "numActivitiesDelta": 0,
+                                "exposureSummary": [],
+                                "dbEntityType": "UNDEFINED_ENTITY",
+                                "mipLabelsSummary": [],
+                                "documentTypesSummary": [],
+                                "__typename": "FileResult"
+                            },
+                            "__typename": "FileResultEdge"
+                        }
+                    ],
+                    "pageInfo": {
+                        "startCursor": "start_hash_cursor",
+                        "endCursor": "end_hash_cursor",
+                        "hasNextPage": true,
+                        "hasPreviousPage": false,
+                        "__typename": "PageInfo"
+                    },
+                    "hasLatestData": true,
+                    "__typename": "FileResultConnection"
+                },
+                "__typename": "PolicyObj"
+            }
+        }
+    },
+    "empty_response": {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000002",
+                "fileResultConnection": {
+                    "edges": []
+                }
+            }
+        }
+    },
+    "outputs": {
+        "RubrikPolaris.PageToken.DSPMViolationFile(val.name == obj.name)": {
+            "name": "rubrik-data-security-violation-file-list",
+            "next_page_token": "end_hash_cursor",
+            "has_next_page": true
+        },
+        "RubrikPolaris.DSPMViolationFile(val.stdPath == obj.stdPath)": [
+            {
+                "nativePath": "/Sales Department/fileName.txt",
+                "stdPath": "/Sales Department/fileName.txt",
+                "filename": "fileName.txt",
+                "mode": "FILE",
+                "size": 67615,
+                "lastAccessTime": 0,
+                "lastModifiedTime": 1684957676,
+                "creationTime": 0,
+                "lastScanTime": 1775406966,
+                "directory": "/Sales Department",
+                "createdBy": "",
+                "modifiedBy": "",
+                "numDescendantFiles": 0,
+                "numDescendantErrorFiles": 0,
+                "numDescendantSkippedExtFiles": 0,
+                "numDescendantSkippedSizeFiles": 0,
+                "errorCode": "NOERROR",
+                "hits": {
+                    "totalHits": 0,
+                    "violations": 3022,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0,
+                    "__typename": "Hits"
+                },
+                "filesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "openAccessFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 0,
+                    "__typename": "Hits"
+                },
+                "staleFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "analyzerGroupResults": [
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000008",
+                            "name": "Personal",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000003",
+                                    "name": "Italy Passport Number",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000004",
+                                    "name": "ITIN",
+                                    "analyzerType": "US_ITIN",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 1533,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000007",
+                            "name": "Geographical",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000005",
+                                    "name": "Country",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "name": "County",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 1489,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    }
+                ],
+                "sensitiveFiles": {
+                    "highRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "mediumRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 1,
+                        "__typename": "SummaryCount"
+                    },
+                    "lowRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "totalFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "__typename": "SensitiveFiles"
+                },
+                "sensitiveHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 1533,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 1489,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "SensitiveHits"
+                },
+                "analyzerRiskHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 1533,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "AnalyzerHits"
+                },
+                "analyzerResults": [
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 758,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000013",
+                            "name": "First Name",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 9,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000009",
+                            "name": "EU Country",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 765,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "City",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 715,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000011",
+                            "name": "US State",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 775,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000012",
+                            "name": "Last Name",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    }
+                ],
+                "openAccessType": "UNKNOWN_ACCESS",
+                "stalenessType": "IS_STALE",
+                "numActivities": 0,
+                "numActivitiesDelta": 0,
+                "dbEntityType": "UNDEFINED_ENTITY",
+                "__typename": "FileResult"
+            },
+            {
+                "nativePath": "/Sales Department/fileName1.txt",
+                "stdPath": "/Sales Department/fileName1.txt",
+                "filename": "fileName1.txt",
+                "mode": "FILE",
+                "size": 25653,
+                "lastAccessTime": 0,
+                "lastModifiedTime": 1684957355,
+                "creationTime": 0,
+                "lastScanTime": 1775406966,
+                "directory": "/Sales Department",
+                "createdBy": "",
+                "modifiedBy": "",
+                "numDescendantFiles": 0,
+                "numDescendantErrorFiles": 0,
+                "numDescendantSkippedExtFiles": 0,
+                "numDescendantSkippedSizeFiles": 0,
+                "errorCode": "NOERROR",
+                "hits": {
+                    "totalHits": 0,
+                    "violations": 790,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0,
+                    "__typename": "Hits"
+                },
+                "filesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "openAccessFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 0,
+                    "__typename": "Hits"
+                },
+                "staleFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "analyzerGroupResults": [
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000007",
+                            "name": "Geographical",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 21,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000005",
+                                    "name": "Country",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "name": "County",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 397,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000008",
+                            "name": "Personal",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000003",
+                                    "name": "Italy Passport Number",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000004",
+                                    "name": "ITIN",
+                                    "analyzerType": "US_ITIN",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 393,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    }
+                ],
+                "sensitiveFiles": {
+                    "highRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "mediumRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 1,
+                        "__typename": "SummaryCount"
+                    },
+                    "lowRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "totalFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "__typename": "SensitiveFiles"
+                },
+                "sensitiveHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 393,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 397,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "SensitiveHits"
+                },
+                "analyzerRiskHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 393,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "AnalyzerHits"
+                },
+                "analyzerResults": [
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 192,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "City",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    }
+                ],
+                "openAccessType": "UNKNOWN_ACCESS",
+                "stalenessType": "IS_STALE",
+                "numActivities": 0,
+                "numActivitiesDelta": 0,
+                "dbEntityType": "UNDEFINED_ENTITY",
+                "__typename": "FileResult"
+            }
+        ]
+    }
+}

@@ -33,13 +33,14 @@ configuration:
   type: 13
   required: false
   section: Collect
-- defaultvalue: Event,Threat Monitoring Object
+- defaultvalue: Event,Threat Monitoring Object,DSPM Violation
   display: RSC Fetch Types
   additionalinfo: "Select RSC types to fetch as incidents.\n\nNote: Supports the listed options only. If not provided, it will fetch all listed options."
   name: rsc_fetch_types
   options:
   - Event
   - Threat Monitoring Object
+  - DSPM Violation
   type: 16
   required: false
   section: Collect
@@ -95,7 +96,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If both Threat Monitoring objects and events are selected, the limit is split equally to fetch both types optimally."
+- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations) are selected, the limit is distributed optimally among them to fetch all types."
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
   name: max_fetch
@@ -136,6 +137,86 @@ configuration:
   - XSOAR MEDIUM
   - XSOAR LOW
   type: 15
+  required: false
+  section: Collect
+- additionalinfo: "Select DSPM violation statuses to fetch as incidents. Default is OPEN and IN_PROGRESS.\n\nNote: Applies only when RSC fetch type is set to \"DSPM Violation\"."
+  display: DSPM Violation Statuses
+  name: dspm_violation_status
+  options:
+  - OPEN
+  - IN_PROGRESS
+  - REMEDIATED
+  - DISMISSED
+  - CLOSED
+  defaultvalue: "OPEN,IN_PROGRESS"
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select DSPM violation sensitivity levels to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"DSPM Violation\"."
+  display: DSPM Violation Sensitivity Levels
+  name: dspm_violation_sensitivity
+  options:
+  - HIGH
+  - MEDIUM
+  - LOW
+  - NO
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select DSPM violation severity levels to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"DSPM Violation\"."
+  display: DSPM Violation Severity Levels
+  name: dspm_violation_severity
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - SEVERITY_UNSPECIFIED
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select DSPM violation categories to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"DSPM Violation\"."
+  display: DSPM Violation Categories
+  name: dspm_violation_category
+  options:
+  - CATEGORY_UNSPECIFIED
+  - MISPLACED
+  - REDUNDANT
+  - OVEREXPOSED
+  - UNPROTECTED
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select DSPM violation object types to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"DSPM Violation\". Values not included in the options can be found in the documentation."
+  display: DSPM Violation Object Types
+  name: dspm_violation_object_type
+  options:
+  - AWS_NATIVE_DYNAMODB_TABLE
+  - AWS_NATIVE_EBS_VOLUME
+  - AWS_NATIVE_RDS_INSTANCE
+  - AWS_NATIVE_S3_BUCKET
+  - AZURE_MANAGED_DISK
+  - AZURE_SQL_DATABASE_DB
+  - AZURE_SQL_MANAGED_INSTANCE_DB
+  - AZURE_STORAGE_ACCOUNT
+  - AZURE_VIRTUAL_MACHINE
+  - GCP_NATIVE_DISK
+  - GCP_NATIVE_GCE_INSTANCE
+  - HYPERV_VIRTUAL_MACHINE
+  - K8S_PROTECTION_SET
+  - K8S_VIRTUAL_MACHINE
+  - LINUX_FILESET
+  - NAS_FILESET
+  - NUTANIX_VIRTUAL_MACHINE
+  - O365_ONEDRIVE
+  - O365_SITE
+  - ORACLE_DATA_GUARD_GROUP
+  - ORACLE_DATABASE
+  - SHARE_FILESET
+  - VOLUME_GROUP
+  - VSPHERE_VIRTUAL_MACHINE
+  - WINDOWS_FILESET
+  type: 16
   required: false
   section: Collect
 - name: integration_reliability
@@ -4636,6 +4717,955 @@ script:
       type: String
     - contextPath: RubrikPolaris.AnomalyCSVv2.isSuccessful
       description: Whether the CSV analysis was successful or not.
+      type: Boolean
+    - contextPath: InfoFile.Name
+      description: FileName.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+  - name: rubrik-data-security-violation-list
+    description: Retrieve the list of DSPM violations.
+    arguments:
+    - name: object_type
+      description: "Filter the violations based on object types. Supports comma separated values.\n\nNote: Values not included in the options can be found in the documentation."
+      auto: PREDEFINED
+      predefined:
+      - AWS_NATIVE_DYNAMODB_TABLE
+      - AWS_NATIVE_EBS_VOLUME
+      - AWS_NATIVE_RDS_INSTANCE
+      - AWS_NATIVE_S3_BUCKET
+      - AZURE_MANAGED_DISK
+      - AZURE_SQL_DATABASE_DB
+      - AZURE_SQL_MANAGED_INSTANCE_DB
+      - AZURE_STORAGE_ACCOUNT
+      - AZURE_VIRTUAL_MACHINE
+      - GCP_NATIVE_DISK
+      - GCP_NATIVE_GCE_INSTANCE
+      - HYPERV_VIRTUAL_MACHINE
+      - K8S_PROTECTION_SET
+      - K8S_VIRTUAL_MACHINE
+      - LINUX_FILESET
+      - NAS_FILESET
+      - NUTANIX_VIRTUAL_MACHINE
+      - O365_ONEDRIVE
+      - O365_SITE
+      - ORACLE_DATA_GUARD_GROUP
+      - ORACLE_DATABASE
+      - SHARE_FILESET
+      - VOLUME_GROUP
+      - VSPHERE_VIRTUAL_MACHINE
+      - WINDOWS_FILESET
+      isArray: true
+    - name: detection_start_date
+      description: "Filter the violations detected after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: detection_start_date and detection_end_date both or none of them should be initialized."
+    - name: detection_end_date
+      description: "Filter the violations detected before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: detection_start_date and detection_end_date both or none of them should be initialized."
+    - name: resolved_start_date
+      description: "Filter the violations resolved after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: resolved_start_date and resolved_end_date both or none of them should be initialized."
+    - name: resolved_end_date
+      description: "Filter the violations resolved before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: resolved_start_date and resolved_end_date both or none of them should be initialized."
+    - name: category
+      description: "Filter the violations by category. Supports comma separated values."
+      auto: PREDEFINED
+      predefined:
+      - CATEGORY_UNSPECIFIED
+      - MISPLACED
+      - REDUNDANT
+      - OVEREXPOSED
+      - UNPROTECTED
+      isArray: true
+    - name: status
+      description: "Filter the violations by status. Supports comma separated values."
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - REMEDIATED
+      - DISMISSED
+      - CLOSED
+      isArray: true
+    - name: severity
+      description: "Filter the violations by severity level. Supports comma separated values."
+      auto: PREDEFINED
+      predefined:
+      - SEVERITY_UNSPECIFIED
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      isArray: true
+    - name: sensitivity
+      description: "Filter the violations by sensitivity level. Supports comma separated values."
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      - NO
+      isArray: true
+    - name: limit
+      defaultValue: "50"
+      description: "Number of results to retrieve in the response. The maximum allowed size is 1000."
+    - name: next_page_token
+      description: "The next page cursor to retrieve the next set of results."
+    - name: sort_by
+      defaultValue: "DETECTION_TIME"
+      description: "Specify the field to use for sorting the response."
+      auto: PREDEFINED
+      predefined:
+      - SEVERITY
+      - HITS
+      - DETECTION_TIME
+      - UPDATE_TIME
+      - IDENTITY_TYPE
+      - FILES_AT_RISK
+      - TOTAL_HITS
+      - ACCESSIBLE_OBJECTS
+      - ORIGIN
+      - EVENT_TIME
+      - NAME
+      - TYPE
+    - name: sort_order
+      defaultValue: "DESC"
+      description: "Specify the order to sort the data in."
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+    outputs:
+    - contextPath: RubrikPolaris.DSPMViolation.policyViolationId
+      description: The unique identifier for the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.status
+      description: The current status of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.__typename
+      description: The GraphQL typename for the violation object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.createdAt
+      description: The date and time when the policy violation was created.
+      type: Date
+    - contextPath: RubrikPolaris.DSPMViolation.lastUpdatedAt
+      description: The date and time when the policy violation was last updated.
+      type: Date
+    - contextPath: RubrikPolaris.DSPMViolation.policy.policyId
+      description: The unique identifier of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.name
+      description: The name of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.policySeverity
+      description: The severity level assigned to the policy.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.__typename
+      description: The GraphQL typename for the policy object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceId
+      description: The unique identifier of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceType
+      description: The type of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.name
+      description: The name of the resource where the violation occurred.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.objectType
+      description: The object type of the resource.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.platform
+      description: The platform of the resource.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.physicalHost
+      description: The physical host where the resource resides.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.accountName
+      description: The name of the associated cloud account.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.__typename
+      description: The GraphQL typename for the cloud account info object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.__typename
+      description: The GraphQL typename for the resource metadata details object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.__typename
+      description: The GraphQL typename for the resource metadata object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.id
+      description: The ID of the data category.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.name
+      description: The name of the data category.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.totalViolatedHits
+      description: The total violated hits of the data category.
+      type: Integer
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.__typename
+      description: The type name of the data category.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.id
+      description: The ID of the data type.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.name
+      description: The name of the data type.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.totalViolatedHits
+      description: The total violated hits of the data type.
+      type: Integer
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.__typename
+      description: The type name of the data type.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedNoRiskSensitiveHits
+      description: The number of no-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedLowRiskSensitiveHits
+      description: The number of low-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedMediumRiskSensitiveHits
+      description: The number of medium-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedHighRiskSensitiveHits
+      description: The number of high-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.snapshotId
+      description: The ID of the snapshot associated with the violation details.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.__typename
+      description: The GraphQL typename for the violation details object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.type
+      description: The type of the remediation action.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.state
+      description: The state of the remediation action.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.remediationDetails
+      description: Detailed information about the remediation action.
+      type: Unknown
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.__typename
+      description: The GraphQL typename for the remediation object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.remediations
+      description: The list of remediations associated with the violation.
+      type: Unknown
+    - contextPath: RubrikPolaris.PageToken.DSPMViolation.next_page_token
+      description: Next page token.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.DSPMViolation.name
+      description: Name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.DSPMViolation.has_next_page
+      description: Whether the result has the next page or not.
+      type: Boolean
+  - arguments:
+    - description: "The ID of the DSPM violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-data-security-violation-list\" command."
+      name: violation_id
+      required: true
+    description: Retrieve the details of DSPM violation based on the provided violation ID.
+    name: rubrik-data-security-violation-get
+    outputs:
+    - contextPath: RubrikPolaris.DSPMViolation.policyViolationId
+      description: The unique identifier for the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.status
+      description: The current status of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.__typename
+      description: The GraphQL typename for the violation object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.createdAt
+      description: The date and time when the policy violation was created.
+      type: Date
+    - contextPath: RubrikPolaris.DSPMViolation.lastUpdatedAt
+      description: The date and time when the policy violation was last updated.
+      type: Date
+    - contextPath: RubrikPolaris.DSPMViolation.policy.policyId
+      description: The unique identifier of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.name
+      description: The name of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.policySeverity
+      description: The severity level assigned to the policy.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.__typename
+      description: The GraphQL typename for the policy object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceId
+      description: The unique identifier of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.name
+      description: The name of the resource where the violation occurred.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.objectType
+      description: The object type of the resource.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.platform
+      description: The platform of the resource.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.physicalHost
+      description: The physical host where the resource resides.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.accountName
+      description: The name of the associated cloud account.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.__typename
+      description: The GraphQL typename for the cloud account info object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.__typename
+      description: The GraphQL typename for the resource metadata details object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.clusterInfo.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.clusterInfo.clusterUuid
+      description: The UUID of the cluster.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.clusterInfo.__typename
+      description: The GraphQL typename for the cluster info object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.creationTime
+      description: The creation time of the metadata.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.lastAccessTime
+      description: The last access time of the metadata.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.snapshotTimestamp
+      description: The snapshot timestamp.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.isDeleted
+      description: Whether the resource is deleted.
+      type: Boolean
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.metadata.region
+      description: The region of the resource.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.resourceMetadata.__typename
+      description: The GraphQL typename for the resource metadata object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedNoRiskSensitiveHits
+      description: The number of no-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedLowRiskSensitiveHits
+      description: The number of low-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedMediumRiskSensitiveHits
+      description: The number of medium-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedHighRiskSensitiveHits
+      description: The number of high-risk sensitive hits involved in the violation.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.violatedSensitiveHits
+      description: The total number of violated sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.id
+      description: The ID of the data type.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.name
+      description: The name of the data type.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.totalViolatedHits
+      description: The total violated hits for the data type.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataTypes.__typename
+      description: The GraphQL typename for the data type stats.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.mipLabels
+      description: The MIP labels associated with the details.
+      type: Unknown
+    - contextPath: RubrikPolaris.DSPMViolation.details.documentTypes
+      description: The document types associated with the details.
+      type: Unknown
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.id
+      description: The ID of the data category.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.name
+      description: The name of the data category.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.totalViolatedHits
+      description: The total violated hits for the data category.
+      type: Number
+    - contextPath: RubrikPolaris.DSPMViolation.details.dataCategories.__typename
+      description: The GraphQL typename for the data category stats.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.snapshotId
+      description: The ID of the snapshot associated with the violation details.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.details.__typename
+      description: The GraphQL typename for the violation details object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.policyCategory
+      description: The category of the policy.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.policy.containsAccessFilters
+      description: Whether the policy contains access filters.
+      type: Boolean
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.state
+      description: The state of the remediation action.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.remediationId
+      description: The ID of the remediation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.remediationDetails
+      description: Detailed information about the remediation action.
+      type: Unknown
+    - contextPath: RubrikPolaris.DSPMViolation.remediations.__typename
+      description: The GraphQL typename for the remediation object.
+      type: String
+  - name: rubrik-data-security-violation-status-update
+    description: Updates the status of the DSPM violation.
+    arguments:
+    - name: violation_id
+      description: "The ID of the DSPM violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-data-security-violation-list\" command."
+      required: true
+    - name: status
+      description: The status to update for violation.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - REMEDIATED
+      - DISMISSED
+      - CLOSED
+    outputs:
+    - contextPath: RubrikPolaris.DSPMViolation.policyViolationId
+      description: The ID of the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolation.status
+      description: The status of the violation.
+      type: String
+  - name: rubrik-data-security-violation-file-list
+    description: Retrieve the file information of data security violation based on the provided violation ID.
+    arguments:
+    - name: violation_id
+      description: "The ID of the DSPM violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-data-security-violation-list\" command."
+      required: true
+    - name: snapshot_id
+      description: "The snapshot ID.\n\nNote: Users can get the snapshot ID by executing the \"rubrik-polaris-object-snapshot-list\" command."
+      required: true
+    - name: object_id
+      description: "The object ID.\n\nNote: Users can get the Object ID by executing the \"rubrik-polaris-objects-list\" command."
+      required: true
+    - name: limit
+      description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+      defaultValue: 25
+      required: false
+    - name: next_page_token
+      description: The next page cursor to retrieve the next set of results.
+      required: false
+    - name: file_name
+      description: Filter files by their name.
+      required: false
+    - name: last_access_start_date
+      description: "Filter files with last access after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: last_access_start_date and last_access_end_date both or none of them should be initialized."
+      required: false
+    - name: last_access_end_date
+      description: "Filter files with last access before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: last_access_start_date and last_access_end_date both or none of them should be initialized."
+      required: false
+    - name: last_modified_start_date
+      description: "Filter files with last modified after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: last_modified_start_date and last_modified_end_date both or none of them should be initialized."
+      required: false
+    - name: last_modified_end_date
+      description: "Filter files with last modified before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: last_modified_start_date and last_modified_end_date both or none of them should be initialized."
+      required: false
+    - name: creation_start_date
+      description: "Filter files created after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: creation_date_start_date and creation_date_start_date both or none of them should be initialized."
+      required: false
+    - name: creation_end_date
+      description: "Filter files created before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: creation_date_start_date and creation_date_start_date both or none of them should be initialized."
+      required: false
+    - name: last_scan_start_date
+      description: "Filter files with last scan after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: last_scan_start_date and last_scan_end_date both or none of them should be initialized."
+      required: false
+    - name: last_scan_end_date
+      description: "Filter files with last scan before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: last_scan_start_date and last_scan_end_date both or none of them should be initialized."
+      required: false
+    - name: sensitivity
+      description: Filter files by sensitivity level. Supports comma separated values.
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      - NO
+      required: false
+    - name: exposure
+      description: Filter files by exposure type. Supports comma separated values.
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - EXPLICIT
+      - INHERITED
+      - NOT_OPEN
+      - PUBLIC
+      required: false
+    - name: access_via
+      description: Filter files by access type.
+      auto: PREDEFINED
+      defaultValue: ACCESS_TYPE_UNSPECIFIED
+      predefined:
+      - ACCESS_TYPE_UNSPECIFIED
+      - DIRECT
+      - GROUP
+      - ROLE
+      required: false
+    - name: sort_order
+      description: Specify the order to sort the data in.
+      auto: PREDEFINED
+      defaultValue: DESC
+      predefined:
+      - ASC
+      - DESC
+      required: false
+    - name: sort_by
+      description: Specify the field to use for sorting the response.
+      defaultValue: HITS
+      auto: PREDEFINED
+      predefined:
+      - CLUSTER
+      - CREATION_TIME
+      - DAILY_CHANGE
+      - DATA_CATEGORY
+      - DATA_TYPE
+      - DOCUMENT_TYPE
+      - EXPOSED_FILES
+      - FILES_WITH_HITS
+      - FILES_WITH_OPEN_ACCESS_HITS
+      - HITS
+      - HITS_BY_SENSITIVITY
+      - LAST_ACCESS_TIME
+      - LAST_MODIFIED
+      - LAST_SCAN_TIME
+      - NAME
+      - NATIVE_PATH
+      - NUM_ACTIVITIES
+      - NUM_ACTIVITIES_DELTA
+      - OBJECT_LOCATION
+      - OBJECT_NAME
+      - OPEN_ACCESS_TYPE
+      - SNAPSHOT_TIME
+      - STALE_FILES_WITH_HITS
+      - TOTAL_SENSITIVE_HITS
+      required: false
+    outputs:
+    - contextPath: Rubrik.DSPMViolationFile.nativePath
+      description: The native path of the file.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.stdPath
+      description: The standardized path of the file.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.filename
+      description: The name of the file.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.mode
+      description: The file mode.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.lastAccessTime
+      description: The last access time of the file.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.lastModifiedTime
+      description: The last modified time of the file.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.creationTime
+      description: The creation time of the file.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.lastScanTime
+      description: The last scan time of the file.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.directory
+      description: The directory of the file.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.createdBy
+      description: The user who created the file.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.modifiedBy
+      description: The user who last modified the file.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.numDescendantFiles
+      description: The number of descendant files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.numDescendantErrorFiles
+      description: The number of descendant files with errors.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.numDescendantSkippedExtFiles
+      description: The number of descendant files skipped due to extension.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.numDescendantSkippedSizeFiles
+      description: The number of descendant files skipped due to size.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.errorCode
+      description: The error code.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.hits.totalHits
+      description: The total number of hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.hits.violations
+      description: The number of violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.hits.violationsDelta
+      description: The change in the number of violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.hits.totalHitsDelta
+      description: The change in the total number of hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.hits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.filesWithHits.totalHits
+      description: The total number of hits in files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.filesWithHits.violations
+      description: The number of violations in files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.filesWithHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.openAccessFilesWithHits.totalHits
+      description: The total number of hits in open access files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.openAccessFilesWithHits.violations
+      description: The number of violations in open access files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.openAccessFilesWithHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.staleFilesWithHits.totalHits
+      description: The total number of hits in stale files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.staleFilesWithHits.violations
+      description: The number of violations in stale files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.staleFilesWithHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.groupType
+      description: The type of the analyzer group.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.id
+      description: The ID of the analyzer group.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.name
+      description: The name of the analyzer group.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.hits.totalHits
+      description: The total number of hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.hits.violations
+      description: The number of violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.hits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.id
+      description: The ID of the analyzer.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.name
+      description: The name of the analyzer.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.analyzerType
+      description: The type of the analyzer.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.hits.totalHits
+      description: The total number of hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.hits.violations
+      description: The number of violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.hits.violationsDelta
+      description: The change in the number of violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.hits.totalHitsDelta
+      description: The change in the total number of hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.hits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerGroupResults.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.highRiskFileCount.totalCount
+      description: The total count of high risk files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.highRiskFileCount.violatedCount
+      description: The count of high risk files with violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.highRiskFileCount.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.mediumRiskFileCount.totalCount
+      description: The total count of medium risk files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.mediumRiskFileCount.violatedCount
+      description: The count of medium risk files with violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.mediumRiskFileCount.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.lowRiskFileCount.totalCount
+      description: The total count of low risk files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.lowRiskFileCount.violatedCount
+      description: The count of low risk files with violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.lowRiskFileCount.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.noRiskFileCount
+      description: The count of files with no risk.
+      type: Unknown
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.totalFileCount.totalCount
+      description: The total count of files.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.totalFileCount.violatedCount
+      description: The count of files with violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.totalFileCount.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveFiles.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.highRiskHits.totalHits
+      description: The total number of high risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.highRiskHits.violatedHits
+      description: The number of violated high risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.highRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.mediumRiskHits.totalHits
+      description: The total number of medium risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.mediumRiskHits.violatedHits
+      description: The number of violated medium risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.mediumRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.lowRiskHits.totalHits
+      description: The total number of low risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.lowRiskHits.violatedHits
+      description: The number of violated low risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.lowRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.noRiskHits.totalHits
+      description: The total number of no risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.noRiskHits.violatedHits
+      description: The number of violated no risk hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.noRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.sensitiveHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.highRiskHits.totalHits
+      description: The total number of high risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.highRiskHits.violatedHits
+      description: The number of violated high risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.highRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.mediumRiskHits.totalHits
+      description: The total number of medium risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.mediumRiskHits.violatedHits
+      description: The number of violated medium risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.mediumRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.lowRiskHits.totalHits
+      description: The total number of low risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.lowRiskHits.violatedHits
+      description: The number of violated low risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.lowRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.noRiskHits.totalHits
+      description: The total number of no risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.noRiskHits.violatedHits
+      description: The number of violated no risk analyzer hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.noRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerRiskHits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.hits.totalHits
+      description: The total number of hits.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.hits.violations
+      description: The number of violations.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.hits.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.analyzer.id
+      description: The ID of the analyzer.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.analyzer.name
+      description: The name of the analyzer.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.analyzer.analyzerType
+      description: The type of the analyzer.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.analyzer.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.analyzerResults.__typename
+      description: The GraphQL type name.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.openAccessType
+      description: The open access type.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.stalenessType
+      description: The staleness type.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.numActivities
+      description: The number of activities.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.numActivitiesDelta
+      description: The change in the number of activities.
+      type: Number
+    - contextPath: Rubrik.DSPMViolationFile.exposureSummary
+      description: The exposure summary.
+      type: Unknown
+    - contextPath: Rubrik.DSPMViolationFile.dbEntityType
+      description: The database entity type.
+      type: String
+    - contextPath: Rubrik.DSPMViolationFile.mipLabelsSummary
+      description: The MIP labels summary.
+      type: Unknown
+    - contextPath: Rubrik.DSPMViolationFile.documentTypesSummary
+      description: The document types summary.
+      type: Unknown
+    - contextPath: Rubrik.DSPMViolationFile.__typename
+      description: The GraphQL type name.
+      type: String
+  - name: rubrik-data-security-violation-csv-download
+    description: Download all files at risk as CSV file for the specified data security violation.
+    arguments:
+    - name: violation_id
+      description: "The ID of the DSPM violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-data-security-violation-list\" command."
+      required: true
+    - name: snapshot_id
+      description: "The snapshot ID.\n\nNote: Users can retrieve the snapshot ID by executing the \"rubrik-polaris-object-snapshot-list\" command."
+      required: true
+    - name: object_id
+      description: "The object ID.\n\nNote: Users can retrieve the object ID by executing the \"rubrik-polaris-objects-list\" command."
+      required: true
+    - name: object_name
+      description: "The object Name.\n\nNote: If not specified command will retrieve it using the \"rubrik-data-security-violation-get\" command."
+    - name: polling
+      description: "Whether to poll for the command."
+      required: false
+      hidden: true
+    polling: true
+    outputs:
+    - contextPath: RubrikPolaris.DSPMViolationCSVDownload.violationId
+      description: The ID of the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationCSVDownload.snapshotId
+      description: The ID of the snapshot.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationCSVDownload.objectId
+      description: The ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationCSVDownload.objectName
+      description: The Name of the object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationCSVDownload.externalId
+      description: The external ID of the CSV file.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationCSVDownload.isSuccessful
+      description: Whether the CSV analysis was successful or not.
+      type: Boolean
+    - contextPath: InfoFile.Name
+      description: FileName.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+  - name: rubrik-data-security-violation-log-download
+    description: Download remediation logs as CSV file for the specified data security violation.
+    arguments:
+    - name: violation_id
+      description: "The ID of the DSPM violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-data-security-violation-list\" command."
+      required: true
+    - name: object_id
+      description: "The object ID.\n\nNote: Users can retrieve the object ID by executing the \"rubrik-polaris-objects-list\" command."
+      required: true
+    - name: object_name
+      description: "The object Name.\n\nNote: If not specified command will retrieve it using the \"rubrik-data-security-violation-get\" command."
+    - name: polling
+      description: "Whether to poll for the command."
+      required: false
+      hidden: true
+    polling: true
+    outputs:
+    - contextPath: RubrikPolaris.DSPMViolationRemediationLogDownload.violationId
+      description: The ID of the violation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationRemediationLogDownload.objectId
+      description: The ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationRemediationLogDownload.remediationId
+      description: The ID of the remediation.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationRemediationLogDownload.objectName
+      description: The Name of the object.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationRemediationLogDownload.externalId
+      description: The external ID of the file.
+      type: String
+    - contextPath: RubrikPolaris.DSPMViolationRemediationLogDownload.isSuccessful
+      description: Whether the command was successful or not.
       type: Boolean
     - contextPath: InfoFile.Name
       description: FileName.

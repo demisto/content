@@ -1,0 +1,172 @@
+{
+    "raw_response": {
+        "data": {
+            "policyViolation": {
+                "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "violationSeverity": "MEDIUM",
+                "createdAt": "2026-03-06T06:30:45.000Z",
+                "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+                "resourceId": "00000000-0000-0000-0000-000000000002",
+                "__typename": "PolicyViolation",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000003",
+                    "name": "Secrets stored outside of vault",
+                    "description": "Storing secrets outside vaults can lead to privilege escalation and unauthorized access. Store secrets in a secure vault to limit exposure.",
+                    "policyCategory": "MISPLACED",
+                    "policySeverity": "MEDIUM",
+                    "containsAccessFilters": false,
+                    "__typename": "DSPMPolicy"
+                },
+                "resourceMetadata": {
+                    "metadata": {
+                        "name": "DEMO-RADAR02",
+                        "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                        "platform": "PLATFORM_DATA_CENTER",
+                        "physicalHost": "vcsa.rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                        "clusterInfo": {
+                            "clusterName": "Cluster_C",
+                            "clusterUuid": "00000000-0000-0000-0000-000000000004",
+                            "__typename": "ClusterInfo"
+                        },
+                        "creationTime": 0,
+                        "lastAccessTime": 0,
+                        "snapshotTimestamp": 1774329080131,
+                        "isDeleted": false,
+                        "region": "",
+                        "cloudAccountInfo": {
+                            "accountName": "",
+                            "__typename": "CloudAccountInfo"
+                        },
+                        "__typename": "CommonAssetMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "details": {
+                    "snapshotId": "00000000-0000-0000-0000-000000000005",
+                    "violatedSensitiveHits": 40,
+                    "violatedNoRiskSensitiveHits": 37,
+                    "violatedLowRiskSensitiveHits": 2,
+                    "violatedMediumRiskSensitiveHits": 1,
+                    "violatedHighRiskSensitiveHits": 0,
+                    "__typename": "DataGovViolationDetails",
+                    "dataTypes": [
+                        {
+                            "id": "00000000-0000-0000-0000-000000000006",
+                            "name": "Country",
+                            "totalViolatedHits": 35,
+                            "__typename": "DataTypeStats"
+                        },
+                        {
+                            "id": "00000000-0000-0000-0000-000000000007",
+                            "name": "US State",
+                            "totalViolatedHits": 2,
+                            "__typename": "DataTypeStats"
+                        }
+                    ],
+                    "dataCategories": [
+                        {
+                            "id": "00000000-0000-0000-0000-000000000008",
+                            "name": "Geographical",
+                            "totalViolatedHits": 37,
+                            "__typename": "DataCategoryStats"
+                        }
+                    ],
+                    "mipLabels": [],
+                    "documentTypes": []
+                },
+                "remediations": [
+                    {
+                        "remediationId": "00000000-0000-0000-0000-000000000009",
+                        "state": "REMEDIATION_STATE_SUCCESS",
+                        "remediationDetails": null,
+                        "__typename": "RemediationMetadata"
+                    }
+                ]
+            }
+        }
+    },
+    "context": {
+        "policyViolationId": "00000000-0000-0000-0000-000000000001",
+        "status": "POLICY_VIOLATION_STATUS_OPEN",
+        "violationSeverity": "MEDIUM",
+        "createdAt": "2026-03-06T06:30:45.000Z",
+        "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+        "resourceId": "00000000-0000-0000-0000-000000000002",
+        "__typename": "PolicyViolation",
+        "policy": {
+            "policyId": "00000000-0000-0000-0000-000000000003",
+            "name": "Secrets stored outside of vault",
+            "description": "Storing secrets outside vaults can lead to privilege escalation and unauthorized access. Store secrets in a secure vault to limit exposure.",
+            "policyCategory": "MISPLACED",
+            "policySeverity": "MEDIUM",
+            "containsAccessFilters": false,
+            "__typename": "DSPMPolicy"
+        },
+        "resourceMetadata": {
+            "metadata": {
+                "name": "DEMO-RADAR02",
+                "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                "platform": "PLATFORM_DATA_CENTER",
+                "physicalHost": "vcsa.rubrik.us/Datacenters/Data Center/vm/Discovered virtual machine",
+                "clusterInfo": {
+                    "clusterName": "Cluster_C",
+                    "clusterUuid": "00000000-0000-0000-0000-000000000004",
+                    "__typename": "ClusterInfo"
+                },
+                "creationTime": 0,
+                "lastAccessTime": 0,
+                "snapshotTimestamp": 1774329080131,
+                "isDeleted": false,
+                "region": "",
+                "cloudAccountInfo": {
+                    "accountName": "",
+                    "__typename": "CloudAccountInfo"
+                },
+                "__typename": "CommonAssetMetadata"
+            },
+            "__typename": "ResourceMetadata"
+        },
+        "details": {
+            "snapshotId": "00000000-0000-0000-0000-000000000005",
+            "violatedSensitiveHits": 40,
+            "violatedNoRiskSensitiveHits": 37,
+            "violatedLowRiskSensitiveHits": 2,
+            "violatedMediumRiskSensitiveHits": 1,
+            "violatedHighRiskSensitiveHits": 0,
+            "__typename": "DataGovViolationDetails",
+            "dataTypes": [
+                {
+                    "id": "00000000-0000-0000-0000-000000000006",
+                    "name": "Country",
+                    "totalViolatedHits": 35,
+                    "__typename": "DataTypeStats"
+                },
+                {
+                    "id": "00000000-0000-0000-0000-000000000007",
+                    "name": "US State",
+                    "totalViolatedHits": 2,
+                    "__typename": "DataTypeStats"
+                }
+            ],
+            "dataCategories": [
+                {
+                    "id": "00000000-0000-0000-0000-000000000008",
+                    "name": "Geographical",
+                    "totalViolatedHits": 37,
+                    "__typename": "DataCategoryStats"
+                }
+            ],
+            "mipLabels": [],
+            "documentTypes": []
+        },
+        "remediations": [
+            {
+                "remediationId": "00000000-0000-0000-0000-000000000009",
+                "state": "REMEDIATION_STATE_SUCCESS",
+                "remediationDetails": null,
+                "__typename": "RemediationMetadata"
+            }
+        ]
+    }
+}

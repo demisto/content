@@ -1,0 +1,59 @@
+{
+    "id": "Rubrik DSPM Violation",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Rubrik DSPM Violation",
+    "prevName": "Rubrik DSPM Violation",
+    "color": "#AEA0C6",
+    "playbookId": "Rubrik DSPM Violation Remediation - Rubrik Security Cloud",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Rubrik DSPM Violation",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "rubrikcdmclusterid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubrikobjectaccountname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubrikobjectlocation": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubrikpolarisobjectname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            }
+        }
+    },
+    "fromVersion": "6.0.0"
+}

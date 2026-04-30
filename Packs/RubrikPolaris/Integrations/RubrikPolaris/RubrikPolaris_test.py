@@ -3,6 +3,7 @@
 import json
 import os
 import time
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -10,6 +11,14 @@ from CommonServerPython import remove_empty_elements
 from RubrikPolaris import (
     ANOMALY_TYPE_ENUM,
     DEFAULT_EVENT_TYPES,
+    DSPM_VIOLATION_FILE_LIST_ACCESS_VIA,
+    DSPM_VIOLATION_FILE_LIST_EXPOSURE,
+    DSPM_VIOLATION_FILE_LIST_SENSITIVITY,
+    DSPM_VIOLATION_FILE_LIST_SORT_BY,
+    DSPM_VIOLATION_SENSITIVITY,
+    DSPM_VIOLATION_SEVERITY,
+    DSPM_VIOLATION_SORT_BY,
+    DSPM_VIOLATION_STATUS,
     ERROR_MESSAGES,
     FALSE_POSITIVE_TYPE_ENUM,
     HUNT_STATUSES,
@@ -28,6 +37,7 @@ from RubrikPolaris import (
 BASE_URL = "https://demo.my.rubrik.com/api"
 BASE_URL_GRAPHQL = BASE_URL + "/graphql"
 BASE_URL_SESSION = BASE_URL + "/session"
+TEST_DATA_DIR = Path(__file__).parent
 last_fetch = "2021-10-22T14:55:51.616000Z"
 first_fetch = "2021-10-22T14:55:51.616Z"
 sonar_on_demand_file_path = "test_data/sonar_ondemand_scan_success_response.json"
@@ -57,13 +67,13 @@ SDK_ERROR_MESSAGES = {
 
 def util_load_json(path):
     """Load file in JSON format."""
-    with open(path, encoding="utf-8") as f:
+    with open(TEST_DATA_DIR / path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def util_load_text_data(path: str) -> str:
     """Load a text file."""
-    with open(path, encoding="utf-8") as f:
+    with open(TEST_DATA_DIR / path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -4238,3 +4248,1033 @@ def test_rubrik_anomaly_csv_analysis_v2_invalid_arguments_are_provided(client, a
         rubrik_anomaly_csv_analysis_v2_command(client, args)
 
     assert error_message in str(e.value)
+
+
+def test_fetch_dspm_violations_success_without_last_run(client, requests_mock):
+    """
+    Test Case : Success scenario with all filter parameters without last run.
+    Tests fetch_dspm_violations function to return incidents and new last run with provided empty last run.
+    """
+    from RubrikPolaris import fetch_dspm_violations
+
+    fetch_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
+    )
+    expected_incidents = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_incidents.json")
+    )
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "dspm_violation_status": ["OPEN"],
+        "dspm_violation_severity": ["HIGH", "MEDIUM"],
+        "dspm_violation_sensitivity": ["HIGH"],
+        "dspm_violation_category": ["MISPLACED"],
+    }
+
+    dspm_next_run, incidents = fetch_dspm_violations(client, {}, params, 10)
+
+    # Verify next_run state
+    assert "last_fetch" in dspm_next_run
+    assert dspm_next_run.get("next_page_token") == "end_cursor"
+    assert len(dspm_next_run.get("already_fetched", [])) == 3
+    assert "00000000-0000-0000-0000-000000000001" in dspm_next_run.get("already_fetched", [])
+    assert "00000000-0000-0000-0000-000000000002" in dspm_next_run.get("already_fetched", [])
+    assert "00000000-0000-0000-0000-000000000003" in dspm_next_run.get("already_fetched", [])
+
+    # Verify incidents match expected
+    assert incidents == expected_incidents
+
+
+def test_fetch_dspm_violations_success_with_last_run(client, requests_mock):
+    """
+    Test Case : Success scenario with last run.
+    Tests fetch_dspm_violations function with existing last_run state.
+    """
+    from RubrikPolaris import fetch_dspm_violations
+
+    fetch_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
+    )
+    expected_incidents = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_incidents.json")
+    )
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
+
+    last_run = {
+        "dspm_violation": {
+            "last_fetch": last_fetch,
+            "next_page_token": "page_cursor",
+            "already_fetched": [],
+        }
+    }
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "dspm_violation_status": ["OPEN"],
+        "dspm_violation_severity": ["HIGH"],
+        "dspm_violation_sensitivity": ["HIGH"],
+        "dspm_violation_category": ["MISPLACED"],
+    }
+
+    dspm_next_run, incidents = fetch_dspm_violations(client, last_run, params, 10)
+
+    # Verify next_run state is updated
+    assert dspm_next_run.get("last_fetch") == last_fetch
+    assert dspm_next_run.get("next_page_token") == "end_cursor"
+    assert len(dspm_next_run.get("already_fetched", [])) == 3
+
+    # Verify incidents match expected
+    assert incidents == expected_incidents
+
+
+def test_fetch_dspm_violations_with_duplicates(client, requests_mock):
+    """
+    Test Case : Success with duplicate scenario.
+    Tests that duplicate violations are skipped and logged.
+    """
+    from RubrikPolaris import fetch_dspm_violations
+
+    fetch_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
+    )
+    expected_incidents = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_incidents.json")
+    )
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
+
+    last_run = {
+        "dspm_violation": {
+            "last_fetch": last_fetch,
+            "already_fetched": ["00000000-0000-0000-0000-000000000001"],  # First violation already fetched
+        }
+    }
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "dspm_violation_status": ["OPEN"],
+        "dspm_violation_severity": ["HIGH", "MEDIUM"],
+        "dspm_violation_sensitivity": ["HIGH"],
+        "dspm_violation_category": ["MISPLACED"],
+    }
+
+    dspm_next_run, incidents = fetch_dspm_violations(client, last_run, params, 10)
+
+    # Verify only two incidents are returned (duplicate skipped)
+    assert incidents == expected_incidents[1:]  # Skip first incident (already fetched)
+
+    # Verify already_fetched list contains all three IDs
+    already_fetched = dspm_next_run.get("already_fetched", [])
+    assert len(already_fetched) == 3
+    assert "00000000-0000-0000-0000-000000000001" in already_fetched
+    assert "00000000-0000-0000-0000-000000000002" in already_fetched
+    assert "00000000-0000-0000-0000-000000000003" in already_fetched
+
+
+def test_fetch_dspm_violations_empty_response(client, requests_mock):
+    """
+    Test Case : Success with empty response.
+    Tests fetch_dspm_violations function returns empty incidents when no violations found.
+    """
+    from RubrikPolaris import fetch_dspm_violations
+
+    fetch_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_empty_response.json")
+    )
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=fetch_response)
+
+    last_run = {
+        "dspm_violation": {
+            "last_fetch": last_fetch,
+            "next_page_token": "page_cursor",
+            "already_fetched": ["00000000-0000-0000-0000-000000000001"],
+        }
+    }
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "dspm_violation_status": ["OPEN"],
+        "dspm_violation_severity": ["HIGH", "MEDIUM"],
+        "dspm_violation_sensitivity": ["HIGH"],
+        "dspm_violation_category": ["MISPLACED"],
+    }
+
+    dspm_next_run, incidents = fetch_dspm_violations(client, last_run, params, 10)
+
+    # Verify empty incidents
+    assert len(incidents) == 0
+    assert dspm_next_run == last_run["dspm_violation"]
+
+
+def test_fetch_incidents_with_all_fetch_types(client, requests_mock):
+    """
+    Test Case : Success scenario with all fetch types in fetch_incidents.
+    Tests fetch_incidents function when all three fetch types are selected.
+    """
+    from RubrikPolaris import fetch_incidents
+
+    # Load test data for all fetch types
+    threat_monitoring_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_threat_monitoring_objects_response.json")
+    )
+    event_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_incidents_success_response.json")
+    )
+    dspm_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/fetch_dspm_violations_success_response.json")
+    )
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/enum_values.json"))
+
+    # Mock responses for all fetch types
+    # Order matches execution: Threat Monitoring -> DSPM Violations -> Events (with 3 enum calls)
+    responses = [
+        {"json": threat_monitoring_response},  # Threat monitoring first
+        {"json": dspm_response},  # DSPM violations second
+        {"json": enum_values.get("activity_type_enum")},  # Events enum calls
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": event_response},  # Events last
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 6,  # Will be distributed: 2 per fetch type
+        "rsc_fetch_types": ["Threat Monitoring Object", "DSPM Violation", "Event"],
+    }
+
+    next_run, incidents = fetch_incidents(client, {}, params)
+
+    # Verify incidents
+    assert len(incidents) == 6
+
+    # Verify next_run contains state for all fetch types
+    assert "threat_monitoring" in next_run
+    assert "dspm_violation" in next_run
+    assert "last_fetch" in next_run  # Events state
+
+    # Verify DSPM violation state
+    assert "last_fetch" in next_run["dspm_violation"]
+    assert "already_fetched" in next_run["dspm_violation"]
+
+
+@pytest.mark.parametrize(
+    "invalid_param, invalid_value, expected_error",
+    [
+        (
+            "dspm_violation_status",
+            ["INVALID_STATUS"],
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_STATUS", "dspm_violation_status", DSPM_VIOLATION_STATUS),
+        ),
+        (
+            "dspm_violation_severity",
+            ["INVALID_SEVERITY"],
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_SEVERITY", "dspm_violation_severity", DSPM_VIOLATION_SEVERITY),
+        ),
+        (
+            "dspm_violation_sensitivity",
+            ["INVALID_SENSITIVITY"],
+            ERROR_MESSAGES["INVALID_SELECT"].format(
+                "INVALID_SENSITIVITY", "dspm_violation_sensitivity", DSPM_VIOLATION_SENSITIVITY
+            ),
+        ),
+        (
+            "dspm_violation_status",
+            ["OPEN", "INVALID"],
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID", "dspm_violation_status", DSPM_VIOLATION_STATUS),
+        ),
+        (
+            "dspm_violation_severity",
+            ["HIGH", "SUPER_HIGH"],
+            ERROR_MESSAGES["INVALID_SELECT"].format("SUPER_HIGH", "dspm_violation_severity", DSPM_VIOLATION_SEVERITY),
+        ),
+    ],
+)
+def test_fetch_dspm_violations_invalid_filter_parameters(client, invalid_param, invalid_value, expected_error):
+    """
+    Test Case 5: Invalid filter parameter with parameterize.
+    Tests that invalid filter values raise appropriate ValueError.
+    """
+    from RubrikPolaris import fetch_dspm_violations
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "dspm_violation_status": ["OPEN"],
+        "dspm_violation_severity": ["HIGH"],
+        "dspm_violation_sensitivity": ["HIGH"],
+        "dspm_violation_category": ["MISPLACED"],
+    }
+
+    # Override with invalid parameter
+    params[invalid_param] = invalid_value
+
+    with pytest.raises(ValueError) as exc_info:
+        fetch_dspm_violations(client, {}, params, 10)
+
+    assert expected_error in str(exc_info.value)
+
+
+def test_data_security_violation_list_command_success(client, requests_mock):
+    """Tests success for rubrik-data-security-violation-list command."""
+    from RubrikPolaris import rubrik_data_security_violation_list_command
+
+    dspm_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_list_response.json")
+    )
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_list_response_hr.md")) as f:
+        dspm_response_hr = f.read()
+
+    args = {"status": "OPEN", "severity": "MEDIUM", "sort_order": "DESC"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": dspm_response.get("raw_response")}])
+    response = rubrik_data_security_violation_list_command(client, args=args)
+
+    assert response.raw_response == dspm_response.get("raw_response")
+    assert response.outputs == remove_empty_elements(dspm_response.get("outputs"))
+    assert response.readable_output == dspm_response_hr
+
+
+def test_data_security_violation_list_command_success_when_empty_response(client, requests_mock):
+    """Tests success when empty response is received for rubrik-data-security-violation-list command."""
+    from RubrikPolaris import rubrik_data_security_violation_list_command
+
+    dspm_empty_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_list_empty_response.json")
+    )
+
+    args = {}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": dspm_empty_response}])
+    response = rubrik_data_security_violation_list_command(client, args=args)
+    assert response.readable_output == f"#### {MESSAGES['NO_RECORDS_FOUND'].format('DSPM violations')}"
+
+
+@pytest.mark.parametrize(
+    "args, exception, error",
+    [
+        (
+            {"limit": "0"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_LIMIT"].format(0),
+        ),
+        (
+            {"limit": "1001"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_LIMIT"].format(1001),
+        ),
+        (
+            {"sort_order": "INVALID"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SORT_ORDER"].format("INVALID"),
+        ),
+        (
+            {"sort_by": "INVALID_FIELD"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_FIELD", "sort_by", DSPM_VIOLATION_SORT_BY),
+        ),
+        (
+            {"status": "INVALID"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID", "status", DSPM_VIOLATION_STATUS),
+        ),
+        (
+            {"severity": "SUPER_HIGH"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("SUPER_HIGH", "severity", DSPM_VIOLATION_SEVERITY),
+        ),
+        (
+            {"sensitivity": "SUPER_SENSITIVE"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_SELECT"].format("SUPER_SENSITIVE", "sensitivity", DSPM_VIOLATION_SENSITIVITY),
+        ),
+        (
+            {"detection_start_date": "2026-01-01"},
+            ValueError,
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("detection_start_date", "detection_end_date"),
+        ),
+        (
+            {"resolved_end_date": "2026-03-01"},
+            ValueError,
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("resolved_start_date", "resolved_end_date"),
+        ),
+        (
+            {"detection_start_date": "2026-03-01", "detection_end_date": "2026-01-01"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_DATE_RANGE"].format("detection_start_date", "detection_end_date"),
+        ),
+        (
+            {"resolved_start_date": "2026-03-01", "resolved_end_date": "2026-01-01"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_DATE_RANGE"].format("resolved_start_date", "resolved_end_date"),
+        ),
+    ],
+)
+def test_data_security_violation_list_command_when_arguments_failure(client, args, exception, error):
+    """Tests failure for rubrik-data-security-violation-list command with invalid arguments."""
+    from RubrikPolaris import rubrik_data_security_violation_list_command
+
+    with pytest.raises(exception) as e:
+        rubrik_data_security_violation_list_command(client, args)
+
+    assert str(e.value) == error
+
+
+def test_rubrik_data_security_violation_get_command_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_data_security_violation_get_command with valid case.
+
+    When:
+        - Calling rubrik_data_security_violation_get_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_data_security_violation_get_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_get_response.json")
+    )
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_get_response_hr.md")) as f:
+        hr_data = f.read()
+
+    args = {"violation_id": "00000000-0000-0000-0000-000000000001"}
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=response_data.get("raw_response"))
+    response = rubrik_data_security_violation_get_command(client, args=args)
+
+    assert response.outputs == remove_empty_elements(response_data.get("context"))
+    assert response.readable_output == hr_data
+
+
+def test_rubrik_data_security_violation_get_command_empty_response(client, requests_mock):
+    """
+    Test case scenario for rubrik_data_security_violation_get_command with empty response.
+
+    When:
+        - Calling rubrik_data_security_violation_get_command with empty response.
+    Then:
+        - Verifies that NO_RESPONSE message is returned.
+    """
+    from RubrikPolaris import rubrik_data_security_violation_get_command
+
+    response_data = {"data": {"policyViolation": {}}}
+
+    args = {"violation_id": "invalid-violation-id"}
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=response_data)
+    response = rubrik_data_security_violation_get_command(client, args=args)
+
+    assert response.readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        ({}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("violation_id")),
+        ({"violation_id": ""}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("violation_id")),
+    ],
+)
+def test_rubrik_data_security_violation_get_command_invalid_args(client, args, error):
+    """
+    Test case scenario for invalid arguments for rubrik_data_security_violation_get_command.
+
+    Given:
+        - args: Contains arguments for the command.
+    When:
+        - Invalid value is passed in arguments
+    Then:
+        - Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_data_security_violation_get_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_data_security_violation_get_command(client, args=args)
+    assert str(e.value) == error
+
+
+def test_rubrik_data_security_violation_status_update_command_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_data_security_violation_status_update_command with valid case.
+
+    When:
+        - Calling rubrik_data_security_violation_status_update_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_data_security_violation_status_update_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_status_update_response.json")
+    )
+
+    hr_data = "#### Successfully updated the DSPM violation status to In Progress"
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "status": "IN_PROGRESS",
+    }
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("raw_response")}])
+    response = rubrik_data_security_violation_status_update_command(client, args=args)
+
+    assert response.raw_response == response_data.get("raw_response")
+    assert response.outputs == remove_empty_elements(response_data.get("outputs"))
+    assert response.readable_output == hr_data
+    assert response.outputs_key_field == ["policyViolationId"]
+    assert response.outputs_prefix == OUTPUT_PREFIX["DSPM_VIOLATION"]
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        ({}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("violation_id")),
+        ({"violation_id": "00000000-0000-0000-0000-000000000001"}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("status")),
+        (
+            {"violation_id": "00000000-0000-0000-0000-000000000001", "status": "INVALID_STATUS"},
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_STATUS", "status", DSPM_VIOLATION_STATUS),
+        ),
+    ],
+)
+def test_rubrik_data_security_violation_status_update_command_with_invalid_args(client, args, error):
+    """
+    Test case scenario for invalid arguments for rubrik_data_security_violation_status_update_command.
+
+    Given:
+        -args: Contains arguments for the command.
+    When:
+        -Invalid value is passed in arguments
+    Then:
+        -Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_data_security_violation_status_update_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_data_security_violation_status_update_command(client, args=args)
+    assert str(e.value) == error
+
+
+def test_data_security_violation_file_list_command_success(client, requests_mock):
+    """Tests success for rubrik-data-security-violation-file-list command."""
+    from RubrikPolaris import rubrik_data_security_violation_file_list_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_file_list_response.json")
+    )
+
+    with open(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_file_list_response_hr.md")
+    ) as f:
+        hr_output = f.read()
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "file_name": "fileName.txt",
+        "sensitivity": "high,LOW",
+        "exposure": "not_OPEN",
+        "access_via": "groUP",
+        "sort_order": "asc",
+    }
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("raw_response")}])
+    response = rubrik_data_security_violation_file_list_command(client, args=args)
+
+    assert response.raw_response == response_data.get("raw_response")
+    assert response.outputs == remove_empty_elements(response_data.get("outputs"))
+    assert response.readable_output == hr_output
+
+
+def test_data_security_violation_file_list_command_success_when_empty_response(client, requests_mock):
+    """Tests success when empty response is received for rubrik-data-security-violation-file_list command."""
+    from RubrikPolaris import rubrik_data_security_violation_file_list_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_file_list_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "file_name": "NotExistFileName.txt",
+    }
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get("empty_response")}])
+    response = rubrik_data_security_violation_file_list_command(client, args=args)
+
+    assert response.readable_output == f"#### {MESSAGES['NO_RECORDS_FOUND'].format('DSPM violation Files')}"
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        (
+            {"limit": "0"},
+            ERROR_MESSAGES["INVALID_LIMIT"].format(0),
+        ),
+        (
+            {"limit": "1001"},
+            ERROR_MESSAGES["INVALID_LIMIT"].format(1001),
+        ),
+        (
+            {"sort_order": "INVALID"},
+            ERROR_MESSAGES["INVALID_SORT_ORDER"].format("INVALID"),
+        ),
+        (
+            {"sort_by": "INVALID_FIELD"},
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID_FIELD", "sort_by", DSPM_VIOLATION_FILE_LIST_SORT_BY),
+        ),
+        (
+            {"exposure": "INVALID"},
+            ERROR_MESSAGES["INVALID_SELECT"].format("INVALID", "exposure", DSPM_VIOLATION_FILE_LIST_EXPOSURE),
+        ),
+        (
+            {"sensitivity": "High,SUPER_SENSITIVE"},
+            ERROR_MESSAGES["INVALID_SELECT"].format("SUPER_SENSITIVE", "sensitivity", DSPM_VIOLATION_FILE_LIST_SENSITIVITY),
+        ),
+        (
+            {"access_via": "Invalid"},
+            ERROR_MESSAGES["INVALID_SELECT"].format("Invalid", "access_via", DSPM_VIOLATION_FILE_LIST_ACCESS_VIA),
+        ),
+        (
+            {"last_access_start_date": "2026-01-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_access_start_date", "last_access_end_date"),
+        ),
+        (
+            {"last_access_end_date": "2026-01-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_access_start_date", "last_access_end_date"),
+        ),
+        (
+            {"last_access_start_date": "2026-03-01", "last_access_end_date": "2026-01-01"},
+            ERROR_MESSAGES["INVALID_DATE_RANGE"].format("last_access_start_date", "last_access_end_date"),
+        ),
+        (
+            {"last_modified_start_date": "2026-03-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_modified_start_date", "last_modified_end_date"),
+        ),
+        (
+            {"last_modified_end_date": "2026-03-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_modified_start_date", "last_modified_end_date"),
+        ),
+        (
+            {"last_modified_start_date": "2026-03-01", "last_modified_end_date": "2026-01-01"},
+            ERROR_MESSAGES["INVALID_DATE_RANGE"].format("last_modified_start_date", "last_modified_end_date"),
+        ),
+        (
+            {"creation_start_date": "2026-03-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("creation_start_date", "creation_end_date"),
+        ),
+        (
+            {"creation_end_date": "2026-03-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("creation_start_date", "creation_end_date"),
+        ),
+        (
+            {"creation_start_date": "2026-03-01", "creation_end_date": "2026-01-01"},
+            ERROR_MESSAGES["INVALID_DATE_RANGE"].format("creation_start_date", "creation_end_date"),
+        ),
+        (
+            {"last_scan_start_date": "2026-03-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_scan_start_date", "last_scan_end_date"),
+        ),
+        (
+            {"last_scan_end_date": "2026-03-01"},
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_scan_start_date", "last_scan_end_date"),
+        ),
+        (
+            {"last_scan_start_date": "2026-03-01", "last_scan_end_date": "2026-01-01"},
+            ERROR_MESSAGES["INVALID_DATE_RANGE"].format("last_scan_start_date", "last_scan_end_date"),
+        ),
+    ],
+)
+def test_data_security_violation_file_list_command_invalid_arguments(client, args, error):
+    """Tests failure for rubrik-data-security-violation-file-list command with invalid arguments."""
+    from RubrikPolaris import rubrik_data_security_violation_file_list_command
+
+    args.update(
+        {
+            "violation_id": "00000000-0000-0000-0000-000000000001",
+            "object_id": "00000000-0000-0000-0000-000000000002",
+            "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        }
+    )
+    with pytest.raises(ValueError) as e:
+        rubrik_data_security_violation_file_list_command(client, args)
+
+    assert str(e.value) == error
+
+
+@pytest.mark.parametrize("empty_response", [True, False])
+def test_rubrik_data_security_violation_csv_downaload_initial_request_success(client, requests_mock, empty_response):
+    """Test initial CSV download request (non-polling) returns success status."""
+    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "polling": False,
+    }
+
+    violation_response = response_data.get("violation_response")
+    if empty_response:
+        raw_response = response_data.get("empty_response")
+        requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
+        result = rubrik_data_security_violation_csv_downaload_command(client, args)
+        assert result[0].readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
+    else:
+        raw_response = response_data.get("initial_request_success", {}).get("raw_response")
+        requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
+        result = rubrik_data_security_violation_csv_downaload_command(client, args)
+
+        assert len(result) == 1
+        assert result[0].raw_response == response_data.get("initial_request_success", {}).get("raw_response")
+        assert result[0].outputs == remove_empty_elements(response_data.get("initial_request_success", {}).get("outputs"))
+        assert result[0].readable_output == "#### Successfully initiated the downloading of the CSV file."
+
+
+def test_rubrik_data_security_violation_csv_downaload_polling_file_ready(client, requests_mock):
+    """Test polling execution when CSV file is ready - should download and return file."""
+    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "object_name": "test_object",
+        "polling": True,
+    }
+
+    user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_file.csv")) as f:
+        file_data = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+    requests_mock.get(
+        "https://demo.my.rubrik.com/file-downloads/00000000-0000-0000-0000-000000000011", text=file_data, status_code=200
+    )
+
+    result = rubrik_data_security_violation_csv_downaload_command(client, args)
+
+    assert len(result) == 2
+    assert result[0].raw_response == response_data.get("polling_file_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(response_data.get("polling_file_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Successfully downloaded the Files at Risk CSV file."
+    if isinstance(result[1], dict):
+        assert result[1].get("File") == "test_object-violating-files_file_results_1775629027.csv"
+
+
+def test_rubrik_data_security_violation_csv_downaload_polling_file_not_ready(client, requests_mock):
+    """Test polling execution when CSV file is not ready yet - should return polling status."""
+    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "object_name": "test_object",
+        "polling": True,
+    }
+
+    user_files_response = response_data.get("polling_file_not_ready", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_data_security_violation_csv_downaload_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == response_data.get("polling_file_not_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(response_data.get("polling_file_not_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Polling for CSV file availability. The command will automatically retry..."
+
+
+def test_rubrik_data_security_violation_csv_downaload_polling_file_failed(client, requests_mock):
+    """Test polling execution when CSV file status is failed."""
+    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "object_name": "test_object",
+        "polling": True,
+    }
+
+    user_files_response = response_data.get("polling_file_failed", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_data_security_violation_csv_downaload_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == response_data.get("polling_file_failed", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(response_data.get("polling_file_failed", {}).get("outputs"))
+    assert result[0].readable_output == "#### Failed to download the Files at Risk CSV file."
+
+
+@pytest.mark.parametrize(
+    "args, error_message",
+    [
+        (
+            {"object_id": "00000000-0000-0000-0000-000000000002", "snapshot_id": "00000000-0000-0000-0000-000000010001"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("violation_id"),
+        ),
+        (
+            {"violation_id": "00000000-0000-0000-0000-000000000001", "object_id": "00000000-0000-0000-0000-000000000002"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id"),
+        ),
+        (
+            {"violation_id": "00000000-0000-0000-0000-000000000001", "snapshot_id": "00000000-0000-0000-0000-000000010001"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id"),
+        ),
+    ],
+)
+def test_rubrik_data_security_violation_csv_downaload_invalid_arguments_are_provided(client, args, error_message):
+    """Test that missing required arguments raise ValueError."""
+    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_data_security_violation_csv_downaload_command(client, args)
+
+    assert error_message in str(e.value)
+
+
+def test_run_polling_command_completed_data_security_violation_csv_downaload(client, requests_mock):
+    """
+    Test run_polling_command when DSPM violation csv downaload job is completed"""
+    from RubrikPolaris import rubrik_data_security_violation_csv_downaload_command, run_polling_command
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "object_name": "test_object",
+        "polling": True,
+    }
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_downaload_response.json")
+    )
+
+    user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_csv_file.csv")) as f:
+        file_data = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+    requests_mock.get(
+        "https://demo.my.rubrik.com/file-downloads/00000000-0000-0000-0000-000000000011", text=file_data, status_code=200
+    )
+
+    result = run_polling_command(
+        client, args, "rubrik-data-security-violation-csv-download", rubrik_data_security_violation_csv_downaload_command
+    )
+
+    # Should return single CommandResults, not a list
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].outputs.get("isSuccessful") is True
+
+
+@pytest.mark.parametrize("empty_response", [True, False])
+def test_rubrik_data_security_violation_log_downaload_command_initial_request_success(client, requests_mock, empty_response):
+    """Test initial CSV download request (non-polling) returns success status."""
+    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "polling": False,
+    }
+
+    violation_response = response_data.get("violation_response")
+    if empty_response:
+        raw_response = response_data.get("empty_response")
+        requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
+        result = rubrik_data_security_violation_log_downaload_command(client, args)
+        assert result[0].readable_output == f"#### {MESSAGES['NO_RESPONSE']}"
+    else:
+        raw_response = response_data.get("initial_request_success", {}).get("raw_response")
+        requests_mock.post(BASE_URL_GRAPHQL, [{"json": violation_response}, {"json": raw_response}])
+        result = rubrik_data_security_violation_log_downaload_command(client, args)
+
+        assert len(result) == 1
+        assert result[0].raw_response == response_data.get("initial_request_success", {}).get("raw_response")
+        assert result[0].outputs == remove_empty_elements(response_data.get("initial_request_success", {}).get("outputs"))
+        assert result[0].readable_output == "#### Successfully initiated the downloading of the Remediation Log file."
+
+
+def test_rubrik_data_security_violation_log_downaload_command_polling_file_ready(client, requests_mock):
+    """Test polling execution when CSV file is ready - should download and return file."""
+    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "object_name": "test_object",
+        "polling": True,
+    }
+
+    user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_file.csv")) as f:
+        file_data = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+    requests_mock.get(
+        "https://demo.my.rubrik.com/file-downloads/00000000-0000-0000-0000-000000000011", text=file_data, status_code=200
+    )
+
+    result = rubrik_data_security_violation_log_downaload_command(client, args)
+
+    assert len(result) == 2
+    assert result[0].raw_response == response_data.get("polling_file_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(response_data.get("polling_file_ready", {}).get("outputs"))
+    assert result[0].readable_output == "#### Successfully downloaded the Remediation Log file."
+    if isinstance(result[1], dict):
+        assert result[1].get("File") == "test_object actions log.csv"
+
+
+def test_rubrik_data_security_violation_log_downaload_command_polling_file_not_ready(client, requests_mock):
+    """Test polling execution when CSV file is not ready yet - should return polling status."""
+    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "object_name": "test_object",
+        "polling": True,
+    }
+
+    user_files_response = response_data.get("polling_file_not_ready", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_data_security_violation_log_downaload_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == response_data.get("polling_file_not_ready", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(response_data.get("polling_file_not_ready", {}).get("outputs"))
+    assert (
+        result[0].readable_output == "#### Polling for Remediation Log file availability. The command will automatically retry..."
+    )
+
+
+def test_rubrik_data_security_violation_log_downaload_command_polling_file_failed(client, requests_mock):
+    """Test polling execution when CSV file status is failed."""
+    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
+    )
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "snapshot_id": "00000000-0000-0000-0000-000000010001",
+        "object_name": "test_object",
+        "polling": True,
+    }
+
+    user_files_response = response_data.get("polling_file_failed", {}).get("raw_response")
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+
+    result = rubrik_data_security_violation_log_downaload_command(client, args)
+
+    assert len(result) == 1
+    assert result[0].raw_response == response_data.get("polling_file_failed", {}).get("raw_response")
+    assert result[0].outputs == remove_empty_elements(response_data.get("polling_file_failed", {}).get("outputs"))
+    assert result[0].readable_output == "#### Failed to download the Remediation Log file."
+
+
+@pytest.mark.parametrize(
+    "args, error_message",
+    [
+        (
+            {"object_id": "00000000-0000-0000-0000-000000000002", "snapshot_id": "00000000-0000-0000-0000-000000010001"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("violation_id"),
+        ),
+        (
+            {"violation_id": "00000000-0000-0000-0000-000000000001", "snapshot_id": "00000000-0000-0000-0000-000000010001"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id"),
+        ),
+    ],
+)
+def test_rubrik_data_security_violation_log_downaload_command_invalid_arguments_are_provided(client, args, error_message):
+    """Test that missing required arguments raise ValueError."""
+    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_data_security_violation_log_downaload_command(client, args)
+
+    assert error_message in str(e.value)
+
+
+def test_run_polling_command_completed_data_security_violation_log_downaload(client, requests_mock):
+    """
+    Test run_polling_command when DSPM violation log downaload is completed"""
+    from RubrikPolaris import rubrik_data_security_violation_log_downaload_command, run_polling_command
+
+    args = {
+        "violation_id": "00000000-0000-0000-0000-000000000001",
+        "object_id": "00000000-0000-0000-0000-000000000002",
+        "object_name": "test_object",
+        "polling": True,
+    }
+    response_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_downaload_response.json")
+    )
+
+    user_files_response = response_data.get("polling_file_ready", {}).get("raw_response")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dspm_violation_log_file.csv")) as f:
+        file_data = f.read()
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=user_files_response)
+    requests_mock.get(
+        "https://demo.my.rubrik.com/file-downloads/00000000-0000-0000-0000-000000000011", text=file_data, status_code=200
+    )
+
+    result = run_polling_command(
+        client, args, "rubrik-data-security-violation-csv-download", rubrik_data_security_violation_log_downaload_command
+    )
+
+    # Should return single CommandResults, not a list
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].outputs.get("isSuccessful") is True

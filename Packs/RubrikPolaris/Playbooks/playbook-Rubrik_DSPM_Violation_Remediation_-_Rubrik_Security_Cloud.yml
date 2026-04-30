@@ -1,0 +1,1074 @@
+id: Rubrik DSPM Violation Remediation - Rubrik Security Cloud
+version: -1
+name: Rubrik DSPM Violation Remediation - Rubrik Security Cloud
+description: This playbook remediates DSPM violations by retrieving violation details and affected file information, downloading the affected file details and remediation logs as CSV files, quarantining the affected files and updating the violation status.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: adc2ab85-975b-474c-8710-5899192aa909
+    type: start
+    task:
+      id: adc2ab85-975b-474c-8710-5899192aa909
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fedc4620-2e8e-4971-8c03-9c7ebeab4a65
+    type: condition
+    task:
+      id: fedc4620-2e8e-4971-8c03-9c7ebeab4a65
+      version: -1
+      name: Is Rubrik Security Cloud integration enabled?
+      description: Checks whether Rubrik Security Cloud integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7f1e5c47-a834-434a-8762-8b1e0567ccbb
+    type: regular
+    task:
+      id: 7f1e5c47-a834-434a-8762-8b1e0567ccbb
+      version: -1
+      name: Set the delete keys
+      description: Set the delete keys in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_dspm_violation_remediation_playbook
+      value:
+        simple: Collect DSPM violation Information, Provide the Update status for the violation, FileInformation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 53fc5e22-126e-471f-8375-c9f361b12ade
+    type: regular
+    task:
+      id: 53fc5e22-126e-471f-8375-c9f361b12ade
+      version: -1
+      name: Clear Previous Inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        complex:
+          root: delete_keys_for_rubrik_dspm_violation_remediation_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b8df24cb-cdb0-4238-84a6-d867802e7aa6
+    type: condition
+    task:
+      id: b8df24cb-cdb0-4238-84a6-d867802e7aa6
+      version: -1
+      name: Check whether the DSPM Violation information is available in playbook input
+      description: Check whether the violation ID, object ID and snapshot ID are available or not in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "YES":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.violation_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_id
+                transformers:
+                - operator: trim
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.snapshot_id
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0fee2f17-f60a-40ea-8af2-35dd4678a3fc
+    type: collection
+    task:
+      id: 0fee2f17-f60a-40ea-8af2-35dd4678a3fc
+      version: -1
+      name: Collect the DSPM violation information
+      description: Collecting violation ID, object ID and snapshot ID to retrieve the DSPM violation and violation files data.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the violation ID, object ID and snapshot ID.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Violation ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The DSPM violation ID. Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command.'
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the Object ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Object ID. Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command.'
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Specify the Snapshot ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Snapshot ID. Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command.'
+        readonly: false
+      title: Collect DSPM violation Information
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d2d8df41-701b-489b-8f6c-fbe962652919
+    type: title
+    task:
+      id: d2d8df41-701b-489b-8f6c-fbe962652919
+      version: -1
+      name: Sync the Violation Information
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "10"
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 91d5f68f-f5dc-4e38-8cbd-92abba63f72a
+    type: regular
+    task:
+      id: 91d5f68f-f5dc-4e38-8cbd-92abba63f72a
+      version: -1
+      name: Retrieve DSPM violation files information
+      description: Syncs the violation file information from RSC to XSOAR.
+      scriptName: RubrikPullDSPMViolationFileInformation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      extend-context:
+        simple: FileInformation=data.policyObj.fileResultConnection.edges={"path":val.node.stdPath,"name":val.node.filename }
+      limit:
+        complex:
+          root: inputs.limit
+          transformers:
+          - operator: trim
+      object_id:
+        complex:
+          root: inputs.object_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.1
+                iscontext: true
+          - operator: trim
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.2
+                iscontext: true
+          - operator: trim
+      violation_id:
+        complex:
+          root: inputs.violation_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ff456906-4a98-4a24-87c9-287c3ee00a21
+    type: regular
+    task:
+      id: ff456906-4a98-4a24-87c9-287c3ee00a21
+      version: -1
+      name: Download the files at risk CSV file
+      description: Download all files at risk as CSV file for the specified data security violation.
+      script: '|||rubrik-data-security-violation-csv-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      object_id:
+        complex:
+          root: inputs.object_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.1
+                iscontext: true
+          - operator: trim
+      object_name:
+        complex:
+          root: inputs.object_name
+          transformers:
+          - operator: trim
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.2
+                iscontext: true
+          - operator: trim
+      violation_id:
+        complex:
+          root: inputs.violation_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 82f505be-0e73-45dc-831b-cc0d8dca27db
+    type: regular
+    task:
+      id: 82f505be-0e73-45dc-831b-cc0d8dca27db
+      version: -1
+      name: Download the remediation Log file
+      description: Download remediation logs as CSV file for the specified data security violation.
+      script: '|||rubrik-data-security-violation-log-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      object_id:
+        complex:
+          root: inputs.object_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.1
+                iscontext: true
+          - operator: trim
+      object_name:
+        complex:
+          root: inputs.object_name
+          transformers:
+          - operator: trim
+      violation_id:
+        complex:
+          root: inputs.violation_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0a2da00a-7154-4f58-8626-d79c606a80d1
+    type: condition
+    task:
+      id: 0a2da00a-7154-4f58-8626-d79c606a80d1
+      version: -1
+      name: Whether to update the status of the violation
+      description: Update the status of DSPM violation?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "14"
+      "Yes":
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Update the status of violation?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fbb72007-0d8f-47e4-8c63-b98031d5748e
+    type: collection
+    task:
+      id: fbb72007-0d8f-47e4-8c63-b98031d5748e
+      version: -1
+      name: Collect the new status of the violation
+      description: Collect the new status of the DSPM violation.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the status of DSPM violation
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify status to update for violation.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: OPEN
+        - simple: IN_PROGRESS
+        - simple: REMEDIATED
+        - simple: DISMISSED
+        - simple: CLOSED
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the Update status for the violation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 129ae53c-34fa-46cf-8193-78359acbc3bc
+    type: regular
+    task:
+      id: 129ae53c-34fa-46cf-8193-78359acbc3bc
+      version: -1
+      name: Update the status of the DSPM violation
+      description: Updates the status of the DSPM violation.
+      script: '|||rubrik-data-security-violation-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      status:
+        complex:
+          root: Provide the Update status for the violation.Answers
+          accessor: "0"
+          transformers:
+          - operator: trim
+      violation_id:
+        complex:
+          root: inputs.violation_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a1c4b858-bf7f-46a5-8287-9613299699c1
+    type: title
+    task:
+      id: a1c4b858-bf7f-46a5-8287-9613299699c1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0ec999a4-840e-4dab-8df8-b861550de3cd
+    type: regular
+    task:
+      id: 0ec999a4-840e-4dab-8df8-b861550de3cd
+      version: -1
+      name: Retrieve DSPM violation data
+      description: Syncs the DSPM violation information from RSC to XSOAR.
+      scriptName: RubrikPullDSPMViolationInformation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      violation_id:
+        complex:
+          root: inputs.violation_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect DSPM violation Information.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c5550c1d-4fed-4f44-8b03-21f92a7449f5
+    type: title
+    task:
+      id: c5550c1d-4fed-4f44-8b03-21f92a7449f5
+      version: -1
+      name: Quarantine the files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: bb2e3b5d-4214-41e8-8387-f65633a8b0ab
+    type: title
+    task:
+      id: bb2e3b5d-4214-41e8-8387-f65633a8b0ab
+      version: -1
+      name: Update the violation status
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9db227e2-aa68-4ee7-8952-3cc406822d8e
+    type: condition
+    task:
+      id: 9db227e2-aa68-4ee7-8952-3cc406822d8e
+      version: -1
+      name: Are the file paths available?
+      description: Checks whether the file paths of the affected files are available in the incident context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileInformation
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4e59ea46-f118-4c51-86c0-5ac6e95ad7e6
+    type: playbook
+    task:
+      id: 4e59ea46-f118-4c51-86c0-5ac6e95ad7e6
+      version: -1
+      name: Rubrik Quarantine Files General
+      description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration.
+      playbookName: Rubrik Quarantine Files General
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      file_information:
+        complex:
+          root: FileInformation
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_Yes": 0.5,
+      "11_14_No": 0.53,
+      "19_18_#default#": 0.44,
+      "19_20_yes": 0.55,
+      "1_14_#default#": 0.28,
+      "1_2_yes": 0.46,
+      "4_5_#default#": 0.56,
+      "4_7_YES": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2575,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: violation_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikviolationid
+  required: false
+  description: |-
+    The ID of the DSPM violation.
+
+    Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command.
+  playbookInputQuery:
+- key: object_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjectid
+  required: false
+  description: |-
+    The object ID.
+
+    Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command.
+  playbookInputQuery:
+- key: snapshot_id
+  value:
+    complex:
+      root: incident
+      accessor: rubriksnapshotid
+  required: false
+  description: |-
+    The snapshot ID.
+
+    Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command.
+  playbookInputQuery:
+- key: object_name
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjectname
+  required: false
+  description: |-
+    The object Name.
+
+    Note: If not specified playbook will retrieve it using the "rubrik-data-security-violation-get" command.
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "1000"
+  required: false
+  description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+  playbookInputQuery:
+- key: quarantine_folder_id
+  value: {}
+  required: false
+  description: The ID of the quarantine folder where the affected files will be moved.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

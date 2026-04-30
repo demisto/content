@@ -1,21 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Rubrik Radar",
-        "Rubrik Threat Monitoring Object",
         "Rubrik DSPM Violation"
     ],
     "caseInsensitive": true,
-    "cliName": "rubrikcdmclustername",
+    "cliName": "rubrikobjectplatform",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_rubrikcdmclustername",
+    "id": "incident_rubrikobjectplatform",
     "isReadOnly": false,
     "locked": false,
-    "name": "Rubrik CDM Cluster Name",
+    "name": "Rubrik Object Platform",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -24,11 +22,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "marketplaces": [
-        "xsoar"
-    ]
+    "fromVersion": "6.0.0"
 }
