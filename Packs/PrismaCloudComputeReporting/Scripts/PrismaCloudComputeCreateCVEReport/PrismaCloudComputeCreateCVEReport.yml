@@ -14,7 +14,7 @@ comment: Deprecated. No available replacement.
 commonfields:
   id: PrismaCloudComputeCreateCVEReport
   version: -1
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: PrismaCloudComputeCreateCVEReport
 runas: DBotWeakRole

@@ -894,7 +894,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - Cybereason Test
 fromversion: 5.0.0

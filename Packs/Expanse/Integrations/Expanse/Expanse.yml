@@ -649,7 +649,7 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

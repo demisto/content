@@ -648,7 +648,7 @@ script:
     deprecated: true
     description: Modifies an alert in ExtraHop.
     name: extrahop-modify-alert-rule
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   type: python

@@ -167,7 +167,7 @@ script:
       description: CVE url.
       type: string
     description: 'Retrieve CVEs for an ArcusTeam device.'
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   subtype: python3
 fromversion: 6.0.0
 tests:

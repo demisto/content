@@ -239,7 +239,7 @@ script:
     - contextPath: CVE.Severity
       description: The CVSS severity level (e.g. CRITICAL, HIGH, MEDIUM, LOW).
       type: String
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: ''

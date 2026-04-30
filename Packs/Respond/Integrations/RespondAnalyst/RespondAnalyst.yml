@@ -235,7 +235,7 @@ script:
       name: tenant_id
     description: Get escalation data associated with incident. In Respond, an 'escalation' is a specific event derived from a cybersecurity telemetry. Escalations are compiled together to form Incidents in Respond.
     name: mad-get-escalations
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

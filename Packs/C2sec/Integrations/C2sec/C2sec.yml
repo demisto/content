@@ -200,6 +200,6 @@ script:
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (auto formatted)

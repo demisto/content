@@ -14,5 +14,5 @@ type: python
 fromversion: 5.0.0
 tests:
 - No tests (deprecated)
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.12.13.8428455
 deprecated: true

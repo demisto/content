@@ -143,7 +143,7 @@ script:
       type: Boolean
     description: Checks if a path exists between the two nodes.
   type: python
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   subtype: python3
   isfetch: true
   runonce: false

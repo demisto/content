@@ -188,7 +188,7 @@ script:
       type: Number
     description: Get specific indicator reputation
 
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

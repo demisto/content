@@ -53,7 +53,7 @@ script:
     - contextPath: PingCastle.Report.report
       description: The XML report sent by Ping Castle.
       type: String
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.13.8428455
   longRunning: true
   longRunningPort: true
   script: '-'

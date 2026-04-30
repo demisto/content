@@ -313,7 +313,7 @@ script:
     - contextPath: MSISAC.RetrievedCases.severity
       description: The severity of the case.
       type: string
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   isFetchSamples: true
   runonce: false

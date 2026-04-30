@@ -42,7 +42,7 @@ script:
       required: true
     description: Send message to Azure Open AI.
     name: azure-openai-send-message
-  dockerimage: demisto/python3:3.12.11.4284848
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3

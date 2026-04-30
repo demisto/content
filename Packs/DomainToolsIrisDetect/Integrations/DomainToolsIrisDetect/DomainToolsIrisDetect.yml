@@ -1045,7 +1045,7 @@ script:
       type: String
   - description: This command will reset your fetch history.
     name: domaintools-iris-detect-reset-fetch-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

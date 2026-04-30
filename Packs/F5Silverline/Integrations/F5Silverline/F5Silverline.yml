@@ -148,7 +148,7 @@ script:
       - proxy-routed
     description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

@@ -11,7 +11,7 @@ comment: |-
 enabled: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 8.14.0
 tests:
   - No tests (auto formatted)

@@ -96,7 +96,7 @@ script:
       required: true
     description: Gets events from Ironscales. This command is intended for development and debugging purposes and is to be used with caution as it may create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
     name: ironscales-get-events
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   script: ''
   subtype: python3

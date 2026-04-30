@@ -39,5 +39,5 @@ tags: []
 comment: Create duplicate incident to the current incident.
 enabled: true
 scripttarget: 0
-dockerimage: demisto/python3:3.10.8.35482
+dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 5.0.0

@@ -219,7 +219,7 @@ script:
       description: The status of the submission scanning process.
       type: String
     deprecated: true
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

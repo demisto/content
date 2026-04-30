@@ -158,7 +158,7 @@ script:
       description: 'Status of the release action.'
     description: 'Apply "release" action to a specified Email. '
     execution: true
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   subtype: python3

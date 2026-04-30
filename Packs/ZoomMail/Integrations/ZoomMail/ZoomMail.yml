@@ -326,7 +326,7 @@ script:
     - contextPath: ZoomMail.User.email
       description: The email for the user.
       type: unknown
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   subtype: python3

@@ -146,7 +146,7 @@ script:
       description: Service state.
     description: All the monitoring information regarding services.
   runonce: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - Centreon-Test-Playbook
 fromversion: 5.0.0

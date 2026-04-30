@@ -73,7 +73,7 @@ script:
       required: true
     description: Gets security events from Forcepoint DLP.
     name: forcepoint-dlp-get-events
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   runonce: false
   script: ''

@@ -54,7 +54,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.11.4284848
+  dockerimage: demisto/python3:3.12.13.8428455
   commands:
   - name: cs-falcon-sandbox-scan
     polling: true

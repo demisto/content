@@ -1770,7 +1770,7 @@ script:
       name: accept_encoding
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.12.12.6875480
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

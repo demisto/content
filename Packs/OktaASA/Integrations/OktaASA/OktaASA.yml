@@ -68,7 +68,7 @@ script:
     description: Gets events from Okta ASA.
     execution: false
     name: okta-asa-get-events
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   runonce: false
   script: '-'

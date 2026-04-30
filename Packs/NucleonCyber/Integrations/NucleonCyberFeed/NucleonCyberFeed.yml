@@ -129,7 +129,7 @@ script:
     - contextPath: NucleonCyber.Indicators.exp
       description: Indicators exp.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: '-'

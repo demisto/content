@@ -103,7 +103,7 @@ scripttarget: 0
 subtype: python3
 pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 fromversion: 5.5.0
 

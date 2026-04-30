@@ -498,7 +498,7 @@ script:
       description: Bool, whether the request was a success
       type: Boolean
 
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

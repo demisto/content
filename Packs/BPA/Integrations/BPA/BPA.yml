@@ -161,7 +161,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

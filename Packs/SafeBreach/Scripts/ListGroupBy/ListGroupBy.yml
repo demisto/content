@@ -19,7 +19,7 @@ comment: Deprecated. No available replacement.
 commonfields:
   id: ListGroupBy
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: ListGroupBy
 runas: DBotWeakRole

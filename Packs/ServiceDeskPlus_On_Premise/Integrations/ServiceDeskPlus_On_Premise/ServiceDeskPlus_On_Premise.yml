@@ -506,7 +506,7 @@ script:
     deprecated: true
     description: Closes the specified request.
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

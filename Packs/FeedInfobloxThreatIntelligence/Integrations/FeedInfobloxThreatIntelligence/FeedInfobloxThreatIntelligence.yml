@@ -387,7 +387,7 @@ script:
     - contextPath: Infoblox.FeedIndicator.extended.sample_sha256
       description: SHA256 of the sample.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isfetch: false
   longRunning: false

@@ -27,7 +27,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 engineinfo: {}
 mainengineinfo: {}

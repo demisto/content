@@ -113,7 +113,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: autofocus-tags-feed-get-indicators
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: '-'

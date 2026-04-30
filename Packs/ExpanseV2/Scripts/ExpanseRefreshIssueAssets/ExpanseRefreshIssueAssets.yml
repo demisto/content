@@ -5,7 +5,7 @@ deprecated: true
 commonfields:
   id: ExpanseRefreshIssueAssets
   version: -1
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: ExpanseRefreshIssueAssets
 runas: DBotWeakRole

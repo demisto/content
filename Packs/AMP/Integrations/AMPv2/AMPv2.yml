@@ -1792,7 +1792,7 @@ script:
     - contextPath: CiscoAMP.LicenseInformation.license_summaries.tier
       description: The tier type of the license.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

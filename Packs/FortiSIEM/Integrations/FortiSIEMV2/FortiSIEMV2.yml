@@ -716,7 +716,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the entry.
       type: String
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

@@ -1088,7 +1088,7 @@ script:
       name: caseNumber
     description: Retrieve a case file by file ID.
     name: salesforce-get-case-file-by-id
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   ismappable: true
   isremotesyncin: true

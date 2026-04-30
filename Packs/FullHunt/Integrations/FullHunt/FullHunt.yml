@@ -259,7 +259,7 @@ script:
     - contextPath: FullHunt.Subdomain.status
       description: HTTP status code.
       type: number
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   script: ''
   subtype: python3
   type: python

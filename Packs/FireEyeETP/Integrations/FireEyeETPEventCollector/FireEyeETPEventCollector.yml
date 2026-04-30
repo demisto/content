@@ -95,7 +95,7 @@ script:
       required: true
     description: Gets events from Trellix Email Security - Cloud. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: fireeye-etp-get-events
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   script: ""
   subtype: python3

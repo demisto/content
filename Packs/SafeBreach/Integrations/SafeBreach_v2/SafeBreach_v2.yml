@@ -520,7 +520,7 @@ script:
       description: Time when the test was triggered.
       type: Datetime
     deprecated: true
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: '-'

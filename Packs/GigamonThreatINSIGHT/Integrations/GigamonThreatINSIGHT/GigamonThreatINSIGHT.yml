@@ -902,7 +902,7 @@ script:
       - x509:san_ip.ip
       description: List of event fields to check for impacted devices.
     description: Create a new detection rule.
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   subtype: python3
 fromversion: 6.5.0

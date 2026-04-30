@@ -10,7 +10,7 @@ comment: This dynamic automation update the live brief data to HTML and presents
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 fromversion: 6.10.0
 tests:

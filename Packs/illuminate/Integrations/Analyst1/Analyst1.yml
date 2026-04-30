@@ -1022,7 +1022,7 @@ script:
     - contextPath: File.EntryID
       description: The XSOAR entry ID of the downloaded file.
       type: String
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
   subtype: python3
   runonce: false
 fromversion: 5.0.0

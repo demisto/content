@@ -168,7 +168,7 @@ script:
       description: Size of the file.
       type: string
     description: Get file hash from URI.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3

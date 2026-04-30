@@ -5,7 +5,7 @@ comment: Reports on common indicators.
 commonfields:
   id: HealthCheckCommonIndicators
   version: -1
-dockerimage: demisto/python3:3.12.11.4819260
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: HealthCheckCommonIndicators
 runas: DBotWeakRole

@@ -90,7 +90,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - Dedup - Generic v3
 fromversion: 5.0.0

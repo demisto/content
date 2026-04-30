@@ -416,7 +416,7 @@ script:
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.result
       description: Result status or outcome returned by the API for the issue request.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   isremotesyncout: true
 tests:

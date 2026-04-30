@@ -573,6 +573,6 @@ script:
       description: The AlienVault OTX vendor.
       type: String
     description: Queries the illuminate REST API and enriches the given URL with illuminate indicator data.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.12.13.8428455
   subtype: python3
 fromversion: 5.0.0

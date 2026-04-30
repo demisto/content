@@ -12,7 +12,7 @@ comment: Common FireEye code that will be appended to each FireEye integration w
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

@@ -351,7 +351,7 @@ script:
       description: The notifier body template.
       type: String
     description: Get notifier from Humio by id
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

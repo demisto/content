@@ -115,7 +115,7 @@ script:
       isArray: true
     description: Gets events from Cloudflare Zero Trust.
     name: cloudflare-zero-trust-get-events
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   runonce: false
   script: '-'

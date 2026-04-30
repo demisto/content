@@ -77,7 +77,7 @@ script:
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
     deprecated: true
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

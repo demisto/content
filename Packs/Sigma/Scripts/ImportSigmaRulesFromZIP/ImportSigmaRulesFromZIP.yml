@@ -14,7 +14,7 @@ scripttarget: 0
 subtype: python3
 timeout: 600
 runonce: false
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

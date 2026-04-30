@@ -135,7 +135,7 @@ script:
     - contextPath: Umbrella.Destinations.comment
       description: Comment associated with the domain in the destination list.
       type: string
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3

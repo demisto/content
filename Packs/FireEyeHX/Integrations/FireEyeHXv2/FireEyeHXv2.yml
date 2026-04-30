@@ -1891,7 +1891,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 6.0.0
 tests:
 - FireEyeHX_v2

@@ -2,7 +2,7 @@ comment: Health Check dynamic section, showing the total number of errors in fai
 commonfields:
   id: IncidentsCheck-NumberofTotalEntriesErrors
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: IncidentsCheck-NumberofTotalEntriesErrors
 runas: DBotWeakRole

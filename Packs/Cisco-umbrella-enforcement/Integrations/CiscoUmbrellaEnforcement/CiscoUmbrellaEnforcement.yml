@@ -101,7 +101,7 @@ script:
     name: umbrella-domain-delete
     compliantpolicies:
       - Domain Blockage
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: true
   script: '-'
   subtype: python3

@@ -1033,7 +1033,7 @@ script:
     - contextPath: Infoblox.DHCPLease.UID
       description: The unique identifier of the DHCP lease record.
       type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3

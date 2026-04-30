@@ -887,7 +887,7 @@ script:
       required: true
     description: Deletes a list entry.
     name: cisco-email-security-list-entry-delete
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

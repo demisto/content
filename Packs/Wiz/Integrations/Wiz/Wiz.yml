@@ -482,7 +482,7 @@ script:
     - name: resource_id
       description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
       required: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

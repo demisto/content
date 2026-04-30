@@ -52,7 +52,7 @@ script:
       name: overwrite_adaptive_card_json
     description: Send a message to Microsoft Teams via Incoming Webhook.
     name: ms-teams-message
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3

@@ -98,7 +98,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: decyfir-get-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isfetch: false
   longRunning: false

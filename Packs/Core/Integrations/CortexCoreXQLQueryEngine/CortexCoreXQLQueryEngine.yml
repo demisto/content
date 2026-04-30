@@ -1577,7 +1577,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.12.12.6151721
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

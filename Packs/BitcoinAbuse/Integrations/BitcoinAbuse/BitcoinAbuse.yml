@@ -136,7 +136,7 @@ script:
     description: Gets indicators from the feed.
     name: bitcoinabuse-get-indicators
     deprecated: true
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isFetchSamples: true
   script: ''

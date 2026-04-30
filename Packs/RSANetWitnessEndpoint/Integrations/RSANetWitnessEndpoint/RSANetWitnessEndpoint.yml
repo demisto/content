@@ -391,7 +391,7 @@ script:
     - contextPath: NetWitness.Blacklist.Domains
       description: Domains block listed successfully.
     description: 'Add a list of domains to block list '
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - NetWitness Endpoint Test
 fromversion: 5.0.0

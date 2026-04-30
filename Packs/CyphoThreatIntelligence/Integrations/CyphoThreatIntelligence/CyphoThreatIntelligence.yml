@@ -111,7 +111,7 @@ script:
       - 'False'
     description: Approves or dismisses a Cypho issue based on the provided ticket ID, user email, and approval decision.
     name: cypho-approve-dismiss-issue
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   isFetchSamples: true
   isfetch: true
   runonce: false

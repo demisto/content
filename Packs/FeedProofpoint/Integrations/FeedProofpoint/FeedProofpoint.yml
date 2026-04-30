@@ -137,7 +137,7 @@ script:
       - ip
     description: Gets indicators from the feed.
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: '-'

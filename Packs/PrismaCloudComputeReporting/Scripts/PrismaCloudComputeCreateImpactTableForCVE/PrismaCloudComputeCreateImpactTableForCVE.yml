@@ -7,7 +7,7 @@ comment: Deprecated. No available replacement.
 commonfields:
   id: PrismaCloudComputeCreateImpactTableForCVE
   version: -1
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: PrismaCloudComputeCreateImpactTableForCVE
 runas: DBotWeakRole

@@ -72,7 +72,7 @@ script:
     - description: End time for event retrieval. Supports relative times or ISO format.
       name: to_date
       required: false
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetchevents: true
   runonce: false
   script: ''

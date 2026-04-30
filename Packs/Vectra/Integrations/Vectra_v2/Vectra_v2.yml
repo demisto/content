@@ -378,7 +378,7 @@ script:
     description: "Runs an advanced search on hosts and detections."
     deprecated: true
   isfetch: true
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests (deprecated)
 fromversion: 5.0.0

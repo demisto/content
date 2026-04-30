@@ -1419,7 +1419,7 @@ script:
       description: SHA256 hash of the file submitted for analysis.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

@@ -564,7 +564,7 @@ script:
       description: The respondant of the Events.
     description: Get all of the events for a given uid
   isfetch: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No test
 fromversion: 5.0.0

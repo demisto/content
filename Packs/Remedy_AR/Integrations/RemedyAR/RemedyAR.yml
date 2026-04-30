@@ -61,7 +61,7 @@ script:
       description: Server name.
       type: string
     description: Retrieves server details.
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

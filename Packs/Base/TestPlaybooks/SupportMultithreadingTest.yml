@@ -38,6 +38,6 @@ subtype: python3
 timeout: 5ns
 pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 fromversion: 5.0.0

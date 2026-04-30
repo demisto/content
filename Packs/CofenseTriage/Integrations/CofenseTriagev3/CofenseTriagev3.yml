@@ -1845,7 +1845,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   isremotesyncin: true
   runonce: false

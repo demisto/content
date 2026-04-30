@@ -1001,7 +1001,7 @@ script:
       type: String
     description: Checks the reputation of an app in Zimperium.
     name: file
-  dockerimage: demisto/python3:3.12.13.8319994
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   script: '-'

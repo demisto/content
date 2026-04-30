@@ -78,5 +78,5 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 5.5.0

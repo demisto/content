@@ -101,7 +101,7 @@ script:
     name: vt-retrohunt-get-indicators
   - description: "This command will reset your fetch history."
     name: vt-retrohunt-reset-fetch-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: "-"

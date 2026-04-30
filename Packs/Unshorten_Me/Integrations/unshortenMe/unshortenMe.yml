@@ -32,7 +32,7 @@ script:
     - contextPath: unshortenMe.success
       description: The status of the unshorten operation.
       type: boolean
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: ''
   subtype: python3

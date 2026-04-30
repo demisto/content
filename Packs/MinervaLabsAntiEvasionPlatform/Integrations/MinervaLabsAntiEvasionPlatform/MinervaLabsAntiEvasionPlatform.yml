@@ -315,7 +315,7 @@ script:
     description: Moves all the events from Archive state to New event state.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
 tests:
 - No tests
 fromversion: 5.0.0

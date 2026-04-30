@@ -10,7 +10,7 @@ comment: Deprecated. No available replacement.
 commonfields:
   id: SnmpDetection
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 deprecated: true
 name: SnmpDetection

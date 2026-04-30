@@ -142,7 +142,7 @@ script:
       description: The ipv4 address to look up data for.
     description: Enrich a IP's threat data from the Augur's API.
     name: augur-get-ip-context
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   runonce: false
   script: ''

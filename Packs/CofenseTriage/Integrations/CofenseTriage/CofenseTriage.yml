@@ -238,7 +238,7 @@ script:
     - contextPath: Cofense.Report.Sha256
       description: SHA256 hash of the file.
     description: 'Retrieves a report by the report ID number. '
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
 tests:
 - No test

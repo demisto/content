@@ -239,7 +239,7 @@ script:
   subtype: python3
   isfetchevents: true
   isfetchevents:xsoar: false
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2

@@ -70,7 +70,7 @@ script:
       description: Start DateTime for the records to be retrieved.
     - name: end_date_time
       description: End DateTime for the records to be retrieved.
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   runonce: false
   script: '-'
   subtype: python3

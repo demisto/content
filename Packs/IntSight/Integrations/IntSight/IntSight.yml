@@ -931,7 +931,7 @@ script:
     description: Request and receive enrichment of an IOC.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
