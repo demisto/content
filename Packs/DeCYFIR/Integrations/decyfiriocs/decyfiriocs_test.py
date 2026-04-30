@@ -72,7 +72,7 @@ def test_command_results_empty():
     assert result == []
 
 
-def test_extract_ioc_value(mocker):
+def test_extract_ioc_value():
     from decyfiriocs import extract_value
 
     result = extract_value("[ipv4-addr:value = '1.2.3.4']")
@@ -154,7 +154,6 @@ def test_module_command_ok(mocker):
     mock_resp.status_code = 200
     mocker.patch.object(client, "_http_request", return_value=mock_resp)
 
-    # mocker.patch.object(client, "ping", return_value=mock_resp)
     result = test_module_command(client, "test_api_key")
     assert result == "ok"
 
@@ -184,7 +183,6 @@ def test_module_command_forbidden(mocker):
 def test_fetch_indicators_by_type_error(mocker):
     client = _client()
     mocker.patch.object(client, "_http_request", side_effect=Exception("network error"))
-    # mocker.patch.object(client, "ping",side_effect=Exception("network error") )
     result = client.fetch_indicators_by_type("api_key", "ip")
     assert result == []
 
@@ -209,7 +207,7 @@ def test_build_ioc_relationship_obj_fail(mocker):
     assert da is None
 
 
-def test_build_ioc_relationship_obj_CVE(mocker):
+def test_build_ioc_relationship_obj_cve_ok(mocker):
     raw_data = util_load_json("test_data/iocs_ti.json")
     raw_cve_data = raw_data["cve"]
 
@@ -292,7 +290,6 @@ def test_build_threat_actor_relationship_obj(mocker):
 
 def test_convert_decyfir_ioc_to_indicators_formats(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
-    # raw_ti_data = util_load_json("test_data/iocs.json")
     ti_data = raw_iocs_ti_data["iocs"]
 
     client = _client()
@@ -313,7 +310,7 @@ def test_convert_decyfir_ioc_to_indicators_formats(mocker):
     assert fields["verdict"] == "Malicious"
 
 
-def test_convert_decyfir_ioc_to_indicators_formats_fail(mocker):
+def test_convert_decyfir_ioc_to_indicators_formats_different_value(mocker):
     raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
 
     ti_data = raw_iocs_ti_data["iocs"]
@@ -367,7 +364,7 @@ def test_build_threat_intel_indicator_obj_benign():
 
 
 def test_build_threat_intel_indicator_obj_no_extensions():
-    """Object with no extensions key — should not raise, returns obj."""
+   
     obj = {
         "type": "threat-actor",
         "id": "threat-actor--002",
@@ -392,14 +389,14 @@ def test_build_threat_intel_indicator_obj_with_aliases_and_labels():
     result = client.build_threat_intel_indicator_obj(data=obj, tlp_color="RED", feed_tags=["tag1"])
 
     assert "apt" in result["fields"]["tags"]
-    # assert "tag1" in result["fields"]["tags"]
+  
 
 
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
 
     raw_data = util_load_json("test_data/iocs_ti.json")
-    # mock_response2 = util_load_json("test_data/iocs.json")
+   
 
     client = Client(
         base_url="test_url",
@@ -541,7 +538,7 @@ def test_get_decyfir_api_ti_data_200_empty_body(mocker):
 def test_convert_ioc_with_is_data_save_true_cached_ta(mocker):
     raw_data = util_load_json("test_data/iocs_ti.json")
     ioc = raw_data["iocs"][0].copy()
-    # Inject a recognisable threat actor name so the TA lookup branch fires.
+
     ioc["extensions"] = {
         list(ioc["extensions"].keys())[0]: {
             **list(ioc["extensions"].values())[0],
@@ -684,34 +681,6 @@ def _base_params():
         "tlp_color": "GREEN",
         "feedReputation": "Good",
     }
-
-
-# def test_main_test_module(mocker):
-#     from decyfiriocs import main
-
-#     mocker.patch("demistomock.params", return_value=_base_params())
-#     mocker.patch("demistomock.command", return_value="test-module")
-#     mocker.patch("demistomock.info")
-#     mock_results = mocker.patch("demistomock.results")
-#     # mocker.patch.object("test_module_command", return_value="test_api_key")
-
-#     main()
-#     mock_results.assert_called_once_with("ok")
-
-
-# def test_main_fetch_indicators(mocker):
-#     from decyfiriocs import main
-
-#     client = _client()
-#     raw_data = util_load_json("test_data/iocs_ti.json")
-#     mocker.patch("demistomock.params", return_value=_base_params())
-#     mocker.patch("demistomock.command", return_value="fetch-indicators")
-#     mocker.patch("demistomock.info")
-#     mocker.patch.object(client, "get_decyfir_api_ti_data", return_value=raw_data["iocs"])
-#     mock_create = mocker.patch("demistomock.createIndicators")
-
-#     main()
-#     assert mock_create.called
 
 
 def test_main_decyfir_get_indicators(mocker):

@@ -95,25 +95,25 @@ name: DeCYFIR Feed
 script:
   commands:
   - deprecated: true
-    description: Get indicators from CYFIRMA.
     execution: true
     name: decyfir-get-indicators
+    description: Deprecated. Use the decyfir-ip-get, decyfir-domain-get, decyfir-url-get, or decyfir-file-get commands instead.
   - deprecated: false
     description: Get IP indicators from CYFIRMA.
     execution: false
-    name: ip
+    name: decyfir-ip-get
   - deprecated: false
     description: Get Domain indicators from CYFIRMA.
     execution: false
-    name: domain
+    name: decyfir-domain-get
   - deprecated: false
     description: Get URL indicators from CYFIRMA.
     execution: false
-    name: url
+    name: decyfir-url-get
   - deprecated: false
     description: Get File Hash indicators from CYFIRMA.
     execution: false
-    name: file
+    name: decyfir-file-get
   dockerimage: demisto/python3:3.12.12.7019815
   feed: true
   isfetch: false

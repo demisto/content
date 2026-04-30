@@ -57,7 +57,7 @@ script:
   - deprecated: false
     description: Initiate a take down request.
     execution: false
-    name: initiate-take-down
+    name: decyfir-takedown-initiate
     arguments:
     - name: alert_id
       required: true
@@ -65,16 +65,18 @@ script:
   - deprecated: false
     description: Get take down list.
     execution: false
-    name: take-down-list
+    name: decyfir-takedown-list
     arguments:
     - name: sub_category
       required: false
       description: The sub-category for which to retrieve the take down list. If not provided, the take down list for all sub-categories will be retrieved.
     - name: size
       required: false
+      defaultValue: '100'
       description: The number of records to retrieve. If not provided, the default value is 100.
     - name: page
       required: false
+      defaultValue: '0'
       description: The page number to retrieve. If not provided, the default value is 0.
   dockerimage: demisto/python3:3.12.12.7019815
   feed: false

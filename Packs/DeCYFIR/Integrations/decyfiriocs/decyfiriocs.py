@@ -140,16 +140,6 @@ class Client(BaseClient):
             target_data.get(LABEL_TYPE),
         )
 
-    # def add_tags(self, in_ti: Dict, data: Optional[List | str]):
-    #     if not data:
-    #         return
-
-    #     if isinstance(data, str):
-    #         data = [data]
-
-    #     data = [item for item in data if item not in {"unknown", "Unknown"}]
-    #     in_ti["fields"]["tags"].extend(data)
-
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
         try:
             intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
@@ -206,7 +196,7 @@ class Client(BaseClient):
             if data.get("labels"):
                 ti_fields["tags"].extend(data.get("labels"))
 
-            ti_fields["aliases"].append(data.get("aliases", "")) if data.get("aliases") else None
+            ti_fields["aliases"].extends(data.get("aliases")) if data.get("aliases") else None
 
             if intel_type is ThreatIntel.ObjectsNames.MALWARE:
                 ti_data_obj["fields"].update(
@@ -275,6 +265,7 @@ class Client(BaseClient):
             return ti_data_obj
         except Exception as e:
             demisto.debug(f"Error occurred while building the threat intelligence data object. Error: {e}")
+            traceback.format_exc()
             return {}
 
     def build_ta_relationships_data(
@@ -322,10 +313,8 @@ class Client(BaseClient):
                         if source_ti_data_obj is not None and source_ti_data_obj:
                             src_exists_in = False
                             for re_data1 in return_data:
-                                try:
-                                    if re_data1["value"] == source_ti_data_obj["value"]:
-                                        src_exists_in = True
-                                except Exception:
+                                if re_data1.get("value") == source_ti_data_obj.get("value"):
+                                    src_exists_in = True
                                     break
                             if not src_exists_in:
                                 return_data.append(source_ti_data_obj)
@@ -341,12 +330,10 @@ class Client(BaseClient):
                         if target_ti_data_obj is not None and target_ti_data_obj:
                             tar_exists_in = False
                             for re_data2 in return_data:
-                                try:
-                                    if re_data2["value"] == target_ti_data_obj["value"]:
-                                        tar_exists_in = True
-                                        break
-                                except Exception:
+                                if re_data2.get("value") == target_ti_data_obj.get("value"):
+                                    tar_exists_in = True
                                     break
+                                
                             if not tar_exists_in:
                                 return_data.append(target_ti_data_obj)
                     else:
@@ -517,6 +504,7 @@ class Client(BaseClient):
                 return_data.append(ioc_data)
             except Exception as e:
                 demisto.debug(f"Error occurred while processing the IOC: {ioc.get('id', 'Unknown ID')}. Error: {e}")
+                traceback.format_exc()
 
         return return_data
 
@@ -554,6 +542,7 @@ class Client(BaseClient):
         except Exception as e:
             err = f"Failed to fetch the feed data. DeCYFIR error: {e}"
             demisto.debug(err)
+            traceback.format_exc()
 
         return return_data
 
@@ -563,6 +552,7 @@ class Client(BaseClient):
             return self.get_decyfir_api_ti_data(api_path)
         except Exception as e:
             demisto.debug(f"Error occurred while fetching the indicator details for ({indicator_type}). Error: {e}")
+            traceback.format_exc()
             return []
 
 
@@ -680,16 +670,16 @@ def main():  # pragma: no cover
         elif demisto.command() == "decyfir-get-indicators":
             return_results(decyfir_get_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags))
 
-        elif demisto.command() == "ip":
+        elif demisto.command() == "decyfir-ip-get":
             return_results(decyfir_ip_indicator_command(client, decyfir_api_key))
 
-        elif demisto.command() == "domain":
+        elif demisto.command() == "decyfir-domain-get":
             return_results(decyfir_domain_indicator_command(client, decyfir_api_key))
 
-        elif demisto.command() == "url":
+        elif demisto.command() == "decyfir-url-get":
             return_results(decyfir_url_indicator_command(client, decyfir_api_key))
 
-        elif demisto.command() == "file":
+        elif demisto.command() == "decyfir-file-get":
             return_results(decyfir_hash_indicator_command(client, decyfir_api_key))
 
         else:

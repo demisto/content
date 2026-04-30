@@ -571,9 +571,9 @@ def main():  # pragma: no cover
             # Pushing Incidents data to XSOAR
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
-        elif demisto.command() == "initiate-take-down":
+        elif demisto.command() == "decyfir-takedown-initiate":
             return_results(initiate_take_down_request(client, decyfir_api_key, args))
-        elif demisto.command() == "take-down-list":
+        elif demisto.command() == "decyfir-takedown-list":
             return_results(get_take_down_list(client, decyfir_api_key, args))
         else:
             raise NotImplementedError("DeCYFIR error: " + f"command {demisto.command()} is not implemented")
