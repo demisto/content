@@ -318,9 +318,7 @@ def test_socradar_reputation_command_url(requests_mock):
     from SOCRadarRapidReputation import socradar_reputation_command
 
     requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
-    results = socradar_reputation_command(
-        make_client(), {"entity_value": "https://example.com/path", "entity_type": "url"}
-    )
+    results = socradar_reputation_command(make_client(), {"entity_value": "https://example.com/path", "entity_type": "url"})
 
     assert len(results) == 1
 

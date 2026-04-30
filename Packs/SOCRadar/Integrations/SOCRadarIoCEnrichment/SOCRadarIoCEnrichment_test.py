@@ -256,15 +256,16 @@ def test_test_module_success(requests_mock):
 def test_test_module_no_response(requests_mock):
     from SOCRadarIoCEnrichment import test_module
 
-    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    requests_mock.post(ENRICHMENT_SUFFIX, json={})
     with pytest.raises(DemistoException, match="API test failed"):
         test_module(make_client())
 
 
-def test_test_module_connection_error(requests_mock):
+def test_test_module_connection_error(requests_mock, mocker):
     import requests as req
     from SOCRadarIoCEnrichment import test_module
 
+    mocker.patch("demisto.error")
     requests_mock.post(ENRICHMENT_SUFFIX, exc=req.exceptions.ConnectionError("Connection refused"))
     with pytest.raises(DemistoException, match="Authentication failed"):
         test_module(make_client())
@@ -346,7 +347,7 @@ def test_socradar_ioc_enrichment_command_no_indicator():
 def test_socradar_ioc_enrichment_command_no_response(requests_mock):
     from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
 
-    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    requests_mock.post(ENRICHMENT_SUFFIX, json={})
     results = socradar_ioc_enrichment_command(make_client(), {"indicator": "1.2.3.4"})
 
     assert len(results) == 1
@@ -368,7 +369,7 @@ def test_socradar_ioc_enrichment_command_unknown_indicator():
 def test_ip_command_no_data(requests_mock):
     from SOCRadarIoCEnrichment import ip_command
 
-    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    requests_mock.post(ENRICHMENT_SUFFIX, json={})
     results = ip_command(make_client(), {"ip": "1.2.3.4"}, reliability=None)
 
     assert len(results) == 1
@@ -378,7 +379,7 @@ def test_ip_command_no_data(requests_mock):
 def test_domain_command_no_data(requests_mock):
     from SOCRadarIoCEnrichment import domain_command
 
-    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    requests_mock.post(ENRICHMENT_SUFFIX, json={})
     results = domain_command(make_client(), {"domain": "example.com"}, reliability=None)
 
     assert len(results) == 1
@@ -388,7 +389,7 @@ def test_domain_command_no_data(requests_mock):
 def test_url_command_no_data(requests_mock):
     from SOCRadarIoCEnrichment import url_command
 
-    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    requests_mock.post(ENRICHMENT_SUFFIX, json={})
     results = url_command(make_client(), {"url": "https://example.com"}, reliability=None)
 
     assert len(results) == 1
@@ -398,7 +399,7 @@ def test_url_command_no_data(requests_mock):
 def test_file_command_no_data(requests_mock):
     from SOCRadarIoCEnrichment import file_command
 
-    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    requests_mock.post(ENRICHMENT_SUFFIX, json={})
     sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     results = file_command(make_client(), {"file": sha256}, reliability=None)
 
