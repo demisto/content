@@ -2596,17 +2596,17 @@ def fileResult(filename, data, file_type=None):
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
 
-    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
-    # xsoar returns empty files to war-rooms
+    # Sanitize filename to prevent path traversal - os.path.basename strips all directory components,
+    # which is safer than the previous single-pass replace("../", "") that could be bypassed.
     if isinstance(filename, str):
-        replaced_filename = filename.replace("../", "")
+        replaced_filename = os.path.basename(filename)
         if filename != replaced_filename:
-            filename = replaced_filename
             demisto.debug(
-                "replaced {filename} with new file name {replaced_file_name}".format(
-                    filename=filename, replaced_file_name=replaced_filename
+                "fileResult: sanitized filename {original} to {safe}".format(
+                    original=filename, safe=replaced_filename
                 )
             )
+            filename = replaced_filename
 
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
@@ -2707,6 +2707,57 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
     return st
+
+
+def sanitize_html_output(value, allow_tags=None):
+    # type: (str, Optional[Set[str]]) -> str
+    """Escape HTML for safe rendering in ContentsFormat:'html' outputs.
+
+    :type value: ``str``
+    :param value: Raw string that may contain attacker-controlled content.
+
+    :type allow_tags: ``Optional[Set[str]]``
+    :param allow_tags: Optional set of allowed HTML tag names
+        (e.g. ``{'b','i','a','br','p','table','tr','td','th'}``). If ``None``, escapes everything.
+
+    :return: HTML-safe string.
+    :rtype: ``str``
+    """
+    try:
+        from html import escape as _html_escape  # Python 3
+    except ImportError:
+        from cgi import escape as _cgi_escape  # Python 2
+
+        def _html_escape(s, quote=True):
+            return _cgi_escape(s, quote=quote).replace("'", "&#x27;")
+    if allow_tags is None:
+        return _html_escape(str(value))
+    # For allowlist mode, use bleach if available, else strip all
+    try:
+        import bleach
+        return bleach.clean(str(value), tags=allow_tags, strip=True)
+    except ImportError:
+        return _html_escape(str(value))
+
+
+def getFilePathSafe(entry_id):
+    # type: (str) -> dict
+    """Wrapper around demisto.getFilePath() that basenames the 'name' field.
+
+    Prevents path traversal when callers use the returned name as a filesystem destination.
+
+    :type entry_id: ``str``
+    :param entry_id: The entry ID of the file.
+
+    :return: dict with ``'id'``, ``'path'``, and ``'name'`` keys, where ``'name'`` is basenamed.
+    :rtype: ``dict``
+    """
+    result = demisto.getFilePath(entry_id)
+    if not result:
+        return result
+    if "name" in result:
+        result["name"] = os.path.basename(result["name"])
+    return result
 
 
 def raiseTable(root, key):
@@ -12450,7 +12501,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': new_limit if look_back > 0 else fetch_limit,
+            'limit': fetch_limit,
         }
     else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
