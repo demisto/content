@@ -1,14 +1,26 @@
 [INGEST:vendor="MSFT", product="Intune", target_dataset="msft_intune_raw", no_hit=keep]
 filter to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]+"
 | alter 
-    timestampModify = time
+    tmp_timestampModify = time 
 | alter 
-    splitStr = split(timestampModify, ".")
+    tmp_splitStr = split(tmp_timestampModify, ".")
 | alter 
-    epoch_s = to_string(to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(splitStr ,0)), "seconds")),
-    epoch_ms = to_string(arrayindex(regextract(trim(arrayindex(splitStr, 1),"Z"),"^(\d{3})"),0))
+    tmp_epoch_s = to_string(to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(tmp_splitStr ,0)), "seconds")),
+    tmp_epoch_ms = trim(arrayindex(tmp_splitStr, 1),"Z")
+| alter
+    tmp_epoch_ms_check = if(
+        to_string(len(tmp_epoch_ms)) = "0", "", 
+        to_string(len(tmp_epoch_ms)) ~= "3|4|5", arrayindex(regextract(tmp_epoch_ms, "^\d{3}"), 0),  
+        to_string(len(tmp_epoch_ms)) ~= "6|7|8", arrayindex(regextract(tmp_epoch_ms, "^\d{6}"), 0),
+        to_string(len(tmp_epoch_ms)) = "9", arrayindex(regextract(tmp_epoch_ms, "^\d{9}"), 0)
+    )
 | alter 
-    timestampModify = concat(epoch_s , epoch_ms)
+    tmp_set_timestamp = if(
+        to_string(len(tmp_epoch_ms)) = "0", to_timestamp(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), "SECONDS"),
+        to_string(len(tmp_epoch_ms)) ~= "3|4|5", to_timestamp(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), "MILLIS"),
+        to_string(len(tmp_epoch_ms)) ~= "6|7|8", to_timestamp(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), "MICROS"),
+        to_string(len(tmp_epoch_ms)) ~= "9", to_timestamp(floor(divide(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), 1000)), "MICROS")
+    )
 | alter 
-    _time = to_timestamp(to_integer(timestampModify), "millis")
-| fields -epoch_s, epoch_ms, splitStr, timestampModify;
+    _time = tmp_set_timestamp
+| fields -tmp*;
