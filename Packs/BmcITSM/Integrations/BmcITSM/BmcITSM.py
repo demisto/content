@@ -2609,7 +2609,7 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
         assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
-        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
+        schedulded_end_date=schedulded_end_date.isoformat() if schedulded_end_date else None,  # type: ignore[arg-type]
         customer_company=customer_company,  # type: ignore[arg-type]
         **additional_fields,
     )
@@ -3164,7 +3164,7 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
         support_group_name=support_group,  # type: ignore[arg-type]
         location_company=location_company,  # type: ignore[arg-type]
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
-        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
+        schedulded_end_date=schedulded_end_date.isoformat() if schedulded_end_date else None,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -3340,7 +3340,7 @@ def extract_args_from_additional_fields_arg(additional_fields: str, field_name: 
         for each_field in fields:
             key, value = each_field.split(VALUE_DELIMITER)
             if value and value.strip() != "":
-                formatted_additional_fields[key.strip()] = value
+                formatted_additional_fields[key.strip()] = value.strip()
     except ValueError as error:
         raise ValueError(
             f'Please validate the format of the argument: {field_name}. For example: "fieldname1=value;fieldname2=value".  '

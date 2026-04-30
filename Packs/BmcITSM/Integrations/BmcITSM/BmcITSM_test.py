@@ -1590,3 +1590,43 @@ def test_worklog_attachment_get(
 
     result = worklog_attachment_get_command(mock_client, command_arguments)
     assert result[0].get("File") == file_name
+
+
+@pytest.mark.parametrize(
+    "additional_fields_input, expected_output",
+    [
+        pytest.param(
+            "ASGRP = Network Firewall",
+            {"ASGRP": "Network Firewall"},
+            id="strips whitespace from both key and value",
+        ),
+        pytest.param(
+            "key1=value1;key2=value2",
+            {"key1": "value1", "key2": "value2"},
+            id="multiple fields without extra whitespace",
+        ),
+        pytest.param(
+            " key1 = value1 ; key2 = value2 ",
+            {"key1": "value1", "key2": "value2"},
+            id="multiple fields with extra whitespace",
+        ),
+        pytest.param(
+            "",
+            {},
+            id="empty string returns empty dict",
+        ),
+    ],
+)
+def test_extract_args_from_additional_fields_arg(additional_fields_input, expected_output):
+    """
+    Given:
+        - An additional_fields string with key=value pairs potentially containing whitespace.
+    When:
+        - Calling extract_args_from_additional_fields_arg.
+    Then:
+        - Both keys and values should be stripped of leading/trailing whitespace.
+    """
+    from BmcITSM import extract_args_from_additional_fields_arg
+
+    result = extract_args_from_additional_fields_arg(additional_fields_input, "additional_fields")
+    assert result == expected_output
