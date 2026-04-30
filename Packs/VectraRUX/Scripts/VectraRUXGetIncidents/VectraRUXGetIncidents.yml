@@ -1,0 +1,37 @@
+commonfields:
+  id: VectraRUXGetIncidents
+  version: -1
+name: VectraRUXGetIncidents
+script: ''
+type: python
+tags: []
+comment: Get the incidents with the type Vectra RUX Events Detection.
+enabled: true
+args:
+- name: page
+  description: Provide the page number. Single page have max 50 incidents.
+  defaultValue: "0"
+  type: unknown
+- name: incident_type
+  description: Provide the incident type.
+  defaultValue: Vectra RUX Events Detection
+  type: unknown
+outputs:
+- contextPath: VectraRUXGetIncidents.id
+  description: Incident ID.
+  type: String
+- contextPath: VectraRUXGetIncidents.name
+  description: Incident name.
+  type: String
+- contextPath: VectraRUXGetIncidents.CustomFields.vectraruxdetectionid
+  description: Vectra RUX detection ID linked to this incident.
+  type: String
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.8160132
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

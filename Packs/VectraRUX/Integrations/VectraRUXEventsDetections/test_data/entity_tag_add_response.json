@@ -1,0 +1,9 @@
+{
+    "status": "success",
+    "tag_id": "1",
+    "tags": [
+        "tag",
+        "tag1",
+        "tag2"
+    ]
+}

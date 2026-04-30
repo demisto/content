@@ -1,0 +1,508 @@
+id: Find Detection State and Expire Inactive Detections - Vectra RUX
+version: -1
+name: Find Detection State and Expire Inactive Detections - Vectra RUX
+description: This playbook identifies the detection states of incidents and updates the investigation status of inactive detections to "expired".
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6600c1a7-4634-45b9-83ba-4ce4907d104d
+    type: start
+    task:
+      id: 6600c1a7-4634-45b9-83ba-4ce4907d104d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 83acdebb-5c63-4474-868e-b17f8f8fce2f
+    type: regular
+    task:
+      id: 83acdebb-5c63-4474-868e-b17f8f8fce2f
+      version: -1
+      name: vectra-detection-describe
+      description: Returns a list of detections for the specified detection ID(s).
+      script: '|||vectra-detection-describe'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      detection_ids:
+        complex:
+          root: VectraRUXIncidents
+          accessor: detection_id
+          transformers:
+          - operator: Stringify
+      extend-context:
+        simple: 'DetectionInfo=results={"id": val.id, "state": val.state}'
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 34119d92-40dd-45d2-8137-8e02e1e26da9
+    type: title
+    task:
+      id: 34119d92-40dd-45d2-8137-8e02e1e26da9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5bf271db-4e24-4061-8cf6-cbfcd8e53274
+    type: regular
+    task:
+      id: 5bf271db-4e24-4061-8cf6-cbfcd8e53274
+      version: -1
+      name: vectra-detection-investigation-status-update
+      description: Update the investigation status of the detection by detection ID(s).
+      script: '|||vectra-detection-investigation-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      detection_ids:
+        complex:
+          root: DetectionInfo
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DetectionInfo.state
+                iscontext: true
+              right:
+                value:
+                  simple: inactive
+              ignorecase: true
+          accessor: id
+          transformers:
+          - operator: Stringify
+      investigation_status:
+        simple: expired
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 10d39647-b3c4-45f5-85e7-5eae08cb2004
+    type: condition
+    task:
+      id: 10d39647-b3c4-45f5-85e7-5eae08cb2004
+      version: -1
+      name: Is Inactive Detections Present?
+      description: Check whether inactive detections are present.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DetectionInfo
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DetectionInfo.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inactive
+                    ignorecase: true
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 116932e3-6820-4ff9-8242-4157c41b32f7
+    type: regular
+    task:
+      id: 116932e3-6820-4ff9-8242-4157c41b32f7
+      version: -1
+      name: Increment the Page Number
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: page
+      value:
+        complex:
+          root: page
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0ce00c9d-1586-4f83-89c3-829a0905b77e
+    type: regular
+    task:
+      id: 0ce00c9d-1586-4f83-89c3-829a0905b77e
+      version: -1
+      name: Search for Incidents
+      description: Get the incidents with the type Vectra RUX Events Detection.
+      scriptName: VectraRUXGetIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      extend-context:
+        simple: 'VectraRUXIncidents=Contents.data={"incident_id": val.id, "incident_name": val.name, "detection_id": val.CustomFields.vectraruxdetectionid}'
+      ignore-outputs:
+        simple: "true"
+      incident_type:
+        complex:
+          root: inputs.incident_type
+      page:
+        complex:
+          root: page
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c0ac823e-e63d-4aba-87a7-282e5dd1964c
+    type: condition
+    task:
+      id: c0ac823e-e63d-4aba-87a7-282e5dd1964c
+      version: -1
+      name: Is Incidents Present?
+      description: Check whether incidents are present.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VectraRUXIncidents
+                accessor: detection_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 44b836e3-51b9-4a96-8c17-de75cdb1aeb0
+    type: regular
+    task:
+      id: 44b836e3-51b9-4a96-8c17-de75cdb1aeb0
+      version: -1
+      name: Loop Exit Condition
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: page
+      value:
+        simple: "-1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a7c6c6b6-32c9-4b89-86b4-d2292636f572
+    type: regular
+    task:
+      id: a7c6c6b6-32c9-4b89-86b4-d2292636f572
+      version: -1
+      name: Clear Previous Outputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: VectraRUXIncidents,DetectionInfo
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 15b2625d-0a17-4051-85ab-9a0cbd5c7cd0
+    type: condition
+    task:
+      id: 15b2625d-0a17-4051-85ab-9a0cbd5c7cd0
+      version: -1
+      name: Is more Incidents Present?
+      description: Check whether more incidents are present.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: VectraRUXIncidents
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_7_yes": 0.61,
+      "6_12_#default#": 0.49,
+      "6_4_yes": 0.52,
+      "9_10_#default#": 0.57,
+      "9_1_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: incident_type
+  value:
+    simple: Vectra RUX Events Detection
+  required: false
+  description: Provide the incident type.
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

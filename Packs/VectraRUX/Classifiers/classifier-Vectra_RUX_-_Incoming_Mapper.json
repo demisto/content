@@ -1,0 +1,780 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Vectra RUX - Incoming Mapper",
+    "mapping": {
+        "Vectra RUX Events Detection": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "Detection URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_href",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "first_timestamp",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "event_timestamp"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "urgency_score",
+                        "filters": [],
+                        "root": "src_account",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "src_host.urgency_score"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0,1-30,31-50,51-80,81-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0.5,1,2,3,4"
+                                        }
+                                    },
+                                    "sep": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                },
+                "Vectra RUX Entity Assignment Assigned By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment.assigned_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment Assigned Date": {
+                    "complex": {
+                        "accessor": "date_assigned",
+                        "filters": [],
+                        "root": "assignment",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment Assigned to": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment.assigned_to",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assignment",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "assignment",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment Outcome": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "assignment.outcome",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment Resolved By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment.resolved_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Assignment Resolved Date": {
+                    "complex": {
+                        "accessor": "date_resolved",
+                        "filters": [],
+                        "root": "assignment",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Certainty Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "certainty",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Destination Account Information": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dst_account",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Destination Domain Information": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dst_domain",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Destination Host Information": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dst_host",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Detection Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Detection ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_id",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Detection Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Investigation Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "investigation_status",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX External Reference ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "external_reference_id",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Detection Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_type",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_id",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity UID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_uid",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_name",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "type",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "src_host",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Urgency Score": {
+                    "complex": {
+                        "accessor": "urgency_score",
+                        "filters": [],
+                        "root": "src_account",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "src_host.urgency_score"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Vectra RUX Entity Priority Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_prioritized",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {
+                                        "isContext": false
+                                    },
+                                    "conditionB": {
+                                        "isContext": false
+                                    },
+                                    "conditionInBetween": {
+                                        "isContext": false
+                                    },
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Prioritized"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false
+                                    },
+                                    "lhs": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "is_prioritized"
+                                        }
+                                    },
+                                    "lhsB": {
+                                        "isContext": false
+                                    },
+                                    "options": {
+                                        "isContext": false
+                                    },
+                                    "optionsB": {
+                                        "isContext": false
+                                    },
+                                    "rhs": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "rhsB": {
+                                        "isContext": false
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Not Prioritized"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Vectra RUX Entity Importance": {
+                    "complex": {
+                        "accessor": "importance",
+                        "filters": [],
+                        "root": "src_account",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "src_host.importance"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0,1,2"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Vectra RUX Entity External Reference ID": {
+                    "complex": {
+                        "accessor": "external_reference_id",
+                        "filters": [],
+                        "root": "src_account",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "src_host.external_reference_id"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Vectra RUX Entity Privilege Category": {
+                    "complex": {
+                        "accessor": "privilege_category",
+                        "filters": [],
+                        "root": "src_account",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "src_host.privilege_category"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    }
+                },
+                "Vectra RUX Event Change Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "change_type",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_timestamp",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Is Event Triaged": {
+                    "complex": {
+                        "filters": [],
+                        "root": "triaged",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Entity Unresolved Priority Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "unresolved_priority",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Mitre IDs": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mitre",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Source External Host IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "src_external_host",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Source External Host Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "src_external_host",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Threat Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Data Source Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [],
+                        "root": "data_source",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Data Source Sensor Name": {
+                    "complex": {
+                        "accessor": "sensor_name",
+                        "filters": [],
+                        "root": "data_source",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Data Source Sensor ID": {
+                    "complex": {
+                        "accessor": "sensor_id",
+                        "filters": [],
+                        "root": "data_source",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Name": {
+                    "complex": {
+                        "accessor": "event_name",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Account ID": {
+                    "complex": {
+                        "accessor": "account_id",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Assumed Role": {
+                    "complex": {
+                        "accessor": "assumed_role",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Access Key ID": {
+                    "complex": {
+                        "accessor": "access_key_id",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX AWS Region": {
+                    "complex": {
+                        "accessor": "aws_region",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Role Sequence": {
+                    "complex": {
+                        "accessor": "role_sequence",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX User Agent": {
+                    "complex": {
+                        "accessor": "user_agent",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Identity Type": {
+                    "complex": {
+                        "accessor": "identity_type",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Last Timestamp": {
+                    "complex": {
+                        "accessor": "last_timestamp",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event IPs": {
+                    "complex": {
+                        "accessor": "ips",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Domains": {
+                    "complex": {
+                        "accessor": "domains",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Hosts": {
+                    "complex": {
+                        "accessor": "hosts",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Accounts": {
+                    "complex": {
+                        "accessor": "accounts",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Ports": {
+                    "complex": {
+                        "accessor": "ports",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event External Targets": {
+                    "complex": {
+                        "accessor": "external_targets",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event DNS": {
+                    "complex": {
+                        "accessor": "dns",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Event Protocols": {
+                    "complex": {
+                        "accessor": "protocols",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Process Context Date Created": {
+                    "complex": {
+                        "accessor": "date_created",
+                        "filters": [],
+                        "root": "process_context_data.crowdstrike",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Process Context Error Message": {
+                    "complex": {
+                        "accessor": "error_message",
+                        "filters": [],
+                        "root": "process_context_data.crowdstrike",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Process Context Investigate Entity Link": {
+                    "complex": {
+                        "accessor": "investigate_entity_link",
+                        "filters": [],
+                        "root": "process_context_data.crowdstrike.urls",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Process Context Query Link": {
+                    "complex": {
+                        "accessor": "query_link",
+                        "filters": [],
+                        "root": "process_context_data.crowdstrike.urls",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Process Context Query Status": {
+                    "complex": {
+                        "accessor": "query_status",
+                        "filters": [],
+                        "root": "process_context_data.crowdstrike",
+                        "transformers": []
+                    }
+                },
+                "Vectra RUX Process Context Processes": {
+                    "complex": {
+                        "accessor": "processes",
+                        "filters": [],
+                        "root": "process_context_data.crowdstrike",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Vectra RUX - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

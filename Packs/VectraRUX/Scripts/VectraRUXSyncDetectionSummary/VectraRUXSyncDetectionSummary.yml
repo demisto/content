@@ -1,0 +1,18 @@
+commonfields:
+  id: VectraRUXSyncDetectionSummary
+  version: -1
+name: VectraRUXSyncDetectionSummary
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: Sync the detection summary from the Vectra platform.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.7444307
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

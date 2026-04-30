@@ -1,0 +1,32 @@
+{
+    "id": "incident_vectraruxeventname",
+    "version": -1,
+    "modified": "2025-12-29T13:07:04.137803968+05:30",
+    "name": "Vectra RUX Event Name",
+    "ownerOnly": false,
+    "cliName": "vectraruxeventname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra RUX Events Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

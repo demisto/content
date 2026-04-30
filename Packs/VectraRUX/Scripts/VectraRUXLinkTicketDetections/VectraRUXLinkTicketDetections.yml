@@ -1,0 +1,28 @@
+commonfields:
+  id: VectraRUXLinkTicketDetections
+  version: -1
+name: VectraRUXLinkTicketDetections
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: Link the Detections which have same External Reference ID.
+enabled: true
+args:
+- name: incident_external_reference_id
+  required: true
+  description: Incident External Reference ID.
+  type: unknown
+- name: incident_detection_id
+  required: true
+  description: Incident Detection ID.
+  type: unknown
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.7444307
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

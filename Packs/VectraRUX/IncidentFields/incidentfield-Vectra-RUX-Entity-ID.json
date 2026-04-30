@@ -1,0 +1,31 @@
+{
+    "id": "incident_vectraruxentityid",
+    "version": -1,
+    "modified": "2023-07-20T11:48:44.564631951+05:30",
+    "name": "Vectra RUX Entity ID",
+    "ownerOnly": false,
+    "cliName": "vectraruxentityid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra RUX Events Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

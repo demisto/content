@@ -1,0 +1,32 @@
+{
+    "id": "incident_vectraruxprocesscontextquerylink",
+    "version": -1,
+    "modified": "2026-03-29T12:20:30.618992544+05:30",
+    "name": "Vectra RUX Process Context Query Link",
+    "ownerOnly": false,
+    "cliName": "vectraruxprocesscontextquerylink",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra RUX Events Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
