@@ -752,8 +752,6 @@ def create_data_to_update(args):
             f" following: {(', ').join(list(RELEVANT_DATA_TO_UPDATE.keys()))}."
         )
     data: dict[str, Any] = {}
-    if assigned_to := args.get("assigned_to"):
-        data["assignedTo"] = assigned_to
     for relevant_args_key, relevant_data_key in RELEVANT_DATA_TO_UPDATE.items():
         if val := args.get(relevant_args_key):
             data[relevant_data_key] = val

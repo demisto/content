@@ -163,14 +163,14 @@ configuration:
   required: false
   defaultvalue: '10'
 - display: Fetch incidents of the given service sources only.
-  additionalinfo: Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all providers will be fetched.
+  additionalinfo: Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all service sources will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
   advanced: true
   required: false
 - display: Fetched incidents filter
-  additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
+  additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
   type: 0
   section: Collect
