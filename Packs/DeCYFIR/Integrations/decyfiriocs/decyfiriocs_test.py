@@ -173,6 +173,29 @@ def test_convert_decyfir_ioc_to_indicators_formats(mocker):
     assert ti_data_out[0]["type"] == "IP"
 
 
+def test_convert_decyfir_ioc_to_indicators_formats_fail(mocker):
+    raw_iocs_ti_data = util_load_json("test_data/iocs_ti.json")
+    # raw_ti_data = util_load_json("test_data/iocs.json")
+    ti_data = raw_iocs_ti_data["iocs"]
+
+    client = Client(
+        base_url="test_url",
+        verify=False,
+    )
+    ti_data_out = client.convert_decyfir_ioc_to_indicators_formats(
+        decyfir_api_key="api_key",
+        decyfir_iocs=ti_data,
+        tlp_color="tlp_color",
+        feed_tags=["feedTags"],
+        reputation="feedReputation",
+        is_data_save=False,
+    )
+
+    assert ("rawJSON" in ti_data_out[0]) is True
+    assert ti_data_out[0]["value"] != "acme.com"
+    assert ti_data_out[0]["type"] != "Domain"
+    
+
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
 
