@@ -87,6 +87,31 @@ REPORT_DATA = {
             "features": None,
         },
     },
+    "data_profiles": [
+        {
+            "name": "Test Profile",
+            "id": 12345,
+            "version": 1,
+            "is_triggered": True,
+            "data_patterns": [
+                {
+                    "id": "pattern_id_1",
+                    "is_matched": True,
+                    "confidence_level": "high",
+                    "occurrence_count": 5,
+                    "occurrence_operator_type": "more_than_equal_to",
+                    "occurrence_low": 1,
+                },
+                {
+                    "id": "pattern_id_2",
+                    "confidence_level": "low",
+                    "occurrence_operator_type": "between",
+                    "occurrence_low": 1,
+                    "occurrence_high": 10,
+                },
+            ],
+        }
+    ],
 }
 
 INCIDENT_JSON = {
@@ -198,6 +223,27 @@ def test_parse_dlp_report(mocker):
     results = parse_dlp_report(REPORT_DATA).to_context()
     pattern_results = demisto.get(results["Contents"], "scanContentRawReport.data_pattern_rule_1_results", None)
     assert pattern_results is not None
+
+    # Verify MatchedConfidenceLevel is present in DataPatternMatches
+    contents = results["EntryContext"]["DLP.Report(val.DataPatternName && val.DataPatternName == obj.DataPatternName)"]
+    data_pattern_matches = contents["DataPatternMatches"]
+    assert len(data_pattern_matches) > 0
+    assert data_pattern_matches[0]["MatchedConfidenceLevel"] == "low"
+
+    # Verify DataProfiles is present and correctly parsed
+    data_profiles = contents["DataProfiles"]
+    assert len(data_profiles) == 1
+    assert data_profiles[0]["Name"] == "Test Profile"
+    assert data_profiles[0]["Id"] == 12345
+    assert data_profiles[0]["Version"] == 1
+    assert data_profiles[0]["IsTriggered"] is True
+    assert len(data_profiles[0]["DataPatterns"]) == 2
+    assert data_profiles[0]["DataPatterns"][0]["Id"] == "pattern_id_1"
+    assert data_profiles[0]["DataPatterns"][0]["IsMatched"] is True
+    assert data_profiles[0]["DataPatterns"][0]["ConfidenceLevel"] == "high"
+    assert data_profiles[0]["DataPatterns"][0]["OccurrenceCount"] == 5
+    assert data_profiles[0]["DataPatterns"][1]["OccurrenceOperatorType"] == "between"
+    assert data_profiles[0]["DataPatterns"][1]["OccurrenceHigh"] == 10
 
 
 def test_get_dlp_incidents(requests_mock):
