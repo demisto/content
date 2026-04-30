@@ -12,8 +12,8 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Server URL (copy URL from XDR) |  | True |
-    | API Key ID |  | False |
-    | API Key |  | False |
+    | API Key ID |  | True |
+    | API Key |  | True |
     | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
     | Incident Mirroring Direction |  | False |
     | Close Mirrored XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
@@ -39,26 +39,22 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 ## Configuration
 
 ---
-You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
+**To** configure the integration on Cortex XSOAR, you need to generate an API Key and obtain your Cortex XDR URL.
 
 #### Generate an API Key and API Key ID
 
-1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **+New Key** button in the top right corner.
-3. Generate a key of type **Advanced**.
-4. Copy and paste the key.
-5. From the ID column, copy the Key ID.
+1. In Cortex XDR, navigate to **Settings** &gt; **Configurations** &gt; **API Keys**.
+2. Click **+New Key** and generate an **Advanced** key.
+3. Copy the generated **API Key** and the **Key ID** from the table.
 
-*Note 1*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
-The highest privileged builtin role is the Instance Admin.
-For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.
+*Note 1*: You can assign a custom or built-in role to the API Key. `Instance Admin` provides the highest privileges, while `Privileged Responder` offers maximum command execution with fewer overall permissions. In order for the integration test to pass, the API Key must have `View` permissions for `Cases and Issues`.
 
-*Note 2*: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the delay period. However, be aware that this may result in increased latency when updating incidents.
+*Note 2*: If you experience missing updates when mirroring incoming changes from XDR, increase the `XDR mirroring delay in minutes` parameter. Note that this may increase latency when updating incidents.
 
 #### URL
 
-1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API key** page > **API Keys**.
-2. Click the **Copy URL** button in the top right corner.
+1. In Cortex XDR, navigate to **Settings** &gt; **Configurations** &gt; **API Keys**.
+2. Click **Copy URL** in the top right corner.
 
 #### XDR & XSOAR
 
