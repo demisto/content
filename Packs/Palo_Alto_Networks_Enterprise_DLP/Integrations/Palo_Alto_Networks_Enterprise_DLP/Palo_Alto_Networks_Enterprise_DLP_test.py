@@ -21,6 +21,7 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     get_start_end_time_intervals,
     START_TIMESTAMP_KEY,
     LAST_IDS_KEY,
+    END_TIME_BUFFER,
 )
 
 
@@ -86,6 +87,31 @@ REPORT_DATA = {
             "features": None,
         },
     },
+    "data_profiles": [
+        {
+            "name": "Test Profile",
+            "id": 12345,
+            "version": 1,
+            "is_triggered": True,
+            "data_patterns": [
+                {
+                    "id": "pattern_id_1",
+                    "is_matched": True,
+                    "confidence_level": "high",
+                    "occurrence_count": 5,
+                    "occurrence_operator_type": "more_than_equal_to",
+                    "occurrence_low": 1,
+                },
+                {
+                    "id": "pattern_id_2",
+                    "confidence_level": "low",
+                    "occurrence_operator_type": "between",
+                    "occurrence_low": 1,
+                    "occurrence_high": 10,
+                },
+            ],
+        }
+    ],
 }
 
 INCIDENT_JSON = {
@@ -197,6 +223,27 @@ def test_parse_dlp_report(mocker):
     results = parse_dlp_report(REPORT_DATA).to_context()
     pattern_results = demisto.get(results["Contents"], "scanContentRawReport.data_pattern_rule_1_results", None)
     assert pattern_results is not None
+
+    # Verify MatchedConfidenceLevel is present in DataPatternMatches
+    contents = results["EntryContext"]["DLP.Report(val.DataPatternName && val.DataPatternName == obj.DataPatternName)"]
+    data_pattern_matches = contents["DataPatternMatches"]
+    assert len(data_pattern_matches) > 0
+    assert data_pattern_matches[0]["MatchedConfidenceLevel"] == "low"
+
+    # Verify DataProfiles is present and correctly parsed
+    data_profiles = contents["DataProfiles"]
+    assert len(data_profiles) == 1
+    assert data_profiles[0]["Name"] == "Test Profile"
+    assert data_profiles[0]["Id"] == 12345
+    assert data_profiles[0]["Version"] == 1
+    assert data_profiles[0]["IsTriggered"] is True
+    assert len(data_profiles[0]["DataPatterns"]) == 2
+    assert data_profiles[0]["DataPatterns"][0]["Id"] == "pattern_id_1"
+    assert data_profiles[0]["DataPatterns"][0]["IsMatched"] is True
+    assert data_profiles[0]["DataPatterns"][0]["ConfidenceLevel"] == "high"
+    assert data_profiles[0]["DataPatterns"][0]["OccurrenceCount"] == 5
+    assert data_profiles[0]["DataPatterns"][1]["OccurrenceOperatorType"] == "between"
+    assert data_profiles[0]["DataPatterns"][1]["OccurrenceHigh"] == 10
 
 
 def test_get_dlp_incidents(requests_mock):
@@ -409,7 +456,7 @@ def test_create_incident(incident_type_input, expected_type):
             {"id1": 1000, "id2": 2000, "id3": 2000, "id4": 1500},
             {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: ["old_id"]},
             2000,
-            {"id2", "id3"},
+            {"id2", "id3"},  # Both have timestamp 2000, within buffer
             id="multiple_incidents_different_timestamps",
         ),
         pytest.param(
@@ -426,6 +473,20 @@ def test_create_incident(incident_type_input, expected_type):
             {"id1"},
             id="single_incident",
         ),
+        pytest.param(
+            {"id1": 2000, "id2": 2000 - END_TIME_BUFFER, "id3": 2000 - END_TIME_BUFFER - 1, "id4": 2000 - 15},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            2000,
+            {"id1", "id2", "id4"},  # id3 excluded (outside buffer: 2000-30-1=1969 < 1970)
+            id="buffer_window_filtering",
+        ),
+        pytest.param(
+            {"id1": 2000, "id2": 1999, "id3": 1998, "id4": 1971, "id5": 1970, "id6": 1969},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            2000,
+            {"id1", "id2", "id3", "id4", "id5"},  # id6 excluded (1969 < 1970 which is 2000-30)
+            id="exact_buffer_boundary",
+        ),
     ],
 )
 def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp, expected_ids):
@@ -435,7 +496,7 @@ def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp,
     When:
         - Calling compute_next_run.
     Then:
-        - Ensure it returns the correct timestamp and IDs.
+        - Ensure it returns the correct timestamp and IDs within the buffer window.
     """
     result = compute_next_run(incident_ids_timestamps, last_run)
 

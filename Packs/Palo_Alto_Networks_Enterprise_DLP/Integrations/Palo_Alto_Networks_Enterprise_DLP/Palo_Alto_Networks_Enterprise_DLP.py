@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
-MAX_SAMPLES = 10
+MAX_LAST_FETCHED_IDS = 200
 DEFAULT_MAX_FETCH = 50
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
@@ -280,10 +280,48 @@ def parse_data_pattern_rule(report_json, verdict_field, results_field):
                     "LowConfidenceFrequency": dp.get("low_confidence_frequency"),
                     "HighConfidenceFrequency": dp.get("high_confidence_frequency"),
                     "MediumConfidenceFrequency": dp.get("medium_confidence_frequency"),
+                    "MatchedConfidenceLevel": dp.get("matched_confidence_level"),
                     "Detections": dp.get("detections"),
                 }
             )
     return data_patterns
+
+
+def parse_data_profiles(report_json: dict) -> list:
+    """
+    Parses the data_profiles array from the DLP report JSON.
+    Args:
+        report_json: DLP report JSON
+
+    Returns: List of parsed data profile dicts with CamelCase keys
+    """
+    profiles = []
+    data_profiles = report_json.get("data_profiles") or []
+    for profile in data_profiles:
+        parsed_patterns = []
+        data_patterns = profile.get("data_patterns") or []
+        for pattern in data_patterns:
+            parsed_patterns.append(
+                {
+                    "Id": pattern.get("id"),
+                    "IsMatched": pattern.get("is_matched"),
+                    "ConfidenceLevel": pattern.get("confidence_level"),
+                    "OccurrenceCount": pattern.get("occurrence_count"),
+                    "OccurrenceOperatorType": pattern.get("occurrence_operator_type"),
+                    "OccurrenceLow": pattern.get("occurrence_low"),
+                    "OccurrenceHigh": pattern.get("occurrence_high"),
+                }
+            )
+        profiles.append(
+            {
+                "Name": profile.get("name"),
+                "Id": profile.get("id"),
+                "Version": profile.get("version"),
+                "IsTriggered": profile.get("is_triggered"),
+                "DataPatterns": parsed_patterns,
+            }
+        )
+    return profiles
 
 
 def parse_data_patterns(report_json):
@@ -297,7 +335,11 @@ def parse_data_patterns(report_json):
     data_patterns = []
     data_patterns.extend(parse_data_pattern_rule(report_json, "data_pattern_rule_1_verdict", "data_pattern_rule_1_results"))
     data_patterns.extend(parse_data_pattern_rule(report_json, "data_pattern_rule_2_verdict", "data_pattern_rule_2_results"))
-    return {"DataProfile": report_json.get("data_profile_name"), "DataPatternMatches": data_patterns}
+    data_profiles = parse_data_profiles(report_json)
+    result: dict = {"DataProfile": report_json.get("data_profile_name"), "DataPatternMatches": data_patterns}
+    if data_profiles:
+        result["DataProfiles"] = data_profiles
+    return result
 
 
 def convert_to_human_readable(data_patterns):
@@ -311,7 +353,7 @@ def convert_to_human_readable(data_patterns):
     matches: list = []
     if not data_patterns:
         return matches
-    headers = ["DataPatternName", "ConfidenceFrequency"]
+    headers = ["DataPatternName", "ConfidenceFrequency", "MatchedConfidenceLevel"]
     for k in data_patterns.get("DataPatternMatches", []):
         match = {
             "DataPatternName": k.get("DataPatternName"),
@@ -320,6 +362,7 @@ def convert_to_human_readable(data_patterns):
                 "Medium": k.get("MediumConfidenceFrequency"),
                 "High": k.get("HighConfidenceFrequency"),
             },
+            "MatchedConfidenceLevel": k.get("MatchedConfidenceLevel"),
         }
         index = 1
         detections = k.get("Detections", [])
@@ -469,10 +512,18 @@ def compute_next_run(incident_ids_committed_timestamps: dict[str, int], last_run
         return last_run
 
     new_last_committed_timestamp = max(incident_ids_committed_timestamps.values())
+    # Filter incidents within buffer window, sort by timestamp (oldest to newest), keep newest MAX_LAST_FETCHED_IDS
+    # 30 seconds buffer taken as a safety margin to account for resolution of filtering start_timestamp
     new_last_incident_ids = [
         _id
-        for _id, _committed_timestamp in incident_ids_committed_timestamps.items()
-        if _committed_timestamp == new_last_committed_timestamp
+        for _id, _ in sorted(
+            (
+                (_id, ts)
+                for _id, ts in incident_ids_committed_timestamps.items()
+                if ts >= new_last_committed_timestamp - END_TIME_BUFFER
+            ),
+            key=lambda x: x[1],
+        )[-MAX_LAST_FETCHED_IDS:]
     ]
 
     return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_KEY: new_last_incident_ids}
@@ -530,7 +581,7 @@ def fetch_notifications(
     if access_token:
         client.set_access_token(access_token)
 
-    last_run = demisto.getLastRun()
+    last_run = demisto.getLastRun() or {}  # May return as "None" on the first fetch
     demisto.debug(f"Got {last_run=}.")
     last_incident_ids = last_run.get(LAST_IDS_KEY) or []
     start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
@@ -542,6 +593,8 @@ def fetch_notifications(
         incident_id: start_timestamp for incident_id in last_incident_ids
     }
 
+    demisto.debug(f"Starting to fetch incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(f"Deduplicating using {len(last_incident_ids)} IDs: {last_incident_ids}.")
     # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
     for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
         if len(new_incidents) >= max_fetch:
@@ -577,7 +630,8 @@ def fetch_notifications(
             new_incidents.append(incident)
             fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
-    demisto.debug(f"Fetched {len(new_incidents)} incidents: {[inc.get('name') for inc in new_incidents]}.")
+    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(f"Fetched {len(new_incidents)} deduplicated incidents: {[inc.get('name') for inc in new_incidents]}.")
 
     demisto.debug("Updating integration context with access token.")
     demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
