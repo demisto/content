@@ -1552,6 +1552,9 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: Action to take on mobile devices when a host observes the custom IOC.
+      type: string
     - contextPath: CrowdStrike.NextPageToken
       description: A pagination token used with the limit parameter to manage pagination of results.
   - arguments:
@@ -1607,6 +1610,9 @@ script:
       type: date
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: Action to take on mobile devices when a host observes the custom IOC.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -1772,6 +1778,14 @@ script:
       name: description
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - auto: PREDEFINED
+      description: 'Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
+      name: mobile_action
+      predefined:
+      - no_action
+      - allow
+      - detect
+      - prevent
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1813,6 +1827,9 @@ script:
       type: string
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: Action to take on mobile devices when a host observes the custom IOC.
       type: string
 
   - arguments:
@@ -2631,6 +2648,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: Action to take on mobile devices when a host observes the custom IOC.
+      type: string
   - arguments:
     - description: The host ID to kill the given process for.
       name: host_id

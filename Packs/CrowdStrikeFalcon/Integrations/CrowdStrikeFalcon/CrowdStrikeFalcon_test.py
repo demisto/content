@@ -2911,7 +2911,7 @@ def test_lift_host_containment_command_default(requests_mock, mocker):
     result = lift_host_containment_command()
 
     assert mock.last_request.qs["action_name"] == ["lift_containment"]
-    assert "Containment has been lift off host" in result["HumanReadable"]
+    assert "Containment has been lifted off host" in result["HumanReadable"]
 
 
 def test_lift_host_containment_command_filesystem(requests_mock, mocker):

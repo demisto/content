@@ -570,6 +570,14 @@ Lifts containment on the host, which returns its network communications to norma
 
 There is no context output for this command.
 
+#### Command Example
+
+```!cs-falcon-lift-host-containment ids="a]1234567890abcdef12345678"```
+
+#### Human Readable Output
+
+>Containment has been lifted off host 'a]1234567890abcdef12345678'
+
 ### cs-falcon-run-command
 
 ***
@@ -1438,6 +1446,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. |
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
+| CrowdStrike.IOC.MobileAction | string | Action to take on mobile devices when a host observes the custom IOC. |
 | CrowdStrike.NextPageToken | unknown | A pagination token used with the limit parameter to manage pagination of results. |
 
 #### Command Example
@@ -1531,6 +1540,7 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. |
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
+| CrowdStrike.IOC.MobileAction | string | Action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -1598,7 +1608,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | host_groups | A comma-separated list of host group IDs that the indicator applies to. The list of host group IDs can be retrieved by running the 'cs-falcon-list-host-groups' command. Either applied_globally or host_groups must be provided. | Optional |
 | tags | A comma-separated list of tags to apply to the indicator. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
-| mobile_action | Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity. Possible values are: no_action, allow, detect, prevent. | Optional |
+| mobile_action | Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity. | Optional |
 
 #### Context Output
 
@@ -1623,7 +1633,7 @@ Uploads an indicator for CrowdStrike to monitor.
 
 #### Command Example
 
-```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
+```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac" mobile_action="no_action"```
 
 #### Context Example
 
@@ -1676,6 +1686,7 @@ Updates an indicator for CrowdStrike to monitor.
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional |
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
+| mobile_action | Action to take on mobile devices when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity. | Optional |
 
 #### Context Output
 
@@ -1694,6 +1705,7 @@ Updates an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. |
+| CrowdStrike.IOC.MobileAction | string | Action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -3353,6 +3365,7 @@ Uploads a batch of indicators.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. |
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. |
+| CrowdStrike.IOC.MobileAction | string | Action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 

@@ -2102,6 +2102,7 @@ def update_custom_ioc(
     description: str | None = None,
     expiration: str | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -2118,6 +2119,7 @@ def update_custom_ioc(
                 source=source,
                 description=description,
                 expiration=expiration,
+                mobile_action=mobile_action,
                 metadata=assign_params(filename=file_name),
             )
         ]
@@ -5868,6 +5870,7 @@ def update_custom_ioc_command(
     description: str | None = None,
     expiration: str | None = None,
     file_name: str | None = None,
+    mobile_action: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -5878,6 +5881,7 @@ def update_custom_ioc_command(
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
     :param file_name: The file name associated with the indicator.
+    :param mobile_action: Action to take on mobile when a host observes the custom IOC.
     """
 
     raw_res = update_custom_ioc(
@@ -5889,6 +5893,7 @@ def update_custom_ioc_command(
         description,
         expiration,
         file_name,
+        mobile_action,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get("resources", [])
@@ -6262,7 +6267,7 @@ def lift_host_containment_command():
     if lift_filesystem:
         hr = f"Filesystem containment has been lifted off host {str(ids)[1:-1]}"
     else:
-        hr = f"Containment has been lift off host {str(ids)[1:-1]}"
+        hr = f"Containment has been lifted off host {str(ids)[1:-1]}"
     return create_entry_object(contents=raw_res, hr=hr)
 
 
