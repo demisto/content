@@ -772,7 +772,7 @@ def test_add_client_list_entry_command_multiple_values(mocker, akamai_waf_client
         list_id="12345",
         value="1.2.3.4,1.2.3.5,1.2.3.6",
         description="Test entry",
-        tags=["test_tag"],
+        tags="test_tag",
     )
     assert expected_raw_response == raw_response
     assert human_readable == "Entries '1.2.3.4, 1.2.3.5, 1.2.3.6' added successfully to Akamai WAF Client List 12345."

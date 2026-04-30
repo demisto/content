@@ -520,9 +520,11 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        tags_list = tags.split(",") if tags else []
+        tags_list = argToList(tags)
         exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
-        values = [v.strip() for v in value.split(",") if v.strip()] if value else []
+        values = argToList(value)
+        if not values:
+            raise ValueError("At least one value must be provided.")
         append = [
             {
                 "value": v,
@@ -3826,8 +3828,10 @@ def add_client_list_entry_command(
     Returns:
         Human readable, context entry, raw response
     """
+    values = argToList(value)
+    if not values:
+        raise ValueError("At least one value must be provided.")
     raw_response = client.add_client_list_entry(list_id, value, description, expiration_date, tags)
-    values = [v.strip() for v in value.split(",") if v.strip()]
     if len(values) == 1:
         human_readable = f"Entry '{values[0]}' added successfully to Akamai WAF Client List {list_id}."
     else:
