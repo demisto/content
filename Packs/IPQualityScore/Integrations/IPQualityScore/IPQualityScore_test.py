@@ -227,13 +227,15 @@ def test_test_module_success(integration_module, client):
 
 
 def test_test_module_failure(integration_module, client):
-    with patch.object(
-        client,
-        "reputation_request",
-        return_value={"success": False, "message": "Invalid API key"},
+    with (
+        patch.object(
+            client,
+            "reputation_request",
+            return_value={"success": False, "message": "Invalid API key"},
+        ),
+        pytest.raises(integration_module.DemistoException, match="Invalid API key"),
     ):
-        with pytest.raises(integration_module.DemistoException, match="Invalid API key"):
-            integration_module.test_module(client)
+        integration_module.test_module(client)
 
 
 def test_ensure_dict_response_valid(integration_module):
@@ -750,6 +752,7 @@ def test_url_file_command_poll_completed(integration_module, client):
     assert result.outputs_prefix == "IPQualityScore.URLFileScan"
     assert result.indicator.url == "https://example.com"
     assert "ipqs_retry_count_req-url-123" not in context
+
 
 def test_get_retry_count_accepts_string(integration_module):
     integration_module.demisto.getIntegrationContext.side_effect = None
