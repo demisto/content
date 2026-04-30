@@ -53,6 +53,7 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
+# Thundering-herd protection
 proxy_cache_lock on;
 proxy_cache_lock_timeout $cache_lock_timeout;
 proxy_cache_lock_age $cache_lock_age;
@@ -133,8 +134,23 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     timeout = f"{timeout_param}s" if timeout_param.isdigit() else timeout_param
     cache_refresh_rate = f"{cache_refresh_rate_param}s" if cache_refresh_rate_param.isdigit() else cache_refresh_rate_param
 
-    cache_lock_timeout = params.get("cache_lock_timeout") or "5s"
-    cache_lock_age = params.get("cache_lock_age") or "5s"
+    # Ensure cache lock directives are at least as large as the upstream timeout. Otherwise, when an
+    # upstream request takes longer than the lock timeout/age, waiting clients bypass the cache lock
+    # and stampede the upstream (each waiter then produces an uncached response), defeating the purpose
+    # of `proxy_cache_lock on`. Defaults match `timeout`; explicit smaller values are bumped up.
+    cache_lock_timeout_param = str(params.get("cache_lock_timeout") or timeout_param)
+    cache_lock_age_param = str(params.get("cache_lock_age") or timeout_param)
+
+    cache_lock_timeout_seconds = parse_nginx_time_to_seconds(cache_lock_timeout_param)
+    cache_lock_age_seconds = parse_nginx_time_to_seconds(cache_lock_age_param)
+
+    if cache_lock_timeout_seconds < timeout_seconds:
+        cache_lock_timeout_param = timeout_param
+    if cache_lock_age_seconds < timeout_seconds:
+        cache_lock_age_param = timeout_param
+
+    cache_lock_timeout = f"{cache_lock_timeout_param}s" if cache_lock_timeout_param.isdigit() else cache_lock_timeout_param
+    cache_lock_age = f"{cache_lock_age_param}s" if cache_lock_age_param.isdigit() else cache_lock_age_param
     cache_404_ttl = params.get("cache_404_ttl") or "1m"
     cache_default_ttl = params.get("cache_default_ttl") or "1m"
 

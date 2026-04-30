@@ -71,16 +71,16 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: The timeout for the cache lock.
-  defaultvalue: 5s
+- additionalinfo: How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value.
+  defaultvalue: 1h
   display: Cache Lock Timeout
   name: cache_lock_timeout
   type: 0
   section: Connect
   advanced: true
   required: false
-- additionalinfo: The age for the cache lock.
-  defaultvalue: 5s
+- additionalinfo: How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout.
+  defaultvalue: 1h
   display: Cache Lock Age
   name: cache_lock_age
   type: 0
