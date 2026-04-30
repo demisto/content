@@ -1,5 +1,4 @@
 category: Endpoint
-provider: SentinelOne
 sectionorder:
 - Connect
 - Collect
@@ -3106,7 +3105,7 @@ script:
     - contextPath: SentinelOne.Threat.ZippedFile
       description: Details of the zipped folder.
       type: String
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   ismappable: true
   isremotesyncin: true
