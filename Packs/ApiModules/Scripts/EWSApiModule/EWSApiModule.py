@@ -948,6 +948,27 @@ def switch_hr_headers(obj, hr_header_changes: dict):
     return obj_copy
 
 
+def escape_hr_item_ids(items: Union[list[dict], dict]) -> Union[list[dict], dict]:
+    """Escape ``+`` in the ``itemId`` field of *items* for human-readable markdown output.
+
+    ``+`` characters in Exchange item IDs can be interpreted as italic / underline
+    formatting by markdown renderers.  This function replaces ``+`` with ``\\+``
+    in the ``itemId`` value so the ID is displayed literally.
+
+    Note: This mutates the dicts in-place and should only be called on HR copies,
+    not on the original context data.
+    """
+
+    def _escape_single(item: dict) -> dict:
+        if isinstance(item, dict) and isinstance(item.get(ITEM_ID), str):
+            item[ITEM_ID] = item[ITEM_ID].replace("+", "\\+")
+        return item
+
+    if isinstance(items, list):
+        return [_escape_single(i) for i in items]
+    return _escape_single(items)
+
+
 def get_entry_for_object(
     title: str, context_key: str, obj, headers: Optional[list] = None, hr_header_changes: dict = {}, filter_null_values=True
 ) -> CommandResults:
@@ -972,6 +993,8 @@ def get_entry_for_object(
         if filter_null_values:
             obj = [filter_dict_null(k) for k in obj]
         hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
+
+    hr_obj = escape_hr_item_ids(hr_obj)
 
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
