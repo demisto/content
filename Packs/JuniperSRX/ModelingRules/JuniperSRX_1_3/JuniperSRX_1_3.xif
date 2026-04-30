@@ -5,7 +5,7 @@
   //Extract all the fields using regex
    alter 
       hostname_temp1 = arrayindex(regextract(_raw_log,"([^\s]+)\s\w+\[\d+\]"),0),
-      hostname_temp2 = arrayindex(regextract(_raw_log,"\d+[Z]\s([^\s]+)\s"),0),
+      hostname_temp2 = arrayindex(regextract(_raw_log,"(?:\d+[Z]|[+-]\d{2}\:\d{2})\s([^\s]+)\s"),0),
       hostname_temp3 = arrayindex(regextract(_raw_log ,"host\=([^\s]+)\sagent"),0),
       event_type_temp5 = arrayindex(regextract(_raw_log ,"\s([A-Z]\w+)\s\-\s"),0),
       event_type_temp4 = arrayindex(regextract(_raw_log , "\s([A-Z]\w+)\:\s"),0),
