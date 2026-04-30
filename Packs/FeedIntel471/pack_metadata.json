@@ -17,7 +17,8 @@
     "useCases": [],
     "keywords": [],
     "itemPrefix": [
-        "Titan"
+        "Titan",
+        "Intel471"
     ],
     "marketplaces": [
         "xsoar",

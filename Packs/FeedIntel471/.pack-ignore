@@ -9,3 +9,9 @@ ignore=IM111
 
 [file:Intel471Malware_image.png]
 ignore=IM111
+
+[file:Intel471WatcherAlerts.yml]
+ignore=BC112
+
+[file:Intel471MalwareIndicator.yml]
+ignore=BC112
