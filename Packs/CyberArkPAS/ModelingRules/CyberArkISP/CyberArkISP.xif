@@ -209,7 +209,7 @@ alter
     xdm.database.statement = coalesce(get_message_lower, action, ""),
     xdm.observer.type = "Identity";
 
-[MODEL: dataset=cyberark_isp_raw]
+[MODEL: dataset="cyberark_isp_raw"]
 /* Auth 102 - CyberArk Audit Authentication Story */
 call CyberArk_Audit_Auth_Classification
 | filter is_auth = true

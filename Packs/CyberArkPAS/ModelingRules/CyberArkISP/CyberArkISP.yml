@@ -3,4 +3,6 @@ id: CyberArk_ISP_ModelingRule
 name: CyberArk ISP Modeling Rule
 rules: ''
 schema: ''
-tags: CyberArk ISP
+tags: ''
+supportedModules:
+- xsiam
