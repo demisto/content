@@ -294,8 +294,13 @@ def create_incident_background(incident: dict) -> None:
                     return
                 demisto.error(f"SNS msg {message_id}: createIncidents returned empty (attempt {attempt}/{RETRY_ATTEMPTS})")
             except Exception as e:
-                demisto.error(f"SNS msg {message_id}: createIncidents raised (attempt {attempt}/{RETRY_ATTEMPTS}): {e}")
-            time.sleep(RETRY_BACKOFF_SEC * attempt)
+                demisto.error(
+                    f"SNS msg {message_id}: createIncidents raised (attempt {attempt}/{RETRY_ATTEMPTS}): {e}\n{format_exc()}"
+                )
+            # Skip the backoff sleep on the final failed attempt — there is no
+            # next retry, so sleeping here only delays releasing the semaphore.
+            if attempt < RETRY_ATTEMPTS:
+                time.sleep(RETRY_BACKOFF_SEC * attempt)
 
     demisto.updateModuleHealth(f"AWS-SNS message {message_id} lost after {RETRY_ATTEMPTS} retries")
 
