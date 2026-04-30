@@ -11,6 +11,6 @@ tags:
 system: true
 scripttarget: 0
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8319994
 tests:
 - No tests (auto formatted)
