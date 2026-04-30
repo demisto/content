@@ -383,7 +383,11 @@ tasks:
       id: 7c6d6f59-6754-4415-80c8-b906dcf81ca6
       version: -1
       name: Collect or Extract Indicators?
-      description: Collect the indicators or extract the indicators from incident.
+      description: |-
+        How would you like to provide the indicators for enrichment?
+
+        - Extract: Automatically pull IP addresses, domains, and SHA256 file hashes from the current incident context.
+        - Collect: Manually enter the indicator values via a form.
       type: condition
       iscommand: false
       brand: ""
@@ -910,7 +914,7 @@ tasks:
       id: 10189a04-66b9-4779-8e27-e19264dddf98
       version: -1
       name: Enrich the SHA256 file hash indicator
-      description: Return previews of hosts matching a specified search query or a list of certificates that match the given query.
+      description: Return previews of hosts matching a specified search query or a list of certificates (SHA256 file hashes) that match the given query.
       script: '|||cen-search'
       type: regular
       iscommand: true
