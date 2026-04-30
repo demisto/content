@@ -240,3 +240,167 @@ def test_handle_error_response_429(requests_mock):
 
     with pytest.raises(DemistoException, match=MESSAGES["RATE_LIMIT_EXCEED_ERROR"]):
         make_client().get_indicator_enrichment("1.2.3.4")
+
+
+# ---------- test_module ----------
+
+
+def test_test_module_success(requests_mock):
+    from SOCRadarIoCEnrichment import test_module
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    result = test_module(make_client())
+    assert result == "ok"
+
+
+def test_test_module_no_response(requests_mock):
+    from SOCRadarIoCEnrichment import test_module
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    with pytest.raises(DemistoException, match="API test failed"):
+        test_module(make_client())
+
+
+def test_test_module_connection_error(requests_mock):
+    import requests as req
+    from SOCRadarIoCEnrichment import test_module
+
+    requests_mock.post(ENRICHMENT_SUFFIX, exc=req.exceptions.ConnectionError("Connection refused"))
+    with pytest.raises(DemistoException, match="Authentication failed"):
+        test_module(make_client())
+
+
+# ---------- socradar_ioc_enrichment_command ----------
+
+
+def test_socradar_ioc_enrichment_command_ip(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": "1.2.3.4"})
+
+    assert len(results) == 1
+    assert results[0].outputs["Indicator"] == "1.2.3.4"
+
+
+def test_socradar_ioc_enrichment_command_domain(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": "example.com"})
+
+    assert len(results) == 1
+    assert results[0].outputs["Indicator"] == "example.com"
+
+
+def test_socradar_ioc_enrichment_command_url(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": "https://example.com/path"})
+
+    assert len(results) == 1
+    assert results[0].outputs["Indicator"] == "https://example.com/path"
+
+
+def test_socradar_ioc_enrichment_command_hash_sha256(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": sha256})
+
+    assert len(results) == 1
+    assert results[0].outputs["Indicator"] == sha256
+
+
+def test_socradar_ioc_enrichment_command_hash_md5(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    md5 = "d41d8cd98f00b204e9800998ecf8427e"
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": md5})
+
+    assert len(results) == 1
+
+
+def test_socradar_ioc_enrichment_command_hash_sha1(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=util_load_json("test_data/ip_enrichment_response.json"))
+    sha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": sha1})
+
+    assert len(results) == 1
+
+
+def test_socradar_ioc_enrichment_command_no_indicator():
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": ""})
+
+    assert len(results) == 1
+    assert "required" in results[0].readable_output
+
+
+def test_socradar_ioc_enrichment_command_no_response(requests_mock):
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": "1.2.3.4"})
+
+    assert len(results) == 1
+    assert "No enrichment data" in results[0].readable_output
+
+
+def test_socradar_ioc_enrichment_command_unknown_indicator():
+    from SOCRadarIoCEnrichment import socradar_ioc_enrichment_command
+
+    results = socradar_ioc_enrichment_command(make_client(), {"indicator": "???not-valid???"})
+
+    assert len(results) == 1
+    assert "Error" in results[0].readable_output
+
+
+# ---------- API failure / no-data paths ----------
+
+
+def test_ip_command_no_data(requests_mock):
+    from SOCRadarIoCEnrichment import ip_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    results = ip_command(make_client(), {"ip": "1.2.3.4"}, reliability=None)
+
+    assert len(results) == 1
+    assert "No enrichment data" in results[0].readable_output
+
+
+def test_domain_command_no_data(requests_mock):
+    from SOCRadarIoCEnrichment import domain_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    results = domain_command(make_client(), {"domain": "example.com"}, reliability=None)
+
+    assert len(results) == 1
+    assert "No enrichment data" in results[0].readable_output
+
+
+def test_url_command_no_data(requests_mock):
+    from SOCRadarIoCEnrichment import url_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    results = url_command(make_client(), {"url": "https://example.com"}, reliability=None)
+
+    assert len(results) == 1
+    assert "No enrichment data" in results[0].readable_output
+
+
+def test_file_command_no_data(requests_mock):
+    from SOCRadarIoCEnrichment import file_command
+
+    requests_mock.post(ENRICHMENT_SUFFIX, json=None)
+    sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    results = file_command(make_client(), {"file": sha256}, reliability=None)
+
+    assert len(results) == 1
+    assert "No enrichment data" in results[0].readable_output

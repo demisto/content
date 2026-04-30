@@ -621,7 +621,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
         "by_score_range": {"0-25": 0, "26-50": 0, "51-75": 0, "76-100": 0, "whitelisted": 0},
     }
 
-    for idx, indicator in enumerate(indicator_list):
+    for indicator in indicator_list:
         try:
             # Detect entity type
             entity_type = detect_entity_type(indicator)

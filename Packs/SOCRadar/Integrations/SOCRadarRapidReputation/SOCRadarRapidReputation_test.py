@@ -233,3 +233,269 @@ def test_detect_entity_type_unknown():
 
     with pytest.raises(ValueError, match="Unable to determine entity type"):
         detect_entity_type("???not-valid???")
+
+
+# ---------- test_module ----------
+
+
+def test_test_module_success(requests_mock):
+    from SOCRadarRapidReputation import test_module
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    result = test_module(make_client())
+    assert result == "ok"
+
+
+def test_test_module_api_failure(requests_mock):
+    from SOCRadarRapidReputation import test_module
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "API error"})
+    with pytest.raises(Exception, match="API test failed"):
+        test_module(make_client())
+
+
+# ---------- process_entity_by_type ----------
+
+
+def test_process_entity_by_type_success(requests_mock):
+    from SOCRadarRapidReputation import process_entity_by_type
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    result = process_entity_by_type(make_client(), "1.2.3.4", "ip")
+
+    assert result["success"] is True
+    assert result["entity"] == "1.2.3.4"
+    assert result["dbot_score"] == 3
+
+
+def test_process_entity_by_type_whitelisted(requests_mock):
+    from SOCRadarRapidReputation import process_entity_by_type
+
+    requests_mock.get(
+        REPUTATION_SUFFIX,
+        json={"is_success": True, "data": {"score": 0, "is_whitelisted": True, "finding_sources": []}},
+    )
+    result = process_entity_by_type(make_client(), "8.8.8.8", "ip")
+
+    assert result["success"] is True
+    assert result["dbot_score"] == 1
+
+
+def test_process_entity_by_type_api_failure(requests_mock):
+    from SOCRadarRapidReputation import process_entity_by_type
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "Not found"})
+    result = process_entity_by_type(make_client(), "1.2.3.4", "ip")
+
+    assert result["success"] is False
+    assert "Not found" in result["error"]
+
+
+# ---------- socradar_reputation_command ----------
+
+
+def test_socradar_reputation_command_ip(requests_mock):
+    from SOCRadarRapidReputation import socradar_reputation_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    results = socradar_reputation_command(make_client(), {"entity_value": "1.2.3.4", "entity_type": "ip"})
+
+    assert len(results) == 1
+    assert results[0].outputs["Entity"] == "1.2.3.4"
+
+
+def test_socradar_reputation_command_hostname(requests_mock):
+    from SOCRadarRapidReputation import socradar_reputation_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/domain_reputation_response.json"))
+    results = socradar_reputation_command(make_client(), {"entity_value": "example.com", "entity_type": "hostname"})
+
+    assert len(results) == 1
+    assert results[0].outputs["Entity"] == "example.com"
+
+
+def test_socradar_reputation_command_url(requests_mock):
+    from SOCRadarRapidReputation import socradar_reputation_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    results = socradar_reputation_command(
+        make_client(), {"entity_value": "https://example.com/path", "entity_type": "url"}
+    )
+
+    assert len(results) == 1
+
+
+def test_socradar_reputation_command_hash(requests_mock):
+    from SOCRadarRapidReputation import socradar_reputation_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    results = socradar_reputation_command(make_client(), {"entity_value": sha256, "entity_type": "hash"})
+
+    assert len(results) == 1
+
+
+def test_socradar_reputation_command_no_args():
+    from SOCRadarRapidReputation import socradar_reputation_command
+
+    results = socradar_reputation_command(make_client(), {})
+
+    assert len(results) == 1
+    assert "required" in results[0].readable_output
+
+
+def test_socradar_reputation_command_api_failure(requests_mock):
+    from SOCRadarRapidReputation import socradar_reputation_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "Server error"})
+    results = socradar_reputation_command(make_client(), {"entity_value": "1.2.3.4", "entity_type": "ip"})
+
+    assert len(results) == 1
+    assert "Error" in results[0].readable_output
+
+
+# ---------- socradar_bulk_check_command ----------
+
+
+def test_socradar_bulk_check_command_no_indicators():
+    from SOCRadarRapidReputation import socradar_bulk_check_command
+
+    results = socradar_bulk_check_command(make_client(), {"indicators": ""})
+
+    assert len(results) == 1
+    assert "No indicators" in results[0].readable_output
+
+
+def test_socradar_bulk_check_command_too_many():
+    from SOCRadarRapidReputation import MAX_BULK_CHECK_INDICATORS, socradar_bulk_check_command
+
+    indicators = ",".join([f"1.2.{i // 255}.{i % 255}" for i in range(MAX_BULK_CHECK_INDICATORS + 1)])
+    results = socradar_bulk_check_command(make_client(), {"indicators": indicators})
+
+    assert len(results) == 1
+    assert "Too Many" in results[0].readable_output
+
+
+def test_socradar_bulk_check_command_basic(requests_mock):
+    from SOCRadarRapidReputation import socradar_bulk_check_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    results = socradar_bulk_check_command(make_client(), {"indicators": "1.2.3.4,5.6.7.8"})
+
+    assert len(results) >= 2
+    assert "Bulk Check Summary" in results[0].readable_output
+
+
+def test_socradar_bulk_check_command_domain(requests_mock):
+    from SOCRadarRapidReputation import socradar_bulk_check_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/domain_reputation_response.json"))
+    results = socradar_bulk_check_command(make_client(), {"indicators": "example.com"})
+
+    assert len(results) >= 1
+    assert "Bulk Check Summary" in results[0].readable_output
+
+
+def test_socradar_bulk_check_command_failed_entity(requests_mock):
+    from SOCRadarRapidReputation import socradar_bulk_check_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "Service error"})
+    results = socradar_bulk_check_command(make_client(), {"indicators": "1.2.3.4"})
+
+    assert len(results) >= 2
+    assert "Failed" in results[0].readable_output
+
+
+def test_socradar_bulk_check_command_unknown_entity():
+    from SOCRadarRapidReputation import socradar_bulk_check_command
+
+    results = socradar_bulk_check_command(make_client(), {"indicators": "???invalid???"})
+
+    assert len(results) >= 1
+
+
+# ---------- ip_command additional paths ----------
+
+
+def test_ip_command_whitelisted(requests_mock):
+    from SOCRadarRapidReputation import ip_command
+
+    requests_mock.get(
+        REPUTATION_SUFFIX,
+        json={"is_success": True, "data": {"score": 0, "is_whitelisted": True, "finding_sources": []}},
+    )
+    results = ip_command(make_client(), {"ip": "8.8.8.8"}, reliability=None)
+
+    assert len(results) == 1
+    assert results[0].outputs["IsWhitelisted"] is True
+
+
+def test_ip_command_no_score(requests_mock):
+    from SOCRadarRapidReputation import ip_command
+
+    requests_mock.get(
+        REPUTATION_SUFFIX,
+        json={"is_success": True, "data": {"is_whitelisted": False, "finding_sources": []}},
+    )
+    results = ip_command(make_client(), {"ip": "1.2.3.4"}, reliability=None)
+
+    assert len(results) == 1
+    assert results[0].outputs["Score"] is None
+
+
+# ---------- file_command additional hash types ----------
+
+
+def test_file_command_sha256_indicator(requests_mock):
+    from SOCRadarRapidReputation import file_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    results = file_command(make_client(), {"file": sha256}, reliability=None)
+
+    assert len(results) == 1
+    assert results[0].indicator.sha256 == sha256
+
+
+def test_file_command_sha1_indicator(requests_mock):
+    from SOCRadarRapidReputation import file_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json=util_load_json("test_data/ip_reputation_response.json"))
+    sha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    results = file_command(make_client(), {"file": sha1}, reliability=None)
+
+    assert len(results) == 1
+
+
+def test_file_command_api_failure(requests_mock):
+    from SOCRadarRapidReputation import file_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "Error"})
+    md5 = "d41d8cd98f00b204e9800998ecf8427e"
+    results = file_command(make_client(), {"file": md5}, reliability=None)
+
+    assert len(results) == 1
+    assert "Error" in results[0].readable_output
+
+
+# ---------- domain/url additional paths ----------
+
+
+def test_domain_command_api_failure(requests_mock):
+    from SOCRadarRapidReputation import domain_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "API error"})
+    results = domain_command(make_client(), {"domain": "example.com"}, reliability=None)
+
+    assert len(results) == 1
+    assert "Error" in results[0].readable_output
+
+
+def test_url_command_api_failure(requests_mock):
+    from SOCRadarRapidReputation import url_command
+
+    requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "API error"})
+    results = url_command(make_client(), {"url": "https://example.com"}, reliability=None)
+
+    assert len(results) == 1
+    assert "Error" in results[0].readable_output
