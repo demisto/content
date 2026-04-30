@@ -389,7 +389,7 @@ def main() -> None:
     """main function, parses params and runs command functions."""
     params = demisto.params()
     args = demisto.args()
-    api_key = params.get("apikey")
+    api_key = params.get("apikey", {}).get("password")
     base_url = SOCRADAR_API_ENDPOINT
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

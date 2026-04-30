@@ -7,7 +7,6 @@ import traceback
 from typing import Any
 import re
 from json.decoder import JSONDecodeError
-import time
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -58,6 +57,9 @@ class Client(BaseClient):
             timeout=60,
             error_handler=self.handle_error_response,
             resp_type="json",
+            retries=3,
+            status_list_to_retry=[429],
+            backoff_factor=1,
         )
         return response
 
@@ -685,11 +687,6 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
             error_msg = f"❌ Error: {indicator} - {error_reason}"
             command_results_list.append(CommandResults(readable_output=error_msg))
 
-        # Rate limiting: 1 request per second
-        # Sleep after each request except the last one
-        if idx < len(indicator_list) - 1:
-            time.sleep(1)
-
     # Build summary with score ranges
     summary_table_data = [
         {"Metric": "Total Indicators", "Count": summary_data["total"]},
@@ -816,7 +813,7 @@ def main() -> None:
     """main function, parses params and runs command functions"""
 
     params = demisto.params()
-    api_key = params.get("apikey")
+    api_key = params.get("apikey", {}).get("password")
     base_url = SOCRADAR_API_ENDPOINT
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
