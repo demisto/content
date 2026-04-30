@@ -2723,15 +2723,21 @@ def sanitize_html_output(value, allow_tags=None):
     :return: HTML-safe string.
     :rtype: ``str``
     """
-    import html as _html_mod
+    try:
+        from html import escape as _html_escape  # Python 3
+    except ImportError:
+        from cgi import escape as _cgi_escape  # Python 2
+
+        def _html_escape(s, quote=True):
+            return _cgi_escape(s, quote=quote).replace("'", "&#x27;")
     if allow_tags is None:
-        return _html_mod.escape(str(value))
+        return _html_escape(str(value))
     # For allowlist mode, use bleach if available, else strip all
     try:
         import bleach
         return bleach.clean(str(value), tags=allow_tags, strip=True)
     except ImportError:
-        return _html_mod.escape(str(value))
+        return _html_escape(str(value))
 
 
 def getFilePathSafe(entry_id):
