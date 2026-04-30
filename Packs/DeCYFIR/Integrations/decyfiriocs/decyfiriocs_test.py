@@ -321,8 +321,8 @@ def _make_ta_obj(confidence, name="Test Actor"):
             }
         },
     }
- 
- 
+
+
 def test_build_threat_intel_indicator_obj_suspicious():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.build_threat_intel_indicator_obj(
@@ -330,8 +330,8 @@ def test_build_threat_intel_indicator_obj_suspicious():
     )
     assert result["value"] == "Test Actor"
     assert result["fields"]["confidence"] == 60
- 
- 
+
+
 def test_build_threat_intel_indicator_obj_benign():
     client = Client(base_url="test_url", verify=False, proxy=False)
     result = client.build_threat_intel_indicator_obj(
@@ -339,8 +339,8 @@ def test_build_threat_intel_indicator_obj_benign():
     )
     assert result["value"] == "Test Actor"
     assert result["fields"]["confidence"] == 20
- 
- 
+
+
 def test_build_threat_intel_indicator_obj_no_extensions():
     """Object with no extensions key — should not raise, returns obj."""
     obj = {
@@ -357,7 +357,6 @@ def test_build_threat_intel_indicator_obj_no_extensions():
     # extensions is empty dict → next(iter(...)) raises StopIteration → caught → returns {}
     result = client.build_threat_intel_indicator_obj(data=obj, tlp_color=None, feed_tags=[])
     assert result == {}
- 
 
 
 def test_build_threat_intel_indicator_obj_with_aliases_and_labels():
@@ -479,8 +478,8 @@ def test_decyfir_get_indicators_command(mocker):
     )
     mocker.patch.object(Client, "fetch_indicators", return_value=raw_data["iocs"])
     data = decyfir_get_indicators_command(
-        client=client, decyfir_api_key="api_key", 
-        reputation="feedReputation", 
+        client=client, decyfir_api_key="api_key",
+        reputation="feedReputation",
         tlp_color="tlp_color", feed_tags=["feedTags"]
     )
 
@@ -501,8 +500,8 @@ def test_get_decyfir_api_ti_data_non_200(mocker):
     mocker.patch.object(client, "_http_request", return_value=mock_resp)
     result = client.get_decyfir_api_ti_data("/some/path")
     assert result == []
- 
- 
+
+
 def test_get_decyfir_api_ti_data_200_empty_body(mocker):
     client = Client(base_url="test_url", verify=False, proxy=False)
     mock_resp = MagicMock()
@@ -511,7 +510,6 @@ def test_get_decyfir_api_ti_data_200_empty_body(mocker):
     mocker.patch.object(client, "_http_request", return_value=mock_resp)
     result = client.get_decyfir_api_ti_data("/some/path")
     assert result == []
- 
 
 
 def test_convert_ioc_with_is_data_save_true_cached_ta(mocker):
@@ -800,7 +798,7 @@ def test_main_exception_in_setup(mocker):
 def test_convert_ioc_file_hash_sha256(mocker):
     """Covers the SHA-256 hash normalisation branch."""
     client = Client(base_url="test_url", verify=False, proxy=False)
- 
+
     ioc = {
         "type": "indicator",
         "id": "indicator--sha256",
@@ -830,12 +828,12 @@ def test_convert_ioc_file_hash_sha256(mocker):
         is_data_save=False,
     )
     assert any(r.get("type") == "File" for r in result)
- 
- 
+
+
 def test_convert_ioc_file_hash_sha1(mocker):
     """Covers the SHA-1 hash normalisation branch."""
     client = Client(base_url="test_url", verify=False, proxy=False)
- 
+
     ioc = {
         "type": "indicator",
         "id": "indicator--sha1",
@@ -865,12 +863,12 @@ def test_convert_ioc_file_hash_sha1(mocker):
         is_data_save=False,
     )
     assert any(r.get("type") == "File" for r in result)
- 
- 
+
+
 def test_convert_ioc_file_hash_md5(mocker):
     """Covers the MD5 hash normalisation branch."""
     client = Client(base_url="test_url", verify=False, proxy=False)
- 
+
     ioc = {
         "type": "indicator",
         "id": "indicator--md5",
@@ -900,4 +898,3 @@ def test_convert_ioc_file_hash_md5(mocker):
         is_data_save=False,
     )
     assert any(r.get("type") == "File" for r in result)
- 
