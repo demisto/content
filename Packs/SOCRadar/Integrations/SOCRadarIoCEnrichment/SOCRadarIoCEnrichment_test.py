@@ -253,9 +253,10 @@ def test_test_module_success(requests_mock):
     assert result == "ok"
 
 
-def test_test_module_no_response(requests_mock):
+def test_test_module_no_response(requests_mock, mocker):
     from SOCRadarIoCEnrichment import test_module
 
+    mocker.patch("demistomock.error")
     requests_mock.post(ENRICHMENT_SUFFIX, json={})
     with pytest.raises(DemistoException, match="API test failed"):
         test_module(make_client())
@@ -265,7 +266,7 @@ def test_test_module_connection_error(requests_mock, mocker):
     import requests as req
     from SOCRadarIoCEnrichment import test_module
 
-    mocker.patch("demisto.error")
+    mocker.patch("demistomock.error")
     requests_mock.post(ENRICHMENT_SUFFIX, exc=req.exceptions.ConnectionError("Connection refused"))
     with pytest.raises(DemistoException, match="Authentication failed"):
         test_module(make_client())
