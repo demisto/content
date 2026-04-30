@@ -569,7 +569,8 @@ class Client(BaseClient):
 # The below function is used to test the connectivity with DeCYFIR API using the ping API.
 def test_module_command(client, decyfir_api_key):
     url = API_TEST_PATH_SUFFIX.format(decyfir_api_key)
-    response = client._http_request(url_suffix=url, method="GET", resp_type="response")
+    response = client.get_decyfir_api_ti_data(url)
+    # response = client._http_request(url_suffix=url, method="GET", resp_type="response")
     if response.status_code == 200:
         return "ok"
     elif response.status_code in [401, 403]:
