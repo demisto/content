@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: AWS-SNS-Listener-solution
+  id: AWS-SNS-Listener
   version: -1
 configuration:
 - display: Long running instance
@@ -65,8 +65,8 @@ configuration:
   required: true
   section: Connect
 description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
-display: AWS-SNS-Listener-solution
-name: AWS-SNS-Listener-solution
+display: AWS-SNS-Listener
+name: AWS-SNS-Listener
 script:
   commands: []
   dockerimage: demisto/fastapi:0.125.0.8198656
