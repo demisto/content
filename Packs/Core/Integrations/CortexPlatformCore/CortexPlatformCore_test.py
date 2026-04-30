@@ -8765,9 +8765,9 @@ def test_update_case_command_resolve_all_alerts_field(mocker: MockerFixture):
 def test_validate_custom_fields_success(mocker):
     """
     GIVEN:
-        Valid custom fields and client with metadata.
+        Valid custom fields with CLI names and client with metadata.
     WHEN:
-        validate_custom_fields is called.
+        validate_custom_fields is called with CLI names.
     THEN:
         All fields are returned as valid and no error messages.
     """
@@ -8775,18 +8775,20 @@ def test_validate_custom_fields_success(mocker):
 
     client = Client(base_url="", headers={})
 
-    # Mock metadata response
+    # Mock metadata response — CLI name is the machine name users pass
     metadata_response = {
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_NAME": "Field 1",
+                    "CUSTOM_FIELD_CLI_NAME": "field1",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_NAME": "Field 2",
+                    "CUSTOM_FIELD_CLI_NAME": "field2",
                     "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8806,7 +8808,7 @@ def test_validate_custom_fields_success(mocker):
 def test_validate_custom_fields_system_field(mocker):
     """
     GIVEN:
-        Custom fields containing a system field.
+        Custom fields containing a system field (looked up by CLI name).
     WHEN:
         validate_custom_fields is called.
     THEN:
@@ -8820,13 +8822,15 @@ def test_validate_custom_fields_system_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_NAME": "System Field",
+                    "CUSTOM_FIELD_CLI_NAME": "system_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "System Field",
                     "CUSTOM_FIELD_IS_SYSTEM": True,
                     "CUSTOM_FIELD_TYPE": "text",
                 },
                 {
-                    "CUSTOM_FIELD_NAME": "custom_field",
+                    "CUSTOM_FIELD_NAME": "Custom Field",
+                    "CUSTOM_FIELD_CLI_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8862,7 +8866,8 @@ def test_validate_custom_fields_non_existent_field(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "existing_field",
+                    "CUSTOM_FIELD_NAME": "Existing Field",
+                    "CUSTOM_FIELD_CLI_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "text",
@@ -8879,6 +8884,44 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+    assert "CLI/machine name" in error_messages
+
+
+def test_validate_custom_fields_cli_name_lookup(mocker):
+    """
+    GIVEN:
+        A custom field with display name "ServiceNow Ticket ID" and CLI name "servicenowticketid".
+        User passes the CLI name (machine name) as the field key.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is matched by CLI name and accepted as valid.
+        This is the scenario from XSUP-67819.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_CLI_NAME": "servicenowticketid",
+                    "CUSTOM_FIELD_PRETTY_NAME": "ServiceNow Ticket ID",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "shortText",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"servicenowticketid": "SN12345"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"servicenowticketid": "SN12345"}
+    assert not error_messages
 
 
 def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
@@ -8898,7 +8941,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8934,7 +8978,8 @@ def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_NAME": "Multi Field",
+                    "CUSTOM_FIELD_CLI_NAME": "multi_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "multiSelect",
@@ -8969,7 +9014,8 @@ def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_NAME": "Single Field",
+                    "CUSTOM_FIELD_CLI_NAME": "single_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": "shortText",
@@ -9022,7 +9068,8 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
         "reply": {
             "DATA": [
                 {
-                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_NAME": "My Field",
+                    "CUSTOM_FIELD_CLI_NAME": "my_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "My Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
                     "CUSTOM_FIELD_TYPE": field_type,
