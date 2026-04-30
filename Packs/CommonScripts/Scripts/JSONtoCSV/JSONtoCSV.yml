@@ -11,7 +11,7 @@ enabled: true
 args:
 - name: entryid
   required: true
-  description: Entry id of json
+  description: Entry id of json.
   isArray: true
 - name: delimiter
   default: true
@@ -21,17 +21,17 @@ args:
   description: If provided will output CSV to file. Default output is to War Room.
 outputs:
 - contextPath: File.Name
-  description: Filename (only in case of report type=json)
+  description: Filename (only in case of report type=json).
 - contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
+  description: File type e.g. "PE" (only in case of report type=json).
 - contextPath: File.Size
-  description: File size (only in case of report type=json)
+  description: File size (only in case of report type=json).
 - contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
+  description: MD5 hash of the file (only in case of report type=json).
 - contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
+  description: SHA1 hash of the file (only in case of report type=json).
 - contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
+  description: SHA256 hash of the file (only in case of report type=json).
 scripttarget: 0
 tests:
 - JSONtoCSV-Test
