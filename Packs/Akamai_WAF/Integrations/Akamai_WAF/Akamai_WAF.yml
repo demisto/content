@@ -719,21 +719,22 @@ script:
       description: The activation details.
       type: unknown
   - name: akamai-add-client-list-entry
-    description: Adds an entry to a client list.
+    description: Adds one or more entries to a client list.
     arguments:
     - name: list_id
       required: true
       description: The ID of the client list.
     - name: value
       required: true
-      description: The value of the new entry.
+      description: A comma-separated list of values to add to the client list (e.g. 1.2.3.4/32,1.2.3.5/32).
+      isArray: true
     - name: description
-      description: A description of the new entry.
+      description: A description for the new entries. Applied to all entries.
     - name: expiration_date
-      description: The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
+      description: The expiration date for the new entries. Applied to all entries. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
     - name: tags
       isArray: true
-      description: A list of tags for the new entry.
+      description: A list of tags for the new entries. Applied to all entries.
   - name: akamai-remove-client-list-entry
     description: Removes an entry from a client list.
     arguments:

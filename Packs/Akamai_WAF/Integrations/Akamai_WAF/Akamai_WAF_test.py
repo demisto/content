@@ -751,6 +751,33 @@ def test_add_client_list_entry_command(mocker, akamai_waf_client):
     assert expected_human_readable == human_readable
 
 
+def test_add_client_list_entry_command_multiple_values(mocker, akamai_waf_client):
+    """
+    Given:
+        - A client and arguments for adding multiple entries to a client list.
+    When:
+        - running the command add_client_list_entry_command with comma-separated values.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+        - The human readable message lists all added entries.
+    """
+    from Akamai_WAF import add_client_list_entry_command
+
+    expected_raw_response = {}
+
+    mocker.patch.object(akamai_waf_client, "add_client_list_entry", return_value=expected_raw_response)
+
+    human_readable, _, raw_response = add_client_list_entry_command(
+        client=akamai_waf_client,
+        list_id="12345",
+        value="1.2.3.4,1.2.3.5,1.2.3.6",
+        description="Test entry",
+        tags=["test_tag"],
+    )
+    assert expected_raw_response == raw_response
+    assert human_readable == "Entries '1.2.3.4, 1.2.3.5, 1.2.3.6' added successfully to Akamai WAF Client List 12345."
+
+
 def test_remove_client_list_entry_command(mocker, akamai_waf_client):
     """
     Given:

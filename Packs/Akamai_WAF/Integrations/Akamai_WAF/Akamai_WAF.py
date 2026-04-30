@@ -502,24 +502,42 @@ class Client(BaseClient):
         )
 
     def add_client_list_entry(
-        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
+        self,
+        list_id: str,
+        value: str,
+        description: str = None,
+        expiration_date: str = None,
+        tags: str = None,
     ) -> dict:
         """
-        Add an entry to a client list.
+        Add one or more entries to a client list.
         Args:
             list_id: The ID of the client list.
-            value: The value for the new entry.
-            description: A description for the new entry.
-            expiration_date: The expiration date for the new entry.
-            tags: A list of tags for the new entry.
+            value: A comma-separated list of values to add.
+            description: A description for the new entries. Applied to all entries.
+            expiration_date: The expiration date for the new entries. Applied to all entries.
+            tags: A comma-separated list of tags for the new entries. Applied to all entries.
         Returns:
             Json response as dictionary
         """
-        tags = tags.split(",") if tags else []
+        tags_list = tags.split(",") if tags else []
         exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
-        entry = {"value": value, "description": description, "expirationDate": exp_iso, "tags": tags}
-        body = {"append": [entry]}
-        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+        values = [v.strip() for v in value.split(",") if v.strip()] if value else []
+        append = [
+            {
+                "value": v,
+                "description": description,
+                "expirationDate": exp_iso,
+                "tags": tags_list,
+            }
+            for v in values
+        ]
+        body = {"append": append}
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/client-list/v1/lists/{list_id}/items",
+            json_data=body,
+        )
 
     def remove_client_list_entry(self, list_id: str, value: str) -> dict:
         """
@@ -3789,22 +3807,31 @@ def activate_client_list_command(
 
 @logger
 def add_client_list_entry_command(
-    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
+    client: Client,
+    list_id: str,
+    value: str,
+    description: str = None,
+    expiration_date: str = None,
+    tags: str = None,
 ) -> tuple[str, dict, dict]:
     """
-    Adds an entry to a client list.
+    Adds one or more entries to a client list.
     Args:
         client: Akamai WAF client
         list_id: The ID of the client list.
-        value: The value for the new entry.
-        description: A description for the new entry.
-        expiration_date: The expiration date for the new entry.
-        tags: A list of tags for the new entry.
+        value: A comma-separated list of values to add.
+        description: A description for the new entries. Applied to all entries.
+        expiration_date: The expiration date for the new entries. Applied to all entries.
+        tags: A comma-separated list of tags for the new entries. Applied to all entries.
     Returns:
         Human readable, context entry, raw response
     """
     raw_response = client.add_client_list_entry(list_id, value, description, expiration_date, tags)
-    human_readable = f"Entry '{value}' added successfully to Akamai WAF Client List {list_id}."
+    values = [v.strip() for v in value.split(",") if v.strip()]
+    if len(values) == 1:
+        human_readable = f"Entry '{values[0]}' added successfully to Akamai WAF Client List {list_id}."
+    else:
+        human_readable = f"Entries '{', '.join(values)}' added successfully to Akamai WAF Client List {list_id}."
     return human_readable, {}, raw_response
 
 

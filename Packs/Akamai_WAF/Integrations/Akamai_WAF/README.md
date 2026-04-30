@@ -403,7 +403,7 @@ Activates a client list.
 ### akamai-add-client-list-entry
 
 ***
-Adds an entry to a client list.
+Adds one or more entries to a client list.
 
 #### Base Command
 
@@ -413,16 +413,15 @@ Adds an entry to a client list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_id | The ID of the client list. | Required |
-| value | The value of the new entry. | Required |
-| description | A description of the new entry. | Optional |
-| expiration_date | The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28). | Optional |
-| tags | A list of tags for the new entry. | Optional |
+| list_id | The ID of the client list. | Required | 
+| value | A comma-separated list of values to add to the client list (e.g. 1.2.3.4/32,1.2.3.5/32). | Required | 
+| description | A description for the new entries. Applied to all entries. | Optional | 
+| expiration_date | The expiration date for the new entries. Applied to all entries. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28). | Optional | 
+| tags | A list of tags for the new entries. Applied to all entries. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### akamai-remove-client-list-entry
 
 ***
