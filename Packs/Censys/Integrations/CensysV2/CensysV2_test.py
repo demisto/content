@@ -2190,7 +2190,6 @@ def test_run_polling_command_completed_related_infra_job(client, requests_mock):
     result = run_polling_command(client, args, "cen-related-infrastructure-list", censys_related_infrastructure_list_command)
 
     # Should return single CommandResults, not a list
-    assert isinstance(result, type(result))
     assert not isinstance(result, list)
     assert result.outputs.get("is_completed") is True
     assert result.outputs.get("status") == "completed"
