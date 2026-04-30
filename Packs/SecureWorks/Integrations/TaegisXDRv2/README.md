@@ -736,7 +736,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
                         "tenant_id": "999-000-111",
                         "sensor_id": "fw-edge-02"
                     },
-                    "source_ip": "192.168.1.50",
+                    "source_ip": "1.1.1.1",
                     "destination_ip": "8.8.8.8",
                     "destination_port": 53,
                     "protocol": "UDP",
