@@ -2,7 +2,7 @@
     "name": "Check Point XDR",
     "description": "Fetch and manage incidents from Check Point XDR.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Check Point",
     "url": "https://supportcenter.checkpoint.com/",
     "email": "xdr@checkpoint.com",
