@@ -246,9 +246,10 @@ def test_test_module_success(requests_mock):
     assert result == "ok"
 
 
-def test_test_module_api_failure(requests_mock):
+def test_test_module_api_failure(requests_mock, mocker):
     from SOCRadarRapidReputation import test_module
 
+    mocker.patch("demistomock.error")
     requests_mock.get(REPUTATION_SUFFIX, json={"is_success": False, "message": "API error"})
     with pytest.raises(Exception, match="API test failed"):
         test_module(make_client())
