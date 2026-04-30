@@ -71,7 +71,7 @@ live in [`connectus/column-schemas.md`](column-schemas.md).
 
 ## Workflow State Machine (`workflow_state.py`)
 
-The [`workflow_state.py`](workflow_state.py) script manages the **16 workflow columns** (columns 5–20) of [`connectus/integrations_report.csv`](integrations_report.csv). It models the workflow as a **single linear 16-step sequence**, strictly gated. The current step is always the first step that is not yet done.
+The [`workflow_state.py`](workflow_state.py) script manages the **16 workflow columns** (columns 5–20) of [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). It models the workflow as a **single linear 16-step sequence**, strictly gated. The current step is always the first step that is not yet done.
 
 State is **purely derived from row contents** — there is no separate "current step" pointer. Re-issuing any `set-*`, `markpass`, or `skip` for a step at-or-behind the current step writes the new value AND clears every step that follows it ("cascade reset"). The ONLY exception is `set-assignee`, which is administrative and never resets later steps.
 

@@ -1,7 +1,7 @@
 # Column Schemas
 
 This file documents the expected JSON shapes for the JSON-valued columns in
-[`connectus/integrations_report.csv`](integrations_report.csv). The CSV column
+[`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). The CSV column
 names and the workflow state machine itself live in
 [`connectus/Readme.md`](Readme.md); this file is the source of truth for the
 **contents** of each JSON-valued cell.

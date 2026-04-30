@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Workflow State Machine for integrations_report.csv (UNIFIED 16-STEP MODEL)
+Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 16-STEP MODEL)
 
 This script manages the workflow tracking columns in the CSV. It models the
 workflow as a single linear 16-step sequence, strictly gated. Setting any
@@ -71,6 +71,12 @@ Usage examples:
   python3 connectus/workflow_state.py at-step "wrote/checked code"
   python3 connectus/workflow_state.py list
   python3 connectus/workflow_state.py list-by-assignee "John Doe"
+  python3 connectus/workflow_state.py list-connectors
+  python3 connectus/workflow_state.py list-by-connector "abcd1234"
+  python3 connectus/workflow_state.py set-assignee-by-connector "abcd1234" "John Doe"
+  python3 connectus/workflow_state.py next --mine
+  python3 connectus/workflow_state.py next --connector "abcd1234"
+  python3 connectus/workflow_state.py next --connector "abcd1234" --mine
   python3 connectus/workflow_state.py show-step "Cisco Spark" "Params to Commands"
 """
 
@@ -91,7 +97,7 @@ from typing import Callable, Optional
 # ---------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "connectus", "integrations_report.csv")
+CSV_PATH = os.path.join(BASE_DIR, "connectus", "connectus-migration-pipeline.csv")
 
 CHECK = "✅"
 FAIL_MARK = "❌"
@@ -394,7 +400,7 @@ def save_csv(rows: list[dict[str, str]]) -> None:
             mode="w",
             encoding="utf-8",
             dir=target_dir,
-            prefix=".integrations_report.",
+            prefix=".connectus-migration-pipeline.",
             suffix=".tmp",
             delete=False,
         ) as tmp:
@@ -698,6 +704,15 @@ def list_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> list[dic
     """Filter rows to those whose assignee matches (case-insensitive)."""
     target = assignee_name.strip().lower()
     return [row for row in rows if row.get("assignee", "").strip().lower() == target]
+
+
+def list_by_connector(rows: list[dict[str, str]], connector_id: str) -> list[dict[str, str]]:
+    """Filter rows to those whose Connector ID matches (case-insensitive, trimmed)."""
+    target = connector_id.strip().lower()
+    return [
+        row for row in rows
+        if row.get("Connector ID", "").strip().lower() == target
+    ]
 
 
 def format_by_assignee(rows: list[dict[str, str]], assignee_name: str) -> str:
@@ -1277,6 +1292,138 @@ def cmd_list_by_assignee(args: list[str]) -> None:
     print(format_by_assignee(matches, assignee_name))
 
 
+def _format_step_for_listing(row: dict[str, str]) -> str:
+    """Return the user-facing step display: 'not started' / step name / '✅ DONE'."""
+    if not has_workflow_progress(row):
+        return "not started"
+    cur = current_step(row)
+    return cur.name if cur is not None else "✅ DONE"
+
+
+def cmd_list_by_connector(args: list[str]) -> None:
+    """List every integration whose Connector ID matches (case-insensitive)."""
+    if not args:
+        print("Usage: workflow_state.py list-by-connector <connector_id>")
+        sys.exit(1)
+
+    connector_id = " ".join(args)
+    rows = load_csv()
+    matches = list_by_connector(rows, connector_id)
+
+    if not matches:
+        print(f"No integrations found for connector '{connector_id}'.")
+        print("  Tip: run 'workflow_state.py list-connectors' to see all known Connector IDs.")
+        return
+
+    print(f"\nIntegrations in connector '{connector_id}' ({len(matches)}):")
+    for row in matches:
+        integration_id = row.get("Integration ID", "")
+        assignee = row.get("assignee", "").strip() or "unassigned"
+        step_display = _format_step_for_listing(row)
+        print(f"  - {integration_id}  [assignee: {assignee}]  → {step_display}")
+
+
+def cmd_list_connectors(_args: list[str]) -> None:
+    """Print every distinct non-empty Connector ID with counts."""
+    rows = load_csv()
+
+    # Group by connector id (preserving the first-seen original casing for display).
+    buckets: dict[str, dict] = {}
+    for row in rows:
+        cid_raw = row.get("Connector ID", "").strip()
+        if not cid_raw:
+            continue
+        key = cid_raw.lower()
+        bucket = buckets.setdefault(
+            key,
+            {"display": cid_raw, "rows": []},
+        )
+        bucket["rows"].append(row)
+
+    if not buckets:
+        print("No connectors found in the CSV.")
+        return
+
+    # Sort by display name (case-insensitive).
+    sorted_keys = sorted(buckets.keys(), key=lambda k: buckets[k]["display"].lower())
+
+    # Compute column width for the connector id.
+    max_id_len = max(len(buckets[k]["display"]) for k in sorted_keys)
+    id_col_width = max(max_id_len, len("Connector ID"))
+
+    header = (
+        f"{'Connector ID':<{id_col_width}}  {'Integrations':>12}  "
+        f"{'In Progress':>11}  {'Complete':>8}"
+    )
+    rule = (
+        f"{'-' * id_col_width}  {'-' * 12}  {'-' * 11}  {'-' * 8}"
+    )
+    print(header)
+    print(rule)
+    for key in sorted_keys:
+        bucket = buckets[key]
+        bucket_rows: list[dict[str, str]] = bucket["rows"]
+        total = len(bucket_rows)
+        in_progress = 0
+        complete = 0
+        for r in bucket_rows:
+            if not has_workflow_progress(r):
+                continue
+            if current_step(r) is None:
+                complete += 1
+            else:
+                in_progress += 1
+        print(
+            f"{bucket['display']:<{id_col_width}}  {total:>12}  "
+            f"{in_progress:>11}  {complete:>8}"
+        )
+
+
+def cmd_set_assignee_by_connector(args: list[str]) -> None:
+    """Assign an owner to every integration in a given connector.
+
+    SPECIAL CARVE-OUT (override #5): like ``cmd_set_assignee``, this writes
+    the assignee column directly with NO cascade reset. Re-assigning is an
+    administrative action; existing migration progress is preserved.
+    """
+    if len(args) < 2:
+        print(
+            "Usage: workflow_state.py set-assignee-by-connector "
+            "<connector_id> <assignee_name>"
+        )
+        sys.exit(1)
+
+    connector_id = args[0]
+    assignee = " ".join(args[1:])
+
+    if not assignee.strip():
+        print("ERROR: Assignee cannot be empty.")
+        sys.exit(1)
+
+    rows = load_csv()
+    matches = list_by_connector(rows, connector_id)
+
+    if not matches:
+        print(f"ERROR: No integrations found for connector '{connector_id}'.")
+        print(
+            "  Tip: run 'workflow_state.py list-connectors' to see all known "
+            "Connector IDs."
+        )
+        sys.exit(1)
+
+    # Direct write per row — no apply_step_action, no cascade reset.
+    for row in matches:
+        row["assignee"] = assignee
+
+    save_csv(rows)
+    print(
+        f"Assigned {len(matches)} integration(s) in connector "
+        f"'{connector_id}' to '{assignee}':"
+    )
+    for row in matches:
+        print(f"  - {row.get('Integration ID', '')}")
+
+
 def cmd_show_step(args: list[str]) -> None:
     """Show the value of a specific column for an integration."""
     if len(args) < 2:
@@ -1355,13 +1502,51 @@ def format_next_line(row: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
+def _parse_next_flags(args: list[str]) -> tuple[Optional[str], bool, list[str]]:
+    """Parse `--connector <id>` and `--mine` out of args (order-independent).
+
+    Returns ``(connector_id, mine_flag, leftover_args)``. Leftover args are
+    the positional arguments not consumed by recognized flags; the caller
+    decides what to do with them (e.g. treat as an integration ID, or as
+    ``--all``).
+    """
+    connector_id: Optional[str] = None
+    mine = False
+    leftover: list[str] = []
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--mine":
+            mine = True
+            i += 1
+            continue
+        if a == "--connector":
+            if i + 1 >= len(args):
+                print("ERROR: --connector requires a connector id argument.")
+                sys.exit(1)
+            connector_id = args[i + 1]
+            i += 2
+            continue
+        # Allow `--connector=<id>` form too, just in case.
+        if a.startswith("--connector="):
+            connector_id = a[len("--connector="):]
+            i += 1
+            continue
+        leftover.append(a)
+        i += 1
+    return connector_id, mine, leftover
+
+
 def cmd_next(args: list[str]) -> None:
     """Print the literal next action.
 
     Forms:
-      next <integration_id>     → that integration only
-      next                      → in-progress integrations assigned to current git user
-      next --all                → in-progress integrations for everyone
+      next <integration_id>             → that integration only
+      next                              → in-progress integrations assigned to current git user
+      next --mine                       → explicit alias for the no-arg form
+      next --all                        → in-progress integrations for everyone
+      next --connector <id>             → in-progress integrations in that connector
+      next --connector <id> --mine      → intersection of the above
     """
     rows = load_csv()
 
@@ -1369,9 +1554,11 @@ def cmd_next(args: list[str]) -> None:
         print("(no rows in CSV — nothing to do)")
         return
 
-    # Form 1: explicit integration ID
-    if args and args[0] != "--all":
-        name = " ".join(args)
+    connector_id, mine, leftover = _parse_next_flags(args)
+
+    # Form 1: explicit integration ID — only when no flags consumed.
+    if leftover and leftover[0] != "--all" and connector_id is None and not mine:
+        name = " ".join(leftover)
         idx = find_row(rows, name)
         if idx is None:
             print(f"ERROR: Integration '{name}' not found.")
@@ -1379,35 +1566,82 @@ def cmd_next(args: list[str]) -> None:
         print(format_next_line(rows[idx]))
         return
 
-    show_all = bool(args and args[0] == "--all")
+    show_all = bool(leftover and leftover[0] == "--all")
+    if show_all and (mine or connector_id is not None):
+        # --all combined with selectors makes no semantic sense; let --mine /
+        # --connector win and ignore --all.
+        show_all = False
+
+    # Determine the assignee filter.
     target_assignee: Optional[str] = None
-    if not show_all:
+    use_assignee_filter = (not show_all) and (mine or connector_id is None)
+    if use_assignee_filter:
         target_assignee = _git_user_name()
         if not target_assignee:
+            # If the user explicitly asked for --connector without --mine, we
+            # don't need a git user. But the no-arg form does.
+            if connector_id is None:
+                print(
+                    "ERROR: cannot determine current user via 'git config user.name'.\n"
+                    "  Pass an integration ID, or use 'next --all' to list everyone's work."
+                )
+                sys.exit(1)
+            # User passed --connector without --mine but we also have no git
+            # user; that's fine because we're not filtering by assignee in
+            # that branch (use_assignee_filter would be False). Defensive.
+            target_assignee = None
+            use_assignee_filter = False
+
+    # If --connector was given, narrow the candidate rows first.
+    candidate_rows = rows
+    if connector_id is not None:
+        candidate_rows = list_by_connector(rows, connector_id)
+        if not candidate_rows:
+            print(f"No integrations found for connector '{connector_id}'.")
             print(
-                "ERROR: cannot determine current user via 'git config user.name'.\n"
-                "  Pass an integration ID, or use 'next --all' to list everyone's work."
+                "  Tip: run 'workflow_state.py list-connectors' to see all known "
+                "Connector IDs."
             )
-            sys.exit(1)
+            return
 
     matched_any = False
-    for row in rows:
+    any_in_progress_in_connector = False
+    for row in candidate_rows:
         if not has_workflow_progress(row):
             continue
         if current_step(row) is None:
             continue
-        if not show_all:
+        any_in_progress_in_connector = True
+        if use_assignee_filter:
             if row.get("assignee", "").strip().lower() != (target_assignee or "").lower():
                 continue
         print(format_next_line(row))
         print()
         matched_any = True
 
-    if not matched_any:
-        if show_all:
-            print("No in-progress integrations.")
-        else:
-            print(f"No in-progress integrations assigned to '{target_assignee}'.")
+    if matched_any:
+        return
+
+    # No matches — produce a targeted message.
+    if connector_id is not None and not any_in_progress_in_connector:
+        print(
+            f"No in-progress integrations in connector '{connector_id}' "
+            f"(all are either unstarted or done)."
+        )
+        return
+    if connector_id is not None and use_assignee_filter:
+        print(
+            f"No in-progress integrations in connector '{connector_id}' "
+            f"assigned to '{target_assignee}'."
+        )
+        return
+    if connector_id is not None:
+        print(f"No in-progress integrations in connector '{connector_id}'.")
+        return
+    if show_all:
+        print("No in-progress integrations.")
+        return
+    print(f"No in-progress integrations assigned to '{target_assignee}'.")
 
 
 # ---------------------------------------------------------------------------
@@ -1461,6 +1695,77 @@ def next_step_for(integration_id: str) -> dict:
         "setter": cur.setter,
         "description": cur.description,
         "message": format_next_line(row),
+    }
+
+
+def _row_summary_dict(row: dict[str, str]) -> dict:
+    """JSON-serializable snapshot of an integration row's workflow state."""
+    cur = current_step(row)
+    completed = sum(1 for s in STEPS if is_done(row, s))
+    return {
+        "integration_id": row.get("Integration ID", ""),
+        "connector_id": row.get("Connector ID", "").strip(),
+        "assignee": row.get("assignee", "").strip(),
+        "current_step": cur.name if cur else None,
+        "current_step_index": cur.index if cur else None,
+        "completed_steps": completed,
+        "all_complete": cur is None and has_workflow_progress(row),
+        "has_progress": has_workflow_progress(row),
+    }
+
+
+def list_integrations_by_connector(connector_id: str) -> list[dict]:
+    """Return one summary dict per integration matching ``connector_id``.
+
+    Match is case-insensitive on the trimmed Connector ID.
+    """
+    rows = load_csv()
+    matches = list_by_connector(rows, connector_id)
+    return [_row_summary_dict(row) for row in matches]
+
+
+def integrations_for_assignee(assignee_name: str) -> list[dict]:
+    """Return one summary dict per integration assigned to ``assignee_name``.
+
+    Match is case-insensitive on the trimmed assignee column.
+    """
+    rows = load_csv()
+    matches = list_by_assignee(rows, assignee_name)
+    return [_row_summary_dict(row) for row in matches]
+
+
+def assign_connector(connector_id: str, assignee_name: str) -> dict:
+    """Assign every integration in ``connector_id`` to ``assignee_name``.
+
+    Mirrors ``cmd_set_assignee_by_connector``: NO cascade reset. Returns
+    ``{"connector_id", "assignee", "assigned": [<ids>], "count": N}`` on
+    success, or ``{"error": "..."}`` if no rows match or the assignee is
+    empty.
+    """
+    if not assignee_name or not assignee_name.strip():
+        return {"error": "Assignee cannot be empty."}
+
+    rows = load_csv()
+    matches = list_by_connector(rows, connector_id)
+    if not matches:
+        return {
+            "error": (
+                f"No integrations found for connector '{connector_id}'. "
+                "Use list-connectors to see all known Connector IDs."
+            )
+        }
+
+    assigned_ids: list[str] = []
+    for row in matches:
+        row["assignee"] = assignee_name
+        assigned_ids.append(row.get("Integration ID", ""))
+
+    save_csv(rows)
+    return {
+        "connector_id": connector_id,
+        "assignee": assignee_name,
+        "assigned": assigned_ids,
+        "count": len(assigned_ids),
     }
 
 
@@ -1610,6 +1915,9 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "at-step": cmd_at_step,
     "list": cmd_list,
     "list-by-assignee": cmd_list_by_assignee,
+    "list-by-connector": cmd_list_by_connector,
+    "list-connectors": cmd_list_connectors,
+    "set-assignee-by-connector": cmd_set_assignee_by_connector,
     "show-step": cmd_show_step,
     "help": cmd_help,
 }

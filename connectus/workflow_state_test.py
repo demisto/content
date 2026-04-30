@@ -38,9 +38,13 @@ from workflow_state import (
     WORKFLOW_DATA_COLUMNS,
     WorkflowError,
     apply_step_action,
+    assign_connector,
+    cmd_list_by_connector,
+    cmd_list_connectors,
     cmd_markpass,
     cmd_next,
     cmd_set_assignee,
+    cmd_set_assignee_by_connector,
     cmd_set_auth_flag,
     cmd_show_step,
     cmd_skip,
@@ -53,9 +57,12 @@ from workflow_state import (
     format_status,
     format_step_value,
     get_current_step,
+    integrations_for_assignee,
     is_checked,
     is_done,
     list_by_assignee,
+    list_by_connector,
+    list_integrations_by_connector,
     load_csv,
     markpass_integration_step,
     markpass_step,
@@ -808,7 +815,7 @@ class TestNormalization:
         assert cleared == []
 
     def test_load_csv_normalizes_and_warns(self, tmp_path, monkeypatch, capsys) -> None:
-        csv_file = tmp_path / "integrations_report.csv"
+        csv_file = tmp_path / "connectus-migration-pipeline.csv"
         monkeypatch.setattr(workflow_state, "CSV_PATH", str(csv_file))
 
         # Build a deliberately contradictory row: assignee unset,
@@ -827,7 +834,7 @@ class TestNormalization:
         # Either way the row is clean now.
 
     def test_save_csv_normalizes_and_warns(self, tmp_path, monkeypatch, capsys) -> None:
-        csv_file = tmp_path / "integrations_report.csv"
+        csv_file = tmp_path / "connectus-migration-pipeline.csv"
         monkeypatch.setattr(workflow_state, "CSV_PATH", str(csv_file))
 
         row = _blank_row(name="BadInt2")
@@ -1158,7 +1165,7 @@ class TestAtomicSaveCsv:
         return [_blank_row(f"Integration{i}") for i in range(3)]
 
     def test_round_trip_preserves_rows(self, tmp_path, monkeypatch) -> None:
-        csv_file = tmp_path / "integrations_report.csv"
+        csv_file = tmp_path / "connectus-migration-pipeline.csv"
         monkeypatch.setattr(workflow_state, "CSV_PATH", str(csv_file))
 
         rows = self._sample_rows()
@@ -1170,7 +1177,7 @@ class TestAtomicSaveCsv:
             assert orig["Integration ID"] == got["Integration ID"]
 
     def test_failed_write_leaves_original_unchanged(self, tmp_path, monkeypatch) -> None:
-        csv_file = tmp_path / "integrations_report.csv"
+        csv_file = tmp_path / "connectus-migration-pipeline.csv"
         monkeypatch.setattr(workflow_state, "CSV_PATH", str(csv_file))
 
         original_rows = self._sample_rows()
@@ -1190,7 +1197,7 @@ class TestAtomicSaveCsv:
         assert csv_file.read_bytes() == original_bytes
         leftovers = [
             p for p in os.listdir(tmp_path)
-            if p.startswith(".integrations_report.") and p.endswith(".tmp")
+            if p.startswith(".connectus-migration-pipeline.") and p.endswith(".tmp")
         ]
         assert leftovers == []
 
@@ -1248,3 +1255,441 @@ class TestLegacyShims:
         assert row["wrote/checked code"] == ""
         assert row["code merged"] == ""
         assert row["run manifest make validate"] == CHECK
+
+
+# ---------------------------------------------------------------------------
+# Connector-id–based commands and APIs
+# ---------------------------------------------------------------------------
+
+def _row_with_connector(name: str, connector_id: str) -> dict[str, str]:
+    """Helper: a blank row with both Integration ID and Connector ID set."""
+    row = _blank_row(name)
+    row["Connector ID"] = connector_id
+    return row
+
+
+def _connector_fixture_rows() -> list[dict[str, str]]:
+    """A small fixture: 3 integrations in connector 'vt', 2 in 'shodan', 1 blank."""
+    rows = [
+        _row_with_connector("VirusTotalV3", "vt"),
+        _row_with_connector("VirusTotal", "vt"),
+        _row_with_connector("VirusTotalPrivate", "VT"),  # case variation
+        _row_with_connector("ShodanV2", "shodan"),
+        _row_with_connector("Shodan", "shodan"),
+        _row_with_connector("Orphan", ""),  # no connector
+    ]
+    return rows
+
+
+class TestListByConnectorHelper:
+    def test_filters_case_insensitive(self) -> None:
+        rows = _connector_fixture_rows()
+        matches = list_by_connector(rows, "vt")
+        assert {r["Integration ID"] for r in matches} == {
+            "VirusTotalV3", "VirusTotal", "VirusTotalPrivate"
+        }
+
+    def test_filters_by_uppercase_query(self) -> None:
+        rows = _connector_fixture_rows()
+        matches = list_by_connector(rows, "VT")
+        assert len(matches) == 3
+
+    def test_no_matches_returns_empty(self) -> None:
+        rows = _connector_fixture_rows()
+        assert list_by_connector(rows, "nonexistent") == []
+
+    def test_trims_whitespace(self) -> None:
+        rows = _connector_fixture_rows()
+        matches = list_by_connector(rows, "  vt  ")
+        assert len(matches) == 3
+
+
+class TestSetAssigneeByConnector:
+    def test_assigns_every_matching_row(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        _patch_csv(monkeypatch, rows)
+        cmd_set_assignee_by_connector(["vt", "Alice"])
+        # All three vt-row assignees set; others untouched.
+        assert rows[0]["assignee"] == "Alice"
+        assert rows[1]["assignee"] == "Alice"
+        assert rows[2]["assignee"] == "Alice"
+        assert rows[3]["assignee"] == ""  # shodan
+        assert rows[4]["assignee"] == ""
+        assert rows[5]["assignee"] == ""
+        out = capsys.readouterr().out
+        assert "Assigned 3 integration(s) in connector 'vt' to 'Alice'" in out
+        assert "VirusTotalV3" in out
+        assert "VirusTotal" in out
+        assert "VirusTotalPrivate" in out
+
+    def test_does_not_cascade_reset_progress(self, monkeypatch, capsys) -> None:
+        # Build a row that already has step 6 done; set-assignee-by-connector
+        # must not wipe it.
+        rows = _connector_fixture_rows()
+        target_row = rows[0]
+        target_row["assignee"] = "OldOwner"
+        target_row["Auth Details"] = VALID_AUTH_JSON
+        target_row["Params to Commands"] = "{}"
+        target_row["Params for test with default in code"] = "[]"
+        target_row["Params same in other handlers"] = NA_MARK
+        target_row["generated manifest"] = CHECK  # step 6 done
+        assert current_step(target_row).index == 7
+
+        _patch_csv(monkeypatch, rows)
+        cmd_set_assignee_by_connector(["vt", "NewOwner"])
+        # Assignee changed.
+        assert target_row["assignee"] == "NewOwner"
+        # All workflow state preserved.
+        assert target_row["Auth Details"] == VALID_AUTH_JSON
+        assert target_row["Params to Commands"] == "{}"
+        assert target_row["Params for test with default in code"] == "[]"
+        assert target_row["Params same in other handlers"] == NA_MARK
+        assert target_row["generated manifest"] == CHECK
+        assert current_step(target_row).index == 7
+
+    def test_unknown_connector_exits_nonzero(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        _patch_csv(monkeypatch, rows)
+        with pytest.raises(SystemExit) as exc:
+            cmd_set_assignee_by_connector(["nope-not-a-real-connector", "Alice"])
+        assert exc.value.code == 1
+        out = capsys.readouterr().out
+        assert "No integrations found" in out
+        assert "list-connectors" in out
+
+    def test_empty_assignee_rejected(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        _patch_csv(monkeypatch, rows)
+        with pytest.raises(SystemExit):
+            cmd_set_assignee_by_connector(["vt", "   "])
+        out = capsys.readouterr().out
+        assert "Assignee cannot be empty" in out
+
+    def test_missing_args_shows_usage(self, capsys) -> None:
+        with pytest.raises(SystemExit):
+            cmd_set_assignee_by_connector(["vt"])
+        out = capsys.readouterr().out
+        assert "Usage" in out
+
+
+class TestListByConnectorCommand:
+    def test_lists_known_connector(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        rows[0]["assignee"] = "Alice"
+        _patch_csv(monkeypatch, rows)
+        cmd_list_by_connector(["vt"])
+        out = capsys.readouterr().out
+        assert "VirusTotalV3" in out
+        assert "VirusTotal" in out
+        assert "VirusTotalPrivate" in out
+        # Shodan rows must NOT appear.
+        assert "Shodan" not in out
+        # Assignee + step display present.
+        assert "[assignee: Alice]" in out
+        assert "[assignee: unassigned]" in out
+        assert "not started" in out
+
+    def test_zero_matches_message(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        _patch_csv(monkeypatch, rows)
+        cmd_list_by_connector(["does-not-exist"])
+        out = capsys.readouterr().out
+        assert "No integrations found for connector 'does-not-exist'." in out
+        assert "list-connectors" in out
+
+    def test_missing_arg_exits(self, capsys) -> None:
+        with pytest.raises(SystemExit):
+            cmd_list_by_connector([])
+        out = capsys.readouterr().out
+        assert "Usage" in out
+
+    def test_step_display_done(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        # Mark VirusTotal fully done.
+        done = _fully_complete_row("VirusTotal")
+        done["Connector ID"] = "vt"
+        rows[1] = done
+        _patch_csv(monkeypatch, rows)
+        cmd_list_by_connector(["vt"])
+        out = capsys.readouterr().out
+        assert "✅ DONE" in out
+
+
+class TestListConnectorsCommand:
+    def test_lists_distinct_connectors_with_counts(self, monkeypatch, capsys) -> None:
+        rows = _connector_fixture_rows()
+        # Mark VirusTotal as done; VirusTotalV3 in progress.
+        rows[0]["assignee"] = "A"
+        rows[0]["Auth Details"] = VALID_AUTH_JSON  # in progress (step 3)
+        # VirusTotal fully complete:
+        rows[1] = _fully_complete_row("VirusTotal")
+        rows[1]["Connector ID"] = "vt"
+        _patch_csv(monkeypatch, rows)
+        cmd_list_connectors([])
+        out = capsys.readouterr().out
+        # Header / column labels present.
+        assert "Connector ID" in out
+        assert "Integrations" in out
+        assert "In Progress" in out
+        assert "Complete" in out
+        # vt should appear (case from first-seen value: "vt").
+        assert "vt" in out
+        assert "shodan" in out
+        # Empty connector should NOT appear (the orphan row).
+        # We'll check by counting lines: header + rule + 2 connectors = 4 lines.
+        # Just assert the orphan integration name not present (it shouldn't be —
+        # the table prints connector ids, not integration ids).
+        assert "Orphan" not in out
+
+    def test_empty_csv_message(self, monkeypatch, capsys) -> None:
+        _patch_csv(monkeypatch, [])
+        cmd_list_connectors([])
+        out = capsys.readouterr().out
+        assert "No connectors found" in out
+
+    def test_only_blank_connector_ids(self, monkeypatch, capsys) -> None:
+        rows = [_blank_row("X"), _blank_row("Y")]
+        _patch_csv(monkeypatch, rows)
+        cmd_list_connectors([])
+        out = capsys.readouterr().out
+        assert "No connectors found" in out
+
+    def test_counts_correctness(self, monkeypatch, capsys) -> None:
+        # 3 rows in 'cx': 1 in progress, 1 complete, 1 not started.
+        rows = [
+            _row_with_connector("InProg", "cx"),
+            _row_with_connector("Done", "cx"),
+            _row_with_connector("NotStarted", "cx"),
+        ]
+        rows[0]["assignee"] = "A"
+        rows[0]["Auth Details"] = VALID_AUTH_JSON
+        rows[1] = _fully_complete_row("Done")
+        rows[1]["Connector ID"] = "cx"
+        _patch_csv(monkeypatch, rows)
+        cmd_list_connectors([])
+        out = capsys.readouterr().out
+        # Find the cx data row and assert the numbers.
+        cx_lines = [ln for ln in out.splitlines() if ln.startswith("cx")]
+        assert len(cx_lines) == 1
+        # 3 integrations, 1 in progress, 1 complete.
+        nums = [int(tok) for tok in cx_lines[0].split() if tok.isdigit()]
+        assert nums == [3, 1, 1]
+
+
+class TestNextWithConnectorAndMineFlags:
+    def _diverse_rows(self) -> list[dict[str, str]]:
+        rows = [
+            _row_with_connector("MyVTA", "vt"),       # mine + in-progress in vt
+            _row_with_connector("MyVTB", "vt"),       # mine + done in vt
+            _row_with_connector("OtherVT", "vt"),     # other + in-progress in vt
+            _row_with_connector("MyShodan", "shodan"),  # mine + in-progress in shodan
+            _row_with_connector("VTNotStarted", "vt"),  # nobody touched
+        ]
+        # MyVTA: in progress (step 3)
+        rows[0]["assignee"] = "Test User"
+        rows[0]["Auth Details"] = VALID_AUTH_JSON
+        # MyVTB: complete
+        done = _fully_complete_row("MyVTB")
+        done["Connector ID"] = "vt"
+        done["assignee"] = "Test User"
+        rows[1] = done
+        # OtherVT: in progress, owned by someone else
+        rows[2]["assignee"] = "Someone"
+        rows[2]["Auth Details"] = VALID_AUTH_JSON
+        # MyShodan: in progress
+        rows[3]["assignee"] = "Test User"
+        rows[3]["Auth Details"] = VALID_AUTH_JSON
+        # rows[4]: blank (no progress)
+        return rows
+
+    def test_next_connector_filters_to_connector(self, monkeypatch, capsys) -> None:
+        rows = self._diverse_rows()
+        _patch_csv(monkeypatch, rows)
+        # Without --mine: connector filter only.
+        monkeypatch.setattr(workflow_state, "_git_user_name", lambda: "Test User")
+        cmd_next(["--connector", "vt"])
+        out = capsys.readouterr().out
+        assert "MyVTA" in out
+        assert "OtherVT" in out  # not assignee-filtered when --mine absent
+        assert "MyShodan" not in out
+        assert "VTNotStarted" not in out  # not in progress
+        assert "MyVTB" not in out  # complete
+
+    def test_next_mine_matches_no_args_when_git_user_set(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = self._diverse_rows()
+        _patch_csv(monkeypatch, rows)
+        monkeypatch.setattr(workflow_state, "_git_user_name", lambda: "Test User")
+
+        cmd_next([])
+        out_no_args = capsys.readouterr().out
+
+        cmd_next(["--mine"])
+        out_mine = capsys.readouterr().out
+
+        assert out_no_args == out_mine
+        # And the contents are the user's in-progress rows only:
+        assert "MyVTA" in out_mine
+        assert "MyShodan" in out_mine
+        assert "OtherVT" not in out_mine
+
+    def test_next_connector_and_mine_intersects(self, monkeypatch, capsys) -> None:
+        rows = self._diverse_rows()
+        _patch_csv(monkeypatch, rows)
+        monkeypatch.setattr(workflow_state, "_git_user_name", lambda: "Test User")
+        cmd_next(["--connector", "vt", "--mine"])
+        out = capsys.readouterr().out
+        assert "MyVTA" in out
+        assert "OtherVT" not in out  # filtered out by --mine
+        assert "MyShodan" not in out  # filtered out by --connector
+        assert "MyVTB" not in out  # complete
+
+    def test_next_connector_mine_flag_order_independent(
+        self, monkeypatch, capsys
+    ) -> None:
+        rows = self._diverse_rows()
+        _patch_csv(monkeypatch, rows)
+        monkeypatch.setattr(workflow_state, "_git_user_name", lambda: "Test User")
+
+        cmd_next(["--connector", "vt", "--mine"])
+        first = capsys.readouterr().out
+        cmd_next(["--mine", "--connector", "vt"])
+        second = capsys.readouterr().out
+        assert first == second
+
+    def test_next_unknown_connector_message(self, monkeypatch, capsys) -> None:
+        rows = self._diverse_rows()
+        _patch_csv(monkeypatch, rows)
+        monkeypatch.setattr(workflow_state, "_git_user_name", lambda: "Test User")
+        cmd_next(["--connector", "ghost"])
+        out = capsys.readouterr().out
+        assert "No integrations found for connector 'ghost'." in out
+        assert "list-connectors" in out
+
+    def test_next_connector_with_no_in_progress_message(
+        self, monkeypatch, capsys
+    ) -> None:
+        # Build a connector where every row is either unstarted or done.
+        done = _fully_complete_row("DoneVT")
+        done["Connector ID"] = "vt"
+        rows = [
+            done,
+            _row_with_connector("BlankVT", "vt"),  # not started
+        ]
+        _patch_csv(monkeypatch, rows)
+        monkeypatch.setattr(workflow_state, "_git_user_name", lambda: "Test User")
+        cmd_next(["--connector", "vt"])
+        out = capsys.readouterr().out
+        assert "No in-progress integrations in connector 'vt'" in out
+        assert "unstarted or done" in out
+
+
+class TestProgrammaticConnectorAPI:
+    def test_list_integrations_by_connector_shape(self, monkeypatch) -> None:
+        rows = _connector_fixture_rows()
+        rows[0]["assignee"] = "Alice"
+        rows[0]["Auth Details"] = VALID_AUTH_JSON  # in progress at step 3
+        with patch("workflow_state.load_csv", return_value=rows), \
+             patch("workflow_state.save_csv"):
+            result = list_integrations_by_connector("vt")
+
+        assert isinstance(result, list)
+        assert len(result) == 3
+        ids = {r["integration_id"] for r in result}
+        assert ids == {"VirusTotalV3", "VirusTotal", "VirusTotalPrivate"}
+        # Each entry has the required keys.
+        for entry in result:
+            assert set(entry.keys()) >= {
+                "integration_id", "connector_id", "assignee",
+                "current_step", "current_step_index", "completed_steps",
+                "all_complete", "has_progress",
+            }
+        # Find the in-progress one and check its fields.
+        in_prog = next(r for r in result if r["integration_id"] == "VirusTotalV3")
+        assert in_prog["assignee"] == "Alice"
+        assert in_prog["current_step"] == "Params to Commands"
+        assert in_prog["current_step_index"] == 3
+        assert in_prog["completed_steps"] == 2
+        assert in_prog["all_complete"] is False
+        assert in_prog["has_progress"] is True
+
+    def test_list_integrations_by_connector_empty(self, monkeypatch) -> None:
+        with patch("workflow_state.load_csv", return_value=_connector_fixture_rows()):
+            result = list_integrations_by_connector("nope")
+        assert result == []
+
+    def test_integrations_for_assignee_shape(self) -> None:
+        rows = _connector_fixture_rows()
+        rows[0]["assignee"] = "Alice"
+        rows[0]["Auth Details"] = VALID_AUTH_JSON
+        rows[3]["assignee"] = "ALICE"  # case-insensitive
+        with patch("workflow_state.load_csv", return_value=rows):
+            result = integrations_for_assignee("alice")
+        assert len(result) == 2
+        ids = {r["integration_id"] for r in result}
+        assert ids == {"VirusTotalV3", "ShodanV2"}
+        # Same key-shape.
+        for entry in result:
+            assert "integration_id" in entry
+            assert "connector_id" in entry
+            assert "assignee" in entry
+            assert "has_progress" in entry
+
+    def test_integrations_for_assignee_no_matches(self) -> None:
+        with patch("workflow_state.load_csv", return_value=_connector_fixture_rows()):
+            assert integrations_for_assignee("ghost") == []
+
+    def test_assign_connector_success(self) -> None:
+        rows = _connector_fixture_rows()
+        with patch("workflow_state.load_csv", return_value=rows), \
+             patch("workflow_state.save_csv") as mock_save:
+            result = assign_connector("vt", "Bob")
+        assert "error" not in result
+        assert result["connector_id"] == "vt"
+        assert result["assignee"] == "Bob"
+        assert result["count"] == 3
+        assert set(result["assigned"]) == {
+            "VirusTotalV3", "VirusTotal", "VirusTotalPrivate"
+        }
+        # Rows mutated in place.
+        assert rows[0]["assignee"] == "Bob"
+        assert rows[1]["assignee"] == "Bob"
+        assert rows[2]["assignee"] == "Bob"
+        # Non-matching rows untouched.
+        assert rows[3]["assignee"] == ""
+        mock_save.assert_called_once()
+
+    def test_assign_connector_no_matches_returns_error(self) -> None:
+        rows = _connector_fixture_rows()
+        with patch("workflow_state.load_csv", return_value=rows), \
+             patch("workflow_state.save_csv") as mock_save:
+            result = assign_connector("ghost", "Bob")
+        assert "error" in result
+        assert "No integrations found" in result["error"]
+        mock_save.assert_not_called()
+
+    def test_assign_connector_empty_assignee_returns_error(self) -> None:
+        with patch("workflow_state.load_csv") as mock_load, \
+             patch("workflow_state.save_csv") as mock_save:
+            result = assign_connector("vt", "   ")
+        assert "error" in result
+        mock_load.assert_not_called()
+        mock_save.assert_not_called()
+
+    def test_assign_connector_does_not_cascade_reset(self) -> None:
+        rows = _connector_fixture_rows()
+        # Pre-populate progress in the matching rows.
+        for r in rows[:3]:
+            r["assignee"] = "OldOwner"
+            r["Auth Details"] = VALID_AUTH_JSON
+            r["Params to Commands"] = "{}"
+            r["generated manifest"] = ""  # still at step 4
+        with patch("workflow_state.load_csv", return_value=rows), \
+             patch("workflow_state.save_csv"):
+            result = assign_connector("vt", "NewOwner")
+        assert result["count"] == 3
+        for r in rows[:3]:
+            assert r["assignee"] == "NewOwner"
+            assert r["Auth Details"] == VALID_AUTH_JSON
+            assert r["Params to Commands"] == "{}"
