@@ -1,3 +1,6 @@
+name: decyfir
+description: DeCYFIR API's provides External Threat Landscape Management insights.
+display: DeCYFIR
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
 sectionorder:
@@ -52,9 +55,6 @@ configuration:
   type: 0
   additionalinfo: The maximum number of incidents to fetch per sub-category.
   hidden: false
-description: DeCYFIR API's provides External Threat Landscape Management insights.
-display: DeCYFIR
-name: decyfir
 script:
   commands:
   - deprecated: false

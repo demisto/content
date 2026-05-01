@@ -88,7 +88,7 @@ def test_extract_value_empty_string():
 
 def test_get_indicator_or_threatintel_type(mocker):
     client = _client()
-    da = client.get_indicator_or_threatintel_type("[ipv4-addr:value = '0.0.0.0'")
+    da = client.get_indicator_or_threatintel_type("[ipv4-addr:value = '0.0.0.0']")
     assert da == "IP"
 
 
@@ -182,6 +182,7 @@ def test_module_command_forbidden(mocker):
 
 def test_fetch_indicators_by_type_error(mocker):
     client = _client()
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "_http_request", side_effect=Exception("network error"))
     result = client.fetch_indicators_by_type("api_key", "ip")
     assert result == []
@@ -375,7 +376,7 @@ def test_build_threat_intel_indicator_obj_no_extensions():
         "extensions": {},
     }
     client = _client()
-    # extensions is empty dict → next(iter(...)) raises StopIteration → caught → returns {}
+
     result = client.build_threat_intel_indicator_obj(data=obj, tlp_color=None, feed_tags=[])
     assert result != {}
 
@@ -550,7 +551,7 @@ def test_convert_ioc_with_is_data_save_true_cached_ta(mocker):
 
     result = client.convert_decyfir_ioc_to_indicators_formats(
         decyfir_api_key="api_key",
-        decyfir_iocs=[ioc, ioc],  # same IOC twice → second hit uses cache
+        decyfir_iocs=[ioc, ioc],
         tlp_color="GREEN",
         feed_tags=["tag1"],
         reputation="Good",
@@ -625,6 +626,7 @@ def test_fetch_indicators_is_data_save_true(mocker):
 
 def test_fetch_indicators_exception(mocker):
     client = _client()
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "get_decyfir_api_ti_data", side_effect=Exception("API error"))
 
     result = client.fetch_indicators(
@@ -655,7 +657,6 @@ def test_build_threat_actor_relationship_obj_source_fallback():
     source = {"type": "Intrusion Set", "value": "APT28"}
     target = {"type": "some-unknown-type", "value": "unknown_target"}
     result = client.build_threat_actor_relationship_obj(source, target)
-    # Intrusion Set maps to ATTRIBUTED_TO
     assert result is not None
     assert result["name"] == "attributed-to"
 
@@ -688,6 +689,7 @@ def test_main_decyfir_get_indicators(mocker):
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="decyfir-get-indicators")
     mocker.patch("demistomock.info")
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "fetch_indicators", return_value=raw_data["iocs"])
     mock_return = mocker.patch("decyfiriocs.return_results")
 
@@ -702,8 +704,9 @@ def test_main_ip_command(mocker):
 
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="decyfir-get-ip")
+    mocker.patch("demistomock.command", return_value="decyfir-ip-get")
     mocker.patch("demistomock.info")
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["iocs"])
     mock_return = mocker.patch("decyfiriocs.return_results")
 
@@ -718,8 +721,9 @@ def test_main_domain_command(mocker):
 
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="decyfir-get-domain")
+    mocker.patch("demistomock.command", return_value="decyfir-domain-get")
     mocker.patch("demistomock.info")
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["domain"])
     mock_return = mocker.patch("decyfiriocs.return_results")
 
@@ -733,8 +737,9 @@ def test_main_url_command(mocker):
     client = _client()
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="decyfir-get-url")
+    mocker.patch("demistomock.command", return_value="decyfir-url-get")
     mocker.patch("demistomock.info")
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["url"])
     mock_return = mocker.patch("decyfiriocs.return_results")
 
@@ -748,8 +753,9 @@ def test_main_file_command(mocker):
     client = _client()
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="decyfir-get-file")
+    mocker.patch("demistomock.command", return_value="decyfir-file-get")
     mocker.patch("demistomock.info")
+    mocker.patch("demistomock.error")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["file"])
     mock_return = mocker.patch("decyfiriocs.return_results")
 
@@ -763,6 +769,7 @@ def test_main_unknown_command(mocker):
     mocker.patch("demistomock.params", return_value=_base_params())
     mocker.patch("demistomock.command", return_value="not-a-real-command")
     mocker.patch("demistomock.info")
+    mocker.patch("demistomock.error")
     mock_error = mocker.patch("decyfiriocs.return_error")
 
     main()
@@ -774,6 +781,7 @@ def test_main_exception_in_setup(mocker):
 
     mocker.patch("demistomock.params", side_effect=Exception("bad params"))
     mocker.patch("demistomock.command", return_value="test-module")
+    mocker.patch("demistomock.error")
     mock_error = mocker.patch("decyfiriocs.return_error")
 
     main()
@@ -930,7 +938,6 @@ def test_fetch_indicators_is_data_save_false_slices(mocker):
         feed_tags=[],
         is_data_save=False,
     )
-    # Only 2 IOCs processed (the slice [:2])
     assert len(result) == 2
 
 
@@ -959,7 +966,6 @@ def test_build_ta_relationships_data_alternate_ref_keys():
     rel = {
         "type": "relationship",
         "id": "relationship--001",
-        # Use camelCase keys (the alternate branch)
         "sourceRef": ta["id"],
         "targetRef": cve["id"],
     }

@@ -41,14 +41,14 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
-### decyfir-get-ip
+### decyfir-ip-get
 
 ***
 Get IP indicators from CYFIRMA.
 
 #### Base Command
 
-`decyfir-get-ip`
+`decyfir-ip-get`
 
 #### Input
 
@@ -57,19 +57,21 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
-```!decyfir-get-ip```
+```!decyfir-ip-get```
+
 #### Human Readable Output
 > IP indicators retrieved successfully.
 
-### decyfir-get-domain
+### decyfir-domain-get
 
 ***
 Get Domain indicators from CYFIRMA.
 
 #### Base Command
 
-`decyfir-get-domain`
+`decyfir-domain-get`
 
 #### Input
 
@@ -78,19 +80,21 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
-```!decyfir-get-domain```
+```!decyfir-domain-get```
+
 #### Human Readable Output
 > Domain indicators retrieved successfully.
 
-### decyfir-get-url
+### decyfir-url-get
 
 ***
 Get URL indicators from CYFIRMA.
 
 #### Base Command
 
-`decyfir-get-url`
+`decyfir-url-get`
 
 #### Input
 
@@ -99,19 +103,21 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
-```!decyfir-get-url```
+```!decyfir-url-get```
+
 #### Human Readable Output
 > URL indicators retrieved successfully.
 
-### decyfir-get-file
+### decyfir-file-get
 
 ***
 Get File Hash indicators from CYFIRMA.
 
 #### Base Command
 
-`decyfir-get-file`
+`decyfir-file-get`
 
 #### Input
 
@@ -120,7 +126,9 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
-```!decyfir-get-file```
+```!decyfir-file-get```
+
 #### Human Readable Output
 > File indicators retrieved successfully.

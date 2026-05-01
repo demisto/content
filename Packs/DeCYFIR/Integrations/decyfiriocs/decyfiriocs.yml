@@ -1,3 +1,6 @@
+name: DeCYFIR Feed
+description: DeCYFIR API's provides External Threat Landscape Management insights.
+display: DeCYFIR Indicators & Threat Intelligence Feed
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
 sectionorder:
@@ -92,31 +95,28 @@ configuration:
   - WHITE
   required: false
   type: 15
-description: DeCYFIR API's provides External Threat Landscape Management insights.
-display: DeCYFIR Indicators & Threat Intelligence Feed
-name: DeCYFIR Feed
 script:
   commands:
   - deprecated: true
     execution: true
     name: decyfir-get-indicators
-    description: Deprecated. Use the decyfir-get-ip, decyfir-get-domain, decyfir-get-url, or decyfir-get-file commands instead.
+    description: Deprecated. Use the decyfir-ip-get, decyfir-domain-get, decyfir-url-get, or decyfir-file-get commands instead.
   - deprecated: false
     description: Get IP indicators from CYFIRMA.
     execution: false
-    name: decyfir-get-ip
+    name: decyfir-ip-get
   - deprecated: false
     description: Get Domain indicators from CYFIRMA.
     execution: false
-    name: decyfir-get-domain
+    name: decyfir-domain-get
   - deprecated: false
     description: Get URL indicators from CYFIRMA.
     execution: false
-    name: decyfir-get-url
+    name: decyfir-url-get
   - deprecated: false
     description: Get File Hash indicators from CYFIRMA.
     execution: false
-    name: decyfir-get-file
+    name: decyfir-file-get
   dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isfetch: false
@@ -126,6 +126,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
