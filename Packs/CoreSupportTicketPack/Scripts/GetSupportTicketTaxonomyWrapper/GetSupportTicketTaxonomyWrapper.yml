@@ -1,0 +1,25 @@
+commonfields:
+  id: GetSupportTicketTaxonomyWrapper
+  version: -1
+name: GetSupportTicketTaxonomyWrapper
+internal: true
+script: ''
+type: python
+tags:
+- Utility
+comment: Wrapper for GetSupportTicketTaxonomy. Calls the inner script via executeCommand
+  so it is dispatched through the XSOAR server where the exclusion list is honored.
+  Requires DEFAULT_ENGINE_EXCLUDED_SCRIPTS to contain getsupporttickettaxonomy.
+enabled: true
+args: []
+outputs:
+- contextPath: Core.SupportTicketTaxonomy
+  description: A mapping of support issue categories to their specific problem concentrations.
+  type: String
+scripttarget: 0
+subtype: python3
+source: agentix
+fromversion: 8.14.0
+dockerimage: demisto/python3:3.12.13.7444307
+tests:
+- No tests (auto formatted)

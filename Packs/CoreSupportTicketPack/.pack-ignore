@@ -1,0 +1,4 @@
+[file:Cortex_-_Fill_Support_Ticket.yml]
+ignore=GR109,RM116
+[file:README.md]
+ignore=RM104

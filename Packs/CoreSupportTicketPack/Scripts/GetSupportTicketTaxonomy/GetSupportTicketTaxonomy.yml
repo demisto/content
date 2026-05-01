@@ -1,0 +1,26 @@
+commonfields:
+  id: GetSupportTicketTaxonomy
+  version: -1
+name: GetSupportTicketTaxonomy
+internal: true
+script: ''
+type: python
+tags:
+- Utility
+comment: Retrieves the complete support ticket taxonomy including all issue categories
+  and their associated problem concentrations.
+enabled: true
+args: []
+outputs:
+- contextPath: Core.SupportTicketTaxonomy
+  description: A mapping of support issue categories to their specific problem concentrations.
+    Each key represents an 'issue_category', and its associated list represents the
+    valid 'problem_concentrations' for that category.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.13.7444307
+source: agentix
+fromversion: 8.14.0
+tests:
+- No tests (auto formatted)

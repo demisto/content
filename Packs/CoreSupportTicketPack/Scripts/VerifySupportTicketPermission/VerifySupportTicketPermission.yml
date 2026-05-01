@@ -1,0 +1,32 @@
+commonfields:
+  id: VerifySupportTicketPermission
+  version: -1
+name: VerifySupportTicketPermission
+internal: true
+script: ''
+type: python
+tags:
+- Utility
+comment: Verifies whether the current user has the required permissions to manage
+  support tickets. Checks both user CSP permission and tenant entitlement. Wraps
+  the core-verify-support-ticket-permission integration command.
+enabled: true
+args: []
+outputs:
+- contextPath: Core.SupportTicketPermission.user_csp_permission
+  description: Whether the user has CSP permission to manage support tickets.
+  type: Boolean
+- contextPath: Core.SupportTicketPermission.tenant_entitlement_check
+  description: Whether the tenant has the entitlement for support ticket management.
+  type: Boolean
+- contextPath: Core.SupportTicketPermission.has_permission
+  description: Whether the user has full permission (both user CSP permission and
+    tenant entitlement).
+  type: Boolean
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.13.7444307
+source: agentix
+fromversion: 8.14.0
+tests:
+- No tests (auto formatted)

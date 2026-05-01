@@ -1,0 +1,80 @@
+commonfields:
+  id: CortexFillSupportTicket
+  version: -1
+name: CortexFillSupportTicket
+display: Cortex - Fill Support Ticket
+description: Populates a Cortex support ticket template using conversation history. Call ONLY upon explicit user request.
+category: Case Management
+fromversion: 8.14.0
+requiresuserapproval: false
+internal: true
+args:
+- name: description
+  underlyingargname: description
+  description: A detailed description of the issue. Include error messages/codes or other identifying details. Limited to 25-32000 chars.
+  required: true
+  isgeneratable: true
+  type: string
+- name: issue_impact
+  underlyingargname: issue_impact
+  description: |
+    The impact of the issue on the system or business.
+    Options: P0, P1, P2, P3, P4.
+    P4: Low, use for inquiries or a minor issue. Product function not impaired, no impact to business.
+    P3: Minor, production system not affected, but a function has failed. A workaround is available.
+    P2: Major, major functionality or performance degradation of the product. Operations are severely impaired. No workaround exists.
+    P1: Critical, production system is down or a critical issue severely impacts the product. Business operations have stopped. No workaround exists.
+    P0: Critical & Life/Operations at Risk, imminent risk to life or our organization's finances, brand, or security. Requires urgent restoration.
+  required: false
+  isgeneratable: true
+  type: string
+- name: contact_number
+  underlyingargname: contact_number
+  description: The preferred contact number for follow-up.
+  required: false
+  type: string
+- name: issue_frequency
+  underlyingargname: issue_frequency
+  description: "The frequency of the issue. Options: Yes - Consistent, Yes - Intermittent, Not Applicable."
+  required: false
+  type: string
+- name: most_recent_issue_start_time
+  underlyingargname: most_recent_issue_start_time
+  description: The start date and time of the most recent occurrence of the issue. Flexible formats are supported, including relative dates (e.g., "7 days ago", "yesterday") and absolute dates (e.g., "2023-01-01T00:00:00Z").
+  required: false
+  type: date
+outputs:
+- name: Core.SupportTicket.description
+  underlyingoutputcontextpath: Core.SupportTicket.description
+  description: The description of the support ticket.
+  type: string
+- name: Core.SupportTicket.contactNumber
+  underlyingoutputcontextpath: Core.SupportTicket.contactNumber
+  description: The contact number associated with the ticket.
+  type: string
+- name: Core.SupportTicket.IssueImpact
+  underlyingoutputcontextpath: Core.SupportTicket.IssueImpact
+  description: The impact level of the ticket (e.g., P0, P1, P2, P3, P4).
+  type: string
+- name: Core.SupportTicket.OngoingIssue
+  underlyingoutputcontextpath: Core.SupportTicket.OngoingIssue
+  description: The frequency status of the issue (e.g., Yes - Consistent, Yes - Intermittent, Not Applicable).
+  type: string
+- name: Core.SupportTicket.DateTimeOfIssue
+  underlyingoutputcontextpath: Core.SupportTicket.DateTimeOfIssue
+  description: The timestamp of the issue occurrence.
+  type: number
+- name: Core.SupportTicket.smeArea
+  underlyingoutputcontextpath: Core.SupportTicket.smeArea
+  description: The issue category assigned to the ticket.
+  type: string
+- name: Core.SupportTicket.subGroupName
+  underlyingoutputcontextpath: Core.SupportTicket.subGroupName
+  description: The problem concentration assigned to the ticket.
+  type: string
+underlyingcontentitem:
+  id: FillSupportTicket
+  name: FillSupportTicket
+  type: script
+  command: ''
+  version: -1

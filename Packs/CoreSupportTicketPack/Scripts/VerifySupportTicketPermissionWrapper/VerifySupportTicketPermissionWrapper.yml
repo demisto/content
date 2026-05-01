@@ -1,0 +1,31 @@
+commonfields:
+  id: VerifySupportTicketPermissionWrapper
+  version: -1
+name: VerifySupportTicketPermissionWrapper
+internal: true
+script: ''
+type: python
+tags:
+- Utility
+comment: Wrapper for VerifySupportTicketPermission. Calls the inner script via executeCommand
+  so it is dispatched through the XSOAR server where the exclusion list is honored.
+  Requires DEFAULT_ENGINE_EXCLUDED_SCRIPTS to contain verifysupportticketpermission.
+enabled: true
+args: []
+outputs:
+- contextPath: Core.SupportTicketPermission.user_csp_permission
+  description: Whether the user has CSP permission to manage support tickets.
+  type: Boolean
+- contextPath: Core.SupportTicketPermission.tenant_entitlement_check
+  description: Whether the tenant has the entitlement for support ticket management.
+  type: Boolean
+- contextPath: Core.SupportTicketPermission.has_permission
+  description: Whether the user has full permission.
+  type: Boolean
+scripttarget: 0
+subtype: python3
+source: agentix
+fromversion: 8.14.0
+dockerimage: demisto/python3:3.12.13.7444307
+tests:
+- No tests (auto formatted)

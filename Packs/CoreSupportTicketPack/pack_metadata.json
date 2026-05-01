@@ -1,0 +1,34 @@
+{
+  "author": "Cortex XSOAR",
+  "categories": [
+    "Utilities"
+  ],
+  "currentVersion": "1.3.0",
+  "description": "Automates Cortex support ticket creation by classifying issues with AI, validating user permissions, and populating ticket fields. Includes an Agentix action for conversational ticket filing.",
+  "email": "",
+  "internal": true,
+  "keywords": [],
+  "managed": true,
+  "marketplaces": [
+    "platform"
+  ],
+  "name": "Cortex - Fill Support Ticket",
+  "serverMinVersion": "8.14",
+  "source": "agentix",
+  "support": "xsoar",
+  "supportedModules": [
+    "asm",
+    "cloud",
+    "cloud_appsec",
+    "cloud_posture",
+    "cloud_runtime_security",
+    "email_security",
+    "exposure_management",
+    "xsiam",
+    "edr",
+    "agentix"
+  ],
+  "tags": [],
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "useCases": []
+}
