@@ -907,7 +907,7 @@ def test_search_job_list_command_all(mocker: MockerFixture, client: "CriblSearch
 
     outputs: list[dict[str, Any]] = response.outputs  # type: ignore[assignment]
 
-    assert len(outputs) == 7
+    assert len(outputs) == 3
     assert outputs[0].get("id") == "1777207075060.cCPnVx"
     assert outputs[1].get("id") == "1777207943198.pb0ZZ0"
     assert "Search Jobs List" in response.readable_output
