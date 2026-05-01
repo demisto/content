@@ -203,7 +203,7 @@ class Client(BaseClient):
                     {"ismalwarefamily": data.get("is_family"), "malwaretypes": data.get("malware_types")}
                 )
 
-            ti_properties = next(iter(data.get("extensions", cast(Dict[str, Any], {})).values()))
+            ti_properties = next(iter(data.get("extensions", cast(Dict[str, Any], {})).values()), {})
 
             if ti_properties:
                 ta_origin = ti_properties.get("origin-of-country", "")
@@ -410,7 +410,7 @@ class Client(BaseClient):
                     verdict = "Benign"
                     score = 1
 
-                ioc_properties = next(iter(ioc.get("extensions", cast(Dict[str, Any], {})).values()))
+                ioc_properties = next(iter(ioc.get("extensions", cast(Dict[str, Any], {})).values()), {})
                 threat_actors = ioc_properties.get("threat_actors", "")
                 recomendation_actions = ioc_properties.get("recommended_actions", "")
 
@@ -583,7 +583,7 @@ def command_results(indicators: List[Dict], indicator_type: str) -> List:
         value = extract_value(pattern)
         ioc_type = indicator_type
 
-        ext = next(iter(ind.get("extensions", cast(Dict[str, Any], {})).values()))
+        ext = next(iter(ind.get("extensions", cast(Dict[str, Any], {})).values()), {})
         vendors = ext.get("security_vendors", {})
         confidence = ind.get("confidence", 0)
 
