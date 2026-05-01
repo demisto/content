@@ -48,10 +48,10 @@ script:
       description: The search query string to execute.
     - name: earliest
       required: false
-      description: The earliest time boundary for the search (relative time or epoch seconds).
+      description: The start time for the search, in relative time or epoch seconds.
     - name: latest
       required: false
-      description: The latest time boundary for the search (relative time or epoch seconds).
+      description: The end time for the search, in relative time or epoch seconds.
     - name: sample_rate
       required: false
       description: The sampling rate for the search (0-1).
@@ -86,7 +86,7 @@ script:
       description: The current status of the search job (for example, queued, running, completed).
       type: String
     - contextPath: Cribl.SearchQuery.job.timeCreated
-      description: Epoch (ms) when the search job was created.
+      description: The epoch (ms) when the search job was created.
       type: Number
     - contextPath: Cribl.SearchQuery.offset
       description: The offset within the result set used for pagination.
@@ -113,13 +113,13 @@ script:
       description: The current status of the search job (for example, queued, running, completed).
       type: String
     - contextPath: Cribl.SearchStatus.timeCreated
-      description: Epoch (ms) when the search job was created.
+      description: The epoch (ms) when the search job was created.
       type: Number
     - contextPath: Cribl.SearchStatus.timeStarted
-      description: Epoch (ms) when the search job started executing. Commonly but not always present (only set once the job leaves the queued state).
+      description: The epoch (ms) when the search job started executing. This is only set once the job leaves the queued state.
       type: Number
     - contextPath: Cribl.SearchStatus.timeCompleted
-      description: Epoch (ms) when the search job completed. Commonly but not always present (only set after the job finishes).
+      description: The epoch (ms) when the search job completed. This is only set after the job finishes.
       type: Number
 
   - name: cribl-search-result
@@ -166,7 +166,7 @@ script:
       description: The current status of the search job (for example, queued, running, completed).
       type: String
     - contextPath: Cribl.SearchResult.job.timeCreated
-      description: Epoch (ms) when the search job was created.
+      description: The epoch (ms) when the search job was created.
       type: Number
     - contextPath: Cribl.SearchResult.offset
       description: The offset within the result set used for pagination.
@@ -187,10 +187,10 @@ script:
       description: The search query string.
     - name: earliest
       required: false
-      description: The earliest time boundary (epoch seconds).
+      description: The start time for the search, in epoch seconds.
     - name: latest
       required: false
-      description: The latest time boundary (epoch seconds).
+      description: The end time for the search, in epoch seconds.
     - name: sample_rate
       required: false
       description: The sampling rate for the search (0-1).
@@ -233,7 +233,7 @@ script:
       description: The current status of the search job (for example, queued, running, completed).
       type: String
     - contextPath: Cribl.SearchJob.timeCreated
-      description: Epoch (ms) when the search job was created.
+      description: The epoch (ms) when the search job was created.
       type: Number
     - contextPath: Cribl.SearchJob.type
       description: The type of search job (for example, standard, dashboard).
@@ -248,10 +248,10 @@ script:
       description: Whether the search job uses acceleration.
       type: Boolean
     - contextPath: Cribl.SearchJob.earliest
-      description: Earliest time boundary for the search (relative time string or epoch seconds).
+      description: The start time for the search, in relative time or epoch seconds.
       type: String
     - contextPath: Cribl.SearchJob.latest
-      description: Latest time boundary for the search (relative time string or epoch seconds).
+      description: The end time for the search, in relative time or epoch seconds.
       type: String
     - contextPath: Cribl.SearchJob.compatibilityChecks
       description: The compatibility check flags evaluated for the job.
@@ -506,7 +506,7 @@ script:
       description: Filter expression applied to the dataset (default "true" for no filter).
       type: String
     - contextPath: Cribl.SearchDataset.tags
-      description: Tags assigned to the dataset (string or array of strings).
+      description: The tags assigned to the dataset (string or array of strings).
       type: Unknown
     - contextPath: Cribl.SearchDataset.breakerRulesets
       description: The event breaker rulesets associated with the dataset.
