@@ -32,9 +32,9 @@ Runs a search query against Cribl Search and returns results.
 | query_id | The ID of a saved query to execute. | Optional |
 | job_id | The ID of an existing search job to retrieve results from. | Optional |
 | query | The search query string to execute. | Optional |
-| earliest | The earliest time boundary for the search (relative time or epoch seconds). | Optional |
-| latest | The latest time boundary for the search (relative time or epoch seconds). | Optional |
-| sample_rate | The sampling rate for the search (0-1). | Optional |
+| earliest | The start time for the search, in relative time or epoch seconds. | Optional |
+| latest | The end time for the search, in relative time or epoch seconds. | Optional |
+| sample_rate | The probability (0-1) of including each matching event (for example, 0.1 returns ~10%). If omitted, no sampling is applied. | Optional |
 | force | Whether to force execution of a scheduled query. | Optional |
 | page | The page number for pagination. | Optional |
 | limit | The maximum number of results to return. Default is 50. | Optional |
@@ -43,15 +43,15 @@ Runs a search query against Cribl Search and returns results.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cribl.SearchQuery.events | Unknown | List of events returned by the search \(parsed from the NDJSON response\). May be empty when the job is still queued/running. |
+| Cribl.SearchQuery.events | Unknown | The list of events returned by the search \(parsed from the NDJSON response\). May be empty when the job is still queued/running. |
 | Cribl.SearchQuery.isFinished | Boolean | Whether the search query has finished executing. |
-| Cribl.SearchQuery.job | Object | Search job metadata associated with this query. |
-| Cribl.SearchQuery.job.id | String | Unique identifier of the search job that produced these results. |
+| Cribl.SearchQuery.job | Object | The search job metadata associated with this query. |
+| Cribl.SearchQuery.job.id | String | The unique identifier of the search job that produced these results. |
 | Cribl.SearchQuery.job.query | String | The search query string executed by the job. |
-| Cribl.SearchQuery.job.status | String | Current status of the search job \(e.g., queued, running, completed\). |
-| Cribl.SearchQuery.job.timeCreated | Number | Epoch \(ms\) when the search job was created. |
-| Cribl.SearchQuery.offset | Number | Offset within the result set used for pagination. |
-| Cribl.SearchQuery.persistedEventCount | Number | Number of events persisted in the result set. |
+| Cribl.SearchQuery.job.status | String | The current status of the search job \(for example, queued, running, completed\). |
+| Cribl.SearchQuery.job.timeCreated | Number | The epoch \(ms\) when the search job was created. |
+| Cribl.SearchQuery.offset | Number | The offset within the result set used for pagination. |
+| Cribl.SearchQuery.persistedEventCount | Number | The number of events persisted in the result set. |
 | Cribl.SearchQuery.totalEventCount | Number | Total number of events matched by the query. |
 
 #### Command example
@@ -110,11 +110,11 @@ Retrieves the status of a specific search job.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cribl.SearchStatus.pendingComputeNodeStatuses | Object | Counts of pending compute nodes \(warm/cold\) for the job. |
-| Cribl.SearchStatus.status | String | Current status of the search job \(e.g., queued, running, completed\). |
-| Cribl.SearchStatus.timeCreated | Number | Epoch \(ms\) when the search job was created. |
-| Cribl.SearchStatus.timeStarted | Number | Epoch \(ms\) when the search job started executing. Commonly but not always present \(only set once the job leaves the queued state\). |
-| Cribl.SearchStatus.timeCompleted | Number | Epoch \(ms\) when the search job completed. Commonly but not always present \(only set after the job finishes\). |
+| Cribl.SearchStatus.pendingComputeNodeStatuses | Object | The counts of pending compute nodes \(warm/cold\) for the job. |
+| Cribl.SearchStatus.status | String | The current status of the search job \(for example, queued, running, completed\). |
+| Cribl.SearchStatus.timeCreated | Number | The epoch \(ms\) when the search job was created. |
+| Cribl.SearchStatus.timeStarted | Number | The epoch \(ms\) when the search job started executing. This is only set once the job leaves the queued state. |
+| Cribl.SearchStatus.timeCompleted | Number | The epoch \(ms\) when the search job completed. This is only set after the job finishes. |
 
 #### Command example
 
@@ -176,22 +176,22 @@ Retrieves the results of a completed search job.
 | upper_bound | The upper time bound for results (exclusive, epoch). | Optional |
 | page | The page number for pagination. | Optional |
 | limit | The maximum number of results to return. Default is 50. | Optional |
-| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+| all_results | Whether to return all results. If true, overrides the limit argument. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cribl.SearchResult.events | Unknown | List of events returned by the search \(parsed from the NDJSON response\). Each element is a free-form event object whose shape depends on the dataset and the query's projection. |
+| Cribl.SearchResult.events | Unknown | The list of events returned by the search \(parsed from the NDJSON response\). Each element is a free-form event object whose shape depends on the dataset and the query's projection. |
 | Cribl.SearchResult.isFinished | Boolean | Whether the search job has finished executing. |
-| Cribl.SearchResult.job | Object | Search job metadata associated with these results. |
-| Cribl.SearchResult.job.id | String | Unique identifier of the search job. |
+| Cribl.SearchResult.job | Object | The search job metadata associated with these results. |
+| Cribl.SearchResult.job.id | String | The unique identifier of the search job. |
 | Cribl.SearchResult.job.query | String | The search query string executed by the job. |
-| Cribl.SearchResult.job.status | String | Current status of the search job \(e.g., queued, running, completed\). |
-| Cribl.SearchResult.job.timeCreated | Number | Epoch \(ms\) when the search job was created. |
-| Cribl.SearchResult.offset | Number | Offset within the result set used for pagination. |
-| Cribl.SearchResult.persistedEventCount | Number | Number of events persisted in the result set. |
-| Cribl.SearchResult.totalEventCount | Number | Total number of events matched by the search job. |
+| Cribl.SearchResult.job.status | String | The current status of the search job \(for example, queued, running, completed\). |
+| Cribl.SearchResult.job.timeCreated | Number | The epoch \(ms\) when the search job was created. |
+| Cribl.SearchResult.offset | Number | The offset within the result set used for pagination. |
+| Cribl.SearchResult.persistedEventCount | Number | The number of events persisted in the result set. |
+| Cribl.SearchResult.totalEventCount | Number | The total number of events matched by the search job. |
 
 #### Command example
 
@@ -272,11 +272,11 @@ Creates a new search job in Cribl Search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The search query string. | Required |
-| earliest | The earliest time boundary (epoch seconds). | Optional |
-| latest | The latest time boundary (epoch seconds). | Optional |
-| sample_rate | The sampling rate for the search (0-1). | Optional |
-| num_events_before | Number of events to include before the target event. | Optional |
-| num_events_after | Number of events to include after the target event. | Optional |
+| earliest | The start time for the search, in epoch seconds. | Optional |
+| latest | The end time for the search, in epoch seconds. | Optional |
+| sample_rate | The probability (0-1) of including each matching event (for example, 0.1 returns ~10%). If omitted, no sampling is applied. | Optional |
+| num_events_before | The number of events to include before the target event. | Optional |
+| num_events_after | The number of events to include after the target event. | Optional |
 | target_event_time | The target event time (epoch seconds). | Optional |
 | is_private | Whether the search job is private. Default is True. | Optional |
 | set_options | A JSON string of additional search options. | Optional |
@@ -286,30 +286,30 @@ Creates a new search job in Cribl Search.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cribl.SearchJob.id | String | Unique identifier of the search job. |
-| Cribl.SearchJob.user | String | User identifier \(client ID\) that created the job. |
-| Cribl.SearchJob.displayUsername | String | Display name of the user who created the job. |
-| Cribl.SearchJob.group | String | Search group the job belongs to. |
+| Cribl.SearchJob.id | String | The unique identifier of the search job. |
+| Cribl.SearchJob.user | String | The user identifier \(client ID\) that created the job. |
+| Cribl.SearchJob.displayUsername | String | The display name of the user who created the job. |
+| Cribl.SearchJob.group | String | The search group the job belongs to. |
 | Cribl.SearchJob.query | String | The search query string executed by the job. |
-| Cribl.SearchJob.status | String | Current status of the search job \(e.g., queued, running, completed\). |
-| Cribl.SearchJob.timeCreated | Number | Epoch \(ms\) when the search job was created. |
-| Cribl.SearchJob.type | String | Type of search job \(e.g., standard, dashboard\). |
-| Cribl.SearchJob.usageGroupId | String | Identifier of the usage group the job is billed against. |
+| Cribl.SearchJob.status | String | The current status of the search job \(for example, queued, running, completed\). |
+| Cribl.SearchJob.timeCreated | Number | The epoch \(ms\) when the search job was created. |
+| Cribl.SearchJob.type | String | The type of search job \(for example, standard, dashboard\). |
+| Cribl.SearchJob.usageGroupId | String | The identifier of the usage group the job is billed against. |
 | Cribl.SearchJob.isPrivate | Boolean | Whether the search job is marked private. |
 | Cribl.SearchJob.accelerated | Boolean | Whether the search job uses acceleration. |
-| Cribl.SearchJob.earliest | String | Earliest time boundary for the search \(relative time string or epoch seconds\). |
-| Cribl.SearchJob.latest | String | Latest time boundary for the search \(relative time string or epoch seconds\). |
-| Cribl.SearchJob.compatibilityChecks | Object | Compatibility check flags evaluated for the job. |
-| Cribl.SearchJob.metadata | Object | Metadata about the query \(datasets, providers, operators, functions, etc.\). |
-| Cribl.SearchJob.setOptions | Object | Additional search options provided when creating the job. |
-| Cribl.SearchJob.stages | Unknown | Stages of the search job's execution plan. |
-| Cribl.SearchJob.internal | Object | Internal job state \(compiled policies, role-derived limits, preprocessed query, etc.\). Returned on create; not normally returned by list/update. |
-| Cribl.SearchJob.userDetails | Object | Details about the user/credential that created the job. |
-| Cribl.SearchJob.userDetails.email | String | Email address of the user who created the job. |
-| Cribl.SearchJob.userDetails.username | String | Username of the user \(or client ID, for API-credential users\) who created the job. |
-| Cribl.SearchJob.userDetails.displayUsername | String | Display name of the user who created the job. |
-| Cribl.SearchJob.userDetails.type | String | Type of user identity \(e.g., apiCredential, sso\). |
-| Cribl.SearchJob.userDetails.roles | Unknown | Roles assigned to the user. |
+| Cribl.SearchJob.earliest | String | The start time for the search, in relative time or epoch seconds. |
+| Cribl.SearchJob.latest | String | The end time for the search, in relative time or epoch seconds. |
+| Cribl.SearchJob.compatibilityChecks | Object | The compatibility check flags evaluated for the job. |
+| Cribl.SearchJob.metadata | Object | The metadata about the query \(for example, datasets, providers, operators, and functions\). |
+| Cribl.SearchJob.setOptions | Object | The additional search options provided when creating the job. |
+| Cribl.SearchJob.stages | Unknown | The stages of the search job's execution plan. |
+| Cribl.SearchJob.internal | Object | The internal job state \(compiled policies, role-derived limits, preprocessed query, etc.\). Returned on create; not normally returned by list/update. |
+| Cribl.SearchJob.userDetails | Object | The details about the user/credential that created the job. |
+| Cribl.SearchJob.userDetails.email | String | The email address of the user who created the job. |
+| Cribl.SearchJob.userDetails.username | String | The username of the user \(or client ID, for API-credential users\) who created the job. |
+| Cribl.SearchJob.userDetails.displayUsername | String | The display name of the user who created the job. |
+| Cribl.SearchJob.userDetails.type | String | The type of user identity \(for example, apiCredential, sso\). |
+| Cribl.SearchJob.userDetails.roles | Unknown | The roles assigned to the user. |
 
 #### Command example
 
@@ -801,7 +801,7 @@ Retrieves a list of search jobs or details of a specific search job.
 | --- | --- | --- |
 | job_id | The unique identifier of a specific search job to retrieve. | Optional |
 | limit | The maximum number of results to return. Default is 10. | Optional |
-| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+| all_results | Whether to return all results. If true, overrides the limit argument. | Optional |
 
 #### Context Output
 
@@ -2621,23 +2621,23 @@ Retrieves a list of available datasets or details of a specific dataset.
 | --- | --- | --- |
 | dataset_id | The unique identifier of a specific dataset to retrieve. | Optional |
 | limit | The maximum number of results to return. Default is 10. | Optional |
-| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+| all_results | Whether to return all results. If true, overrides the limit argument. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cribl.SearchDataset.id | String | Unique identifier of the dataset. |
-| Cribl.SearchDataset.type | String | Dataset provider type \(e.g., s3, azure_blob, gcs\). |
-| Cribl.SearchDataset.provider | String | Identifier of the provider configuration backing the dataset. |
-| Cribl.SearchDataset.region | String | Cloud region where the dataset's underlying storage resides \(when applicable\). |
-| Cribl.SearchDataset.bucket | String | Bucket/path template that locates the dataset's underlying objects. |
-| Cribl.SearchDataset.description | String | Human-readable description of the dataset. |
-| Cribl.SearchDataset.filter | String | Filter expression applied to the dataset \(default "true" for no filter\). |
-| Cribl.SearchDataset.tags | Unknown | Tags assigned to the dataset \(string or array of strings\). |
-| Cribl.SearchDataset.breakerRulesets | Unknown | Event breaker rulesets associated with the dataset. |
-| Cribl.SearchDataset.storageClasses | Unknown | Storage classes the dataset is configured to read from. |
-| Cribl.SearchDataset.staleChannelFlushMs | Number | Milliseconds after which a stale channel is flushed during ingestion. |
+| Cribl.SearchDataset.id | String | The unique identifier of the dataset. |
+| Cribl.SearchDataset.type | String | The dataset provider type \(for example, s3, azure_blob, gcs\). |
+| Cribl.SearchDataset.provider | String | The identifier of the provider configuration backing the dataset. |
+| Cribl.SearchDataset.region | String | The cloud region where the dataset's underlying storage resides \(when applicable\). |
+| Cribl.SearchDataset.bucket | String | The bucket/path template that locates the dataset's underlying objects. |
+| Cribl.SearchDataset.description | String | The human-readable description of the dataset. |
+| Cribl.SearchDataset.filter | String | The filter expression applied to events from the dataset; defaults to "true" \(passes all events\). |
+| Cribl.SearchDataset.tags | Unknown | The tags assigned to the dataset \(string or array of strings\). |
+| Cribl.SearchDataset.breakerRulesets | Unknown | The event breaker rulesets associated with the dataset. |
+| Cribl.SearchDataset.storageClasses | Unknown | The storage classes the dataset is configured to read from. |
+| Cribl.SearchDataset.staleChannelFlushMs | Number | The time in milliseconds after which a stale channel is flushed during ingestion. |
 
 #### Command example
 
@@ -2705,14 +2705,14 @@ Retrieves a list of saved searches or details of a specific saved search.
 | --- | --- | --- |
 | search_id | The unique identifier of a specific saved search to retrieve. | Optional |
 | limit | The maximum number of results to return. Default is 10. | Optional |
-| all_results | Whether to return all results. Overrides the limit argument if used. | Optional |
+| all_results | Whether to return all results. If true, overrides the limit argument. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cribl.SavedSearch.id | String | Unique identifier of the saved search. |
-| Cribl.SavedSearch.name | String | Display name of the saved search. |
+| Cribl.SavedSearch.id | String | The unique identifier of the saved search. |
+| Cribl.SavedSearch.name | String | The display name of the saved search. |
 | Cribl.SavedSearch.query | String | The search query string defined by the saved search. |
 
 #### Command example
