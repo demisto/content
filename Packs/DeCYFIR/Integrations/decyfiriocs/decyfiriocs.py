@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import Any, cast
 
 import urllib3
 
@@ -100,7 +101,7 @@ class Client(BaseClient):
 
         return ""
 
-    def get_decyfir_api_ti_data(self, decyfir_api_path: str) -> List[Dict]:
+    def get_decyfir_api_ti_data(self, decyfir_api_path: str) -> list[dict]:
         response = self._http_request(url_suffix=decyfir_api_path, method="GET", resp_type="response")
         if response.status_code == 200 and response.content:
             return response.json()
@@ -112,7 +113,7 @@ class Client(BaseClient):
             name=relation_type, entity_a=source_value, entity_a_type=source_type, entity_b=target_value, entity_b_type=target_type
         ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
+    def build_threat_actor_relationship_obj(self, source_data: dict[str, str], target_data: dict[str, str]):
         target_type = target_data.get(LABEL_TYPE)
         target_value = target_data.get(LABEL_VALUE)
         source_type = source_data.get(LABEL_TYPE)
@@ -128,7 +129,7 @@ class Client(BaseClient):
 
         return None
 
-    def build_ioc_relationship_obj(self, ioc_data: Dict, target_data: Dict):
+    def build_ioc_relationship_obj(self, ioc_data: dict, target_data: dict):
         if not (ioc_data and target_data):
             return None
 
@@ -140,7 +141,7 @@ class Client(BaseClient):
             target_data.get(LABEL_TYPE),
         )
 
-    def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
+    def build_threat_intel_indicator_obj(self, data: dict, tlp_color: str | None, feed_tags: list | None):
         try:
             intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
             if not intel_type:
@@ -160,7 +161,7 @@ class Client(BaseClient):
                 verdict = "Benign"
                 cve_score = 1
 
-            ti_data_obj: Dict = {
+            ti_data_obj: dict = {
                 "value": data.get("name", ""),
                 "name": data.get("name", ""),
                 "type": intel_type,
@@ -203,7 +204,7 @@ class Client(BaseClient):
                     {"ismalwarefamily": data.get("is_family"), "malwaretypes": data.get("malware_types")}
                 )
 
-            ti_properties = next(iter(data.get("extensions", cast(Dict[str, Any], {})).values()), {})
+            ti_properties: dict[str, Any] = next(iter(data.get("extensions", cast(dict[str, Any], {})).values()), {})
 
             if ti_properties:
                 ta_origin = ti_properties.get("origin-of-country", "")
@@ -269,12 +270,12 @@ class Client(BaseClient):
             return {}
 
     def build_ta_relationships_data(
-        self, ta_rel_data_coll: list, ta_source_obj: dict, return_data: list, tlp_color: Optional[str], feed_tags: Optional[List]
+        self, ta_rel_data_coll: list, ta_source_obj: dict, return_data: list, tlp_color: str | None, feed_tags: list | None
     ):
         src_ti_relationships_data = []
-        raw_ta_rels: List = []
-        raw_ta_data: Dict = {}
-        raw_ta_obj: Dict = {}
+        raw_ta_rels: list = []
+        raw_ta_data: dict = {}
+        raw_ta_obj: dict = {}
 
         # Only source object getting from the iterating
         # Threat actor relationships data getting from the API and mapping.
@@ -297,13 +298,13 @@ class Client(BaseClient):
             for raw_ta_rel_ in raw_ta_rels:
                 # Source ref obj from relationship obj
                 if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
-                    source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ""), {})
+                    source_ref_obj: dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF, ""), {})
                 else:
                     source_ref_obj = raw_ta_data.get(raw_ta_rel_.get("sourceRef", ""), {})
 
                 # Target ref obj from relationship obj
                 if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
-                    target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF, ""), {})
+                    target_ref_obj: dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF, ""), {})
                 else:
                     target_ref_obj = raw_ta_data.get(raw_ta_rel_.get("targetRef", ""), {})
 
@@ -361,20 +362,20 @@ class Client(BaseClient):
     def convert_decyfir_ioc_to_indicators_formats(
         self,
         decyfir_api_key: str,
-        decyfir_iocs: List[Dict],
-        reputation: Optional[str],
-        tlp_color: Optional[str],
-        feed_tags: Optional[List],
+        decyfir_iocs: list[dict],
+        reputation: str | None,
+        tlp_color: str | None,
+        feed_tags: list | None,
         is_data_save: bool,
-    ) -> List:
-        return_data: List[Dict] = []
-        threat_actors_cache: Dict[str, List[Dict]] = {}
+    ) -> list:
+        return_data: list[dict] = []
+        threat_actors_cache: dict[str, list[dict]] = {}
 
         for ioc in decyfir_iocs:
             try:
                 ioc_type: str = self.get_indicator_or_threatintel_type(ioc.get("pattern"))
                 value: str = str(ioc.get("name", ""))
-                file_hash_values: Dict[str, object] = {}
+                file_hash_values: dict[str, object] = {}
 
                 if "File SHA-1 hash" in value:
                     value = value.replace("File SHA-1 hash '", "").replace("'", "")
@@ -410,7 +411,7 @@ class Client(BaseClient):
                     verdict = "Benign"
                     score = 1
 
-                ioc_properties = next(iter(ioc.get("extensions", cast(Dict[str, Any], {})).values()), {})
+                ioc_properties: dict[str, Any] = next(iter(ioc.get("extensions", cast(dict[str, Any], {})).values()), {})
                 threat_actors = ioc_properties.get("threat_actors", "")
                 recomendation_actions = ioc_properties.get("recommended_actions", "")
 
@@ -447,7 +448,7 @@ class Client(BaseClient):
                     },
                 }
 
-                ioc_fields = cast(Dict[str, Any], ioc_data["fields"])
+                ioc_fields = cast(dict[str, Any], ioc_data["fields"])
 
                 if file_hash_values:
                     for key1_, val1_ in file_hash_values.items():
@@ -511,11 +512,11 @@ class Client(BaseClient):
     def fetch_indicators(
         self,
         decyfir_api_key: str,
-        reputation: Optional[str],
-        tlp_color: Optional[str],
-        feed_tags: Optional[List],
+        reputation: str | None,
+        tlp_color: str | None,
+        feed_tags: list | None,
         is_data_save: bool,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         return_data = []
         try:
             # Indicators from DeCYFIR
@@ -546,7 +547,7 @@ class Client(BaseClient):
 
         return return_data
 
-    def fetch_indicators_by_type(self, decyfir_api_key: str, indicator_type: str) -> List[Dict]:
+    def fetch_indicators_by_type(self, decyfir_api_key: str, indicator_type: str) -> list[dict]:
         try:
             api_path = API_IOC_By_TYPE_PATH_SUFFIX.format(decyfir_api_key, indicator_type)
             return self.get_decyfir_api_ti_data(api_path)
@@ -572,7 +573,7 @@ def extract_value(pattern: str) -> str:
     return match.group(1) if match else ""
 
 
-def command_results(indicators: List[Dict], indicator_type: str) -> List:
+def command_results(indicators: list[dict], indicator_type: str) -> list:
     if not indicators:
         return []
 
@@ -583,7 +584,7 @@ def command_results(indicators: List[Dict], indicator_type: str) -> List:
         value = extract_value(pattern)
         ioc_type = indicator_type
 
-        ext = next(iter(ind.get("extensions", cast(Dict[str, Any], {})).values()), {})
+        ext: dict[str, Any] = next(iter(ind.get("extensions", cast(dict[str, Any], {})).values()), {})
         vendors = ext.get("security_vendors", {})
         confidence = ind.get("confidence", 0)
 
@@ -630,13 +631,13 @@ def decyfir_hash_indicator_command(client: Client, decyfir_api_key: str):
 
 
 def fetch_indicators_command(
-    client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str], feed_tags: Optional[List]
-) -> List[Dict]:
+    client: Client, decyfir_api_key: str, tlp_color: str | None, reputation: str | None, feed_tags: list | None
+) -> list[dict]:
     return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, True)
 
 
 def decyfir_get_indicators_command(
-    client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str], feed_tags: Optional[List]
+    client: Client, decyfir_api_key: str, tlp_color: str | None, reputation: str | None, feed_tags: list | None
 ):
     indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
     return command_results(indicators, "Indicator")

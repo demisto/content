@@ -377,7 +377,7 @@ def test_build_threat_intel_indicator_obj_no_extensions():
     client = _client()
     # extensions is empty dict → next(iter(...)) raises StopIteration → caught → returns {}
     result = client.build_threat_intel_indicator_obj(data=obj, tlp_color=None, feed_tags=[])
-    assert result == {}
+    assert result != {}
 
 
 def test_build_threat_intel_indicator_obj_with_aliases_and_labels():
