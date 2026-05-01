@@ -124,9 +124,9 @@ class Client(BaseClient):
         }
 
         if status:
-            params["status"] = status
+            params["status_list[]"] = status
         if severities:
-            params["severities"] = severities
+            params["severity"] = ",".join(severities)
         if alarm_main_types:
             params["alarm_main_types"] = alarm_main_types
         if alarm_sub_types:
