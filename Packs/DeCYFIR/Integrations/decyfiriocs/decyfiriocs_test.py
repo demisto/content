@@ -364,7 +364,6 @@ def test_build_threat_intel_indicator_obj_benign():
 
 
 def test_build_threat_intel_indicator_obj_no_extensions():
-   
     obj = {
         "type": "threat-actor",
         "id": "threat-actor--002",
@@ -389,14 +388,12 @@ def test_build_threat_intel_indicator_obj_with_aliases_and_labels():
     result = client.build_threat_intel_indicator_obj(data=obj, tlp_color="RED", feed_tags=["tag1"])
 
     assert "apt" in result["fields"]["tags"]
-  
 
 
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
 
     raw_data = util_load_json("test_data/iocs_ti.json")
-   
 
     client = Client(
         base_url="test_url",
@@ -705,7 +702,7 @@ def test_main_ip_command(mocker):
 
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="ip")
+    mocker.patch("demistomock.command", return_value="decyfir-ip-get")
     mocker.patch("demistomock.info")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["iocs"])
     mock_return = mocker.patch("decyfiriocs.return_results")
@@ -721,7 +718,7 @@ def test_main_domain_command(mocker):
 
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="domain")
+    mocker.patch("demistomock.command", return_value="decyfir-domain-get")
     mocker.patch("demistomock.info")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["domain"])
     mock_return = mocker.patch("decyfiriocs.return_results")
@@ -736,7 +733,7 @@ def test_main_url_command(mocker):
     client = _client()
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="url")
+    mocker.patch("demistomock.command", return_value="decyfir-url-get")
     mocker.patch("demistomock.info")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["url"])
     mock_return = mocker.patch("decyfiriocs.return_results")
@@ -751,7 +748,7 @@ def test_main_file_command(mocker):
     client = _client()
     raw_data = util_load_json("test_data/iocs_ti.json")
     mocker.patch("demistomock.params", return_value=_base_params())
-    mocker.patch("demistomock.command", return_value="file")
+    mocker.patch("demistomock.command", return_value="decyfir-file-get")
     mocker.patch("demistomock.info")
     mocker.patch.object(client, "fetch_indicators_by_type", return_value=raw_data["file"])
     mock_return = mocker.patch("decyfiriocs.return_results")

@@ -35,21 +35,20 @@ Gets indicators from the feed.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
 
-### ip
+### decyfir-ip-get
 
 ***
 Get IP indicators from CYFIRMA.
 
 #### Base Command
 
-`ip`
+`decyfir-ip-get`
 
 #### Input
 
@@ -58,15 +57,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-
-### domain
+### decyfir-domain-get
 
 ***
 Get Domain indicators from CYFIRMA.
 
 #### Base Command
 
-`domain`
+`decyfir-domain-get`
 
 #### Input
 
@@ -75,15 +73,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-
-### url
+### decyfir-url-get
 
 ***
 Get URL indicators from CYFIRMA.
 
 #### Base Command
 
-`url`
+`decyfir-url-get`
 
 #### Input
 
@@ -92,15 +89,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-
-### file
+### decyfir-file-get
 
 ***
 Get File Hash indicators from CYFIRMA.
 
 #### Base Command
 
-`file`
+`decyfir-file-get`
 
 #### Input
 

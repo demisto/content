@@ -196,7 +196,7 @@ class Client(BaseClient):
             if data.get("labels"):
                 ti_fields["tags"].extend(data.get("labels"))
 
-            ti_fields["aliases"].extends(data.get("aliases")) if data.get("aliases") else None
+            ti_fields["aliases"].extend(data.get("aliases")) if data.get("aliases") else None
 
             if intel_type is ThreatIntel.ObjectsNames.MALWARE:
                 ti_data_obj["fields"].update(
@@ -333,7 +333,7 @@ class Client(BaseClient):
                                 if re_data2.get("value") == target_ti_data_obj.get("value"):
                                     tar_exists_in = True
                                     break
-                                
+
                             if not tar_exists_in:
                                 return_data.append(target_ti_data_obj)
                     else:

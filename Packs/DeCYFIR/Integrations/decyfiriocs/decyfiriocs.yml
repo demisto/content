@@ -114,7 +114,7 @@ script:
     description: Get File Hash indicators from CYFIRMA.
     execution: false
     name: decyfir-file-get
-  dockerimage: demisto/python3:3.12.12.7019815
+  dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isfetch: false
   longRunning: false
