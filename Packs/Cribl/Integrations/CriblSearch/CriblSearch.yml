@@ -54,7 +54,7 @@ script:
       description: The end time for the search, in relative time or epoch seconds.
     - name: sample_rate
       required: false
-      description: The sampling rate for the search (0-1).
+      description: The probability (0-1) of including each matching event (for example, 0.1 returns ~10%). If omitted, no sampling is applied.
     - name: force
       required: false
       defaultValue: false
@@ -68,7 +68,7 @@ script:
       description: The maximum number of results to return.
     outputs:
     - contextPath: Cribl.SearchQuery.events
-      description: List of events returned by the search (parsed from the NDJSON response). May be empty when the job is still queued/running.
+      description: The list of events returned by the search (parsed from the NDJSON response). May be empty when the job is still queued/running.
       type: Unknown
     - contextPath: Cribl.SearchQuery.isFinished
       description: Whether the search query has finished executing.
@@ -92,7 +92,7 @@ script:
       description: The offset within the result set used for pagination.
       type: Number
     - contextPath: Cribl.SearchQuery.persistedEventCount
-      description: Number of events persisted in the result set.
+      description: The number of events persisted in the result set.
       type: Number
     - contextPath: Cribl.SearchQuery.totalEventCount
       description: Total number of events matched by the query.
@@ -172,7 +172,7 @@ script:
       description: The offset within the result set used for pagination.
       type: Number
     - contextPath: Cribl.SearchResult.persistedEventCount
-      description: Number of events persisted in the result set.
+      description: The number of events persisted in the result set.
       type: Number
     - contextPath: Cribl.SearchResult.totalEventCount
       description: The total number of events matched by the search job.
@@ -193,7 +193,7 @@ script:
       description: The end time for the search, in epoch seconds.
     - name: sample_rate
       required: false
-      description: The sampling rate for the search (0-1).
+      description: The probability (0-1) of including each matching event (for example, 0.1 returns ~10%). If omitted, no sampling is applied.
     - name: num_events_before
       required: false
       description: The number of events to include before the target event.
@@ -503,7 +503,7 @@ script:
       description: The human-readable description of the dataset.
       type: String
     - contextPath: Cribl.SearchDataset.filter
-      description: Filter expression applied to the dataset (default "true" for no filter).
+      description: The filter expression applied to events from the dataset; defaults to "true" (passes all events).
       type: String
     - contextPath: Cribl.SearchDataset.tags
       description: The tags assigned to the dataset (string or array of strings).
@@ -515,7 +515,7 @@ script:
       description: The storage classes the dataset is configured to read from.
       type: Unknown
     - contextPath: Cribl.SearchDataset.staleChannelFlushMs
-      description: Milliseconds after which a stale channel is flushed during ingestion.
+      description: The time in milliseconds after which a stale channel is flushed during ingestion.
       type: Number
 
   - name: cribl-saved-search-list
