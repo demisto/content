@@ -1,5 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
+sectionorder:
+  - Connect
+  - Collect
 commonfields:
   id: DeCYFIR Feed
   version: -1
@@ -97,23 +100,23 @@ script:
   - deprecated: true
     execution: true
     name: decyfir-get-indicators
-    description: Deprecated. Use the decyfir-ip-get, decyfir-domain-get, decyfir-url-get, or decyfir-file-get commands instead.
+    description: Deprecated. Use the decyfir-get-ip, decyfir-get-domain, decyfir-get-url, or decyfir-get-file commands instead.
   - deprecated: false
     description: Get IP indicators from CYFIRMA.
     execution: false
-    name: decyfir-ip-get
+    name: decyfir-get-ip
   - deprecated: false
     description: Get Domain indicators from CYFIRMA.
     execution: false
-    name: decyfir-domain-get
+    name: decyfir-get-domain
   - deprecated: false
     description: Get URL indicators from CYFIRMA.
     execution: false
-    name: decyfir-url-get
+    name: decyfir-get-url
   - deprecated: false
     description: Get File Hash indicators from CYFIRMA.
     execution: false
-    name: decyfir-file-get
+    name: decyfir-get-file
   dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   isfetch: false

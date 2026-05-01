@@ -37,6 +37,11 @@ Initiate a take down request.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!decyfir-takedown-initiate alert_id=123```
+#### Human Readable Output
+>The take down request was initiated successfully.
+
 ### decyfir-takedown-list
 
 ***
@@ -57,3 +62,7 @@ Get take down list.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!decyfir-takedown-list alert_id=123```
+#### Human Readable Output
+>The take down list retrieved successfully..

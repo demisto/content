@@ -670,16 +670,16 @@ def main():  # pragma: no cover
         elif demisto.command() == "decyfir-get-indicators":
             return_results(decyfir_get_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags))
 
-        elif demisto.command() == "decyfir-ip-get":
+        elif demisto.command() == "decyfir-get-ip":
             return_results(decyfir_ip_indicator_command(client, decyfir_api_key))
 
-        elif demisto.command() == "decyfir-domain-get":
+        elif demisto.command() == "decyfir-get-domain":
             return_results(decyfir_domain_indicator_command(client, decyfir_api_key))
 
-        elif demisto.command() == "decyfir-url-get":
+        elif demisto.command() == "decyfir-get-url":
             return_results(decyfir_url_indicator_command(client, decyfir_api_key))
 
-        elif demisto.command() == "decyfir-file-get":
+        elif demisto.command() == "decyfir-get-file":
             return_results(decyfir_hash_indicator_command(client, decyfir_api_key))
 
         else:
