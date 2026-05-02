@@ -1579,7 +1579,7 @@ def incident_response_create_command(client: OpenCTIApiClient, args: Dict[str, s
             externalReferences=external_references_id,
         )
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create incident response. {e}")
 
     if incident_response_id := result.get("id"):
@@ -1608,11 +1608,8 @@ def malware_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Co
     name = args.get("name")
     description = args.get("description", None)
     is_family = argToBoolean(args.get("is_family", False))
-    malware_types_arg = args.get("malware_types")
-    malware_types = None
-    if malware_types_arg:
-        malware_types = [t.strip() for t in str(malware_types_arg).split(",") if t.strip()]
-         
+    malware_types = argToList(args.get("malware_types"))
+
     try:
         result = client.malware.create(
             name=name,
