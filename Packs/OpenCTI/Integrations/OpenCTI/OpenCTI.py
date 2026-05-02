@@ -1913,7 +1913,7 @@ def add_object_to_container_create_command(client: OpenCTIApiClient, args: Dict[
             demisto.error(str(e))
             raise DemistoException(f"{error_prefix}. {e}")
     else:
-        error = f"Can't add object into container. Invalid container_type: {container_type}"
+        error = f"Can't add object into container. Invalid container_type: {container_type}. Supported containers are: 'report', 'grouping', 'case-incident', 'case-rft', 'case-rfi'."
         demisto.error(str(error))
         raise DemistoException(error)
     
