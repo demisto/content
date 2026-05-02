@@ -8046,32 +8046,24 @@ class SSM:
 
         Args:
             client (BotoClient): The boto3 client for SSM service.
-            args (Dict[str, Any]): Command arguments including optional filters, limit,
-                next_token, and include_inactive_instance flag.
+            args (Dict[str, Any]): Command arguments including optional filters, result_attributes,
+                aggregators, limit, and next_token.
 
         Returns:
-            CommandResults: Results containing inventory entities with instance information
-                flattened from the AWS:InstanceInformation data type.
+            CommandResults: Results containing inventory entities with their data.
         """
-        # Apply status filter: active only by default; extend to inactive when requested
-        status_values = ["Active"]
-        if argToBoolean(args.get("include_inactive_instance", "false")):
-            status_values.extend(["Stopped", "Terminated", "ConnectionLost"])
+        result_attributes_raw = argToList(args.get("result_attributes"))
+        aggregators_raw = args.get("aggregators")
 
         kwargs: Dict[str, Any] = {
-            "Filters": [
-                {"Key": "AWS:InstanceInformation.InstanceStatus", "Values": status_values, "Type": "Equal"}
-            ],
+            "Filters": parse_filter_field(args.get("filters")) or None,
+            "ResultAttributes": [{"TypeName": t.strip()} for t in result_attributes_raw] if result_attributes_raw else None,
+            "Aggregators": json.loads(aggregators_raw) if aggregators_raw else None,
         }
-
-        if extra_filters := parse_name_value_type_format_filter(args.get("filters")):
-            kwargs["Filters"].extend(extra_filters)
-
-        pagination_kwargs = build_pagination_kwargs(args, minimum_limit=1, max_limit=50)
-        kwargs.update(pagination_kwargs)
-
         remove_nulls_from_dictionary(kwargs)
-        print_debug_logs(client, f"Listing SSM inventory with parameters: {kwargs}")
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM inventory with {kwargs=}")
 
         response = client.get_inventory(**kwargs)
 
@@ -8084,31 +8076,6 @@ class SSM:
         if not entities:
             return CommandResults(readable_output="No inventory entities found.")
 
-        # Flatten AWS:InstanceInformation data into each entity
-        for entity in entities:
-            instance_info = entity.get("Data", {}).pop("AWS:InstanceInformation", {})
-            entity.update(instance_info)
-            entity.pop("Data", None)
-
-        readable_entities = []
-        for entity in entities:
-            for content in entity.get("Content", []):
-                readable_entities.append(
-                    {
-                        "Id": entity.get("Id"),
-                        "InstanceId": content.get("InstanceId"),
-                        "ComputerName": content.get("ComputerName"),
-                        "PlatformType": content.get("PlatformType"),
-                        "PlatformName": content.get("PlatformName"),
-                        "AgentVersion": content.get("AgentVersion"),
-                        "IpAddress": content.get("IpAddress"),
-                        "ResourceType": content.get("ResourceType"),
-                        "InstanceStatus": content.get("InstanceStatus"),
-                    }
-                )
-            if not entity.get("Content"):
-                readable_entities.append({"Id": entity.get("Id")})
-
         outputs = {
             "AWS.SSM.Inventory(val.Id && val.Id == obj.Id)": entities,
             "AWS.SSM(true)": {"InventoryNextToken": response.get("NextToken")},
@@ -8118,18 +8085,8 @@ class SSM:
             outputs=remove_empty_elements(outputs),
             readable_output=tableToMarkdown(
                 "AWS SSM Inventory",
-                readable_entities,
-                headers=[
-                    "Id",
-                    "InstanceId",
-                    "ComputerName",
-                    "PlatformType",
-                    "PlatformName",
-                    "AgentVersion",
-                    "IpAddress",
-                    "ResourceType",
-                    "InstanceStatus",
-                ],
+                entities,
+                headers=["Id", "Data"],
                 headerTransform=pascalToSpace,
                 removeNull=True,
             ),
@@ -8151,19 +8108,19 @@ class SSM:
             CommandResults: Results containing the list of SSM associations with their
                 status, schedule, and target information.
         """
-        kwargs = remove_empty_elements(
-            {
-                "AssociationFilterList": [
-                    {"key": "Name", "value": args.get("name")},
-                    {"key": "AssociationId", "value": args.get("association_id")},
-                    {"key": "AssociationStatusName", "value": args.get("association_status_name")},
-                    {"key": "LastExecutedBefore", "value": args.get("last_executed_before")},
-                    {"key": "LastExecutedAfter", "value": args.get("last_executed_after")},
-                    {"key": "AssociationName", "value": args.get("association_name")},
-                    {"key": "ResourceGroupName", "value": args.get("resource_group_name")},
-                ],
-            }
-        )
+        filter_candidates = [
+            ("Name", args.get("name")),
+            ("AssociationId", args.get("association_id")),
+            ("AssociationStatusName", args.get("association_status_name")),
+            ("LastExecutedBefore", args.get("last_executed_before")),
+            ("LastExecutedAfter", args.get("last_executed_after")),
+            ("AssociationName", args.get("association_name")),
+            ("ResourceGroupName", args.get("resource_group_name")),
+        ]
+        association_filters = [{"key": k, "value": v} for k, v in filter_candidates if v is not None]
+
+        kwargs: Dict[str, Any] = {"AssociationFilterList": association_filters or None}
+        remove_nulls_from_dictionary(kwargs)
 
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
 
@@ -8400,13 +8357,12 @@ class SSM:
         Returns:
             CommandResults: Results containing the SSM document description.
         """
-        kwargs = remove_nulls_from_dictionary(
-            {
+        kwargs = {
                 "Name": args.get("document_name"),
                 "DocumentVersion": args.get("document_version"),
                 "VersionName": args.get("version_name"),
             }
-        )
+        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing SSM document with {kwargs=}")
 
         response = client.describe_document(**kwargs)
@@ -8505,7 +8461,7 @@ class SSM:
     @polling_function(
         name="aws-ssm-automation-execution-run",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
-        timeout=arg_to_number(demisto.args().get("timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
         requires_polling_arg=False,
     )
     def automation_execution_run_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
@@ -8527,8 +8483,7 @@ class SSM:
             raw_filters = parse_filter_field(args.get("targets"))
             targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
 
-            kwargs = remove_nulls_from_dictionary(
-                {
+            kwargs = {
                     "DocumentName": args.get("document_name"),
                     "DocumentVersion": args.get("document_version"),
                     "Mode": args.get("mode", "Auto"),
@@ -8540,7 +8495,7 @@ class SSM:
                     "Tags": parse_tag_field(args.get("tags")) or None,
                     "Targets": targets,
                 }
-            )
+            remove_nulls_from_dictionary(kwargs)
             print_debug_logs(client, f"Starting SSM automation execution with {kwargs=}")
 
             response = client.start_automation_execution(**kwargs)
@@ -8597,7 +8552,7 @@ class SSM:
     @polling_function(
         name="aws-ssm-automation-execution-cancel",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
-        timeout=arg_to_number(demisto.args().get("timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
         requires_polling_arg=True,
         polling_arg_name="include_polling",
     )
@@ -8641,12 +8596,11 @@ class SSM:
             return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
 
         # Initial execution — send cancel
-        kwargs = remove_nulls_from_dictionary(
-            {
-                "AutomationExecutionId": automation_execution_id,
-                "Type": args.get("type"),
-            }
-        )
+        kwargs: Dict[str, Any] = {
+            "AutomationExecutionId": automation_execution_id,
+            "Type": args.get("type"),
+        }
+        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Stopping SSM automation execution with {kwargs=}")
 
         client.stop_automation_execution(**kwargs)
@@ -8679,13 +8633,12 @@ class SSM:
         raw_filters = parse_filter_field(args.get("filters"))
         command_filters = [{"key": f["Name"], "value": f["Values"][0]} for f in raw_filters] if raw_filters else None
 
-        kwargs = remove_nulls_from_dictionary(
-            {
-                "CommandId": args.get("command_id"),
-                "InstanceId": args.get("instance_id"),
-                "Filters": command_filters,
-            }
-        )
+        kwargs: Dict[str, Any] = {
+            "CommandId": args.get("command_id"),
+            "InstanceId": args.get("instance_id"),
+            "Filters": command_filters,
+        }
+        remove_nulls_from_dictionary(kwargs)
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
 
         print_debug_logs(client, f"Listing SSM commands with {kwargs=}")
@@ -8732,7 +8685,7 @@ class SSM:
     @polling_function(
         name="aws-ssm-command-cancel",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
-        timeout=arg_to_number(demisto.args().get("timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+        timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
         requires_polling_arg=True,
         polling_arg_name="include_polling",
     )
@@ -8774,12 +8727,11 @@ class SSM:
             return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
 
         # Initial execution — send cancel
-        kwargs = remove_nulls_from_dictionary(
-            {
-                "CommandId": command_id,
-                "InstanceIds": argToList(args.get("instance_ids")) or None,
-            }
-        )
+        kwargs: Dict[str, Any] = {
+            "CommandId": command_id,
+            "InstanceIds": argToList(args.get("instance_ids")) or None,
+        }
+        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Cancelling SSM command with {kwargs=}")
 
         client.cancel_command(**kwargs)

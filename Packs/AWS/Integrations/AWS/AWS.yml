@@ -10289,11 +10289,17 @@ script:
       - contextPath: AWS.SSM.Association.ScheduleOffset
         description: Number of days to wait after the scheduled day to run an association.
         type: Number
+      - contextPath: AWS.SSM.Association.Duration
+        description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
+        type: Number
+      - contextPath: AWS.SSM.Association.TargetMaps
+        description: A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can't be specified together.
+        type: Unknown
       - contextPath: AWS.SSM.AssociationNextToken
         description: The token to use when requesting the next set of items.
         type: String
   - name: aws-ssm-inventory-list
-    description: Queries SSM inventory information for managed nodes. Returns instance information such as platform, agent version, IP address, and status.
+    description: Queries SSM inventory information for managed nodes.
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -10337,16 +10343,15 @@ script:
           - sa-east-1
           - us-gov-east-1
           - us-gov-west-1
-      - name: include_inactive_instance
-        description: "When set to true, includes instances with status Stopped, Terminated, or ConnectionLost in addition to Active instances."
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-        defaultValue: 'false'
       - name: filters
-        description: "One or more filters separated by ';' (for example, key=<key>,values=<values>,type=<type>;key=<key>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+        description: "One or more filters separated by ';' in the format name=<key>,values=<values>. Use a filter to return a more specific list of results. For example: name=AWS:InstanceInformation.InstanceStatus,values=Active."
+        required: false
+      - name: result_attributes
+        description: "A comma-separated list of inventory type names to return. For example: AWS:InstanceInformation,AWS:Application. If not specified, all inventory types are returned."
+        required: false
+        isArray: true
+      - name: aggregators
+        description: "A JSON string specifying aggregators to group inventory data. For example: [{\"Expression\": \"AWS:InstanceInformation.PlatformType\"}]."
         required: false
       - name: limit
         description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.
@@ -11289,7 +11294,7 @@ script:
         description: The interval in seconds between polling attempts.
         required: false
         defaultValue: '30'
-      - name: timeout
+      - name: polling_timeout
         description: The timeout in seconds until polling ends.
         required: false
         defaultValue: '600'
@@ -11469,7 +11474,7 @@ script:
         description: The interval in seconds between polling attempts.
         required: false
         defaultValue: '30'
-      - name: timeout
+      - name: polling_timeout
         description: The timeout in seconds until polling ends.
         required: false
         defaultValue: '600'
@@ -11693,7 +11698,7 @@ script:
         description: The interval in seconds between polling attempts.
         required: false
         defaultValue: '30'
-      - name: timeout
+      - name: polling_timeout
         description: The timeout in seconds until polling ends.
         required: false
         defaultValue: '600'
