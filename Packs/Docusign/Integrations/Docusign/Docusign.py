@@ -445,9 +445,8 @@ def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token
         raise DemistoException(f"Exception during get remaining audit users. Exception is {e!s}")
 
 
-def fetch_audit_user_data(last_run: dict, auth_client: AuthClient, test_mode: bool = False) -> tuple[dict, list]:
-    params = demisto.params()
-    limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
+def fetch_audit_user_data(last_run: dict, auth_client: AuthClient, limit: int, test_mode: bool = False) -> tuple[dict, list]:
+    limit = min(limit, MAX_USER_DATA_PER_FETCH)
     users_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
     users = []
     access_token = auth_client.access_token
@@ -676,13 +675,19 @@ def initiate_auth_client() -> AuthClient:
     return auth
 
 
-def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list]:
-    """
+def fetch_customer_events(last_run: dict, access_token: str, limit: int = MAX_CUSTOMER_EVENTS_PER_FETCH) -> tuple[dict, list]:
+    """Fetch customer events from Docusign Monitor API.
+
     Note to developer:
     MAX_CUSTOMER_EVENTS_PER_FETCH is set to 2000 due to API limitation.
     The limit parameter does not work as expected on the API side, so it is not currently supported in the configuration.
+
+    Args:
+        last_run: Previous fetch state containing cursor.
+        access_token: Valid access token for the Docusign API.
+        limit: Number of events to fetch. Defaults to MAX_CUSTOMER_EVENTS_PER_FETCH (2000).
     """
-    limit = MAX_CUSTOMER_EVENTS_PER_FETCH
+    limit = min(limit, MAX_CUSTOMER_EVENTS_PER_FETCH)
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching customer events: {last_run}")
         client = initiate_customer_events_client()
@@ -741,7 +746,8 @@ def fetch_events(auth_client: AuthClient) -> tuple[dict, list]:
     if USER_DATA_TYPE in selected_fetch_types:
         start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch audit users, Current audit users last_run:\n{last_run_user_data}")
-        last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data, auth_client)
+        user_data_limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
+        last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data, auth_client, limit=user_data_limit)
         events.extend(fetched_user_data)
 
         elapsed = time.perf_counter() - start
@@ -837,7 +843,61 @@ def validate_configuration_params() -> str:
 
 
 def test_module() -> str:
-    return validate_configuration_params()
+    """Test the Docusign integration configuration by validating parameters , test Auth and making an API call.
+    Returns:
+        str: 'ok' if the configuration is valid and the API call succeeds, otherwise an error message.
+    """
+    validation_result = validate_configuration_params()
+    if validation_result != "ok":
+        return validation_result
+
+    try:
+        auth_client = initiate_auth_client()
+    except DemistoException as e:
+        return str(e)
+
+    # Verify the access token works by calling the /oauth/userinfo endpoint
+    auth_client.get_user_info(auth_client.access_token)
+    demisto.debug(f"{LOG_PREFIX}test-module: API call to /oauth/userinfo succeeded.")
+    return "Test completed successfully."
+
+
+def get_events_command(auth_client: AuthClient) -> CommandResults:
+    """Manual command to fetch Docusign events and display them in the War Room.
+
+    Args:
+        auth_client: Authenticated AuthClient instance.
+
+    Returns:
+        CommandResults: Human-readable table and raw events.
+    """
+    args = demisto.args()
+    event_type: str = args.get("event_type")
+    limit: int = arg_to_number(args.get("limit", 10), required=True)  # type: ignore[assignment]
+
+    events = []
+
+    if event_type == CUSTOMER_EVENTS_TYPE:
+        _, customer_events = fetch_customer_events(last_run={}, access_token=auth_client.access_token, limit=limit)
+        events = customer_events
+
+    elif event_type == USER_DATA_TYPE:
+        _, user_events = fetch_audit_user_data(last_run={}, auth_client=auth_client, limit=limit, test_mode=True)
+        events = user_events
+
+    else:
+        raise DemistoException(f"Unknown event type: '{event_type}'. Must be '{CUSTOMER_EVENTS_TYPE}' or '{USER_DATA_TYPE}'.")
+
+    readable = tableToMarkdown(
+        f"Docusign {event_type} (fetched {len(events)})",
+        events,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable,
+        raw_response=events,
+    )
 
 
 def reset_access_token() -> CommandResults:
@@ -855,6 +915,11 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
         if command == "test-module":
+            return_results(
+                "Please run the command 'docusign-auth-test' to test the full authentication flow and API connectivity."
+            )
+
+        elif command == "docusign-auth-test":
             return_results(test_module())
 
         elif command == "fetch-events":
@@ -872,8 +937,15 @@ def main() -> None:  # pragma: no cover
         elif command == "docusign-generate-consent-url":
             return_results(generate_consent_url())
 
+        elif command == "docusign-get-events":
+            auth_client = initiate_auth_client()
+            return_results(get_events_command(auth_client))
+
         elif command == "docusign-reset-access-token":
             return_results(reset_access_token())
+
+        else:
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
         return_error(f"{LOG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")

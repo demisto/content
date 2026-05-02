@@ -253,18 +253,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: 'The bucket to which to apply the ACL.'
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: acl
@@ -337,18 +340,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the bucket for which to set the logging parameters.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: target_bucket
@@ -429,18 +435,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the bucket for which to set the logging parameters.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: status
@@ -499,6 +508,38 @@ script:
     - name: policy
       description: 'The bucket policy to apply as a JSON string.'
       required: true
+
+  - name: aws-s3-bucket-policy-put-quick-action
+    description: Enforces SSL-only access on the S3 bucket by applying a bucket policy that denies all non-HTTPS requests.
+    prettyname: Enforce SSL Only on Bucket
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        description: The name of the bucket to which the policy will be applied.
+        prettyname: Bucket Name
+        required: true
+        defaultValue: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: policy
+        description: The bucket policy to apply as a JSON string.
+        defaultValue: '{"Version":"2012-10-17","Statement":[{"Sid":"ForceSSLOnlyAccess","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::${asset.xdm.asset.name}","arn:aws:s3:::${asset.xdm.asset.name}/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}'
+        hidden: true
 
   - name: aws-s3-bucket-website-delete
     description: Removes the website configuration for a bucket.
@@ -559,18 +600,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the S3 bucket from which the website configuration will be removed.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
 
@@ -630,6 +674,38 @@ script:
           - BucketOwnerPreferred
           - ObjectWriter
           - BucketOwnerEnforced
+
+  - name: aws-s3-bucket-ownership-controls-put-quick-action
+    description: Switches the bucket to "Bucket Owner Enforced" mode. This remediation step aligns the bucket with AWS security best practices by making ACLs irrelevant and centralizing all access control under your account's policies.
+    prettyname: Set S3 ACL to BucketOwnerEnforced
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        description: The name of the S3 bucket to configure with Ownership Controls.
+        prettyname: Bucket Name
+        required: true
+        defaultValue: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: ownership_controls_rule
+        description: Specifies the ownership setting for objects uploaded to the bucket.
+        defaultValue: 'BucketOwnerEnforced'
+        hidden: true
 
   - name: aws-s3-bucket-website-get
     description: Returns the website configuration for a bucket.
@@ -1200,18 +1276,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: cluster_name
         prettyname: EKS Cluster
         description: The name of the Amazon EKS cluster to update.
         required: true
+        defaultValue: EKS Cluster
         prettypredefined:
           EKS Cluster: ${asset.xdm.asset.name}
       - name: logging
@@ -1229,18 +1308,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: cluster_name
         prettyname: EKS Cluster
         description: The name of the Amazon EKS cluster to update.
         required: true
+        defaultValue: EKS Cluster
         prettypredefined:
           EKS Cluster: ${asset.xdm.asset.name}
       - name: resources_vpc_config
@@ -1567,18 +1649,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
         required: true
+        defaultValue: RDS Cluster ID
         prettypredefined:
           RDS Cluster ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
@@ -1654,18 +1739,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_snapshot_identifier
         prettyname: RDS Cluster Snapshot ID
         description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
         required: true
+        defaultValue: RDS Cluster Snapshot ID
         prettypredefined:
           RDS Cluster Snapshot ID: ${asset.xdm.asset.name}
       - name: attribute_name
@@ -1687,18 +1775,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
         required: true
+        defaultValue: RDS Cluster ID
         prettypredefined:
           RDS Cluster ID: ${asset.xdm.asset.name}
       - name: deletion_protection
@@ -1823,18 +1914,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: publicly_accessible
@@ -1856,18 +1950,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: copy_tags_to_snapshot
@@ -1889,18 +1986,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: backup_retention_period
@@ -1922,18 +2022,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
@@ -1951,18 +2054,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: deletion_protection
@@ -1980,18 +2086,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: auto_minor_version_upgrade
@@ -2013,18 +2122,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
         description: 'The identifier of DB instance to modify.'
         required: true
+        defaultValue: RDS Instance ID
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: multi_az
@@ -2186,6 +2298,69 @@ script:
         description: The time the RDS event notification subscription was created.
         type: string
 
+  - name: aws-rds-event-subscription-modify-quick-action
+    description: Activates an existing RDS event subscription.
+    prettyname: Enable RDS Event Subscription
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: subscription_name
+        description: The name of the RDS event notification subscription.
+        prettyname: RDS Instance
+        required: true
+        defaultValue: RDS Instance
+        prettypredefined:
+          RDS Instance: ${asset.xdm.asset.name}
+      - name: enabled
+        description: Whether to activate the subscription.
+        defaultValue: 'true'
+        hidden: true
+    outputs:
+    - contextPath: AWS.RDS.EventSubscription.CustomerAwsId
+      description: The AWS customer account associated with the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
+      description: The RDS event notification subscription ID.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.Enabled
+      description: Whether the subscription is enabled. If True, the subscription is enabled.
+      type: boolean
+    - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
+      description: A list of event categories for the RDS event notification subscription.
+      type: array
+    - contextPath: AWS.RDS.EventSubscription.EventSubscriptionArn
+      description: The Amazon Resource Name (ARN) for the event subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.SnsTopicArn
+      description: The topic ARN of the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.SourceIdsList
+      description: A list of source IDs for the RDS event notification subscription.
+      type: array
+    - contextPath: AWS.RDS.EventSubscription.SourceType
+      description: The source type for the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.Status
+      description: The status of the RDS event notification subscription.
+      type: string
+    - contextPath: AWS.RDS.EventSubscription.SubscriptionCreationTime
+      description: The time the RDS event notification subscription was created.
+      type: string
+
   - name: aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
     description: Revokes public access to the RDS DB snapshot, making it private.
     prettyname: Set RDS Snapshot to Private
@@ -2196,18 +2371,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: db_snapshot_identifier
         prettyname: RDS Snapshot ID
         description: 'The identifier for the DB snapshot to modify the attributes for.'
         required: true
+        defaultValue: RDS Snapshot ID
         prettypredefined:
           RDS Snapshot ID: ${asset.xdm.asset.name}
       - name: attribute_name
@@ -2648,12 +2826,14 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: instance_id
@@ -2662,6 +2842,7 @@ script:
         prettypredefined:
           EC2 Instance ID: ${asset.xdm.asset.strong_id}
         required: true
+        defaultValue: EC2 Instance ID
 
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
@@ -2747,18 +2928,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: image_id
         prettyname: AMI ID
         description: 'The ID of the AMI.'
         required: true
+        defaultValue: AMI ID
         prettypredefined:
           AMI ID: ${asset.xdm.asset.strong_id}
       - name: attribute
@@ -3009,18 +3193,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: snapshot_id
         prettyname: EC2 Snapshot ID
         description: The ID of the EBS snapshot.
         required: true
+        defaultValue: EC2 Snapshot ID
         prettypredefined:
           EC2 Snapshot ID: ${asset.xdm.asset.name}
       - name: operation_type
@@ -3646,18 +3833,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: name
         prettyname: Name
         description: The name of the trail or trail ARN.
         required: true
+        defaultValue: Name
         prettypredefined:
           Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
@@ -3773,18 +3963,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: name
         prettyname: Name
         description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
         required: true
+        defaultValue: Name
         prettypredefined:
           Name: ${asset.xdm.asset.name}
 
@@ -6919,18 +7112,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the Amazon S3 bucket.
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: block_public_acls
@@ -6960,18 +7156,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: instance_id
         prettyname: EC2 Instance ID
         description: The ID of the instance.
         required: true
+        defaultValue: EC2 Instance ID
         prettypredefined:
           EC2 Instance ID: ${asset.xdm.asset.strong_id}
       - name: http_tokens
@@ -7950,3 +8149,4 @@ sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true
+internal: true

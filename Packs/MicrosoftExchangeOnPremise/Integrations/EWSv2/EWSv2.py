@@ -408,16 +408,13 @@ class SearchMailboxes(EWSService):
         return element
 
 
-def search_mailboxes(client: EWSClient, filter, limit=100, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
+def search_mailboxes(client: EWSClient, args: dict):  # pragma: no cover
     """
     Search mailboxes for items matching the given filter.
 
     Args:
         client (EWSClient): The EWS client object.
-        filter (str): The search filter to apply.
-        limit (int): The maximum number of results to return. Default value is 100.
-        mailbox_search_scope (str or list, optional): The mailbox search scope. Defaults to None.
-        email_addresses (str, optional): Comma-separated list of email addresses to search. Defaults to None.
+        args (dict): The command arguments.
 
     Returns:
         dict: A dictionary containing the search results.
@@ -425,6 +422,11 @@ def search_mailboxes(client: EWSClient, filter, limit=100, mailbox_search_scope=
     Raises:
         Exception: If both mailbox_search_scope and email_addresses are provided, or if no searchable mailboxes are found.
     """
+    filter = args.get("filter", "")
+    limit = args.get("limit", 100)
+    mailbox_search_scope = args.get("mailbox_search_scope")
+    email_addresses = args.get("email_addresses")
+
     mailbox_ids = []
     limit_argument = arg_to_number(limit)
     if not limit_argument:
@@ -1125,9 +1127,12 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT, dict_result)
 
 
-def fetch_attachments_for_message(
-    client: EWSClient, item_id: str, target_mailbox: Optional[str] = None, attachment_ids=[], identifiers_filter=""
-) -> list:  # pragma: no cover
+def fetch_attachments_for_message(client: EWSClient, args: dict) -> list:  # pragma: no cover
+    item_id = args.get("item_id", "")
+    target_mailbox = args.get("target_mailbox")
+    attachment_ids = args.get("attachment_ids", [])
+    identifiers_filter = args.get("identifiers_filter", "")
+
     identifiers_filter = argToList(identifiers_filter)
     account = client.get_account(target_mailbox or client.account_email)
     attachment_ids = argToList(attachment_ids)
@@ -1181,17 +1186,16 @@ def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
     return results
 
 
-def search_items_in_mailbox(
-    client: EWSClient,
-    query=None,
-    message_id=None,
-    folder_path="",
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    selected_fields="all",
-    surround_id_with_angle_brackets=True,
-):  # pragma: no cover
+def search_items_in_mailbox(client: EWSClient, args: dict):  # pragma: no cover
+    query = args.get("query")
+    message_id = args.get("message_id")
+    folder_path = args.get("folder_path", "")
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+    selected_fields = args.get("selected_fields", "all")
+    surround_id_with_angle_brackets = argToBoolean(args.get("surround_id_with_angle_brackets", True))
+
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
     if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != "<" and message_id[-1] != ">":
@@ -1282,7 +1286,10 @@ def parse_contact(contact):
     return contact_dict
 
 
-def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no cover
+def get_contacts(client: EWSClient, args: dict):  # pragma: no cover
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+
     account = client.get_account(target_mailbox or client.account_email)
     contacts = []
 
@@ -1297,7 +1304,10 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no c
     )
 
 
-def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pragma: no cover
+def find_folders(client: EWSClient, args: dict):  # pragma: no cover
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+
     account = client.get_account(target_mailbox or client.account_email)
     root = account.public_folders_root if is_public else account.root.tois  # pylint: disable=E1101
     root_collection = FolderCollection(account=account, folders=[root])
@@ -1318,9 +1328,13 @@ def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pra
     }
 
 
-def get_items_from_folder(
-    client: EWSClient, folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item="no"
-):  # pragma: no cover
+def get_items_from_folder(client: EWSClient, args: dict):  # pragma: no cover
+    folder_path = args.get("folder_path", "")
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+    get_internal_item = args.get("get_internal_item", "no")
+
     account = client.get_account(target_mailbox or client.account_email)
     limit = int(limit)
     get_internal_item = get_internal_item == "yes"
@@ -1348,7 +1362,10 @@ def get_items_from_folder(
     return get_entry_for_object("Items in folder " + folder_path, CONTEXT_UPDATE_EWS_ITEM, items_result, headers=hm_headers)
 
 
-def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no cover
+def get_items(client: EWSClient, args: dict):  # pragma: no cover
+    item_ids = args.get("item_ids", "")
+    target_mailbox = args.get("target_mailbox")
+
     account = client.get_account(target_mailbox or client.account_email)
     item_ids = argToList(item_ids)
 
@@ -1418,7 +1435,10 @@ def resolve_name_command(client: EWSClient, args):  # pragma: no cover
     )
 
 
-def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
+def get_item_as_eml(client: EWSClient, args: dict):  # pragma: no cover
+    item_id = args.get("item_id", "")
+    target_mailbox = args.get("target_mailbox")
+
     account = client.get_account(target_mailbox or client.account_email)
     item = client.get_item_from_mailbox(account, item_id)
 
@@ -1708,49 +1728,49 @@ def sub_main():  # pragma: no cover
             incidents = fetch_emails_as_incidents(client, skip_unparsable_emails, fetch_all_history, fetch_time)
             demisto.incidents(incidents)
         elif demisto.command() == "ews-get-attachment":
-            return_results(fetch_attachments_for_message(client, **args))
+            return_results(fetch_attachments_for_message(client, args))
         elif demisto.command() == "ews-delete-attachment":
-            return_results(delete_attachments_for_message(client, **args))
+            return_results(delete_attachments_for_message(client, args))
         elif demisto.command() == "ews-get-searchable-mailboxes":
-            return_results(get_searchable_mailboxes(client))
+            return_results(get_searchable_mailboxes(client, args))
         elif demisto.command() == "ews-search-mailboxes":
-            return_results(search_mailboxes(client, **args))
+            return_results(search_mailboxes(client, args))
         elif demisto.command() == "ews-move-item-between-mailboxes":
-            return_results(move_item_between_mailboxes(client, **args))
+            return_results(move_item_between_mailboxes(client, args))
         elif demisto.command() == "ews-move-item":
-            return_results(move_item(client, **args))
+            return_results(move_item(client, args))
         elif demisto.command() == "ews-delete-items":
-            return_results(delete_items(client, **args))
+            return_results(delete_items(client, args))
         elif demisto.command() == "ews-search-mailbox":
-            return_results(search_items_in_mailbox(client, **args))
+            return_results(search_items_in_mailbox(client, args))
         elif demisto.command() == "ews-get-contacts":
-            return_results(get_contacts(client, **args))
+            return_results(get_contacts(client, args))
         elif demisto.command() == "ews-get-out-of-office":
-            return_results(get_out_of_office_state(client, **args))
+            return_results(get_out_of_office_state(client, args))
         elif demisto.command() == "ews-recover-messages":
-            return_results(recover_soft_delete_item(client, **args))
+            return_results(recover_soft_delete_item(client, args))
         elif demisto.command() == "ews-create-folder":
-            return_results(create_folder(client, **args))
+            return_results(create_folder(client, args))
         elif demisto.command() == "ews-mark-item-as-junk":
-            return_results(mark_item_as_junk(client, **args))
+            return_results(mark_item_as_junk(client, args))
         elif demisto.command() == "ews-find-folders":
-            return_results(find_folders(client, **args))
+            return_results(find_folders(client, args))
         elif demisto.command() == "ews-get-items-from-folder":
-            return_results(get_items_from_folder(client, **args))
+            return_results(get_items_from_folder(client, args))
         elif demisto.command() == "ews-get-items":
-            return_results(get_items(client, **args))
+            return_results(get_items(client, args))
         elif demisto.command() == "ews-get-folder":
-            return_results(get_folder(client, **args))
+            return_results(get_folder(client, args))
         elif demisto.command() == "ews-get-autodiscovery-config":
             return_results(get_autodiscovery_config())
         elif demisto.command() == "ews-expand-group":
-            return_results(get_expanded_group(client, **args))
+            return_results(get_expanded_group(client, args))
         elif demisto.command() == "ews-mark-items-as-read":
-            return_results(mark_item_as_read(client, **args))
+            return_results(mark_item_as_read(client, args))
         elif demisto.command() == "ews-resolve-name":
             return_results(resolve_name_command(client, args))
         elif demisto.command() == "ews-get-items-as-eml":
-            return_results(get_item_as_eml(client, **args))
+            return_results(get_item_as_eml(client, args))
         elif demisto.command() == "send-mail":
             return_results(send_email(client, args))
         elif demisto.command() == "reply-mail":

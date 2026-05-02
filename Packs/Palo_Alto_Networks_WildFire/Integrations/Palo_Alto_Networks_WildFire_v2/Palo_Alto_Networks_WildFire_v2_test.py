@@ -713,32 +713,53 @@ def test_wildfire_get_pending_file_report(mocker):
 
 
 @pytest.mark.parametrize(
-    "api_key_source, platform, token, expected_agent, test_id",
+    "api_key_source, is_xsiam_platform, is_version_ge_8, token, expected_agent, test_id",
     [
-        # Happy path tests
-        ("xsoartim", "x2", "a" * 33, "xsoartim", "happy_path_xsoartim"),
-        ("xdr", "x2", "a" * 33, "xdr", "happy_path_xdr"),
-        ("pcc", "x2", "a" * 33, "pcc", "happy_path_pcc"),
-        ("prismaaccessapi", "x2", "a" * 33, "prismaaccessapi", "happy_path_prismaaccessapi"),
-        # Edge cases
-        ("", "x2", "a" * 33, "xdr", "edge_case_platform_x2"),
-        ("", "x3", "a" * 33, "", "edge_case_platform_other"),
-        ("", "x2", "a" * 32, "", "edge_case_token_length_32"),
-        # Error cases
-        ("unknown", "x2", "a" * 33, "", "error_case_unknown_api_key_source"),
-        ("xsoartim", "x2", "", "xsoartim", "error_case_empty_token"),
-        # Version specific cases
-        ("", "x2", "a" * 33, "xdr", "version_case_demisto_version_less_than_8"),
+        # Happy path: explicit api_key_source values are always returned directly (token length > 32)
+        ("xsoartim", False, False, "a" * 33, "xsoartim", "happy_path_xsoartim"),
+        ("xdr", False, False, "a" * 33, "xdr", "happy_path_xdr"),
+        ("pcc", False, False, "a" * 33, "pcc", "happy_path_pcc"),
+        ("prismaaccessapi", False, False, "a" * 33, "prismaaccessapi", "happy_path_prismaaccessapi"),
+        # Explicit api_key_source takes priority even with 32-char tokens
+        ("xsoartim", True, True, "a" * 32, "xsoartim", "explicit_source_with_32_char_token"),
+        ("xdr", True, True, "a" * 32, "xdr", "explicit_xdr_with_32_char_token"),
+        # XSIAM/v8+ auto-detection returns "xdr" even with 32-char license tokens (XSUP-64888)
+        ("", True, True, "a" * 32, "xdr", "xsiam_platform_32_char_license_token"),
+        # Edge case: empty api_key_source on XSIAM (x2 platform) returns "xdr"
+        ("", True, False, "a" * 33, "xdr", "edge_case_xsiam_platform"),
+        # Edge case: empty api_key_source on non-XSIAM, non-v8 platform with 32-char token returns ""
+        ("", False, False, "a" * 32, "", "edge_case_non_xsiam_32_char_token"),
+        # Edge case: empty api_key_source on non-XSIAM, non-v8 platform returns ""
+        ("", False, False, "a" * 33, "", "edge_case_non_xsiam_non_v8"),
+        # Version-specific: empty api_key_source on XSOAR >= 8 (non-XSIAM) returns "xdr"
+        ("", False, True, "a" * 33, "xdr", "version_case_xsoar_ge_8"),
+        # Version-specific: empty api_key_source on XSIAM with version >= 8 also returns "xdr"
+        ("", True, True, "a" * 33, "xdr", "version_case_xsiam_and_ge_8"),
+        # Version-specific: empty api_key_source on XSOAR >= 8 with 32-char token returns "xdr"
+        ("", False, True, "a" * 32, "xdr", "version_case_xsoar_ge_8_32_char_token"),
+        # Error case: unknown api_key_source (not in known list) returns ""
+        ("unknown", True, False, "a" * 33, "", "error_case_unknown_api_key_source"),
+        # Error case: empty token with known api_key_source still returns the source (token length 0 != 32)
+        ("xsoartim", False, False, "", "xsoartim", "error_case_empty_token"),
     ],
 )
-def test_get_agent(api_key_source, platform, token, expected_agent, test_id, mocker):
-    # Mocking the is_demisto_version_ge function
-    mocker.patch(
-        "Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge", return_value=test_id == "version_case_demisto_version_less_than_8"
-    )
+def test_get_agent(api_key_source, is_xsiam_platform, is_version_ge_8, token, expected_agent, test_id, mocker):
+    """
+    Given:
+        - api_key_source: the configured API key source
+        - is_xsiam_platform: whether the integration is running on XSIAM
+        - is_version_ge_8: whether the XSOAR/XSIAM version is >= 8
+        - token: the API token string
+    When:
+        - get_agent() is called
+    Then:
+        - The correct agent header value is returned based on the combination of inputs
+    """
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge", return_value=is_version_ge_8)
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_xsiam", return_value=is_xsiam_platform)
 
     # Act
-    agent = get_agent(api_key_source, platform, token)
+    agent = get_agent(api_key_source, token)
 
     # Assert
     assert agent == expected_agent, f"Test failed for {test_id}"

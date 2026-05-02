@@ -2404,9 +2404,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
         # in case of a single key, create a column table where each element is in a different row.
         headers = list(t.keys())
-        # if the value of the single key is a list, unpack it for creating a column table.
-        if isinstance(list(t.values())[0], list):
-            t = list(t.values())[0]
+        # if the value of the single key is a non-empty list, unpack it for creating a column table.
+        single_value = list(t.values())[0]
+        if isinstance(single_value, list) and single_value:
+            t = single_value
 
     if not isinstance(t, list):
         t = [t]
@@ -9169,6 +9170,13 @@ def is_xsoar_saas():
     """
     return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
 
+def is_platform():
+    """Determines whether running on a unified Cortex platform tenant.
+
+    :return: True iff the platform type is 'unified_platform'.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "unified_platform"
 
 def is_xsiam():
     """Determines whether or not the platform is XSIAM.
@@ -9176,16 +9184,13 @@ def is_xsiam():
     :return: True iff the platform is XSIAM.
     :rtype: ``bool``
     """
-    return demisto.demistoVersion().get("platform") == "x2"
+    XSIAM_PLATFORM_CODES = {"x1", "x3", "x5"}
+    
+    version_info = demisto.demistoVersion()
+    is_xsiam_legacy = version_info.get("platform") == "x2"
+    is_xsiam_platform = is_platform() and (version_info.get("module") in XSIAM_PLATFORM_CODES)
+    return is_xsiam_legacy or is_xsiam_platform
 
-
-def is_platform():
-    """Determines whether or not the platform is platform.
-
-    :return: True iff the platform is unified_platform.
-    :rtype: ``bool``
-    """
-    return demisto.demistoVersion().get("platform") == "unified_platform"
 
 
 def is_using_engine():

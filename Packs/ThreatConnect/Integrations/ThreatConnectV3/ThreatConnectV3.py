@@ -316,12 +316,14 @@ def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no co
 def tc_get_indicators(
     client: Client,
     tag: str = "",
+    tag_operator: str = "LIKE",
     page: str = "0",
     limit: str = "500",
     owners: str = "",
     indicator_id: str = "",
     summary: str = "",
     fields_to_return: list = None,
+    tql_filter: str = "",
 ) -> Any:  # pragma: no cover
     tql_prefix = ""
     if summary:
@@ -329,7 +331,10 @@ def tc_get_indicators(
         tql_prefix = "?tql="
 
     if tag:
-        tag = f' AND tag LIKE "%{tag}%"'
+        if tag_operator == "LIKE":
+            tag = f' AND tag LIKE "%{tag}%"'
+        else:
+            tag = f' AND tag {tag_operator} "{tag}"'
         tql_prefix = "?tql="
 
     if owners:
@@ -338,9 +343,12 @@ def tc_get_indicators(
     if indicator_id:
         indicator_id = " AND " + create_or_query(indicator_id, "id").replace('"', "")
         tql_prefix = "?tql="
+    if tql_filter:
+        tql_filter = f" AND {tql_filter}"
+        tql_prefix = "?tql="
     fields = set_fields(fields_to_return)
 
-    tql = f"{indicator_id}{summary}{owners}{tag}".replace(" AND ", "", 1)
+    tql = f"{indicator_id}{summary}{owners}{tag}{tql_filter}".replace(" AND ", "", 1)
     tql = urllib.parse.quote(tql.encode("utf8"))
     url = f"/api/v3/indicators{tql_prefix}{tql}{fields}&resultStart={page}&resultLimit={limit}"
     if not tql_prefix:
@@ -376,7 +384,8 @@ def tc_get_indicators_command(client: Client, args: dict):
     limit = args.get("limit", "500")
     page = args.get("page", "0")
     fields_to_return = argToList(args.get("fields_to_return") or [])
-    indicators = tc_get_indicators(client=client, owners=owners, limit=limit, page=page)
+    tql_filter = args.get("filter", "")
+    indicators = tc_get_indicators(client=client, owners=owners, limit=limit, page=page, tql_filter=tql_filter)
     ec, human_readable = create_context(indicators, include_dbot_score=True, fields_to_return=fields_to_return)
     return_results(
         {
@@ -481,6 +490,7 @@ def fetch_incidents(client: Client, *args) -> str:
     fields = set_fields(argToList(params.get("fields")))
     max_fetch = params.get("max_fetch", "200")
     group_type = params.get("group_type", ["Incident"])
+    tql_filter = params.get("tql_filter", "")
 
     last_run = demisto.getLastRun()
     demisto.debug(f"[ThreatConnect] last run: {last_run}")
@@ -503,6 +513,7 @@ def fetch_incidents(client: Client, *args) -> str:
         from_date=last_fetch_time,
         limit=max_fetch,
         sort="&sorting=dateAdded%20ASC",
+        tql_filter=tql_filter,
     )
     incidents: list = []
     for incident in response:
@@ -943,8 +954,11 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
     limit: str = args.get("limit", "500")
     page: str = args.get("page", "0")
     tag: str = args.get("tag") or ""
-    fields_to_return = argToList(args.get("fields_to_return") or []).append(["tags"])
-    indicators = tc_get_indicators(client, owners=owners, limit=limit, page=page, tag=tag, fields_to_return=fields_to_return)
+    tag_operator: str = args.get("operator", "LIKE")
+    fields_to_return = argToList(args.get("fields_to_return") or []) + ["tags"]
+    indicators = tc_get_indicators(
+        client, owners=owners, limit=limit, page=page, tag=tag, tag_operator=tag_operator, fields_to_return=fields_to_return
+    )
     ec, human_readable = create_context(indicators, include_dbot_score=True)
 
     return_results(
