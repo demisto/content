@@ -10855,7 +10855,7 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: filters
-        description: "A semicolon-separated list of filters in the format Key=<key>,Values=<value1>,<value2>. Valid filter keys: Name, Owner, PlatformTypes, DocumentType, TargetType, SchemaVersion, DocumentFormat. For example: Key=Owner,Values=Amazon;Key=DocumentType,Values=Command."
+        description: "A semicolon-separated list of filters in the format name=<key>,values=<value1>,<value2>. Valid filter keys: Name, Owner, PlatformTypes, DocumentType, TargetType, SchemaVersion, DocumentFormat. For example: name=Owner,values=Amazon;name=DocumentType,values=Command."
       - name: limit
         description: The maximum number of documents to return. Minimum 1, maximum 50. Default is 50.
       - name: next_token
@@ -10967,6 +10967,14 @@ script:
       - name: version_name
         description: An optional field specifying the version of the artifact associated with the document.
         required: false
+      - name: document_format
+        description: Returns the document in the specified format. The document format can be either JSON or YAML. JSON is the default format.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - YAML
+          - JSON
+          - TEXT
     outputs:
       - contextPath: AWS.SSM.Document.Hash
         description: The Sha256 or Sha1 hash created by the system when the document was created.

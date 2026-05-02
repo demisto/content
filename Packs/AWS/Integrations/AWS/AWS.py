@@ -8295,15 +8295,10 @@ class SSM:
         Returns:
             CommandResults: Results containing the list of SSM documents with pagination token.
         """
-        filters = args.get("filters")
+        raw_filters = parse_filter_field(args.get("filters"))
         kwargs = remove_empty_elements(
             {
-                "Filters": [
-                    {"Key": f.split("=")[0].strip(), "Values": [v.strip() for v in f.split("=")[1].split(",")]}
-                    for f in filters.split(";")
-                ]
-                if filters
-                else None,
+                "Filters": [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None,
             }
         )
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
@@ -8361,6 +8356,7 @@ class SSM:
                 "Name": args.get("document_name"),
                 "DocumentVersion": args.get("document_version"),
                 "VersionName": args.get("version_name"),
+                "DocumentFormat": args.get("document_format")
             }
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Describing SSM document with {kwargs=}")
