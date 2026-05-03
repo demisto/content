@@ -2,10 +2,8 @@
     "id": "ServiceNow Ticket",
     "version": -1,
     "fromVersion": "5.0.0",
-    "vcShouldIgnore": false,
     "locked": false,
-    "name": "ServiceNow Ticket",
-    "prevName": "ServiceNow Ticket",
+    "name": "ServiceNowTicket",
     "color": "#7C71F5",
     "hours": 0,
     "days": 0,
@@ -18,11 +16,5 @@
     "default": false,
     "autorun": false,
     "disabled": false,
-    "reputationCalc": 0,
-    "preProcessingScript": "",
-    "layout": "ServiceNow Ticket",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "reputationCalc": 0
 }
