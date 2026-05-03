@@ -426,7 +426,7 @@ script:
       - Other
       - Undetermined
       description: Disposition of the finding. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
-    - description: `The time associated with the finding event. For example: the _time of trhe finding'
+    - description: 'The time associated with the finding event. For example: the _time of trhe finding'
       name: finding_time
     description: Updates existing finding events in Splunk ES.
     execution: true
