@@ -22,8 +22,8 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Username
-  displaypassword: Password
+- display: Username / Client ID
+  displaypassword: Password / Client Secret
   hiddenusername: true
   name: credentials
   required: true
