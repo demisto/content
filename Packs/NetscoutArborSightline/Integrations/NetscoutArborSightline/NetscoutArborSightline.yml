@@ -34,6 +34,12 @@ configuration:
   name: max_fetch
   type: 0
   required: false
+- name: look_back
+  type: 0
+  required: false
+  defaultvalue: 1
+  display: Minutes to look back when fetching.
+  additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created.
 - additionalinfo: Alert class to filter by. Only one class can be configured at a time. If none is chosen, all classes will be fetched.
   display: Alert Class
   name: alert_class
