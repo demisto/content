@@ -459,7 +459,9 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
             [call(DetectorId="detector_id1", FindingIds=["finding_id1"])],
             [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1", updated_at="2022-09-28T10:12:39.923854")],
             {"detector_id1": "2022-09-28T10:12:39.923854"},
-            {"detector_id1": "finding_id1"},
+            # XSUP-67097: last_ids is now stored as list[str] of all ids sharing
+            # the cursor's UpdatedAt second, not just one id.
+            {"detector_id1": ["finding_id1"]},
             id="1 detector, 1 new finding",
         ),
         pytest.param(
@@ -479,7 +481,7 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
             [call(DetectorId="detector_id1", FindingIds=["finding_id1"])],
             [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1", updated_at="2022-09-28T10:12:39.923854")],
             {"detector_id1": "2022-09-28T10:12:39.923854"},
-            {"detector_id1": "finding_id1"},
+            {"detector_id1": ["finding_id1"]},
             id="1 detector, 1 new finding, 1 old finding",
         ),
         pytest.param(
@@ -553,7 +555,7 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                 update_finding_id(FINDING_OUTPUT.copy(), "finding_id2", updated_at="2022-07-29T10:12:39.923854"),
             ],
             {"detector_id1": "2022-09-28T10:12:39.923854", "detector_id2": "2022-07-29T10:12:39.923854"},
-            {"detector_id1": "finding_id1", "detector_id2": "finding_id2"},
+            {"detector_id1": ["finding_id1"], "detector_id2": ["finding_id2"]},
             id="1 old detector, 1 new detector, 1 new finding each",
         ),
     ],
@@ -608,3 +610,167 @@ def test_fetch_events(
     assert events == expected_events
     assert new_collect_from == expected_new_collect_from
     assert new_last_ids == expected_new_last_ids
+
+
+# ---------------------------------------------------------------------------
+# Regression test for XSUP-67097 / XSUP-67552 — same-second sibling-loss bug.
+#
+# Scenario: three findings (A, B, C) all share the same UpdatedAt timestamp.
+#   Run 1: AWS pagination returns [A, B] (limit=2 cuts off page 2).
+#          Cursor stored: last_ids[detector] = "B", collect_from = T.
+#   Run 2: Filter is updatedAt: {Gte: T} (inclusive), so AWS returns the same
+#          set again. AWS does NOT guarantee a stable order across calls when
+#          findings share an UpdatedAt second, so it returns [A, C, B].
+#          The dedup at AWSGuardDutyEventCollector.py:130-135 finds B, slices
+#          AFTER B's index → result is []. Finding C is permanently dropped.
+#
+# Expected (after fix): A, B fetched in run 1; C fetched in run 2.
+# Actual (with bug):    A, B fetched in run 1; C is LOST.
+# ---------------------------------------------------------------------------
+
+
+def test_same_second_sibling_loss_xsup_67097(mocker):
+    """
+    Given:
+        Three findings (A, B, C) on a single detector, all sharing the same
+        UpdatedAt second. Pagination splits them across two fetch cycles.
+
+    When:
+        Run 1 fetches with limit=2 and stores last_ids[det] = "B".
+        Run 2's mocked AWS returns the same findings in a different valid
+        intra-second order ([A, C, B]) — permitted by AWS GuardDuty since
+        sort is stable only on updatedAt, not on id.
+
+    Then:
+        After both runs, all three findings should be ingested exactly once.
+        With the current single-id dedup in get_events(), finding C is lost
+        on run 2 (the dedup slices AFTER B's index, dropping C).
+
+    Reference:
+        AWSGuardDutyEventCollector.py:130-135 (single-id dedup slice)
+        AWSGuardDutyEventCollector.py:158     (single-id storage)
+    """
+    same_second_ts = "2026-04-10T01:35:09.000000"
+    finding_a = update_finding_id(FINDING.copy(), "finding_A", updated_at=same_second_ts)
+    finding_b = update_finding_id(FINDING.copy(), "finding_B", updated_at=same_second_ts)
+    finding_c = update_finding_id(FINDING.copy(), "finding_C", updated_at=same_second_ts)
+
+    # ------------------------------------------------------------------ Run 1
+    # AWS returns [A, B] only (limit=2 stops the loop before page 2 of [C]).
+    run1_client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_A", "finding_B"]}],
+        get_findings_res=[{"Findings": [finding_a, finding_b]}],
+    )
+
+    events_run1, last_ids_after_run1, collect_from_after_run1 = get_events(
+        aws_client=run1_client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids={},
+        severity="Low",
+        limit=2,
+    )
+
+    run1_ids = sorted(e["Id"] for e in events_run1)
+    assert run1_ids == ["finding_A", "finding_B"], (
+        f"Sanity check failed: run 1 should ingest A and B, got {run1_ids}"
+    )
+    # Cursor state after run 1: with the XSUP-67097 fix, last_ids stores ALL ids
+    # whose UpdatedAt equals the cursor (the same-second siblings), not just one.
+    # Both A and B share the cursor second so both must be remembered.
+    assert last_ids_after_run1 == {"det1": ["finding_A", "finding_B"]}
+    assert collect_from_after_run1 == {"det1": same_second_ts}
+
+    # ------------------------------------------------------------------ Run 2
+    # AWS re-queries with Gte: T (inclusive). It returns the same three
+    # findings, but in a DIFFERENT intra-second order: [A, C, B].
+    # This is valid AWS behavior — sort key is updatedAt only, ties are
+    # not guaranteed stable across calls. The dedup in get_events() will
+    # find B at index 2 and slice AFTER it, producing []. C is dropped.
+    mocker.resetall()
+    run2_client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_A", "finding_C", "finding_B"]}],
+        # get_findings is only invoked if there are surviving ids after dedup.
+        # The bug means there will be none, so this side-effect is never hit.
+        # If a fix is applied, it WILL be hit with FindingIds=["finding_C"].
+        get_findings_res=[{"Findings": [finding_c]}],
+    )
+
+    events_run2, _, _ = get_events(
+        aws_client=run2_client,
+        collect_from=collect_from_after_run1,
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids=last_ids_after_run1,
+        severity="Low",
+        limit=10,
+    )
+
+    # ------------------------------------------------------------ Assertion
+    # Combined across both runs, every finding (A, B, C) must appear exactly
+    # once. Today's code drops C — this assertion fails as proof of the bug.
+    all_ingested_ids = sorted(e["Id"] for e in (events_run1 + events_run2))
+    assert all_ingested_ids == ["finding_A", "finding_B", "finding_C"], (
+        f"XSUP-67097 same-second sibling loss: expected all three findings "
+        f"to be ingested across the two fetch cycles, but got {all_ingested_ids}. "
+        f"Finding 'finding_C' was silently dropped because the dedup at "
+        f"AWSGuardDutyEventCollector.py:135 slices after the single stored "
+        f"last_id, losing any same-second siblings that AWS returned in a "
+        f"position before that last_id on the next page."
+    )
+
+
+def test_legacy_last_ids_str_shape_still_works(mocker):
+    """
+    Given:
+        A last_ids dict using the legacy str shape (single id per detector),
+        as written by integration versions prior to 1.3.67.
+
+    When:
+        get_events runs with that legacy state and AWS returns the stored id
+        again (because Gte is inclusive on updatedAt).
+
+    Then:
+        The legacy id is treated as already-seen and dropped from the new
+        ingestion. State is migrated forward — the new run writes the
+        list-shaped value going forward.
+
+    Reference:
+        AWSGuardDutyEventCollector._normalize_last_ids_entry — accepts
+        str | list | tuple | set, preserving compatibility with stored
+        state from older versions.
+    """
+    same_second_ts = "2026-04-10T01:35:09.000000"
+    # Only finding_new is constructed because the dedup drops finding_old before
+    # it ever reaches get_findings — there's no need to materialize the old one.
+    finding_new = update_finding_id(FINDING.copy(), "finding_new", updated_at=same_second_ts)
+
+    # Legacy single-string last_ids shape, as written by versions <1.3.67.
+    legacy_last_ids: dict = {"det1": "finding_old"}
+    legacy_collect_from = {"det1": same_second_ts}
+
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        # AWS returns both findings; old one must be deduped via legacy str.
+        list_finding_ids_res=[{"FindingIds": ["finding_old", "finding_new"]}],
+        get_findings_res=[{"Findings": [finding_new]}],
+    )
+
+    events, new_last_ids, _ = get_events(
+        aws_client=client,
+        collect_from=legacy_collect_from,
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids=legacy_last_ids,
+        severity="Low",
+        limit=10,
+    )
+
+    # Only the new finding ingests; the legacy id is recognized and dropped.
+    assert [e["Id"] for e in events] == ["finding_new"]
+    # State is migrated forward to the list shape. Both old and new share the
+    # cursor second, so both are remembered for the NEXT run's dedup.
+    assert new_last_ids == {"det1": ["finding_new", "finding_old"]}
