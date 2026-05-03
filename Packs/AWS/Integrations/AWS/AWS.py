@@ -8094,7 +8094,7 @@ class SSM:
         )
 
     @staticmethod
-    def association_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def associations_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Returns all State Manager associations in the current AWS account and Region.
 
@@ -8479,6 +8479,29 @@ class SSM:
             raw_filters = parse_filter_field(args.get("targets"))
             targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
 
+            # Build AlarmConfiguration from flat args
+            alarm_names = argToList(args.get("alarm_names"))
+            alarm_configuration = (
+                {
+                    "Alarms": [{"Name": name} for name in alarm_names],
+                    "IgnorePollAlarmFailure": argToBoolean(args.get("alarm_ignore_poll_failure", False)),
+                }
+                if alarm_names
+                else None
+            )
+
+            # Build TargetLocations from tag-style flat arg
+            raw_target_locations = parse_tag_field(args.get("target_locations")) if args.get("target_locations") else None
+            target_locations = (
+                [{loc["Key"]: loc["Value"] for loc in raw_target_locations}]
+                if raw_target_locations
+                else None
+            )
+
+            # Build TargetMaps from key-values format
+            raw_target_maps = parse_key_values_2_dict(args.get("target_maps")) if args.get("target_maps") else None
+            target_maps = [{k: v} for k, v in raw_target_maps.items()] if raw_target_maps else None
+
             kwargs = {
                     "DocumentName": args.get("document_name"),
                     "DocumentVersion": args.get("document_version"),
@@ -8490,6 +8513,10 @@ class SSM:
                     "Parameters": parse_key_values_2_dict(args.get("parameters")) if args.get("parameters") else None,
                     "Tags": parse_tag_field(args.get("tags")) or None,
                     "Targets": targets,
+                    "TargetLocations": target_locations,
+                    "TargetLocationsURL": args.get("target_locations_url"),
+                    "TargetMaps": target_maps,
+                    "AlarmConfiguration": alarm_configuration,
                 }
             remove_nulls_from_dictionary(kwargs)
             print_debug_logs(client, f"Starting SSM automation execution with {kwargs=}")
@@ -8682,11 +8709,11 @@ class SSM:
         name="aws-ssm-command-cancel",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
         timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
-        requires_polling_arg=True
+        requires_polling_arg=False,
     )
     def command_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
         """
-        Cancels the specified SSM command and optionally polls until the cancellation is confirmed.
+        Cancels the specified SSM command and polls until the cancellation is confirmed.
         Args:
             args (dict): Command arguments including command_id, optional instance_ids,
                 and first_run (hidden, used for polling state).
@@ -8738,6 +8765,7 @@ class SSM:
             partial_result=CommandResults(
                 readable_output=f"Cancellation request sent for command '{command_id}'.",
             ),
+            continue_to_poll=True,
             args_for_next_run=args,
         )
 
@@ -8908,7 +8936,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-fleet-modify": EC2.modify_fleet_command,
     "aws-ssm-association-version-list": SSM.association_versions_list_command,
     "aws-ssm-association-get": SSM.association_get_command,
-    "aws-ssm-association-list": SSM.association_list_command,
+    "aws-ssm-associations-list": SSM.associations_list_command,
     "aws-ssm-inventory-list": SSM.inventory_list_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,

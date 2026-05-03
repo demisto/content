@@ -9959,7 +9959,7 @@ script:
         type: String
       - contextPath: AWS.SSM.AssociationVersion.CreatedDate
         description: The date the association version was created.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.AssociationVersion.Name
         description: The name specified when the association was created.
         type: String
@@ -9969,6 +9969,9 @@ script:
       - contextPath: AWS.SSM.AssociationVersion.DocumentVersion
         description: The version of an SSM document used when the association version was created.
         type: String
+      - contextPath: AWS.SSM.AssociationVersion.Duration
+        description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
+        type: Number
       - contextPath: AWS.SSM.AssociationVersion.Parameters
         description: Parameters specified when the association version was created.
         type: Unknown
@@ -10090,6 +10093,9 @@ script:
       - contextPath: AWS.SSM.Association.DocumentVersion
         description: The document version.
         type: String
+      - contextPath: AWS.SSM.Association.Duration
+        description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
+        type: Number
       - contextPath: AWS.SSM.Association.AutomationTargetParameterName
         description: The parameter that defines how the automation will branch out. Required for associations that use an Automation runbook with rate controls.
         type: String
@@ -10098,16 +10104,16 @@ script:
         type: Unknown
       - contextPath: AWS.SSM.Association.Date
         description: The date when the association was made.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.Association.LastUpdateAssociationDate
         description: The date when the association was last updated.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.Association.LastExecutionDate
         description: The date on which the association was last run.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.Association.LastSuccessfulExecutionDate
         description: The last date on which the association was successfully run.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.Association.Status
         description: The status object containing Date, Name, Message, and AdditionalInfo fields.
         type: Unknown
@@ -10168,7 +10174,8 @@ script:
       - contextPath: AWS.SSM.Association.TriggeredAlarms.State
         description: The state of the CloudWatch alarm.
         type: String
-  - name: aws-ssm-association-list
+
+  - name: aws-ssm-associations-list
     description: "Returns all State Manager associations in the current AWS account and Region. An association is a binding between a document and a set of targets with a schedule. Required IAM Permission: ssm:ListAssociations."
     arguments:
       - name: account_id
@@ -11120,10 +11127,10 @@ script:
         type: String
       - contextPath: AWS.SSM.AutomationExecution.ExecutionStartTime
         description: The time the execution started.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.AutomationExecution.ExecutionEndTime
         description: The time the execution finished.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.AutomationExecution.ExecutedBy
         description: The IAM role ARN of the user who ran the Automation.
         type: String
@@ -11169,6 +11176,12 @@ script:
       - contextPath: AWS.SSM.AutomationExecution.Target
         description: The list of execution outputs as defined in the Automation runbook.
         type: String
+      - contextPath: AWS.SSM.AutomationExecution.TargetLocationsURL
+        description: A publicly accessible URL for a file that contains the TargetLocations body.
+        type: String
+      - contextPath: AWS.SSM.AutomationExecution.TargetMaps
+        description: A key-value mapping of document parameters to target resources.
+        type: List
       - contextPath: AWS.SSM.AutomationExecution.AutomationType
         description: Use this filter with DescribeAutomationExecutions. Specify either Local or CrossAccount.
         type: String
@@ -11183,7 +11196,7 @@ script:
         type: String
       - contextPath: AWS.SSM.AutomationExecution.ScheduledTime
         description: The date and time the Automation operation is scheduled to start.
-        type: String
+        type: Date
       - contextPath: AWS.SSM.AutomationExecution.Runbooks
         description: Information about the Automation runbooks that are run during a runbook workflow, containing DocumentName, DocumentVersion, Parameters, TargetParameterName, Targets, TargetMaps, MaxConcurrency, MaxErrors, and TargetLocations fields.
         type: Unknown
@@ -11278,6 +11291,27 @@ script:
       - name: targets
         description: "One or more targets separated by ';' in the format name=<key>,values=<value1>,<value2>. A key-value mapping to target resources."
         required: false
+      - name: target_locations
+        description: "A semicolon-separated list of target location entries in the format key=<field>,value=<value>. Supported fields: Accounts, Regions, ExecutionRoleName, TargetLocationMaxConcurrency, TargetLocationMaxErrors. For example: key=Accounts,value=123456789012;key=Regions,value=us-east-1."
+        required: false
+      - name: target_locations_url
+        description: A publicly accessible URL for a file that contains the TargetLocations body. Use this parameter if you want to specify a large number of targets without providing them inline.
+        required: false
+      - name: target_maps
+        description: "A semicolon-separated list of key-value maps in the format key=<key1>,values=<value1>,<value2>;key=<key2>,values=<value3>. Each entry maps document parameters to target resources."
+        required: false
+      - name: alarm_names
+        description: A comma-separated list of CloudWatch alarm names to apply to the automation execution.
+        required: false
+        isArray: true
+      - name: alarm_ignore_poll_failure
+        description: When true, the automation continues to run even if CloudWatch alarm status cannot be retrieved.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
       - name: tags
         description: "Optional metadata to assign to the execution. Semicolon-separated list in the format key=<key>,value=<value>."
         required: false
@@ -11451,7 +11485,7 @@ script:
         auto: PREDEFINED
         predefined:
           - Cancel
-          - CompleteExecution
+          - Complete
         defaultValue: Cancel
       - name: include_polling
         description: When set to true, polls the automation execution status until it reaches a terminal state.
