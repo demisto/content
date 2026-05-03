@@ -50,6 +50,11 @@ configuration:
   name: fetch_limit
   type: 0
   required: false
+- defaultvalue: '600'
+  display: Lookback in minutes
+  name: lookback
+  type: 0
+  required: false
 - defaultvalue: auto-discovery
   display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to automatically determine the format.
   name: time_format
