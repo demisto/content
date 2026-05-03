@@ -53,8 +53,9 @@ def test_fetch_incidents_command(mocker):
     alerts_http_response = http_responses["incidents"]
     alerts_command_results = command_results["fetched_incidents"]
 
-    mocker.patch.object(client, "list_alerts", return_value=alerts_http_response)
-    mocker.patch.object(client, "calculate_amount_of_incidents", return_value=40)
+    alerts = alerts_http_response["data"]
+    alerts.reverse()
+    mocker.patch.object(client, "fetch_paged_alerts", return_value=alerts)
     mocker.patch.object(demisto, "incidents")
 
     fetch_incidents_command(client)
@@ -126,45 +127,6 @@ def test_commands(mocker, function_to_mock, function_to_test, args, http_respons
 
     command_result: CommandResults = function_to_test(client, args)
     assert command_result.outputs == expected_command_results
-
-
-@pytest.mark.parametrize(
-    "http_response_key, expected_number_of_pages",
-    [("amount_of_incidents_vanilla_case", 25), ("amount_of_incidents_one_result", 1), ("amount_of_incidents_no_results", 0)],
-)
-def test_calculate_amount_of_incidents(mocker, http_response_key, expected_number_of_pages):
-    """
-    Given:
-     - Case A: A "regular" query that returns response with 25 pages.
-     - Case B: A query that returns response with only one page.
-     - Case C: A query that response with no pages and data.
-
-    When:
-    Calculating the amount of relevant incidents by counting the amount of pages
-
-    Then:
-     - Case A: Assert the the amount of incidents calculated is 25
-     - Case B: Assert the the amount of incidents calculated is 1
-     - Case C: Assert the the amount of incidents calculated is 0
-
-    """
-    mocked_http_response = http_responses[http_response_key]
-
-    mocker.patch.object(client, "list_alerts", return_value=mocked_http_response)
-    number_of_pages = client.calculate_amount_of_incidents("", {})
-    assert number_of_pages == expected_number_of_pages
-
-
-def test_calculate_amount_of_incidents_raise_error(mocker):
-    mocked_http_response = http_responses["amount_of_incidents_broken_last_page"]
-
-    mocker.patch.object(client, "list_alerts", return_value=mocked_http_response)
-
-    with pytest.raises(
-        DemistoException,
-        match="Could not calculate page size, last page number was not found:\nhttps://xsoar-example:57585/api/sp/v7/alerts/?",
-    ):
-        client.calculate_amount_of_incidents("", {})
 
 
 @pytest.mark.parametrize(
