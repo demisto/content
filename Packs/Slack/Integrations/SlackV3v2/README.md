@@ -169,6 +169,7 @@ Before you begin, ensure the following requirements are met:
 ### How to Enable
   
 To enable this feature, configure the following in the integration instance settings.
+
 1. Check **Enabled AI assistant**.
 2. **Long running instance** — The **Long running instance** checkbox must be enabled in the instance settings (required for listening to bot mentions in real time).
 
