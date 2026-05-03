@@ -18,8 +18,11 @@ import pytest
 
 from AkamaiProlexic import (
     CRITICAL_EVENTS,
+    DEFAULT_FIRST_FETCH,
     EVENTS,
+    MAX_EVENTS_PER_FETCH_CEILING,
     Client,
+    _parse_max_events_per_fetch,
     annotate_critical_event,
     extract_event_list,
     fetch_events,
@@ -244,6 +247,46 @@ class TestFilterAndDedup:
         assert all(e["SOURCE_LOG_TYPE"] == "EVENTS" for e in events)
         assert all("_time" in e for e in events)
 
+    def test_dedup_unions_when_cursor_does_not_advance(self):
+        """Regression test for PR review (44059): when no NEW events arrive but the
+        API re-emits previously-seen events at the same boundary timestamp, the
+        prior dedup ids must be preserved (UNION) rather than replaced.
+        """
+        raws = CRITICAL_RESPONSE["criticalEvents"]
+        # Seed last_run with the LAST event id so the cursor cannot advance.
+        seeded_id = make_event_id(CRITICAL_EVENTS, raws[-1], "firstOccur")
+        # Pretend we previously processed everything up to the latest timestamp.
+        last_fetch_iso = "2026-04-20T12:45:00.000000Z"
+        events, hw, retained = filter_and_dedup(
+            raw_events=raws,
+            event_type=CRITICAL_EVENTS,
+            last_fetch_iso=last_fetch_iso,
+            fetched_ids={seeded_id},
+            max_events=100,
+        )
+        # No fresh events accepted (ce-3 is dedup'd; ce-1/ce-2 are pre-cursor).
+        assert events == []
+        # High-water unchanged.
+        assert hw == last_fetch_iso
+        # Critical: prior id MUST survive into the next ``last_run``.
+        assert seeded_id in retained
+
+    def test_dedup_replaces_when_cursor_advances(self):
+        """Counter-test for the union case: when the cursor DOES advance, only
+        ids at the new boundary are retained (older ids cannot reappear)."""
+        raws = CRITICAL_RESPONSE["criticalEvents"]
+        # last_fetch_iso is well before everything; cursor will advance to ce-3.
+        events, hw, retained = filter_and_dedup(
+            raw_events=raws,
+            event_type=CRITICAL_EVENTS,
+            last_fetch_iso="2026-04-19T00:00:00.000000Z",
+            fetched_ids=set(),
+            max_events=100,
+        )
+        assert hw == "2026-04-20T12:45:00.000000Z"
+        # Only ce-3 sits at the new high-water mark.
+        assert retained == {make_event_id(CRITICAL_EVENTS, events[-1], "firstOccur")}
+
 
 # --------------------------------------------------------------------------- #
 # Source dispatch tests
@@ -415,6 +458,82 @@ class TestGetEventsCommand:
         assert kwargs["vendor"] == "akamai"
         assert kwargs["product"] == "prolexic"
         assert len(kwargs["events"]) == 2
+
+    def test_get_events_start_time_filters_old_events(self, mocker):
+        """PR review (44059): ``get-events`` must accept a ``start_time`` arg
+        that overrides the integration-level first-fetch.
+        """
+        client = _build_client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+
+        # ``start_time`` later than e-1 (09:00) but before e-2 (09:15) → only e-2
+        # should pass the filter.
+        events, _ = get_events_command(
+            client=client,
+            args={
+                "limit": "100",
+                "event_type": "Events",
+                "start_time": "2026-04-20T09:10:00Z",
+                "should_push_events": "false",
+            },
+            contract_id="C-1",
+            configured_types=[EVENTS],
+            first_fetch_iso="2026-04-19T00:00:00.000000Z",
+        )
+        assert {e["id"] for e in events} == {"e-2"}
+
+
+# --------------------------------------------------------------------------- #
+# Configuration-parameter validation
+# --------------------------------------------------------------------------- #
+
+
+class TestParseMaxEventsPerFetch:
+    """PR review (44059): ``max_events_per_fetch`` must reject 0 explicitly,
+    not silently rewrite it to the default.
+    """
+
+    def test_default_when_unset(self):
+        assert _parse_max_events_per_fetch(None) > 0
+        assert _parse_max_events_per_fetch("") > 0
+
+    def test_rejects_zero(self):
+        with pytest.raises(Exception, match="Maximum events per fetch"):
+            _parse_max_events_per_fetch("0")
+
+    def test_rejects_negative(self):
+        with pytest.raises(Exception, match="Maximum events per fetch"):
+            _parse_max_events_per_fetch("-5")
+
+    def test_rejects_non_numeric(self):
+        # ``arg_to_number`` raises ``ValueError`` with a message containing
+        # "is not a valid number" before our wrapper gets to relabel it.
+        with pytest.raises(Exception, match="not a valid number|must be an integer"):
+            _parse_max_events_per_fetch("abc")
+
+    def test_rejects_above_ceiling(self):
+        with pytest.raises(Exception, match="Maximum events per fetch"):
+            _parse_max_events_per_fetch(str(MAX_EVENTS_PER_FETCH_CEILING + 1))
+
+    def test_accepts_valid_integer(self):
+        assert _parse_max_events_per_fetch("500") == 500
+
+
+# --------------------------------------------------------------------------- #
+# Default-first-fetch behaviour (PR review 44059)
+# --------------------------------------------------------------------------- #
+
+
+class TestDefaultFirstFetch:
+    def test_default_is_now(self):
+        """The default first-fetch value should be 'now' so we do not back-fill
+        on the first run (XSIAM Event-Collector convention)."""
+        assert DEFAULT_FIRST_FETCH == "now"
+
+    def test_parse_first_fetch_now_returns_iso(self):
+        out = parse_first_fetch("now")
+        assert out.endswith("Z")
+        assert "T" in out
 
 
 # --------------------------------------------------------------------------- #

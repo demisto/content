@@ -6,6 +6,7 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2026-04-28T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
     ],
@@ -23,9 +24,5 @@
     "marketplaces": [
         "marketplacev2",
         "platform"
-    ],
-    "supportedModules": [
-        "agentix",
-        "xsiam"
     ]
 }

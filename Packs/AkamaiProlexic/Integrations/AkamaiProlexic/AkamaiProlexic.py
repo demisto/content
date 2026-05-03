@@ -14,8 +14,9 @@ Authentication is Akamai EdgeGrid HMAC-SHA-256, performed by the
 ``requests`` ``auth`` mechanism.
 """
 
+import traceback
 from collections.abc import Iterable
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -50,7 +51,9 @@ SOURCE_CONFIG: dict[str, dict[str, str]] = {
     },
 }
 
-DEFAULT_FIRST_FETCH = "3 days"
+# Default to "now" so the first fetch does not back-fill historical events
+# (matches the XSIAM Event-Collector convention used by OnePassword and others).
+DEFAULT_FIRST_FETCH = "now"
 DEFAULT_MAX_EVENTS_PER_FETCH = 1000
 MAX_EVENTS_PER_FETCH_CEILING = 10000
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -63,7 +66,15 @@ ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 class Client(BaseClient):
     """Thin wrapper around ``BaseClient`` that issues EdgeGrid-signed requests
-    to the Akamai Prolexic Analytics API."""
+    to the Akamai Prolexic Analytics API.
+
+    ``BaseClient`` is intentionally used (instead of ``ContentClient``) because
+    the Akamai EdgeGrid library ships a ``requests.auth.AuthBase`` implementation
+    that signs each call synchronously via ``self._session.auth`` — this is
+    natively supported by ``BaseClient`` but is not directly compatible with
+    the ``httpx``-based ``ContentClient``. This mirrors the pattern used by
+    the existing ``Akamai_SIEM`` pack.
+    """
 
     def __init__(
         self,
@@ -207,12 +218,21 @@ def filter_and_dedup(
     set of dedup ids that share that high-water-mark (to be persisted in
     ``last_run`` so the next fetch can skip them even if the API re-emits them
     at exactly the same timestamp).
+
+    Note: The returned id-set is computed defensively. When the high-water
+    mark does NOT advance (i.e. ``new_high_water == last_fetch_iso``) we
+    UNION with the input ``fetched_ids`` so that previously-seen ids at the
+    same boundary timestamp survive into the next ``last_run``. Replacing
+    them would risk re-ingestion if the API re-emitted the same event.
     """
     time_field = SOURCE_CONFIG[event_type]["time_field"]
     selected: list[dict[str, Any]] = []
     last_fetch_dt = arg_to_datetime(last_fetch_iso)
     new_high_water = last_fetch_iso
     new_high_water_dt = last_fetch_dt
+    skipped_invalid_ts = 0
+    skipped_old = 0
+    skipped_seen = 0
 
     # Sort ascending by timestamp so we walk the time window forward.
     def _sort_key(ev: dict[str, Any]) -> str:
@@ -221,14 +241,16 @@ def filter_and_dedup(
     for raw in sorted(raw_events, key=_sort_key):
         normalized_ts = normalize_event_timestamp(raw.get(time_field))
         if normalized_ts is None:
-            demisto.debug(f"Skipping {event_type} event with missing/invalid {time_field}: {raw!r}")
+            skipped_invalid_ts += 1
             continue
         event_dt = arg_to_datetime(normalized_ts)
         if last_fetch_dt is not None and event_dt is not None and event_dt < last_fetch_dt:
+            skipped_old += 1
             continue
 
         dedup_id = make_event_id(event_type, raw, time_field)
         if dedup_id in fetched_ids:
+            skipped_seen += 1
             continue
 
         enriched: dict[str, Any] = dict(raw)
@@ -246,12 +268,24 @@ def filter_and_dedup(
             new_high_water = normalized_ts
 
         if len(selected) >= max_events:
-            demisto.debug(f"Reached max_events={max_events} for {event_type}; truncating.")
             break
 
-    # Only retain dedup ids whose timestamp matches the new high-water mark —
-    # older ids cannot reappear once the lower bound moves past them.
-    retained_ids = {make_event_id(event_type, ev, time_field) for ev in selected if ev.get("_time") == new_high_water}
+    if skipped_invalid_ts or skipped_old or skipped_seen:
+        demisto.debug(
+            f"{event_type}: skipped {skipped_invalid_ts} invalid-timestamp, "
+            f"{skipped_old} pre-cursor and {skipped_seen} previously-seen events."
+        )
+    if len(selected) >= max_events:
+        demisto.debug(f"Reached max_events={max_events} for {event_type}; truncating.")
+
+    # Compute retained ids for next run.
+    new_run_ids = {make_event_id(event_type, ev, time_field) for ev in selected if ev.get("_time") == new_high_water}
+    if new_high_water == last_fetch_iso:
+        # Cursor did not advance — keep prior boundary ids so they cannot
+        # be re-ingested next run.
+        retained_ids = fetched_ids | new_run_ids
+    else:
+        retained_ids = new_run_ids
     return selected, new_high_water, retained_ids
 
 
@@ -349,15 +383,23 @@ def get_events_command(
     limit = arg_to_number(args.get("limit")) or 50
     requested_types = argToList(args.get("event_type")) or configured_types or [CRITICAL_EVENTS, EVENTS]
 
+    # ``start_time`` lets the caller override the lower-bound timestamp used
+    # for client-side filtering. If omitted we fall back to ``first_fetch``.
+    start_time_arg = args.get("start_time")
+    if start_time_arg:
+        start_iso = parse_first_fetch(str(start_time_arg))
+    else:
+        start_iso = first_fetch_iso
+
     all_events: list[dict[str, Any]] = []
     for event_type in requested_types:
         events, _ = fetch_source_events(
             client=client,
             event_type=event_type,
             contract_id=contract_id,
-            source_last_run={"last_fetch_ts": first_fetch_iso, "fetched_ids": []},
+            source_last_run={"last_fetch_ts": start_iso, "fetched_ids": []},
             max_events=limit,
-            first_fetch_iso=first_fetch_iso,
+            first_fetch_iso=start_iso,
         )
         all_events.extend(events)
 
@@ -401,6 +443,23 @@ def fetch_events(
 # --------------------------------------------------------------------------- #
 
 
+def _parse_max_events_per_fetch(raw: Any) -> int:
+    """Parse and validate the ``max_events_per_fetch`` parameter.
+
+    Distinguishes between "not supplied" (use default) and "explicitly 0/negative"
+    (reject). Using ``arg_to_number(...) or DEFAULT`` would silently rewrite
+    ``0`` to ``DEFAULT``, masking misconfiguration.
+    """
+    if raw in (None, ""):
+        return DEFAULT_MAX_EVENTS_PER_FETCH
+    parsed = arg_to_number(raw)
+    if parsed is None:
+        raise DemistoException(f"Maximum events per fetch must be an integer; got {raw!r}.")
+    if parsed <= 0 or parsed > MAX_EVENTS_PER_FETCH_CEILING:
+        raise DemistoException(f"Maximum events per fetch must be between 1 and {MAX_EVENTS_PER_FETCH_CEILING}; got {parsed}.")
+    return parsed
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -418,12 +477,6 @@ def main() -> None:  # pragma: no cover
         if event_type not in SOURCE_CONFIG:
             return_error(f"Unsupported event type configured: {event_type}")
 
-    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
-    if max_events_per_fetch <= 0 or max_events_per_fetch > MAX_EVENTS_PER_FETCH_CEILING:
-        return_error(
-            f"Maximum events per fetch must be between 1 and {MAX_EVENTS_PER_FETCH_CEILING}; " f"got {max_events_per_fetch}."
-        )
-
     if not base_url:
         return_error("Server URL is required.")
     if not contract_id:
@@ -437,6 +490,8 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command!r}")
     try:
+        max_events_per_fetch = _parse_max_events_per_fetch(params.get("max_events_per_fetch"))
+
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -482,6 +537,7 @@ def main() -> None:  # pragma: no cover
         raise NotImplementedError(f"Command {command!r} is not implemented.")
 
     except Exception as exc:  # noqa: BLE001
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command!r} command. Error: {exc!s}")
 
 

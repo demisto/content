@@ -2,6 +2,8 @@
 
 This pack provides the **Akamai Prolexic Event Collector** for Cortex XSIAM.
 
+## What does this pack do?
+
 Akamai Prolexic is a cloud-based DDoS protection service. The integration
 collects two complementary event streams from the Prolexic Analytics API:
 

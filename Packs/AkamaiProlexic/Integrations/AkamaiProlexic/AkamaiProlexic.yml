@@ -1,3 +1,5 @@
+name: AkamaiProlexic
+display: Akamai Prolexic
 category: Analytics & SIEM
 provider: Akamai Technologies
 sectionorder:
@@ -6,8 +8,6 @@ sectionorder:
 commonfields:
   id: AkamaiProlexic
   version: -1
-name: AkamaiProlexic
-display: Akamai Prolexic Event Collector
 description: Collects DDoS detection critical events and general events from Akamai Prolexic Analytics for Cortex XSIAM.
 fromversion: 8.4.0
 configuration:
@@ -48,29 +48,6 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- name: event_types_to_fetch
-  display: Event types to fetch
-  type: 16
-  defaultvalue: Critical Events,Events
-  options:
-  - Critical Events
-  - Events
-  required: true
-  section: Collect
-- name: first_fetch
-  display: First fetch time
-  defaultvalue: 3 days
-  additionalinfo: 'How far back to fetch events on the first run (e.g., "1 day", "12 hours").'
-  required: false
-  type: 0
-  section: Collect
-- name: max_events_per_fetch
-  display: Maximum events per fetch
-  defaultvalue: '1000'
-  additionalinfo: 'Per source. Maximum allowed: 10000.'
-  required: false
-  type: 0
-  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -83,6 +60,34 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  required: false
+  section: Collect
+- name: event_types_to_fetch
+  display: Event types to fetch
+  type: 16
+  defaultvalue: Critical Events,Events
+  options:
+  - Critical Events
+  - Events
+  required: true
+  section: Collect
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: now
+  additionalinfo: 'How far back to fetch events on the first run. Defaults to "now" (do not back-fill). Examples: "1 day", "12 hours".'
+  required: false
+  type: 0
+  section: Collect
+- name: max_events_per_fetch
+  display: Maximum events per fetch
+  defaultvalue: '1000'
+  additionalinfo: 'Per source. Maximum allowed: 10000.'
+  required: false
+  type: 0
+  section: Collect
 script:
   script: '-'
   type: python
@@ -105,6 +110,9 @@ script:
       - Critical Events
       - Events
       isArray: true
+      required: false
+    - name: start_time
+      description: 'The lower-bound timestamp for events to retrieve. Supports ISO 8601 (e.g., "2026-04-20T10:00:00Z") or relative time expressions (e.g., "3 days ago"). If omitted, the integration''s "First fetch time" value is used.'
       required: false
     - name: should_push_events
       description: If true, push retrieved events to Cortex XSIAM. Otherwise only display them.
