@@ -9896,7 +9896,7 @@ script:
         description: If Prefix was sent with the request, it is included in the response.
         type: string
   - name: aws-ssm-association-version-list
-    description: Retrieves all versions of an association for a specific association ID.
+    description: "Retrieves all versions of an association for a specific association ID. Required IAM Permission: ssm:ListAssociationVersions."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -10015,7 +10015,7 @@ script:
         description: The token to use when requesting the next set of items.
         type: String
   - name: aws-ssm-association-get
-    description: Describes the association for the specified target or managed node. Must provide either association_id, or both instance_id and document_name.
+    description: "Describes the association for the specified target or managed node. Must provide either association_id, or both instance_id and document_name. Required IAM Permission: ssm:DescribeAssociation."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -10169,7 +10169,7 @@ script:
         description: The state of the CloudWatch alarm.
         type: String
   - name: aws-ssm-association-list
-    description: Returns all State Manager associations in the current AWS account and Region. An association is a binding between a document and a set of targets with a schedule.
+    description: "Returns all State Manager associations in the current AWS account and Region. An association is a binding between a document and a set of targets with a schedule. Required IAM Permission: ssm:ListAssociations."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -10299,7 +10299,7 @@ script:
         description: The token to use when requesting the next set of items.
         type: String
   - name: aws-ssm-inventory-list
-    description: Queries SSM inventory information for managed nodes.
+    description: "Queries SSM inventory information for managed nodes. Required IAM Permission: ssm:GetInventory."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -10674,7 +10674,7 @@ script:
         type: String
 
   - name: aws-ssm-tag-add
-    description: Adds or overwrites one or more tags for the specified resource.
+    description: "Adds or overwrites one or more tags for the specified resource. Required IAM Permission: ssm:AddTagsToResource."
     execution: true
     arguments:
       - name: account_id
@@ -10741,7 +10741,7 @@ script:
         required: true
 
   - name: aws-ssm-tag-list
-    description: Returns a list of the tags assigned to the specified resource.
+    description: "Returns a list of the tags assigned to the specified resource. Required IAM Permission: ssm:ListTagsForResource."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -10814,7 +10814,7 @@ script:
         type: String
 
   - name: aws-ssm-documents-list
-    description: Returns all Systems Manager (SSM) documents in the current AWS account and Region.
+    description: "Returns all Systems Manager (SSM) documents in the current AWS account and Region. Required IAM Permission: ssm:ListDocuments."
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -11694,7 +11694,7 @@ script:
         hidden: true
 
   - name: aws-ssm-tag-remove
-    description: Removes tag keys from the specified resource.
+    description: "Removes tag keys from the specified resource. Required IAM Permission: ssm:RemoveTagsFromResource."
     execution: true
     arguments:
       - name: account_id
