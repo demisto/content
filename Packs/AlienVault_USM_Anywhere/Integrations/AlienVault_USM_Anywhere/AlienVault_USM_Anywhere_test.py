@@ -7,7 +7,7 @@ import pytest
 
 server_url = (
     "https://vigilant.alienvault.cloud/api/2.0/alarms?page=0&size=1"
-    "&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547567249000"
+    "&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547563649000"
 )
 
 
@@ -68,7 +68,9 @@ def approximate_compare(time1, time2):
     ],
 )
 def test_fetch_incidents(mocker, requests_mock, alarm, expected_incident):
-    mocker.patch.object(demisto, "params", return_value={"fetch_limit": "1", "url": "https://vigilant.alienvault.cloud/"})
+    mocker.patch.object(
+        demisto, "params", return_value={"fetch_limit": "1", "url": "https://vigilant.alienvault.cloud/", "lookback": "60"}
+    )
     mocker.patch.object(demisto, "getLastRun", return_value={"timestamp": "1547567249000"})
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "incidents")

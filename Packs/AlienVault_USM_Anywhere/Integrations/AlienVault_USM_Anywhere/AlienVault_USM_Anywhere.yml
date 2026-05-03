@@ -50,7 +50,7 @@ configuration:
   name: fetch_limit
   type: 0
   required: false
-- defaultvalue: '600'
+- defaultvalue: '10'
   display: Lookback in minutes
   name: lookback
   type: 0
