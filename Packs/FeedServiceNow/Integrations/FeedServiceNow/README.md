@@ -7,7 +7,8 @@ This is a feed integration for extracting indicators from ServiceNow.
 | Server URL | The format should be https://company.service-now.com/ | True |
 | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
 | Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
-| Password |  | True |
+| Username / Client ID |  | True |
+| Password / Client Secret |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch indicators |  | True |
