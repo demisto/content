@@ -29,7 +29,7 @@ Send messages and notifications to your Slack team and integrate with Slack's se
 
 <~PLATFORM>
 
-### Cortex AI Assistant in Slack
+### Cortex Agentic Assistant in Slack
 
 Interact with the **Cortex Agentic Assistant** directly from Slack. Mention the bot in any channel or thread to ask security questions, run investigations, and get AI-powered responses, all without leaving Slack.
 

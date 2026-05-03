@@ -142,7 +142,7 @@ messages and the steady flow of the integration.**
 2. Navigate to your Instance Settings page in Cortex XSOAR and click **Test**. A message should appear in the channel
    from your app.
 
-## Cortex AI Assistant in Slack
+## Cortex Agentic Assistant in Slack
 
 The Slack integration allows users to interact with the **Cortex Agentic Assistant** directly from Slack. Users can mention the bot in any channel or thread to ask security questions, run investigations, and receive AI-powered responses, all without leaving Slack.
 
@@ -150,7 +150,7 @@ The Slack integration allows users to interact with the **Cortex Agentic Assista
 
 ### Prerequisites
 
-Before using the AI Assistant feature, ensure the following requirements are met:
+Before you begin, ensure the following requirements are met:
 
 1. **Supported Cortex product version** — The tenant must be running one of the following versions (or later), depending on your product:
 
@@ -163,17 +163,18 @@ Before using the AI Assistant feature, ensure the following requirements are met
    | Cortex XSIAM | 2.10 / 3.5 |
 
 2. **Slack App installed** — The Slack app must be created and installed in your workspace as described in [Creating a Custom App](#creating-a-custom-app) and [Installing the App to Your Workspace](#installing-the-app-to-your-workspace).
-3. **Slack integration version 3.6.0 or later** — The SlackV3 integration pack version must be **3.6.0** or above.
-4. **User permissions** — Each Slack user who interacts with the AI Assistant must have the appropriate permissions to use the Cortex Agentic Assistant in the Cortex platform. Users without the required permissions will receive an error message when attempting to interact with the bot. Contact your Cortex administrator to ensure the relevant roles and permissions are assigned.
+3. **Slack content pack version 3.6.0 or later** — This includes the SlackV3 integration.
+4. **User permissions** — Each Slack user who interacts with the Cortex Agentic Assistant must have the appropriate permissions to use the Cortex Agentic Assistant in the Cortex platform. Users without the required permissions will receive an error message when attempting to interact with the bot. Contact your Cortex administrator to ensure the relevant roles and permissions are assigned.
 
 ### How to Enable
-
-1. **Enabled AI assistant** — In the integration instance settings, the **Enabled AI assistant** checkbox must be checked.
+  
+To enable this feature, configure the following in the integration instance settings.
+1. Check **Enabled AI assistant**.
 2. **Long running instance** — The **Long running instance** checkbox must be enabled in the instance settings (required for listening to bot mentions in real time).
 
 ### How It Works
 
-Once the prerequisites are met, users can interact with the AI Assistant by **mentioning the bot** (e.g., `@YourBotName <your question>`) in any Slack channel or thread where the bot has been added.
+Once the prerequisites are met, users can interact with the Cortex Agentic Assistant by mentioning the bot (for example, `@YourBotName <your question>`) in any Slack channel or thread where the bot has been added.
 
 > **Note:** Only users with the appropriate Cortex Agentic Assistant permissions can interact with the bot. Users without the required permissions will receive an error message prompting them to contact their administrator.
 
@@ -213,7 +214,7 @@ Feedback is sent back to the platform to help improve AI responses over time.
 
 #### Thread Locking
 
-- Each thread is **locked to the user who started the conversation**. Other users cannot interact with the assistant in the same thread.
+- Each thread is locked to the user who started the conversation. Other users cannot interact with the assistant in the same thread.
 - Other users will see a message indicating the thread is locked and can start their own conversation in a different thread.
 - To release a locked thread, any Cortex user can type `@BotName !reset`.
 
@@ -221,7 +222,7 @@ Feedback is sent back to the platform to help improve AI responses over time.
 
 Conversations automatically expire after 14 days of inactivity. After this period, the thread is unlocked, and a new conversation can begin.
 
-## Backwards Compatibility with Slack V2
+## Backward Compatibility with Slack V2
 
 Slack V3 contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This
 version is intended to provide customers with more granular control over the Slack integration by enabling the
