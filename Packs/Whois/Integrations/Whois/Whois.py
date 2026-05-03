@@ -9,7 +9,7 @@ import ipwhois
 from typing import Dict, List, Optional, Type
 import urllib
 import whois
-from whois.parser import WhoisError  # pylint: disable=E0401,E0611
+from whois.parser import PywhoisError  # pylint: disable=E0401,E0611
 import dateparser.search
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
@@ -1878,7 +1878,7 @@ whois_exception_mapping: Dict[Type, str] = {
     WhoisInvalidDomain: "general_error",
     WhoisEmptyResponse: "service_error",
     TypeError: "general_error",
-    WhoisError: "service_error",
+    PywhoisError: "service_error",
 }
 
 
@@ -3383,7 +3383,7 @@ def whois_command(reliability: str) -> List[CommandResults]:
             results.append(result)
 
         except (
-            WhoisError,
+            PywhoisError,
             WhoisEmptyResponse,
         ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
@@ -3451,7 +3451,7 @@ def domain_command(reliability: str) -> List[CommandResults]:
             results.append(result)
 
         except (
-            WhoisError,
+            PywhoisError,
             WhoisEmptyResponse,
         ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
@@ -3754,7 +3754,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                 )
             )
         except (
-            WhoisError,
+            PywhoisError,
             WhoisEmptyResponse,
         ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
