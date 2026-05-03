@@ -1,3 +1,4 @@
+import time
 from abc import ABC
 from collections import defaultdict
 from dataclasses import dataclass
@@ -389,8 +390,17 @@ class BatchExecutor:
         """
         brands_to_run = brands_to_run or []
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
-        demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; using-brands={brands_to_run or 'all'}")
+        command_names = [command.name for command in commands]
+        demisto.debug(
+            f"[Timing][execute_batch] Executing batch: {len(commands_to_execute)} commands "
+            f"({command_names}); using-brands={brands_to_run or 'all'}"
+        )
+        batch_start = time.perf_counter()
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
+        batch_elapsed = time.perf_counter() - batch_start
+        demisto.debug(
+            f"[Timing][execute_batch] demisto.executeCommandBatch for commands {command_names} " f"took {batch_elapsed:.3f}s"
+        )
         demisto.debug("Batch returned [" + ", ".join(str(len(r)) for r in results) + "] results before processing")
         return self.process_results(results, commands, verbose)
 
@@ -809,6 +819,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         verbose: bool = False,
         commands: list[list[Command]] | None = None,
         verbose_outputs: list[str] | None = None,
+        redundant_error_raising: bool = False,
     ):
         """
         Initializes the reputation aggregated command.
@@ -830,11 +841,13 @@ class ReputationAggregatedCommand(AggregatedCommand):
             verbose (bool): Whether to add verbose outputs.
             commands (list[list[Command]]): List of batches of commands to run.
             verbose_outputs (list[str]): verbose outputs to add to this current verbose.
+            redundant_error_raising (bool): will return error results only if all commands failed - for Agentix action only.
         """
         self.external_enrichment = external_enrichment
         self.final_context_path = final_context_path
         self.additional_fields = additional_fields
         self.indicator_instances = indicator_instances
+        self.redundant_error_raising = redundant_error_raising
         # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich
         self.indicator_mapping = {
             indicator_instance.extracted_value: indicator_instance
@@ -1022,9 +1035,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         query = f"type:{self.indicator_schema.type} and ({indicator_values})"
         try:
             demisto.debug(f"Executing TIM search with query: {query}")
+            searcher_start = time.perf_counter()
             searcher = IndicatorsSearcher(query=query)
             iocs = flatten_list([res.get("iocs", []) for res in searcher])
-            demisto.debug(f"TIM search returned {len(iocs)} raw IOCs.")
+            searcher_elapsed = time.perf_counter() - searcher_start
+            demisto.debug(
+                f"[Timing][search_indicators_in_tim] IndicatorsSearcher returned {len(iocs)} raw IOCs "
+                f"in {searcher_elapsed:.3f}s"
+            )
 
             if not iocs:
                 return []
@@ -1387,10 +1405,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         if not entries:
             return False
-
-        all_failed_or_no_match = all(
-            entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries
-        )
+        if self.redundant_error_raising:
+            all_failed_or_no_match = all(entry.status == Status.FAILURE for entry in entries)
+        else:
+            all_failed_or_no_match = all(
+                entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries
+            )
         any_failure = any(entry.status == Status.FAILURE for entry in entries)
         return all_failed_or_no_match and any_failure
 
@@ -1521,9 +1541,11 @@ def create_and_extract_indicators(
     invalid_set: set[str] = set()
     expected_type_lower = indicator_type.lower()
 
+    total_start = time.perf_counter()
     for raw in data:
         if raw in valid_set or raw in invalid_set:
             continue
+        single_start = time.perf_counter()
         instances_for_raw, hr = _process_single_input(
             raw=raw,
             expected_type_lower=expected_type_lower,
@@ -1531,8 +1553,17 @@ def create_and_extract_indicators(
             valid_set=valid_set,
             invalid_set=invalid_set,
         )
+        single_elapsed = time.perf_counter() - single_start
+        demisto.debug(
+            f"[Timing][create_and_extract_indicators] extractIndicators for input '{raw}' " f"took {single_elapsed:.3f}s"
+        )
         indicators_instances.extend(instances_for_raw)
         full_hr.append(hr)
+    total_elapsed = time.perf_counter() - total_start
+    demisto.debug(
+        f"[Timing][create_and_extract_indicators] Total one-by-one extractIndicators for "
+        f"{len(data)} inputs took {total_elapsed:.3f}s"
+    )
 
     if not valid_set:
         raise ValueError("No valid indicators found in the input data.")
@@ -1541,6 +1572,72 @@ def create_and_extract_indicators(
     demisto.debug(f"Invalid Inputs: {invalid_set}")
 
     return indicators_instances, "".join(full_hr)
+
+
+# This function is relevant only for the Agentix enrichment scripts
+def create_and_extract_indicators_batch(data: list[str], indicator_type: str) -> tuple[list[IndicatorInstance], str]:
+    """
+    Extract and validate a batch of indicator values using a single `extractIndicators` call,
+    then build IndicatorInstance objects for every valid indicator of the requested type.
+    - Processes the entire list in a single `extractIndicators` call (one round-trip).
+    - Does NOT raise when no valid indicators are found – it returns an empty list of
+      instances along with an explanatory human-readable string.
+
+    Args:
+        data: List of raw string values to validate.
+        indicator_type: The expected indicator type (e.g., "IP", "URL", "Domain").
+
+    Returns:
+        A tuple of:
+          - list[IndicatorInstance]: Default-SUCCESS-state IndicatorInstance objects for every
+            valid extracted indicator matching `indicator_type`. Empty when none are found.
+          - str: Human-readable markdown describing the batch extraction result.
+
+    Raises:
+        DemistoException: If extractIndicators raises an exception (actual failure).
+    """
+    hr_header = f"\n\n### Result for name=extractIndicators (batch) args='text': {data}\n\n"
+
+    if not data:
+        demisto.debug("[create_and_extract_indicators_batch] Empty data provided, returning empty list.")
+        return [], hr_header + "No input data provided."
+
+    demisto.debug(f"[create_and_extract_indicators_batch] Validating {len(data)} values for type '{indicator_type}'.")
+
+    try:
+        batch_extract_start = time.perf_counter()
+        results = execute_command("extractIndicators", {"text": data}, extract_contents=False)
+        batch_extract_elapsed = time.perf_counter() - batch_extract_start
+        demisto.debug(
+            f"[Timing][create_and_extract_indicators_batch] extractIndicators batch call for "
+            f"{len(data)} inputs took {batch_extract_elapsed:.3f}s"
+        )
+    except Exception as ex:
+        raise DemistoException(f"Failed to validate input using extractIndicators: {ex}") from ex
+
+    if not results:
+        demisto.debug(
+            "[create_and_extract_indicators_batch] extractIndicators returned empty/None results, returning empty list."
+        )
+        return [], hr_header + "extractIndicators returned no results."
+
+    extracted_ctx: dict = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
+    demisto.debug(f"[create_and_extract_indicators_batch] Extracted context keys: {list(extracted_ctx.keys())}")
+
+    expected_type_lower = indicator_type.lower()
+    matched_indicators, _ = _split_expected_and_other_types(extracted_ctx, expected_type_lower)
+    hr = hr_header + tableToMarkdown(name="Extracted Indicators", t=extracted_ctx)
+
+    if not matched_indicators:
+        demisto.debug("[create_and_extract_indicators_batch] extractIndicators No valid indicators returned.")
+        return [], hr
+
+    indicator_instances = [IndicatorInstance(raw_input=value, extracted_value=value) for value in matched_indicators]
+
+    demisto.debug(
+        f"[create_and_extract_indicators_batch] Found {len(indicator_instances)} valid indicators " f"of type '{indicator_type}'."
+    )
+    return indicator_instances, hr
 
 
 def _process_single_input(

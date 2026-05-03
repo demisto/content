@@ -1,3 +1,6 @@
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: TaegisXDRv2
   version: -1
@@ -17,53 +20,64 @@ configuration:
   - US3 (Foxtrot)
   - EU (Echo)
   additionalinfo: Used to determine the URL and API endpoint to utilize for your tenant
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Client ID
   name: client_id
   type: 4
   required: true
+  section: Connect
 - display: Client Secret
   name: client_secret
   type: 4
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "15"
   type: 0
   required: false
   additionalinfo: The maximum limit is 200.
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
+  section: Collect
 - defaultvalue: 1 day
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Include Assets in Fetch
   name: include_assets
   defaultvalue: "false"
   type: 8
   required: false
   additionalinfo: An error can occur when the API is slow or there are a large numbers of assets being added to a new incident/investigation. Disabling this will fetch incidents without including asset information, allowing time for the investigation creation to be completed.
+  section: Collect
 - display: Fetch Incident Type
   name: fetch_type
   type: 15
@@ -72,6 +86,7 @@ configuration:
   - alerts
   - investigations
   additionalinfo: The type of Taegis asset to fetch when using fetch-incidents
+  section: Collect
 script:
   script: ''
   type: python
@@ -531,7 +546,70 @@ script:
     outputs:
     - contextPath: TaegisXDR.ShareLink
       description: Results from creating the ShareLink.
-    description: Create a ShareLink to a Taegis element, such as an alert or investigation.
+    description: Creates a ShareLink to a Taegis element, such as an alert or investigation.
+  - name: taegis-fetch-events
+    arguments:
+    - name: ids
+      description: A comma-separated list of event IDs to return.
+      isArray: true
+    - name: cql_query
+      description: The Taegis CQL query string to use for searching events (e.g. "FROM process EARLIEST=-1d | head 10"). If not defined, defaults to "FROM * EARLIEST=-1m | head 50".
+    - name: limit
+      description: The maximum number of events to return. For standard CQL searches, the limit is passed as a GraphQL variable. For user-provided queries, embed the limit directly in the CQL string (e.g., "| head 100").
+      defaultValue: "50"
+    - name: offset
+      description: The number of events to skip before returning results.
+      defaultValue: "0"
+    - name: next
+      description: The pagination cursor token returned from a previous taegis-fetch-events call. Use this to retrieve the next page of results.
+    - name: fields
+      description: The fields to return from the query.
+    - name: tenant_id
+      description: The tenant to run against if using an MSP. If no tenant is provided, the tenant of the generated credentials is used.
+    outputs:
+    - contextPath: TaegisXDR.Events.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.event_type
+      description: The type of event (e.g., process, netflow, dnsquery).
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.event_time
+      description: The timestamp when the event occurred.
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.tenant_id
+      description: The tenant ID associated with the event.
+      type: String
+    - contextPath: TaegisXDR.Events.metadata.sensor_id
+      description: The sensor ID that generated the event.
+      type: String
+    - contextPath: TaegisXDR.Events.parent_process_id
+      description: The parent process ID associated with the event (process events).
+      type: String
+    - contextPath: TaegisXDR.Events.image_path
+      description: The image/executable path associated with the event (process events).
+      type: String
+    - contextPath: TaegisXDR.Events.commandline
+      description: The command line string associated with the event (process events).
+      type: String
+    - contextPath: TaegisXDR.Events.username
+      description: The username associated with the event.
+      type: String
+    - contextPath: TaegisXDR.Events.source_ip
+      description: The source IP address (netflow events).
+      type: String
+    - contextPath: TaegisXDR.Events.destination_ip
+      description: The destination IP address (netflow events).
+      type: String
+    - contextPath: TaegisXDR.Events.destination_port
+      description: The destination port number (netflow events).
+      type: Number
+    - contextPath: TaegisXDR.Events.protocol
+      description: The network protocol (netflow events).
+      type: String
+    - contextPath: TaegisXDR.Events.next
+      description: The pagination cursor token for retrieving the next page of results.
+      type: String
+    description: 'This is a beta command, which lets you implement and test pre-release software. Since the command is beta, it might contain bugs. Updates to the command during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the command to help us identify issues, fix them, and continually improve. Fetches Taegis events using a CQL query string or a list of event IDs. Supports pagination via the next cursor token returned in results. If no cql_query is provided, defaults to "FROM * EARLIEST=-1m | head 50".'
   - name: taegis-add-evidence-to-investigation
     arguments:
     - name: id
@@ -548,7 +626,7 @@ script:
     - contextPath: TaegisXDR.InvestigationEvidenceUpdate
       description: The investigation that received the update.
     description: Add alerts and events to an existing investigation.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   runonce: false
   subtype: python3
