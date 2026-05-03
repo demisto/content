@@ -432,7 +432,7 @@ script:
       - "true"
       - "false"
     - name: app_role_assignment_required
-      description: Specifies whether an appRoleAssignment to a user or group is required before Azure AD will issue a user or access token to the application. Not nullable.
+      description: Specifies whether an appRoleAssignment to a user or group is required before Microsoft Entra ID will issue a user or access token to the application. Not nullable.
       required: false
       auto: PREDEFINED
       predefined:
@@ -442,7 +442,7 @@ script:
       description: The display name for the service principal.
       required: false
     - name: preferred_single_sign_on_mode
-      description: Specifies the single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, saml, external, and oidc.
+      description: Specifies the single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, saml, external, and oidc.
       required: false
       auto: PREDEFINED
       predefined:

@@ -330,21 +330,10 @@ Update the properties of servicePrincipal object.
 | id | The application id to update. Can be retrieved via the msgraph-apps-service-principal-list command. | Optional |
 | app_id | The application client id to update. Can be retrieved via the msgraph-apps-service-principal-list command. | Optional |
 | account_enabled | true if the service principal account is enabled; otherwise, false. Possible values are: true, false. | Optional |
-| add_ins | Defines custom behavior that a consuming service can use to call an app in specific contexts. For example, applications that can render file streams may set the addIns property for its "FileHandler" functionality. This will let services like Microsoft 365 call the application in the context of a document the user is working on. | Optional |
-| alternative_names | Used to retrieve service principals by subscription, identify resource group and full resource ids for managed identities. | Optional |
-| app_role_assignment_required | Specifies whether an appRoleAssignment to a user or group is required before Azure AD will issue a user or access token to the application. Not nullable. Possible values are: true, false. | Optional |
-| app_roles | The application roles exposed by the associated application. For more information see the appRoles property definition on the application resource. Not nullable. | Optional |
-| custom_security_attributes | An open complex type that holds the value of a custom security attribute that is assigned to a directory object. To update this property, the calling principal must be assigned the Attribute Assignment Administrator role and must be granted the CustomSecAttributeAssignment.ReadWrite.All permission. | Optional |
+| app_role_assignment_required | Specifies whether an appRoleAssignment to a user or group is required before Microsoft Entra ID will issue a user or access token to the application. Not nullable. Possible values are: true, false. | Optional |
 | display_name | The display name for the service principal. | Optional |
-| home_page | Home page or landing page of the application. | Optional |
-| key_credentials | The collection of key credentials associated with the service principal. Not nullable. | Optional |
-| logout_url | Specifies the URL that will be used by Microsoft's authorization service to logout an user using front-channel, back-channel or SAML logout protocols. | Optional |
-| oauth2_permission_scopes | The OAuth 2.0 permission scopes exposed by the associated application. For more information see the oauth2PermissionScopes property definition on the application resource. Not nullable. | Optional |
-| preferred_single_sign_on_mode | Specifies the single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, saml, external, and oidc. Possible values are: password, saml, external, oidc. | Optional |
+| preferred_single_sign_on_mode | Specifies the single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, saml, external, and oidc. Possible values are: password, saml, oidc. | Optional |
 | reply_urls | The URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. Not nullable. | Optional |
-| service_principal_names | Contains the list of identifiersUris, copied over from the associated application. Additional values can be added to hybrid applications. These values can be used to identify the permissions exposed by this app within Azure AD. | Optional |
-| tags | Custom strings that can be used to categorize and identify the application. Not nullable. | Optional |
-| token_encryption_key_id | Specifies the keyId of a public key from the keyCredentials collection. When configured, Azure AD issues tokens for this application encrypted using the key specified by this property. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user. | Optional |
 
 #### Context Output
 
