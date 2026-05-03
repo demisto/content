@@ -1043,19 +1043,19 @@ def test_whois_and_domain_command_with_exception(mocker: MockerFixture):
 
     import whois
     from Whois import whois_and_domain_command
-    from whois.parser import WhoisError
+    from whois.exceptions import PywhoisError
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "args", return_value={"domain": "raw.githubusercontent.com"})
     mocker.patch.object(demisto, "params", return_value={"with_error": True})
     mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
-    mocker.patch.object(whois, "whois", side_effect=WhoisError)
+    mocker.patch.object(whois, "whois", side_effect=PywhoisError)
     res = whois_and_domain_command("domain", DBotScoreReliability.B)
 
     assert len(res) == 2
     assert (
         res[0].readable_output
-        == "Exception of type WhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
+        == "Exception of type PywhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
     )
     assert res[0].entry_type == 4
 
