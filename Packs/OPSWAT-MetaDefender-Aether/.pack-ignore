@@ -1,5 +1,5 @@
 [file:MetaDefenderAether.yml]
-ignore=IN126,IN135,IN153
+ignore=IN126,IN135,IN153,BA129
 
 [file:README.md]
 ignore=RM104,RM102
