@@ -1729,49 +1729,6 @@ def extract_ids(case_extra_data: dict) -> list:
     return issue_ids
 
 
-def get_case_extra_data(client, args):
-    """
-    Calls the core-get-case-extra-data command and parses the output to a standard structure.
-
-    Args:
-        args: The arguments to pass to the core-get-case-extra-data command.
-
-    Returns:
-        A dictionary containing the case data with the following keys:
-            issue_ids: A list of IDs of issues in the case.
-            network_artifacts: A list of network artifacts in the case.
-            file_artifacts: A list of file artifacts in the case.
-    """
-    demisto.debug(f"Calling core-get-case-extra-data, {args=}")
-    # Set the base URL for this API call to use the public API v1 endpoint
-    try:
-        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
-    except Exception as e:
-        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
-        return {}
-    demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
-    issue_ids = extract_ids(case_extra_data)
-    case_data = case_extra_data.get("case", {})
-    notes = case_data.get("notes")
-    xdr_url = case_data.get("xdr_url")
-    starred_manually = case_data.get("starred_manually")
-    detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
-    network_artifacts = case_extra_data.get("network_artifacts")
-    file_artifacts = case_extra_data.get("file_artifacts")
-    extra_data = {
-        "issue_ids": issue_ids,
-        "network_artifacts": network_artifacts,
-        "file_artifacts": file_artifacts,
-        "notes": notes,
-        "detection_time": detection_time,
-        "xdr_url": xdr_url,
-        "starred_manually": starred_manually,
-        "manual_description": manual_description,
-    }
-    return extra_data
-
-
 def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     """
     Parse a single case's extra data from the bulk API response into the CaseExtraData format.
