@@ -2596,17 +2596,17 @@ def fileResult(filename, data, file_type=None):
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
 
-    # Sanitize filename to prevent path traversal - os.path.basename strips all directory components,
-    # which is safer than the previous single-pass replace("../", "") that could be bypassed.
+    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
+    # xsoar returns empty files to war-rooms
     if isinstance(filename, str):
-        replaced_filename = os.path.basename(filename)
+        replaced_filename = filename.replace("../", "")
         if filename != replaced_filename:
+            filename = replaced_filename
             demisto.debug(
-                "fileResult: sanitized filename {original} to {safe}".format(
-                    original=filename, safe=replaced_filename
+                "replaced {filename} with new file name {replaced_file_name}".format(
+                    filename=filename, replaced_file_name=replaced_filename
                 )
             )
-            filename = replaced_filename
 
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
