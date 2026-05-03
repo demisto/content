@@ -2725,15 +2725,14 @@ script:
           description: Tag name associated with the case.
           type: String
     - name: core-run-playbook
-      description: Runs a playbook on specific issue IDs. Accepts a playbook name or ID via the 'playbook' argument.
+      description: Runs a playbook on specific issue IDs.
       hidden: false
       arguments:
         - name: playbook
-          description: The name or ID of the playbook to run. When a name is provided it is resolved to an ID automatically. The name must be unique; if multiple playbooks share the same name, provide the ID directly.
-          required: false
+          description: The name or ID of the playbook to run.
+          required: true
         - name: playbook_id
           description: Deprecated. Use the 'playbook' argument instead. The ID of the playbook to run.
-          required: false
           deprecated: true
         - name: issue_ids
           description: The IDs of the issues to process with the playbook.
@@ -2744,7 +2743,7 @@ script:
           description: The playbook name or ID that was provided as input.
           type: String
         - contextPath: Core.RunPlaybook.result
-          description: The result of the playbook execution. Contains "success" on success, or an error message describing what went wrong.
+          description: The result of the playbook execution, containing either a success message or an error message describing what went wrong
           type: String
     - name: core-list-scripts
       hidden: true

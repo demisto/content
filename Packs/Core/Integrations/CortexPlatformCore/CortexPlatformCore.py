@@ -3621,23 +3621,27 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
 
-    Accepts either the new ``playbook`` argument (which can be a playbook name or ID)
-    or the deprecated ``playbook_id`` argument for backward compatibility.
+    Reads the ``playbook`` argument, which can be either a playbook name or a playbook ID,
+    and resolves it to a playbook ID via :func:`resolve_playbook_id`.
 
-    All outcomes — success, resolution errors, and API-level failures — are reported
-    via the ``result`` output field rather than raising exceptions.
+    All outcomes — success, resolution errors (unknown name/ID), and API-level per-issue
+    failures — are reported via the ``result`` output field rather than raising exceptions.
+    The ``result`` field contains the full status message string in all cases.
 
     Args:
         client (Client): The client instance for making API requests.
-        args (dict): Arguments for running the playbook.
+        args (dict): Arguments for running the playbook. Supported keys:
+            - ``playbook`` (str): Playbook name or ID to execute.
+            - ``issue_ids`` (str | list): Issue IDs to run the playbook against.
 
     Returns:
-        CommandResults: Results of the playbook execution with a ``result`` output field.
+        CommandResults: Results of the playbook execution with the following output fields:
+            - ``playbook``: The playbook name or ID as provided by the caller.
+            - ``result``: A status message string. On success:
+              ``"Playbook '<name>' executed successfully for all issue IDs: <ids>"``.
+              On resolution failure or per-issue API errors: a descriptive error string.
     """
-    playbook_input = args.get("playbook") or args.get("playbook_id", "")
-    if not playbook_input:
-        raise ValueError("Either 'playbook' or 'playbook_id' argument must be provided.")
-
+    playbook_input = args.get("playbook", "")
     issue_ids = argToList(args.get("issue_ids", ""))
 
     try:
@@ -3652,23 +3656,19 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
 
     response = client.run_playbook(issue_ids, playbook_id)
 
-    # Empty response indicates success for all issues
-    if not response:
-        success_message = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
-        return CommandResults(
-            outputs_prefix="Core.RunPlaybook",
-            outputs_key_field="playbook",
-            outputs={"playbook": playbook_input, "result": success_message},
+    if response:
+        error_parts = [f"Issue ID {issue_id}: {msg}" for issue_id, msg in response.items()]
+        result = (f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(error_parts)).replace(
+            "alert", "issue"
         )
+        demisto.debug(f"Playbook run errors: {error_parts}")
+    else:
+        result = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
 
-    error_parts = [f"Issue ID {issue_id}: {error_message.replace('alert', 'issue')}" for issue_id, error_message in response.items()]
-    error_result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(error_parts)
-    demisto.debug(f"Playbook run errors: {error_parts}")
     return CommandResults(
-        readable_output=error_result,
         outputs_prefix="Core.RunPlaybook",
         outputs_key_field="playbook",
-        outputs={"playbook": playbook_input, "result": error_result},
+        outputs={"playbook": playbook_input, "result": result},
     )
 
 

@@ -4053,11 +4053,11 @@ def test_process_case_response_renames_incident_domain_to_case_domain():
 def test_run_playbook_command_empty_response_success():
     """
     Given:
-        A mock client that returns an empty response and valid playbook arguments (using deprecated playbook_id).
+        A mock client that returns an empty response and valid playbook arguments.
     When:
         The run_playbook_command function is called.
     Then:
-        The function should return a successful result with appropriate readable output and result='success'.
+        The function should return a successful result with a descriptive message in result output.
     """
     from CortexPlatformCore import run_playbook_command
 
@@ -4067,14 +4067,13 @@ def test_run_playbook_command_empty_response_success():
         {"id": "test_playbook_123", "name": "Test Playbook"},
     ]
 
-    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+    args = {"playbook": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "executed successfully" in result.readable_output
-    assert "test_playbook_123" in result.readable_output
-    assert "issue_1, issue_2" in result.readable_output
-    assert result.outputs["result"] == "success"
+    assert "executed successfully" in result.outputs["result"]
+    assert "test_playbook_123" in result.outputs["result"]
+    assert "issue_1, issue_2" in result.outputs["result"]
 
 
 def test_run_playbook_command_multiple_errors_response():
@@ -4098,7 +4097,7 @@ def test_run_playbook_command_multiple_errors_response():
         {"id": "multi_fail_playbook", "name": "Multi Fail Playbook"},
     ]
 
-    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+    args = {"playbook": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
 
     result = run_playbook_command(mock_client, args)
 
@@ -4106,15 +4105,15 @@ def test_run_playbook_command_multiple_errors_response():
     error_message = result.outputs["result"]
     assert "multi_fail_playbook" in error_message
     assert (
-        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for issue issue_1, couldn't find issue"
         in error_message
     )
     assert (
-        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for issue issue_2, "
         "failed creating investigation playbook" in error_message
     )
     assert (
-        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for issue issue_3, "
         "failed creating investigation playbook" in error_message
     )
 
@@ -4136,18 +4135,18 @@ def test_run_playbook_command_string_issue_ids():
         {"id": "test_playbook", "name": "Test Playbook"},
     ]
 
-    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+    args = {"playbook": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
 
     result = run_playbook_command(mock_client, args)
 
-    assert "issue_1, issue_2, issue_3" in result.readable_output
+    assert "issue_1, issue_2, issue_3" in result.outputs["result"]
     mock_client.run_playbook.assert_called_once()
 
 
 def test_run_playbook_command_client_call_parameters():
     """
     Given:
-        A mock client and valid playbook arguments (using deprecated playbook_id).
+        A mock client and valid playbook arguments.
     When:
         The run_playbook_command function is called.
     Then:
@@ -4161,7 +4160,7 @@ def test_run_playbook_command_client_call_parameters():
         {"id": "param_test_playbook", "name": "Param Test Playbook"},
     ]
 
-    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+    args = {"playbook": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
 
     run_playbook_command(mock_client, args)
 
@@ -4191,8 +4190,8 @@ def test_run_playbook_command_by_name_resolves_to_id():
     result = run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["issue_1"], "uuid-abc-123")
-    assert "executed successfully" in result.readable_output
-    assert "My Custom Playbook" in result.readable_output
+    assert "executed successfully" in result.outputs["result"]
+    assert "My Custom Playbook" in result.outputs["result"]
 
 
 def test_run_playbook_command_by_id_when_no_name_match():
@@ -4245,49 +4244,30 @@ def test_run_playbook_command_unknown_playbook_returns_error_in_result():
     mock_client.run_playbook.assert_not_called()
 
 
-def test_run_playbook_command_playbook_arg_takes_priority_over_playbook_id():
+def test_run_playbook_command_no_playbook_arg_returns_error_in_result():
     """
     Given:
-        A mock client and args containing both 'playbook' and 'playbook_id'.
+        A mock client and args with no 'playbook' argument (empty string default).
     When:
         The run_playbook_command function is called.
     Then:
-        The 'playbook' argument takes priority and is used for resolution.
+        resolve_playbook_id raises DemistoException which is caught and returned
+        as a CommandResults with the error in the 'result' output field.
+        client.run_playbook is never called.
     """
     from CortexPlatformCore import run_playbook_command
 
     mock_client = Mock()
-    mock_client.run_playbook.return_value = {}
     mock_client.get_playbooks_metadata.return_value = [
-        {"id": "uuid-new", "name": "New Playbook"},
+        {"id": "uuid-abc-123", "name": "My Custom Playbook"},
     ]
-
-    args = {"playbook": "New Playbook", "playbook_id": "old-id", "issue_ids": ["issue_1"]}
-
-    run_playbook_command(mock_client, args)
-
-    mock_client.run_playbook.assert_called_once_with(["issue_1"], "uuid-new")
-
-
-def test_run_playbook_command_no_playbook_arg_raises_error():
-    """
-    Given:
-        A mock client and args with neither 'playbook' nor 'playbook_id'.
-    When:
-        The run_playbook_command function is called.
-    Then:
-        A ValueError is raised indicating that a playbook argument is required.
-    """
-    from CortexPlatformCore import run_playbook_command
-
-    mock_client = Mock()
 
     args = {"issue_ids": ["issue_1"]}
 
-    with pytest.raises(ValueError) as exc_info:
-        run_playbook_command(mock_client, args)
+    result = run_playbook_command(mock_client, args)
 
-    assert "playbook" in str(exc_info.value).lower()
+    assert "not found" in result.outputs["result"].lower()
+    mock_client.run_playbook.assert_not_called()
 
 
 def test_resolve_playbook_id_not_found_raises():
