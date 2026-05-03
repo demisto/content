@@ -1,0 +1,461 @@
+commonfields:
+  id: PiHoleV6
+  version: -1
+name: PiHoleV6
+display: PiHole V6
+category: IT Services
+provider: Open Source
+description: PiHole V6 integration using the new REST API. PiHole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+  additionalinfo: Base URL of PiHole (e.g. https://192.168.1.25)
+- display: Password
+  name: password
+  type: 4
+  required: true
+  additionalinfo: PiHole admin password for API authentication
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+
+  # --- Stats ---
+  - name: pihole-get-summary
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Summary.queries
+      description: Query statistics including total, blocked, cached, forwarded counts.
+      type: Unknown
+    - contextPath: PiHoleV6.Summary.clients
+      description: Client statistics.
+      type: Unknown
+    - contextPath: PiHoleV6.Summary.gravity
+      description: Gravity list statistics.
+      type: Unknown
+    description: Get overview of PiHole activity including query stats, client counts, and gravity info.
+
+  - name: pihole-get-top-domains
+    arguments:
+    - name: count
+      description: Number of top domains to return.
+      defaultValue: "10"
+    - name: blocked
+      description: If true, return top blocked domains instead of top permitted domains.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: PiHoleV6.TopDomains.domains
+      description: Array of top domains with counts.
+      type: Unknown
+    - contextPath: PiHoleV6.TopDomains.total_queries
+      description: Total number of queries.
+      type: Number
+    description: Get top permitted or blocked domains.
+
+  - name: pihole-get-top-clients
+    arguments:
+    - name: count
+      description: Number of top clients to return.
+      defaultValue: "10"
+    - name: blocked
+      description: If true, return top blocked clients instead of top active clients.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: PiHoleV6.TopClients.clients
+      description: Array of top clients with counts.
+      type: Unknown
+    - contextPath: PiHoleV6.TopClients.total_queries
+      description: Total number of queries.
+      type: Number
+    description: Get top clients by query count.
+
+  - name: pihole-get-upstreams
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Upstreams.upstreams
+      description: Array of upstream destinations with query counts and response times.
+      type: Unknown
+    - contextPath: PiHoleV6.Upstreams.forwarded_queries
+      description: Number of forwarded queries.
+      type: Number
+    description: Get metrics about upstream DNS destinations.
+
+  - name: pihole-get-query-types
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.QueryTypes.types
+      description: Query type counts (A, AAAA, MX, etc).
+      type: Unknown
+    description: Get breakdown of DNS query types.
+
+  - name: pihole-get-recent-blocked
+    arguments:
+    - name: count
+      description: Number of recently blocked domains to return.
+      defaultValue: "1"
+    outputs:
+    - contextPath: PiHoleV6.RecentBlocked.blocked
+      description: List of recently blocked domains.
+      type: Unknown
+    description: Get most recently blocked domain(s).
+
+  # --- History ---
+  - name: pihole-get-history
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.History.history
+      description: Activity over time data with timestamps, total, cached, blocked, forwarded counts.
+      type: Unknown
+    description: Get activity graph data (queries over time).
+
+  - name: pihole-get-history-clients
+    arguments:
+    - name: N
+      description: Maximum number of clients to return. 0 returns all.
+      defaultValue: "20"
+    outputs:
+    - contextPath: PiHoleV6.HistoryClients.clients
+      description: Client information with query counts.
+      type: Unknown
+    - contextPath: PiHoleV6.HistoryClients.history
+      description: Per-client activity over time.
+      type: Unknown
+    description: Get per-client activity graph data.
+
+  # --- Queries ---
+  - name: pihole-get-queries
+    arguments:
+    - name: length
+      description: Number of queries to return.
+      defaultValue: "100"
+    - name: domain
+      description: Filter by domain (wildcards supported).
+    - name: client_ip
+      description: Filter by client IP (wildcards supported).
+    - name: client_name
+      description: Filter by client hostname (wildcards supported).
+    - name: upstream
+      description: Filter by upstream server.
+    - name: type
+      description: Filter by query type (A, AAAA, etc).
+    - name: status
+      description: Filter by status (GRAVITY, FORWARDED, CACHE, etc).
+    outputs:
+    - contextPath: PiHoleV6.Queries.queries
+      description: Array of DNS query records.
+      type: Unknown
+    - contextPath: PiHoleV6.Queries.recordsTotal
+      description: Total number of available queries.
+      type: Number
+    description: Get DNS query log with optional filtering.
+
+  # --- DNS Blocking ---
+  - name: pihole-get-blocking-status
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Blocking.blocking
+      description: Current blocking status (enabled/disabled).
+      type: String
+    - contextPath: PiHoleV6.Blocking.timer
+      description: Remaining seconds until blocking mode changes automatically. Null if permanent.
+      type: Number
+    description: Get current PiHole blocking status.
+
+  - name: pihole-set-blocking
+    arguments:
+    - name: blocking
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable or disable blocking.
+    - name: timer
+      description: Seconds until blocking mode automatically reverts. Leave empty for permanent change.
+    outputs:
+    - contextPath: PiHoleV6.Blocking.blocking
+      description: New blocking status.
+      type: String
+    - contextPath: PiHoleV6.Blocking.timer
+      description: Timer value if set.
+      type: Number
+    description: Enable or disable PiHole blocking, optionally with a timer.
+    execution: true
+
+  # --- Domain Management ---
+  - name: pihole-get-domains
+    arguments:
+    - name: type
+      description: Domain type filter.
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+    - name: kind
+      description: Domain kind filter.
+      auto: PREDEFINED
+      predefined:
+      - exact
+      - regex
+    outputs:
+    - contextPath: PiHoleV6.Domains.domains
+      description: Array of domain entries.
+      type: Unknown
+    description: Get domains from allow/deny lists. Filter by type and kind.
+
+  - name: pihole-add-domain
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+      description: Domain type.
+    - name: kind
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - exact
+      - regex
+      description: Domain kind.
+    - name: domain
+      required: true
+      description: Domain to add.
+    - name: comment
+      description: Optional comment.
+    outputs:
+    - contextPath: PiHoleV6.Domains.domains
+      description: Added domain details.
+      type: Unknown
+    description: Add a domain to allow/deny list.
+
+  - name: pihole-delete-domain
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+      description: Domain type.
+    - name: kind
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - exact
+      - regex
+      description: Domain kind.
+    - name: domain
+      required: true
+      description: Domain to delete.
+    outputs: []
+    description: Delete a domain from allow/deny list.
+
+  # --- Info ---
+  - name: pihole-get-version
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Version
+      description: Version information for all PiHole components.
+      type: Unknown
+    description: Get PiHole component versions.
+
+  - name: pihole-get-system-info
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.SystemInfo
+      description: System information (CPU, memory, disk, uptime, etc).
+      type: Unknown
+    description: Get system information from PiHole host.
+
+  - name: pihole-get-ftl-info
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.FTLInfo
+      description: FTL engine information.
+      type: Unknown
+    description: Get FTL (Faster Than Light) engine information.
+
+  - name: pihole-get-host-info
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.HostInfo
+      description: Host information.
+      type: Unknown
+    description: Get host information.
+
+  - name: pihole-get-sensors
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Sensors
+      description: Sensor readings (temperature, etc).
+      type: Unknown
+    description: Get sensor information from PiHole host.
+
+  # --- Actions ---
+  - name: pihole-run-gravity
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Gravity.output
+      description: Gravity update output.
+      type: String
+    description: Update PiHole gravity (pull latest adlists).
+    execution: true
+
+  - name: pihole-restart-dns
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.RestartDNS
+      description: Restart result.
+      type: Unknown
+    description: Restart the pihole-FTL DNS service.
+    execution: true
+
+  - name: pihole-flush-logs
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.FlushLogs
+      description: Flush result.
+      type: Unknown
+    description: Flush DNS logs and purge last 24 hours from database.
+    execution: true
+
+  - name: pihole-flush-network
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.FlushNetwork
+      description: Flush result.
+      type: Unknown
+    description: Flush the network table (remove all known devices and addresses).
+    execution: true
+
+  # --- Network ---
+  - name: pihole-get-network-devices
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.NetworkDevices
+      description: Network device information.
+      type: Unknown
+    description: Get network devices known to PiHole.
+
+  - name: pihole-get-network-gateway
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Gateway
+      description: Gateway information.
+      type: Unknown
+    description: Get network gateway information.
+
+  # --- Search ---
+  - name: pihole-search-domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to search for.
+    outputs:
+    - contextPath: PiHoleV6.Search
+      description: Search results showing where the domain appears in PiHole configuration.
+      type: Unknown
+    description: Search for a domain across all PiHole lists and configuration.
+
+  # --- DHCP ---
+  - name: pihole-get-dhcp-leases
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.DHCPLeases
+      description: DHCP lease information.
+      type: Unknown
+    description: Get current DHCP leases.
+
+  # --- Groups ---
+  - name: pihole-get-groups
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Groups
+      description: Group information.
+      type: Unknown
+    description: Get all groups.
+
+  - name: pihole-add-group
+    arguments:
+    - name: name
+      required: true
+      description: Group name.
+    - name: comment
+      description: Optional comment.
+    outputs:
+    - contextPath: PiHoleV6.Groups
+      description: Created group details.
+      type: Unknown
+    description: Create a new group.
+
+  - name: pihole-delete-group
+    arguments:
+    - name: name
+      required: true
+      description: Group name to delete.
+    outputs: []
+    description: Delete a group.
+
+  # --- Lists (Adlists) ---
+  - name: pihole-get-lists
+    arguments: []
+    outputs:
+    - contextPath: PiHoleV6.Lists
+      description: Adlist information.
+      type: Unknown
+    description: Get all configured adlists.
+
+  - name: pihole-add-list
+    arguments:
+    - name: address
+      required: true
+      description: URL of the adlist to add.
+    - name: comment
+      description: Optional comment.
+    - name: enabled
+      description: Whether the list should be enabled.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    outputs:
+    - contextPath: PiHoleV6.Lists
+      description: Added list details.
+      type: Unknown
+    description: Add a new adlist.
+
+  - name: pihole-delete-list
+    arguments:
+    - name: address
+      required: true
+      description: URL of the adlist to delete.
+    outputs: []
+    description: Delete an adlist.
+
+  dockerimage: demisto/python3:3.12.8.3296088
+  runonce: false
+  subtype: python3
+tests:
+- No Test
+fromversion: 5.0.0
