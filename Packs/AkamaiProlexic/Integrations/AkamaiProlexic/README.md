@@ -51,7 +51,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Akamai Prolexic Events
+### Akamai Prolexic Events
 
 >|_time|event_type|SOURCE_LOG_TYPE|_ENTRY_STATUS|id|firstOccur|recentOccur|severity|description|
 >|---|---|---|---|---|---|---|---|---|
