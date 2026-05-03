@@ -442,7 +442,7 @@ script:
       description: The display name for the service principal.
       required: false
     - name: preferred_single_sign_on_mode
-      description: Specifies the single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, saml, external, and oidc.
+      description: Specifies the single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, saml, and oidc.
       required: false
       auto: PREDEFINED
       predefined:
@@ -450,7 +450,7 @@ script:
       - saml
       - oidc
     - name: reply_urls
-      description: The URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. Not nullable.
+      description: A comma-separated list of the URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. Not nullable.
       required: false
     outputs: []
   - description: Add a strong password or secret to a service principal. To allow this command, use msgraph-apps-service-principal-unlock-configuration. The password will be expired in 1 hour by default.
