@@ -3657,10 +3657,8 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     response = client.run_playbook(issue_ids, playbook_id)
 
     if response:
-        error_parts = [f"Issue ID {issue_id}: {msg}" for issue_id, msg in response.items()]
-        result = (f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(error_parts)).replace(
-            "alert", "issue"
-        )
+        error_parts = [f"Issue ID {issue_id}: {msg.replace('alert', 'issue')}" for issue_id, msg in response.items()]
+        result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(error_parts)
         demisto.debug(f"Playbook run errors: {error_parts}")
     else:
         result = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"

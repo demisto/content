@@ -2743,7 +2743,7 @@ script:
           description: The playbook name or ID that was provided as input.
           type: String
         - contextPath: Core.RunPlaybook.result
-          description: The result of the playbook execution, containing either a success message or an error message describing what went wrong
+          description: The result of the playbook execution, containing either a success message or an error message describing what went wrong.
           type: String
     - name: core-list-scripts
       hidden: true
