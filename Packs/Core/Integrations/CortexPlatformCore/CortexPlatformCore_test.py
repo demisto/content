@@ -3852,11 +3852,11 @@ def test_get_case_extra_data_with_all_fields_present(mocker):
 def test_add_cases_extra_data_single_case(mocker: MockerFixture):
     """
     Given:
-        A mock client and a list containing a single case.
+        A mock client and a list containing a single case with one alert.
     When:
         The add_cases_extra_data function is called.
     Then:
-        A list with one case containing CaseExtraData parsed from the bulk API response.
+        A list with one case containing CaseExtraData with issue_ids, issues, xdr_url, and artifacts.
     """
     from CortexPlatformCore import add_cases_extra_data
 
@@ -3865,30 +3865,21 @@ def test_add_cases_extra_data_single_case(mocker: MockerFixture):
         "reply": {
             "incidents": [
                 {
-                    "incident": {"incident_id": "123", "notes": None, "xdr_url": "https://example.com"},
-                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1"}]},
+                    "incident": {
+                        "incident_id": "123",
+                        "notes": None,
+                        "xdr_url": "https://example.com",
+                        "detection_time": None,
+                        "starred_manually": False,
+                        "manual_description": None,
+                    },
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1", "name": "Test Alert"}]},
                     "network_artifacts": {"total_count": 0, "data": []},
                     "file_artifacts": {"total_count": 0, "data": []},
                 }
             ]
         }
     }
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=["a1"])
-    mocker.patch(
-        "CortexPlatformCore.preprocess_get_case_extra_data_outputs",
-        return_value={
-            "case": {
-                "notes": None,
-                "xdr_url": "https://example.com",
-                "detection_time": None,
-                "starred_manually": False,
-                "manual_description": None,
-            },
-            "issues": {"data": [{"issue_id": "a1"}]},
-            "network_artifacts": {"total_count": 0, "data": []},
-            "file_artifacts": {"total_count": 0, "data": []},
-        },
-    )
 
     case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
     result = add_cases_extra_data(mock_client, case_data)
@@ -3897,9 +3888,13 @@ def test_add_cases_extra_data_single_case(mocker: MockerFixture):
     assert result[0]["case_id"] == "123"
     extra = result[0]["CaseExtraData"]
     assert extra["issue_ids"] == ["a1"]
-    assert extra["case"]["xdr_url"] == "https://example.com"
-    assert extra["issues"]["data"] == [{"issue_id": "a1"}]
+    assert extra["xdr_url"] == "https://example.com"
+    assert extra["notes"] is None
+    assert extra["starred_manually"] is False
+    assert len(extra["issues"]) == 1
+    assert extra["issues"][0]["issue_id"] == "a1"
     assert extra["network_artifacts"] == {"total_count": 0, "data": []}
+    assert extra["file_artifacts"] == {"total_count": 0, "data": []}
     mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123"])
 
 
@@ -3919,42 +3914,26 @@ def test_add_cases_extra_data_multiple_cases(mocker: MockerFixture):
         "reply": {
             "incidents": [
                 {
-                    "incident": {"incident_id": "123"},
+                    "incident": {"incident_id": "123", "xdr_url": "https://example.com/123"},
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+                {
+                    "incident": {"incident_id": "456", "xdr_url": "https://example.com/456"},
                     "alerts": {"total_count": 0, "data": []},
                     "network_artifacts": {"total_count": 0, "data": []},
                     "file_artifacts": {"total_count": 0, "data": []},
                 },
                 {
-                    "incident": {"incident_id": "456"},
-                    "alerts": {"total_count": 0, "data": []},
-                    "network_artifacts": {"total_count": 0, "data": []},
-                    "file_artifacts": {"total_count": 0, "data": []},
-                },
-                {
-                    "incident": {"incident_id": "789"},
-                    "alerts": {"total_count": 0, "data": []},
+                    "incident": {"incident_id": "789", "xdr_url": "https://example.com/789"},
+                    "alerts": {"total_count": 2, "data": [{"alert_id": "a2"}, {"alert_id": "a3"}]},
                     "network_artifacts": {"total_count": 0, "data": []},
                     "file_artifacts": {"total_count": 0, "data": []},
                 },
             ]
         }
     }
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
-    mocker.patch(
-        "CortexPlatformCore.preprocess_get_case_extra_data_outputs",
-        return_value={
-            "case": {
-                "notes": None,
-                "xdr_url": None,
-                "detection_time": None,
-                "starred_manually": None,
-                "manual_description": None,
-            },
-            "issues": {"data": []},
-            "network_artifacts": None,
-            "file_artifacts": None,
-        },
-    )
 
     case_data = [
         {"case_id": "123", "title": "Case 1"},
@@ -3966,6 +3945,12 @@ def test_add_cases_extra_data_multiple_cases(mocker: MockerFixture):
     assert len(result) == 3
     for case in result:
         assert "CaseExtraData" in case
+    assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
+    assert result[0]["CaseExtraData"]["xdr_url"] == "https://example.com/123"
+    assert result[1]["CaseExtraData"]["issue_ids"] == []
+    assert result[1]["CaseExtraData"]["issues"] == []
+    assert result[2]["CaseExtraData"]["issue_ids"] == ["a2", "a3"]
+    assert len(result[2]["CaseExtraData"]["issues"]) == 2
     mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123", "456", "789"])
 
 

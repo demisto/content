@@ -1779,19 +1779,34 @@ def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     The bulk endpoint returns each case as:
         {"incident": {...}, "alerts": {"total_count": N, "data": [...]}, "network_artifacts": ..., "file_artifacts": ...}
 
-    After preprocessing, keys are renamed (incident→case, alert→issue) and the full processed
-    data is returned with an additional ``issue_ids`` convenience field.
+    Extracts relevant fields from the incident object (xdr_url, notes, etc.) and the alerts
+    (renamed to issues), then builds a flat CaseExtraData dict matching the format produced
+    by ``get_case_extra_data``.
 
     Args:
         case_incident_data: A single case entry from the bulk response's 'incidents' list.
 
     Returns:
-        dict: The full processed extra data with renamed keys and an ``issue_ids`` list.
+        dict: The CaseExtraData dict with issue_ids, network/file artifacts, and incident-level fields.
     """
-    processed = preprocess_get_case_extra_data_outputs(case_incident_data)
-    issue_ids = extract_ids(processed)
-    processed["issue_ids"] = issue_ids
-    return processed
+    incident_data = case_incident_data.get("incident", {})
+    alerts = case_incident_data.get("alerts", {})
+    alerts_data = alerts.get("data", [])
+
+    issue_ids = [str(alert.get("alert_id")) for alert in alerts_data if alert.get("alert_id") is not None]
+    issues = [alert_to_issue(incident_to_case(alert)) for alert in alerts_data]
+
+    return {
+        "issue_ids": issue_ids,
+        "issues": issues,
+        "network_artifacts": case_incident_data.get("network_artifacts"),
+        "file_artifacts": case_incident_data.get("file_artifacts"),
+        "notes": incident_data.get("notes"),
+        "detection_time": incident_data.get("detection_time"),
+        "xdr_url": incident_data.get("xdr_url"),
+        "starred_manually": incident_data.get("starred_manually"),
+        "manual_description": incident_data.get("manual_description"),
+    }
 
 
 def add_cases_extra_data(client: Client, cases_list: list) -> list:
