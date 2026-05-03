@@ -2,7 +2,7 @@ Palo Alto Networks Enterprise DLP discovers and protects company data across eve
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP.
 
 **Note**:  
-This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Browser" channels only.
+This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Access" channels only.
 
 ### Setup
 
@@ -58,6 +58,18 @@ Fetches DLP reports associated with a report ID.
 | DLP.Report.DataPatternMatches.HighConfidenceFrequency | unknown | The number of high confidence occurrences. |
 | DLP.Report.DataPatternMatches.MediumConfidenceFrequency | unknown | The number of medium confidence occurrences. |
 | DLP.Report.DataPatternMatches.LowConfidenceFrequency | unknown | The number of low confidence occurrences. |
+| DLP.Report.DataPatternMatches.MatchedConfidenceLevel | String | The matched confidence level of the data pattern \(e.g., "high", "medium", "low"\). Only present for patterns that matched. |
+| DLP.Report.DataProfiles.Name | String | The name of the data profile. |
+| DLP.Report.DataProfiles.Id | Number | The ID of the data profile. |
+| DLP.Report.DataProfiles.Version | Number | The version of the data profile. |
+| DLP.Report.DataProfiles.IsTriggered | Boolean | Whether the data profile was triggered. |
+| DLP.Report.DataProfiles.DataPatterns.Id | String | The data pattern ID within the profile. |
+| DLP.Report.DataProfiles.DataPatterns.IsMatched | Boolean | Whether the data pattern matched. |
+| DLP.Report.DataProfiles.DataPatterns.ConfidenceLevel | String | The confidence level configured for the pattern. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceCount | Number | The number of occurrences detected. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceOperatorType | String | The occurrence operator type \(e.g., "more_than_equal_to", "between"\). |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceLow | Number | The low bound for "between" operator type. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceHigh | Number | The high bound for "between" operator type. |
 
 ### pan-dlp-update-incident
 
@@ -149,3 +161,17 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+In case specific DLP incidents are not appearing on the Cortex tenant, verify the following:
+
+1. **DLP Regions Configuration**
+   - Check the Strata Cloud Manager to confirm which regions generated the incidents.
+   - **Note**: The *DLP Regions* dropdown menu shows all currently-supported regions.
+   - Ensure all regions where incidents originated are selected from the dropdown menu.
+
+2. **Strata Cloud Manager (SCM) Channel Support**
+   - Verify the channel in SCM console under the incident details.
+   - **Note**: Only incidents from the "NGFW" and "Prisma Access" SCM channels are supported.
+   - Incidents from other channels, such as Endpoint DLP, will not be fetched by this integration.
