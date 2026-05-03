@@ -4,3 +4,5 @@ name: Imperva Incapsula Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

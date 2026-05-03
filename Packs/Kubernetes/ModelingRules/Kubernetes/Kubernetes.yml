@@ -4,3 +4,5 @@ name: Kubernetes Modeling Rules
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
