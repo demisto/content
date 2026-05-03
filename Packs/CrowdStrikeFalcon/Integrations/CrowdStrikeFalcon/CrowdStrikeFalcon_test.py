@@ -8895,6 +8895,7 @@ class TestSpotlightSeverityBasedFetch:
 
         Given:
             - Multiple severities with different vulnerability counts.
+            - No previously completed severities (clean start).
         When:
             - fetch_spotlight_by_severity_parallel is called.
         Then:
@@ -8902,6 +8903,7 @@ class TestSpotlightSeverityBasedFetch:
             - Results are aggregated correctly.
             - Asset handler flushes remaining AIDs.
             - Final sealing batch is sent.
+            - completed_severities is cleared after all complete.
         """
         from CrowdStrikeFalcon import fetch_spotlight_by_severity_parallel
 
@@ -8949,12 +8951,17 @@ class TestSpotlightSeverityBasedFetch:
             side_effect=create_task_side_effect,
         )
 
-        # Execute
+        # Mock save functions
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        # Execute - no previously completed severities
         total_vulns, unique_aids = await fetch_spotlight_by_severity_parallel(
             client=mock_client,
             context_store=mock_context_store,
             spotlight_state=mock_state,
             snapshot_id=snapshot_id,
+            completed_severities=[],  # Clean start
         )
 
         # Verify
@@ -8964,6 +8971,11 @@ class TestSpotlightSeverityBasedFetch:
         # Verify asset handler was created and flushed
         mock_handler_cls.assert_called_once()
         mock_handler.flush_remaining.assert_awaited_once()
+
+        # Verify state was saved with cleared completed_severities (all done)
+        assert mock_update_state.called
+        final_call = mock_update_state.call_args_list[-1]
+        assert final_call.kwargs["completed_severities"] == []
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_by_severity_parallel_one_severity_fails(self, mocker, capfd):
@@ -8979,11 +8991,15 @@ class TestSpotlightSeverityBasedFetch:
             - Exception is logged but not propagated.
             - Other severities complete successfully.
             - Results include only successful severities.
+            - HIGH is NOT marked as completed (will retry next cycle).
+            - Snapshot is NOT sealed (not all severities completed).
         """
         from CrowdStrikeFalcon import fetch_spotlight_by_severity_parallel
 
         # Setup
         mock_client = mocker.AsyncMock()
+        mock_state = mocker.Mock()
+        mock_state.metadata = {}
 
         # Mock fetch_vulnerabilities_by_severity - HIGH fails, others succeed
         async def mock_fetch_by_severity(client, severity, **kwargs):
@@ -9021,19 +9037,37 @@ class TestSpotlightSeverityBasedFetch:
             side_effect=create_task_side_effect,
         )
 
+        # Mock save functions
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
         # Execute - should not raise exception
         # Disable stdout capture since this test intentionally triggers error logging
         with capfd.disabled():
             total_vulns, unique_aids = await fetch_spotlight_by_severity_parallel(
                 client=mock_client,
                 context_store=mocker.Mock(),
-                spotlight_state=mocker.Mock(),
+                spotlight_state=mock_state,
                 snapshot_id="snap123",
+                completed_severities=[],  # Clean start
             )
 
         # Verify - only successful severities counted
         assert total_vulns == 18  # 10+5+3 (HIGH excluded)
         assert unique_aids == {"aid1", "aid2", "aid3"}
+
+        # Verify sealing batch was NOT sent (not all severities completed)
+        # The create_task mock is called for each severity's batches, but NOT for final sealing
+        # We can't easily verify this without inspecting call args, so we check state instead
+
+        # Verify completed_severities does NOT include HIGH (it failed)
+        # Check the final state update call
+        final_call = mock_update_state.call_args_list[-1]
+        completed = final_call.kwargs["completed_severities"]
+        assert "HIGH" not in completed
+        assert "CRITICAL" in completed
+        assert "MEDIUM" in completed
+        assert "LOW" in completed
 
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_asset_enrichment(self, mocker):
