@@ -9,9 +9,11 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
+""" CONSTANTS """
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PRODUCT = "threat_response"
 VENDOR = "proofpoint"
+MAX_API_REQUESTS = 50
 
 
 class Client(BaseClient):
@@ -254,6 +256,14 @@ def get_incidents_batch_by_time_request(client, params):
     while created_after < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
         iteration_count += 1
 
+        if iteration_count > MAX_API_REQUESTS:
+            demisto.debug(
+                f"[BATCH_API_LIMIT] Reached maximum API request limit of {MAX_API_REQUESTS}. "
+                f"Stopping batch processing with {len(incidents_list)} incidents collected so far. "
+                f"created_after={created_after.isoformat()}, current_time={current_time.isoformat()}"
+            )
+            break
+
         # Set created_before to the minimum of (created_after + time_delta) or current_time
         # This ensures we always fetch up to current_time in the last iteration
         created_before = min(created_after + time_delta, current_time)
@@ -285,7 +295,8 @@ def get_incidents_batch_by_time_request(client, params):
     demisto.debug(
         f"[BATCH_COMPLETE] Batch processing completed after {iteration_count} iterations, "
         f"total_incidents={len(incidents_list)}, fetch_limit={fetch_limit}, "
-        f"reached_current_time={created_after >= current_time}"
+        f"reached_current_time={created_after >= current_time}, "
+        f"hit_api_limit={iteration_count > MAX_API_REQUESTS}"
     )
 
     incidents_list_limit = incidents_list[:fetch_limit]
