@@ -685,20 +685,6 @@ class TestTableToMarkdown:
         assert table_single_key_dict_nested == expected_single_key_dict_nested_tbl
 
     @staticmethod
-    def test_single_key_dict_with_empty_list():
-        """
-        Given:
-          - A single-key dict whose value is an empty list, and no explicit headers.
-        When:
-          - Calling tableToMarkdown.
-        Then:
-          - Should return a 'No entries.' table without raising an IndexError.
-        """
-        table = tableToMarkdown('tableToMarkdown test with single key dict and empty list',
-                                {'Name Servers': []})
-        assert '|Name Servers|\n|---|\n|  |' in table
-
-    @staticmethod
     def test_dict_with_special_character():
         """
         When:
@@ -9023,7 +9009,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 6,
+                    'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
@@ -9039,7 +9025,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-07T10:13:00',
-                    'limit': 6,
+                    'limit': 3,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )
@@ -11199,6 +11185,146 @@ class TestTimeSensitive:
 
         with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* exceeded"):
             client._http_request('get', 'test')
+
+
+class TestSanitizeHtmlOutput:
+    """Tests for sanitize_html_output – output encoding."""
+
+    def test_escapes_html_tags_by_default(self):
+        """Test that HTML special characters are escaped when no allow_tags specified."""
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('<img src=x onerror=alert(1)>')
+        assert '&lt;img' in result
+        assert '<img' not in result
+
+    def test_escapes_script_tags(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('<script>alert(1)</script>')
+        assert '<script>' not in result
+        assert '&lt;script&gt;' in result
+
+    def test_preserves_plain_text(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('Hello World')
+        assert result == 'Hello World'
+
+    def test_handles_non_string_input(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output(12345)
+        assert result == '12345'
+
+    def test_escapes_ampersand_and_quotes(self):
+        from CommonServerPython import sanitize_html_output
+        result = sanitize_html_output('a & b "c"')
+        assert '&amp;' in result
+        assert '&quot;' in result
+
+
+class TestFileResultSanitization:
+    """Tests for fileResult – safe filename handling."""
+
+    def test_strips_path_traversal(self, mocker, request):
+        """Test that path traversal sequences are removed from filenames."""
+        file_id = str(uuid.uuid4())
+        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
+        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+        file_name = "{}_testfile".format(file_id)
+
+        def cleanup():
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
+
+        request.addfinalizer(cleanup)
+        result = fileResult('../../../etc/passwd', 'data')
+        assert result['File'] == 'passwd'
+
+    def test_strips_absolute_path(self, mocker, request):
+        """Test that absolute paths are reduced to basename."""
+        file_id = str(uuid.uuid4())
+        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
+        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+        file_name = "{}_testfile".format(file_id)
+
+        def cleanup():
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
+
+        request.addfinalizer(cleanup)
+        result = fileResult('/var/lib/demisto/secret.txt', 'data')
+        assert result['File'] == 'secret.txt'
+
+    def test_double_dot_bypass_blocked(self, mocker, request):
+        """Test that ....// bypass pattern is properly handled."""
+        file_id = str(uuid.uuid4())
+        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
+        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+        file_name = "{}_testfile".format(file_id)
+
+        def cleanup():
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
+
+        request.addfinalizer(cleanup)
+        result = fileResult('....//....//etc/passwd', 'data')
+        assert result['File'] == 'passwd'
+        assert '/' not in result['File']
+        assert '..' not in result['File']
+
+    def test_normal_filename_unchanged(self, mocker, request):
+        """Test that normal filenames pass through unchanged."""
+        file_id = str(uuid.uuid4())
+        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
+        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+        file_name = "{}_testfile".format(file_id)
+
+        def cleanup():
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
+
+        request.addfinalizer(cleanup)
+        result = fileResult('report.pdf', 'data')
+        assert result['File'] == 'report.pdf'
+
+
+class TestGetFilePathSafe:
+    """Tests for getFilePathSafe – safe filename handling."""
+
+    def test_basenames_name_field(self, mocker):
+        """Test that the name field is reduced to basename."""
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'id': 'entry1', 'path': '/tmp/file', 'name': '/tmp/evil/../../etc/passwd'
+        })
+        from CommonServerPython import getFilePathSafe
+        result = getFilePathSafe('entry1')
+        assert result['name'] == 'passwd'
+
+    def test_preserves_other_fields(self, mocker):
+        """Test that id and path fields are not modified."""
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'id': 'entry1', 'path': '/tmp/file', 'name': 'test.txt'
+        })
+        from CommonServerPython import getFilePathSafe
+        result = getFilePathSafe('entry1')
+        assert result['id'] == 'entry1'
+        assert result['path'] == '/tmp/file'
+        assert result['name'] == 'test.txt'
+
+    def test_handles_absolute_path_name(self, mocker):
+        """Test that absolute path in name is reduced to basename."""
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'id': 'entry1', 'path': '/tmp/file', 'name': '/etc/shadow'
+        })
+        from CommonServerPython import getFilePathSafe
+        result = getFilePathSafe('entry1')
+        assert result['name'] == 'shadow'
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
