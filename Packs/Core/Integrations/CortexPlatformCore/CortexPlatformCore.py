@@ -3570,36 +3570,106 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     return valid_fields, "\n".join(f"- {e}" for e in error_messages)
 
 
+def resolve_playbook_id(client: Client, playbook: str) -> str:
+    """
+    Resolves a playbook name or ID to a playbook ID.
+
+    Fetches all playbooks metadata and builds a name→id mapping.
+    If the provided value matches a known playbook name, the corresponding ID is returned.
+    If no name match is found, the value is checked against known IDs.
+    If it matches a known ID, it is returned as-is.
+    If it matches neither a name nor a known ID, a DemistoException is raised.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        playbook (str): A playbook name or playbook ID.
+
+    Returns:
+        str: The resolved playbook ID.
+
+    Raises:
+        DemistoException: If the value does not match any known playbook name or ID.
+    """
+    pbs_metadata: list = client.get_playbooks_metadata() or []
+
+    name_to_id: dict[str, str] = {}
+    known_ids: set[str] = set()
+    for pb in pbs_metadata:
+        pb_name = pb.get("name", "")
+        pb_id = pb.get("id", "")
+        if pb_id:
+            known_ids.add(pb_id)
+        if pb_name and pb_id:
+            name_to_id[pb_name] = pb_id
+
+    if playbook in name_to_id:
+        resolved_id = name_to_id[playbook]
+        demisto.debug(f"Resolved playbook name '{playbook}' to ID '{resolved_id}'.")
+        return resolved_id
+
+    if playbook in known_ids:
+        demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
+        return playbook
+
+    raise DemistoException(
+        f"Playbook '{playbook}' was not found. "
+        f"Verify that the playbook name or ID is correct and that the playbook exists in the system."
+    )
+
+
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
+
+    Accepts either the new ``playbook`` argument (which can be a playbook name or ID)
+    or the deprecated ``playbook_id`` argument for backward compatibility.
+
+    All outcomes — success, resolution errors, and API-level failures — are reported
+    via the ``result`` output field rather than raising exceptions.
 
     Args:
         client (Client): The client instance for making API requests.
         args (dict): Arguments for running the playbook.
 
     Returns:
-        CommandResults: Results of the playbook execution.
+        CommandResults: Results of the playbook execution with a ``result`` output field.
     """
-    playbook_id = args.get("playbook_id", "")
+    playbook_input = args.get("playbook") or args.get("playbook_id", "")
+    if not playbook_input:
+        raise ValueError("Either 'playbook' or 'playbook_id' argument must be provided.")
+
     issue_ids = argToList(args.get("issue_ids", ""))
+
+    try:
+        playbook_id = resolve_playbook_id(client, playbook_input)
+    except DemistoException as e:
+        demisto.debug(f"Playbook resolution error: {str(e)}")
+        return CommandResults(
+            outputs_prefix="Core.RunPlaybook",
+            outputs_key_field="playbook",
+            outputs={"playbook": playbook_input, "result": str(e)},
+        )
 
     response = client.run_playbook(issue_ids, playbook_id)
 
-    # Process the response to determine success or failure
+    # Empty response indicates success for all issues
     if not response:
-        # Empty response indicates success for all issues
+        success_message = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
         return CommandResults(
-            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
+            outputs_prefix="Core.RunPlaybook",
+            outputs_key_field="playbook",
+            outputs={"playbook": playbook_input, "result": success_message},
         )
 
-    error_messages = []
-
-    for issue_id, error_message in response.items():
-        error_messages.append(f"Issue ID {issue_id}: {error_message}")
-
-    demisto.debug(f"Playbook run errors: {error_messages}")
-    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+    error_parts = [f"Issue ID {issue_id}: {error_message.replace('alert', 'issue')}" for issue_id, error_message in response.items()]
+    error_result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(error_parts)
+    demisto.debug(f"Playbook run errors: {error_parts}")
+    return CommandResults(
+        readable_output=error_result,
+        outputs_prefix="Core.RunPlaybook",
+        outputs_key_field="playbook",
+        outputs={"playbook": playbook_input, "result": error_result},
+    )
 
 
 def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
