@@ -19,8 +19,10 @@ Per-integration authentication classification. One JSON object per row.
 
 ```json
 {
-  "auth_types": [{"type": "<AuthEnum>", "name": "<param_name>"}],
-  "config": "<requirement_expression>",
+  "auth_types": [
+    {"type": "<AuthEnum>", "name": "<param_name>", "interpolated": <bool>}
+  ],
+  "config": "REQUIRED(<param_name>, ...) [+ OPTIONAL(<param_name>, ...)] | CHOICE(<param_name>, <param_name>) | NoneRequired",
   "params": {
     "<param_name>": {
       "type": "<AuthEnum>",
@@ -32,10 +34,23 @@ Per-integration authentication classification. One JSON object per row.
 }
 ```
 
-- `auth_types` — Array of `{type, name}` entries, sorted by `(type, name)`.
-- `config` — Auth Config Expression (e.g. `REQUIRED(APIKey)`,
-  `CHOICE(APIKey, Plain)`). See the
-  [`Auth Config Expression Format`](Readme.md:8) section in the README.
+- `auth_types` — Array of `{type, name, interpolated}` entries, sorted by
+  `(type, name)`.
+- `auth_types[].interpolated` — Optional boolean (defaults to `false`).
+  When `true`, the manifest generator sets the `interpolated` flag in this
+  param's metadata in the generated manifest (signaling that the value is
+  interpolated from another source/template at runtime rather than supplied
+  verbatim by the user).
+- `config` — Auth Config Expression. Same operators as the README grammar
+  in [`Auth Config Expression Format`](Readme.md:8) — `REQUIRED(...)`,
+  `OPTIONAL(...)`, `CHOICE(...)`, joined with `+`, plus the literal
+  `NoneRequired` — but **the operands inside the parens are param names
+  from `params`**, not auth-type enum values. Examples:
+  - `REQUIRED(api_key)` — single required API key (param `api_key`)
+  - `REQUIRED(privateApiKey, publicApiKey)` — two required API key params
+  - `CHOICE(credentials, hunting_credentials)` — pick one of two optional params
+  - `REQUIRED(credentials) + OPTIONAL(credentials_consumer)` — Plain credentials required, OAuth optional
+  - `NoneRequired` — no auth params
 - `params.<name>.type` — Which auth type this param belongs to. May be a
   string or a list of strings (when one param can play multiple roles).
 - `params.<name>.xsoar_type` — XSOAR widget type:
@@ -47,18 +62,9 @@ Per-integration authentication classification. One JSON object per row.
   device code, ROPC, etc.). MUST be non-null when any `Other` auth type
   is used. `null` otherwise.
 
-Validation rules:
-
-1. Must be valid JSON with keys: `auth_types`, `config`, `params`, `notes`.
-2. `auth_types` entries sorted by `(type, name)`.
-3. Every param in `params` must appear in `auth_types` (by name).
-4. Every type in `config` must appear in at least one param's `type` field,
-   OR be explained in `notes`.
-5. If `config` is `NoneRequired`, then `auth_types` must be `[]` and
-   `params` must be `{}`.
-6. If `Other` is used, `notes` MUST be non-null.
-7. `xsoar_type` values must match the YML param widget types listed above.
-8. `required` values must match the YML param `required` field.
+Schema validation is enforced by
+[`workflow_state.py validate_auth_detail()`](workflow_state.py:432) and runs
+automatically on every `set-auth` invocation.
 
 Setter:
 [`workflow_state.py set-auth "<Integration ID>" '<json>'`](workflow_state.py:833).
