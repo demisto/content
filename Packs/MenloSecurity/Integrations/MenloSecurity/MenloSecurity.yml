@@ -9,7 +9,7 @@ provider: Menlo Security
 sectionorder:
 - Connect
 - Collect
-description: Collects web, email, audit, SMTP, attachment, DLP, and iSOC logs from the Menlo Security Isolation Platform (MSIP).
+description: Collects web, email, audit, SMTP, attachment, DLP, HEAT, firewall, bandwidth, auth flows, and Menlo Security Client logs from the Menlo Security Isolation Platform (MSIP).
 configuration:
 - display: Server URL
   name: url
@@ -24,6 +24,16 @@ configuration:
   required: true
   hiddenusername: true
   section: Connect
+- display: Token type
+  name: token_type
+  type: 15
+  required: true
+  defaultvalue: Admin token
+  options:
+  - Admin token
+  - token
+  section: Connect
+  additionalinfo: 'Select "Admin token" for tokens generated from the Admin UI (recommended, uses the v2 API). Select "token" for legacy CSV-based tokens (uses the v1 API).'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -38,17 +48,21 @@ configuration:
   name: log_types
   type: 16
   required: true
-  defaultvalue: web,safemail,audit,smtp,attachment,dlp,isoc
+  defaultvalue: web,safemail,audit,smtp,attachment,dlp
   options:
   - web
   - safemail
   - audit
+  - auth_flows
   - smtp
   - attachment
+  - bandwidth
+  - heat
+  - firewall
   - dlp
-  - isoc
+  - ms_client_logs
   section: Collect
-  additionalinfo: Select the log types to collect.
+  additionalinfo: 'Select the log types to collect. Note: "heat" replaces the deprecated "isoc" log type.'
 - display: Fetch events
   name: isFetchEvents
   type: 8

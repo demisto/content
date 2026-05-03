@@ -29,6 +29,8 @@ def mock_client(mocker) -> Client:
     client = Client.__new__(Client)
     client._token = "test-token-12345"
     client._base_url = "https://logs.menlosecurity.com"
+    # Default to v2 (Admin token) — matches DEFAULT_TOKEN_TYPE in production code.
+    client._api_path = "/api/rep/v2/fetch/client_select"
     return client
 
 
@@ -205,13 +207,16 @@ class TestGetEventsForLogType:
 
     def test_paginated_calls_keep_constant_page_size_and_trim_overshoot(self, mock_client: Client, mocker):
         """
-        Given: max_events=1500 — requires pagination, and the API returns full 1000-event pages.
+        Given: max_events exceeds MAX_EVENTS_PER_PAGE — requires pagination, and the API
+               returns full pages.
         When: Calling get_events_for_log_type.
-        Then: All calls use limit=MAX_EVENTS_PER_PAGE (page size stays constant), and the result
-              is trimmed to exactly max_events.
+        Then: All calls use limit=MAX_EVENTS_PER_PAGE (page size stays constant), and the
+              result is trimmed to exactly max_events.
         """
-        # Build full 1000-event pages by replicating a fresh deep-copy per event so
-        # in-place enrichment by the integration doesn't pollute the shared template.
+        # Use a max_events that forces 2 paginated calls: one full page + a trim on the second.
+        max_events = MAX_EVENTS_PER_PAGE + (MAX_EVENTS_PER_PAGE // 2)  # e.g. 15000 with page=10000
+        # Build full pages by replicating a fresh deep-copy per event so in-place enrichment
+        # by the integration doesn't pollute the shared template.
         events_page_1 = [make_web_response()["result"]["events"][0] for _ in range(MAX_EVENTS_PER_PAGE)]
         events_page_2 = [make_web_response()["result"]["events"][0] for _ in range(MAX_EVENTS_PER_PAGE)]
         full_page_with_cursor = {
@@ -226,13 +231,13 @@ class TestGetEventsForLogType:
         mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", side_effect=[full_page_with_cursor, full_page_no_cursor])
 
         events = get_events_for_log_type(
-            client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=1500
+            client=mock_client, log_type_ui="web", start_epoch=1700000000, end_epoch=1700003600, max_events=max_events
         )
 
         assert mock_fetch.call_count == 2
         assert mock_fetch.call_args_list[0].kwargs["limit"] == MAX_EVENTS_PER_PAGE
         assert mock_fetch.call_args_list[1].kwargs["limit"] == MAX_EVENTS_PER_PAGE
-        assert len(events) == 1500
+        assert len(events) == max_events
 
     def test_empty_response_stops_pagination(self, mock_client: Client, mocker):
         """

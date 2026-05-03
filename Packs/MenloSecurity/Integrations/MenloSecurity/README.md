@@ -14,7 +14,8 @@ This integration collects logs from the MSIP Logging API and sends them to Corte
 | --- | --- | --- |
 | Server URL | The Menlo Security logging API base URL. Default: `https://logs.menlosecurity.com` | True |
 | Auth Token | The API authentication token with Log Export API permission. | True |
-| Log types | The log types to collect. Select one or more from: web, safemail, audit, smtp, attachment, dlp, isoc. | True |
+| Token type | Select `Admin token` (default) for tokens generated from the Admin UI (uses the v2 API). Select `token` for legacy tokens (uses the v1 API). | True |
+| Log types | The log types to collect. Select one or more from: `web`, `safemail`, `audit`, `auth_flows`, `smtp`, `attachment`, `bandwidth`, `heat`, `firewall`, `dlp`, `ms_client_logs`. Default selection: `web, safemail, audit, smtp, attachment, dlp`. Note: `heat` replaces the deprecated `isoc` log type. | True |
 | Fetch events | Enable event fetching. | False |
 | Maximum number of events per fetch | Maximum events to collect per log type per fetch cycle. Default: 5000. | False |
 | Trust any certificate (not secure) | Disable SSL certificate verification. | False |

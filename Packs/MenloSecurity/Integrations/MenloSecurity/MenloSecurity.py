@@ -15,25 +15,33 @@ VENDOR = "Menlo"
 PRODUCT = "Menlo Security Isolation Platform"
 
 DEFAULT_MAX_EVENTS_PER_FETCH = 5000
-MAX_EVENTS_PER_PAGE = 1000  # API hard limit per request
+MAX_EVENTS_PER_PAGE = 1000  # API default limit per request
 DEFAULT_FIRST_FETCH = "3 hours"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-API_PATH = "/api/rep/v1/fetch/client_select"
+# Per Menlo docs: Admin-UI-generated tokens use the v2 endpoint; legacy CSV-based tokens use v1.
+API_PATH_TEMPLATE = "/api/rep/{api_version}/fetch/client_select"
+TOKEN_TYPE_TO_API_VERSION = {"Admin token": "v2", "token": "v1"}
+DEFAULT_TOKEN_TYPE = "Admin token"
+
+# Default log types to pre-select in the UI (per design — not all available types).
+DEFAULT_LOG_TYPES = ["web", "safemail", "audit", "smtp", "attachment", "dlp"]
 
 # Mapping from UI log type name to API log_type value.
-# "safemail" is the name used in the official Menlo Python script; the API body uses "email".
-# TODO: Verify that "safemail" is the correct UI label. Confirm with Menlo Security.
-# TODO: Verify that "isoc" is a valid log_type. The official Python script help text does not
-#       list it, but the Logging API docs mention it as valid.
+# "safemail" is the UI label used in the official Menlo Python script; the API body uses "email".
+# "heat" replaces the deprecated "isoc" log type per the latest Menlo Logging API docs.
 LOG_TYPE_MAP: dict[str, str] = {
     "web": "web",
     "safemail": "email",
     "audit": "audit",
+    "auth_flows": "auth_flows",
     "smtp": "smtp",
     "attachment": "attachment",
+    "bandwidth": "bandwidth",
+    "heat": "heat",
+    "firewall": "firewall",
     "dlp": "dlp",
-    "isoc": "isoc",
+    "ms_client_logs": "ms_client_logs",
 }
 
 # Maps UI log type name to the source_log_type field added to each enriched event.
@@ -41,10 +49,14 @@ SOURCE_LOG_TYPE_MAP: dict[str, str] = {
     "web": "web_logs",
     "safemail": "email_logs",
     "audit": "audit_logs",
+    "auth_flows": "auth_flows_logs",
     "smtp": "smtp_logs",
     "attachment": "attachment_logs",
+    "bandwidth": "bandwidth_logs",
+    "heat": "heat_logs",
+    "firewall": "firewall_logs",
     "dlp": "dlp_logs",
-    "isoc": "isoc_logs",
+    "ms_client_logs": "ms_client_logs",
 }
 
 ALL_LOG_TYPES = list(LOG_TYPE_MAP.keys())
@@ -60,8 +72,11 @@ class Client(ContentClient):
     Authenticates via an API token passed in the POST body of each request.
     """
 
-    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool) -> None:
+    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool, token_type: str = DEFAULT_TOKEN_TYPE) -> None:
         self._token = token
+        # Admin-UI tokens use v2; legacy CSV-based tokens use v1.
+        api_version = TOKEN_TYPE_TO_API_VERSION.get(token_type, TOKEN_TYPE_TO_API_VERSION[DEFAULT_TOKEN_TYPE])
+        self._api_path = API_PATH_TEMPLATE.format(api_version=api_version)
         super().__init__(
             base_url=base_url,
             verify=verify,
@@ -84,7 +99,7 @@ class Client(ContentClient):
             log_type: API log_type value (e.g. "web", "email", "audit").
             start: UTC start time in seconds since epoch.
             end: UTC end time in seconds since epoch.
-            limit: Maximum records per page (API max: 1000).
+            limit: Maximum records per page (API default: 1000).
             paging_identifiers: Pagination state from the previous response; None for first page.
 
         Returns:
@@ -95,7 +110,7 @@ class Client(ContentClient):
         if paging_identifiers:
             body["pagingIdentifiers"] = paging_identifiers
 
-        return self.post(url_suffix=API_PATH, params=params, json_data=body)
+        return self.post(url_suffix=self._api_path, params=params, json_data=body)
 
 
 """ HELPER FUNCTIONS """
@@ -504,16 +519,17 @@ def main() -> None:
     token = params.get("credentials", {}).get("password") or params.get("token", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    token_type = params.get("token_type", DEFAULT_TOKEN_TYPE)
 
-    log_types: list[str] = argToList(params.get("log_types", ",".join(ALL_LOG_TYPES))) or ALL_LOG_TYPES
+    log_types: list[str] = argToList(params.get("log_types", ",".join(DEFAULT_LOG_TYPES))) or DEFAULT_LOG_TYPES
     max_events_per_fetch: int = (
         arg_to_number(params.get("max_events_per_fetch", DEFAULT_MAX_EVENTS_PER_FETCH)) or DEFAULT_MAX_EVENTS_PER_FETCH
     )
 
-    demisto.debug(f"[main] Command: {command}, log types: {log_types}")
+    demisto.debug(f"[main] Command: {command}, token_type: {token_type}, log types: {log_types}")
 
     try:
-        client = Client(base_url=base_url, token=token, verify=verify_certificate, proxy=proxy)
+        client = Client(base_url=base_url, token=token, verify=verify_certificate, proxy=proxy, token_type=token_type)
 
         if command == "test-module":
             return_results(test_module(client, log_types))
