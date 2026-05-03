@@ -4,3 +4,5 @@ id: NVIDIA_DOCA_Argus_ModelingRule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
