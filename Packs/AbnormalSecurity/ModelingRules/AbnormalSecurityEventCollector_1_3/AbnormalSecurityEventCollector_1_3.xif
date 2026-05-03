@@ -1,20 +1,24 @@
 [MODEL: dataset="abnormal_security_email_protection_raw"]
 alter
-    senderIpAddressipv4 = if(senderIpAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", senderIpAddress, null),
-    senderIpAddressipv6 = if(senderIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", senderIpAddress, null)
-| alter
     xdm.event.id = threatId,
-    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = null, null, to_string(remediationStatus)),
-    xdm.email.recipients = arraymap(split(to_string(toAddresses), ","), replex("@element", "\[|\"|\]", "")),
-    xdm.email.attachment.filename = arraystring(arraymap(split(to_string(attachmentNames), ","), replex("@element", "\[|\"|\]", "")), " | "),
+    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, autoRemediated = "TRUE", XDM_CONST.OUTCOME_SUCCESS, postRemediated = "TRUE", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.description = to_json_string(object_create("abxPortalUrl", abxPortalUrl, "fromName", fromName, "attackedParty", attackedParty, "replyToEmails", replyToEmails, "attackVector", attackVector, "autoRemediated", autoRemediated, "postRemediated", postRemediated, "isRead", isRead)),
+    xdm.alert.category = attackType,
+    xdm.alert.name = attackStrategy,
+    // Build a JSON object with supplementary fields not covered by dedicated XDM fields; serialized to string for xdm.event.description
+    xdm.alert.description = arraystring(arraymap(split(to_string(summaryInsights), ","), replex("@element", "\[|\"|\]", "")), " | "),
+    xdm.observer.unique_identifier = to_string(abxMessageId),
+    // Use toAddresses when present; fall back to recipientAddress when toAddresses is empty or null
+    xdm.email.recipients = if(toAddresses != null and toAddresses != "", arraymap(split(to_string(toAddresses), ","), replex("@element", "\[|\"|\]", "")), arraycreate(recipientAddress)),
+    // Build attachment filename string only when attachmentNames is non-empty; returns null for empty arrays ("[]")
+    xdm.email.attachment.filename = if(attachmentNames != "[]" and attachmentNames != null, arraystring(arraymap(split(to_string(attachmentNames), ","), replex("@element", "\[|\"|\]", "")), " | "), null),
     xdm.email.subject = subject,
     xdm.email.cc = arraymap(split(to_string(ccEmails), ","), replex("@element", "\[|\"|\]", "")),
     xdm.email.sender = fromAddress,
     xdm.email.return_path = returnPath,
     xdm.email.message_id = internetMessageId,
-    xdm.alert.category = attackType,
-    xdm.alert.name = attackStrategy,
-    xdm.alert.description = arraystring(arraymap(split(to_string(summaryInsights), ","), replex("@element", "\[|\"|\]", "")), " | "),
-    xdm.observer.unique_identifier = to_string(abxMessageId),
-    xdm.source.ipv4 = senderIpAddressipv4,
-    xdm.source.ipv6 = senderIpAddressipv6;
+    // Classify senderIpAddress as IPv4 or IPv6 using built-in is_ipv4() and is_ipv6() functions
+    xdm.source.ipv4 = if(is_ipv4(senderIpAddress), senderIpAddress, null),
+    xdm.source.ipv6 = if(is_ipv6(senderIpAddress), senderIpAddress, null),
+    // Extract all URLs from the stringified urls array as a pipe-delimited string; null when urls=[]
+    xdm.target.url = if(urls != "[]" and urls != null, arraystring(arraymap(split(to_string(urls), ","), replex("@element", "\[|\"|\]", "")), " | "), null);
