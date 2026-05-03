@@ -99,7 +99,7 @@ configuration:
   required: false
   section: Collect
   type: 8
-- additionalinfo: The tag applied to the indicator when being forwarded into the TIM
+- additionalinfo: The tag applied to the indicator when being forwarded into the TIM.
   display: Tags
   name: feedTags
   required: false

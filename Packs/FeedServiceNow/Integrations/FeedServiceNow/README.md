@@ -17,7 +17,7 @@ This is a feed integration for extracting indicators from ServiceNow.
 | Feed Expiration Policy |  | False |
 | Feed Fetch Interval |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Tags | The tag applied to the indicator when being forwarded into the TIM | False |
+| Tags | The tag applied to the indicator when being forwarded into the TIM. | False |
 | Query URL | The API route of the requested information in ServiceNow | True |
 | Indicator Field | The field needed from the ServiceNow response which contains the indicator value | True |
 
