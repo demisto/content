@@ -27,6 +27,8 @@ USE_SSL = not demisto.params().get("insecure", False)
 IS_FETCH = demisto.params().get("isFetch")
 # How much time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get("fetch_time", "3 days")
+FETCH_LIMIT = int(demisto.params().get("fetch_limit"))
+LOOKBACK_MINUTES = int(demisto.params().get("lookback", 600))
 # Service base URL
 BASE_URL = SERVER + "/api/2.0"
 # Headers to be sent in requests
@@ -276,11 +278,18 @@ def dict_value_to_int(target_dict: dict, key: str):
 def item_to_incident(item):
     if not (occurred := item.get("timestamp_occured_iso8601")):
         occurred = convert_timestamp_to_iso86(item.get("timestamp_occured", ""), item.get("time_offset", "Z"))
+    alarm_id = item.get("uuid")
+
+    if not occurred or not alarm_id:
+        demisto.debug(f"item {item} has no uuid or occurred timestamp.")
+        return None
+
     incident = {
         "Type": "AlienVault USM",
-        "name": "Alarm: " + item.get("uuid"),
+        "name": f"Alarm: {alarm_id}",
         "occurred": occurred,
         "rawJSON": json.dumps(item),
+        "incident_id": alarm_id,
     }
 
     return incident
@@ -466,39 +475,40 @@ def get_events_by_alarm_command():
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get("timestamp")
 
-    # Handle first time fetch, fetch incidents retroactively
-    # OR
-    # Handle first time after release
-    if last_fetch is None:
-        time_field = last_run.get("time")
-        if time_field:
-            last_fetch = date_to_timestamp(time_field, parse_time(time_field))
-        else:
-            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+    fetch_limit = last_run.get("limit") or FETCH_LIMIT
 
-    incidents = []
-    limit = dict_value_to_int(demisto.params(), "fetch_limit")
-    items = search_alarms(start_time=last_fetch, direction="asc", limit=limit)
-    for item in items:
-        incident = item_to_incident(item)
-        incidents.append(incident)
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=FETCH_TIME,
+        look_back=LOOKBACK_MINUTES,
+    )
 
-    if incidents:
-        #  updating according to latest incident
-        time_str = str(incidents[-1].get("occurred"))
+    incidents_res = search_alarms(start_time=start_fetch_time, end_time=end_fetch_time, limit=fetch_limit, direction="asc")
 
-        # add one second to last incident occurred time to avoid duplications
-        occurred = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        occurred = occurred + timedelta(seconds=1)
-        time_str = occurred.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    # convert to XSOAR incidents
+    incidents_res = [incident for item in incidents_res if (incident := item_to_incident(item))]
 
-        last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
+    incidents = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents_res,
+        last_run=last_run,
+        fetch_limit=FETCH_LIMIT,
+        id_field="incident_id",  # must map to uuid
+    )
 
-    demisto.setLastRun({"timestamp": last_fetch})
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents,
+        fetch_limit=FETCH_LIMIT,
+        start_fetch_time=start_fetch_time,
+        end_fetch_time=end_fetch_time,
+        look_back=LOOKBACK_MINUTES,
+        created_time_field="occurred",
+        id_field="incident_id",
+    )
+
     demisto.incidents(incidents)
+    demisto.setLastRun(last_run)
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
