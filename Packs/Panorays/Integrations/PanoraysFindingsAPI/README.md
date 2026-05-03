@@ -3,7 +3,6 @@ This integration was integrated and tested with version v2 of PanoraysFindingsAP
 
 ## Configure Panorays Findings API in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Panorays PAPI base URL | True |

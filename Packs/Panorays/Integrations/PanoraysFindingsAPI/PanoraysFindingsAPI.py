@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import json
 from typing import Any
-from datetime import timezone
+from datetime import UTC
 
 urllib3.disable_warnings()
 
@@ -57,7 +57,7 @@ def _make_aware(dt):
     if dt is None:
         return None
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
+        return dt.replace(tzinfo=UTC)
     return dt
 
 
