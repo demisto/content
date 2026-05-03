@@ -99,7 +99,7 @@ configuration:
   required: false
   section: Collect
   type: 8
-- additionalinfo: The tag applied to the indicator when being forwarded into the TIM.
+- additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
@@ -117,7 +117,7 @@ configuration:
   required: true
   section: Collect
   type: 0
-description: This is a feed integration for extracting indicators from ServiceNow
+description: This is a feed integration for extracting indicators from ServiceNow.
 display: ServiceNow Generic Feed
 name: FeedServiceNow
 script:
