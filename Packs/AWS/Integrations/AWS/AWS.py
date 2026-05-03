@@ -8284,7 +8284,7 @@ class SSM:
 
 
     @staticmethod
-    def document_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def documents_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Returns all SSM documents in the current AWS account and Region.
 
@@ -8682,14 +8682,13 @@ class SSM:
         name="aws-ssm-command-cancel",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
         timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
-        requires_polling_arg=True,
-        polling_arg_name="include_polling",
+        requires_polling_arg=True
     )
     def command_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
         """
         Cancels the specified SSM command and optionally polls until the cancellation is confirmed.
         Args:
-            args (dict): Command arguments including command_id, optional instance_ids, include_polling,
+            args (dict): Command arguments including command_id, optional instance_ids,
                 and first_run (hidden, used for polling state).
             client: The AWS SSM boto3 client used to perform the request.
 
@@ -8697,7 +8696,6 @@ class SSM:
             PollResult: An object containing the results of the command and whether to continue polling.
         """
         command_id = args.get("command_id", "")
-        include_polling = argToBoolean(args.get("include_polling", False))
 
         cancel_terminal_statuses = {
             "Success": "The cancel command failed. The command completed successfully before the cancellation.",
@@ -8740,7 +8738,6 @@ class SSM:
             partial_result=CommandResults(
                 readable_output=f"Cancellation request sent for command '{command_id}'.",
             ),
-            continue_to_poll=include_polling,
             args_for_next_run=args,
         )
 
@@ -8917,7 +8914,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ssm-command-run": SSM.command_run_command,
     "aws-ssm-tag-add": SSM.add_tags_to_resource_command,
     "aws-ssm-tag-remove": SSM.remove_tags_from_resource_command,
-    "aws-ssm-document-list": SSM.document_list_command,
+    "aws-ssm-documents-list": SSM.documents_list_command,
     "aws-ssm-document-get": SSM.document_get_command,
     "aws-ssm-automation-execution-list": SSM.automation_execution_list_command,
     "aws-ssm-automation-execution-run": SSM.automation_execution_run_command,

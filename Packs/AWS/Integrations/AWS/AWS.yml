@@ -10577,6 +10577,10 @@ script:
       - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
         name: hide_polling_output
         hidden: true
+      - name: interval_in_seconds
+        description: The interval in seconds between polling attempts.
+        required: false
+        defaultValue: '30'
     outputs:
       - contextPath: AWS.SSM.Command.CommandId
         description: A unique identifier for this command.
@@ -10809,7 +10813,7 @@ script:
         description: The value of the tag.
         type: String
 
-  - name: aws-ssm-document-list
+  - name: aws-ssm-documents-list
     description: Returns all Systems Manager (SSM) documents in the current AWS account and Region.
     arguments:
       - name: account_id
@@ -10888,6 +10892,18 @@ script:
       - contextPath: AWS.SSM.Document.SchemaVersion
         description: The schema version.
         type: String
+      - contextPath: AWS.SSM.Document.Requires.Name
+        description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
+        type: String
+      - contextPath: AWS.SSM.Document.Requires.RequireType
+        description: The document type of the required SSM document.
+        type: String
+      - contextPath: AWS.SSM.Document.Requires.Version
+        description: The document version required by the current document.
+        type: String
+      - contextPath: AWS.SSM.Document.Requires.VersionName
+        description: An optional field specifying the version of the artifact associated with the document.
+        type: String
       - contextPath: AWS.SSM.Document.DocumentFormat
         description: The document format, either JSON or YAML.
         type: String
@@ -10900,9 +10916,6 @@ script:
       - contextPath: AWS.SSM.Document.Tags.Value
         description: The value of the tag.
         type: String
-      - contextPath: AWS.SSM.Document.Requires
-        description: A list of SSM documents required by a document, containing Name, Version, RequireType, and VersionName fields.
-        type: Unknown
       - contextPath: AWS.SSM.Document.ReviewStatus
         description: The current status of a document review.
         type: String
@@ -10976,11 +10989,20 @@ script:
           - JSON
           - TEXT
     outputs:
-      - contextPath: AWS.SSM.Document.Hash
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Hash
         description: The Sha256 or Sha1 hash created by the system when the document was created.
         type: String
-      - contextPath: AWS.SSM.Document.HashType
+      - contextPath: AWS.SSM.Document.AttachmentsContent.HashType
         description: The hash type of the document. Valid values are Sha256 or Sha1.
+        type: String
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Name
+        description: The name of an attachment.
+        type: String
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Size
+        description: The size of an attachment in bytes.
+        type: String
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Url
+        description: The URL location of the attachment content.
         type: String
       - contextPath: AWS.SSM.Document.Name
         description: The name of the SSM document.
@@ -10990,9 +11012,6 @@ script:
         type: String
       - contextPath: AWS.SSM.Document.VersionName
         description: The version of the artifact associated with the document.
-        type: String
-      - contextPath: AWS.SSM.Document.Owner
-        description: The AWS user that created the document.
         type: String
       - contextPath: AWS.SSM.Document.CreatedDate
         description: The date the document was created.
@@ -11006,65 +11025,29 @@ script:
       - contextPath: AWS.SSM.Document.DocumentVersion
         description: The document version.
         type: String
-      - contextPath: AWS.SSM.Document.Description
-        description: A description of the document.
-        type: String
-      - contextPath: AWS.SSM.Document.Parameters
-        description: A description of the parameters for a document, including Name, Type, Description, and DefaultValue fields.
-        type: Unknown
-      - contextPath: AWS.SSM.Document.PlatformTypes
-        description: The list of OS platforms compatible with this SSM document.
-        type: String
       - contextPath: AWS.SSM.Document.DocumentType
         description: The type of document.
-        type: String
-      - contextPath: AWS.SSM.Document.SchemaVersion
-        description: The schema version.
-        type: String
-      - contextPath: AWS.SSM.Document.LatestVersion
-        description: The latest version of the document.
-        type: String
-      - contextPath: AWS.SSM.Document.DefaultVersion
-        description: The default version.
         type: String
       - contextPath: AWS.SSM.Document.DocumentFormat
         description: The document format, either JSON or YAML.
         type: String
-      - contextPath: AWS.SSM.Document.TargetType
-        description: The target type which defines the kinds of resources the document can run on.
-        type: String
-      - contextPath: AWS.SSM.Document.Tags.Key
-        description: The name of the tag.
-        type: String
-      - contextPath: AWS.SSM.Document.Tags.Value
-        description: The value of the tag.
-        type: String
-      - contextPath: AWS.SSM.Document.AttachmentsInformation
-        description: Details about the document attachments, including Name, Location, Url, Size, and Hash fields.
-        type: Unknown
-      - contextPath: AWS.SSM.Document.Requires
-        description: A list of SSM documents required by a document, containing Name, Version, RequireType, and VersionName fields.
-        type: Unknown
-      - contextPath: AWS.SSM.Document.Author
-        description: The user in the organization who created the document.
-        type: String
-      - contextPath: AWS.SSM.Document.ReviewInformation
-        description: Details about the review of a document, including ReviewedTime, Status, and Reviewer fields.
-        type: Unknown
-      - contextPath: AWS.SSM.Document.ApprovedVersion
-        description: The version of the document currently approved for use in the organization.
-        type: String
-      - contextPath: AWS.SSM.Document.PendingReviewVersion
-        description: The version of the document that is currently under review.
-        type: String
       - contextPath: AWS.SSM.Document.ReviewStatus
         description: The current status of a document review.
         type: String
-      - contextPath: AWS.SSM.Document.Category
-        description: The classification of a document to help you identify and categorize its use.
+      - contextPath: AWS.SSM.Document.Content
+        description: The contents of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.CategoryEnum
-        description: The value that identifies a document's category.
+      - contextPath: AWS.SSM.Document.Requires.Name
+        description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
+        type: String
+      - contextPath: AWS.SSM.Document.Requires.RequireType
+        description: The document type of the required SSM document.
+        type: String
+      - contextPath: AWS.SSM.Document.Requires.Version
+        description: The document version required by the current document.
+        type: String
+      - contextPath: AWS.SSM.Document.Requires.VersionName
+        description: An optional field specifying the version of the artifact associated with the document.
         type: String
 
   - name: aws-ssm-automation-execution-list
@@ -11570,7 +11553,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Command.ExpiresAfter
         description: If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed.
-        type: String
+        type: Number
       - contextPath: AWS.SSM.Command.Parameters
         description: The parameter values to be inserted in the document when running the command.
         type: Unknown
@@ -11585,7 +11568,7 @@ script:
         type: String
       - contextPath: AWS.SSM.Command.RequestedDateTime
         description: The date and time the command was requested.
-        type: String
+        type: Number
       - contextPath: AWS.SSM.Command.Status
         description: The status of the command.
         type: String
@@ -11694,14 +11677,6 @@ script:
         description: A comma-separated list of managed node IDs on which you want to cancel the command. If not provided, the command is canceled on every node on which it was requested.
         required: false
         isArray: true
-      - name: include_polling
-        description: When set to true, polls the command status until it reaches a terminal state after cancellation.
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-        defaultValue: 'false'
       - name: interval_in_seconds
         description: The interval in seconds between polling attempts.
         required: false
