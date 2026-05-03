@@ -29,8 +29,7 @@ Per-integration authentication classification. One JSON object per row.
       "xsoar_type": <int>,
       "required": <bool>
     }
-  },
-  "notes": "<string or null>"
+  }
 }
 ```
 
@@ -58,9 +57,6 @@ Per-integration authentication classification. One JSON object per row.
   `14` = cert key, `15` = select.
 - `params.<name>.required` — Whether the param is required in the XSOAR
   configuration.
-- `notes` — Explanation for complex auth setups (managed identity,
-  device code, ROPC, etc.). MUST be non-null when any `Other` auth type
-  is used. `null` otherwise.
 
 Schema validation is enforced by
 [`workflow_state.py validate_auth_detail()`](workflow_state.py:432) and runs

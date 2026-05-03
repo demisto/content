@@ -266,7 +266,7 @@ grep -n "grant_type.*password\|resource_owner\|ROPC" <file>.py
 grep -n "device_code\|devicecode\|device_authorization" <file>.py
 ```
 
-**Managed Identity — noted in `notes` field:**
+**Managed Identity — classified as `Other`:**
 ```bash
 grep -n "managed_identit\|MANAGED_IDENTITIES\|use_managed_identities\|managed_identities_client_id" <file>.py
 ```
@@ -301,9 +301,9 @@ Based on manual review of 148 integrations (71 corrections found), these are the
 | 1 | `type=9` credentials used for OAuth2 client_credentials | 9 | `Plain(credentials)` | `OAuth2ClientCreds(credentials)` | Code does `grant_type=client_credentials` or uses `MicrosoftClient` |
 | 2 | Bearer token classified as Plain | 8 | `Plain(credentials)` | `APIKey(credentials)` | Code sets `Authorization: Bearer {token}` with a static token from params |
 | 3 | False positive OAuth2ClientCreds from code patterns | 25 | `OPTIONAL(OAuth2ClientCreds)` added | Should be removed | Code has `client_id`/`access_token` strings but they're not OAuth2 — they're proprietary token exchange |
-| 4 | Microsoft/Azure missing ManagedIdentity | 23 | No mention | Add to notes/auth_types | Code imports `MicrosoftClient` and has `managed_identities_client_id` param |
-| 5 | Microsoft/Azure missing DeviceCode | 12 | No mention | Add to notes/auth_types | Code has `device_code` grant type support |
-| 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Other` with ROPC note | Code does `grant_type=password` |
+| 4 | Microsoft/Azure missing ManagedIdentity | 23 | No mention | Add to `auth_types` as `Other` | Code imports `MicrosoftClient` and has `managed_identities_client_id` param |
+| 5 | Microsoft/Azure missing DeviceCode | 12 | No mention | Add to `auth_types` as `Other` | Code has `device_code` grant type support |
+| 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Other` (ROPC) | Code does `grant_type=password` |
 | 7 | Hidden old param creates false CHOICE | ~10 | `CHOICE(APIKey, Plain)` | Single mechanism | Old `type=4` param is `hidden: true`, new `type=9` param is visible — same credential |
 | 8 | `type=4` OAuth client secret classified as APIKey | ~5 | `APIKey(client_secret)` | `OAuth2ClientCreds(client_secret)` | Param named `client_secret` or `enc_key` used in OAuth flow |
 
@@ -319,7 +319,7 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
   - Check for `managed_identities_client_id` param → indicates ManagedIdentity support
   - Check for `redirect_uri` and `auth_code` params → indicates OAuth2AuthCode support
   - The config should typically be: `CHOICE(OAuth2AuthCode, OAuth2ClientCreds, DeviceCode, ManagedIdentity)` or similar
-  - DeviceCode and ManagedIdentity are classified as `Other` in the enum but should be noted in the `notes` field
+  - DeviceCode and ManagedIdentity are classified as `Other` in the enum
 
 ---
 
@@ -327,14 +327,13 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
 
 After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md):
 
-1. Must be valid JSON with keys: `auth_types`, `config`, `params`, `notes`
+1. Must be valid JSON with keys: `auth_types`, `config`, `params`
 2. `auth_types` entries sorted by `(type, name)`
 3. Every param in `params` must appear in `auth_types` (by name)
-4. Every type in `config` must appear in at least one param's `type` field, OR be explained in `notes`
+4. Every type in `config` must appear in at least one param's `type` field
 5. If `config` is `NoneRequired`, then `auth_types` must be `[]` and `params` must be `{}`
-6. If `Other` is used, `notes` MUST be non-null explaining the mechanism
-7. `xsoar_type` values must match the YML param types (0=text, 4=encrypted, 8=bool, 9=credentials, 14=cert key, 15=select)
-8. `required` values must match the YML param `required` field
+6. `xsoar_type` values must match the YML param types (0=text, 4=encrypted, 8=bool, 9=credentials, 14=cert key, 15=select)
+7. `required` values must match the YML param `required` field
 
 ---
 
@@ -372,7 +371,7 @@ python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details J
 
 This command:
 
-- Validates the Auth Details JSON against the schema (`auth_types`, `config`, `params`, `notes`)
+- Validates the Auth Details JSON against the schema (`auth_types`, `config`, `params`)
 - Sets the `Auth Details` workflow data column in the CSV
 - Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag
 - Rejects invalid JSON with specific error messages
@@ -380,7 +379,7 @@ This command:
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}}}'
 ```
 
 After setting, verify it looks correct:
@@ -402,7 +401,7 @@ See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions.
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow |
 | `APIKey` | API Key, HMAC, and similar static secret mechanisms |
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates |
-| `Other` | Catch-all (e.g., DeviceCode, ROPC, ManagedIdentity) — `notes` MUST explain the mechanism |
+| `Other` | Catch-all (e.g., DeviceCode, ROPC, ManagedIdentity, custom signing) |
 | `NoneRequired` | No authentication needed |
 
 ### Step 2: Set Params to Commands (workflow data column)
@@ -659,7 +658,7 @@ When analyzing an integration's authentication, use these enum values inside `Au
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow |
 | `APIKey` | API key authentication (header or query parameter) |
 | `Plain` | Simple credentials (username/password, token, etc.) |
-| `Other` | Catch-all (DeviceCode, ROPC, ManagedIdentity, custom signing) — `notes` MUST explain |
+| `Other` | Catch-all (DeviceCode, ROPC, ManagedIdentity, custom signing) |
 | `NoneRequired` | No authentication required |
 
 ## Auth Requirement Semantics

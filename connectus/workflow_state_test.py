@@ -79,10 +79,9 @@ from workflow_state import (
 VALID_AUTH_JSON = (
     '{"auth_types":[{"type":"APIKey","name":"api_key"}],'
     '"config":"REQUIRED(APIKey)",'
-    '"params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},'
-    '"notes":null}'
+    '"params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}}}'
 )
-VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NONE","params":{}}'
 
 
 # ---------------------------------------------------------------------------
@@ -1088,14 +1087,14 @@ class TestValidateAuthDetail:
         assert "Missing required keys" in errors[0]
 
     def test_invalid_auth_type(self) -> None:
-        bad = '{"auth_types":[{"type":"INVALID","name":"x"}],"config":"NONE","params":{},"notes":null}'
+        bad = '{"auth_types":[{"type":"INVALID","name":"x"}],"config":"NONE","params":{}}'
         errors = validate_auth_detail(bad)
         assert any("invalid type 'INVALID'" in e for e in errors)
 
     def test_all_valid_auth_types(self) -> None:
         for at in VALID_AUTH_TYPES:
             detail = (f'{{"auth_types":[{{"type":"{at}","name":"x"}}],'
-                      '"config":"NONE","params":{},"notes":null}')
+                      '"config":"NONE","params":{}}')
             assert validate_auth_detail(detail) == [], f"Type '{at}' should be valid"
 
 

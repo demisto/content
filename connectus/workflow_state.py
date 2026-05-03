@@ -441,7 +441,7 @@ def validate_auth_detail(value: str) -> list[str]:
     if not isinstance(detail, dict):
         return [f"Expected a JSON object, got {type(detail).__name__}"]
 
-    required_keys = {"auth_types", "config", "params", "notes"}
+    required_keys = {"auth_types", "config", "params"}
     missing = required_keys - set(detail.keys())
     if missing:
         errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
@@ -502,9 +502,6 @@ def validate_auth_detail(value: str) -> list[str]:
                     f"params['{param_name}']: 'required' must be bool, "
                     f"got {type(param_data['required']).__name__}"
                 )
-
-    if detail["notes"] is not None and not isinstance(detail["notes"], str):
-        errors.append(f"'notes' must be a string or null, got {type(detail['notes']).__name__}")
 
     return errors
 
@@ -1462,7 +1459,7 @@ def _example_value_for(step: Step) -> str:
     if step.kind == "data" and step.name in JSON_VALUED_COLUMNS:
         if step.name == "Auth Details":
             return ("'{\"auth_types\":[],\"config\":\"NONE\","
-                    "\"params\":{},\"notes\":null}'")
+                    "\"params\":{}}'")
         if step.name == "Params for test with default in code":
             return "'[]'"
         if step.name == "Params same in other handlers":

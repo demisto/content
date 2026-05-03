@@ -25,7 +25,7 @@ Special case: `NoneRequired` (no auth params)
 | `OAuth2JWT` | OAuth 2.0 JWT Bearer flow | Google integrations |
 | `APIKey` | API Key, HMAC, and similar static secret mechanisms | Abnormal Security, VirusTotal |
 | `Plain` | Plain text fields: username/password, basic auth, bearer tokens, AWS credentials, certificates | ActiveMQ, AWS S3, CyberArk |
-| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow). The `notes` field MUST explain the specific auth mechanism. | Azure WAF, Azure Kubernetes Services |
+| `Other` | Catch-all for auth mechanisms that don't fit the other categories (e.g., OAuth 2.0 Device Code flow, Managed Identity, ROPC). | Azure WAF, Azure Kubernetes Services |
 | `NoneRequired` | No authentication needed | AlienVault Reputation Feed |
 
 #### Requirement Expression
@@ -141,7 +141,7 @@ python3 connectus/workflow_state.py show-step "Cisco Spark" "Auth Details"
 python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 
 # Set Auth Details (validates JSON schema; cascade-resets steps #3-#16)
-python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}},"notes":null}'
+python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}}}'
 
 # Set Params to Commands (validates JSON; cascade-resets steps #4-#16)
 python3 connectus/workflow_state.py set-params-to-commands "Cisco Spark" '{"integration":"Cisco Spark","commands":{"test-module":["credentials"]}}'
@@ -311,7 +311,7 @@ $ python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
 Set assignee for 'Cisco Spark' to: John Doe
   Current step: #2 Auth Details
 
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}},"notes":null}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[{"type":"Plain","name":"credentials"}],"config":"REQUIRED(Plain)","params":{"credentials":{"type":"Plain","xsoar_type":9,"required":true}}}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Current step: #3 Params to Commands
 
@@ -336,7 +336,7 @@ $ python3 connectus/workflow_state.py markpass "Cisco Spark" "generated manifest
 #### 6. Cascade reset: re-issuing `set-auth` mid-flight
 
 ```
-$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NONE","params":{},"notes":null}'
+$ python3 connectus/workflow_state.py set-auth "Cisco Spark" '{"auth_types":[],"config":"NONE","params":{}}'
 Set 'Auth Details' (step 2/16) for 'Cisco Spark'.
   Cleared 4 subsequent step(s): ['Params to Commands', 'Params for test with default in code', 'Params same in other handlers', 'generated manifest']
   Current step: #3 Params to Commands
