@@ -8,7 +8,6 @@ This is a feed integration for extracting indicators from ServiceNow.
 | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
 | Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
 | Password |  | True |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch indicators |  | True |
