@@ -1,0 +1,98 @@
+{
+    "data": {
+        "alert": {
+            "id": "01tc8est-test-7a6f-beeb-eddummya986",
+            "name": "hhau2.txt detected as Malware",
+            "description": "Windows file events analysis detected a file hash that was added to the Blocklist",
+            "severity": "MEDIUM",
+            "status": "IN_PROGRESS",
+            "result": "MITIGATED",
+            "analystVerdict": "TRUE_POSITIVE_RANSOMWARE",
+            "attackSurfaces": [
+                "ENDPOINT"
+            ],
+            "classification": "MALWARE",
+            "confidenceLevel": "MALICIOUS",
+            "externalId": "1234567891011",
+            "createdAt": "2026-02-24T11:35:23.392Z",
+            "updatedAt": "2026-03-17T13:21:33.459Z",
+            "firstSeenAt": "2026-02-24T11:34:37.315Z",
+            "lastSeenAt": "2026-03-02T10:16:11.144Z",
+            "detectedAt": "2026-02-24T11:34:37.315Z",
+            "noteExists": false,
+            "dataSources": [],
+            "storylineId": null,
+            "ticketId": null,
+            "fileName": "N/A",
+            "fileHash": "N/A",
+            "analytics": {
+                "uid": null,
+                "name": "Agent Policy",
+                "type": "OTHER",
+                "typeValue": "STATIC",
+                "category": "User-Defined Blocklist"
+            },
+            "assignee": null,
+            "detectionSource": {
+                "product": "EDR",
+                "vendor": "SentinelOne",
+                "engine": null
+            },
+            "asset": {
+                "id": "dummyid1234",
+                "name": "TEST",
+                "agentUuid": "dummytest12345",
+                "agentVersion": "25.1.3.334",
+                "assetTypeClassifier": "Windows laptop",
+                "category": "Workstation",
+                "subcategory": "Laptop",
+                "type": "UNKNOWN",
+                "connectivityToConsole": "ONLINE",
+                "osType": "WINDOWS",
+                "osVersion": "Windows 10 Enterprise Evaluation 123",
+                "pendingReboot": false,
+                "lastLoggedInUser": "joe",
+                "policy": null
+            },
+            "detectionTime": {
+                "asset": {
+                    "agentVersion": "25.1.3.334",
+                    "consoleIpAddress": null,
+                    "domain": null,
+                    "ipV4": "1.2.3.4",
+                    "ipV6": ":::519f:96a4:e108",
+                    "lastLoggedInUser": "hhau",
+                    "osName": "Windows 10 Enterprise Evaluation",
+                    "osRevision": "1234",
+                    "osType": "WINDOWS",
+                    "policy": "PROTECT",
+                    "subscriptionTime": null
+                },
+                "scope": {
+                    "accountId": "123456789101112",
+                    "accountName": "SentinelOne",
+                    "groupName": "Default group",
+                    "siteName": "Default site"
+                },
+                "cloud": null,
+                "kubernetes": null
+            },
+            "realTime": {
+                "scope": {
+                    "account": {
+                        "id": "123456789101112",
+                        "name": "SentinelOne"
+                    },
+                    "group": {
+                        "id": "123456789101112",
+                        "name": "Default group"
+                    },
+                    "site": {
+                        "id": "123456789101112",
+                        "name": "Default site"
+                    }
+                }
+            }
+        }
+    }
+}
