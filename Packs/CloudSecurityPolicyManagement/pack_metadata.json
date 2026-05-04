@@ -15,6 +15,14 @@
     "marketplaces": [
         "platform"
     ],
+    "supportedModules": [
+        "agentix",
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr"
+    ],
     "created": "2026-04-02T11:25:26Z",
     "dependencies": {
         "AWS": {
