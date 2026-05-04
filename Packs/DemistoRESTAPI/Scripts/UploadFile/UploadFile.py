@@ -4,6 +4,8 @@ from CommonServerPython import *
 def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = "", target: str = "entry"):
     if "incident" in target or "case" in target:
         service_name = "incident"
+    else:
+        service_name = "entry"
     if "case" in target:
         raw_id = incident_id.split('-')[1]
         incident_id = f"INCIDENT-{raw_id}"
