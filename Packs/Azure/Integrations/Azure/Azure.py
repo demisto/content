@@ -125,6 +125,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-auth-update-quick-action",
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
+        "azure-appservice-webapp-auth-settings-update",
+        "azure-appservice-webapp-auth-settings-update-quick-action",
+        "azure-appservice-webapp-config-update",
+        "azure-webapp-conf-update-http2-quick-action",
+        "azure-webapp-conf-disable-remote-debugging-quick-action",
+        "azure-webapp-conf-update-min-tls-version-quick-action",
     ],
     "Microsoft.Web/sites/config/write": [
         "azure-webapp-config-set",
@@ -135,16 +141,26 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-auth-update-quick-action",
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
+        "azure-appservice-webapp-auth-settings-update",
+        "azure-appservice-webapp-auth-settings-update-quick-action",
+        "azure-appservice-webapp-config-update",
+        "azure-webapp-conf-update-http2-quick-action",
+        "azure-webapp-conf-disable-remote-debugging-quick-action",
+        "azure-webapp-conf-update-min-tls-version-quick-action",
     ],
     "Microsoft.Web/sites/read": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-appservice-webapp-update",
+        "azure-appservice-webapp-update-quick-action"
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-appservice-webapp-update",
+        "azure-appservice-webapp-update-quick-action"
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
@@ -3266,8 +3282,17 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         ["Name", "Http20 Enabled", "Remote Debugging Enabled", "Min Tls Version", "ID"],
         removeNull=True,
     )
+    old_namings = ["azure-webapp-config-set", "azure-webapp-set-http2-quick-action", "azure-set-function-app-http-version2-0-quick-action", "azure-webapp-disable-remote-debugging-quick-action", "azure-webapp-set-min-tls-version-quick-action"]
+    if demisto.command() in old_namings:
+        return CommandResults(
+            outputs_prefix="Azure.WebAppConfig",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=md,
+            raw_response=outputs,
+        )
     return CommandResults(
-        outputs_prefix="Azure.WebAppConfig",
+        outputs_prefix="Azure.AppService.WebAppConfiguration",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -3305,8 +3330,18 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         ["Name", "Enabled", "ID"],
         removeNull=True,
     )
+
+    old_namings = ["azure-webapp-auth-update", "azure-webapp-auth-update-quick-action"]
+    if demisto.command() in old_namings:
+        return CommandResults(
+            outputs_prefix="Azure.WebAppAuth",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=md,
+            raw_response=outputs,
+        )
     return CommandResults(
-        outputs_prefix="Azure.WebAppAuth",
+        outputs_prefix="Azure.AppService.WebAppAuthSettings",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -4829,11 +4864,14 @@ def main():  # pragma: no cover
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
             "azure-webapp-config-set": set_webapp_config_command,
+            "azure-appservice-webapp-config-update": set_webapp_config_command,
             "azure-webapp-auth-update": update_webapp_auth_command,
+            "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
+            "azure-appservice-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
@@ -4853,15 +4891,20 @@ def main():  # pragma: no cover
             "azure-vm-network-interface-details-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
             "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-appservice-webapp-update-quick-action": webapp_update_command,
             "azure-storage-allow-access-quick-action": storage_account_update_command,
             "azure-webapp-set-http2-quick-action": set_webapp_config_command,
+            "azure-webapp-conf-update-http2-quick-action": set_webapp_config_command,
             "azure-webapp-auth-update-quick-action": update_webapp_auth_command,
+            "azure-appservice-webapp-auth-settings-update-quick-action": update_webapp_auth_command,
             "azure-storage-disable-cross-tenant-replication-quick-action": storage_account_update_command,
             "azure-set-function-app-http-version2-0-quick-action": set_webapp_config_command,
             "azure-storage-disable-storage-account-public-access-quick-action": storage_account_update_command,
             "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command,
+            "azure-webapp-conf-disable-remote-debugging-quick-action": set_webapp_config_command,
             "azure-nsg-security-rule-delete-quick-action": nsg_security_rule_delete_command,
             "azure-webapp-set-min-tls-version-quick-action": set_webapp_config_command,
+            "azure-webapp-conf-update-min-tls-version-quick-action": set_webapp_config_command,
             "azure-function-app-set-min-tls-version-quick-action": set_webapp_config_command,
             "azure-mysql-set-secure-transport-quick-action": mysql_flexible_server_param_set_command,
             "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,

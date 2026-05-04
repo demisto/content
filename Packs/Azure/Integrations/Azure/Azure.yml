@@ -1000,7 +1000,8 @@ script:
       - '1.2'
       - '1.3'
     name: azure-webapp-config-set
-    description: Updates the configuration settings of an existing Azure Web App.
+    description: Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update.
+    deprecated: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
       description: Resource ID.
@@ -1089,6 +1090,132 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
+  - name: azure-appservice-webapp-config-update
+    description: "Updates the configuration settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/write, Microsoft.Web/sites/config/read."
+    arguments:
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+    - name: subscription_id
+      type: string
+      required: true
+      description: Subscription ID.
+    - name: name
+      type: string
+      required: true
+      description: Name of the Web App.
+    - auto: PREDEFINED
+      name: http20_enabled
+      type: bool
+      required: false
+      description: Configures a web site to allow clients to connect over http2.0.
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      name: remote_debugging_enabled
+      type: bool
+      required: false
+      description: True if remote debugging is enabled; otherwise, false.
+      predefined:
+        - 'true'
+        - 'false'
+    - name: min_tls_version
+      type: str
+      auto: PREDEFINED
+      required: false
+      description: Configures the minimum version of TLS required for SSL requests.
+      predefined:
+        - '1.0'
+        - '1.1'
+        - '1.2'
+        - '1.3'
+    outputs:
+    - contextPath: Azure.AppService.WebAppConfiguration.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.ftpsState
+      description: State of FTP / FTPS service.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.cors
+      description: Cross-Origin Resource Sharing (CORS) settings.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
   - arguments:
     - name: resource_group_name
       type: string
@@ -1111,7 +1238,8 @@ script:
       - 'true'
       - 'false'
     name: azure-webapp-auth-update
-    description: Updates the authentication and authorization settings of an existing Azure Web App.
+    description: Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update.
+    deprecated: true
     outputs:
     - contextPath: Azure.WebAppAuth.id
       description: Resource ID.
@@ -1207,6 +1335,126 @@ script:
       description: The app setting that contains the Apple provider client secret.
       type: String
     - contextPath: Azure.WebAppAuth.properties.authFilePath
+      description: The path to the authentication configuration file.
+      type: String
+  - name: azure-appservice-webapp-auth-settings-update
+    description: "Updates the authentication and authorization settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    arguments:
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+    - name: subscription_id
+      type: string
+      required: true
+      description: Subscription ID.
+    - name: name
+      type: string
+      required: true
+      description: Name of the Web App.
+    - auto: PREDEFINED
+      name: enabled
+      type: bool
+      required: false
+      description: True if the Authentication / Authorization feature is enabled for the current app; otherwise, false.
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Azure.AppService.WebAppAuthSettings.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.name
+      description: Resource Name.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.enabled
+      description: Indicates whether Authentication/Authorization is enabled for the app.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.runtimeVersion
+      description: The RuntimeVersion of the Authentication/Authorization feature.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction
+      description: The action to take when an unauthenticated client attempts to access the app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled
+      description: Indicates whether the Azure App Service Authentication platform’s token store is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls
+      description: External URLs that are allowed to be redirected to as part of logging in or logging out of the app.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.defaultProvider
+      description: The default authentication provider to use when multiple providers are configured.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.clientId
+      description: The Client ID of the app used for AAD login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.clientSecret
+      description: The client secret associated with the AAD app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName
+      description: The app setting that contains the client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.issuer
+      description: The OpenID Connect Issuer URI that represents the entity that issues access tokens.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.allowedAudiences
+      description: The list of audiences that can receive the authentication tokens.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams
+      description: Additional parameters to send to the authentication provider.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned
+      description: True if AAD is auto-provisioned; otherwise false.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.googleClientId
+      description: The Client ID of the app used for Google login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.googleClientSecret
+      description: The client secret associated with the Google app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName
+      description: The app setting that contains the client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.facebookAppId
+      description: The App ID of the Facebook app used for login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret
+      description: The app secret associated with the Facebook app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName
+      description: The app setting that contains the Facebook app secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey
+      description: The OAuth 1.0a consumer key of the Twitter application used for login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret
+      description: The consumer secret associated with the Twitter application.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName
+      description: The app setting that contains the Twitter consumer secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId
+      description: The OAuth 2.0 client ID for the Microsoft account provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret
+      description: The client secret for the Microsoft account provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName
+      description: The app setting that contains the Microsoft account client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.appleClientId
+      description: The client ID for the Apple provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.appleClientSecret
+      description: The client secret for the Apple provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName
+      description: The app setting that contains the Apple provider client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.authFilePath
       description: The path to the authentication configuration file.
       type: String
   - arguments:
@@ -1464,7 +1712,8 @@ script:
       - 'true'
       - 'false'
     - name: client_cert_enabled
-      description: Configures the web site to accept only https requests.
+      description: Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
+      deprecated: true
       type: bool
       predefined:
       - 'true'
@@ -1673,6 +1922,211 @@ script:
     - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
       description: Whether request tracing is enabled.
       type: Boolean
+  - name: azure-appservice-webapp-update
+    description: "Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
+    arguments:
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+    - name: subscription_id
+      type: String
+      required: true
+      description: Subscription ID.
+    - name: name
+      type: String
+      required: true
+      description: Name of the Web App.
+    - name: identity_type
+      type: String
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - None
+        - SystemAssigned
+      description: Managed service identity type.
+    - name: https_only
+      description: Configures the web site to accept only https requests.
+      type: bool
+      predefined:
+        - 'true'
+        - 'false'
+    - name: client_cert_enabled
+      description: Whether client certificates are enabled.
+      type: bool
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Azure.AppService.WebApp.id
+      description: Fully qualified resource ID for the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.name
+      description: The name of the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.type
+      description: The resource type, e.g., Microsoft.Web/sites.
+      type: String
+    - contextPath: Azure.AppService.WebApp.location
+      description: Geographic location of the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.kind
+      description: The kind of the app, e.g., app, functionapp, etc.
+      type: String
+    - contextPath: Azure.AppService.WebApp.tags
+      description: Resource tags as key-value pairs.
+    - contextPath: Azure.AppService.WebApp.identity.type
+      description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+      type: String
+    - contextPath: Azure.AppService.WebApp.identity.principalId
+      description: The principal ID of the system-assigned identity.
+      type: String
+    - contextPath: Azure.AppService.WebApp.identity.tenantId
+      description: The tenant ID of the system-assigned identity.
+      type: String
+    - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
+      description: The list of user-assigned identities associated with the web app.
+    - contextPath: Azure.AppService.WebApp.properties.state
+      description: Current state of the web app (Running, Stopped, etc.).
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.enabled
+      description: Whether the web app is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.defaultHostName
+      description: Default host name of the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.hostNames
+      description: List of host names associated with the web app.
+    - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
+      description: Name of the repository site.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
+      description: Whether client affinity is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
+      description: Whether client certificates are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
+      description: Paths to exclude from client certificate authentication.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
+      description: App Service Environment to use for the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.serverFarmId
+      description: Resource ID of the associated App Service plan.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.reserved
+      description: Whether the web app is on a Linux plan.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.isXenon
+      description: Whether the web app is hosted in Xenon.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.hyperV
+      description: Whether Hyper-V is enabled for the web app.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.appSettings
+      description: List of app settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.metadata
+      description: List of metadata settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.connectionStrings
+      description: List of connection strings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled
+      description: Whether local MySQL is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.alwaysOn
+      description: Whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.http20Enabled
+      description: Whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.ftpsState
+      description: FTPS state (Disabled, AllAllowed, etc.).
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.linuxFxVersion
+      description: Runtime stack for Linux apps.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.windowsFxVersion
+      description: Runtime stack for Windows apps.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.numberOfWorkers
+      description: Number of workers allocated.
+      type: Number
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.webSocketsEnabled
+      description: Whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.preWarmedInstanceCount
+      description: Number of pre-warmed instances.
+      type: Number
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
+      description: Whether ACR uses managed identity credentials.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.acrUserManagedIdentityID
+      description: User-assigned identity ID for ACR.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmType
+      description: Source control management type.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.use32BitWorkerProcess
+      description: Whether to use 32-bit worker process.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled
+      description: Whether auto-heal is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealRules
+      description: Auto-heal rules configuration.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.tracingOptions
+      description: Tracing options.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
+      description: Whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+      description: Whether detailed error logging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled
+      description: Whether HTTP logging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled
+      description: Whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
+      description: Request tracing expiration time.
+      type: DateTime
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.defaultDocuments
+      description: List of default documents.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.virtualApplications
+      description: List of virtual applications.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.loadBalancing
+      description: Load balancing settings.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.experiments
+      description: Experiments configuration.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.limits
+      description: Site limits configuration.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoSwapSlotName
+      description: Auto-swap slot name.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.ipSecurityRestrictions
+      description: IP security restrictions.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictions
+      description: SCM IP security restrictions.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
+      description: Whether SCM IP restrictions use main settings.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.cors
+      description: CORS settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.push
+      description: Push settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiDefinition
+      description: API definition settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiManagementConfig
+      description: API management configuration.
   - arguments:
     - name: resource_group_name
       type: String
@@ -3180,6 +3634,212 @@ script:
     - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
       description: Whether request tracing is enabled.
       type: Boolean
+  - name: azure-appservice-webapp-update-quick-action
+    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. Required permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
+    prettyname: Assign Web App Managed Identity
+    quickaction: true
+    hidden: true
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+      defaultValue: Subscription ID
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
+    - name: name
+      type: String
+      required: true
+      defaultValue: AZ Web App
+      description: Name of the Web App.
+      prettyname: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
+    - name: identity_type
+      type: String
+      required: false
+      defaultValue: SystemAssigned
+      description: Managed service identity type.
+      hidden: true
+    outputs:
+    - contextPath: Azure.AppService.WebApp.id
+      description: Fully qualified resource ID for the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.name
+      description: The name of the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.type
+      description: The resource type, e.g., Microsoft.Web/sites.
+      type: String
+    - contextPath: Azure.AppService.WebApp.location
+      description: Geographic location of the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.kind
+      description: The kind of the app, e.g., app, functionapp, etc.
+      type: String
+    - contextPath: Azure.AppService.WebApp.tags
+      description: Resource tags as key-value pairs.
+    - contextPath: Azure.AppService.WebApp.identity.type
+      description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+      type: String
+    - contextPath: Azure.AppService.WebApp.identity.principalId
+      description: The principal ID of the system-assigned identity.
+      type: String
+    - contextPath: Azure.AppService.WebApp.identity.tenantId
+      description: The tenant ID of the system-assigned identity.
+      type: String
+    - contextPath: Azure.AppService.WebApp.identity.userAssignedIdentities
+      description: The list of user-assigned identities associated with the web app.
+    - contextPath: Azure.AppService.WebApp.properties.state
+      description: Current state of the web app (Running, Stopped, etc.).
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.enabled
+      description: Whether the web app is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.defaultHostName
+      description: Default host name of the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.hostNames
+      description: List of host names associated with the web app.
+    - contextPath: Azure.AppService.WebApp.properties.repositorySiteName
+      description: Name of the repository site.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.clientAffinityEnabled
+      description: Whether client affinity is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.clientCertEnabled
+      description: Whether client certificates are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.clientCertExclusionPaths
+      description: Paths to exclude from client certificate authentication.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.hostingEnvironment
+      description: App Service Environment to use for the web app.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.serverFarmId
+      description: Resource ID of the associated App Service plan.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.reserved
+      description: Whether the web app is on a Linux plan.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.isXenon
+      description: Whether the web app is hosted in Xenon.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.hyperV
+      description: Whether Hyper-V is enabled for the web app.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.appSettings
+      description: List of app settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.metadata
+      description: List of metadata settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.connectionStrings
+      description: List of connection strings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.localMySqlEnabled
+      description: Whether local MySQL is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.alwaysOn
+      description: Whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.http20Enabled
+      description: Whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.ftpsState
+      description: FTPS state (Disabled, AllAllowed, etc.).
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.linuxFxVersion
+      description: Runtime stack for Linux apps.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.windowsFxVersion
+      description: Runtime stack for Windows apps.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.numberOfWorkers
+      description: Number of workers allocated.
+      type: Number
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.webSocketsEnabled
+      description: Whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.preWarmedInstanceCount
+      description: Number of pre-warmed instances.
+      type: Number
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
+      description: Whether ACR uses managed identity credentials.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.acrUserManagedIdentityID
+      description: User-assigned identity ID for ACR.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmType
+      description: Source control management type.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.use32BitWorkerProcess
+      description: Whether to use 32-bit worker process.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealEnabled
+      description: Whether auto-heal is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoHealRules
+      description: Auto-heal rules configuration.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.tracingOptions
+      description: Tracing options.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingEnabled
+      description: Whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+      description: Whether detailed error logging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.httpLoggingEnabled
+      description: Whether HTTP logging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingEnabled
+      description: Whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
+      description: Request tracing expiration time.
+      type: DateTime
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.defaultDocuments
+      description: List of default documents.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.virtualApplications
+      description: List of virtual applications.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.loadBalancing
+      description: Load balancing settings.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.experiments
+      description: Experiments configuration.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.limits
+      description: Site limits configuration.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.autoSwapSlotName
+      description: Auto-swap slot name.
+      type: String
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.ipSecurityRestrictions
+      description: IP security restrictions.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictions
+      description: SCM IP security restrictions.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
+      description: Whether SCM IP restrictions use main settings.
+      type: Boolean
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.cors
+      description: CORS settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.push
+      description: Push settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiDefinition
+      description: API definition settings.
+    - contextPath: Azure.AppService.WebApp.properties.siteConfig.apiManagementConfig
+      description: API management configuration.
   - arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -3318,11 +3978,12 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Enables HTTP 2.0 for the web app."
+    description: "Enables HTTP 2.0 for the web app. The quick action is deprecated, please use Set Web App HTTP Version to 2.0."
     name: azure-webapp-set-http2-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
     quickaction: true
     hidden: true
+    deprecated: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
       description: Resource ID.
@@ -3411,6 +4072,129 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
+  - name: azure-webapp-conf-update-http2-quick-action
+    prettyname: Set Web App HTTP Version to 2.0
+    quickaction: true
+    description: "Enables HTTP 2.0 for the web app. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    hidden: true
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      defaultValue: Subscription ID
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
+    - name: name
+      type: string
+      required: true
+      defaultValue: AZ Web App
+      description: Name of the Web App.
+      prettyname: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
+    - auto: PREDEFINED
+      name: http20_enabled
+      type: bool
+      description: Enable clients to connect over HTTP/2.
+      predefined:
+        - 'true'
+        - 'false'
+      defaultValue: 'true'
+    outputs:
+    - contextPath: Azure.AppService.WebAppConfiguration.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.ftpsState
+      description: State of FTP / FTPS service.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.cors
+      description: Cross-Origin Resource Sharing (CORS) settings.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
   - arguments:
     - name: subscription_id
       type: string
@@ -3442,7 +4226,8 @@ script:
       required: false
       description: Whether App Service Authentication/Authorization is enabled.
       defaultValue: 'true'
-    description: "Enables App Service Authentication for the web app."
+    description: "Enables App Service Authentication for the web app. The quick action is deprecated, please use Enable Azure App Service Authentication."
+    deprecated: true
     name: azure-webapp-auth-update-quick-action
     prettyname: Enable Azure App Service Auth
     quickaction: true
@@ -3542,6 +4327,139 @@ script:
       description: The app setting that contains the Apple provider client secret.
       type: String
     - contextPath: Azure.WebAppAuth.properties.authFilePath
+      description: The path to the authentication configuration file.
+      type: String
+  - name: azure-appservice-webapp-auth-settings-update-quick-action
+    prettyname: Enable Azure App Service Authentication
+    quickaction: true
+    hidden: true
+    description: "Enables App Service Authentication for the web app. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      defaultValue: Subscription ID
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
+    - name: name
+      type: string
+      required: true
+      defaultValue: AZ Web App
+      description: Name of the Web App.
+      prettyname: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
+    - auto: PREDEFINED
+      name: enabled
+      type: bool
+      required: false
+      description: Whether App Service Authentication/Authorization is enabled.
+      defaultValue: 'true'
+    outputs:
+    - contextPath: Azure.AppService.WebAppAuthSettings.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.name
+      description: Resource Name.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.enabled
+      description: Indicates whether Authentication/Authorization is enabled for the app.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.runtimeVersion
+      description: The RuntimeVersion of the Authentication/Authorization feature.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction
+      description: The action to take when an unauthenticated client attempts to access the app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled
+      description: Indicates whether the Azure App Service Authentication platform’s token store is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls
+      description: External URLs that are allowed to be redirected to as part of logging in or logging out of the app.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.defaultProvider
+      description: The default authentication provider to use when multiple providers are configured.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.clientId
+      description: The Client ID of the app used for AAD login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.clientSecret
+      description: The client secret associated with the AAD app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName
+      description: The app setting that contains the client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.issuer
+      description: The OpenID Connect Issuer URI that represents the entity that issues access tokens.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.allowedAudiences
+      description: The list of audiences that can receive the authentication tokens.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams
+      description: Additional parameters to send to the authentication provider.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned
+      description: True if AAD is auto-provisioned; otherwise false.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.googleClientId
+      description: The Client ID of the app used for Google login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.googleClientSecret
+      description: The client secret associated with the Google app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName
+      description: The app setting that contains the client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.facebookAppId
+      description: The App ID of the Facebook app used for login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret
+      description: The app secret associated with the Facebook app.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName
+      description: The app setting that contains the Facebook app secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey
+      description: The OAuth 1.0a consumer key of the Twitter application used for login.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret
+      description: The consumer secret associated with the Twitter application.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName
+      description: The app setting that contains the Twitter consumer secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId
+      description: The OAuth 2.0 client ID for the Microsoft account provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret
+      description: The client secret for the Microsoft account provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName
+      description: The app setting that contains the Microsoft account client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.appleClientId
+      description: The client ID for the Apple provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.appleClientSecret
+      description: The client secret for the Apple provider.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName
+      description: The app setting that contains the Apple provider client secret.
+      type: String
+    - contextPath: Azure.AppService.WebAppAuthSettings.properties.authFilePath
       description: The path to the authentication configuration file.
       type: String
   - arguments:
@@ -3684,9 +4602,10 @@ script:
       defaultValue: 'true'
     name: azure-set-function-app-http-version2-0-quick-action
     prettyname: Set Function App HTTP Version to 2.0
-    description: "Enables HTTP 2.0 for the Function App."
+    description: "Enables HTTP 2.0 for the Function App. The quick action is deprecated, please use Set Web App HTTP Version to 2.0."
     quickaction: true
     hidden: true
+    deprecated: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
       description: Resource ID.
@@ -3910,10 +4829,11 @@ script:
       required: false
       description: Whether remote debugging is enabled.
       defaultValue: 'false'
-    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access."
+    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. The quick action is deprecated, please use Disable Remote Debugging on Web App."
     name: azure-webapp-disable-remote-debugging-quick-action
     prettyname: Disable Remote Debugging on Azure App
     hidden: true
+    deprecated: true
     quickaction: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
@@ -4002,6 +4922,127 @@ script:
       type: String
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
+  - name: azure-webapp-conf-disable-remote-debugging-quick-action
+    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    prettyname: Disable Remote Debugging on Web App
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      defaultValue: Subscription ID
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: name
+      type: string
+      required: true
+      defaultValue: AZ Web App
+      description: Name of the Web App.
+      prettyname: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
+    - auto: PREDEFINED
+      name: remote_debugging_enabled
+      type: bool
+      required: false
+      description: Whether remote debugging is enabled.
+      defaultValue: 'false'
+    outputs:
+    - contextPath: Azure.AppService.WebAppConfiguration.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.ftpsState
+      description: State of FTP / FTPS service.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.cors
+      description: Cross-Origin Resource Sharing (CORS) settings.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
   - name: azure-billing-usage-list
     description: Returns actual usage and cost details for a given time period, optionally filtered by service name.
     arguments:
@@ -4408,11 +5449,12 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: Sets the web app's minimum accepted TLS version to 1.2 to enhance security.
+    description: Sets the web app's minimum accepted TLS version to 1.2 to enhance security. The quick action is deprecated, please use Set Web App Minimum TLS Version.
     name: azure-webapp-set-min-tls-version-quick-action
     prettyname: Set Web App Min TLS Version
     hidden: true
     quickaction: true
+    deprecated: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
       description: Resource ID.
@@ -4501,6 +5543,134 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
+  - name: azure-webapp-conf-update-min-tls-version-quick-action
+    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    prettyname: Set Web App Minimum TLS Version
+    hidden: true
+    quickaction: true
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
+    - name: name
+      type: string
+      required: true
+      description: Name of the Web App.
+      prettyname: AZ Web App
+      defaultValue: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
+    - name: min_tls_version
+      type: str
+      auto: PREDEFINED
+      description: Minimum TLS version required for SSL requests.
+      predefined:
+        - '1.0'
+        - '1.1'
+        - '1.2'
+        - '1.3'
+      defaultValue: '1.2'
+    outputs:
+      - contextPath: Azure.WebAppConfig.id
+        description: Resource ID.
+        type: String
+      - contextPath: Azure.WebAppConfig.name
+        description: Resource name.
+        type: String
+      - contextPath: Azure.WebAppConfig.type
+        description: Resource type.
+        type: String
+      - contextPath: Azure.WebAppConfig.location
+        description: Resource location.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.numberOfWorkers
+        description: Number of workers.
+        type: Number
+      - contextPath: Azure.WebAppConfig.properties.defaultDocuments
+        description: List of default documents.
+        type: Unknown
+      - contextPath: Azure.WebAppConfig.properties.netFrameworkVersion
+        description: .NET Framework version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.phpVersion
+        description: PHP version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.pythonVersion
+        description: Python version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.nodeVersion
+        description: Node.js version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.powerShellVersion
+        description: PowerShell version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.linuxFxVersion
+        description: Linux app framework and version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.windowsFxVersion
+        description: Windows container image name.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.requestTracingEnabled
+        description: Indicates whether request tracing is enabled.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.remoteDebuggingEnabled
+        description: Indicates whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.http20Enabled
+        description: Indicates whether HTTP/2 is enabled.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.minTlsVersion
+        description: Minimum TLS version required.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.ftpsState
+        description: State of FTP/ FTPS service.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
+        description: Indicates whether WebSockets are enabled.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.alwaysOn
+        description: Indicates whether Always On is enabled.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.managedPipelineMode
+        description: Managed pipeline mode.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.loadBalancing
+        description: Site load balancing mode.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.autoHealEnabled
+        description: Indicates whether Auto Heal is enabled.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.autoHealRules
+        description: Auto Heal rules configuration.
+        type: Unknown
+      - contextPath: Azure.WebAppConfig.properties.cors.allowedOrigins
+        description: CORS allowed origins.
+        type: Unknown
+      - contextPath: Azure.WebAppConfig.properties.cors.supportCredentials
+        description: Indicates whether CORS supports credentials.
+        type: Boolean
+      - contextPath: Azure.WebAppConfig.properties.apiDefinition.url
+        description: URL of the API definition.
+        type: String
+      - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
+        description: Azure API management integration ID.
+        type: String
   - arguments:
     - name: subscription_id
       type: string
@@ -4536,10 +5706,11 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: Sets the Function App's minimum accepted TLS version to 1.2 to enhance security.
+    description: Sets the Function App's minimum accepted TLS version to 1.2 to enhance security. The quick action is deprecated, please use Set Web App Minimum TLS Version.
     name: azure-function-app-set-min-tls-version-quick-action
     prettyname: Set Function App Min TLS Version
     hidden: true
+    deprecated: true
     quickaction: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
@@ -4976,10 +6147,11 @@ script:
       prettyname: Identity Type
       defaultValue: 'SystemAssigned'
       hidden: true
-    description: Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them.
+    description: Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. The quick action is deprecated, please use Assign Web App Managed Identity.
     name: azure-webapp-update-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Function App
     hidden: true
+    deprecated: true
     quickaction: true
     outputs:
     - contextPath: Azure.WebApp.id
