@@ -1,4 +1,4 @@
-Example playbook on how to manage different response actions based on incident fields.
+Enriches Sysdig runtime event incidents with agent information via API and optionally triggers a system capture on the affected host.
 
 ## Dependencies
 
@@ -14,12 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * PrintErrorEntry
 
 ### Commands
 
 * create-system-capture
 * get-capture-file
+* sysdig-get-agent-info
 
 ## Playbook Inputs
 
@@ -35,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Sysdig Trigger System Capture](../doc_files/Sysdig_Trigger_System_Capture_Playbook.png)
+![Sysdig Trigger System Capture](../doc_files/Sysdig_Trigger_System_Capture.png)
