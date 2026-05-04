@@ -257,6 +257,13 @@ class TestConfluenceCloudOAuthClient:
         assert "read:confluence-groups" in scopes
         assert "write:confluence-content" in scopes
         assert "write:confluence-space" in scopes
+        # v2 Pages API granular scopes — required because Atlassian's OAuth 2.0 (3LO)
+        # gateway does not expose v1 /wiki/rest/api/content/{id} and the classic
+        # `read:confluence-content.all` scope does not cover the v2 /wiki/api/v2/pages
+        # endpoints. See ConfluenceCloudOAuthClient.get_oauth_scopes() docstring.
+        assert "read:page:confluence" in scopes
+        assert "write:page:confluence" in scopes
+        assert "delete:page:confluence" in scopes
         assert "offline_access" in scopes
 
     @patch("AtlassianApiModule.get_integration_context")

@@ -32,7 +32,11 @@ OAuth 2.0 provides a more secure authentication method using the Atlassian Devel
    - `write:confluence-content` — Write content
    - `write:confluence-space` — Write space data
    - `read:page:confluence` — **Required for `confluence-cloud-content-get`** (v2 Pages API)
+   - `write:page:confluence` — Required for future v2 page-write commands
+   - `delete:page:confluence` — Required for future v2 page-delete commands
    - `offline_access` — Enables refresh token for unattended access
+
+> **Important — re-consent required after upgrading:** if you previously authorized this integration before pack version 1.1.15, the existing access token does NOT include the new v2 page scopes (`read:page:confluence`, `write:page:confluence`, `delete:page:confluence`). After ticking these scopes in the Developer Console, you MUST re-run the OAuth flow in XSOAR/XSIAM (`!confluence-cloud-oauth-start` → visit URL → `!confluence-cloud-oauth-complete code=<code>`) so a fresh token carrying the new scopes is issued. Verify with `!confluence-cloud-oauth-test` that the returned scope list includes `read:page:confluence`.
 5. Navigate to "Authorization" and configure the callback URL
 6. Navigate to "Settings" to find your Client ID and Client Secret
 

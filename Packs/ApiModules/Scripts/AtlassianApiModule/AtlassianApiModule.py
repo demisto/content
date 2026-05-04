@@ -238,6 +238,16 @@ class ConfluenceCloudOAuthClient(AtlassianOAuthClient):
         """
         Return the OAuth scopes required for Confluence Cloud.
 
+        Note on `read:page:confluence`:
+        Atlassian's OAuth 2.0 (3LO) gateway does NOT expose the legacy v1
+        `GET /wiki/rest/api/content/{id}` endpoint, so commands that fetch a single
+        content item (e.g. `confluence-cloud-content-get`) target the v2 Pages API
+        (`GET /wiki/api/v2/pages/{id}`). The v2 endpoint requires the granular
+        `read:page:confluence` scope; the classic `read:confluence-content.all`
+        scope does NOT cover it. Without `read:page:confluence` in the consent
+        request, Atlassian's gateway returns 401 (not 403) for the v2 path.
+        See https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/
+
         Returns:
             List of required OAuth scopes
         """
@@ -249,6 +259,13 @@ class ConfluenceCloudOAuthClient(AtlassianOAuthClient):
             "read:confluence-groups",
             "write:confluence-content",
             "write:confluence-space",
+            # v2 Pages API granular scopes (required for v2 endpoints; classic
+            # `read:confluence-content.all` / `write:confluence-content` do NOT cover
+            # /wiki/api/v2/pages/{id}). Adding all three now so future v2 migrations
+            # of content-update and content-delete don't require a re-consent flow.
+            "read:page:confluence",  # GET /wiki/api/v2/pages/{id}
+            "write:page:confluence",  # PUT /wiki/api/v2/pages/{id}
+            "delete:page:confluence",  # DELETE /wiki/api/v2/pages/{id}
             "offline_access",  # For refresh token
         ]
 
