@@ -3346,9 +3346,9 @@ script:
     - contextPath: Azure.ResourceManagement.ResourceGroups.tags.type
       description: 'The type tag associated with the Azure Network Security Groups resource group.'
       type: String
-  - description: Gets network interfaces in a resource group.
+  - description: Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list.
     deprecated: true
-    name: azure-nsg-network-interfaces-list The command is deprecated, please use azure-vn-network-interfaces-list.
+    name: azure-nsg-network-interfaces-list
     outputs:
       - contextPath: Azure.NSGNetworkInterfaces.name
         description: The network interface's name.
@@ -7497,7 +7497,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.6932158
+  dockerimage: demisto/crypto:1.0.0.8187750
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
