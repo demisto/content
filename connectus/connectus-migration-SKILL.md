@@ -156,36 +156,24 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 
 ## Workflow Steps
 
-### Step 1: Verify Auth Classification (prerequisite — not a checkpoint)
+### Step 1: Classify Auth (prerequisite — not a checkpoint)
 
-**Before starting any migration work**, rigorously verify that the `Auth Details` for this integration is correct, then write/update it via `set-auth`. The automated classifier analyzed YML param metadata (widget types) and has systematic errors — a manual review of 148 integrations found **71 corrections** (48% error rate). Every integration MUST be validated before proceeding.
+**Before starting any migration work**, the skill must actively read the integration's YML and Python source, derive the correct `Auth Details` JSON from scratch, and write it via `set-auth`. Do **not** trust any pre-existing value in the CSV — past automated classification of 148 integrations had a **48% error rate (71/148 wrong)**. Always re-derive from the source files.
 
-`Auth Details` is a workflow data column (not a checkpoint), so there is no `markpass` for it; setting it via `set-auth` is what registers your verification AND resets the workflow back to `generated manifest`.
+`Auth Details` is a workflow data column (not a checkpoint), so there is no `markpass` for it; calling `set-auth` is what registers the classification AND resets the workflow back to `generated manifest`.
 
-#### Validation Checklist
+#### Procedure (do every step in order)
 
-Follow this checklist for EVERY integration. Do not skip any step.
+1. ☐ Locate the integration files (YML + Python)
+2. ☐ Extract every auth-related param from the YML `configuration` section
+3. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime
+4. ☐ Cross-reference each YML param with where/how it is consumed in code
+5. ☐ Build the `Auth Details` JSON (`auth_types`, `config`, `params`) per [`column-schemas.md`](column-schemas.md)
+6. ☐ Sanity-check against the [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
+7. ☐ Apply via `set-auth` (this validates the JSON schema and resets the workflow)
+8. ☐ Re-run `status` to confirm the value was stored as intended
 
-1. ☐ Run `workflow_state.py status` to see current `Auth Details`
-2. ☐ Locate the integration files (YML + Python)
-3. ☐ Extract auth params from YML `configuration` section
-4. ☐ Analyze Python code for actual auth mechanism
-5. ☐ Cross-reference YML params with code usage
-6. ☐ Validate Auth Details JSON structure against [`column-schemas.md`](column-schemas.md)
-7. ☐ Determine if corrections are needed
-8. ☐ Apply via `set-auth` (this also resets the workflow)
-
----
-
-#### 1.1 Check Current Classification
-
-```bash
-python3 connectus/workflow_state.py status "<Integration ID>"
-```
-
-Note the **Auth Details** value from the output (its `config` field is the Auth Config Expression). This is what you will validate.
-
-You can also pretty-print just that value:
+The current CSV value, if any, is informational only — show it to the user for context but derive the new value entirely from the source code:
 
 ```bash
 python3 connectus/workflow_state.py show-step "<Integration ID>" "Auth Details"
@@ -193,7 +181,7 @@ python3 connectus/workflow_state.py show-step "<Integration ID>" "Auth Details"
 
 ---
 
-#### 1.2 Locate Integration Files
+#### 1.1 Locate Integration Files
 
 Integration files follow this structure:
 
@@ -210,6 +198,182 @@ Once located, you may want to record the path:
 
 ```bash
 # (No CLI setter for File Path yet — note it for documentation; future iteration may add `set-file-path`.)
+```
+
+---
+
+#### 1.2 Researching `Auth Details` — the four sources of truth
+
+Before you can write the JSON for `set-auth`, you must derive it from the integration pack itself — never guess from the param list alone. The shape you are building is documented in [`connectus/column-schemas.md`](column-schemas.md:16) and is enforced by [`validate_auth_detail()`](workflow_state.py:521); the validator now checks the `config` expression grammar AND that every name referenced in `config` exists as some `auth_types[].name`. Wrong input is rejected at the CLI — better to catch it at research time.
+
+Read these four files **in this order**, treating each one as a cross-check on the previous:
+
+1. **YML — `Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.yml`.** Open the `configuration:` list and tabulate every param: `name`, `type`, `display`, `required`, `displaypassword` (if present), `hidden`, and `additionalinfo`. The param `type` codes you must recognize:
+   - `0` — Short text (often hostnames, IDs, public keys).
+   - `4` — Encrypted text (API keys, tokens, secrets — flat, single value).
+   - `8` — Checkbox.
+   - `9` — Credentials (compound: a `username`/`identifier` + `password` pair). When this type is used, the field path expands to **two** leaf fields: `<paramid>.identifier` AND `<paramid>.password`.
+   - `14` — Authentication Certificate (cert + key).
+   - `15` — Single select (often the `auth_type` selector for multi-auth integrations).
+   - `16` — Multi select.
+   - `17` — TextArea (often used for JSON config / private keys).
+   - (Other types like `1`, `12`, `13` exist but are typically connection metadata, not auth secrets.)
+
+   This file tells you *what could be auth* — never *what is auth*. The source code is the only source of truth for which YML param actually feeds which auth flow. If a parameter is hidden or deprecated it should be skipped.
+
+2. **Source — `<IntegrationName>.py` (or `.js` / `.ps1`).** This is the source of truth. Grep / read for:
+   - Reads of `demisto.params()` — e.g. `params.get("api_key")`, `params.get("credentials", {}).get("password")`, `params['credentials']['identifier']`. Build a mental list of every YML param id the code actually consumes.
+   - HTTP header construction — `Authorization: Bearer <...>`, `X-API-Key: <...>`, `Authorization: Basic <...>`, custom signed headers (HMAC).
+   - OAuth helpers / token endpoints — `client_id`, `client_secret`, `grant_type=client_credentials`, `grant_type=password`, `redirect_uri`, JWT signing with a private key, `refresh_token`, `device_code`.
+   - The `Client` / `BaseClient` constructor — what auth-related kwargs it takes.
+   - The `test-module` command — what it tries to authenticate with (this is usually the cleanest auth flow read).
+
+   For each YML param, trace where its value flows:
+   - Becomes an `Authorization` header / API request signature → **auth secret**.
+   - Becomes the URL / host / region → **connection metadata, NOT auth**.
+   - Becomes a feature flag / fetch cadence / proxy toggle / verify-SSL boolean → **NOT auth**.
+   - Sent to a token endpoint as `client_id` / `client_secret` / `assertion` / `refresh_token` → **part of an OAuth connection**.
+
+3. **`<IntegrationName>_description.md`.** The short blurb shown in the XSOAR UI under the integration. Often spells out the auth method in one sentence — e.g. *"Generate an API key from the Settings page"*, *"Use OAuth 2.0 client credentials"*, *"Service account JSON key file required"*. Use it to confirm what the code is doing.
+
+4. **`README.md`** (the per-integration one, in the same directory). Long-form docs. The setup / configuration section frequently spells out exactly which credentials each field requires and how to obtain them — invaluable when the source code is large or obfuscated.
+
+If steps 1 and 2 disagree (e.g. the YML defines a `credentials` param but the code only ever reads `params.get('api_key')`), step 2 wins. Steps 3 and 4 are tiebreakers when the code is ambiguous.
+
+---
+
+#### 1.2.1 Classification decision table
+
+Map "what you saw in the source" → "auth-type enum value" (the values are listed in [`VALID_AUTH_TYPES`](workflow_state.py:118)):
+
+| You see... | Use type |
+|---|---|
+| `Authorization: Bearer <key>` from a single param, no token exchange | `APIKey` |
+| `X-API-Key: <key>` / `apikey=<key>` query param / similar static header | `APIKey` |
+| `Authorization: Basic <user>:<pass>` from a credentials (type `9`) or two flat params | `Plain` |
+| Username + password posted to a login endpoint that returns a session cookie | `Plain` |
+| OAuth2 with user-driven `code` + `redirect_uri` flow | `OAuth2AuthCode` |
+| OAuth2 with `client_id` + `client_secret` (no user code, `grant_type=client_credentials`) | `OAuth2ClientCreds` |
+| OAuth2 with a signed JWT assertion (private key + claims, `grant_type=jwt-bearer`) | `OAuth2JWT` |
+| OAuth2 ROPC (`grant_type=password`), Device Code, Managed Identity, mTLS-only, HMAC signing, custom challenge/response | `Other` |
+| No credentials at all (public API, or a feed that just hits a URL) | `NoneRequired` |
+
+---
+
+#### 1.2.2 Building each `auth_types[]` entry
+
+Each `auth_types[]` entry describes **one complete UCP connection type** — one full auth flow, not one XSOAR param. See [`column-schemas.md`](column-schemas.md:34) for the authoritative shape. The rules you'll be applying as you build entries:
+
+- **`type`** — the enum value chosen via the table above.
+- **`name`** — a free-form logical id you choose (e.g. `"api_key"`, `"credentials"`, `"oauth_client"`, `"hunting_credentials"`). Must be unique within the row. **`config` references these names**, NOT the YML param ids and NOT the auth-type enum values.
+- **`xsoar_params`** — the list of XSOAR field paths that supply the secrets for **this one** connection type:
+  - For a flat param (YML type `0`/`4`/`14`/`17` etc.): use the bare param id, e.g. `"api_key"`, `"server_token"`.
+  - For a credentials param (YML type `9`): list **both** sub-fields with dotted notation, e.g. `["credentials.identifier", "credentials.password"]`. Listing only one is wrong.
+  - For a `Plain` auth built from two **separate** flat params: list both ids directly, e.g. `["server_user", "server_password"]`.
+  - The same field path MAY appear in multiple entries (e.g. when one `credentials.password` backs both a Plain profile and an OAuth profile) — that's correct, list it in each entry's `xsoar_params`.
+- **`interpolated`** (optional, defaults to `false`) — set to `true` only when the value is templated in at runtime by the manifest generator rather than supplied by the user. Rare; leave it out if you are not certain it applies.
+- **Sort order** — entries are sorted by `(type, name)` ascending. The validator now enforces this — `set-auth` will reject unsorted input.
+
+---
+
+#### 1.2.3 Building the `config` expression
+
+The grammar is small. See the worked examples in [`column-schemas.md`](column-schemas.md:73) for the canonical list.
+
+- The literal `NoneRequired` — used **only** when there is genuinely no auth (and `auth_types` is `[]`).
+- One or more clauses joined by ` + ` (with spaces around the plus). Each clause is one of:
+  - `REQUIRED(name1, name2, ...)` — every listed connection type must be configured.
+  - `OPTIONAL(name1, name2, ...)` — each listed connection type may be configured.
+  - `CHOICE(name1, name2, ...)` — exactly one of the listed connection types must be configured.
+- Operand names refer to `auth_types[].name` values. The validator REJECTS unknown names (it's the most common cause of `set-auth` failures).
+
+Worked examples (re-using the canonical set):
+
+- `REQUIRED(api_key)` — single required connection.
+- `REQUIRED(privateApiKey, publicApiKey)` — two required connections.
+- `CHOICE(credentials, hunting_credentials)` — pick one of two.
+- `REQUIRED(credentials) + OPTIONAL(credentials_consumer)` — mandatory Plain plus optional OAuth.
+- `NoneRequired` — no auth.
+
+Don't strictly stick to if the corresponding xsoar parameters are required or not. There might be cases it isnt required due to supporting legacy, now hidden parameters. These should be required in this case if there is no alternate auth acceptable.
+
+---
+
+#### 1.2.4 Two end-to-end worked examples
+
+**Example A — Bearer token API key (single flat param).**
+
+YML excerpt:
+
+```yaml
+- name: api_key
+  display: API Key
+  type: 4
+  required: true
+```
+
+Code excerpt:
+
+```python
+headers = {"Authorization": f"Bearer {params.get('api_key')}"}
+```
+
+Resulting JSON to pass to `set-auth`:
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "APIKey",
+      "name": "api_key",
+      "xsoar_params": ["api_key"]
+    }
+  ],
+  "config": "REQUIRED(api_key)"
+}
+```
+
+**Example B — Username/password credentials (type `9`) plus optional OAuth client creds reusing a second credentials param.**
+
+YML excerpt:
+
+```yaml
+- name: credentials
+  display: Username
+  type: 9
+  required: true
+- name: credentials_consumer
+  display: Consumer Key / Secret
+  type: 9
+  required: false
+```
+
+Code excerpt:
+
+```python
+basic = HTTPBasicAuth(params['credentials']['identifier'], params['credentials']['password'])
+oauth = OAuth1(params['credentials_consumer']['identifier'],
+               params['credentials_consumer']['password'], ...)
+```
+
+Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < `Plain` alphabetically):
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "OAuth2ClientCreds",
+      "name": "credentials_consumer",
+      "xsoar_params": ["credentials_consumer.identifier", "credentials_consumer.password"]
+    },
+    {
+      "type": "Plain",
+      "name": "credentials",
+      "xsoar_params": ["credentials.identifier", "credentials.password"]
+    }
+  ],
+  "config": "REQUIRED(credentials) + OPTIONAL(credentials_consumer)"
+}
 ```
 
 ---

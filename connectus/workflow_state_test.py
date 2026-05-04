@@ -77,11 +77,11 @@ from workflow_state import (
 
 
 VALID_AUTH_JSON = (
-    '{"auth_types":[{"type":"APIKey","name":"api_key"}],'
-    '"config":"REQUIRED(APIKey)",'
-    '"params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}}}'
+    '{"auth_types":[{"type":"APIKey","name":"api_key",'
+    '"xsoar_params":["api_key"]}],'
+    '"config":"REQUIRED(api_key)"}'
 )
-VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NONE","params":{}}'
+VALID_AUTH_JSON_NONE = '{"auth_types":[],"config":"NoneRequired"}'
 
 
 # ---------------------------------------------------------------------------
@@ -1087,15 +1087,157 @@ class TestValidateAuthDetail:
         assert "Missing required keys" in errors[0]
 
     def test_invalid_auth_type(self) -> None:
-        bad = '{"auth_types":[{"type":"INVALID","name":"x"}],"config":"NONE","params":{}}'
+        bad = ('{"auth_types":[{"type":"INVALID","name":"x",'
+               '"xsoar_params":["p"]}],"config":"REQUIRED(x)"}')
         errors = validate_auth_detail(bad)
         assert any("invalid type 'INVALID'" in e for e in errors)
 
     def test_all_valid_auth_types(self) -> None:
         for at in VALID_AUTH_TYPES:
-            detail = (f'{{"auth_types":[{{"type":"{at}","name":"x"}}],'
-                      '"config":"NONE","params":{}}')
+            detail = (f'{{"auth_types":[{{"type":"{at}","name":"x",'
+                      '"xsoar_params":["p"]}],'
+                      '"config":"REQUIRED(x)"}')
             assert validate_auth_detail(detail) == [], f"Type '{at}' should be valid"
+
+    # ------------------------------------------------------------------
+    # New: `config` grammar / cross-reference / sort / xsoar_params shape
+    # ------------------------------------------------------------------
+
+    def test_valid_none_required_explicit(self) -> None:
+        detail = '{"auth_types":[],"config":"NoneRequired"}'
+        assert validate_auth_detail(detail) == []
+
+    def test_valid_simple_required(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key)"}')
+        assert validate_auth_detail(detail) == []
+
+    def test_valid_two_clause_required_plus_optional(self) -> None:
+        detail = (
+            '{"auth_types":['
+            '{"type":"OAuth2ClientCreds","name":"credentials_consumer",'
+            '"xsoar_params":["credentials_consumer.identifier",'
+            '"credentials_consumer.password"]},'
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]}'
+            '],'
+            '"config":"REQUIRED(credentials) + OPTIONAL(credentials_consumer)"}'
+        )
+        assert validate_auth_detail(detail) == []
+
+    def test_valid_choice(self) -> None:
+        detail = (
+            '{"auth_types":['
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]},'
+            '{"type":"Plain","name":"hunting_credentials",'
+            '"xsoar_params":["hunting_credentials.identifier",'
+            '"hunting_credentials.password"]}'
+            '],'
+            '"config":"CHOICE(credentials, hunting_credentials)"}'
+        )
+        assert validate_auth_detail(detail) == []
+
+    def test_config_unknown_name(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(missing_name)"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "unknown connection-type name 'missing_name'" in e for e in errors
+        ), errors
+
+    def test_config_malformed_empty_required(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED()"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "no operands" in e for e in errors), errors
+
+    def test_config_malformed_trailing_plus(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED(api_key) +"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "ends with '+'" in e for e in errors), errors
+
+    def test_config_malformed_unknown_keyword(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"FOO(api_key)"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "malformed clause" in e for e in errors), errors
+
+    def test_config_malformed_missing_parens(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"REQUIRED api_key"}')
+        errors = validate_auth_detail(detail)
+        assert any("'config'" in e and "malformed clause" in e for e in errors), errors
+
+    def test_none_required_with_non_empty_auth_types(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":["api_key"]}],'
+                  '"config":"NoneRequired"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'config' is 'NoneRequired' but 'auth_types' contains entries" in e
+            for e in errors
+        ), errors
+
+    def test_non_none_required_with_empty_auth_types(self) -> None:
+        detail = '{"auth_types":[],"config":"REQUIRED(api_key)"}'
+        errors = validate_auth_detail(detail)
+        assert any(
+            "'config' is not 'NoneRequired' but 'auth_types' is empty" in e
+            for e in errors
+        ), errors
+        # And the unknown-name check should also fire (api_key isn't defined).
+        assert any(
+            "unknown connection-type name 'api_key'" in e for e in errors
+        ), errors
+
+    def test_sort_order_violation(self) -> None:
+        # APIKey < Plain by type; placing Plain first is out of order.
+        detail = (
+            '{"auth_types":['
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_params":["credentials.identifier","credentials.password"]},'
+            '{"type":"APIKey","name":"api_key",'
+            '"xsoar_params":["api_key"]}'
+            '],'
+            '"config":"REQUIRED(api_key) + REQUIRED(credentials)"}'
+        )
+        errors = validate_auth_detail(detail)
+        assert any("must be sorted by (type, name)" in e for e in errors), errors
+        # The error should name the offending pair.
+        assert any(
+            "'Plain'/'credentials'" in e and "'APIKey'/'api_key'" in e
+            for e in errors
+        ), errors
+
+    def test_sort_order_violation_same_type_by_name(self) -> None:
+        # Same type, names out of order: 'b' before 'a'.
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"b","xsoar_params":["p"]},'
+            '{"type":"APIKey","name":"a","xsoar_params":["p"]}'
+            '],'
+            '"config":"REQUIRED(a) + REQUIRED(b)"}'
+        )
+        errors = validate_auth_detail(detail)
+        assert any("must be sorted by (type, name)" in e for e in errors), errors
+
+    def test_empty_xsoar_params_rejected(self) -> None:
+        detail = ('{"auth_types":[{"type":"APIKey","name":"api_key",'
+                  '"xsoar_params":[]}],'
+                  '"config":"REQUIRED(api_key)"}')
+        errors = validate_auth_detail(detail)
+        assert any(
+            "auth_types[0]" in e and "must contain at least one entry" in e
+            for e in errors
+        ), errors
 
 
 # ---------------------------------------------------------------------------

@@ -86,6 +86,7 @@ import csv
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -429,8 +430,123 @@ def find_row(rows: list[dict[str, str]], integration_id: str) -> Optional[int]:
 # Auth Details schema validation
 # ---------------------------------------------------------------------------
 
+# Regexes for the Auth Details `config` mini-grammar.
+_AUTH_CONFIG_CLAUSE_RE = re.compile(
+    r"^\s*(REQUIRED|OPTIONAL|CHOICE)\s*\(\s*([^)]*?)\s*\)\s*$"
+)
+_AUTH_CONFIG_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# Split clauses on `+` surrounded by optional whitespace. We use a manual
+# split rather than re.split so we can detect leading/trailing `+` (which
+# would produce empty segments).
+_AUTH_CONFIG_SPLIT_RE = re.compile(r"\s*\+\s*")
+
+
+def _parse_auth_config(config: str) -> tuple[list[str], list[str]]:
+    """Parse the Auth Details ``config`` expression mini-grammar.
+
+    Returns ``(referenced_names, parse_errors)`` where ``referenced_names``
+    is the (order-preserving, possibly duplicate) list of operand names
+    appearing inside any ``REQUIRED(...)``, ``OPTIONAL(...)`` or
+    ``CHOICE(...)`` clause, and ``parse_errors`` is a list of human-readable
+    issues with the expression itself (malformed clauses, bad operand
+    names, stray ``+``, etc.).
+
+    Grammar (case-sensitive on keywords):
+
+        config       := "NoneRequired" | clause ( " + " clause )*
+        clause       := ("REQUIRED" | "OPTIONAL" | "CHOICE") "(" name_list ")"
+        name_list    := name ("," name)*
+        name         := /[A-Za-z_][A-Za-z0-9_]*/
+
+    Surrounding whitespace inside clauses and around ``+`` / ``,`` is
+    tolerated. Empty clauses (``REQUIRED()``) are rejected.
+    """
+    referenced_names: list[str] = []
+    parse_errors: list[str] = []
+
+    stripped = config.strip()
+    if stripped == "":
+        parse_errors.append("config expression is empty")
+        return referenced_names, parse_errors
+    if stripped == "NoneRequired":
+        return referenced_names, parse_errors
+
+    # Detect leading/trailing `+` before splitting, so the resulting empty
+    # segments give a clear error message.
+    if stripped.startswith("+"):
+        parse_errors.append("config expression starts with '+' (no leading clause)")
+    if stripped.endswith("+"):
+        parse_errors.append("config expression ends with '+' (no trailing clause)")
+
+    segments = _AUTH_CONFIG_SPLIT_RE.split(stripped)
+    for seg_idx, segment in enumerate(segments):
+        if segment.strip() == "":
+            # Already covered by the leading/trailing checks above OR a
+            # genuine "+ +" in the middle.
+            if not (seg_idx == 0 and stripped.startswith("+")) and not (
+                seg_idx == len(segments) - 1 and stripped.endswith("+")
+            ):
+                parse_errors.append("empty clause between '+' separators")
+            continue
+        m = _AUTH_CONFIG_CLAUSE_RE.match(segment)
+        if not m:
+            parse_errors.append(
+                f"malformed clause '{segment}' (expected "
+                "REQUIRED(...), OPTIONAL(...), or CHOICE(...))"
+            )
+            continue
+        keyword, inner = m.group(1), m.group(2)
+        if inner.strip() == "":
+            parse_errors.append(f"clause '{keyword}(...)' has no operands")
+            continue
+        operands = [op.strip() for op in inner.split(",")]
+        for op in operands:
+            if op == "":
+                parse_errors.append(
+                    f"clause '{keyword}(...)' has an empty operand "
+                    "(stray comma?)"
+                )
+                continue
+            if not _AUTH_CONFIG_NAME_RE.fullmatch(op):
+                parse_errors.append(
+                    f"clause '{keyword}(...)' operand '{op}' is not a "
+                    "valid identifier (must match [A-Za-z_][A-Za-z0-9_]*)"
+                )
+                continue
+            referenced_names.append(op)
+
+    return referenced_names, parse_errors
+
+
 def validate_auth_detail(value: str) -> list[str]:
-    """Validate Auth Details JSON shape. Returns list of errors ([] = valid)."""
+    """Validate Auth Details JSON shape. Returns list of errors ([] = valid).
+
+    Shape: ``{"auth_types": [{"type": <enum>, "name": <logical_name>,
+    "xsoar_params": [<xsoar_param_id>, ...], "interpolated"?: <bool>},
+    ...], "config": <expression>}``.
+
+    Each ``auth_types[]`` entry describes one prospective ConnectUs
+    connection type that the migrated integration should expose. ``name``
+    is a free-form logical id chosen for that connection type and must be
+    unique across entries within this row. ``xsoar_params`` is the list
+    of XSOAR parameter ids whose values feed the secrets for that
+    connection type (the same XSOAR param may appear in multiple entries
+    if it supplies several connection types). ``config`` references the
+    entry ``name``s (not the XSOAR param ids).
+
+    Validation performed (in addition to the per-entry shape checks):
+
+      - ``xsoar_params`` must be a non-empty list of non-empty strings.
+      - ``auth_types`` entries must be sorted by ``(type, name)``
+        ascending. The first out-of-order pair is reported.
+      - ``config`` must conform to the mini-grammar parsed by
+        :func:`_parse_auth_config` (``NoneRequired`` or one or more
+        ``REQUIRED/OPTIONAL/CHOICE`` clauses joined by ``+``).
+      - Every operand name referenced by ``config`` must appear as some
+        ``auth_types[].name`` in the same row.
+      - If ``config == "NoneRequired"`` then ``auth_types`` must be
+        empty; otherwise ``auth_types`` must be non-empty.
+    """
     errors: list[str] = []
 
     try:
@@ -441,67 +557,116 @@ def validate_auth_detail(value: str) -> list[str]:
     if not isinstance(detail, dict):
         return [f"Expected a JSON object, got {type(detail).__name__}"]
 
-    required_keys = {"auth_types", "config", "params"}
+    required_keys = {"auth_types", "config"}
     missing = required_keys - set(detail.keys())
     if missing:
         errors.append(f"Missing required keys: {', '.join(sorted(missing))}")
         return errors
 
-    if not isinstance(detail["auth_types"], list):
+    seen_names: set[str] = set()
+    # Track per-entry validity for the sort check (only consider entries
+    # whose `type` and `name` are both well-formed).
+    sortable: list[tuple[int, str, str]] = []
+    valid_auth_types_list = isinstance(detail["auth_types"], list)
+    if not valid_auth_types_list:
         errors.append(f"'auth_types' must be a list, got {type(detail['auth_types']).__name__}")
     else:
         for i, entry in enumerate(detail["auth_types"]):
             if not isinstance(entry, dict):
                 errors.append(f"auth_types[{i}]: expected object, got {type(entry).__name__}")
                 continue
+            entry_type_ok = False
+            entry_name_ok = False
             if "type" not in entry:
                 errors.append(f"auth_types[{i}]: missing 'type'")
             elif entry["type"] not in VALID_AUTH_TYPES:
                 errors.append(f"auth_types[{i}]: invalid type '{entry['type']}'")
+            else:
+                entry_type_ok = True
             if "name" not in entry:
                 errors.append(f"auth_types[{i}]: missing 'name'")
             elif not isinstance(entry["name"], str):
                 errors.append(f"auth_types[{i}]: 'name' must be a string")
+            elif not entry["name"]:
+                errors.append(f"auth_types[{i}]: 'name' must be a non-empty string")
+            elif entry["name"] in seen_names:
+                errors.append(
+                    f"auth_types[{i}]: duplicate 'name' '{entry['name']}' "
+                    "(each entry must have a unique logical name)"
+                )
+            else:
+                seen_names.add(entry["name"])
+                entry_name_ok = True
+            if "xsoar_params" not in entry:
+                errors.append(f"auth_types[{i}]: missing 'xsoar_params'")
+            elif not isinstance(entry["xsoar_params"], list):
+                errors.append(
+                    f"auth_types[{i}]: 'xsoar_params' must be a list, "
+                    f"got {type(entry['xsoar_params']).__name__}"
+                )
+            elif len(entry["xsoar_params"]) == 0:
+                errors.append(
+                    f"auth_types[{i}]: 'xsoar_params' must contain at least one entry"
+                )
+            else:
+                for j, p in enumerate(entry["xsoar_params"]):
+                    if not isinstance(p, str) or not p:
+                        errors.append(
+                            f"auth_types[{i}]: xsoar_params[{j}] must be a non-empty string"
+                        )
+            if "interpolated" in entry and not isinstance(entry["interpolated"], bool):
+                errors.append(
+                    f"auth_types[{i}]: 'interpolated' must be a bool, "
+                    f"got {type(entry['interpolated']).__name__}"
+                )
+
+            if entry_type_ok and entry_name_ok:
+                sortable.append((i, entry["type"], entry["name"]))
+
+        # Sort-order check: report the first out-of-order adjacent pair
+        # among the entries that have valid `type` and `name`.
+        for k in range(len(sortable) - 1):
+            i_a, type_a, name_a = sortable[k]
+            i_b, type_b, name_b = sortable[k + 1]
+            if (type_a, name_a) > (type_b, name_b):
+                errors.append(
+                    f"auth_types must be sorted by (type, name); entry "
+                    f"[{i_a}] '{type_a}'/'{name_a}' should come after "
+                    f"entry [{i_b}] '{type_b}'/'{name_b}'"
+                )
+                break
 
     if not isinstance(detail["config"], str):
         errors.append(f"'config' must be a string, got {type(detail['config']).__name__}")
-
-    if not isinstance(detail["params"], dict):
-        errors.append(f"'params' must be a dict, got {type(detail['params']).__name__}")
     else:
-        for param_name, param_data in detail["params"].items():
-            if not isinstance(param_data, dict):
-                errors.append(f"params['{param_name}']: expected object, got {type(param_data).__name__}")
-                continue
-            if "type" not in param_data:
-                errors.append(f"params['{param_name}']: missing 'type'")
+        config_str = detail["config"]
+        referenced_names, parse_errors = _parse_auth_config(config_str)
+        for pe in parse_errors:
+            errors.append(f"'config': {pe}")
+        for n in referenced_names:
+            if n not in seen_names:
+                errors.append(
+                    f"'config' references unknown connection-type name "
+                    f"'{n}' (must match an auth_types[].name)"
+                )
+        # Coherence between `config` and `auth_types`.
+        if valid_auth_types_list:
+            auth_types_empty = len(detail["auth_types"]) == 0
+            if config_str.strip() == "NoneRequired":
+                if not auth_types_empty:
+                    errors.append(
+                        "'config' is 'NoneRequired' but 'auth_types' "
+                        "contains entries; remove the entries or change "
+                        "'config'"
+                    )
             else:
-                ptype = param_data["type"]
-                if isinstance(ptype, str):
-                    if ptype not in VALID_AUTH_TYPES:
-                        errors.append(f"params['{param_name}']: invalid type '{ptype}'")
-                elif isinstance(ptype, list):
-                    for t in ptype:
-                        if t not in VALID_AUTH_TYPES:
-                            errors.append(f"params['{param_name}']: invalid type '{t}' in list")
-                else:
-                    errors.append(f"params['{param_name}']: 'type' must be string or list")
-
-            if "xsoar_type" not in param_data:
-                errors.append(f"params['{param_name}']: missing 'xsoar_type'")
-            elif not isinstance(param_data["xsoar_type"], int):
-                errors.append(
-                    f"params['{param_name}']: 'xsoar_type' must be int, "
-                    f"got {type(param_data['xsoar_type']).__name__}"
-                )
-
-            if "required" not in param_data:
-                errors.append(f"params['{param_name}']: missing 'required'")
-            elif not isinstance(param_data["required"], bool):
-                errors.append(
-                    f"params['{param_name}']: 'required' must be bool, "
-                    f"got {type(param_data['required']).__name__}"
-                )
+                # Only flag the empty-auth_types mismatch if the config
+                # itself parsed cleanly (otherwise the parse error is
+                # the more informative signal).
+                if not parse_errors and auth_types_empty:
+                    errors.append(
+                        "'config' is not 'NoneRequired' but 'auth_types' is empty"
+                    )
 
     return errors
 
@@ -1458,8 +1623,7 @@ def _example_value_for(step: Step) -> str:
     """Return a canonical example value for the example CLI line."""
     if step.kind == "data" and step.name in JSON_VALUED_COLUMNS:
         if step.name == "Auth Details":
-            return ("'{\"auth_types\":[],\"config\":\"NONE\","
-                    "\"params\":{}}'")
+            return "'{\"auth_types\":[],\"config\":\"NoneRequired\"}'"
         if step.name == "Params for test with default in code":
             return "'[]'"
         if step.name == "Params same in other handlers":
