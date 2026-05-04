@@ -429,7 +429,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Entries '1.2.3.4/32, 1.2.3.5/32' added successfully to Akamai WAF Client List 1234_MYIPLIST.
+> Entries '1.2.3.4/32, 1.2.3.5/32' added successfully to Akamai WAF Client List 1234_MYIPLIST.
 
 ### akamai-remove-client-list-entry
 
