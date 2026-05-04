@@ -49,6 +49,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: Maximum Number of Audit Events Per Fetch
   name: max_fetch  # for fetch-events on XSIAM 
   defaultvalue: 10000
@@ -56,6 +58,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - xsiam
 name: HashicorpTerraform
 display: HashiCorp Terraform
 category: IT Services
@@ -667,5 +671,3 @@ script:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam
