@@ -9335,14 +9335,8 @@ def test_workflow_execute_command(mocker):
     from CrowdStrikeFalcon import workflow_execute_command
 
     mock_response = {
-        "resources": [
-            {
-                "id": "exec-456",
-                "definition_id": "def-123",
-                "execution_id": "exec-456",
-                "trace_id": "trace-789",
-            }
-        ]
+        "meta": {"trace_id": "trace-789"},
+        "resources": ["exec-456"],
     }
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
 
@@ -9350,9 +9344,8 @@ def test_workflow_execute_command(mocker):
     result = workflow_execute_command(args)
 
     assert result.outputs_prefix == "CrowdStrike.Workflow"
-    assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["definition_id"] == "def-123"
+    assert result.outputs == ["exec-456"]
+    assert "exec-456" in result.readable_output
 
 
 def test_workflow_execute_command_missing_args(mocker):
@@ -9419,26 +9412,27 @@ def test_list_workflow_executions_command(mocker):
 def test_list_workflow_execution_results_command(mocker):
     """
     Test cs-falcon-list-workflow-execution-results command.
-
-    Given:
-        - A list of execution IDs.
-    When:
-        - Running list_workflow_execution_results_command.
-    Then:
-        - Verify the command returns expected execution results.
+    Given: A list of execution IDs.
+    When: Running list_workflow_execution_results_command.
+    Then: Verify the command returns expected execution results with nested activities.
     """
     from CrowdStrikeFalcon import list_workflow_execution_results_command
 
     mock_response = {
         "resources": [
             {
-                "id": "result-001",
-                "node_id": "node-1",
-                "start_timestamp": "2024-01-01T00:00:00Z",
-                "end_timestamp": "2024-01-01T00:01:00Z",
-                "status": "completed",
-                "name": "Action Step",
-                "type": "action",
+                "execution_id": "ae6b9021abff1dc526093dbcb5e66bd2",
+                "activities": [
+                    {
+                        "node_id": "GetCaseDetails",
+                        "start_timestamp": "2026-03-10T15:10:24.024Z",
+                        "end_timestamp": "2026-03-10T15:10:24.374Z",
+                        "status": "Completed",
+                        "id": "3dc4a68cf25bf32ceec6588c6d5c8989",
+                        "name": "Get case details",
+                        "type": "cases",
+                    }
+                ],
             }
         ]
     }
@@ -9448,9 +9442,12 @@ def test_list_workflow_execution_results_command(mocker):
     result = list_workflow_execution_results_command(args)
 
     assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResults"
-    assert result.outputs_key_field == "id"
+    assert result.outputs_key_field == "execution_id"
     assert len(result.outputs) == 1
-    assert result.outputs[0]["status"] == "completed"
+    assert result.outputs[0]["execution_id"] == "ae6b9021abff1dc526093dbcb5e66bd2"
+    assert result.outputs[0]["activities"][0]["status"] == "Completed"
+    assert "GetCaseDetails" in result.readable_output
+    assert "Get case details" in result.readable_output
 
 
 def test_workflow_execution_action_command(mocker):

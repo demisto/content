@@ -9636,24 +9636,18 @@ def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
     resources = response.get("resources", [])
 
     # Build human-readable output
-    hr_data = []
-    for resource in resources:
-        hr_data.append({
-            "Trace ID": resource.get("trace_id"),
-            "Definition ID": resource.get("definition_id"),
-            "Execution ID": resource.get("execution_id"),
-        })
+    # The API returns resources as a list of execution ID strings, not dicts.
+    hr_data = [{"Resources": resource} for resource in resources]
 
     readable_output = tableToMarkdown(
         name="Workflow Execution",
         t=hr_data,
-        headers=["Trace ID", "Definition ID", "Execution ID"],
+        headers=["Resources"],
         removeNull=True,
     )
 
     return CommandResults(
         outputs_prefix="CrowdStrike.Workflow",
-        outputs_key_field="id",
         outputs=resources,
         readable_output=readable_output,
         raw_response=response,
@@ -9734,29 +9728,33 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
     response = get_workflow_execution_results(ids=ids)
     results = response.get("resources", [])
 
-    # Build human-readable table
+    # Build human-readable table from nested activities
     hr_data = []
     for result in results:
-        hr_data.append({
-            "Node ID": result.get("node_id"),
-            "Start Timestamp": result.get("start_timestamp"),
-            "End Timestamp": result.get("end_timestamp"),
-            "Status": result.get("status"),
-            "ID": result.get("id"),
-            "Name": result.get("name"),
-            "Type": result.get("type"),
-        })
+        execution_id = result.get("execution_id")
+        activities = result.get("activities", [])
+        for activity in activities:
+            hr_data.append({
+                "Execution ID": execution_id,
+                "Node ID": activity.get("node_id"),
+                "Start Timestamp": activity.get("start_timestamp"),
+                "End Timestamp": activity.get("end_timestamp"),
+                "Status": activity.get("status"),
+                "ID": activity.get("id"),
+                "Name": activity.get("name"),
+                "Type": activity.get("type"),
+            })
 
     readable_output = tableToMarkdown(
         name="Workflow Execution Results",
         t=hr_data,
-        headers=["Node ID", "Start Timestamp", "End Timestamp", "Status", "ID", "Name", "Type"],
+        headers=["Execution ID", "Node ID", "Start Timestamp", "End Timestamp", "Status", "ID", "Name", "Type"],
         removeNull=True,
     )
 
     return CommandResults(
         outputs_prefix="CrowdStrike.Workflows.ExecutionResults",
-        outputs_key_field="id",
+        outputs_key_field="execution_id",
         outputs=results,
         readable_output=readable_output,
         raw_response=response,
