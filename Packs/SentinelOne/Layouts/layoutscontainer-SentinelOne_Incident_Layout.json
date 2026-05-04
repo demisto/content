@@ -437,12 +437,30 @@
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertstatus",
+								"height": 22,
+								"id": "f741ca10-9c9c-11ed-8844-a17be4688e73",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertanalystverdictmapped",
+								"height": 22,
+								"id": "f952db21-9c9d-11ed-8844-a17be4688e74",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "SentinelOne Threat Mirrored Fields",
+						"name": "SentinelOne Mirrored Fields",
 						"static": false,
 						"w": 1,
 						"wrapLabels": true,
@@ -1704,10 +1722,19 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "sentineloneuamalertanalystverdict",
+								"fieldId": "sentineloneuamalertanalystverdictmapped",
 								"height": 22,
-								"id": "e0fe7a70-dff9-11f0-b711-ef6183340a2c",
-								"index": 4,
+								"id": "f1fe7a70-dff9-11f0-b711-ef6183340a2d",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sentineloneuamalertstatus",
+								"height": 22,
+								"id": "g0fe7a70-dff9-11f0-b711-ef6183340a3c",
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -1716,7 +1743,7 @@
 								"fieldId": "sentineloneuamalertexternalid",
 								"height": 22,
 								"id": "5fe0b3f4-6bda-4372-b71f-f6acf4f9cf3f",
-								"index": 4,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -2409,6 +2436,14 @@
 					},
 					{
 						"fieldId": "incident_scenario",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sentineloneuamalertstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sentineloneuamalertanalystverdictmapped",
 						"isVisible": true
 					},
 					{
