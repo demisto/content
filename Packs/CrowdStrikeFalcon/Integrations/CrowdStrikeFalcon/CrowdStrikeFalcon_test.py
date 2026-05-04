@@ -4736,6 +4736,8 @@ def test_apply_quarantine_file_action_command_no_matches(requests_mock):
 @pytest.mark.parametrize(
     "query_params, expected",
     [
+        # empty dict -> empty string
+        ({}, ""),
         # scalar value (back-compat)
         ({"name": "test"}, "name:'test'"),
         # multiple scalar values joined with '+'
@@ -4746,6 +4748,16 @@ def test_apply_quarantine_file_action_command_no_matches(requests_mock):
         ({"filename": ["a.txt", "b.txt"]}, "filename:['a.txt','b.txt']"),
         # mixed scalar + single-element list
         ({"hostname": "INSTANCE-1", "filename": ["a.txt"]}, "hostname:'INSTANCE-1'+filename:'a.txt'"),
+        # empty list -> key is skipped
+        ({"filename": []}, ""),
+        # empty list mixed with scalar -> only scalar is rendered
+        ({"hostname": "INSTANCE-1", "filename": []}, "hostname:'INSTANCE-1'"),
+        # None value -> key is skipped
+        ({"hostname": "INSTANCE-1", "filename": None}, "hostname:'INSTANCE-1'"),
+        # single quote in value -> escaped with backslash
+        ({"filename": "O'Brien.txt"}, "filename:'O\\'Brien.txt'"),
+        # single quote in list value -> escaped with backslash
+        ({"filename": ["O'Brien.txt", "b.txt"]}, "filename:['O\\'Brien.txt','b.txt']"),
     ],
 )
 def test_build_query_params(query_params, expected):
