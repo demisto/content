@@ -9278,3 +9278,217 @@ class TestSpotlightFetchAssets:
         assert saved_context["spotlight_assets"]["cursor"] == "token123"
         assert saved_context["spotlight_assets"]["metadata"]["snapshot_id"] == "snap1"
         assert "existing_key" in saved_context
+
+
+def test_list_workflow_definitions_command(mocker):
+    """
+    Test cs-falcon-list-workflow-definitions command.
+
+    Given:
+        - Arguments with name filter.
+    When:
+        - Running list_workflow_definitions_command.
+    Then:
+        - Verify the command returns expected workflow definitions.
+    """
+    from CrowdStrikeFalcon import list_workflow_definitions_command
+
+    mock_response = {
+        "resources": [
+            {
+                "id": "def-123",
+                "name": "Test Workflow",
+                "description": "A test workflow",
+                "trigger": {
+                    "event": "on_demand",
+                    "name": "Manual Trigger",
+                    "schedule": "",
+                    "type": "on_demand",
+                },
+            }
+        ]
+    }
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"name": "Test", "limit": "10"}
+    result = list_workflow_definitions_command(args)
+
+    assert result.outputs_prefix == "CrowdStrike.WorkflowDefinition"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "def-123"
+    assert result.outputs[0]["name"] == "Test Workflow"
+    assert "Test Workflow" in result.readable_output
+
+
+def test_workflow_execute_command(mocker):
+    """
+    Test cs-falcon-workflow-execute command.
+
+    Given:
+        - A definition_id and body.
+    When:
+        - Running workflow_execute_command.
+    Then:
+        - Verify the command returns expected execution result.
+    """
+    from CrowdStrikeFalcon import workflow_execute_command
+
+    mock_response = {
+        "resources": [
+            {
+                "id": "exec-456",
+                "definition_id": "def-123",
+                "execution_id": "exec-456",
+                "trace_id": "trace-789",
+            }
+        ]
+    }
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"definition_id": "def-123", "body": "{}"}
+    result = workflow_execute_command(args)
+
+    assert result.outputs_prefix == "CrowdStrike.Workflow"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["definition_id"] == "def-123"
+
+
+def test_workflow_execute_command_missing_args(mocker):
+    """
+    Test cs-falcon-workflow-execute command with missing required args.
+
+    Given:
+        - No definition_id or name provided.
+    When:
+        - Running workflow_execute_command.
+    Then:
+        - Verify DemistoException is raised.
+    """
+    from CrowdStrikeFalcon import workflow_execute_command
+
+    args = {"body": "{}"}
+    with pytest.raises(DemistoException, match="Either 'definition_id' or 'name' must be provided."):
+        workflow_execute_command(args)
+
+
+def test_list_workflow_executions_command(mocker):
+    """
+    Test cs-falcon-list-workflow-executions command.
+
+    Given:
+        - Arguments with definition_id filter.
+    When:
+        - Running list_workflow_executions_command.
+    Then:
+        - Verify the command returns expected workflow executions.
+    """
+    from CrowdStrikeFalcon import list_workflow_executions_command
+
+    mock_response = {
+        "resources": [
+            {
+                "id": "exec-001",
+                "execution_id": "exec-001",
+                "status": "completed",
+                "activities": [
+                    {
+                        "node_id": "node-1",
+                        "start_timestamp": "2024-01-01T00:00:00Z",
+                        "end_timestamp": "2024-01-01T00:01:00Z",
+                        "status": "completed",
+                        "name": "Step 1",
+                        "type": "action",
+                    }
+                ],
+            }
+        ]
+    }
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"definition_id": "def-123", "limit": "10"}
+    result = list_workflow_executions_command(args)
+
+    assert result.outputs_prefix == "CrowdStrike.Workflows.Executions"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["execution_id"] == "exec-001"
+    assert "Step 1" in result.readable_output
+
+
+def test_list_workflow_execution_results_command(mocker):
+    """
+    Test cs-falcon-list-workflow-execution-results command.
+
+    Given:
+        - A list of execution IDs.
+    When:
+        - Running list_workflow_execution_results_command.
+    Then:
+        - Verify the command returns expected execution results.
+    """
+    from CrowdStrikeFalcon import list_workflow_execution_results_command
+
+    mock_response = {
+        "resources": [
+            {
+                "id": "result-001",
+                "node_id": "node-1",
+                "start_timestamp": "2024-01-01T00:00:00Z",
+                "end_timestamp": "2024-01-01T00:01:00Z",
+                "status": "completed",
+                "name": "Action Step",
+                "type": "action",
+            }
+        ]
+    }
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"ids": "exec-001,exec-002"}
+    result = list_workflow_execution_results_command(args)
+
+    assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResults"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["status"] == "completed"
+
+
+def test_workflow_execution_action_command(mocker):
+    """
+    Test cs-falcon-workflow-execution-action command.
+
+    Given:
+        - Execution IDs and action_name=cancel.
+    When:
+        - Running workflow_execution_action_command.
+    Then:
+        - Verify the command returns expected readable output.
+    """
+    from CrowdStrikeFalcon import workflow_execution_action_command
+
+    mock_response = {"resources": []}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=mock_response)
+
+    args = {"ids": "exec-001", "action_name": "cancel"}
+    result = workflow_execution_action_command(args)
+
+    assert "cancelled" in result.readable_output
+    assert result.outputs is None  # No context output for action command
+
+
+def test_workflow_execution_action_command_invalid_action(mocker):
+    """
+    Test cs-falcon-workflow-execution-action command with invalid action.
+
+    Given:
+        - An invalid action_name.
+    When:
+        - Running workflow_execution_action_command.
+    Then:
+        - Verify DemistoException is raised.
+    """
+    from CrowdStrikeFalcon import workflow_execution_action_command
+
+    args = {"ids": "exec-001", "action_name": "invalid"}
+    with pytest.raises(DemistoException, match="Invalid action_name"):
+        workflow_execution_action_command(args)
