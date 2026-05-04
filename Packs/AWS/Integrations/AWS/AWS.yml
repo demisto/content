@@ -14220,7 +14220,51 @@ script:
       required: false
 
   - name: aws-logs-log-group-create
+    description: Creates a log group with the specified name.
+    execution: true
     arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
     - name: log_group_name
       required: true
       description: The name of the log group. Log group names can be between 1 and 512 characters long. Allowed characters are a-z, A-Z, 0-9, '_' (underscore), '-' (hyphen), '/' (forward slash), '.' (period), and '#' (number sign).
@@ -14233,71 +14277,215 @@ script:
       - INFREQUENT_ACCESS
       description: The class of the log group. If you omit this parameter, the default of STANDARD is used. INFREQUENT_ACCESS class log groups have a higher per-ingestion cost but lower per-GB storage cost.
     - name: tags
-      description: "The key-value pairs to use for the tags. Must be separated by a semicolon (;) and specified using the format \"key=abc,value=123;key=fed,value=456\"."
+      description: "The key-value pairs to use for the tags. Must be separated by a semicolon (;) and specified using the format: key=abc,value=123;key=fed,value=456."
     - name: deletion_protection_enabled
       auto: PREDEFINED
       predefined:
       - "true"
+      - "false"
       description: Whether to enable deletion protection for the log group. When deletion protection is enabled, the log group cannot be deleted. Default is false.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
-    description: Creates a log group with the specified name.
-    execution: true
 
   - name: aws-logs-log-stream-create
-    arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
-    - name: log_stream_name
-      required: true
-      description: The name of the log stream.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
     description: Creates a log stream for the specified log group.
     execution: true
-
-  - name: aws-logs-log-group-delete
     arguments:
-    - name: log_group_name
-      required: true
-      description: The name of the log group.
     - name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
       description: The AWS Region.
     - name: account_id
       required: true
       description: The AWS account ID.
-    description: Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
-    execution: true
-
-  - name: aws-logs-log-stream-delete
-    arguments:
     - name: log_group_name
       required: true
       description: The name of the log group.
     - name: log_stream_name
       required: true
       description: The name of the log stream.
+
+  - name: aws-logs-log-group-delete
+    description: Deletes the specified log group and permanently deletes all the archived log events associated with the log group.
+    execution: true
+    arguments:
     - name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
       description: The AWS Region.
     - name: account_id
       required: true
       description: The AWS account ID.
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+
+  - name: aws-logs-log-stream-delete
     description: Deletes the specified log stream and permanently deletes all the archived log events associated with the log stream.
     execution: true
+    arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: log_group_name
+      required: true
+      description: The name of the log group.
+    - name: log_stream_name
+      required: true
+      description: The name of the log stream.
 
   - name: aws-logs-log-events-filter
+    description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
     arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
     - name: log_group_name
       required: true
       description: The name of the log group to search. You must include either logGroupName or logGroupIdentifier, but not both.
@@ -14309,9 +14497,9 @@ script:
     - name: log_stream_name_prefix
       description: Filters the results to include only events from log streams that have names starting with this prefix. Cannot be used together with log_stream_names.
     - name: start_time
-      description: The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp before this time are not returned.
+      description: The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp before this time are not returned.
     - name: end_time
-      description: The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a timestamp later than this time are not returned.
+      description: The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC (Unix Time, for example- 1777536297198). Events with a timestamp later than this time are not returned.
     - name: filter_pattern
       description: The filter pattern to use. If not provided, all the events are matched. For more information, see Filter and Pattern Syntax in the AWS documentation.
     - name: limit
@@ -14324,12 +14512,6 @@ script:
       - "true"
       - "false"
       description: Specify true to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is false.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
     outputs:
     - contextPath: AWS.CloudWatchLogs.Events.LogStreamName
       description: The name of the log stream this event belongs to.
@@ -14349,38 +14531,74 @@ script:
     - contextPath: AWS.CloudWatchLogs.EventsNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
-    description: Lists log events from the specified log group. You can list all the log events or filter the results using a filter pattern, a time range, and the name of the log stream.
 
   - name: aws-logs-log-groups-describe
+    description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
     arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
     - name: log_group_name_prefix
-      description: The prefix to match. logGroupNamePrefix and logGroupNamePattern are mutually exclusive. Only one of these parameters can be passed.
+      description: The prefix to match. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed.
     - name: log_group_name_pattern
-      description: A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. logGroupNamePrefix and logGroupNamePattern are mutually exclusive.
+      description: A case-sensitive substring to match against log group names. A log group will be included in the results if the substring matches any part of the log group name. log_group_name_prefix and log_group_name_pattern are mutually exclusive. Only one of these parameters can be passed.
     - name: account_identifiers
-      description: Comma-separated list of account IDs. When used with includeLinkedAccounts, returns log groups in the accounts listed. Used for cross-account querying.
+      description: Comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying.
       isArray: true
     - name: include_linked_accounts
       predefined:
       - "true"
       - "false"
-      description: If true, include log groups in the accounts specified by accountIdentifiers. If this parameter is set to true and accountIdentifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
+      description: If true, include log groups in the accounts specified by account_identifiers. If this parameter is set to true and account_identifiers is empty, returns all log groups in the monitoring account and all linked source accounts.
     - name: log_group_class
       auto: PREDEFINED
       predefined:
       - STANDARD
       - INFREQUENT_ACCESS
-      description: Specifies the log group class for this log group. Possible values are STANDARD and INFREQUENT_ACCESS.
+      description: Specifies the log group class for this log group.
     - name: limit
-      description: The maximum number of items returned. If you don't specify a value, max 50 items.
+      description: The maximum number of items returned. If you don’t specify a value, the default is up to 50 items..
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
     outputs:
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogGroupName
       description: The name of the log group.
@@ -14406,10 +14624,52 @@ script:
     - contextPath: AWS.CloudWatchLogs.LogGroupsNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
-    description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
 
   - name: aws-logs-log-streams-describe
+    description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
     arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
     - name: log_group_name
       description: The name of the log group. You must include either log_group_name or log_group_identifier, but not both.
     - name: log_group_identifier
@@ -14432,12 +14692,6 @@ script:
       description: The maximum number of items returned. If you don't specify a value, maximum 50 items.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
     outputs:
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName
       description: The name of the log group.
@@ -14469,10 +14723,53 @@ script:
     - contextPath: AWS.CloudWatchLogs.LogStreamsNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
-    description: Lists the log streams for the specified log group. You can list all the log streams or filter the results by prefix. You can also control how the results are ordered.
 
   - name: aws-logs-retention-policy-put
+    description: Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
+    execution: true
     arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
     - name: log_group_name
       required: true
       description: The name of the log group.
@@ -14498,31 +14795,103 @@ script:
       - "1827"
       - "3653"
       description: The number of days to retain the log events in the specified log group.
+
+  - name: aws-logs-retention-policy-delete
+    description: Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
+    execution: true
+    arguments:
     - name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
       description: The AWS Region.
     - name: account_id
       required: true
       description: The AWS account ID.
-    description: Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group.
-    execution: true
-
-  - name: aws-logs-retention-policy-delete
-    arguments:
     - name: log_group_name
       required: true
       description: The name of the log group.
+
+  - name: aws-logs-log-event-put
+    description: Uploads a log event to the specified log stream.
+    execution: true
+    arguments:
     - name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
       description: The AWS Region.
     - name: account_id
       required: true
       description: The AWS account ID.
-    description: Deletes the specified retention policy. Log events do not expire if they belong to log groups without a retention policy.
-    execution: true
-
-  - name: aws-logs-log-events-put
-    arguments:
     - name: log_group_name
       required: true
       description: The name of the log group.
@@ -14535,12 +14904,10 @@ script:
     - name: message
       required: true
       description: The raw event message.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
+    - name: key_attributes
+      description: "Entity key attributes that identify the entity. Must be separated by a semicolon (;) and specified using the format: key=<name>,value=<value>;key=<name>,value=<value>. For example: key=Type,value=AWS::EC2::Instance;key=Name,value=my-instance."
+    - name: attributes
+      description: "Additional entity attributes that describe the entity. Must be separated by a semicolon (;) and specified using the format: key=<name>,value=<value>;key=<name>,value=<value>. For example: key=Environment,value=production;key=Team,value=platform."
     outputs:
     - contextPath: AWS.CloudWatchLogs.PutLogEvents.rejectedLogEventsInfo
       description: Information about rejected log events, including the reason for rejection.
@@ -14548,11 +14915,53 @@ script:
     - contextPath: AWS.CloudWatchLogs.PutLogEvents.rejectedEntityInfo
       description: Information about rejected entity, including the reason for rejection.
       type: Unknown
-    description: Uploads a batch of log events to the specified log stream.
-    execution: true
 
   - name: aws-logs-metric-filter-put
+    description: Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
+    execution: true
     arguments:
+    - name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+      description: The AWS Region.
+    - name: account_id
+      required: true
+      description: The AWS account ID.
     - name: log_group_name
       required: true
       description: The name of the log group.
@@ -14574,7 +14983,7 @@ script:
     - name: default_value
       description: The value to emit when a filter pattern does not match a log event. This value can be null.
     - name: dimensions
-      description: "The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Must be separated by a semicolon (;) and specified using the format \"key=DimensionName,value=DimensionValueSource;key=DimensionName2,value=DimensionValueSource2\"."
+      description: "The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions. Must be separated by a semicolon (;) and specified using the format: key=DimensionName,value=DimensionValueSource;key=DimensionName2,value=DimensionValueSource2."
     - name: unit
       auto: PREDEFINED
       predefined:
@@ -14612,34 +15021,105 @@ script:
       - "true"
       - "false"
       description: Whether to apply the metric filter to results of CloudWatch Logs Insights queries or to log events that are ingested through a CloudWatch Logs Transformer. Default is false.
+
+  - name: aws-logs-metric-filter-delete
+    description: Deletes the specified metric filter.
+    execution: true
+    arguments:
     - name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
       description: The AWS Region.
     - name: account_id
       required: true
       description: The AWS account ID.
-    description: Creates or updates a metric filter and associates it with the specified log group. Metric filters allow you to configure rules to extract metric data from log events ingested through PutLogEvents.
-    execution: true
-
-  - name: aws-logs-metric-filter-delete
-    arguments:
     - name: log_group_name
       required: true
       description: The name of the log group.
     - name: filter_name
       required: true
       description: The name of the metric filter.
+
+  - name: aws-logs-metric-filters-describe
+    description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
+    arguments:
     - name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
       description: The AWS Region.
     - name: account_id
       required: true
       description: The AWS account ID.
-    description: Deletes the specified metric filter.
-    execution: true
-
-  - name: aws-logs-metric-filters-describe
-    arguments:
     - name: log_group_name
       description: The name of the log group.
     - name: filter_name_prefix
@@ -14652,12 +15132,6 @@ script:
       description: The maximum number of items returned. If you don't specify a value, maximum 50 items.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
-    - name: region
-      required: true
-      description: The AWS Region.
-    - name: account_id
-      required: true
-      description: The AWS account ID.
     outputs:
     - contextPath: AWS.CloudWatchLogs.MetricFilters.FilterName
       description: The name of the metric filter.
@@ -14686,7 +15160,6 @@ script:
     - contextPath: AWS.CloudWatchLogs.MetricFiltersNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
-    description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
 
   isfetch: false
   runonce: false

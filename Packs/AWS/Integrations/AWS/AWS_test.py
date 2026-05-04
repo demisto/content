@@ -14864,7 +14864,7 @@ def test_log_events_filter_command_no_events(mocker):
 def test_log_events_filter_command_with_all_params(mocker):
     """
     Given: A mocked CloudWatch Logs client with all optional filter parameters.
-    When: log_events_filter_command is called with all parameters.
+    When: log_events_filter_command is called with all parameters using log_group_identifier (without log_group_name).
     Then: It should pass all parameters to the API call.
     """
     from AWS import CloudWatchLogs
@@ -14875,7 +14875,6 @@ def test_log_events_filter_command_with_all_params(mocker):
     args = {
         "account_id": "123456789012",
         "region": "us-east-1",
-        "log_group_name": "my-log-group",
         "log_group_identifier": "arn:aws:logs:us-east-1:123456789012:log-group:my-log-group",
         "log_stream_names": "stream-1,stream-2",
         "log_stream_name_prefix": "stream-",
@@ -14890,7 +14889,6 @@ def test_log_events_filter_command_with_all_params(mocker):
     CloudWatchLogs.log_events_filter_command(mock_client, args)
 
     call_kwargs = mock_client.filter_log_events.call_args[1]
-    assert call_kwargs["logGroupName"] == "my-log-group"
     assert call_kwargs["logGroupIdentifier"] == "arn:aws:logs:us-east-1:123456789012:log-group:my-log-group"
     assert call_kwargs["logStreamNames"] == ["stream-1", "stream-2"]
     assert call_kwargs["logStreamNamePrefix"] == "stream-"
@@ -15033,7 +15031,7 @@ def test_log_streams_describe_command_with_pagination(mocker):
 
     result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
 
-    assert result.outputs["AWS.CloudWatchLogs(true)"]["LogStreamsNextToken"] == "stream-next-token"
+    assert result.outputs["AWS.CloudWatchLogs.LogGroups(true)"]["LogStreamsNextToken"] == "stream-next-token"
 
 
 def test_retention_policy_put_command_success(mocker):
@@ -15091,7 +15089,7 @@ def test_log_events_put_command_success(mocker):
     from AWS import CloudWatchLogs
 
     mock_client = mocker.Mock()
-    mock_client.put_log_events.return_value = {}
+    mock_client.put_log_events.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
     args = {
         "account_id": "123456789012",
@@ -15105,7 +15103,7 @@ def test_log_events_put_command_success(mocker):
     result = CloudWatchLogs.log_events_put_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "Successfully created event!" in result.readable_output
+    assert "Successfully created a log event!" in result.readable_output
     call_kwargs = mock_client.put_log_events.call_args[1]
     assert call_kwargs["logGroupName"] == "my-log-group"
     assert call_kwargs["logStreamName"] == "my-log-stream"
@@ -15123,6 +15121,7 @@ def test_log_events_put_command_with_rejected_info(mocker):
 
     mock_client = mocker.Mock()
     mock_client.put_log_events.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "rejectedLogEventsInfo": {"tooNewLogEventStartIndex": 1},
     }
 
