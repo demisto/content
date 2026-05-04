@@ -3856,7 +3856,7 @@ def test_add_cases_extra_data_single_case(mocker: MockerFixture):
     When:
         The add_cases_extra_data function is called.
     Then:
-        A list with one case containing CaseExtraData with issue_ids, issues, xdr_url, and artifacts.
+        A list with one case containing CaseExtraData with issue_ids, extra incident fields, and artifacts.
     """
     from CortexPlatformCore import add_cases_extra_data
 
@@ -3891,8 +3891,8 @@ def test_add_cases_extra_data_single_case(mocker: MockerFixture):
     assert extra["xdr_url"] == "https://example.com"
     assert extra["notes"] is None
     assert extra["starred_manually"] is False
-    assert len(extra["issues"]) == 1
-    assert extra["issues"][0]["issue_id"] == "a1"
+    assert extra["manual_description"] is None
+    assert extra["detection_time"] is None
     assert extra["network_artifacts"] == {"total_count": 0, "data": []}
     assert extra["file_artifacts"] == {"total_count": 0, "data": []}
     mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123"])
@@ -3948,9 +3948,7 @@ def test_add_cases_extra_data_multiple_cases(mocker: MockerFixture):
     assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
     assert result[0]["CaseExtraData"]["xdr_url"] == "https://example.com/123"
     assert result[1]["CaseExtraData"]["issue_ids"] == []
-    assert result[1]["CaseExtraData"]["issues"] == []
     assert result[2]["CaseExtraData"]["issue_ids"] == ["a2", "a3"]
-    assert len(result[2]["CaseExtraData"]["issues"]) == 2
     mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123", "456", "789"])
 
 

@@ -1736,26 +1736,23 @@ def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     The bulk endpoint returns each case as:
         {"incident": {...}, "alerts": {"total_count": N, "data": [...]}, "network_artifacts": ..., "file_artifacts": ...}
 
-    Extracts relevant fields from the incident object (xdr_url, notes, etc.) and the alerts
-    (renamed to issues), then builds a flat CaseExtraData dict matching the format produced
-    by ``get_case_extra_data``.
+    Extracts fields from the incident object that are only available via the extra-data API
+    (not returned by the initial get_cases call), plus issue_ids from alerts and artifacts.
 
     Args:
         case_incident_data: A single case entry from the bulk response's 'incidents' list.
 
     Returns:
-        dict: The CaseExtraData dict with issue_ids, network/file artifacts, and incident-level fields.
+        dict: The CaseExtraData dict with issue_ids, extra incident fields, and network/file artifacts.
     """
     incident_data = case_incident_data.get("incident", {})
     alerts = case_incident_data.get("alerts", {})
     alerts_data = alerts.get("data", [])
 
     issue_ids = [str(alert.get("alert_id")) for alert in alerts_data if alert.get("alert_id") is not None]
-    issues = [alert_to_issue(incident_to_case(alert)) for alert in alerts_data]
 
     return {
         "issue_ids": issue_ids,
-        "issues": issues,
         "network_artifacts": case_incident_data.get("network_artifacts"),
         "file_artifacts": case_incident_data.get("file_artifacts"),
         "notes": incident_data.get("notes"),
