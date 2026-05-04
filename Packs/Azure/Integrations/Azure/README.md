@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### azure-nsg-security-rule-update
 
 ***
-Update a security rule. If one does not exist, it will be created.
+Update a security rule. If one does not exist, it will be created. The command is deprecated, please use azure-vn-security-rule-update.
 
 #### Base Command
 
@@ -643,7 +643,7 @@ There is no context output for this command.
 ### azure-key-vault-update
 
 ***
-Updates a key vault in the specified subscription.
+Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update.
 
 #### Base Command
 
@@ -653,11 +653,11 @@ Updates a key vault in the specified subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | Key Vault name. | Required |
-| subscription_id | The subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
-| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
-| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional |
+| vault_name | Key Vault name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional | 
+| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional | 
 
 #### Context Output
 
@@ -693,7 +693,7 @@ Updates a key vault in the specified subscription.
 ### azure-sql-db-threat-policy-update
 
 ***
-Updates the database's threat detection policy.
+Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update.
 
 #### Base Command
 
@@ -703,11 +703,11 @@ Updates the database's threat detection policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| server_name | Server name. | Required |
-| db_name | Database name. | Required |
-| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values: "true" and "false". Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
+| server_name | Server name. | Required | 
+| db_name | Database name. | Required | 
+| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
+| subscription_id | Subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
 
 #### Context Output
 
@@ -756,7 +756,7 @@ There is no context output for this command.
 ### azure-cosmos-db-update
 
 ***
-Updates the properties of an existing Azure Cosmos DB database account.
+Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update.
 
 #### Base Command
 
@@ -766,10 +766,10 @@ Updates the properties of an existing Azure Cosmos DB database account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_name | Cosmos DB database account name. | Required |
-| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
+| account_name | Cosmos DB database account name. | Required | 
+| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional | 
+| subscription_id | Subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
 
 #### Context Output
 
@@ -823,7 +823,7 @@ Updates the properties of an existing Azure Cosmos DB database account.
 ### azure-vm-instance-details-get
 
 ***
-Gets the properties of a given virtual machine.
+Gets the properties of a given virtual machine. The command is deprecated, please use azure-compute-vm-get.
 
 #### Base Command
 
@@ -842,27 +842,27 @@ Gets the properties of a given virtual machine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.name | string | The name of the virtual machine you want to get details of. |
-| Azure.Compute.id | string | The ID of the virtual machine. |
-| Azure.Compute.location | string | The region in which the virtual machine is hosted. |
-| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). |
-| Azure.Compute.OS | string | The OS running on the given virtual machine. |
-| Azure.Compute.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
-| Azure.Compute.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
-| Azure.Compute.properties.hardwareProfile.vmSize | string | The size or SKU of the virtual machine, defining CPU, memory, and storage capacity. |
-| Azure.Compute.properties.provisioningState | string | The current provisioning state of the virtual machine \(e.g., Succeeded, Updating, Failed\). |
-| Azure.Compute.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
-| Azure.Compute.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
-| Azure.Compute.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
-| Azure.Compute.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
-| Azure.Compute.properties.timeCreated | string | The timestamp when the virtual machine was created. |
-| Azure.Compute.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
-| Azure.Compute.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
+| Azure.Compute.name | string | The name of the virtual machine you want to get details of. | 
+| Azure.Compute.id | string | The ID of the virtual machine. | 
+| Azure.Compute.location | string | The region in which the virtual machine is hosted. | 
+| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). | 
+| Azure.Compute.OS | string | The OS running on the given virtual machine. | 
+| Azure.Compute.properties.provisioningState | string | The provisioning state of the deployed virtual machine. | 
+| Azure.Compute.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. | 
+| Azure.Compute.properties.hardwareProfile.vmSize | string | The size or SKU of the virtual machine, defining CPU, memory, and storage capacity. | 
+| Azure.Compute.properties.provisioningState | string | The current provisioning state of the virtual machine \(e.g., Succeeded, Updating, Failed\). | 
+| Azure.Compute.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. | 
+| Azure.Compute.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. | 
+| Azure.Compute.properties.vmId | string | The unique identifier assigned to the virtual machine instance. | 
+| Azure.Compute.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. | 
+| Azure.Compute.properties.timeCreated | string | The timestamp when the virtual machine was created. | 
+| Azure.Compute.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. | 
+| Azure.Compute.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. | 
 
 ### azure-nsg-security-groups-list
 
 ***
-List all network security groups.
+List all network security groups. The command is deprecated, please use azure-vn-security-groups-list.
 
 #### Base Command
 
@@ -894,7 +894,7 @@ List all network security groups.
 ### azure-nsg-security-rule-delete
 
 ***
-Delete a security rule.
+Delete a security rule. The command is deprecated, please use azure-vn-security-rule-delete.
 
 #### Base Command
 
@@ -949,7 +949,7 @@ Run this command to update a specific blob container.
 ### azure-vm-instance-start
 
 ***
-Powers on a given virtual machine.
+Powers on a given virtual machine. The command is deprecated, please use azure-compute-vm-start.
 
 #### Base Command
 
@@ -974,7 +974,7 @@ Powers on a given virtual machine.
 ### azure-nsg-network-interfaces-list
 
 ***
-Gets network interfaces in a resource group.
+Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list.
 
 #### Base Command
 
@@ -1012,7 +1012,7 @@ Gets network interfaces in a resource group.
 ### azure-vm-network-interface-details-get
 
 ***
-Gets the properties of a given network interface.
+Gets the properties of a given network interface. The command is deprecated, please use azure-vn-network-interface-get.
 
 #### Base Command
 
@@ -1048,7 +1048,7 @@ Gets the properties of a given network interface.
 ### azure-nsg-security-rule-get
 
 ***
-Get a specific rule.
+Get a specific rule. The command is deprecated, please use azure-vn-security-rule-get.
 
 #### Base Command
 
@@ -1087,7 +1087,7 @@ Get a specific rule.
 ### azure-nsg-public-ip-addresses-list
 
 ***
-Gets public IP addresses in a resource group.
+Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
 
 #### Base Command
 
@@ -1154,7 +1154,7 @@ Run this command to get the blob service properties of a specific account storag
 ### azure-vm-public-ip-details-get
 
 ***
-Gets the properties of a given public IP address.
+Gets the properties of a given public IP address. The command is deprecated, please useazure-vn-public-ip-list.
 
 #### Base Command
 
@@ -1188,7 +1188,7 @@ Gets the properties of a given public IP address.
 ### azure-nsg-security-rule-create
 
 ***
-Create a security rule.
+Create a security rule. The command is deprecated, please use azure-vn-security-rule-create.
 
 #### Base Command
 
@@ -1235,7 +1235,7 @@ Create a security rule.
 ### azure-nsg-resource-group-list
 
 ***
-Gets all resource groups for a subscription.
+Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list.
 
 #### Base Command
 
@@ -1269,7 +1269,7 @@ Gets all resource groups for a subscription.
 ### azure-vm-instance-power-off
 
 ***
-Powers off a given virtual machine.
+Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off.
 
 #### Base Command
 
@@ -1593,7 +1593,7 @@ Retrieve Blob from Container.
 ### azure-storage-container-blob-tag-get
 
 ***
-Retrieve the tags of the specified Blob.
+Retrieve the tags of the specified Blob. The command is deprecated, please use azure-storage-blob-tag-get.
 
 #### Base Command
 
@@ -1645,7 +1645,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-property-get
 
 ***
-Retrieve Blob properties.
+Retrieve Blob properties. The command is deprecated, please use azure-storage-blob-property-get.
 
 #### Base Command
 
@@ -1732,7 +1732,7 @@ There is no context output for this command.
 ### azure-nsg-security-rules-list
 
 ***
-Gets all security rules in a network security group.
+Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list.
 
 #### Base Command
 
@@ -1761,3 +1761,713 @@ Gets all security rules in a network security group.
 | Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-storage-blob-property-get
+
+***
+Retrieve Blob properties.  Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
+
+#### Base Command
+
+`azure-storage-blob-property-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_name | The name of the Blob Container. | Required | 
+| blob_name | The name of the blob. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group name. | Required | 
+| account_name | The storage account name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.Blob.Property.last_modified | Date | Last modified time of the blob. | 
+| Azure.Storage.Blob.Property.etag | String | The entity tag for the blob. | 
+| Azure.Storage.Blob.Property.lease_status | String | The lease status of the blob. | 
+| Azure.Storage.Blob.Property.lease_state | String | The lease state of the blob. | 
+| Azure.Storage.Blob.Property.blob_type | String | The blob type. | 
+| Azure.Storage.Blob.Property.content_length | Number | The size of the blob in bytes. | 
+| Azure.Storage.Blob.Property.content_type | String | The content type specified for the blob. If no content type was specified, the default content type is application/octet-stream. | 
+| Azure.Storage.Blob.Property.content-md5 | String | The MD5 hash of the blob content. | 
+| Azure.Storage.Blob.Property.creation_time | Date | The date at which the blob was created. | 
+| Azure.Storage.Blob.name | String | Blob name. | 
+| Azure.Storage.Blob.ContainerName | String | Container name. | 
+
+### azure-storage-blob-tag-get
+
+***
+Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write.
+
+#### Base Command
+
+`azure-storage-blob-tag-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_name | The name of the Blob Container. | Required | 
+| blob_name | The name of the blob. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group name. | Required | 
+| account_name | The storage account name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.Blob.Tag.Key | String | Tag key. | 
+| Azure.Storage.Blob.Tag.Value | String | Tag value. | 
+| Azure.Storage.Blob.name | String | Blob name. | 
+| Azure.Storage.Blob.ContainerName | String | Container name. | 
+
+### azure-compute-vm-get
+
+***
+Gets the properties of a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read.
+
+#### Base Command
+
+`azure-compute-vm-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.<br/>. | Required | 
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+| expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine you want to get details of. | 
+| Azure.Compute.VirtualMachines.id | string | The ID of the virtual machine. | 
+| Azure.Compute.VirtualMachines.location | string | The region in which the virtual machine is hosted. | 
+| Azure.Compute.VirtualMachines.Size | number | The size of the deployed virtual machine \(in gigabytes\). | 
+| Azure.Compute.VirtualMachines.OS | string | The OS running on the given virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.provisioningState | string | The provisioning state of the deployed virtual machine. | 
+| Azure.Compute.VirtualMachines.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. | 
+| Azure.Compute.VirtualMachines.properties.hardwareProfile.vmSize | string | The size or SKU of the virtual machine, defining CPU, memory, and storage capacity. | 
+| Azure.Compute.VirtualMachines.properties.provisioningState | string | The current provisioning state of the virtual machine \(e.g., Succeeded, Updating, Failed\). | 
+| Azure.Compute.VirtualMachines.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. | 
+| Azure.Compute.VirtualMachines.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. | 
+| Azure.Compute.VirtualMachines.properties.vmId | string | The unique identifier assigned to the virtual machine instance. | 
+| Azure.Compute.VirtualMachines.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. | 
+| Azure.Compute.VirtualMachines.properties.timeCreated | string | The timestamp when the virtual machine was created. | 
+| Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. | 
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. | 
+
+### azure-compute-vm-power-off
+
+***
+Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/poweroff/action.
+
+#### Base Command
+
+`azure-compute-vm-power-off`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.<br/>. | Required | 
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+| skip_shutdown | Set to True to request non-graceful VM shutdown. Default value is False. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.VirtualMachines.name | string | The name of the virtual machine that was powered off. | 
+| Azure.Compute.VirtualMachines.resourceGroup | string | The resource group in which the virtual machine resides. | 
+| Azure.Compute.VirtualMachines.powerState | string | Whether the virtual machine instance is powered on or off. | 
+
+### azure-compute-vm-start
+
+***
+Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/start/action.
+
+#### Base Command
+
+`azure-compute-vm-start`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | Resource Group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.<br/>. | Required | 
+| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.VirtualMachines.name | string | Name of the VM that was started. | 
+| Azure.Compute.VirtualMachines.resourceGroup | string | Resource group the VM resides in. | 
+| Azure.Compute.VirtualMachines.powerState | string | Whether the VM instance is powered on or off. | 
+
+### azure-cosmosdb-db-account-update
+
+***
+Updates the properties of an existing Azure Cosmos DB database account. The required permissions are: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
+
+#### Base Command
+
+`azure-cosmosdb-db-account-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_name | Cosmos DB database account name. | Required | 
+| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional | 
+| subscription_id | Subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.CosmosDB.DBAccounts.id | String | The unique resource identifier of the ARM resource. | 
+| Azure.CosmosDB.DBAccounts.name | String | The name of the ARM resource. | 
+| Azure.CosmosDB.DBAccounts.location | String | The location of the resource group to which the resource belongs. | 
+| Azure.CosmosDB.DBAccounts.kind | String | The database account type. | 
+| Azure.CosmosDB.DBAccounts.identity.type | String | The type of identity used for the resource. | 
+| Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. | 
+| Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. | 
+| Azure.CosmosDB.DBAccounts.properties.apiProperties | Dictionary | API specific properties. | 
+| Azure.CosmosDB.DBAccounts.properties.backupPolicy | unknown | The policy for taking backups on an account. | 
+| Azure.CosmosDB.DBAccounts.properties.capabilities | List | List of Cosmos DB capabilities for the account. | 
+| Azure.CosmosDB.DBAccounts.properties.capacity | Integer | Properties related to capacity enforcement on an account. | 
+| Azure.CosmosDB.DBAccounts.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. | 
+| Azure.CosmosDB.DBAccounts.properties.consistencyPolicy | String | The consistency policy for the Cosmos DB database account. | 
+| Azure.CosmosDB.DBAccounts.properties.cors | List | The CORS policy for the Cosmos DB database account. | 
+| Azure.CosmosDB.DBAccounts.properties.createMode | String | The mode of account creation. | 
+| Azure.CosmosDB.DBAccounts.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. | 
+| Azure.CosmosDB.DBAccounts.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. | 
+| Azure.CosmosDB.DBAccounts.properties.defaultIdentity | String | The default identity for accessing key vault used in features like customer managed keys. | 
+| Azure.CosmosDB.DBAccounts.properties.disableKeyBasedMetadataWriteAccess | Boolean | Whether write operations on metadata resources via account keys is disabled. | 
+| Azure.CosmosDB.DBAccounts.properties.disableLocalAuth | Boolean | Whether local authentication is disabled. | 
+| Azure.CosmosDB.DBAccounts.properties.documentEndpoint | String | The connection endpoint for the Cosmos DB database account. | 
+| Azure.CosmosDB.DBAccounts.properties.enableAnalyticalStorage | Boolean | Whether storage analytics are enabled. | 
+| Azure.CosmosDB.DBAccounts.properties.enableAutomaticFailover | Boolean | Enables automatic failover of the write region. | 
+| Azure.CosmosDB.DBAccounts.properties.enableBurstCapacity | Boolean | Whether Burst Capacity is enabled. | 
+| Azure.CosmosDB.DBAccounts.properties.enableCassandraConnector | Boolean | Enables the Cassandra connector on the Cosmos DB account. | 
+| Azure.CosmosDB.DBAccounts.properties.enableFreeTier | Boolean | Whether Free Tier is enabled. | 
+| Azure.CosmosDB.DBAccounts.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. | 
+| Azure.CosmosDB.DBAccounts.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. | 
+| Azure.CosmosDB.DBAccounts.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. | 
+| Azure.CosmosDB.DBAccounts.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. | 
+| Azure.CosmosDB.DBAccounts.properties.instanceId | String | A unique identifier assigned to the database account. | 
+| Azure.CosmosDB.DBAccounts.properties.ipRules | List | List of IP rules. | 
+| Azure.CosmosDB.DBAccounts.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. | 
+| Azure.CosmosDB.DBAccounts.properties.keyVaultKeyUri | String | The URI of the key vault. | 
+| Azure.CosmosDB.DBAccounts.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. | 
+| Azure.CosmosDB.DBAccounts.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. | 
+| Azure.CosmosDB.DBAccounts.properties.minimalTlsVersion | String | The minimum allowed TLS version. | 
+| Azure.CosmosDB.DBAccounts.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. | 
+| Azure.CosmosDB.DBAccounts.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. | 
+| Azure.CosmosDB.DBAccounts.properties.privateEndpointConnections | List | List of private endpoint connections. | 
+| Azure.CosmosDB.DBAccounts.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. | 
+| Azure.CosmosDB.DBAccounts.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. | 
+| Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. | 
+| Azure.CosmosDB.DBAccounts.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. | 
+
+### azure-keyvault-vault-update
+
+***
+Updates a key vault in the specified subscription. The required permissions are: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write.
+
+#### Base Command
+
+`azure-keyvault-vault-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| vault_name | Key Vault name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+| enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional | 
+| enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.KeyVault.Vault.id | String | Resource ID. | 
+| Azure.KeyVault.Vault.name | String | Key Vault name. | 
+| Azure.KeyVault.Vault.type | String | Resource type in Azure. | 
+| Azure.KeyVault.Vault.location | String | Key Vault location. | 
+| Azure.KeyVault.Vault.tags | unknown | Resource tags. | 
+| Azure.KeyVault.Vault.properties.sku.family | String | SKU family name. | 
+| Azure.KeyVault.Vault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. | 
+| Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. | 
+| Azure.KeyVault.Vault.properties.accessPolicies | unknown | An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. | 
+| Azure.KeyVault.Vault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. | 
+| Azure.KeyVault.Vault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. | 
+| Azure.KeyVault.Vault.properties.accessPolicies.permissions | unknown | Permissions the identity has for keys, secrets and certificates. | 
+| Azure.KeyVault.Vault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. | 
+| Azure.KeyVault.Vault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. | 
+| Azure.KeyVault.Vault.properties.enabledForTemplateDeployment | Boolean | Whether Azure Resource Manager is allowed to retrieve secrets from the key vault. | 
+| Azure.KeyVault.Vault.properties.enableSoftDelete | Boolean | Whether soft delete is enabled for this key vault. | 
+| Azure.KeyVault.Vault.properties.enablePurgeProtection | Boolean | Whether purge protection is enabled for this key vault. | 
+| Azure.KeyVault.Vault.properties.enableRbacAuthorization | Boolean | Whether Azure Key Vault uses Role Based Access Control \(RBAC\) for authorization of data actions. | 
+| Azure.KeyVault.Vault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. | 
+| Azure.KeyVault.Vault.properties.provisioningState | String | The current provisioning state. | 
+| Azure.KeyVault.Vault.properties.privateEndpointConnections | unknown | List of private endpoint connections associated with the key vault. | 
+| Azure.KeyVault.Vault.properties.networkAcls | unknown | Rules governing the accessibility of the key vault from specific network locations. | 
+| Azure.KeyVault.Vault.properties.networkAcls.bypass | String | What traffic can bypass network rules. | 
+| Azure.KeyVault.Vault.properties.networkAcls.defaultAction | String | The default action when no rules match from ipRules and virtualNetworkRules. | 
+| Azure.KeyVault.Vault.properties.networkAcls.ipRules | unknown | The list of IP address rules. | 
+| Azure.KeyVault.Vault.properties.networkAcls.virtualNetworkRules | unknown | The list of virtual network rules. | 
+
+### azure-rm-resource-groups-list
+
+***
+Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read
+
+#### Base Command
+
+`azure-rm-resource-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
+| tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceManagement.ResourceGroups.id | String | The unique identifier of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.name | String | The name of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.type | String | The type of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.location | String | The location of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.properties.provisioningState | String | The provisioning state of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.tags.Owner | String | The owner tag of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.tags | Unknown | The tags associated with the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.tags.Name | String | The name tag of the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.managedBy | String | The entity that manages the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. | 
+| Azure.ResourceManagement.ResourceGroups.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. | 
+### azure-sqldb-security-alert-policy-update
+
+***
+Updates a database's security alert policy. The required permissions are: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write.
+
+#### Base Command
+
+`azure-sqldb-security-alert-policy-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | Server name. | Required | 
+| db_name | Database name. | Required | 
+| email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional | 
+| subscription_id | Subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.SecurityAlertPolicies.kind | String | Kind of threat policy. | 
+| Azure.SqlDB.SecurityAlertPolicies.location | String | Threat policy location. | 
+| Azure.SqlDB.SecurityAlertPolicies.id | String | Threat policy ID. | 
+| Azure.SqlDB.SecurityAlertPolicies.name | String | Threat policy name. | 
+| Azure.SqlDB.SecurityAlertPolicies.type | String | Threat policy type. | 
+| Azure.SqlDB.SecurityAlertPolicies.state | String | Threat policy state. | 
+| Azure.SqlDB.SecurityAlertPolicies.creationTime | String | Threat policy creation time. | 
+| Azure.SqlDB.SecurityAlertPolicies.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
+| Azure.SqlDB.SecurityAlertPolicies.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
+| Azure.SqlDB.SecurityAlertPolicies.storageEndpoint | String | Threat Detection audit storage account. | 
+| Azure.SqlDB.SecurityAlertPolicies.emailAccountAdmins | Boolean | Email accounts administrators who the alert is sent to. | 
+| Azure.SqlDB.SecurityAlertPolicies.emailAddresses | String | List of email addresses to which the alert is sent. | 
+| Azure.SqlDB.SecurityAlertPolicies.disabledAlerts | String | List of alerts that are disabled, or an empty string if no alerts are disabled. | 
+| Azure.SqlDB.SecurityAlertPolicies.useServerDefault | unknown | Whether to use the default server policy. | 
+| Azure.SqlDB.SecurityAlertPolicies.databaseName | String | The name of the database that the threat policy is related to. | 
+| Azure.SqlDB.SecurityAlertPolicies.serverName | String | The name of server that the threat policy is related to. | 
+
+### azure-vn-network-interfaces-list
+
+***
+Gets network interfaces in a resource group. Required permissions: Microsoft.Network/networkInterfaces/read.
+
+#### Base Command
+
+`azure-vn-network-interfaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface's name. | 
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface's ID. | 
+| Azure.VirtualNetworks.NetworkInterfaces.kind | String | The kind of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | The ETag of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The location of the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.managedBy | String | The entity that manages the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.tags | String | The tags associated with the network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.name | List | The name of the IP configuration resource that is unique within a resource group. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.id | List | The IP configuration resource ID. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.etag | List | The ETag of the IP configuration. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations.type | List | The type of the IP configuration resource. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | List | List of tap configurations. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). | 
+
+### azure-vn-public-ip-addresses-list
+
+***
+Gets public IP addresses in a resource group. Required permissions: Microsoft.Network/publicIPAddresses/read.
+
+#### Base Command
+
+`azure-vn-public-ip-addresses-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required | 
+| subscription_id | The subscription ID. | Required | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.PublicIPAddresses.name | String | The public IP address's name. | 
+| Azure.VirtualNetworks.PublicIPAddresses.id | String | The public IP address's ID. | 
+| Azure.VirtualNetworks.PublicIPAddresses.location | String | The location of the public IP address. | 
+| Azure.VirtualNetworks.PublicIPAddresses.sku | String | The public IP address's SKU. | 
+| Azure.VirtualNetworks.PublicIPAddresses.type | String | The type of the public IP address. | 
+| Azure.VirtualNetworks.PublicIPAddresses.etag | String | The public IP address's ETag. | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState | String | The public IP address's provisioning state. | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion | String | The public IP address's version. | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress | String | The public IP address's IP address. | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.domainNameLabel | String | The public IP address's domain name label. | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAllocationMethod | String | The public IP address's allocation method. | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
+| Azure.VirtualNetworks.PublicIPAddresses.properties.resourceGuid | String | The public IP address's resource GUID. | 
+| Azure.VirtualNetworks.PublicIPAddresses.sku.name | String | The public IP address's SKU name. | 
+| Azure.VirtualNetworks.PublicIPAddresses.sku.tier | String | The public IP address's SKU tier. | 
+
+### azure-vn-security-groups-list
+
+***
+List all network security groups. Required permissions: Microsoft.Network/networkSecurityGroups/read.
+
+#### Base Command
+
+`azure-vn-security-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityGroups.name | String | The security group's name. | 
+| Azure.VirtualNetworks.SecurityGroups.id | String | The security group's ID. | 
+| Azure.VirtualNetworks.SecurityGroups.type | String | The security group's type. | 
+| Azure.VirtualNetworks.SecurityGroups.location | String | The security group's location. | 
+| Azure.VirtualNetworks.SecurityGroups.etag | String | The security group's ETag. | 
+| Azure.VirtualNetworks.SecurityGroups.tags | String | The security group's tags. | 
+| Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules | List | The default security rules. | 
+| Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces | List | The network interfaces. | 
+| Azure.VirtualNetworks.SecurityGroups.properties.provisioningState | String | The provisioning state. | 
+| Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid | String | The resource GUID. | 
+| Azure.VirtualNetworks.SecurityGroups.properties.SecurityRules | List | The security rules. | 
+
+### azure-vn-security-rule-create
+
+***
+Create a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
+
+#### Base Command
+
+`azure-vn-security-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | Resource group name. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | The name of the rule to create. | Required | 
+| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Required | 
+| action | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny. Default is Allow. | Optional | 
+| protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional | 
+| source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". Default is Any. | Optional | 
+| priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required | 
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". Default is *. | Optional | 
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional | 
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is *. | Optional | 
+| description | A description to add to the rule. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. | 
+| Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. | 
+| Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. | 
+| Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. | 
+| Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. | 
+| Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". | 
+| Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. | 
+| Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". | 
+
+### azure-vn-security-rule-delete
+
+***
+Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete
+
+#### Base Command
+
+`azure-vn-security-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | Resource group name. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | The name of the rule to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-vn-security-rule-get
+
+***
+Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
+
+#### Base Command
+
+`azure-vn-security-rule-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | Resource group name. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | The name of the rule to get. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. | 
+| Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. | 
+| Azure.VirtualNetworks.SecurityRules.location | String | The rule's location. | 
+| Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. | 
+| Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. | 
+| Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. | 
+| Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". | 
+| Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. | 
+| Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". | 
+
+### azure-vn-security-rule-update
+
+***
+Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write
+
+#### Base Command
+
+`azure-vn-security-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The name of the resource group. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | The name of the rule to be updated. | Required | 
+| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Optional | 
+| action | Whether to allow the traffic. Possible values are "Allow" and "Deny". Possible values are: Allow, Deny. | Optional | 
+| protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP. | Optional | 
+| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional | 
+| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional | 
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional | 
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
+| description | A description to add to the rule. | Optional | 
+| access | The network traffic is allowed or denied. Possible values are: Allow, Deny. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. | 
+| Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. | 
+| Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. | 
+| Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. | 
+| Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. | 
+| Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". | 
+| Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. | 
+| Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". | 
+
+### azure-vn-security-rules-list
+
+***
+Gets all security rules in a network security group. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
+
+#### Base Command
+
+`azure-vn-security-rules-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | Resource group name. | Required | 
+| network_security_group_name | The name of the network security group. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. | 
+| Azure.NSGRule.id | String | The rule's ID. | 
+| Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. | 
+| Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourcePortRange | String | For a single port, the source port or a range of ports. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationPortRange | String | For a single port, the destination port or range of ports. | 
+| Azure.VirtualNetworks.SecurityRules.properties.sourceAddressPrefix | String | The source address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix | String | The destination address. | 
+| Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". | 
+| Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. | 
+| Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". | 
+
+### azure-vn-network-interface-get
+
+***
+Gets the properties of a given network interface. Required permissions: Microsoft.Network/networkInterfaces/read.
+
+#### Base Command
+
+`azure-vn-network-interface-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group to which the network interface belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.<br/>. | Required | 
+| network_interface_name | The name of the network interface you want to view the details of. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations | Unknown | The interface public IP address ID. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress | String | The interface MAC address. | 
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The interface name. | 
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The interface location. | 
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The interface ID. | 
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. | 
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. | 
+| Azure.VirtualNetworks.NetworkInterfaces.kind | String | The type of the network interface resource, used for Azure internal classification. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | String | The list of tap configurations attached to the network interface for traffic mirroring. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out | String | Indicates whether outbound traffic on port 25 \(SMTP\) is allowed from this network interface. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | Specifies the type of network interface, such as Standard or Elastic. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The current provisioning state of the network interface \(e.g., Succeeded, Updating, Failed\). | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings | String | The DNS configuration of the network interface, including DNS servers and domain name. | 
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding | String | Indicates whether IP forwarding is enabled for the network interface. | 
+
+### azure-vn-public-ip-list
+
+***
+Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read
+
+#### Base Command
+
+`azure-vn-public-ip-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required | 
+| resource_group_name | The resource group to which the IP address belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.<br/>. | Required | 
+| address_name | The IP address name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.IPConfigurations.location | String | The Azure region where the IP configuration resource is located. | 
+| Azure.VirtualNetworks.IPConfigurations.id | String | The unique resource ID of the IP configuration. | 
+| Azure.VirtualNetworks.IPConfigurations.name | String | The name of the IP configuration. | 
+| Azure.VirtualNetworks.IPConfigurations.etag | String | A unique read-only string that changes whenever the IP configuration resource is updated. | 
+| Azure.VirtualNetworks.IPConfigurations.properties.idleTimeoutInMinutes | String | The idle timeout value in minutes for the associated public IP address. | 
+| Azure.VirtualNetworks.IPConfigurations.properties.ipAddress | String | The private IP address assigned to the network interface or resource. | 
+| Azure.VirtualNetworks.IPConfigurations.properties.provisioningState | String | The current provisioning state of the IP configuration \(e.g., Succeeded, Updating, Failed\). | 
+| Azure.VirtualNetworks.IPConfigurations.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. | 
+| Azure.VirtualNetworks.IPConfigurations.properties.publicIPAddressVersion | String | The version of the public IP address \(IPv4 or IPv6\). | 
+| Azure.VirtualNetworks.IPConfigurations.properties.publicIPAllocationMethod | String | Defines how the public IP address is allocated — Static or Dynamic. | 
+| Azure.VirtualNetworks.IPConfigurations.properties.resourceGuid | String | The unique Azure resource GUID for the IP configuration. | 
+| Azure.VirtualNetworks.IPConfigurations.properties.sku | String | The SKU of the public IP address associated with the configuration, defining its performance tier. | 
