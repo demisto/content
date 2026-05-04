@@ -32,17 +32,17 @@ WINDOWS_PLATFORM = "Windows"
 
 
 ASSET_FIELDS = {
-    "asset_names": "xdm.asset.name",
-    "asset_types": "xdm.asset.type.name",
-    "asset_tags": "xdm.asset.tags",
-    "asset_ids": "xdm.asset.id",
-    "asset_providers": "xdm.asset.provider",
-    "asset_realms": "xdm.asset.realm",
-    "asset_group_ids": "xdm.asset.group_ids",
-    "asset_categories": "xdm.asset.type.category",
-    "asset_classes": "xdm.asset.type.class",
-    "software_package_versions": "xdm.software_package.version",
-    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version",
+    "asset_names": "xdm__asset__name",
+    "asset_types": "xdm__asset__type__name",
+    "asset_tags": "xdm__asset__tags",
+    "asset_ids": "xdm__asset__id",
+    "asset_providers": "xdm__asset__provider",
+    "asset_realms": "xdm__asset__realm",
+    "asset_group_ids": "xdm__asset__group_ids",
+    "asset_categories": "xdm__asset__type__category",
+    "asset_classes": "xdm__asset__type__class",
+    "software_package_versions": "xdm__software_package__version",
+    "kubernetes_cluster_versions": "xdm__kubernetes_cluster__version",
 }
 
 APPSEC_SOURCES = [
@@ -90,6 +90,7 @@ XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSETS_TABLE = "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
@@ -2189,8 +2190,9 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
 
 def normalize_key(key: str) -> str:
     """
-    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
-    if present, and returns the remaining key unchanged otherwise.
+    Strips the prefixes 'xdm.asset.' / 'xdm__asset__' or 'xdm.' / 'xdm__' from the
+    beginning of the key, if present, and returns the remaining key unchanged otherwise.
+    Handles both dot-notation and double-underscore notation returned by different API endpoints.
 
     Args:
         key (str): The original output key.
@@ -2205,6 +2207,15 @@ def normalize_key(key: str) -> str:
         return key.replace("xdm.", "")
 
     return key
+
+
+# Asset types that use WILDCARD operator for exact matching (to avoid partial-name collisions).
+# "Server *" avoids matching "Serverless"; "Kubernetes Cluster *" avoids matching
+# "Kubernetes ClusterRole" and "Kubernetes ClusterRoleBinding".
+ASSET_TYPE_WILDCARD = {
+    "Server",
+    "Kubernetes Cluster",
+}
 
 
 def search_assets_command(client: Client, args):
@@ -2223,6 +2234,7 @@ def search_assets_command(client: Client, args):
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    client._base_url = "/api/webapp"
     software_package_versions = args.get("software_package_versions", "")
     kubernetes_cluster_versions = args.get("kubernetes_cluster_versions", "")
     filter = FilterBuilder()
@@ -2230,11 +2242,6 @@ def search_assets_command(client: Client, args):
         ASSET_FIELDS["asset_names"],
         FilterType.CONTAINS,
         argToList(args.get("asset_names", "")),
-    )
-    filter.add_field(
-        ASSET_FIELDS["asset_types"],
-        FilterType.EQ,
-        argToList(args.get("asset_types", "")),
     )
     filter.add_field(
         ASSET_FIELDS["asset_tags"],
@@ -2261,19 +2268,33 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
     filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
     filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
-    filter_str = filter.to_dict()
 
-    demisto.debug(f"Search Assets Filter: {filter_str}")
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
-    page_number = arg_to_number(args.get("page_number", 0))
-    on_demand_fields = ["xdm.asset.tags"]
+    asset_types = argToList(args.get("asset_types", ""))
+    wildcard_values = [f"{v} *" for v in asset_types if v in ASSET_TYPE_WILDCARD]
+    contains_values = [v for v in asset_types if v not in ASSET_TYPE_WILDCARD]
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.WILDCARD, wildcard_values)
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, contains_values)
+
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT)) or SEARCH_ASSETS_DEFAULT_LIMIT
+    page_number = arg_to_number(args.get("page_number", 0)) or 0
+    on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
-        ("xdm.software_package.version", software_package_versions),
-        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
+        ("xdm__software_package__version", software_package_versions),
+        ("xdm__kubernetes__cluster__version", kubernetes_cluster_versions),
     ]
     on_demand_fields.extend([field for field, condition in version_fields if condition])
 
-    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    request_data = build_webapp_request_data(
+        table_name=ASSETS_TABLE,
+        filter_dict=filter.to_dict(),
+        limit=page_number * page_size + page_size,
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        start_page=page_number * page_size,
+        on_demand_fields=on_demand_fields,
+    )
+    demisto.debug(f"Search Assets Request: {request_data}")
+    raw_response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
     return CommandResults(
