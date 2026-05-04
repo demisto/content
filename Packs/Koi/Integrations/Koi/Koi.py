@@ -1328,6 +1328,12 @@ def fetch_events_command(client: Client) -> None:
     last_run = demisto.getLastRun()
     demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
 
+    # Guard against an empty log_types selection — ThreadPoolExecutor(max_workers=0) raises ValueError.
+    if not log_types:
+        demisto.debug("[Fetch] No event types selected. Nothing to fetch. Preserving last_run as-is.")
+        demisto.setLastRun(last_run)
+        return
+
     # Fetch all log types in parallel so one slow type doesn't block the other
     results: list[FetchResult] = []
     with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
@@ -1394,9 +1400,9 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     limit_arg = arg_to_number(args.get("limit"))
 
     if page_size > Config.MAX_PAGE_SIZE:
-        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
     if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
 
     if page_arg:
         # Single-page mode: fetch the requested page
@@ -1690,8 +1696,10 @@ def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> Co
     """
     demisto.debug("[Command] koi-policy-status-update triggered")
 
-    policy_id = int(args["policy_id"])
-    enabled = argToBoolean(args["enabled"])
+    policy_id = arg_to_number(args.get("policy_id"))
+    if policy_id is None:
+        raise DemistoException("policy_id is required and must be a valid integer.")
+    enabled = argToBoolean(args.get("enabled"))
 
     response = client.update_policy_status(policy_id=policy_id, enabled=enabled)
 
@@ -1747,9 +1755,9 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
     limit_arg = arg_to_number(args.get("limit"))
 
     if page_size > Config.MAX_PAGE_SIZE:
-        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
     if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
 
     # Extract filter arguments
     filter_kwargs: dict[str, Any] = assign_params(
@@ -1966,9 +1974,9 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
     limit_arg = arg_to_number(args.get("limit"))
 
     if page_size > Config.MAX_PAGE_SIZE:
-        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
     if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
 
     filter_obj: dict[str, Any] = parse_filter_from_args(args)
     sort_by: str | None = args.get("sort_by")
@@ -2126,9 +2134,9 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
     limit_arg = arg_to_number(args.get("limit"))
 
     if page_size > Config.MAX_PAGE_SIZE:
-        raise ValueError(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
     if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise ValueError(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
 
     if page_arg:
         # Single-page mode

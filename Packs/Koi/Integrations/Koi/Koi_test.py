@@ -1721,13 +1721,13 @@ class TestClientGetPolicies:
     def test_policy_list_page_size_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
         args = {"page": "1", "page_size": "501"}
-        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="page_size .* exceeds the maximum allowed value"):
             koi_policy_list_command(mock_client, args)
 
     def test_policy_list_limit_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that limit exceeding MAX_LIMIT raises ValueError."""
         args = {"limit": "1001"}
-        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="limit .* exceeds the maximum allowed value"):
             koi_policy_list_command(mock_client, args)
 
 
@@ -2749,13 +2749,13 @@ class TestClientGetInventory:
     def test_inventory_list_page_size_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
         args = {"page": "1", "page_size": "501"}
-        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="page_size .* exceeds the maximum allowed value"):
             koi_inventory_list_command(mock_client, args)
 
     def test_inventory_list_limit_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that limit exceeding MAX_LIMIT raises ValueError."""
         args = {"limit": "1001"}
-        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="limit .* exceeds the maximum allowed value"):
             koi_inventory_list_command(mock_client, args)
 
     def test_get_inventory_no_optional_params(self, mock_client, inventory_response, mocker):
@@ -3222,13 +3222,13 @@ class TestClientSearchInventory:
     def test_inventory_search_page_size_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
         args = {"page": "1", "page_size": "501", "filter_json": '{"field": "test"}'}
-        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="page_size .* exceeds the maximum allowed value"):
             koi_inventory_search_command(mock_client, args)
 
     def test_inventory_search_limit_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that limit exceeding MAX_LIMIT raises ValueError."""
         args = {"limit": "1001", "filter_json": '{"field": "test"}'}
-        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="limit .* exceeds the maximum allowed value"):
             koi_inventory_search_command(mock_client, args)
 
     def test_search_inventory_api_error(self, mock_client, mocker):
@@ -3402,13 +3402,13 @@ class TestClientGetInventoryItemEndpoints:
     def test_inventory_item_endpoints_page_size_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that page_size exceeding MAX_PAGE_SIZE raises ValueError."""
         args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "page": "1", "page_size": "501"}
-        with pytest.raises(ValueError, match="page_size .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="page_size .* exceeds the maximum allowed value"):
             koi_inventory_item_endpoints_list_command(mock_client, args)
 
     def test_inventory_item_endpoints_limit_exceeds_max_raises_error(self, mock_client, mocker):
         """Test that limit exceeding MAX_LIMIT raises ValueError."""
         args = {"item_id": "abc123", "marketplace": "chrome_web_store", "version": "1.0.0", "limit": "1001"}
-        with pytest.raises(ValueError, match="limit .* exceeds the maximum allowed value"):
+        with pytest.raises(DemistoException, match="limit .* exceeds the maximum allowed value"):
             koi_inventory_item_endpoints_list_command(mock_client, args)
 
     def test_get_inventory_item_endpoints_api_error(self, mock_client, mocker):
