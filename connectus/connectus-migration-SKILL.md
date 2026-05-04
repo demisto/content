@@ -11,7 +11,7 @@ This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs pla
 
 The CSV has two kinds of columns (see [`connectus/Readme.md`](Readme.md) for full details):
 
-- **Data columns** (4) — identity / metadata: `Integration ID`, `Integration File Path`, `Connector ID`, `special cases`.
+- **Data columns** (3) — identity / metadata: `Integration ID`, `Integration File Path`, `Connector ID`.
 - **Workflow columns** (16, managed by the state machine):
   - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params same in other handlers`.
   - **Workflow checkpoints** (sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `shadowed command test passes`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.

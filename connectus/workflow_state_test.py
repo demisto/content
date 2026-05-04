@@ -194,15 +194,14 @@ class TestSchemaConstants:
         }
 
     def test_total_column_count_unchanged(self) -> None:
-        assert EXPECTED_COLUMN_COUNT == 20
-        assert len(ALL_COLUMNS) == 20
+        assert EXPECTED_COLUMN_COUNT == 19
+        assert len(ALL_COLUMNS) == 19
 
     def test_data_columns_unchanged(self) -> None:
         assert DATA_COLUMNS == [
             "Integration ID",
             "Integration File Path",
             "Connector ID",
-            "special cases",
         ]
 
     def test_step_by_name_lookup(self) -> None:

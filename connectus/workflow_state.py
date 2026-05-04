@@ -14,11 +14,10 @@ State is purely derived from row contents — there is no explicit
 
 CSV column groups:
 
-Identity / metadata columns (4) — NOT managed by this script:
+Identity / metadata columns (3) — NOT managed by this script:
   1. Integration ID
   2. Integration File Path
   3. Connector ID
-  4. special cases
 
 Workflow columns (16) — the unified ordered sequence (see ``STEPS``):
    1. assignee                              (data, admin)
@@ -109,7 +108,6 @@ DATA_COLUMNS = [
     "Integration ID",
     "Integration File Path",
     "Connector ID",
-    "special cases",
 ]
 
 VALID_FLAG_VALUES = {"YES", "NO", "N/A"}
@@ -772,14 +770,11 @@ def format_status(row: dict[str, str]) -> str:
 
     file_path = row.get("Integration File Path", "").strip()
     connector_id = row.get("Connector ID", "").strip()
-    special = row.get("special cases", "").strip()
     assignee = row.get("assignee", "").strip()
 
     lines.append(f"  Assignee:        {assignee if assignee else '(unassigned)'}")
     lines.append(f"  File Path:       {file_path if file_path else '(not set)'}")
     lines.append(f"  Connector ID:    {connector_id if connector_id else '(not set)'}")
-    if special:
-        lines.append(f"  Special Cases:   {special}")
     lines.append("")
 
     lines.append(f"  Workflow ([{done_count}/16]):")

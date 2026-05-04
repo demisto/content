@@ -59,7 +59,6 @@ Special case: `NoneRequired` (no auth params)
 | 1 | `Integration ID` | ID of the integration |
 | 2 | `Integration File Path` | Path to the integration's source files |
 | 3 | `Connector ID` | The ID of the Connector |
-| 4 | `special cases` | Frontend/Backend special hardcoded cases |
 
 #### JSON Column Schemas
 
@@ -106,7 +105,7 @@ State is **purely derived from row contents** — there is no separate "current 
 6. **Flag step #12 → step #13 auto-N/A.** Setting `requires auth parity test` to `NO` or `N/A` automatically writes `"N/A"` into `auth parity test passes`. Setting it to `YES` leaves #13 empty so the user must `markpass` it.
 7. **Normalization on read AND write.** Any value past the first incomplete step is auto-cleared (with a one-line stderr warning per affected row). Contradictions are not allowed to persist.
 8. **`fail` and `reset-to`.** Both verbs clear the named step AND every step after it (the named step becomes the new current step). They have identical behavior; `reset-to` is the explicit name, `fail` reads as "this step failed, redo it".
-9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`, `special cases`) are preserved.
+9. **`reset` (no step).** Clears all 16 workflow columns for the integration. Identity columns (`Integration ID`, `Integration File Path`, `Connector ID`) are preserved.
 
 ### CLI Commands
 
