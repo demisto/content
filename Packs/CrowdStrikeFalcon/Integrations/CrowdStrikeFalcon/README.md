@@ -64,6 +64,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Assessment - Read
 - Falcon Container Image - Read
 - Recon - Read and Write
+- Workflow - Read and Write
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -6763,3 +6764,149 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
   }
 }
 ```
+
+### cs-falcon-list-workflow-definitions
+
+***
+Lists workflow definitions from CrowdStrike Falcon.
+
+#### Base Command
+
+`cs-falcon-list-workflow-definitions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filter workflow definitions using a query in Falcon Query Language (FQL). For example, filter="change_log:~'updated'". For full FQL documentation, refer to the CrowdStrike Falcon documentation. For the list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| definition_id | The workflow definition ID. When provided, adds id:'&lt;value&gt;' to the filter. | Optional |
+| activity_id | Filter by activity ID. When provided, adds activity_id:'&lt;value&gt;' to the filter. | Optional |
+| name | Filter by workflow name. When provided, adds name:~'&lt;value&gt;' to the filter (partial match). | Optional |
+| description | Filter by workflow description. When provided, adds description:~'&lt;value&gt;' to the filter (partial match). | Optional |
+| offset | The offset to start retrieving records from. Default is 0. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| sort | The property to sort by in the format property.direction (e.g., name.desc, time.asc). Comma-separated for multiple sorts. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.WorkflowDefinition | Unknown | The raw API response containing workflow definition details. |
+| CrowdStrike.WorkflowDefinition.id | String | The workflow definition ID. |
+
+#### Command example
+
+`!cs-falcon-list-workflow-definitions limit=5`
+
+### cs-falcon-workflow-execute
+
+***
+Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find workflows to run. Note: This command executes on-demand workflows only.
+
+#### Base Command
+
+`cs-falcon-workflow-execute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| definition_id | The workflow definition ID to execute. Supports a comma-separated list. Either definition_id or name must be provided. | Optional |
+| name | The workflow name to execute. Either definition_id or name must be provided. | Optional |
+| execution_cid | A comma-separated list of CID(s) to execute the workflow on. | Optional |
+| key | A key used for deduplication of workflow executions. | Optional |
+| source_event_url | A URL reference to the source that triggered the workflow execution. | Optional |
+| body | The JSON body to pass to the workflow execution. Can be an empty object {}. Default is {}. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Workflow | Unknown | The raw API response containing workflow execution details. |
+| CrowdStrike.Workflow.id | String | The workflow execution ID. |
+
+#### Command example
+
+`!cs-falcon-workflow-execute definition_id="abc123" body="{}"`
+
+### cs-falcon-list-workflow-executions
+
+***
+Lists workflow executions from CrowdStrike Falcon.
+
+#### Base Command
+
+`cs-falcon-list-workflow-executions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filter workflow executions using a query in Falcon Query Language (FQL). For full FQL documentation, refer to the CrowdStrike Falcon documentation. For the list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| definition_id | Filter by workflow definition ID. When provided, adds definition_id:'&lt;value&gt;' to the filter. | Optional |
+| definition_name | Filter by workflow definition name. When provided, adds definition_name:~'&lt;value&gt;' to the filter (partial match). | Optional |
+| execution_id | Filter by execution ID. When provided, adds execution_id:'&lt;value&gt;' to the filter. | Optional |
+| offset | The offset to start retrieving records from. Default is 0. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| sort | The property to sort by in the format property.direction (e.g., created_at.desc). Comma-separated for multiple sorts. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Workflows.Executions | Unknown | The raw API response containing workflow execution details. |
+| CrowdStrike.Workflows.Executions.id | String | The workflow execution ID. |
+
+#### Command example
+
+`!cs-falcon-list-workflow-executions limit=10`
+
+### cs-falcon-list-workflow-execution-results
+
+***
+Gets detailed results for specific workflow executions.
+
+#### Base Command
+
+`cs-falcon-list-workflow-execution-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of workflow execution IDs to retrieve results for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Workflows.ExecutionResults | Unknown | The raw API response containing workflow execution result details. |
+| CrowdStrike.Workflows.ExecutionResults.id | String | The workflow execution result ID. |
+
+#### Command example
+
+`!cs-falcon-list-workflow-execution-results ids="exec_id_1,exec_id_2"`
+
+### cs-falcon-workflow-execution-action
+
+***
+Performs an action (cancel or resume) on one or more workflow executions.
+
+#### Base Command
+
+`cs-falcon-workflow-execution-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of workflow execution IDs to perform the action on. Get the workflow execution ID using cs-falcon-list-workflow-executions. | Required |
+| action_name | The action to perform on the workflow executions. Possible values are: cancel, resume. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-workflow-execution-action ids="exec_id_1" action_name="cancel"`
