@@ -5177,6 +5177,91 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
+  - arguments:
+    - description: 'Filter workflow definitions using a query in Falcon Query Language (FQL). For example, filter="change_log:~''updated''". For full FQL documentation, refer to the CrowdStrike Falcon documentation. A link to the FQL reference is available in the integration description.'
+      name: filter
+    - description: The workflow definition ID. When provided, adds id:''<value>'' to the filter.
+      name: definition_id
+    - description: Filter by activity ID. When provided, adds activity_id:''<value>'' to the filter.
+      name: activity_id
+    - description: Filter by workflow name. When provided, adds name:~''<value>'' to the filter (partial match).
+      name: name
+    - description: Filter by workflow description. When provided, adds description:~''<value>'' to the filter (partial match).
+      name: description
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: '0'
+    - description: The maximum number of records to return.
+      name: limit
+      defaultValue: '50'
+    - description: 'The property to sort by in the format property.direction (e.g., name.desc, time.asc). Comma-separated for multiple sorts.'
+      name: sort
+    description: Lists workflow definitions from CrowdStrike Falcon.
+    name: cs-falcon-list-workflow-definitions
+    outputs: []
+  - arguments:
+    - description: The workflow definition ID to execute. Supports a comma-separated list. Either definition_id or name must be provided.
+      name: definition_id
+      isArray: true
+    - description: The workflow name to execute. Either definition_id or name must be provided.
+      name: name
+    - description: A comma-separated list of CID(s) to execute the workflow on.
+      name: execution_cid
+      isArray: true
+    - description: A key used for deduplication of workflow executions.
+      name: key
+    - description: A URL reference to the source that triggered the workflow execution.
+      name: source_event_url
+    - description: The JSON body to pass to the workflow execution. Can be an empty object {}.
+      name: body
+      required: true
+      defaultValue: '{}'
+    description: 'Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find workflows to run. Note: This command executes on-demand workflows only.'
+    name: cs-falcon-workflow-execute
+    outputs: []
+  - arguments:
+    - description: 'Filter workflow executions using a query in Falcon Query Language (FQL). For full FQL documentation, refer to the CrowdStrike Falcon documentation. A link to the FQL reference is available in the integration description.'
+      name: filter
+    - description: Filter by workflow definition ID. When provided, adds definition_id:''<value>'' to the filter.
+      name: definition_id
+    - description: Filter by workflow definition name. When provided, adds definition_name:~''<value>'' to the filter (partial match).
+      name: definition_name
+    - description: Filter by execution ID. When provided, adds execution_id:''<value>'' to the filter.
+      name: execution_id
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: '0'
+    - description: The maximum number of records to return.
+      name: limit
+      defaultValue: '50'
+    - description: 'The property to sort by in the format property.direction (e.g., created_at.desc). Comma-separated for multiple sorts.'
+      name: sort
+    description: Lists workflow executions from CrowdStrike Falcon.
+    name: cs-falcon-list-workflow-executions
+    outputs: []
+  - arguments:
+    - description: A comma-separated list of workflow execution IDs to retrieve results for.
+      name: ids
+      required: true
+      isArray: true
+    description: Gets detailed results for specific workflow executions.
+    name: cs-falcon-list-workflow-execution-results
+    outputs: []
+  - arguments:
+    - description: A comma-separated list of workflow execution IDs to perform the action on. Get the workflow execution ID using cs-falcon-list-workflow-executions.
+      name: ids
+      required: true
+      isArray: true
+    - auto: PREDEFINED
+      description: The action to perform on the workflow executions.
+      name: action_name
+      required: true
+      predefined:
+      - cancel
+      - resume
+    description: Performs an action (cancel or resume) on one or more workflow executions.
+    name: cs-falcon-workflow-execution-action
+    outputs: []
   dockerimage: demisto/py3-tools:1.0.0.7436613
   isfetch: true
   isfetch:marketplacev2: false
