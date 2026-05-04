@@ -28,7 +28,7 @@ configuration:
   type: 8
   section: Connect
 description: Cribl Search allows you to query, retrieve, and manage search jobs, datasets, and saved searches across your Cribl Cloud deployment.
-display: CriblSearch
+display: Cribl Search
 name: CriblSearch
 script:
   commands:
