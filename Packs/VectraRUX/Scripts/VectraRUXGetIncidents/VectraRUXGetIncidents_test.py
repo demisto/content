@@ -56,7 +56,7 @@ class TestAddIncidentsLink:
     @patch("VectraRUXGetIncidents.demisto")
     @patch("VectraRUXGetIncidents.is_demisto_version_ge", return_value=True)
     def test_adds_incident_link_version_ge_8_4(self, mock_version, mock_demisto):
-        mock_demisto.demistoUrls.return_value = {"server": "https://xsoar.example.com"}
+        mock_demisto.demistoUrls.return_value = {"server": "https://example.com"}
         data = [{"id": "100"}]
         result = add_incidents_link(data)
         assert "incidentLink" in result[0]
@@ -66,7 +66,7 @@ class TestAddIncidentsLink:
     @patch("VectraRUXGetIncidents.demisto")
     @patch("VectraRUXGetIncidents.is_demisto_version_ge", return_value=False)
     def test_adds_incident_link_with_hash_prefix_below_8_4(self, mock_version, mock_demisto):
-        mock_demisto.demistoUrls.return_value = {"server": "https://xsoar.example.com"}
+        mock_demisto.demistoUrls.return_value = {"server": "https://example.com"}
         data = [{"id": "200"}]
         result = add_incidents_link(data)
         assert "incidentLink" in result[0]
@@ -75,7 +75,7 @@ class TestAddIncidentsLink:
     @patch("VectraRUXGetIncidents.demisto")
     @patch("VectraRUXGetIncidents.is_demisto_version_ge", return_value=True)
     def test_multiple_incidents(self, mock_version, mock_demisto):
-        mock_demisto.demistoUrls.return_value = {"server": "https://xsoar.example.com"}
+        mock_demisto.demistoUrls.return_value = {"server": "https://example.com"}
         data = [{"id": "10"}, {"id": "20"}]
         result = add_incidents_link(data)
         assert all("incidentLink" in inc for inc in result)
@@ -85,7 +85,7 @@ class TestAddIncidentsLink:
     @patch("VectraRUXGetIncidents.demisto")
     @patch("VectraRUXGetIncidents.is_demisto_version_ge", return_value=True)
     def test_returns_same_data_list(self, mock_version, mock_demisto):
-        mock_demisto.demistoUrls.return_value = {"server": "https://xsoar.example.com"}
+        mock_demisto.demistoUrls.return_value = {"server": "https://example.com"}
         data = [{"id": "xyz"}]
         result = add_incidents_link(data)
         assert result is data
@@ -93,7 +93,7 @@ class TestAddIncidentsLink:
     @patch("VectraRUXGetIncidents.demisto")
     @patch("VectraRUXGetIncidents.is_demisto_version_ge", return_value=True)
     def test_incident_link_contains_server_url(self, mock_version, mock_demisto):
-        mock_demisto.demistoUrls.return_value = {"server": "https://xsoar.example.com"}
+        mock_demisto.demistoUrls.return_value = {"server": "https://example.com"}
         data = [{"id": "42"}]
         result = add_incidents_link(data)
-        assert "xsoar.example.com" in result[0]["incidentLink"]
+        assert "example.com" in result[0]["incidentLink"]
