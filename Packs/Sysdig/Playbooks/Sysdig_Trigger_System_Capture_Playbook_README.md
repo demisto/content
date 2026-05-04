@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Sysdig Trigger System Capture](../doc_files/Sysdig_Trigger_System_Capture.png)
+![Sysdig Trigger System Capture](../doc_files/Sysdig_Trigger_System_Capture_Playbook.png)
