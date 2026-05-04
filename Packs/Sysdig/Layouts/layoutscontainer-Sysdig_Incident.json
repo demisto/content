@@ -355,7 +355,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "k8sclustername",
+                                "fieldId": "sysdigk8sclustername",
                                 "height": 26,
                                 "id": "sysdig-k8s-cluster-field",
                                 "index": 0,
@@ -364,7 +364,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "k8snamespace",
+                                "fieldId": "sysdigk8snamespace",
                                 "height": 26,
                                 "id": "sysdig-k8s-namespace-field",
                                 "index": 1,
@@ -373,7 +373,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "k8spodname",
+                                "fieldId": "sysdigk8spodname",
                                 "height": 26,
                                 "id": "sysdig-k8s-pod-field",
                                 "index": 2,
@@ -382,7 +382,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "k8snodename",
+                                "fieldId": "sysdigk8snodename",
                                 "height": 26,
                                 "id": "sysdig-k8s-node-field",
                                 "index": 3,
@@ -391,7 +391,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "k8sworkloadname",
+                                "fieldId": "sysdigk8sworkloadname",
                                 "height": 26,
                                 "id": "sysdig-k8s-workload-name-field",
                                 "index": 4,
@@ -400,7 +400,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "k8sworkloadtype",
+                                "fieldId": "sysdigk8sworkloadtype",
                                 "height": 26,
                                 "id": "sysdig-k8s-workload-type-field",
                                 "index": 5,
@@ -426,7 +426,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "awsaccountid",
+                                "fieldId": "sysdigawsaccountid",
                                 "height": 26,
                                 "id": "sysdig-aws-account-field",
                                 "index": 0,
@@ -435,7 +435,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "awsregion",
+                                "fieldId": "sysdigawsregion",
                                 "height": 26,
                                 "id": "sysdig-aws-region-field",
                                 "index": 1,
@@ -444,7 +444,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "awsinstanceid",
+                                "fieldId": "sysdigawsinstanceid",
                                 "height": 26,
                                 "id": "sysdig-aws-instance-field",
                                 "index": 2,

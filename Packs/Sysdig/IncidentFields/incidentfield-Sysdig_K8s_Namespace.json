@@ -1,10 +1,10 @@
 {
-    "id": "incident_k8snamespace",
+    "id": "incident_sysdigk8snamespace",
     "version": -1,
-    "name": "K8s Namespace",
+    "name": "Sysdig K8s Namespace",
     "ownerOnly": false,
     "description": "The Kubernetes namespace",
-    "cliName": "k8snamespace",
+    "cliName": "sysdigk8snamespace",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

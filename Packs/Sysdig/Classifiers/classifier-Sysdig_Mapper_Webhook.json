@@ -119,31 +119,31 @@
                 "Sysdig Agent Variant": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.agent\\.variant"
                 },
-                "K8s Cluster Name": {
+                "Sysdig K8s Cluster Name": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.cluster\\.name"
                 },
-                "K8s Namespace": {
+                "Sysdig K8s Namespace": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.namespace\\.name"
                 },
-                "K8s Pod Name": {
+                "Sysdig K8s Pod Name": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.pod\\.name"
                 },
-                "K8s Node Name": {
+                "Sysdig K8s Node Name": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.node\\.name"
                 },
-                "K8s Workload Name": {
+                "Sysdig K8s Workload Name": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.workload\\.name"
                 },
-                "K8s Workload Type": {
+                "Sysdig K8s Workload Type": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.kubernetes\\.workload\\.type"
                 },
-                "AWS Account ID": {
+                "Sysdig AWS Account ID": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.aws\\.accountId"
                 },
-                "AWS Region": {
+                "Sysdig AWS Region": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.aws\\.region"
                 },
-                "AWS Instance ID": {
+                "Sysdig AWS Instance ID": {
                     "simple": "entities.[0].policyEvents.[0].eventLabels.aws\\.instanceId"
                 },
                 "Sysdig Process Name": {
