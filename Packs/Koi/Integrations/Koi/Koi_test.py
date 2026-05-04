@@ -7,12 +7,10 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa
 
 from Koi import (
+    ApiPaths,
     Client,
     Config,
     LogType,
-    API_POLICIES,
-    API_ALLOWLIST,
-    API_BLOCKLIST,
     VALID_AUDIT_TYPES,
     VALID_MARKETPLACES,
     COMMAND_MAP,
@@ -40,8 +38,6 @@ from Koi import (
     parse_filter_from_args,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
-    API_INVENTORY,
-    API_INVENTORY_SEARCH,
     get_formatted_utc_time,
     parse_date_or_use_current,
     main,
@@ -1716,7 +1712,7 @@ class TestClientGetPolicies:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "GET"
-        assert call_kwargs["url_suffix"] == API_POLICIES
+        assert call_kwargs["url_suffix"] == ApiPaths.POLICIES
         assert call_kwargs["params"]["page"] == 2
         assert call_kwargs["params"]["page_size"] == 50
         assert "limit" not in call_kwargs["params"]
@@ -1803,7 +1799,7 @@ class TestClientGetAllowlist:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "GET"
-        assert call_kwargs["url_suffix"] == API_ALLOWLIST
+        assert call_kwargs["url_suffix"] == ApiPaths.ALLOWLIST
         assert "params" not in call_kwargs
         assert result == allowlist_response
 
@@ -1895,7 +1891,7 @@ class TestClientRemoveAllowlistItems:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "DELETE"
-        assert call_kwargs["url_suffix"] == API_ALLOWLIST
+        assert call_kwargs["url_suffix"] == ApiPaths.ALLOWLIST
         assert call_kwargs["json_data"] == {"items": items}
         assert call_kwargs["resp_type"] == "response"
         assert call_kwargs["ok_codes"] == (204,)
@@ -2043,7 +2039,7 @@ class TestClientAddAllowlistItems:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "POST"
-        assert call_kwargs["url_suffix"] == API_ALLOWLIST
+        assert call_kwargs["url_suffix"] == ApiPaths.ALLOWLIST
         assert call_kwargs["json_data"] == {"items": items}
         assert call_kwargs["resp_type"] == "response"
         assert call_kwargs["ok_codes"] == (204,)
@@ -2144,7 +2140,7 @@ class TestClientGetBlocklist:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "GET"
-        assert call_kwargs["url_suffix"] == API_BLOCKLIST
+        assert call_kwargs["url_suffix"] == ApiPaths.BLOCKLIST
         assert "params" not in call_kwargs
         assert result == blocklist_response
 
@@ -2236,7 +2232,7 @@ class TestClientRemoveBlocklistItems:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "DELETE"
-        assert call_kwargs["url_suffix"] == API_BLOCKLIST
+        assert call_kwargs["url_suffix"] == ApiPaths.BLOCKLIST
         assert call_kwargs["json_data"] == {"items": items}
         assert call_kwargs["resp_type"] == "response"
         assert call_kwargs["ok_codes"] == (204,)
@@ -2330,7 +2326,7 @@ class TestClientAddBlocklistItems:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "POST"
-        assert call_kwargs["url_suffix"] == API_BLOCKLIST
+        assert call_kwargs["url_suffix"] == ApiPaths.BLOCKLIST
         assert call_kwargs["json_data"] == {"items": items}
         assert call_kwargs["resp_type"] == "response"
         assert call_kwargs["ok_codes"] == (204,)
@@ -2510,7 +2506,7 @@ class TestClientUpdatePolicyStatus:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "PUT"
-        assert call_kwargs["url_suffix"] == f"{API_POLICIES}/42"
+        assert call_kwargs["url_suffix"] == ApiPaths.policy(42)
         assert call_kwargs["json_data"] == {"enabled": enabled}
         assert result == policy_update_response
 
@@ -2743,7 +2739,7 @@ class TestClientGetInventory:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "GET"
-        assert call_kwargs["url_suffix"] == API_INVENTORY
+        assert call_kwargs["url_suffix"] == ApiPaths.INVENTORY
         assert call_kwargs["params"]["page"] == 2
         assert call_kwargs["params"]["page_size"] == 50
         assert call_kwargs["params"]["marketplace"] == "vscode"
@@ -2927,7 +2923,7 @@ class TestClientGetInventoryItem:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "GET"
-        assert call_kwargs["url_suffix"] == f"{API_INVENTORY}/abc123"
+        assert call_kwargs["url_suffix"] == ApiPaths.inventory_item("abc123")
         assert call_kwargs["params"]["marketplace"] == "chrome_web_store"
         assert call_kwargs["params"]["version"] == "2.0.0"
         assert result == inventory_item_response
@@ -3210,7 +3206,7 @@ class TestClientSearchInventory:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "POST"
-        assert call_kwargs["url_suffix"] == API_INVENTORY_SEARCH
+        assert call_kwargs["url_suffix"] == ApiPaths.INVENTORY_SEARCH
         body = call_kwargs["json_data"]
         assert body["page"] == 1
         assert body["page_size"] == 100
@@ -3396,7 +3392,7 @@ class TestClientGetInventoryItemEndpoints:
 
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["method"] == "GET"
-        assert call_kwargs["url_suffix"] == f"{API_INVENTORY}/abc123/endpoints"
+        assert call_kwargs["url_suffix"] == ApiPaths.inventory_item_endpoints("abc123")
         assert call_kwargs["params"]["marketplace"] == "chrome_web_store"
         assert call_kwargs["params"]["version"] == "1.0.0"
         assert call_kwargs["params"]["page"] == 1

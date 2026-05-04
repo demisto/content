@@ -26,15 +26,38 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # =================================
 INTEGRATION_NAME = "KOI"
 
-# ---------- API Endpoint Paths ----------
-API_BASE = "/api/external/v2"
-API_ALERTS = f"{API_BASE}/alerts"
-API_AUDIT_LOGS = f"{API_BASE}/audit-logs"
-API_POLICIES = f"{API_BASE}/policies"
-API_ALLOWLIST = f"{API_BASE}/policies/allowlist"
-API_BLOCKLIST = f"{API_BASE}/policies/blocklist"
-API_INVENTORY = f"{API_BASE}/inventory"
-API_INVENTORY_SEARCH = f"{API_BASE}/inventory/search"
+
+class ApiPaths:
+    """Centralized KOI API endpoint paths.
+
+    All paths are relative to the KOI base URL configured in integration parameters.
+    Use the classmethods for parameterized routes (e.g., a specific policy or item)
+    so URL construction lives in exactly one place.
+    """
+
+    BASE = "/api/external/v2"
+    ALERTS = f"{BASE}/alerts"
+    AUDIT_LOGS = f"{BASE}/audit-logs"
+    POLICIES = f"{BASE}/policies"
+    ALLOWLIST = f"{BASE}/policies/allowlist"
+    BLOCKLIST = f"{BASE}/policies/blocklist"
+    INVENTORY = f"{BASE}/inventory"
+    INVENTORY_SEARCH = f"{BASE}/inventory/search"
+
+    @classmethod
+    def policy(cls, policy_id: int) -> str:
+        """Return the path for a specific policy by ID."""
+        return f"{cls.POLICIES}/{policy_id}"
+
+    @classmethod
+    def inventory_item(cls, item_id: str) -> str:
+        """Return the path for a specific inventory item by ID."""
+        return f"{cls.INVENTORY}/{item_id}"
+
+    @classmethod
+    def inventory_item_endpoints(cls, item_id: str) -> str:
+        """Return the path for the endpoints of a specific inventory item."""
+        return f"{cls.INVENTORY}/{item_id}/endpoints"
 
 
 class Config:
@@ -70,8 +93,8 @@ class Config:
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    ALERTS = ("alerts", "Alerts", API_ALERTS)
-    AUDIT = ("audit", "Audit", API_AUDIT_LOGS)
+    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS)
+    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS)
 
     def __init__(self, type_string: str, title: str, api_endpoint: str):
         self.type_string = type_string
@@ -607,7 +630,7 @@ class Client(ContentClient):
 
         response = self._http_request(
             method="GET",
-            url_suffix=API_POLICIES,
+            url_suffix=ApiPaths.POLICIES,
             params=params,
         )
 
@@ -624,7 +647,7 @@ class Client(ContentClient):
         Returns:
             The full updated policy object from the API.
         """
-        url_suffix = f"{API_POLICIES}/{policy_id}"
+        url_suffix = ApiPaths.policy(policy_id)
         body: dict[str, Any] = {"enabled": enabled}
 
         demisto.debug(f"[API] Updating policy {policy_id} status to enabled={enabled}")
@@ -648,7 +671,7 @@ class Client(ContentClient):
 
         response = self._http_request(
             method="GET",
-            url_suffix=API_ALLOWLIST,
+            url_suffix=ApiPaths.ALLOWLIST,
         )
 
         items = response.get("items", [])
@@ -665,7 +688,7 @@ class Client(ContentClient):
 
         response = self._http_request(
             method="GET",
-            url_suffix=API_BLOCKLIST,
+            url_suffix=ApiPaths.BLOCKLIST,
         )
 
         items = response.get("items", [])
@@ -687,7 +710,7 @@ class Client(ContentClient):
 
         self._http_request(
             method="DELETE",
-            url_suffix=API_ALLOWLIST,
+            url_suffix=ApiPaths.ALLOWLIST,
             json_data=body,
             resp_type="response",
             ok_codes=(204,),
@@ -710,7 +733,7 @@ class Client(ContentClient):
 
         self._http_request(
             method="POST",
-            url_suffix=API_ALLOWLIST,
+            url_suffix=ApiPaths.ALLOWLIST,
             json_data=body,
             resp_type="response",
             ok_codes=(204,),
@@ -733,7 +756,7 @@ class Client(ContentClient):
 
         self._http_request(
             method="DELETE",
-            url_suffix=API_BLOCKLIST,
+            url_suffix=ApiPaths.BLOCKLIST,
             json_data=body,
             resp_type="response",
             ok_codes=(204,),
@@ -756,7 +779,7 @@ class Client(ContentClient):
 
         self._http_request(
             method="POST",
-            url_suffix=API_BLOCKLIST,
+            url_suffix=ApiPaths.BLOCKLIST,
             json_data=body,
             resp_type="response",
             ok_codes=(204,),
@@ -841,7 +864,7 @@ class Client(ContentClient):
 
         response = self._http_request(
             method="GET",
-            url_suffix=API_INVENTORY,
+            url_suffix=ApiPaths.INVENTORY,
             params=params,
         )
 
@@ -869,7 +892,7 @@ class Client(ContentClient):
             "version": version,
         }
 
-        url_suffix = f"{API_INVENTORY}/{item_id}"
+        url_suffix = ApiPaths.inventory_item(item_id)
         demisto.debug(f"[API] Fetching inventory item {item_id} | Params: {params}")
 
         response = self._http_request(
@@ -908,7 +931,7 @@ class Client(ContentClient):
             "page_size": page_size,
         }
 
-        url_suffix = f"{API_INVENTORY}/{item_id}/endpoints"
+        url_suffix = ApiPaths.inventory_item_endpoints(item_id)
         demisto.debug(f"[API] Fetching endpoints for item {item_id} | Params: {params}")
 
         response = self._http_request(
@@ -955,7 +978,7 @@ class Client(ContentClient):
 
         response = self._http_request(
             method="POST",
-            url_suffix=API_INVENTORY_SEARCH,
+            url_suffix=ApiPaths.INVENTORY_SEARCH,
             json_data=body,
         )
 
