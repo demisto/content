@@ -65,6 +65,8 @@ script:
     - name: alert_id
       required: true
       description: The ID of the alert for which to initiate the take down request.
+    outputs:
+    
   - deprecated: false
     description: Get take down list.
     execution: false
@@ -81,6 +83,62 @@ script:
       required: false
       defaultValue: '0'
       description: The page number to retrieve. If not provided, the default value is 0.
+    outputs:
+    - contextPath: DeCYFIR.Takedown.Category
+      description: Takedown category.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.SubCategory
+      description: Takedown sub-category.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.Domain
+      description: Associated domain.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.Status
+      description: Current takedown request status.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.TicketName
+      description: Takedown ticket identifier.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.TicketDetails
+      description: Takedown request details.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.CreatedBy
+      description: User who created the request.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.CreatedDate
+      description: Request creation date.
+      type: Date
+
+    - contextPath: DeCYFIR.Takedown.ModifiedBy
+      description: User who last modified the request.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.ModifiedDate
+      description: Last modification date.
+      type: Date
+
+    - contextPath: DeCYFIR.Takedown.OnHoldByClient
+      description: Whether the request is on hold by the client.
+      type: Boolean
+
+    - contextPath: DeCYFIR.Takedown.OnHoldByExternal
+      description: Whether the request is on hold externally.
+      type: Boolean
+
+    - contextPath: DeCYFIR.Takedown.URLStatus
+      description: URL takedown status.
+      type: String
+
+    - contextPath: DeCYFIR.Takedown.URLStatusUpdatedBy
+      description: User who updated the URL status.
+      type: String
   dockerimage: demisto/python3:3.12.13.8428455
   feed: false
   isfetch: true

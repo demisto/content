@@ -265,7 +265,7 @@ class Client(BaseClient):
 
             return ti_data_obj
         except Exception as e:
-            demisto.error(f"Error occurred while building the threat intelligence data object.  Error: {e}\n{traceback.format_exc()}")
+            demisto.error(f"Error: {e}\n {traceback.format_exc()}")
             return {}
 
     def build_ta_relationships_data(
@@ -500,7 +500,7 @@ class Client(BaseClient):
 
                 return_data.append(ioc_data)
             except Exception as e:
-                demisto.error(f"Error occurred while processing the IOC: {ioc.get('id', 'Unknown ID')}.  Error: {e}\n{traceback.format_exc()}")
+                demisto.error(f"Error : {e}\n {traceback.format_exc()}")
 
         return return_data
 
@@ -536,7 +536,7 @@ class Client(BaseClient):
             return return_data
 
         except Exception as e:
-            err = f"Failed to fetch the feed data. DeCYFIR error: {e}.  Error: {e}\nTraceback: {traceback.format_exc()}"
+            err = f"Error: {e}\nTraceback: {traceback.format_exc()}"
             demisto.error(err)
 
         return return_data
@@ -546,7 +546,7 @@ class Client(BaseClient):
             api_path = API_IOC_By_TYPE_PATH_SUFFIX.format(decyfir_api_key, indicator_type)
             return self.get_decyfir_api_ti_data(api_path)
         except Exception as e:
-            demisto.error(f"Error occurred while fetching the indicator details for ({indicator_type}). Error: {e}\nTraceback: {traceback.format_exc()}")
+            demisto.error(f"Error: {e}\nTraceback: {traceback.format_exc()}")
             return []
 
 
