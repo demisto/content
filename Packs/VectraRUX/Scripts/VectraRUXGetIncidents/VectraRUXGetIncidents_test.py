@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch
+from urllib.parse import urlparse
 from VectraRUXGetIncidents import (
     check_if_found_incident,
     add_incidents_link,
@@ -96,4 +97,5 @@ class TestAddIncidentsLink:
         mock_demisto.demistoUrls.return_value = {"server": "https://example.com"}
         data = [{"id": "42"}]
         result = add_incidents_link(data)
-        assert "example.com" in result[0]["incidentLink"]
+        parsed_url = urlparse(result[0]["incidentLink"])
+        assert parsed_url.netloc == "example.com"
