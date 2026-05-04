@@ -18,10 +18,12 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedTypes": ["Sysdig Runtime Event"],
+    "associatedTypes": [
+        "Sysdig Runtime Event"
+    ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
