@@ -1027,72 +1027,62 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
 
         if associated_groups:
             return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Associated Groups for indicator: {}".format(args.get("indicator", "")),
                         associated_groups.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=associated_groups.get("data", []),
+                )
             )
 
         if associated_indicators:
             return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Associated Indicators for indicator: {}".format(args.get("indicator", "")),
                         associated_indicators.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=associated_indicators.get("data", []),
+                )
             )
 
         if include_tags:
             return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Tags for indicator: {}".format(args.get("indicator", "")),
                         include_tags.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=include_tags.get("data", []),
+                )
             )
 
         if include_attributes:
             return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Attributes for indicator: {}".format(args.get("indicator", "")),
                         include_attributes.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=include_attributes.get("data", []),
+                )
             )
 
         if include_observations:
             return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Observations for indicator: {}".format(args.get("id", "")),
                         include_observations,
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=include_observations,
+                )
             )
 
 
