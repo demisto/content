@@ -1,10 +1,10 @@
 import base64
 import re
 import threading
+import traceback
 from collections import deque
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
-from traceback import format_exc
 from urllib.parse import urlparse
 
 import uvicorn
@@ -140,7 +140,7 @@ class SNSCertificateManager:
             except DemistoException:
                 raise
             except Exception as e:
-                demisto.error(f"Exception validating sign cert url: {e}\n{format_exc()}")
+                demisto.error(f"Exception validating sign cert url: {e}\n{traceback.format_exc()}")
                 if "502" in str(e):
                     demisto.error(f'SigningCertURL: {sns_payload["SigningCertURL"]}')
                 elif "Verify that the server URL parameter" in str(e):
@@ -249,7 +249,7 @@ def store_samples(incident):  # pragma: no cover
         integration_context["sample_events"] = list(sample_events)
         set_to_integration_context_with_retries(integration_context)
     except Exception as e:
-        demisto.error(f"Failed storing sample events - {e}\n{format_exc()}")
+        demisto.error(f"Failed storing sample events - {e}\n{traceback.format_exc()}")
 
 
 def _extract_message_id(incident: dict) -> str:
@@ -295,7 +295,8 @@ def create_incident_background(incident: dict) -> None:
                 demisto.error(f"SNS msg {message_id}: createIncidents returned empty (attempt {attempt}/{RETRY_ATTEMPTS})")
             except Exception as e:
                 demisto.error(
-                    f"SNS msg {message_id}: createIncidents raised (attempt {attempt}/{RETRY_ATTEMPTS}): {e}\n{format_exc()}"
+                    f"SNS msg {message_id}: createIncidents raised (attempt {attempt}/{RETRY_ATTEMPTS}): "
+                    f"{e}\n{traceback.format_exc()}"
                 )
             # Skip the backoff sleep on the final failed attempt — there is no
             # next retry, so sleeping here only delays releasing the semaphore.
@@ -335,7 +336,7 @@ async def handle_post(
     try:
         is_valid_credentials, header_name = is_valid_integration_credentials(credentials, request_headers, token)
     except Exception as e:
-        demisto.error(f"Error handling auth failure: {e}\n{format_exc()}")
+        demisto.error(f"Error handling auth failure: {e}\n{traceback.format_exc()}")
     if not is_valid_credentials:
         return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Authorization failed.")
 
@@ -347,7 +348,7 @@ async def handle_post(
         payload = await request.json()
         raw_json = json.dumps(payload)
     except Exception as e:
-        demisto.error(f"Error in request parsing: {e}\n{format_exc()}")
+        demisto.error(f"Error in request parsing: {e}\n{traceback.format_exc()}")
         return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Failed parsing request.")
     if not sns_cert_manager.is_valid_sns_message(payload):
         return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Validation of SNS message failed.")
@@ -358,7 +359,7 @@ async def handle_post(
         try:
             response = handle_subscription_confirmation(subscribe_url=subscribe_url)
         except Exception as e:
-            demisto.error(f"Failed handling SubscriptionConfirmation: {e}\n{format_exc()}")
+            demisto.error(f"Failed handling SubscriptionConfirmation: {e}\n{traceback.format_exc()}")
             return "Failed handling SubscriptionConfirmation"
         demisto.debug(f"Response from subscribe url: {response}")
         return response
@@ -466,14 +467,14 @@ def main():  # pragma: no cover
                         **server_config.ssl_args,
                     )
                 except Exception as e:
-                    demisto.error(f"An error occurred in the long running loop: {e!s} - {format_exc()}")
+                    demisto.error(f"An error occurred in the long running loop: {e!s} - {traceback.format_exc()}")
                     demisto.updateModuleHealth(f"An error occurred: {e!s}")
                 finally:
                     unlink_certificate(server_config.certificate_path, server_config.private_key_path)
         else:
             raise NotImplementedError(f"Command {demisto.command()} is not implemented.")
     except Exception as e:
-        demisto.error(format_exc())
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {demisto.command()} command. Error: {e}")
 
 
