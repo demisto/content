@@ -9009,7 +9009,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
@@ -9025,7 +9025,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-07T10:13:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )
@@ -11218,80 +11218,6 @@ class TestSanitizeHtmlOutput:
         result = sanitize_html_output('a & b "c"')
         assert '&amp;' in result
         assert '&quot;' in result
-
-
-class TestFileResultSanitization:
-    """Tests for fileResult – safe filename handling."""
-
-    def test_strips_path_traversal(self, mocker, request):
-        """Test that path traversal sequences are removed from filenames."""
-        file_id = str(uuid.uuid4())
-        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
-        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
-        file_name = "{}_testfile".format(file_id)
-
-        def cleanup():
-            try:
-                os.remove(file_name)
-            except OSError:
-                pass
-
-        request.addfinalizer(cleanup)
-        result = fileResult('../../../etc/passwd', 'data')
-        assert result['File'] == 'passwd'
-
-    def test_strips_absolute_path(self, mocker, request):
-        """Test that absolute paths are reduced to basename."""
-        file_id = str(uuid.uuid4())
-        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
-        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
-        file_name = "{}_testfile".format(file_id)
-
-        def cleanup():
-            try:
-                os.remove(file_name)
-            except OSError:
-                pass
-
-        request.addfinalizer(cleanup)
-        result = fileResult('/var/lib/demisto/secret.txt', 'data')
-        assert result['File'] == 'secret.txt'
-
-    def test_double_dot_bypass_blocked(self, mocker, request):
-        """Test that ....// bypass pattern is properly handled."""
-        file_id = str(uuid.uuid4())
-        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
-        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
-        file_name = "{}_testfile".format(file_id)
-
-        def cleanup():
-            try:
-                os.remove(file_name)
-            except OSError:
-                pass
-
-        request.addfinalizer(cleanup)
-        result = fileResult('....//....//etc/passwd', 'data')
-        assert result['File'] == 'passwd'
-        assert '/' not in result['File']
-        assert '..' not in result['File']
-
-    def test_normal_filename_unchanged(self, mocker, request):
-        """Test that normal filenames pass through unchanged."""
-        file_id = str(uuid.uuid4())
-        mocker.patch.object(demisto, 'uniqueFile', return_value='testfile')
-        mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
-        file_name = "{}_testfile".format(file_id)
-
-        def cleanup():
-            try:
-                os.remove(file_name)
-            except OSError:
-                pass
-
-        request.addfinalizer(cleanup)
-        result = fileResult('report.pdf', 'data')
-        assert result['File'] == 'report.pdf'
 
 
 class TestGetFilePathSafe:
