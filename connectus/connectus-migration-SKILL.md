@@ -164,14 +164,16 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 
 #### Procedure (do every step in order)
 
-1. ☐ Locate the integration files (YML + Python)
-2. ☐ Extract every auth-related param from the YML `configuration` section
-3. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime
-4. ☐ Cross-reference each YML param with where/how it is consumed in code
-5. ☐ Build the `Auth Details` JSON (`auth_types`, `config`, `params`) per [`column-schemas.md`](column-schemas.md)
-6. ☐ Sanity-check against the [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
-7. ☐ Apply via `set-auth` (this validates the JSON schema and resets the workflow)
-8. ☐ Re-run `status` to confirm the value was stored as intended
+1. ☐ Locate the integration files (YML + Python + `_description.md` + `README.md`) — see [1.1](#11-locate-integration-files) and [1.2](#12-researching-auth-details--the-four-sources-of-truth)
+2. ☐ Walk the four sources of truth in order — see [1.2](#12-researching-auth-details--the-four-sources-of-truth)
+3. ☐ Extract every auth-related param from the YML `configuration` section — see [1.3](#13-yml-analysis-procedure)
+4. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime — see [1.4](#14-python-code-analysis--specific-patterns)
+5. ☐ Cross-reference each YML param with where/how it is consumed in code — see [1.5](#15-cross-reference-yml-params-with-code-usage)
+6. ☐ Classify each connection via the [decision table](#121-classification-decision-table); build each entry per [1.2.2](#122-building-each-auth_types-entry); compose `config` per [1.2.3](#123-building-the-config-expression)
+7. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
+8. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
+9. ☐ Apply via `set-auth` (this validates the JSON schema and resets the workflow) — see [1.10](#110-applying-corrections)
+10. ☐ Re-run `status` to confirm the value was stored as intended
 
 The current CSV value, if any, is informational only — show it to the user for context but derive the new value entirely from the source code:
 
@@ -489,15 +491,14 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
 
 #### 1.8 Auth Details JSON Validation
 
-After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md):
+After determining the correct auth types, validate the Auth Details JSON against the rules in [`connectus/column-schemas.md`](column-schemas.md:16). The same rules are enforced at runtime by [`validate_auth_detail()`](workflow_state.py:521):
 
-1. Must be valid JSON with keys: `auth_types`, `config`, `params`
-2. `auth_types` entries sorted by `(type, name)`
-3. Every param in `params` must appear in `auth_types` (by name)
-4. Every type in `config` must appear in at least one param's `type` field
-5. If `config` is `NoneRequired`, then `auth_types` must be `[]` and `params` must be `{}`
-6. `xsoar_type` values must match the YML param types (0=text, 4=encrypted, 8=bool, 9=credentials, 14=cert key, 15=select)
-7. `required` values must match the YML param `required` field
+1. Must be valid JSON with top-level keys `auth_types` (array) and `config` (string).
+2. Each `auth_types[]` entry has a `type` (one of [`VALID_AUTH_TYPES`](workflow_state.py:118)), a unique `name`, and a non-empty `xsoar_params` array (unless the entry is `NoneRequired`-shaped).
+3. `auth_types[]` entries are sorted by `(type, name)` ascending.
+4. `config` is either the literal `NoneRequired`, or one or more clauses joined with ` + `, each clause being `REQUIRED(...)`, `OPTIONAL(...)`, or `CHOICE(...)`.
+5. Every operand name appearing inside `config`'s parens MUST exist as some `auth_types[].name` (the most common cause of `set-auth` rejection).
+6. If `config` is `NoneRequired`, then `auth_types` MUST be `[]`.
 
 ---
 
@@ -535,15 +536,15 @@ python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details J
 
 This command:
 
-- Validates the Auth Details JSON against the schema (`auth_types`, `config`, `params`)
-- Sets the `Auth Details` workflow data column in the CSV
-- Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag
-- Rejects invalid JSON with specific error messages
+- Validates the Auth Details JSON against the schema (`auth_types` + `config`) — see [`validate_auth_detail()`](workflow_state.py:521).
+- Sets the `Auth Details` workflow data column in the CSV.
+- Automatically **resets the workflow** to the first checkpoint (`generated manifest`) and clears all checkpoints + the auth-parity flag.
+- Rejects invalid JSON with specific error messages — including unsorted `auth_types[]`, unknown names referenced from `config`, and malformed `config` expressions.
 
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key"}],"config":"REQUIRED(APIKey)","params":{"api_key":{"type":"APIKey","xsoar_type":4,"required":true}}}'
+python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_params":["api_key"]}],"config":"REQUIRED(api_key)"}'
 ```
 
 After setting, verify it looks correct:
@@ -553,6 +554,22 @@ python3 connectus/workflow_state.py status "<Integration ID>"
 ```
 
 Note: there is **no `markpass "auth params set"`** anymore — the verification IS the `set-auth` call. The first markpass-able checkpoint is `generated manifest`.
+
+---
+
+#### 1.11 Pre-flight self-check
+
+Before invoking `set-auth`, walk this checklist mentally. The validator will catch most of these but it's faster (and clearer) to catch them locally.
+
+- [ ] Every YML param the source code reads as an auth secret is covered by some `auth_types[].xsoar_params`.
+- [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is in any `xsoar_params`.
+- [ ] Every credentials-typed (YML type `9`) auth param appears as **both** `<id>.identifier` AND `<id>.password` (not just one).
+- [ ] Every name referenced in `config` exists as some `auth_types[].name`.
+- [ ] `auth_types[]` entries are sorted by `(type, name)` ascending.
+- [ ] If there is genuinely no auth, `config` is exactly `NoneRequired` AND `auth_types` is `[]`.
+- [ ] Connection metadata (URL, instance host, region) is intentionally NOT in `auth_types` — those are configured separately at the integration level, not as auth secrets.
+
+---
 
 #### Auth Type Reference
 
