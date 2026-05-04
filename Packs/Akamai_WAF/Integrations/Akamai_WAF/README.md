@@ -423,7 +423,7 @@ Adds one or more entries to a client list.
 
 There is no context output for this command.
 
-#### Command Example
+#### Command example
 
 ```!akamai-add-client-list-entry list_id="1234_MYIPLIST" value="1.2.3.4/32,1.2.3.5/32"```
 
