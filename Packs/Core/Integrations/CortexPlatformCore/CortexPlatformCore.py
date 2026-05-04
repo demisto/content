@@ -1707,13 +1707,14 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def extract_ids(case_extra_data: dict) -> list:
+def extract_ids(case_extra_data: dict, data_key: str = "issues", field_name: str = "issue_id") -> list:
     """
     Extract a list of IDs from a command result.
 
     Args:
-        command_res: The result of a command. It can be either a dictionary or a list.
-        field_name: The name of the field that contains the ID.
+        case_extra_data: The extra data dictionary containing the nested data.
+        data_key: The top-level key containing the data list (default: "issues").
+        field_name: The name of the field that contains the ID (default: "issue_id").
 
     Returns:
         A list of the IDs extracted from the command result.
@@ -1721,12 +1722,11 @@ def extract_ids(case_extra_data: dict) -> list:
     if not case_extra_data:
         return []
 
-    field_name = "issue_id"
-    issues = case_extra_data.get("issues", {})
-    issues_data = issues.get("data", {}) if issues else {}
-    issue_ids = [issue.get(field_name) for issue in issues_data if isinstance(issue, dict) and field_name in issue]
-    demisto.debug(f"Extracted issue ids: {issue_ids}")
-    return issue_ids
+    container = case_extra_data.get(data_key, {})
+    data = container.get("data", {}) if container else {}
+    ids = [str(item.get(field_name)) for item in data if isinstance(item, dict) and field_name in item]
+    demisto.debug(f"Extracted {field_name}s: {ids}")
+    return ids
 
 
 def parse_single_case_extra_data(case_incident_data: dict) -> dict:
@@ -1746,10 +1746,7 @@ def parse_single_case_extra_data(case_incident_data: dict) -> dict:
         dict: The CaseExtraData dict with issue_ids, extra incident fields, and network/file artifacts.
     """
     incident_data = case_incident_data.get("incident", {})
-    alerts = case_incident_data.get("alerts", {})
-    alerts_data = alerts.get("data", [])
-
-    issue_ids = [str(alert.get("alert_id")) for alert in alerts_data if alert.get("alert_id") is not None]
+    issue_ids = extract_ids(case_incident_data, data_key="alerts", field_name="alert_id")
 
     return {
         "issue_ids": issue_ids,
