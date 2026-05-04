@@ -2,7 +2,7 @@ args:
 - defaultValue: type
   description: The name of the incident field where its type is stored. Default is "type". Change this argument only in case you use a custom field for specifying incident type.
   name: incidentTypeFieldName
-- description: A comma-separated list of incident types by which to filter. The default is the current incident type. Specify "None" to ignore incident type from deduplication logic.
+- description: A  comma-separated list of incident types by which to filter. The default is the current incident type. Specify "None" to ignore incident type from deduplication logic.
   name: incidentTypes
 - defaultValue: 30 days ago
   description: The start date by which to search for duplicated existing incidents. Date format is the same as in the incidents query page. For example, "3 days ago", "2019-01-01T00:00:00 +0200").
