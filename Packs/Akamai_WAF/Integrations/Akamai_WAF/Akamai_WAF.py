@@ -523,8 +523,6 @@ class Client(BaseClient):
         tags_list = argToList(tags)
         exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
         values = argToList(value)
-        if not values:
-            raise ValueError("At least one value must be provided.")
         append = [
             {
                 "value": v,
