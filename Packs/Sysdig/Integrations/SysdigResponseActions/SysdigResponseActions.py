@@ -255,7 +255,8 @@ def create_system_capture_command(client: Client, args: dict[str, Any]) -> Comma
     Trigger a sysdig system capture
     """
     data = _build_capture_payload(args)
-    result: dict = client.call_sysdig_api(method="POST", url_suffix="/api/v1/captures", json_data=data)  # type: ignore[assignment]
+    result: dict = client.call_sysdig_api(method="POST", url_suffix="/api/v1/captures",
+                                          json_data=data)  # type: ignore[assignment]
     readable_output = (
         f"## Capture: {result.get('capture', {}).get('name')}\n"
         f"- **Status:** {result.get('capture', {}).get('status')}\n"

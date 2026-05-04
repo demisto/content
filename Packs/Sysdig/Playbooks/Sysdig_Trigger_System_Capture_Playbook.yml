@@ -1,8 +1,7 @@
 id: Sysdig Trigger System Capture
 version: -1
 name: Sysdig Trigger System Capture
-description: Enriches Sysdig runtime event incidents with agent information via API
-  and optionally triggers a system capture on the affected host.
+description: Enriches Sysdig runtime event incidents with agent information via API and optionally triggers a system capture on the affected host.
 tags:
 - Runtime
 - Sysdig
@@ -46,7 +45,8 @@ tasks:
       id: 358fe5fe-ccab-40e2-8001-7c6c05544a69
       version: -1
       name: Should we trigger a system capture?
-      description: Manual decision to trigger or skip the system capture.
+      description: |-
+        Manual decision to trigger or skip the system capture.
       type: condition
       iscommand: false
       brand: ""
@@ -89,8 +89,7 @@ tasks:
       id: c801bdb3-ada0-4277-8558-51883aac8111
       version: -1
       name: Create system capture
-      description: Command to trigger a system capture, it will record all system
-        calls at the host level.
+      description: Command to trigger a system capture, it will record all system calls at the host level.
       script: SysdigResponseActions|||create-system-capture
       type: regular
       iscommand: true

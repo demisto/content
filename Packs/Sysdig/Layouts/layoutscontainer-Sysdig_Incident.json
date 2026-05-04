@@ -80,9 +80,16 @@
                         "y": 0
                     },
                     {
-                        "displayType": "CARD",
                         "h": 2,
                         "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2,
+                        "displayType": "CARD",
                         "items": [
                             {
                                 "endCol": 1,
@@ -129,14 +136,7 @@
                                 "sectionItemType": "field",
                                 "startCol": 1
                             }
-                        ],
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Timeline Information",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
+                        ]
                     },
                     {
                         "h": 2,
@@ -151,11 +151,18 @@
                         "y": 0
                     },
                     {
-                        "description": "Sysdig event identification and rule details",
                         "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
                         "i": "caseinfoid-sysdig-event-info",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Sysdig Event Info",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0,
+                        "description": "Sysdig event identification and rule details",
+                        "hideName": false,
                         "items": [
                             {
                                 "endCol": 2,
@@ -230,21 +237,21 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Sysdig Event Info",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 0
+                        "minH": 1
                     },
                     {
-                        "description": "Container and host identification",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-sysdig-container-host",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Container \u0026 Host",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2,
+                        "description": "Container and host identification",
                         "items": [
                             {
                                 "endCol": 2,
@@ -337,21 +344,21 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Container & Host",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 2
+                        "minH": 1
                     },
                     {
-                        "description": "Kubernetes context",
                         "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
                         "i": "caseinfoid-sysdig-k8s-context",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Kubernetes Context",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4,
+                        "description": "Kubernetes context",
+                        "hideName": false,
                         "items": [
                             {
                                 "endCol": 2,
@@ -408,20 +415,11 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Kubernetes Context",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
+                        "minH": 1
                     },
                     {
-                        "description": "Cloud provider context",
                         "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
                         "i": "caseinfoid-sysdig-cloud-context",
                         "items": [
                             {
@@ -453,13 +451,15 @@
                             }
                         ],
                         "maxW": 3,
-                        "minH": 1,
                         "moved": false,
                         "name": "Cloud Context",
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 4,
+                        "description": "Cloud provider context",
+                        "hideName": false,
+                        "minH": 1
                     },
                     {
                         "description": "Process details from Falco event",
