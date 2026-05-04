@@ -48,18 +48,18 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-security-rule-create",
         "azure-vn-security-rule-get",
         "azure-vn-security-rule-update",
-        "azure-vn-security-rules-list"
+        "azure-vn-security-rules-list",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": [
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
         "azure-vn-security-rule-create",
-        "azure-vn-security-rule-update"
+        "azure-vn-security-rule-update",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": [
         "azure-nsg-security-rule-delete",
         "azure-nsg-security-rule-delete-quick-action",
-        "azure-vn-security-rule-delete"
+        "azure-vn-security-rule-delete",
     ],
     "Microsoft.Storage/storageAccounts/read": [
         "azure-storage-account-update",
@@ -77,8 +77,19 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-network-disable-storage-account-access-quick-action",
         "azure-set-storage-account-https-only-quick-action",
     ],
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-network-interface-details-get", "azure-vn-network-interfaces-list", "azure-vn-network-interfaces-list", "azure-vn-network-interface-get"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-public-ip-details-get", "azure-vn-public-ip-addresses-list", "azure-vn-public-ip-list"],
+    "Microsoft.Network/networkInterfaces/read": [
+        "azure-nsg-network-interfaces-list",
+        "azure-vm-network-interface-details-get",
+        "azure-vn-network-interfaces-list",
+        "azure-vn-network-interfaces-list",
+        "azure-vn-network-interface-get",
+    ],
+    "Microsoft.Network/publicIPAddresses/read": [
+        "azure-nsg-public-ip-addresses-list",
+        "azure-vm-public-ip-details-get",
+        "azure-vn-public-ip-addresses-list",
+        "azure-vn-public-ip-list",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
@@ -2608,7 +2619,9 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
         return format_rule(rule, security_rule_name)
 
     hr = tableToMarkdown(f"Rule {security_rule_name} updated successfully", rule, removeNull=True)
-    return CommandResults(outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr)
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr
+    )
 
 
 def storage_account_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults | str:
@@ -3869,7 +3882,9 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     if demisto.command() == "azure-nsg-security-rule-get":
         return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
 
-    return CommandResults(outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr)
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr
+    )
 
 
 def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -4009,7 +4024,9 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     if demisto.command() == "azure-nsg-security-rule-create":
         return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
 
-    return CommandResults(outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr)
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.SecurityRules", outputs_key_field="id", outputs=rule, readable_output=hr
+    )
 
 
 def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -4270,7 +4287,11 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str
             outputs_prefix="Azure.Compute", outputs_key_field="name", outputs=vm, readable_output=human_readable, raw_response=vm
         )
     return CommandResults(
-        outputs_prefix="Azure.Compute.VirtualMachines", outputs_key_field="name", outputs=vm, readable_output=human_readable, raw_response=vm
+        outputs_prefix="Azure.Compute.VirtualMachines",
+        outputs_key_field="name",
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=vm,
     )
 
 
@@ -4309,7 +4330,11 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: dict[
             outputs_prefix="Azure.Compute", outputs_key_field="name", outputs=vm, readable_output=human_readable, raw_response=vm
         )
     return CommandResults(
-        outputs_prefix="Azure.Compute.VirtualMachines", outputs_key_field="name", outputs=vm, readable_output=human_readable, raw_response=vm
+        outputs_prefix="Azure.Compute.VirtualMachines",
+        outputs_key_field="name",
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=vm,
     )
 
 

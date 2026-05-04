@@ -142,10 +142,10 @@ def test_update_security_rule_command(mocker, client, mock_params):
     result = update_security_rule_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityRules"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-rule"
-    assert result.outputs["access"] == "Allow"
+    assert result.outputs.get("properties", {}).get("access") == "Allow"
 
 
 def test_storage_account_update_command(mocker, client, mock_params):
@@ -580,7 +580,7 @@ def test_update_key_vault_command(mocker, client, mock_params):
     result = update_key_vault_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.KeyVault"
+    assert result.outputs_prefix == "Azure.KeyVault.Vault"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-keyvault"
     assert result.outputs["properties"]["enableSoftDelete"] is True
@@ -618,7 +618,7 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     result = sql_db_threat_policy_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.SqlDBThreatPolicy"
+    assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
     assert result.outputs["properties"]["emailAccountAdmins"] is True
@@ -691,7 +691,7 @@ def test_cosmosdb_update_command(mocker, client, mock_params):
     result = cosmosdb_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.CosmosDB"
+    assert result.outputs_prefix == "Azure.CosmosDB.DBAccounts"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-cosmos"
     assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
@@ -2155,7 +2155,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGPublicIPAddress"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.PublicIPAddresses"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 2
     assert "name" in result.outputs[0]
@@ -2212,7 +2212,7 @@ def test_nsg_network_interfaces_list_command(mocker):
     args = {"limit": "1", "all_results": "false"}
     result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
 
-    assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
     first = result.outputs[0]
@@ -2268,7 +2268,7 @@ def test_nsg_resource_group_list_command(mocker):
     mock_client.list_resource_groups_request.assert_called_with(subscription_id="subscription1", filter_by_tag="", limit="1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGResourceGroup"
+    assert result.outputs_prefix == "Azure.ResourceManagement.ResourceGroups"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
 
@@ -2346,7 +2346,7 @@ def test_nsg_security_rule_create_command(mocker):
 
     # --- Check the returned CommandResults ---
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityRules"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "rule1"
 
@@ -2391,7 +2391,7 @@ def test_nsg_security_rule_get_command(mocker):
 
     # Check the returned CommandResults
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityRules"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_rule
 
@@ -2428,7 +2428,7 @@ def test_nsg_security_groups_list_command(mocker):
     mock_client.list_network_security_groups.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityGroups"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == len(mock_response["value"])
 
@@ -3066,9 +3066,9 @@ def test_storage_container_blob_tag_get_command(mocker, client, mock_params):
     # Verify result
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Mocked Table"
-    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_prefix == "Azure.Storage"
     assert result.outputs_key_field == "name"
-    assert result.outputs["name"] == "testcontainer"
+    assert result.outputs["Blob"]["ContainerName"] == "testcontainer"
     assert "Blob" in result.outputs
     assert result.outputs["Blob"]["name"] == "testblob.txt"
     assert "Tag" in result.outputs["Blob"]
@@ -3148,9 +3148,9 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     # Verify result
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Mocked Table"
-    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_prefix == "Azure.Storage"
     assert result.outputs_key_field == "name"
-    assert result.outputs["name"] == "testcontainer"
+    assert result.outputs["Blob"]["ContainerName"] == "testcontainer"
     assert "Blob" in result.outputs
     assert result.outputs["Blob"]["name"] == "testblob.txt"
     assert "Property" in result.outputs["Blob"]
@@ -3390,7 +3390,7 @@ def test_start_vm_command(mocker):
     mock_client.start_vm_request.assert_called_once_with("sub-id", "rg1", "vm1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "vm1"
     assert result.outputs["resourceGroup"] == "rg1"
@@ -3417,7 +3417,7 @@ def test_poweroff_vm_command(mocker):
     mock_client.poweroff_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", True)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "vm1"
     assert result.outputs["resourceGroup"] == "rg1"
@@ -3458,7 +3458,7 @@ def test_get_vm_command(mocker):
     mock_client.get_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", expand="")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
     assert result.outputs_key_field == "name"
     assert result.outputs["properties"]["vmId"] == "vm123"
     assert result.outputs["properties"]["provisioningState"] == "Succeeded"
@@ -3509,7 +3509,7 @@ def test_get_network_interface_command(mocker):
     mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "nic1"
     assert result.outputs["properties"]["macAddress"] == "00:11:22:33:44:55"
@@ -3575,7 +3575,7 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.IPConfigurations"
     assert result.outputs_key_field == "id"
     assert result.outputs["properties"]["ipAddress"] == "1.2.3.4"
     assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
