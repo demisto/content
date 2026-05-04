@@ -1191,6 +1191,36 @@ def list_workflow_executions(filter_query: str = "", offset: str = "0", limit: i
     return http_request("GET", "/workflows/combined/executions/v1", params=params)
 
 
+def get_workflow_execution_results(ids: list[str]) -> dict:
+    """
+    Get detailed results for specific workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+
+    Returns:
+        Response JSON containing execution results.
+    """
+    params = {"ids": ids}
+    return http_request("GET", "/workflows/entities/execution-results/v1", params=params)
+
+
+def perform_workflow_execution_action(ids: list[str], action_name: str) -> dict:
+    """
+    Perform an action (cancel or resume) on workflow executions.
+
+    Args:
+        ids: List of workflow execution IDs.
+        action_name: The action to perform ('cancel' or 'resume').
+
+    Returns:
+        Response JSON from the action.
+    """
+    params = {"action_name": action_name}
+    body = {"ids": ids}
+    return http_request("POST", "/workflows/entities/execution-actions/v1", params=params, json=body)
+
+
 """ COMMAND SPECIFIC FUNCTIONS """
 
 
@@ -9693,6 +9723,69 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
+def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Gets detailed results for specific workflow executions.
+    """
+    ids = argToList(args.get("ids"))
+    if not ids:
+        raise DemistoException("The 'ids' argument is required.")
+
+    response = get_workflow_execution_results(ids=ids)
+    results = response.get("resources", [])
+
+    # Build human-readable table
+    hr_data = []
+    for result in results:
+        hr_data.append({
+            "Node ID": result.get("node_id"),
+            "Start Timestamp": result.get("start_timestamp"),
+            "End Timestamp": result.get("end_timestamp"),
+            "Status": result.get("status"),
+            "ID": result.get("id"),
+            "Name": result.get("name"),
+            "Type": result.get("type"),
+        })
+
+    readable_output = tableToMarkdown(
+        name="Workflow Execution Results",
+        t=hr_data,
+        headers=["Node ID", "Start Timestamp", "End Timestamp", "Status", "ID", "Name", "Type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.ExecutionResults",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Performs an action (cancel or resume) on one or more workflow executions.
+    """
+    ids = argToList(args.get("ids"))
+    action_name = args.get("action_name", "")
+
+    if not ids:
+        raise DemistoException("The 'ids' argument is required.")
+    if action_name not in ("cancel", "resume"):
+        raise DemistoException(f"Invalid action_name '{action_name}'. Must be 'cancel' or 'resume'.")
+
+    response = perform_workflow_execution_action(ids=ids, action_name=action_name)
+
+    action_past_tense = "cancelled" if action_name == "cancel" else "resumed"
+    readable_output = f"Workflow executions {ids} have been {action_past_tense}."
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
@@ -9947,6 +10040,10 @@ def main():  # pragma: no cover
             return_results(workflow_execute_command(args))
         elif command == "cs-falcon-list-workflow-executions":
             return_results(list_workflow_executions_command(args))
+        elif command == "cs-falcon-list-workflow-execution-results":
+            return_results(list_workflow_execution_results_command(args))
+        elif command == "cs-falcon-workflow-execution-action":
+            return_results(workflow_execution_action_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
