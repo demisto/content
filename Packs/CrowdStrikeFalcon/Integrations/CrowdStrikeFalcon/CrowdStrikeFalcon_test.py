@@ -4669,7 +4669,7 @@ def test_list_quarantined_file_command(requests_mock):
     from CrowdStrikeFalcon import list_quarantined_file_command
 
     requests_mock.get(
-        f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50",
+        f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27INSTANCE-1%27&limit=50",
         json={"resources": ["121212", "171717"]},
     )
     requests_mock.post(
@@ -4686,9 +4686,7 @@ def test_list_quarantined_file_command(requests_mock):
 def test_list_quarantined_file_command_no_results(requests_mock):
     from CrowdStrikeFalcon import list_quarantined_file_command
 
-    requests_mock.get(
-        f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50", json={}
-    )
+    requests_mock.get(f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27INSTANCE-1%27&limit=50", json={})
 
     results = list_quarantined_file_command({"hostname": "INSTANCE-1"})
 
@@ -4699,7 +4697,7 @@ def test_apply_quarantine_file_action_command(requests_mock):
     from CrowdStrikeFalcon import apply_quarantine_file_action_command
 
     requests_mock.get(
-        f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50",
+        f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27INSTANCE-1%27&limit=50",
         json={"resources": ["121212", "171717"]},
     )
     mock_request = requests_mock.patch(f"{SERVER_URL}/quarantine/entities/quarantined-files/v1", json={})
@@ -4708,6 +4706,64 @@ def test_apply_quarantine_file_action_command(requests_mock):
 
     assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
     assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'
+
+
+def test_apply_quarantine_file_action_command_no_matches(requests_mock):
+    """
+    Given:
+        - search arguments (filename) that do not match any quarantined file in CrowdStrike.
+    When:
+        - apply_quarantine_file_action_command is called.
+    Then:
+        - The command returns a friendly readable output and does NOT issue a PATCH
+          to /quarantine/entities/quarantined-files/v1 (which would 400 with no ids).
+        - Verifies the fix for XSUP-68290.
+    """
+    from CrowdStrikeFalcon import apply_quarantine_file_action_command
+
+    requests_mock.get(
+        f"{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=filename%3A%27a.txt%27&limit=50",
+        json={"resources": []},
+    )
+    patch_mock = requests_mock.patch(f"{SERVER_URL}/quarantine/entities/quarantined-files/v1", json={})
+
+    results = apply_quarantine_file_action_command({"filename": "a.txt", "action": "unrelease", "comment": "test"})
+
+    assert results.readable_output == "The arguments/filters you provided did not match any files."
+    assert patch_mock.call_count == 0
+
+
+@pytest.mark.parametrize(
+    "query_params, expected",
+    [
+        # scalar value (back-compat)
+        ({"name": "test"}, "name:'test'"),
+        # multiple scalar values joined with '+'
+        ({"name": "test", "os_name": "WINDOWS"}, "name:'test'+os_name:'WINDOWS'"),
+        # single-element list -> unwrapped (regression test for XSUP-68290)
+        ({"filename": ["a.txt"]}, "filename:'a.txt'"),
+        # multi-element list -> FQL bracket multi-value notation
+        ({"filename": ["a.txt", "b.txt"]}, "filename:['a.txt','b.txt']"),
+        # mixed scalar + single-element list
+        ({"hostname": "INSTANCE-1", "filename": ["a.txt"]}, "hostname:'INSTANCE-1'+filename:'a.txt'"),
+    ],
+)
+def test_build_query_params(query_params, expected):
+    """
+    Given:
+        - A dict of FQL query params with scalar and/or list values.
+    When:
+        - build_query_params is called (used to construct the ``q=`` parameter for
+          /quarantine/queries/quarantined-files/v1).
+    Then:
+        - List values are unwrapped (single element) or rendered in FQL multi-value
+          bracket notation (multiple elements). Without this, list values were
+          interpolated as a Python repr (``filename:'['a.txt']'``) and silently
+          returned zero matches, ultimately causing XSUP-68290.
+    """
+    from CrowdStrikeFalcon import build_query_params
+
+    assert build_query_params(query_params) == expected
 
 
 filter_args = {"key1": "val1,val2", "key2": "val3", "key3": None}
