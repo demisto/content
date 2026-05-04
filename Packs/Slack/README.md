@@ -25,6 +25,22 @@ Send messages and notifications to your Slack team and integrate with Slack's se
   - Rules for parsing and modeling Slack audit logs that are ingested via the event collector into Cortex XSIAM.
   - The ingested Slack logs can be queried in XQL Search using the *`slack_slack_raw`* dataset.
 
+</~XSIAM>
+
+<~PLATFORM>
+
+### Cortex Agentic Assistant in Slack
+
+Interact with the **Cortex Agentic Assistant** directly from Slack. Mention the bot in any channel or thread to ask security questions, run investigations, and get AI-powered responses, all without leaving Slack.
+
+![Cortex AI Assistant in Slack](doc_files/slack_ai_assistant_demo.png)
+
+> For setup instructions and detailed usage, see the [Slack V3 integration README](https://xsoar.pan.dev/docs/reference/integrations/slack-v3#cortex-ai-assistant-in-slack).
+
+</~PLATFORM>
+
+<~XSIAM>
+
 ## Supported log categories
 
 | Category | Category Display Name |
