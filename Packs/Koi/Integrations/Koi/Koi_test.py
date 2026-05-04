@@ -3426,3 +3426,58 @@ class TestClientGetInventoryItemEndpoints:
 
 
 # endregion
+
+# region Empty log_types guard tests
+
+
+class TestEmptyLogTypesGuard:
+    """Tests for the empty log_types guard in fetch_events_command."""
+
+    def test_empty_event_types_to_fetch_does_not_crash(self, mock_client, mocker):
+        """Test that an empty event_types_to_fetch param does not crash on ThreadPoolExecutor(max_workers=0)."""
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": ""},
+        )
+        existing_last_run = {"last_fetch_alerts": "2024-01-01T00:00:00Z"}
+        mocker.patch.object(demisto, "getLastRun", return_value=existing_last_run)
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        # Should return cleanly without raising
+        fetch_events_command(mock_client)
+
+        # No events sent
+        mock_send.assert_not_called()
+        # last_run preserved as-is
+        mock_set_last_run.assert_called_once_with(existing_last_run)
+
+
+# endregion
+
+# region Client.send_events tests
+
+
+class TestClientSendEvents:
+    """Tests for the Client.send_events method."""
+
+    def test_send_events_calls_send_events_to_xsiam(self, mock_client, mocker):
+        """Test that send_events delegates to send_events_to_xsiam with correct vendor/product."""
+        mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
+        events = [{"id": "1", "_time": "2024-01-01T00:00:00Z"}, {"id": "2", "_time": "2024-01-01T00:00:01Z"}]
+
+        mock_client.send_events(events)
+
+        mock_send_to_xsiam.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+
+    def test_send_events_with_empty_list(self, mock_client, mocker):
+        """Test that send_events still calls send_events_to_xsiam when events list is empty."""
+        mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
+
+        mock_client.send_events([])
+
+        mock_send_to_xsiam.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+
+
+# endregion
