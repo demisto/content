@@ -1,40 +1,44 @@
 id: Azure - VM Instance Network Security Group Remediation
-version: -1
+version: 3
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: CloudSecurityPolicyManagement
+    packName: Cloud Security Policy Management
+    itemVersion: 1.0.0
+    fromServerVersion: 6.10.0
+    toServerVersion: ''
+    definitionid: ''
+    prevname: ''
+    isoverridable: false
+    supportedModules: []
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ''
+  type: ''
+  name: ''
 name: Azure - VM Instance Network Security Group Remediation
-description: |-
-  This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
-
-  Conditions and limitations:
-  - Limited to one resource group.
-  - 2 priorities lower than the offending rule priority must be available.
-  - Adds rules to NSGs associated to NICs.
-starttaskid: "0"
+description: "This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.\n\nConditions and limitations:\n- Limited to one resource group.\n- 2 priorities lower than the offending rule priority must be available.\n- Adds rules to NSGs associated to NICs."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 436b4cb7-ceee-497b-84af-263ea412d934
     type: start
     task:
       id: 436b4cb7-ceee-497b-84af-263ea412d934
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": -640
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": -840\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -42,8 +46,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 181eda37-9630-415c-89d8-771705da5a85
     type: regular
     task:
@@ -55,9 +59,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "56"
+      - '56'
     scriptarguments:
       network_security_group_name:
         simple: ${NSGName}
@@ -68,14 +74,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 1695
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 1695\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -83,8 +83,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 87132a2b-723e-40c2-8d02-98150ce2f878
     type: condition
     task:
@@ -94,15 +94,17 @@ tasks:
       description: Verify the required Azure integration is configured and enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
-      - "47"
-      "yes":
-      - "66"
+      - '47'
+      yes:
+      - '66'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -129,14 +131,8 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": -460
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": -660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -144,8 +140,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 01af73d9-535d-4e0c-831b-794d78e1383a
     type: title
     task:
@@ -154,17 +150,12 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 4220
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 4220\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -172,8 +163,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: a245dcb2-8b43-4e09-8636-dbe63a0fe0ed
     type: title
     task:
@@ -182,20 +173,15 @@ tasks:
       name: Update Existing Allow Rule
       type: title
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 2290
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 2290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -203,8 +189,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 9c563845-7b64-4374-879f-42601e2f2cab
     type: regular
     task:
@@ -215,10 +201,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "62"
+      - '62'
     scriptarguments:
       key:
         simple: existingAllowRule
@@ -278,14 +266,8 @@ tasks:
                   simple: ExposedNICPrivateIPs
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 2440
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 2440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -293,8 +275,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: c5593217-2436-43d8-81f0-df7d3d9ba6b7
     type: regular
     task:
@@ -306,9 +288,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       destination:
         complex:
@@ -347,14 +331,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 2805
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 2805\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -362,8 +340,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 3ebd1cee-9882-4c01-851f-9f2cdec9186a
     type: condition
     task:
@@ -373,17 +351,19 @@ tasks:
       description: Determines whether a remediation deny rule already exists or not.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
-      - "45"
+      - '45'
       Update:
-      - "35"
-      "yes":
-      - "71"
+      - '35'
+      yes:
+      - '71'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -513,14 +493,8 @@ tasks:
                         simple: ExposedNICPrivateIPs
                       iscontext: true
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 2980
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 2980\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -528,8 +502,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: ee8a7d25-a7f9-4c2d-88ef-6365ca3d9ab4
     type: title
     task:
@@ -538,20 +512,15 @@ tasks:
       name: Update Existing Deny Rule
       type: title
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 3145
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 3145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -559,8 +528,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 654c17fc-99e0-4794-86cc-f74c572207b2
     type: regular
     task:
@@ -571,10 +540,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "64"
+      - '64'
     scriptarguments:
       key:
         simple: existingDenyRule
@@ -634,14 +605,8 @@ tasks:
                   simple: ExposedNICPrivateIPs
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 3285
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 3285\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -649,8 +614,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: e9873880-d591-49ab-8659-a43d7ec8ffc6
     type: regular
     task:
@@ -662,9 +627,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     scriptarguments:
       destination:
         complex:
@@ -703,14 +670,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 3650
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 3650\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -718,8 +679,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: 1f04abef-c42e-40f7-8274-aa7b06894def
     type: condition
     task:
@@ -729,17 +690,19 @@ tasks:
       description: Determines whether a remediation allow rule already exists or not.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
-      - "39"
+      - '39'
       Update:
-      - "30"
-      "yes":
-      - "70"
+      - '30'
+      yes:
+      - '70'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -869,14 +832,8 @@ tasks:
                         simple: ExposedNICPrivateIPs
                       iscontext: true
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 2085
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 2085\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -884,8 +841,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: 46b6af5b-42e8-4b2a-884a-fbf359f7ac56
     type: title
     task:
@@ -894,20 +851,15 @@ tasks:
       name: Create New Allow Rule
       type: title
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "42"
+      - '42'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 2290
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 2290\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -915,8 +867,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: 54375985-e1aa-4213-8ea9-8b62a2f81ab5
     type: regular
     task:
@@ -928,9 +880,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "63"
+      - '63'
     scriptarguments:
       action:
         simple: Allow
@@ -957,7 +911,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "1"
+                  simple: '1'
       protocol:
         complex:
           root: inputs.RemoteProtocol
@@ -991,14 +945,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 2440
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 2440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1006,8 +954,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     taskid: 6ddb5660-a578-4de0-b253-c2759807561d
     type: regular
     task:
@@ -1019,9 +967,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "65"
+      - '65'
     scriptarguments:
       action:
         simple: Deny
@@ -1048,7 +998,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
       protocol:
         complex:
           root: inputs.RemoteProtocol
@@ -1083,14 +1033,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 3285
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 3285\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1098,8 +1042,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
+  '45':
+    id: '45'
     taskid: 88a26391-3758-4152-81ba-f10d34fc5b05
     type: title
     task:
@@ -1108,20 +1052,15 @@ tasks:
       name: Create New Deny Rule
       type: title
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 3145
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 3145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1129,8 +1068,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: 08409d8f-01a8-4286-8620-8624587fa453
     type: regular
     task:
@@ -1141,26 +1080,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "61"
+      - '61'
     scriptarguments:
       key:
         simple: remediatedFlag
       stringify:
-        simple: "false"
+        simple: 'false'
       value:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 3845
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 3845\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1168,8 +1103,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: 3d1e347b-42fb-4da2-8a77-6888bf0483f6
     type: regular
     task:
@@ -1180,26 +1115,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       key:
         simple: remediatedFlag
       stringify:
-        simple: "false"
+        simple: 'false'
       value:
-        simple: "false"
+        simple: 'false'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1070,
-          "y": 3845
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 3845\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1207,8 +1138,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: 6182e6dd-02b3-48af-8ad7-4b2f56811983
     type: regular
     task:
@@ -1220,9 +1151,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "52"
+      - '52'
     scriptarguments:
       address_name:
         complex:
@@ -1236,7 +1169,7 @@ tasks:
                   simple: publicIPAddresses/
               fields:
                 value:
-                  simple: "2"
+                  simple: '2'
       resource_group_name:
         simple: ${ResourceGroupName}
       subscription_id:
@@ -1244,14 +1177,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 630
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 430\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1259,8 +1186,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
+  '52':
+    id: '52'
     taskid: ae565719-c44e-4393-8aa4-87784ee9603e
     type: regular
     task:
@@ -1271,10 +1198,12 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "60"
+      - '60'
     scriptarguments:
       key:
         simple: ExposedPublicIpID
@@ -1293,14 +1222,8 @@ tasks:
                 iscontext: true
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 815
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 615\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1308,8 +1231,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     taskid: 6d38a6c8-4380-48e9-872d-76885eb98dc7
     type: regular
     task:
@@ -1321,9 +1244,11 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
     scriptarguments:
       network_interface_name:
         complex:
@@ -1337,7 +1262,7 @@ tasks:
                   simple: networkInterfaces/
               fields:
                 value:
-                  simple: "2"
+                  simple: '2'
       resource_group_name:
         simple: ${ResourceGroupName}
       subscription_id:
@@ -1345,14 +1270,8 @@ tasks:
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 455
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 255\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1360,8 +1279,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
+  '55':
+    id: '55'
     taskid: 2922951e-cffd-491f-8ade-fc2fe89dd0bb
     type: regular
     task:
@@ -1372,10 +1291,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "57"
+      - '73'
     scriptarguments:
       key:
         simple: ExposedNICName
@@ -1394,14 +1315,8 @@ tasks:
                 iscontext: true
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 1150
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1409,8 +1324,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
+  '56':
+    id: '56'
     taskid: 018c6f47-d8eb-4290-8e6c-7c65ba17b6d2
     type: regular
     task:
@@ -1421,10 +1336,12 @@ tasks:
       scriptName: AzureIdentifyNSGExposureRule
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     scriptarguments:
       integration_instance:
         simple: ${inputs.IntegrationInstance}
@@ -1433,7 +1350,7 @@ tasks:
       port:
         simple: ${inputs.RemotePort}
       priority_count:
-        simple: "2"
+        simple: '2'
       private_ip_address:
         simple: ${ExposedNICPrivateIPs}
       private_ip_addresses:
@@ -1445,14 +1362,8 @@ tasks:
       subscription_id:
         simple: ${Core.CoreAsset.xdm__asset__realm}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 1890
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 1890\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1460,8 +1371,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
+  '57':
+    id: '57'
     taskid: fee64318-0f38-476b-862d-0f66f022e9be
     type: regular
     task:
@@ -1472,10 +1383,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "58"
+      - '58'
     scriptarguments:
       key:
         simple: NSGName
@@ -1501,16 +1414,10 @@ tasks:
                   simple: networkSecurityGroups/
               fields:
                 value:
-                  simple: "2"
+                  simple: '2'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 1315
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 1315\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1518,8 +1425,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
+  '58':
+    id: '58'
     taskid: cb4a8e87-3f99-4618-82ef-e7c472040265
     type: regular
     task:
@@ -1530,10 +1437,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       key:
         simple: ExposedNICPrivateIPs
@@ -1552,14 +1461,8 @@ tasks:
                 iscontext: true
           accessor: ipConfigurations.properties.privateIPAddress
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 1500
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 1500\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1567,8 +1470,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "59":
-    id: "59"
+  '59':
+    id: '59'
     taskid: 7b7e048d-7665-48e7-82e0-e84fc21f97c4
     type: title
     task:
@@ -1577,20 +1480,15 @@ tasks:
       name: Collect VM NIC and NSG Details
       type: title
       iscommand: false
-      brand: ""
-      description: ''
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "53"
+      - '53'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 295
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 95\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1598,8 +1496,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
+  '60':
+    id: '60'
     taskid: e888a1aa-d44a-4b77-8729-6cf2d0402a4e
     type: condition
     task:
@@ -1609,29 +1507,25 @@ tasks:
       description: Check that the public IP address has been identified.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
-      - "47"
-      "yes":
-      - "55"
+      - '74'
+      yes:
+      - '55'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: ExposedPublicIpID
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 970
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1639,8 +1533,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "61":
-    id: "61"
+  '61':
+    id: '61'
     taskid: 3d3cfef0-18e0-4a75-85cd-ab5c197d2f95
     type: regular
     task:
@@ -1651,32 +1545,18 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       value:
-        simple: |-
-          ## Remediation Complete
-          This exposure has been remediated by modifying Azure Network Security Groups to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${VirtualMachineName}.
-
-          Azure Subscription ID: ${Core.CoreAsset.xdm__asset__realm}.
-          Azure Resource Group: ${ResourceGroupName}.
-          Network Security Group assigned to VM NIC: ${NSGName}.
-          Rule Name Permitting Exposure: ${AzurePublicExposure.MatchingRuleName}.
-
-          **Remediation Steps Taken:**
-          ${remediation_action}
+        simple: "## Remediation Complete\nThis exposure has been remediated by modifying Azure Network Security Groups to block access from the Internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on Virtual Machine ${VirtualMachineName}.\n\nAzure Subscription ID: ${Core.CoreAsset.xdm__asset__realm}.\nAzure Resource Group: ${ResourceGroupName}.\nNetwork Security Group assigned to VM NIC: ${NSGName}.\nRule Name Permitting Exposure: ${AzurePublicExposure.MatchingRuleName}.\n\n**Remediation Steps Taken:**\n${remediation_action}"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 4020
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 4020\n  }\n}"
     note: true
     timertriggers: []
     ignoreworker: false
@@ -1684,8 +1564,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "62":
-    id: "62"
+  '62':
+    id: '62'
     taskid: de8ba3f2-52ef-4030-8bca-6c7d9c62fdef
     type: regular
     task:
@@ -1696,28 +1576,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: remediation_action
       value:
-        simple: |-
-          ${remediation_action}
-          - Updated Existing Allow Rule: ${existingAllowRule.name}
+        simple: "${remediation_action}\n- Updated Existing Allow Rule: ${existingAllowRule.name}"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 2630
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 2630\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1725,8 +1599,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
+  '63':
+    id: '63'
     taskid: 6661f14a-8011-4f94-871e-3045f184f6f4
     type: regular
     task:
@@ -1737,28 +1611,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: remediation_action
       value:
-        simple: |-
-          ${remediation_action}
-          - Created New NSG Allow Rule: cortex-remediation-allow-port-${inputs.RemoteProtocol}-${inputs.RemotePort}
+        simple: "${remediation_action}\n- Created New NSG Allow Rule: cortex-remediation-allow-port-${inputs.RemoteProtocol}-${inputs.RemotePort}"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 2630
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 2630\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1766,8 +1634,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
+  '64':
+    id: '64'
     taskid: 59d0d78b-beb3-4418-849a-9d057285b81b
     type: regular
     task:
@@ -1778,28 +1646,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: remediation_action
       value:
-        simple: |-
-          ${remediation_action}
-          - Updated Existing Deny Rule: ${existingDenyRule.name}
+        simple: "${remediation_action}\n- Updated Existing Deny Rule: ${existingDenyRule.name}"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 3466.875
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 3466.875\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1807,8 +1669,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
+  '65':
+    id: '65'
     taskid: 58443ad6-d985-4ff8-8f22-a395dc3d8fe9
     type: regular
     task:
@@ -1819,28 +1681,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: remediation_action
       value:
-        simple: |-
-          ${remediation_action}
-          - Created New NSG Deny Rule: cortex-remediation-deny-port-${inputs.RemoteProtocol}-${inputs.RemotePort}
+        simple: "${remediation_action}\n- Created New NSG Deny Rule: cortex-remediation-deny-port-${inputs.RemoteProtocol}-${inputs.RemotePort}"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 3466.875
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 3466.875\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1848,8 +1704,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
+  '66':
+    id: '66'
     taskid: 947fddbc-d554-40da-896f-7561ed7355f8
     type: regular
     task:
@@ -1861,23 +1717,19 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - Platform
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "67"
+      - '67'
     scriptarguments:
       asset_id:
         simple: ${inputs.AssetID}
       using:
         simple: ${inputs.IntegrationInstance}
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": -240
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": -440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1885,8 +1737,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
+  '67':
+    id: '67'
     taskid: 6da81cde-9c9d-47f1-8862-445fbcc05b86
     type: regular
     task:
@@ -1897,10 +1749,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "68"
+      - '68'
     scriptarguments:
       key:
         simple: ResourceGroupName
@@ -1916,7 +1770,7 @@ tasks:
                   simple: resourceGroups/
               fields:
                 value:
-                  simple: "2"
+                  simple: '2'
           - operator: Cut
             args:
               delimiter:
@@ -1924,16 +1778,10 @@ tasks:
                   simple: /
               fields:
                 value:
-                  simple: "1"
+                  simple: '1'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": -60
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": -260\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1941,8 +1789,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
+  '68':
+    id: '68'
     taskid: 357d5c6e-163a-4f4e-8df7-69b7220be346
     type: regular
     task:
@@ -1953,10 +1801,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "59"
+      - '59'
     scriptarguments:
       key:
         simple: VirtualMachineName
@@ -1972,16 +1822,10 @@ tasks:
                   simple: virtualMachines/
               fields:
                 value:
-                  simple: "2"
+                  simple: '2'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 120
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": -80\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1989,8 +1833,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
+  '69':
+    id: '69'
     taskid: ee06d1db-a0ff-4ce3-9077-70ed31804854
     type: regular
     task:
@@ -2001,28 +1845,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: remediation_action
       value:
-        simple: |-
-          ${remediation_action}
-          - Found Existing Allow Rule: ${existingAllowRule.name}. No modification needed.
+        simple: "${remediation_action}\n- Found Existing Allow Rule: ${existingAllowRule.name}. No modification needed."
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 2630
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 2630\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2030,8 +1868,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "70":
-    id: "70"
+  '70':
+    id: '70'
     taskid: c75bb571-5c15-41d4-8412-ce7581d330de
     type: regular
     task:
@@ -2042,10 +1880,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "69"
+      - '69'
     scriptarguments:
       key:
         simple: existingAllowRule
@@ -2105,14 +1945,8 @@ tasks:
                   simple: ExposedNICPrivateIPs
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 2440
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 2440\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2120,8 +1954,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "71":
-    id: "71"
+  '71':
+    id: '71'
     taskid: 36c8ae63-f695-4c21-86e6-4ada7a55bea3
     type: regular
     task:
@@ -2132,10 +1966,12 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "72"
+      - '72'
     scriptarguments:
       key:
         simple: existingDenyRule
@@ -2195,14 +2031,8 @@ tasks:
                   simple: ExposedNICPrivateIPs
                 iscontext: true
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 3285
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 3285\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2210,8 +2040,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "72":
-    id: "72"
+  '72':
+    id: '72'
     taskid: e78eb21e-2544-47e9-8f8b-890d9b6745f5
     type: regular
     task:
@@ -2222,28 +2052,22 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: remediation_action
       value:
-        simple: |-
-          ${remediation_action}
-          - Found Existing Deny Rule: ${existingDenyRule.name}. No modification needed.
+        simple: "${remediation_action}\n- Found Existing Deny Rule: ${existingDenyRule.name}. No modification needed."
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 367.5,
-          "y": 3466.875
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 3466.875\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2251,24 +2075,108 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '73':
+    id: '73'
+    taskid: 3ebdcc42-6960-4615-91a4-34d280e00f2c
+    type: condition
+    task:
+      id: 3ebdcc42-6960-4615-91a4-34d280e00f2c
+      version: -1
+      name: Was an Interface Name Identified?
+      description: Check that the public IP address has been identified.
+      type: condition
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - '75'
+      yes:
+      - '57'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExposedNICName
+            iscontext: true
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 1120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '74':
+    id: '74'
+    taskid: 72ea955e-40d8-4cbf-a3a6-030777658eb6
+    type: regular
+    task:
+      id: 72ea955e-40d8-4cbf-a3a6-030777658eb6
+      version: -1
+      name: Print Message That An IP Address Could Not Be Identified
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      value:
+        simple: No Public IP Address object could be found matching ${inputs.PublicIP}. Remediation cannot be performed.
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 810,\n    \"y\": 950\n  }\n}"
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '75':
+    id: '75'
+    taskid: 3906d36c-d876-4ef3-bc2e-56150b94a6e7
+    type: regular
+    task:
+      id: 3906d36c-d876-4ef3-bc2e-56150b94a6e7
+      version: -1
+      name: Print Message That An Interface Name Could Not Be Identified
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      value:
+        simple: No Network Interface object could be found associated with Public IP Address ID ${ExposedPublicIpID}. Remediation cannot be performed.
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 810,\n    \"y\": 1315\n  }\n}"
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
 system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "34_35_Update": 0.65,
-      "38_39_#default#": 0.58,
-      "4_47_#default#": 0.13,
-      "60_47_#default#": 0.17
-    },
-    "paper": {
-      "dimensions": {
-        "height": 4920,
-        "width": 1510,
-        "x": -60,
-        "y": -640
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"34_35_Update\": 0.65,\n    \"38_39_#default#\": 0.58,\n    \"4_47_#default#\": 0.13\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 5120,\n      \"width\": 1510,\n      \"x\": -60,\n      \"y\": -840\n    }\n  }\n}"
 inputs:
 - key: AssetID
   value: {}
@@ -2325,6 +2233,7 @@ outputs:
   description: Textual summary of remediation action(s) that were performed.
   type: string
 adopted: true
+possibleresponses: []
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
