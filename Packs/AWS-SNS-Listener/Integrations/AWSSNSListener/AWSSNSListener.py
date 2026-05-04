@@ -140,7 +140,7 @@ class SNSCertificateManager:
             except DemistoException:
                 raise
             except Exception as e:
-                demisto.error(f"Exception validating sign cert url: {e}")
+                demisto.error(f"Exception validating sign cert url: {e}\n{format_exc()}")
                 if "502" in str(e):
                     demisto.error(f'SigningCertURL: {sns_payload["SigningCertURL"]}')
                 elif "Verify that the server URL parameter" in str(e):
@@ -249,7 +249,7 @@ def store_samples(incident):  # pragma: no cover
         integration_context["sample_events"] = list(sample_events)
         set_to_integration_context_with_retries(integration_context)
     except Exception as e:
-        demisto.error(f"Failed storing sample events - {e}")
+        demisto.error(f"Failed storing sample events - {e}\n{format_exc()}")
 
 
 def _extract_message_id(incident: dict) -> str:
@@ -335,7 +335,7 @@ async def handle_post(
     try:
         is_valid_credentials, header_name = is_valid_integration_credentials(credentials, request_headers, token)
     except Exception as e:
-        demisto.error(f"Error handling auth failure: {e}")
+        demisto.error(f"Error handling auth failure: {e}\n{format_exc()}")
     if not is_valid_credentials:
         return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Authorization failed.")
 
@@ -347,7 +347,7 @@ async def handle_post(
         payload = await request.json()
         raw_json = json.dumps(payload)
     except Exception as e:
-        demisto.error(f"Error in request parsing: {e}")
+        demisto.error(f"Error in request parsing: {e}\n{format_exc()}")
         return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Failed parsing request.")
     if not sns_cert_manager.is_valid_sns_message(payload):
         return Response(status_code=status.HTTP_401_UNAUTHORIZED, content="Validation of SNS message failed.")
@@ -358,7 +358,7 @@ async def handle_post(
         try:
             response = handle_subscription_confirmation(subscribe_url=subscribe_url)
         except Exception as e:
-            demisto.error(f"Failed handling SubscriptionConfirmation: {e}")
+            demisto.error(f"Failed handling SubscriptionConfirmation: {e}\n{format_exc()}")
             return "Failed handling SubscriptionConfirmation"
         demisto.debug(f"Response from subscribe url: {response}")
         return response
