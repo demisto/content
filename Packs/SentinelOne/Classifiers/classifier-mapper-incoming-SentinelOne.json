@@ -506,10 +506,16 @@
 				"SentinelOne UAM Alert Name": {
 					"simple": "node.name"
 				},
+				"SentinelOne UAM Alert Status": {
+					"simple": "node.status"
+				},
 				"SentinelOne UAM Alert Detection Product": {
 					"simple": "node.detectionSource.product"
 				},
 				"SentinelOne UAM Alert Analyst Verdict": {
+					"simple": "node.analystVerdict"
+				},
+				"SentinelOne UAM Alert Analyst Verdict Mapped": {
 					"simple": "node.analystVerdict"
 				},
 				"SentinelOne UAM Alert Attack Surfaces": {
