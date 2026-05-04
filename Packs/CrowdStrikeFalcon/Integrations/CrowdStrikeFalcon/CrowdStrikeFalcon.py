@@ -1174,6 +1174,23 @@ def execute_workflow(
     return http_request("POST", "/workflows/entities/execute/v1", params=params, json=json_body)
 
 
+def list_workflow_executions(filter_query: str = "", offset: str = "0", limit: int = 50, sort: str = "") -> dict:
+    """
+    List workflow executions from CrowdStrike Falcon.
+
+    Args:
+        filter_query: FQL filter query string.
+        offset: The offset to start retrieving records from.
+        limit: The maximum number of records to return.
+        sort: The property to sort by (e.g., created_at.desc).
+
+    Returns:
+        Response JSON containing workflow executions.
+    """
+    params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    return http_request("GET", "/workflows/combined/executions/v1", params=params)
+
+
 """ COMMAND SPECIFIC FUNCTIONS """
 
 
@@ -9613,6 +9630,69 @@ def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
+def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Lists workflow executions from CrowdStrike Falcon.
+    Builds an FQL filter from convenience arguments and calls the API.
+    """
+    # Build FQL filter from convenience arguments
+    filter_parts: list[str] = []
+
+    if raw_filter := args.get("filter"):
+        filter_parts.append(raw_filter)
+    if definition_id := args.get("definition_id"):
+        filter_parts.append(f"definition_id:'{definition_id}'")
+    if definition_name := args.get("definition_name"):
+        filter_parts.append(f"definition_name:~'{definition_name}'")
+    if execution_id := args.get("execution_id"):
+        filter_parts.append(f"execution_id:'{execution_id}'")
+
+    filter_query = "+".join(filter_parts)
+    offset = args.get("offset", "0")
+    limit = arg_to_number(args.get("limit", 50)) or 50
+    sort = args.get("sort", "")
+
+    response = list_workflow_executions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
+    executions = response.get("resources", [])
+
+    # Build human-readable table from activities
+    hr_data = []
+    for execution in executions:
+        execution_id_val = execution.get("execution_id", execution.get("id"))
+        activities = execution.get("activities", [])
+        if activities:
+            for activity in activities:
+                hr_data.append({
+                    "Execution ID": execution_id_val,
+                    "Node ID": activity.get("node_id"),
+                    "Start Timestamp": activity.get("start_timestamp"),
+                    "End Timestamp": activity.get("end_timestamp"),
+                    "Status": activity.get("status"),
+                    "Name": activity.get("name"),
+                    "Type": activity.get("type"),
+                })
+        else:
+            hr_data.append({
+                "Execution ID": execution_id_val,
+                "Status": execution.get("status"),
+            })
+
+    readable_output = tableToMarkdown(
+        name="Workflow Executions",
+        t=hr_data,
+        headers=["Execution ID", "Node ID", "Start Timestamp", "End Timestamp", "Status", "Name", "Type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.Workflows.Executions",
+        outputs_key_field="execution_id",
+        outputs=executions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
@@ -9865,6 +9945,8 @@ def main():  # pragma: no cover
             return_results(list_workflow_definitions_command(args))
         elif command == "cs-falcon-workflow-execute":
             return_results(workflow_execute_command(args))
+        elif command == "cs-falcon-list-workflow-executions":
+            return_results(list_workflow_executions_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
