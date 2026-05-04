@@ -1129,10 +1129,10 @@ class TestFilePermissionMethods:
         mocker_http_request.return_value = mock_response
 
         args = {
-            "name": "Quarantine Folder",
+            "file_name": "Quarantine Folder",
             "mime_type": "application/vnd.google-apps.folder",
             "user_id": "admin@example.com",
-            "parent_id": "root",
+            "parent": "root",
         }
         result: CommandResults = file_create_command(gsuite_client, args)
 
@@ -1141,6 +1141,13 @@ class TestFilePermissionMethods:
         assert result.outputs["id"] == "new_folder_id_456"
         assert result.outputs["mimeType"] == "application/vnd.google-apps.folder"
         assert "Created" in result.readable_output
+
+        # Verify the request body and params
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["body"]["name"] == "Quarantine Folder"
+        assert call_kwargs["body"]["parents"] == ["root"]
+        # supports_all_drives defaults to False when not provided
+        assert call_kwargs["params"]["supportsAllDrives"] is False
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_create_tombstone_command_success(self, mocker_http_request, gsuite_client):
@@ -1169,13 +1176,53 @@ class TestFilePermissionMethods:
         mocker_http_request.return_value = mock_response
 
         args = {
-            "name": "This file has been quarantined",
+            "file_name": "This file has been quarantined",
             "mime_type": "application/vnd.google-apps.document",
             "user_id": "admin@example.com",
-            "parent_id": "original_folder_id",
+            "parent": "original_folder_id",
             "description": "This file was quarantined by security policy. Contact admin for details.",
         }
         result: CommandResults = file_create_command(gsuite_client, args)
 
         assert result.outputs["id"] == "tombstone_id_789"
         assert result.outputs["mimeType"] == "application/vnd.google-apps.document"
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_supports_all_drives(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-create command run with supports_all_drives="true".
+
+        Given:
+        - Command args including supports_all_drives="true".
+
+        When:
+        - Calling google-drive-file-create command with the parameters provided.
+
+        Then:
+        - Ensure supportsAllDrives is forwarded to the API as True.
+        """
+        from GoogleDrive import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "shared_drive_folder_id",
+            "name": "Shared Drive Folder",
+            "mimeType": "application/vnd.google-apps.folder",
+            "parents": ["shared_drive_root_id"],
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "Shared Drive Folder",
+            "mime_type": "application/vnd.google-apps.folder",
+            "user_id": "admin@example.com",
+            "parent": "shared_drive_root_id",
+            "supports_all_drives": "true",
+        }
+        result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs["id"] == "shared_drive_folder_id"
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["params"]["supportsAllDrives"] is True
+        assert call_kwargs["body"]["name"] == "Shared Drive Folder"
+        assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]

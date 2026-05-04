@@ -1994,10 +1994,11 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
 
     :return: Command Result.
     """
-    name = args.get("name", "")
+    file_name = args.get("file_name", "")
     mime_type = args.get("mime_type", "application/vnd.google-apps.folder")
-    parent_id = args.get("parent_id", "")
+    parent = args.get("parent", "")
     description = args.get("description", "")
+    supports_all_drives = argToBoolean(args.get("supports_all_drives", False))
 
     # user_id can be overridden in the args
     user_id = args.get("user_id") or client.user_id
@@ -2006,21 +2007,21 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     url_suffix = URL_SUFFIX["FILE_CREATE"]
     params = {
         "fields": args.get("fields", "*"),
-        "supportsAllDrives": True,
+        "supportsAllDrives": supports_all_drives,
     }
     body: dict[str, Any] = {
-        "name": name,
+        "name": file_name,
         "mimeType": mime_type,
     }
-    if parent_id:
-        body["parents"] = [parent_id]
+    if parent:
+        body["parents"] = [parent]
     if description:
         body["description"] = description
 
     response = client.http_request(url_suffix=url_suffix, method="POST", params=params, body=body)
 
     readable_output = tableToMarkdown(
-        f'Created "{name}" successfully.',
+        f'Created "{file_name}" successfully.',
         response,
         headers=["id", "name", "mimeType", "parents"],
         headerTransform=pascalToSpace,
