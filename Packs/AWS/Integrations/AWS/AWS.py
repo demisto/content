@@ -7963,7 +7963,6 @@ class CloudWatchLogs:
             DemistoException: If the AWS API call fails.
         """
         tags = args.get("tags")
-        deletion_protection = args.get("deletion_protection_enabled")
         kwargs: dict[str, Any] = {
             "logGroupName": args.get("log_group_name"),
             "kmsKeyId": args.get("kms_key_id"),
@@ -8108,7 +8107,7 @@ class CloudWatchLogs:
         log_group_name = args.get("log_group_name")
         log_group_identifier = args.get("log_group_identifier")
 
-        if not (bool(log_group_name) ^ bool(log_group_identifier)): # "^" is bitwise XOR - exactly one of the two must be true
+        if not (bool(log_group_name) ^ bool(log_group_identifier)):  # "^" is bitwise XOR - exactly one of the two must be true
             raise DemistoException("You must provide exactly one of the arguments log_group_name or log_group_identifier.")
 
         log_stream_names = args.get("log_stream_names")
@@ -8122,7 +8121,13 @@ class CloudWatchLogs:
             "filterPattern": args.get("filter_pattern"),
             "unmask": arg_to_bool_or_none(args.get("unmask")),
         }
-        kwargs.update(build_pagination_kwargs(args, next_token_name="nextToken", limit_name="limit",))
+        kwargs.update(
+            build_pagination_kwargs(
+                args,
+                next_token_name="nextToken",
+                limit_name="limit",
+            )
+        )
         remove_nulls_from_dictionary(kwargs)
         demisto.debug(f"{kwargs=}")
 
@@ -8241,10 +8246,9 @@ class CloudWatchLogs:
         """
         log_group_name = args.get("log_group_name")
         log_group_identifier = args.get("log_group_identifier")
-        if not (bool(log_group_name) ^ bool(log_group_identifier)): # "^" is bitwise XOR - exactly one of the two must be true
+        if not (bool(log_group_name) ^ bool(log_group_identifier)):  # "^" is bitwise XOR - exactly one of the two must be true
             raise DemistoException("You must provide exactly one of the arguments log_group_name or log_group_identifier.")
 
-        descending = args.get("descending")
         kwargs: dict[str, Any] = {
             "logGroupName": log_group_name,
             "logGroupIdentifier": log_group_identifier,
@@ -8446,7 +8450,6 @@ class CloudWatchLogs:
         """
         default_value = args.get("default_value")
         dimensions = args.get("dimensions")
-        apply_on_transformed = args.get("apply_on_transformed_logs")
         metric_transformation: dict[str, Any] = {
             "metricName": args.get("metric_name"),
             "metricNamespace": args.get("metric_namespace"),
