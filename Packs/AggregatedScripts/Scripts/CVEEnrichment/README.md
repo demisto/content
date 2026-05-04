@@ -28,7 +28,7 @@ This script is used in the following playbooks and scripts.
 | external_enrichment | Whether to call external integrations for enrichment.<br/>- 'true': enrich using enabled external integrations \(e.g., CIRCL CVE Search, CVE Search v2\).<br/>- 'false': use only existing TIM data; skip external integrations.<br/>If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.<br/> |
 | verbose | Whether to retrieve a human-readable entry for every command; if false, only the final result is summarized and error entries are suppressed. |
 | brands | A list of integration brands to run enrichment against.  <br/>Example: \`"CIRCL CVE Search, CVE Search v2"\`.  <br/>- If provided, only the selected brands are used. <br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.<br/>To see the available brands for the \`cve\` command, run: \`\!ProvidesCommand command=cve\`.<br/> |
-| additional_fields | When set to true, the output will also include an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`ID\`, \`Brand\`, \`CVSS\`, <br/>\`Description\`, \`Published\`, \`CVSS\`.  <br/>When set to false, only the standard keys are returned.<br/> |
+| additional_fields | When set to true, the output will also include an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`ID\`, \`Brand\`, \`CVSS\`, <br/>\`Description\`, \`Published\`.  <br/>When set to false, only the standard keys are returned.<br/> |
 
 ## Outputs
 
@@ -41,6 +41,7 @@ This script is used in the following playbooks and scripts.
 | CVEEnrichment.MaxCVSSRating | The max CVSS rating of the indicator. | string |
 | CVEEnrichment.Results | List of all indicators found for the CVE. | array |
 | CVEEnrichment.Status | The status of the indicator. | string |
+| CVEEnrichment.Results.ID | The ID of the indicator. | string |
 | CVEEnrichment.Results.Brand | The brand of the indicator. | string |
 | CVEEnrichment.Results.CVSS | The CVSS of the indicator. | number |
 | CVEEnrichment.Results.Description | The description of the indicator. | string |
