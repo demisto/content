@@ -360,7 +360,7 @@ tasks:
       "no":
       - "4"
     scriptarguments:
-      integration:
+      brandname:
         simple: SysdigResponseActions
     separatecontext: false
     continueonerrortype: ""
