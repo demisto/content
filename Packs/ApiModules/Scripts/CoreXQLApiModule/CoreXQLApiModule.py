@@ -632,10 +632,10 @@ def is_empty(item_to_check: Any) -> bool:
 def is_timestamp_field(key: str) -> bool:
     """
     Check if a field name represents a timestamp field that should be converted.
-    
+
     Args:
         key (str): The field name to check.
-    
+
     Returns:
         bool: True if the field should be treated as a timestamp, False otherwise.
     """
