@@ -1,8 +1,8 @@
 id: Sysdig Trigger System Capture
 version: -1
 name: Sysdig Trigger System Capture
-description: Example playbook on how to manage different response actions based on
-  incident fields.
+description: Enriches Sysdig runtime event incidents with agent information via API
+  and optionally triggers a system capture on the affected host.
 tags:
 - Runtime
 - Sysdig
@@ -21,14 +21,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -10,
-          "y": -350
+          "y": -450
         }
       }
     note: false
@@ -333,6 +333,43 @@ tasks:
         "position": {
           "x": -200,
           "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e
+    type: condition
+    task:
+      id: b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e
+      version: -1
+      name: Is Sysdig Response Actions enabled?
+      description: Checks if the SysdigResponseActions integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+      "no":
+      - "4"
+    scriptarguments:
+      integration:
+        simple: SysdigResponseActions
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": -320
         }
       }
     note: false
