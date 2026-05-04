@@ -1,3 +1,1 @@
-# Partner Contributed Integration
-
-Integration Author:  **Cyfirma Team**.
+## DeCYFIR IOCs
