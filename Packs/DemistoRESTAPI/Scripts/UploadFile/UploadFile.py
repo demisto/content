@@ -1,22 +1,31 @@
 from CommonServerPython import *
 
 
-def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = "", as_incident_attachment: bool = True):
-    service_name = "incident" if as_incident_attachment else "entry"
+def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = "", target: str = "entry"):
+    if "incident" in target or "case" in target:
+        service_name = "incident"
+    if "case" in target:
+        raw_id = incident_id.split('-')[1]
+        incident_id = f"INCIDENT-{raw_id}"
     return demisto.executeCommand(
         "core-api-multipart", {"uri": f"{service_name}/upload/{incident_id}", "entryID": entry_id, "body": body, "using": using}
     )
 
 
+def validate_target(target: str) -> str:
+    if not is_platform() and "case" in target:
+        raise DemistoException("Case attachment is only available in PLATFORM")
+    return target
+        
 def upload_file_command(args: dict) -> list[CommandResults]:
     command_results: list[CommandResults] = []
     incident_id = args.get("incID", "")
     entry_ids = argToList(args.get("entryID", ""))
     body = args.get("body", "")
-    target = args.get("target", "war room entry")
+    target = validate_target(args.get("target", "war room entry"))
     using = args.get("using", "")
     for entry_id in entry_ids:
-        response = upload_file(incident_id, entry_id, body, using, "attachment" in target)
+        response = upload_file(incident_id, entry_id, body, using, target)
         if is_error(response[0]):
             raise DemistoException(f"There was an issue uploading the file. Error received: {response[0]['Contents']}")
 

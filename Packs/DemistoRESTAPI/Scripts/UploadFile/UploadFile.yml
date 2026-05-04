@@ -12,7 +12,9 @@ args:
   - ''
   required: true
   isArray: true
-- description: Incident ID to upload the file to.
+- description: |-
+    Incident ID to upload the file to.
+    In PLATFORM machine, when uploading a file to a case, provide the case id.
   name: incID
   required: true
 - description: Integration instance used to run the script.
@@ -27,11 +29,13 @@ args:
     - Available options are:
     - `war room entry`: the file will be uploaded as war room entry.
     - `incident attachment`: the file will be uploaded as incident attachment.
-    - default are `war room entry`.
+    - `case attachment` (for PLATFORM only)
+    - default is `war room entry`.
   name: target
   predefined:
   - 'war room entry'
   - 'incident attachment'
+  - 'case attachment'
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
