@@ -100,7 +100,6 @@ To obtain your API credentials:
 | **Max incidents per fetch** | No | 10000 | Maximum incidents per fetch cycle |
 | **First fetch time** | No | 3 days | Initial time range for first fetch |
 | **Fetch Interval (Minutes)** | No | 1 | Time window for subsequent fetches |
-| **Show Content** | No | False | Show Alarm Content Field |
 
 ### Filtering Options
 
@@ -211,16 +210,11 @@ Change the status of one or more alarms.
   - `DUPLICATE`, `PROCESSED_INTERNALLY`, `MITIGATED`, `NOT_APPLICABLE`
 - `comments` (Optional): Status change comments
 - `company_id` (Optional): Override default company ID
-- `update_related_finding_status` (Optional, boolean): If set to true, also update related finding status.
-- `email` (Conditionally Required): Email of action owner. **Required if `update_related_finding_status` is true.**
-
-**Relational Logic:**
-If you select `update_related_finding_status`, you must provide the `email` field.
 
 **Example:**
 
 ```
-!socradar-change-alarm-status alarm_ids="81171696" status_reason="INVESTIGATING" comments="Under review" update_related_finding_status=true email="analyst@company.com"
+!socradar-change-alarm-status alarm_ids="81171696" status_reason="INVESTIGATING" comments="Under review"
 ```
 
 **From Incident Context:**
@@ -277,7 +271,7 @@ Add a comment to an alarm.
 **Example:**
 
 ```
-!socradar-add-comment alarm_id="81171696" user_email="analyst@company.com" comment="Investigating with security team"
+!socradar-add-comment alarm_id="81171696" user_email="useremail" comment="Investigating with security team"
 ```
 
 #### `socradar-ask-analyst`
@@ -311,7 +305,7 @@ Change alarm assignee(s).(User must be defined the same company)
 **Example:**
 
 ```
-!socradar-add-assignee alarm_id="81171696" user_emails="analyst1@company.com,analyst2@company.com"
+!socradar-add-assignee alarm_id="81171696" user_emails="useremail"
 ```
 
 #### `socradar-add-tag`
@@ -374,8 +368,7 @@ Sample incidents:
 - [81171696] HIGH | OPEN | example.com
   Company: 789 | Type: Brand Protection / Impersonating Domain
   
-- [81171697] CRITICAL | OPEN | admin@company.com
-  Company: 789 | Type: Cyber Threat Intelligence / Stolen Credentials
+
 ```
 
 ---
@@ -452,7 +445,7 @@ domain_info = incident.get('CustomFields', {}).get('socradarcontentdns_informati
 # Take action
 demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': alarm_id,
-    'user_emails': 'legal@company.com'
+    'user_emails': 'useremail@usermail.com'
 })
 ```
 
@@ -480,9 +473,9 @@ company_id = incident.get('CustomFields', {}).get('socradarcompanyid')
 
 # Route to appropriate team
 if company_id == "789":
-    assign_to = "team-a@company.com"
+    assign_to = "useremail"
 else:
-    assign_to = "team-b@company.com"
+    assign_to = "useremail"
 
 demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': incident.get('dbotMirrorId'),
@@ -642,5 +635,3 @@ SOCRadar is a leading Extended Threat Intelligence (XTI) platform that helps org
 - Track dark web activities
 - Manage attack surface exposure
 - Ensure supply chain security
-
-Learn more: [www.socradar.io](https://www.socradar.io)

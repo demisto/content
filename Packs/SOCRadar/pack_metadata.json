@@ -1,8 +1,9 @@
 {
     "name": "SOCRadar",
-    "description": "Streamline remediation of alerts and incidents with enhanced multi-tenant capabilities. Easily manage and automate security operations across multiple tenants, including quick, automated queries on ThreatFusion to get a risk reputation score.",
+    "created": "2021-08-05T16:43:31Z",
+    "description": "Streamline remediation of alerts and incidents with enhanced multi-tenant capabilities. Easily manage and automate security operations across multiple tenants, including for enrichment threat intelligence, reputation checking, and IoC feeds",
     "support": "partner",
-    "currentVersion": "2.2.3",
+    "currentVersion": "2.3.0",
     "author": "SOCRadar Cyber Intelligence Inc.",
     "defaultDataSource": "SOCRadarIncidentsV4",
     "url": "www.socradar.io",
@@ -10,8 +11,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "threat intelligence",
+        "reputation",
+        "ioc",
+        "enrichment"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Indicator Enrichment"
+    ],
     "keywords": [
         "Threat Intelligence",
         "CTI",
@@ -19,7 +28,9 @@
         "Incident Management",
         "Brand Protection",
         "Credential Monitoring",
-        "SOCRadar"
+        "socradar",
+        "Reputation",
+        "IoC Enrichment"
     ],
     "devEmail": [
         "xsoar@socradar.io"

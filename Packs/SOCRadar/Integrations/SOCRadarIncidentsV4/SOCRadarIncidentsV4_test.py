@@ -1,7 +1,6 @@
 import pytest
 from datetime import datetime, timedelta
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -269,7 +268,11 @@ def test_test_module_success(mock_client, mocker):
 def test_test_module_failure(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
 
-    mocker.patch.object(mock_client, "search_incidents", return_value={"is_success": False, "message": "Authentication failed"})
+    mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        return_value={"is_success": False, "message": "Authentication failed"},
+    )
     with capfd.disabled():
         result = test_module(mock_client)
     assert "Test failed" in result
@@ -279,7 +282,11 @@ def test_test_module_unauthorized(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
     from CommonServerPython import DemistoException
 
-    mocker.patch.object(mock_client, "search_incidents", side_effect=DemistoException("401 Unauthorized"))
+    mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        side_effect=DemistoException("401 Unauthorized"),
+    )
     with capfd.disabled():
         result = test_module(mock_client)
     assert "Authorization Error" in result
@@ -360,7 +367,11 @@ def test_fetch_incidents_subsequent_fetch(mock_client, mocker):
     from SOCRadarIncidentsV4 import fetch_incidents
 
     last_fetch_time = (datetime.now() - timedelta(minutes=5)).isoformat() + "Z"
-    mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([_make_alarm(alarm_id=200)]))
+    mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        return_value=_mock_response([_make_alarm(alarm_id=200)]),
+    )
 
     next_run, incidents = fetch_incidents(
         client=mock_client,
@@ -379,7 +390,11 @@ def test_fetch_incidents_with_duplicates(mock_client, mocker):
     from SOCRadarIncidentsV4 import fetch_incidents
 
     last_fetch_time = (datetime.now() - timedelta(minutes=5)).isoformat() + "Z"
-    mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([_make_alarm(alarm_id=123)]))
+    mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        return_value=_mock_response([_make_alarm(alarm_id=123)]),
+    )
 
     next_run, incidents = fetch_incidents(
         client=mock_client,
@@ -511,7 +526,10 @@ def test_add_comment_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_comment_command
 
     mocker.patch.object(mock_client, "add_alarm_comment", return_value={"is_success": True})
-    result = add_comment_command(mock_client, {"alarm_id": "1", "user_email": "user@example.com", "comment": "test"})
+    result = add_comment_command(
+        mock_client,
+        {"alarm_id": "1", "user_email": "user@example.com", "comment": "test"},
+    )
     assert "Comment added" in result.readable_output
 
 
