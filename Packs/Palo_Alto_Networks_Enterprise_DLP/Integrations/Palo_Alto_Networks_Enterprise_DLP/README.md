@@ -1,5 +1,8 @@
 Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
-This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP
+This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP.
+
+**Note**:  
+This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Access" channels only.
 
 ### Setup
 
@@ -11,11 +14,15 @@ Make sure the toggle at the bottom is switched on.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| Server URL | Default value is https://api.dlp.paloaltonetworks.com/v1/ | False |
+| Authentication URL | Default value is https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token | False |
 | Access Token | Access token generated in the Enterprise DLP UI | True |
 | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Long running instance |  | False |
+| Fetch incidents |  | False |
+| Maximum number of incidents per fetch | Default value is 50. | False |
+| First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
 | DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |
@@ -51,6 +58,18 @@ Fetches DLP reports associated with a report ID.
 | DLP.Report.DataPatternMatches.HighConfidenceFrequency | unknown | The number of high confidence occurrences. |
 | DLP.Report.DataPatternMatches.MediumConfidenceFrequency | unknown | The number of medium confidence occurrences. |
 | DLP.Report.DataPatternMatches.LowConfidenceFrequency | unknown | The number of low confidence occurrences. |
+| DLP.Report.DataPatternMatches.MatchedConfidenceLevel | String | The matched confidence level of the data pattern \(e.g., "high", "medium", "low"\). Only present for patterns that matched. |
+| DLP.Report.DataProfiles.Name | String | The name of the data profile. |
+| DLP.Report.DataProfiles.Id | Number | The ID of the data profile. |
+| DLP.Report.DataProfiles.Version | Number | The version of the data profile. |
+| DLP.Report.DataProfiles.IsTriggered | Boolean | Whether the data profile was triggered. |
+| DLP.Report.DataProfiles.DataPatterns.Id | String | The data pattern ID within the profile. |
+| DLP.Report.DataProfiles.DataPatterns.IsMatched | Boolean | Whether the data pattern matched. |
+| DLP.Report.DataProfiles.DataPatterns.ConfidenceLevel | String | The confidence level configured for the pattern. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceCount | Number | The number of occurrences detected. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceOperatorType | String | The occurrence operator type \(e.g., "more_than_equal_to", "between"\). |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceLow | Number | The low bound for "between" operator type. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceHigh | Number | The high bound for "between" operator type. |
 
 ### pan-dlp-update-incident
 
@@ -129,7 +148,7 @@ Gets the Slack bot message to send to the user for gathering feedback.
 ### pan-dlp-reset-last-run
 
 ***
-Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+Deprecated.  Reset the "last run" timestamp via the integration instance configuration window.
 
 #### Base Command
 
@@ -137,9 +156,22 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+In case specific DLP incidents are not appearing on the Cortex tenant, verify the following:
+
+1. **DLP Regions Configuration**
+   - Check the Strata Cloud Manager to confirm which regions generated the incidents.
+   - **Note**: The *DLP Regions* dropdown menu shows all currently-supported regions.
+   - Ensure all regions where incidents originated are selected from the dropdown menu.
+
+2. **Strata Cloud Manager (SCM) Channel Support**
+   - Verify the channel in SCM console under the incident details.
+   - **Note**: Only incidents from the "NGFW" and "Prisma Access" SCM channels are supported.
+   - Incidents from other channels, such as Endpoint DLP, will not be fetched by this integration.
