@@ -301,13 +301,16 @@ def get_incidents_batch_by_time_request(client, params):
 
     incidents_list_limit = incidents_list[:fetch_limit]
 
+    # Return the final created_after so the caller can persist progress even when no incidents were found
+    final_created_after = created_after.strftime(TIME_FORMAT)
+
     demisto.debug(
         f"[BATCH_END] get_incidents_batch_by_time_request completed, "
         f"total_iterations={iteration_count}, final_incident_count={len(incidents_list_limit)}, "
         f"incidents_truncated={len(incidents_list) > (fetch_limit or 0)}"
     )
 
-    return incidents_list_limit
+    return incidents_list_limit, final_created_after
 
 
 def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
@@ -332,8 +335,8 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             "state": state,
             "fetch_limit": fetch_limit,
         }
-        id = last_fetched_id[state]
-        incidents_list = get_incidents_batch_by_time_request(client, request_params)
+
+        incidents_list, final_created_after = get_incidents_batch_by_time_request(client, request_params)
         incidents.extend(incidents_list)
 
         if incidents_list:
@@ -343,6 +346,10 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
                 0
             ] + "Z"
             last_fetched_id[state] = id
+        else:
+            # Even when no incidents were found, persist the progress made by the batch loop
+            # so the next fetch starts from where we left off (e.g., after hitting MAX_API_REQUESTS).
+            last_fetch[state] = final_created_after
 
     demisto.debug(f"End of current fetch function with last_fetch {last_fetch!s} and last_fetched_id {last_fetched_id!s}")
 
