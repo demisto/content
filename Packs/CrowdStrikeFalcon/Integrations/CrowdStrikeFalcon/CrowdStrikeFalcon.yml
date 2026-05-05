@@ -5208,7 +5208,7 @@ script:
     - description: A comma-separated list of CID(s) to execute the workflow on.
       name: execution_cid
       isArray: true
-    - description: A key used for deduplication of workflow executions.
+    - description: A key used for deduplication of workflow executions, if unset a new UUID is used.
       name: key
     - description: A URL reference to the source that triggered the workflow execution.
       name: source_event_url

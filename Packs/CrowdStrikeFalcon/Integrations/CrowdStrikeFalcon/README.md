@@ -6789,10 +6789,7 @@ Lists workflow definitions from CrowdStrike Falcon.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.WorkflowDefinition | Unknown | The raw API response containing workflow definition details. |
-| CrowdStrike.WorkflowDefinition.id | String | The workflow definition ID. |
+**`CrowdStrike.WorkflowDefinition.*`** - The raw API response containing workflow details.
 
 #### Command example
 
@@ -6801,7 +6798,7 @@ Lists workflow definitions from CrowdStrike Falcon.
 ### cs-falcon-workflow-execute
 
 ***
-Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find workflows to run. Note: This command executes on-demand workflows only.
+Executes an on-demand workflow. Use `cs-falcon-list-workflow-definitions` to find workflows to run. Note: This command executes on-demand workflows only.
 
 #### Base Command
 
@@ -6814,16 +6811,13 @@ Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find 
 | definition_id | The workflow definition ID to execute. Supports a comma-separated list. Either definition_id or name must be provided. | Optional |
 | name | The workflow name to execute. Either definition_id or name must be provided. | Optional |
 | execution_cid | A comma-separated list of CID(s) to execute the workflow on. | Optional |
-| key | A key used for deduplication of workflow executions. | Optional |
+| key | A key used for deduplication of workflow executions, if unset a new UUID is used. | Optional |
 | source_event_url | A URL reference to the source that triggered the workflow execution. | Optional |
 | body | The JSON body to pass to the workflow execution. Can be an empty object {}. Default is {}. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Workflow | Unknown | The raw API response containing workflow execution details. |
-| CrowdStrike.Workflow.id | String | The workflow execution ID. |
+**`CrowdStrike.Workflow.*`** - The raw API response containing workflow execution details.
 
 #### Command example
 
@@ -6852,10 +6846,7 @@ Lists workflow executions from CrowdStrike Falcon.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Workflows.Executions | Unknown | The raw API response containing workflow execution details. |
-| CrowdStrike.Workflows.Executions.id | String | The workflow execution ID. |
+**`CrowdStrike.Workflows.Executions.*`** - The raw API response containing workflow execution details.
 
 #### Command example
 
@@ -6878,10 +6869,7 @@ Gets detailed results for specific workflow executions.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Workflows.ExecutionResults | Unknown | The raw API response containing workflow execution result details. |
-| CrowdStrike.Workflows.ExecutionResults.id | String | The workflow execution result ID. |
+**`CrowdStrike.Workflows.ExecutionResults.*`** - The raw API response containing workflow execution results.
 
 #### Command example
 
