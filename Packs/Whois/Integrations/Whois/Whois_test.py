@@ -1043,7 +1043,7 @@ def test_whois_and_domain_command_with_exception(mocker: MockerFixture):
 
     import whois
     from Whois import whois_and_domain_command
-    from whois.parser import PywhoisError
+    from whois.exceptions import PywhoisError
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "args", return_value={"domain": "raw.githubusercontent.com"})
