@@ -143,34 +143,32 @@ def hash_event(event: dict) -> str:
 def deduplicate_events(events: list[dict], previous_hashes: list[str]) -> tuple[list[dict], list[str]]:
     """Remove events whose content-hash matches a previously-seen hash.
 
+    Filters out events that match either a hash from the previous run OR a hash
+    already seen earlier in the same batch (intra-batch dedup).
+
     Returns:
-        (new_events, all_hashes) where:
-        - new_events: events NOT seen in `previous_hashes` (in original order).
-        - all_hashes: union of `previous_hashes` and the new events' hashes — i.e.
-          everything we should remember next run. This guarantees that even if a
-          fetch returns no new events, prior dedup state is preserved.
+        (new_events, new_hashes) where both are bounded by len(events) and only
+        contain entries for unique events from THIS run. If `events` is empty,
+        `previous_hashes` is returned unchanged to preserve dedup state.
     """
     if not events:
         demisto.debug("[Dedup] No events to process; returning previous hashes unchanged.")
         return [], list(previous_hashes)
 
-    if not previous_hashes:
-        demisto.debug(f"[Dedup] First run - hashing {len(events)} event(s).")
-        return list(events), [hash_event(event) for event in events]
-
     demisto.debug(f"[Dedup] Checking {len(events)} event(s) against {len(previous_hashes)} previous hash(es).")
     previous_set = set(previous_hashes)  # O(1) lookup
     new_events: list[dict] = []
-    all_hashes: list[str] = list(previous_hashes)  # carry prior hashes forward
+    new_hashes: list[str] = []
     for event in events:
         h = hash_event(event)
         if h not in previous_set:
             new_events.append(event)
-            all_hashes.append(h)
+            new_hashes.append(h)
+            previous_set.add(h)  # intra-batch dedup: skip identical events later in this batch
 
     skipped = len(events) - len(new_events)
     demisto.debug(f"[Dedup] Skipped {skipped} duplicate(s); {len(new_events)} new event(s) remain.")
-    return new_events, all_hashes
+    return new_events, new_hashes
 
 
 def get_max_fetch(limit: Optional[int]) -> int:
@@ -334,14 +332,14 @@ def main() -> None:  # pragma: no cover
 
             # Dedup against hashes from last_run (no unique event ID is returned by the API).
             previous_hashes = last_run.get(LAST_RUN_HASHES_KEY) or []
-            events, all_hashes = deduplicate_events(events, previous_hashes)
+            events, new_hashes = deduplicate_events(events, previous_hashes)
 
             try:
                 demisto.info(f"[Fetch] Sending {len(events)} event(s) to XSIAM.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setIntegrationContext({})
-                # Persist hashes only on successful push (includes both previous and new hashes).
-                last_run[LAST_RUN_HASHES_KEY] = all_hashes
+                # Persist this run's hashes only (bounded by max_fetch) — replaces any prior hashes.
+                last_run[LAST_RUN_HASHES_KEY] = new_hashes
                 demisto.debug(f"[Fetch] Stored {len(last_run[LAST_RUN_HASHES_KEY])} hash(es) in last_run.")
             except Exception as e:
                 demisto.info(f"[Fetch] Push to XSIAM failed: [{e}]")
