@@ -361,7 +361,7 @@ def restore_latest_clean_snapshot(client: Client, args: dict[str, Any]) -> str:
 
     if not snapshot_id:
         raise ValueError(
-            f"CohesityHelios error: no clean snapshot available for " f"entity {entity_name} (id={entity_id}). Cannot restore."
+            f"CohesityHelios error: no clean snapshot available for entity {entity_name} (id={entity_id}). Cannot restore."
         )
 
     if not cluster_id:

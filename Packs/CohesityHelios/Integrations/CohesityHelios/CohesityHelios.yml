@@ -120,15 +120,15 @@ script:
       description: Job ID from the alert propertyList.
       type: String
   - arguments:
-    - description: Alert ID. If not provided, extracted automatically from the incident context.
+    - description: The alert ID to suppress.
       name: alert_id
-      required: false
+      required: true
     description: Ignore detected anomalous object by suppressing the alert.
     name: cohesity-helios-ignore-anomalous-object
   - arguments:
-    - description: Alert ID. If not provided, extracted automatically from the incident context.
+    - description: The alert ID to restore the latest clean snapshot for.
       name: alert_id
-      required: false
+      required: true
     description: Restore the latest clean snapshot for the given object using incidence details.
     name: cohesity-helios-restore-latest-clean-snapshot
   isfetch: true
@@ -136,6 +136,10 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.12.8.3296088
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
