@@ -87,7 +87,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-public-ip-addresses-list",
         "azure-vm-public-ip-details-get",
         "azure-vn-public-ip-addresses-list",
-        "azure-vn-public-ip-list",
+        "azure-vn-public-ip-address-get",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
@@ -223,7 +223,10 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": ["azure-storage-container-blob-property-get", "azure-storage-blob-property-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
+        "azure-storage-container-blob-property-get",
+        "azure-storage-blob-property-get",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": ["azure-storage-blob-tag-get"],
 }
 
@@ -3112,7 +3115,6 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
         raise DemistoException(f"Failed to get headers from response for blob {blob_name}")
 
     raw_response = response.headers  # type: ignore[attr-defined]
-    demisto.debug(f"{raw_response=}")
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
     outputs = {}
 
@@ -3136,7 +3138,6 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
         )
 
     outputs["Blob"]["ContainerName"] = outputs.pop("name")
-    demisto.debug(f"{outputs=}")
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Azure.Storage.Blob",
@@ -4578,7 +4579,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         )
 
     return CommandResults(
-        outputs_prefix="Azure.VirtualNetworks.IPConfigurations",
+        outputs_prefix="Azure.VirtualNetworks.PublicIPAddresses",
         outputs_key_field="id",
         outputs=response,
         readable_output=human_readable,
@@ -5043,7 +5044,7 @@ def main():  # pragma: no cover
             "azure-vm-network-interface-details-get": get_network_interface_command,
             "azure-vn-network-interface-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
-            "azure-vn-public-ip-list": get_public_ip_details_command,
+            "azure-vn-public-ip-address-get": get_public_ip_details_command,
             "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
             "azure-storage-allow-access-quick-action": storage_account_update_command,
             "azure-webapp-set-http2-quick-action": set_webapp_config_command,

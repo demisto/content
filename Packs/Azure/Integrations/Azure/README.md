@@ -1154,7 +1154,7 @@ Run this command to get the blob service properties of a specific account storag
 ### azure-vm-public-ip-details-get
 
 ***
-Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-list.
+Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-address-get.
 
 #### Base Command
 
@@ -1875,12 +1875,12 @@ Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virt
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.<br/>. | Required |
-| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
-| skip_shutdown | Set to True to request non-graceful VM shutdown. Default value is False. Possible values are: true, false. Default is false. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| subscription_id | The subscription ID.                                                                                                                                                              | Required |
+| resource_group_name | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command. | Required |
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.   | Required |
+| skip_shutdown | Set to True to request non-graceful VM shutdown. Default value is False. Possible values are: true, false. Default is false.                                                      | Optional |
 
 #### Context Output
 
@@ -2010,8 +2010,7 @@ Updates a key vault in the specified subscription. The required permissions are:
 | Azure.KeyVault.Vault.type | String | Resource type in Azure. |
 | Azure.KeyVault.Vault.location | String | Key Vault location. |
 | Azure.KeyVault.Vault.tags | unknown | Resource tags. |
-| Azure.KeyVault.Vault.properties.sku.family | String | SKU family name. |
-| Azure.KeyVault.Vault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
+| Azure.KeyVault.Vault.properties.sku | String | SKU details. |
 | Azure.KeyVault.Vault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
 | Azure.KeyVault.Vault.properties.accessPolicies | unknown | An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. |
 | Azure.KeyVault.Vault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
@@ -2175,12 +2174,11 @@ Gets public IP addresses in a resource group. Required permissions: Microsoft.Ne
 | Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState | String | The public IP address's provisioning state. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion | String | The public IP address's version. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress | String | The public IP address's IP address. |
-| Azure.VirtualNetworks.PublicIPAddresses.properties.domainNameLabel | String | The public IP address's domain name label. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAllocationMethod | String | The public IP address's allocation method. |
-| Azure.VirtualNetworks.PublicIPAddresses.properties.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.resourceGuid | String | The public IP address's resource GUID. |
 | Azure.VirtualNetworks.PublicIPAddresses.sku.name | String | The public IP address's SKU name. |
 | Azure.VirtualNetworks.PublicIPAddresses.sku.tier | String | The public IP address's SKU tier. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. |
 
 ### azure-vn-security-groups-list
 
@@ -2231,7 +2229,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to create. | Required |
-| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Required |
+| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Required |
 | action | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny. Default is Allow. | Optional |
 | protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
 | source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". Default is Any. | Optional |
@@ -2339,7 +2337,7 @@ Update a security rule. If one does not exist, it will be created. Required perm
 | resource_group_name | The name of the resource group. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to be updated. | Required |
-| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Optional |
+| direction | The direction of the rule. Possible values are: Inbound, Outbound. | Optional |
 | action | Whether to allow the traffic. Possible values are "Allow" and "Deny". Possible values are: Allow, Deny. | Optional |
 | protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP. | Optional |
 | source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional |
@@ -2439,14 +2437,14 @@ Gets the properties of a given network interface. Required permissions: Microsof
 | Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings | String | The DNS configuration of the network interface, including DNS servers and domain name. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding | String | Indicates whether IP forwarding is enabled for the network interface. |
 
-### azure-vn-public-ip-list
+### azure-vn-public-ip-address-get
 
 ***
 Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read
 
 #### Base Command
 
-`azure-vn-public-ip-list`
+`azure-vn-public-ip-address-get`
 
 #### Input
 
@@ -2460,15 +2458,17 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.VirtualNetworks.IPConfigurations.location | String | The Azure region where the IP configuration resource is located. |
-| Azure.VirtualNetworks.IPConfigurations.id | String | The unique resource ID of the IP configuration. |
-| Azure.VirtualNetworks.IPConfigurations.name | String | The name of the IP configuration. |
-| Azure.VirtualNetworks.IPConfigurations.etag | String | A unique read-only string that changes whenever the IP configuration resource is updated. |
-| Azure.VirtualNetworks.IPConfigurations.properties.idleTimeoutInMinutes | String | The idle timeout value in minutes for the associated public IP address. |
-| Azure.VirtualNetworks.IPConfigurations.properties.ipAddress | String | The private IP address assigned to the network interface or resource. |
-| Azure.VirtualNetworks.IPConfigurations.properties.provisioningState | String | The current provisioning state of the IP configuration \(e.g., Succeeded, Updating, Failed\). |
-| Azure.VirtualNetworks.IPConfigurations.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. |
-| Azure.VirtualNetworks.IPConfigurations.properties.publicIPAddressVersion | String | The version of the public IP address \(IPv4 or IPv6\). |
-| Azure.VirtualNetworks.IPConfigurations.properties.publicIPAllocationMethod | String | Defines how the public IP address is allocated — Static or Dynamic. |
-| Azure.VirtualNetworks.IPConfigurations.properties.resourceGuid | String | The unique Azure resource GUID for the IP configuration. |
-| Azure.VirtualNetworks.IPConfigurations.properties.sku | String | The SKU of the public IP address associated with the configuration, defining its performance tier. |
+| Azure.VirtualNetworks.PublicIPAddresses.name | String | The public IP address's name. |
+| Azure.VirtualNetworks.PublicIPAddresses.id | String | The public IP address's ID. |
+| Azure.VirtualNetworks.PublicIPAddresses.location | String | The location of the public IP address. |
+| Azure.VirtualNetworks.PublicIPAddresses.sku | String | The public IP address's SKU. |
+| Azure.VirtualNetworks.PublicIPAddresses.type | String | The type of the public IP address. |
+| Azure.VirtualNetworks.PublicIPAddresses.etag | String | The public IP address's ETag. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState | String | The public IP address's provisioning state. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion | String | The public IP address's version. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress | String | The public IP address's IP address. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAllocationMethod | String | The public IP address's allocation method. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.resourceGuid | String | The public IP address's resource GUID. |
+| Azure.VirtualNetworks.PublicIPAddresses.sku.name | String | The public IP address's SKU name. |
+| Azure.VirtualNetworks.PublicIPAddresses.sku.tier | String | The public IP address's SKU tier. |
+| Azure.VirtualNetworks.PublicIPAddresses.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. |

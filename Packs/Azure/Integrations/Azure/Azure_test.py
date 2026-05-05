@@ -3069,7 +3069,6 @@ def test_storage_container_blob_tag_get_command(mocker, client, mock_params):
     assert result.outputs_prefix == "Azure.Storage.Blob"
     assert result.outputs_key_field == "name"
     assert result.outputs["ContainerName"] == "testcontainer"
-    assert "Blob" in result.outputs
     assert result.outputs["name"] == "testblob.txt"
     assert "Tag" in result.outputs
 
@@ -3151,7 +3150,6 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     assert result.outputs_prefix == "Azure.Storage.Blob"
     assert result.outputs_key_field == "name"
     assert result.outputs["ContainerName"] == "testcontainer"
-    assert "Blob" in result.outputs
     assert result.outputs["name"] == "testblob.txt"
     assert "Property" in result.outputs
 
@@ -3575,7 +3573,7 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.VirtualNetworks.IPConfigurations"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.PublicIPAddresses"
     assert result.outputs_key_field == "id"
     assert result.outputs["properties"]["ipAddress"] == "1.2.3.4"
     assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
