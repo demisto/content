@@ -500,3 +500,256 @@ def test_max_fetch_negative_number():
 
     with pytest.raises(DemistoException):
         get_max_fetch(-1)
+
+
+# Tests: hash_event
+
+
+class TestHashEvent:
+    """Tests for the hash_event helper function."""
+
+    def test_hash_is_deterministic(self):
+        """Hashing the same dict twice yields the same hash."""
+        from SaasSecurityEventCollector import hash_event
+
+        event = {"timestamp": "2025-01-01T00:00:00Z", "log_type": "audit", "user": "alice"}
+        assert hash_event(event) == hash_event(event)
+
+    def test_hash_is_key_order_independent(self):
+        """Different dict insertion order produces the same hash (sort_keys=True)."""
+        from SaasSecurityEventCollector import hash_event
+
+        event_a = {"a": 1, "b": 2, "c": 3}
+        event_b = {"c": 3, "b": 2, "a": 1}
+        assert hash_event(event_a) == hash_event(event_b)
+
+    def test_hash_differs_for_different_events(self):
+        """Two events with different content produce different hashes."""
+        from SaasSecurityEventCollector import hash_event
+
+        event_a = {"id": "1", "user": "alice"}
+        event_b = {"id": "2", "user": "alice"}
+        assert hash_event(event_a) != hash_event(event_b)
+
+    def test_hash_handles_nested_structures(self):
+        """Nested dicts/lists hash deterministically regardless of key order."""
+        from SaasSecurityEventCollector import hash_event
+
+        event_a = {"meta": {"x": 1, "y": 2}, "tags": ["a", "b"]}
+        event_b = {"tags": ["a", "b"], "meta": {"y": 2, "x": 1}}
+        assert hash_event(event_a) == hash_event(event_b)
+
+    def test_hash_handles_non_json_values(self):
+        """Non-JSON-native values (e.g., datetime) are stringified, not raising."""
+        from datetime import datetime
+
+        from SaasSecurityEventCollector import hash_event
+
+        event = {"timestamp": datetime(2025, 1, 1)}  # noqa: DTZ001
+        assert hash_event(event) == hash_event(event)
+
+    def test_hash_returns_hex_string(self):
+        """The returned hash is a 32-character hex string (MD5)."""
+        from SaasSecurityEventCollector import hash_event
+
+        h = hash_event({"a": 1})
+        assert isinstance(h, str)
+        assert len(h) == 32
+        assert all(c in "0123456789abcdef" for c in h)
+
+
+# Tests: deduplicate_events
+
+
+class TestDeduplicateEvents:
+    """Tests for the deduplicate_events helper function."""
+
+    def test_first_run_returns_all_events_and_their_hashes(self):
+        """When no previous hashes exist, every event passes through and is hashed."""
+        from SaasSecurityEventCollector import deduplicate_events, hash_event
+
+        events = [{"id": "1"}, {"id": "2"}, {"id": "3"}]
+        new_events, new_hashes = deduplicate_events(events, previous_hashes=[])
+
+        assert new_events == events
+        assert new_hashes == [hash_event(e) for e in events]
+
+    def test_empty_events_returns_empty(self):
+        """Empty input gives empty outputs and does not raise."""
+        from SaasSecurityEventCollector import deduplicate_events
+
+        new_events, new_hashes = deduplicate_events([], previous_hashes=["abc"])
+        assert new_events == []
+        assert new_hashes == []
+
+    def test_filters_out_duplicates(self):
+        """Events whose hash matches a previous hash are removed."""
+        from SaasSecurityEventCollector import deduplicate_events, hash_event
+
+        seen = {"id": "1", "user": "alice"}
+        new = {"id": "2", "user": "bob"}
+        events = [seen, new]
+        previous_hashes = [hash_event(seen)]
+
+        new_events, new_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
+
+        assert new_events == [new]
+        assert new_hashes == [hash_event(new)]
+
+    def test_preserves_event_order(self):
+        """Surviving events retain their original order."""
+        from SaasSecurityEventCollector import deduplicate_events
+
+        events = [{"id": "1"}, {"id": "2"}, {"id": "3"}, {"id": "4"}]
+        new_events, _ = deduplicate_events(events, previous_hashes=[])
+
+        assert [e["id"] for e in new_events] == ["1", "2", "3", "4"]
+
+    def test_no_duplicates_when_hashes_disjoint(self):
+        """If no event matches any previous hash, all events pass through."""
+        from SaasSecurityEventCollector import deduplicate_events
+
+        events = [{"id": "x"}, {"id": "y"}]
+        new_events, new_hashes = deduplicate_events(events, previous_hashes=["unrelated_hash"])
+
+        assert new_events == events
+        assert len(new_hashes) == 2
+
+    def test_all_events_are_duplicates(self):
+        """If every event matches a previous hash, the result is empty."""
+        from SaasSecurityEventCollector import deduplicate_events, hash_event
+
+        events = [{"id": "1"}, {"id": "2"}]
+        previous_hashes = [hash_event(e) for e in events]
+
+        new_events, new_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
+
+        assert new_events == []
+        assert new_hashes == []
+
+    def test_dedup_is_key_order_invariant(self):
+        """An event sent with reordered keys is still detected as a duplicate."""
+        from SaasSecurityEventCollector import deduplicate_events, hash_event
+
+        original = {"a": 1, "b": 2, "c": 3}
+        reordered = {"c": 3, "a": 1, "b": 2}
+        previous_hashes = [hash_event(original)]
+
+        new_events, new_hashes = deduplicate_events([reordered], previous_hashes=previous_hashes)
+
+        assert new_events == []
+        assert new_hashes == []
+
+
+# Tests: dedup integration in main() fetch-events flow
+
+
+class TestMainFetchEventsDedup:
+    """Tests for the dedup integration inside main()'s fetch-events branch."""
+
+    PARAMS = {
+        "url": "https://test.com/",
+        "credentials": {"identifier": "1234", "password": "1234"},
+        "max_fetch": 100,
+    }
+
+    def _common_mocks(self, mocker, last_run, queue):
+        """Wire up common demisto + Client mocks used by every test in this class."""
+        import SaasSecurityEventCollector
+
+        mocker.patch.object(Client, "http_request", side_effect=queue)
+        mocker.patch.object(demisto, "params", return_value=self.PARAMS)
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        return SaasSecurityEventCollector
+
+    def test_first_run_pushes_all_events_and_stores_hashes(self, mocker):
+        """
+        Given - last_run has no `hashed_recent_events` key (first run).
+        When  - main() runs fetch-events with a queue of events.
+        Then  - all fetched events are sent to XSIAM, and last_run is updated with
+                hashes for every pushed event.
+        """
+        from SaasSecurityEventCollector import hash_event
+
+        mod = self._common_mocks(
+            mocker,
+            last_run={},
+            queue=[
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=3)),
+                MockedResponse(status_code=204),
+            ],
+        )
+        send_mock = mocker.patch.object(mod, "send_events_to_xsiam")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+
+        mod.main()
+
+        sent_events = send_mock.call_args.kwargs.get("events")
+        assert len(sent_events) == 3
+        stored_last_run = set_last_run_mock.call_args.args[0]
+        expected_hashes = [hash_event(e) for e in sent_events]
+        assert stored_last_run["hashed_recent_events"] == expected_hashes
+
+    def test_subsequent_run_filters_duplicates(self, mocker):
+        """
+        Given - last_run already contains hashes for some of the upcoming events.
+        When  - main() runs fetch-events.
+        Then  - duplicates are removed before pushing; only new events are sent and
+                only their hashes are persisted in last_run.
+        """
+        from SaasSecurityEventCollector import hash_event
+
+        # Pre-compute hashes for events 1 and 2 — they should be filtered out.
+        already_seen = [{"id": 1}, {"id": 2}]
+        previous_hashes = [hash_event(e) for e in already_seen]
+
+        mod = self._common_mocks(
+            mocker,
+            last_run={"hashed_recent_events": previous_hashes},
+            queue=[
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=4)),
+                MockedResponse(status_code=204),
+            ],
+        )
+        send_mock = mocker.patch.object(mod, "send_events_to_xsiam")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+
+        mod.main()
+
+        sent_events = send_mock.call_args.kwargs.get("events")
+        # Only events 3 and 4 should remain after dedup.
+        assert sent_events == [{"id": 3}, {"id": 4}]
+        stored_last_run = set_last_run_mock.call_args.args[0]
+        assert stored_last_run["hashed_recent_events"] == [hash_event(e) for e in sent_events]
+
+    def test_hashes_not_stored_when_push_fails(self, mocker):
+        """
+        Given - last_run has previous hashes; XSIAM push raises an exception.
+        When  - main() runs fetch-events.
+        Then  - last_run["hashed_recent_events"] is NOT updated (still the previous
+                hashes), so a re-fetch on the next invocation will not falsely treat
+                the unsent events as duplicates.
+        """
+        from SaasSecurityEventCollector import hash_event
+
+        previous_hashes = [hash_event({"id": 999})]  # unrelated to events about to fetch
+
+        mod = self._common_mocks(
+            mocker,
+            last_run={"hashed_recent_events": previous_hashes},
+            queue=[
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=2)),
+                MockedResponse(status_code=204),
+            ],
+        )
+        mocker.patch.object(mod, "send_events_to_xsiam", side_effect=Exception("xsiam down"))
+        mocker.patch.object(demisto, "setIntegrationContext")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+
+        mod.main()
+
+        stored_last_run = set_last_run_mock.call_args.args[0]
+        # Hashes should remain unchanged (still the previous ones, not overwritten).
+        assert stored_last_run["hashed_recent_events"] == previous_hashes
