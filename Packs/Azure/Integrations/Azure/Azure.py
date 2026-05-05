@@ -227,7 +227,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": ["azure-storage-blob-tag-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": ["azure-storage-blob-tag-get"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -2562,7 +2562,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
 
     updated_properties = assign_params(
         protocol="*" if protocol == "Any" else protocol,
-        access=action,
+        access=action or access,
         priority=priority,
         direction=direction,
         description=description,
@@ -2606,8 +2606,6 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
             updated_properties["sourceAddressPrefix"] = "*" if source == "Any" else source
 
     properties.update(updated_properties)
-    if access:
-        properties.update({"access": access})
 
     rule = client.create_or_update_rule(
         security_group=security_group_name,
