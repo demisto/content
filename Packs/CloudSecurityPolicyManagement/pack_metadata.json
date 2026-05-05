@@ -1,0 +1,41 @@
+{
+    "name": "Cloud Security Policy Management",
+    "description": "This pack contains playbooks and scripts used for tasks in other cloud security content packs.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr"
+    ],
+    "created": "2026-04-02T11:25:26Z",
+    "dependencies": {
+        "AWS": {
+            "mandatory": true,
+            "display_name": "AWS"
+        },
+        "Azure": {
+            "mandatory": true,
+            "display_name": "Azure"
+        }
+    },
+    "displayedImages": [
+        "AWS",
+        "Azure"
+    ]
+}

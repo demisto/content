@@ -2709,6 +2709,57 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
     return st
 
 
+def sanitize_html_output(value, allow_tags=None):
+    # type: (str, Optional[Set[str]]) -> str
+    """Escape HTML for safe rendering in ContentsFormat:'html' outputs.
+
+    :type value: ``str``
+    :param value: Raw string that may contain attacker-controlled content.
+
+    :type allow_tags: ``Optional[Set[str]]``
+    :param allow_tags: Optional set of allowed HTML tag names
+        (e.g. ``{'b','i','a','br','p','table','tr','td','th'}``). If ``None``, escapes everything.
+
+    :return: HTML-safe string.
+    :rtype: ``str``
+    """
+    try:
+        from html import escape as _html_escape  # Python 3
+    except ImportError:
+        from cgi import escape as _cgi_escape  # Python 2
+
+        def _html_escape(s, quote=True):
+            return _cgi_escape(s, quote=quote).replace("'", "&#x27;")
+    if allow_tags is None:
+        return _html_escape(str(value))
+    # For allowlist mode, use bleach if available, else strip all
+    try:
+        import bleach
+        return bleach.clean(str(value), tags=allow_tags, strip=True)
+    except ImportError:
+        return _html_escape(str(value))
+
+
+def getFilePathSafe(entry_id):
+    # type: (str) -> dict
+    """Wrapper around demisto.getFilePath() that basenames the 'name' field.
+
+    Prevents path traversal when callers use the returned name as a filesystem destination.
+
+    :type entry_id: ``str``
+    :param entry_id: The entry ID of the file.
+
+    :return: dict with ``'id'``, ``'path'``, and ``'name'`` keys, where ``'name'`` is basenamed.
+    :rtype: ``dict``
+    """
+    result = demisto.getFilePath(entry_id)
+    if not result:
+        return result
+    if "name" in result:
+        result["name"] = os.path.basename(result["name"])
+    return result
+
+
 def raiseTable(root, key):
     newInternal = {}
     if key in root and isinstance(root[key], dict):

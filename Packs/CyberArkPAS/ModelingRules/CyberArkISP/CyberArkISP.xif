@@ -1,0 +1,221 @@
+/* Auth Classification Rule */
+[RULE: CyberArk_Audit_Auth_Classification]
+alter
+    is_auth = if(
+        lowercase(message) in (
+            "cloud.core.login.multifactorchallenge",
+            "cloud.core.login",
+            "cloud.core.oauthtoken.create",
+            "cloud.core.mfasummary",
+            "cloud.core.login.multifactorchallenge.multifactorresponse"
+        ) or auditCode in (
+            "IDP2005", "IDP2008", "IDP2007", "IDP2009",
+            "IDP2013", "IDP2014", "IDP6006"
+        ), true, false
+    );
+
+/* SaaS Classification Rule */
+[RULE: CyberArk_Audit_Saas_Classification]
+alter
+    is_saas = if(
+        auditCode in (
+            "IDP2001", "IDP2002", "IDP2003", "IDP2701", "IDP2702", "IDP3001", "IDP3004", "IDP4001",
+            "IDP4002", "IDP6001", "IDP6004", "IDP6010", "IDP6011", "IDP6016",
+            "IDP1501", "IDP1502",
+            "IDP4005", "IDP5001", "IDP5002", "IDP5003", "IDP5004", "IDP5005", "IDP5006",
+            "IDP1201", "IDP1204", "IDP2401", "IDP2402", "IDP2023",
+            "IDP1707", "IDP1706", "IDP1802", "IDP1803", "IDP2102"
+        ), true, false
+    );
+
+/* Auth 102 - CyberArk Audit Authentication Story Mapping */
+[RULE: CyberArk_Audit_Auth_Mapping]
+alter
+    get_source_ip = coalesce(json_extract_scalar(customData, "$.client_ip_address"), source),
+    get_success = json_extract_scalar(customData, "$.success"),
+    get_failure_reason = json_extract_scalar(customData, "$.failure_reason"),
+    get_denied_by_user = json_extract_scalar(customData, "$.denied_by_user"),
+    get_mechanism = json_extract_scalar(customData, "$.mechanism"),
+    get_auth_method = json_extract_scalar(customData, "$.authentication_method"),
+    get_factors = json_extract_scalar(customData, "$.factors"),
+    get_roles = json_extract_scalar(customData, "$.roles"),
+    get_mobile_device = json_extract_scalar(customData, "$.mobile_device"),
+    get_cookie_session = json_extract_scalar(customData, "$.cookie_session"),
+    get_device_os = json_extract_scalar(customData, "$.device_os"),
+    get_browser_name = json_extract_scalar(customData, "$.browser_name"),
+    get_user_agent = json_extract_scalar(customData, "$.user_agent"),
+    get_entity_name = json_extract_scalar(customData, "$.entity_name"),
+    get_session_id = json_extract_scalar(customData, "$.internal_session_id"),
+    get_session_guid = json_extract_scalar(customData, "$.session_guid"),
+    get_city = json_extract_scalar(customData, "$.geoip_city_name"),
+    get_country = json_extract_scalar(customData, "$.geoip_country_name"),
+    get_latitude = json_extract_scalar(customData, "$.geoip_latitude"),
+    get_longitude = json_extract_scalar(customData, "$.geoip_longitude")
+| alter
+    get_outcome = if(
+        get_success = "True", XDM_CONST.OUTCOME_SUCCESS,
+        auditCode = "IDP2005" and get_cookie_session != null, XDM_CONST.OUTCOME_SUCCESS,
+        auditCode = "IDP2009", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_FAILED
+    )
+| alter
+    xdm.event.type = "authentication",
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.event.id = uuid,
+    xdm.event.original_event_type = lowercase(message),
+    xdm.event.description = action,
+    xdm.event.operation = if(
+        get_factors contains ",", XDM_CONST.OPERATION_TYPE_AUTH_MFA,
+        auditCode in ("IDP2012", "IDP2013", "IDP2014"), XDM_CONST.OPERATION_TYPE_AUTH_MFA,
+        XDM_CONST.OPERATION_TYPE_AUTH_LOGIN
+    ),
+    xdm.event.operation_sub_type = if(
+        get_mechanism = "Email", "email",
+        get_mechanism = "SMS", "sms",
+        get_auth_method = "Federation", "Generic SSO",
+        "password"
+    ),
+    xdm.event.outcome = get_outcome,
+    xdm.event.outcome_reason = if(
+        get_outcome = XDM_CONST.OUTCOME_SUCCESS, null,
+        get_failure_reason contains "abandoned", "mfa_expired",
+        get_failure_reason contains "Internal error", "OTHER",
+        get_denied_by_user = "True", "user_reject",
+        "failed_login"
+    ),
+    xdm.source.ipv4 = get_source_ip,
+    xdm.source.port = to_integer(0),
+    xdm.source.user_agent = get_user_agent,
+    xdm.source.user.upn = username,
+    xdm.source.user.identifier = userId,
+    xdm.source.user.username = username,
+    xdm.source.user.user_type = if(identityType = "HUMAN", XDM_CONST.USER_TYPE_REGULAR, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+    xdm.source.host.device_id = get_source_ip,
+    xdm.source.host.device_category = if(get_mobile_device = "True", "Mobile", "Computer"),
+    xdm.source.host.os_family = if(
+        get_device_os contains "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        get_device_os contains "Mac", XDM_CONST.OS_FAMILY_MACOS,
+        get_device_os contains "Linux", XDM_CONST.OS_FAMILY_LINUX,
+        get_device_os contains "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        get_device_os contains "iOS", XDM_CONST.OS_FAMILY_IOS,
+        get_device_os contains "Chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+        get_device_os = null, null,
+        to_string(get_device_os)
+    ),
+    xdm.source.application.name = get_browser_name,
+    xdm.source.location.city = get_city,
+    xdm.source.location.country = get_country,
+    xdm.source.location.latitude = to_float(get_latitude),
+    xdm.source.location.longitude = to_float(get_longitude),
+    xdm.target.ipv4 = "",
+    xdm.target.port = to_integer(0),
+    xdm.target.resource.name = get_entity_name,
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.network.session_id = get_session_id,
+    xdm.session_context_id = coalesce(get_session_id, get_session_guid),
+    xdm.logon.type = if(message = "Cloud.Core.O365WsTrustLogin", XDM_CONST.LOGON_TYPE_SERVICE, XDM_CONST.LOGON_TYPE_INTERACTIVE),
+    xdm.auth.service = if(
+        auditCode in ("IDP2013", "IDP2014", "IDP2012"), "IDP",
+        get_auth_method = "Federation", "SP",
+        "IDP"
+    ),
+    xdm.auth.privilege_level = if(
+        get_roles contains "sysadmin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        get_roles contains "Admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        XDM_CONST.PRIVILEGE_LEVEL_USER
+    ),
+    xdm.observer.type = "Identity";
+
+/* SaaS Audit - CyberArk Audit to XDM SaaS Story Mapping */
+[RULE: CyberArk_Audit_Saas_Mapping]
+alter
+    get_source_ip = coalesce(json_extract_scalar(customData, "$.source_ip_address"), source),
+    get_roles = json_extract_scalar(customData, "$.roles"),
+    get_level = json_extract_scalar(customData, "$.level"),
+    get_status = json_extract_scalar(customData, "$.status"),
+    get_failure_reason = json_extract_scalar(customData, "$.failure_reason"),
+    get_user_state = json_extract_scalar(customData, "$.user_state"),
+    get_user_agent = json_extract_scalar(customData, "$.user_agent"),
+    get_browser_name = json_extract_scalar(customData, "$.browser_name"),
+    get_entity_uuid = json_extract_scalar(customData, "$.entity_uuid"),
+    get_application_id = json_extract_scalar(customData, "$.application_id"),
+    get_role_id = json_extract_scalar(customData, "$.role_id"),
+    get_device_id = json_extract_scalar(customData, "$.device_id"),
+    get_target_user_id = json_extract_scalar(customData, "$.target_user_id"),
+    get_proxy_id = json_extract_scalar(customData, "$.proxy_id"),
+    get_application_name = json_extract_scalar(customData, "$.application_name"),
+    get_entity_name = json_extract_scalar(customData, "$.entity_name"),
+    get_role_name = json_extract_scalar(customData, "$.role_name"),
+    get_policy_name = json_extract_scalar(customData, "$.policy_name"),
+    get_object_name = json_extract_scalar(customData, "$.object_name"),
+    get_device_name = json_extract_scalar(customData, "$.device_name"),
+    get_success = json_extract_scalar(customData, "$.success"),
+    get_app_url = json_extract_scalar(customData, "$.app_url"),
+    get_session_id = json_extract_scalar(customData, "$.internal_session_id"),
+    get_session_guid = json_extract_scalar(customData, "$.session_guid"),
+    get_action_type_lower = lowercase(actionType),
+    get_message_lower = lowercase(message)
+| alter
+    xdm.event.type = "saas audit",
+    xdm.event.id = uuid,
+    xdm.event.original_event_type = get_message_lower,
+    xdm.event.operation = if(
+        get_action_type_lower in ("create", "add"), XDM_CONST.OPERATION_TYPE_CREATE,
+        get_action_type_lower = "delete" or get_message_lower contains "remove", XDM_CONST.OPERATION_TYPE_DELETE,
+        get_action_type_lower in ("edit", "approve", "upgrade"), XDM_CONST.OPERATION_TYPE_UPDATE,
+        null
+    ),
+    xdm.event.outcome = if(
+        get_level = "Error" or get_status = "NonExist" or get_success = "False" or get_message_lower ~= "fail$", XDM_CONST.OUTCOME_FAILED,
+        get_status in ("Deleted", "Created", "Updated", "Success", "Normal"), XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_SUCCESS
+    ),
+    xdm.event.outcome_reason = coalesce(get_failure_reason, get_status, get_user_state),
+    xdm.source.ipv4 = coalesce(get_source_ip, ""),
+    xdm.source.user_agent = get_user_agent,
+    xdm.source.user.upn = username,
+    xdm.source.user.identifier = userId,
+    xdm.source.user.identity_type = if(
+        username contains "SYSTEM$" or username contains "RA-SYSTEM-USER$", "SERVICE_ACCOUNT",
+        identityType = "HUMAN", "USER",
+        "USER"
+    ),
+    xdm.source.user.user_type = if(
+        username contains "SYSTEM$" or username contains "RA-SYSTEM-USER$", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        XDM_CONST.USER_TYPE_REGULAR
+    ),
+    xdm.source.application.name = get_browser_name,
+    xdm.source.cloud.project_id = tenantId,
+    xdm.session_context_id = coalesce(get_session_id, get_session_guid),
+    xdm.auth.privilege_level = if(
+        get_roles contains "sysadmin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        get_roles contains "Admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        XDM_CONST.PRIVILEGE_LEVEL_USER
+    ),
+    xdm.intermediate.user.identifier = coalesce(get_application_id, get_application_name, ""),
+    xdm.target.resource.type = if(
+        auditCode ~= "^IDP4", "Policy",
+        auditCode ~= "^IDP15", "Access Right",
+        auditCode ~= "^IDP60" or auditCode ~= "^IDP21", "Application",
+        auditCode in ("IDP2001", "IDP2002", "IDP2003", "IDP2701"), "User",
+        auditCode in ("IDP1201", "IDP1204"), "Collection",
+        auditCode in ("IDP1803", "IDP1802"), "CONFIGURATION",
+        auditCode in ("IDP1707", "IDP1706"), "Device",
+        "Other"
+    ),
+    xdm.target.resource.id = coalesce(get_entity_uuid, get_application_id, get_role_id, get_device_id, get_target_user_id, get_proxy_id),
+    xdm.target.resource.name = coalesce(get_application_name, get_entity_name, get_role_name, get_policy_name, get_object_name, get_device_name),
+    xdm.target.url = coalesce(get_app_url, ""),
+    xdm.database.statement = coalesce(get_message_lower, action, ""),
+    xdm.observer.type = "Identity";
+
+[MODEL: dataset="cyberark_isp_raw"]
+/* Auth 102 - CyberArk Audit Authentication Story */
+call CyberArk_Audit_Auth_Classification
+| filter is_auth = true
+| call CyberArk_Audit_Auth_Mapping;
+
+/* SaaS Audit - CyberArk Audit to XDM SaaS Story */
+call CyberArk_Audit_Saas_Classification
+| filter is_saas = true
+| call CyberArk_Audit_Saas_Mapping;

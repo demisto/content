@@ -68,6 +68,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - defaultvalue: 10000
   section: Collect
   display: Max number of events per fetch
@@ -76,6 +78,8 @@ configuration:
   type: 0
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: Fetch Events
   defaultvalue: 'false'
   name: isFetchEvents
@@ -84,6 +88,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud
@@ -2194,5 +2200,3 @@ triggers:
   - name: cloud_id
     action:
       required: true
-supportedModules:
-- xsiam
