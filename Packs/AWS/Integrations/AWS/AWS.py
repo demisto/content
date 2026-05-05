@@ -43,6 +43,7 @@ TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "doesn't count against the parent command's max-errors limit, "
     "but does contribute to whether the parent command status is Success or Failed.",
     "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
+    "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
 }
 
 
@@ -8546,18 +8547,11 @@ class SSM:
         status = automation.get("AutomationExecutionStatus", "")
         demisto.debug(f"[ssm] aws-ssm-automation-execution-run: execution_id={execution_id} status={status}")
 
-        terminal_statuses = {
-            "Success": "The automation completed successfully.",
-            "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
-            "Cancelled": "The automation was stopped by a requester before it completed.",
-            "Failed": "The automation didn't complete successfully.",
-        }
-
-        if status in terminal_statuses:
+        if status in TERMINAL_COMMAND_STATUSES:
             if failure_message := automation.get("FailureMessage"):
                 readable_output = f"Automation execution {execution_id} failed: {failure_message}"
             else:
-                readable_output = f"Automation execution {execution_id} status: {status}. {terminal_statuses[status]}"
+                readable_output = f"Automation execution {execution_id} status: {status}. {TERMINAL_COMMAND_STATUSES[status]}"
             return PollResult(
                 response=CommandResults(
                     outputs_prefix="AWS.SSM.AutomationExecution",
@@ -8591,13 +8585,6 @@ class SSM:
         """
         automation_execution_id = args.get("automation_execution_id", "")
 
-        cancel_terminal_statuses = {
-            "Success": "The cancel command failed. The automation completed successfully before the cancellation.",
-            "TimedOut": "The cancel command failed. The automation failed on timeout before the cancellation.",
-            "Cancelled": "The cancel command completed successfully. The automation was stopped before it completed.",
-            "Failed": "The cancel command failed. The automation failed before it completed.",
-        }
-
         if not argToBoolean(args.get("first_run", True)):
             # Polling — check cancellation status
             automation_response = client.get_automation_execution(AutomationExecutionId=automation_execution_id)
@@ -8606,11 +8593,11 @@ class SSM:
                 f"[ssm] aws-ssm-automation-execution-cancel: automation_execution_id={automation_execution_id} status={status}"
             )
 
-            if status in cancel_terminal_statuses:
+            if status in TERMINAL_COMMAND_STATUSES:
                 return PollResult(
                     response=CommandResults(
                         readable_output=f"Automation execution {automation_execution_id} status: {status}. "
-                        f"{cancel_terminal_statuses[status]}",
+                        f"{TERMINAL_COMMAND_STATUSES[status]}",
                     ),
                     continue_to_poll=False,
                 )
@@ -8673,8 +8660,8 @@ class SSM:
         
         if not commands:
             # AWS SSM ListCommands has a known pagination quirk: when called without a NextToken,
-            # it may return an empty Commands list alongside a new NextToken. We transparently retry once with the returned token so the caller
-            # always receives actual results when they exist.
+            # it may return an empty Commands list alongside a new NextToken.
+            # We transparently retry once with the returned token so the caller always receives actual results when they exist.
             if retry_token := response.get("NextToken"):
                 demisto.debug(
                     "[SSM] command_list_command: received empty Commands with a NextToken — retrying with the new token."
@@ -8739,24 +8726,16 @@ class SSM:
         """
         command_id = args.get("command_id", "")
 
-        cancel_terminal_statuses = {
-            "Success": "The cancel command failed. The command completed successfully before the cancellation.",
-            "Failed": "The cancel command failed. The command failed before it completed.",
-            "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
-            "Cancelled": "The cancel command completed successfully. The command was cancelled before it was completed.",
-            "Canceled": "The cancel command completed successfully. The command was canceled before it was completed.",
-        }
-
         if not argToBoolean(args.get("first_run", True)):
             # Polling — check command status
             response_list = client.list_commands(CommandId=command_id)
             status = response_list.get("Commands", [{}])[0].get("Status", "")
             demisto.debug(f"[ssm] aws-ssm-command-cancel: command_id={command_id} status={status}")
 
-            if status in cancel_terminal_statuses:
+            if status in TERMINAL_COMMAND_STATUSES:
                 return PollResult(
                     response=CommandResults(
-                        readable_output=f"Command {command_id} status: {status}. {cancel_terminal_statuses[status]}",
+                        readable_output=f"Command {command_id} status: {status}. {TERMINAL_COMMAND_STATUSES[status]}",
                     ),
                     continue_to_poll=False,
                 )
