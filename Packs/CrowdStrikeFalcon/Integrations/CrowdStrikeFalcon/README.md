@@ -6778,7 +6778,7 @@ Lists workflow definitions from CrowdStrike Falcon.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter workflow definitions using a query in Falcon Query Language (FQL). For example, filter="change_log:~'updated'". For full FQL documentation, refer to the CrowdStrike Falcon documentation. For the list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| filter | Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
 | definition_id | The workflow definition ID. When provided, adds id:'&lt;value&gt;' to the filter. | Optional |
 | activity_id | Filter by activity ID. When provided, adds activity_id:'&lt;value&gt;' to the filter. | Optional |
 | name | Filter by workflow name. When provided, adds name:~'&lt;value&gt;' to the filter (partial match). | Optional |
@@ -6842,7 +6842,7 @@ Lists workflow executions from CrowdStrike Falcon.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter workflow executions using a query in Falcon Query Language (FQL). For full FQL documentation, refer to the CrowdStrike Falcon documentation. For the list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| filter | Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
 | definition_id | Filter by workflow definition ID. When provided, adds definition_id:'&lt;value&gt;' to the filter. | Optional |
 | definition_name | Filter by workflow definition name. When provided, adds definition_name:~'&lt;value&gt;' to the filter (partial match). | Optional |
 | execution_id | Filter by execution ID. When provided, adds execution_id:'&lt;value&gt;' to the filter. | Optional |

@@ -5178,7 +5178,7 @@ script:
       description: Event timestamp.
       type: String
   - arguments:
-    - description: 'Filter workflow definitions using a query in Falcon Query Language (FQL). For example, filter="change_log:~''updated''". For full FQL documentation, refer to the CrowdStrike Falcon documentation. A link to the FQL reference is available in the integration description.'
+    - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3)'
       name: filter
     - description: The workflow definition ID. When provided, adds id:''<value>'' to the filter.
       name: definition_id
@@ -5219,7 +5219,7 @@ script:
     name: cs-falcon-workflow-execute
     outputs: []
   - arguments:
-    - description: 'Filter workflow executions using a query in Falcon Query Language (FQL). For full FQL documentation, refer to the CrowdStrike Falcon documentation. A link to the FQL reference is available in the integration description.'
+    - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3)' 
       name: filter
     - description: Filter by workflow definition ID. When provided, adds definition_id:''<value>'' to the filter.
       name: definition_id
