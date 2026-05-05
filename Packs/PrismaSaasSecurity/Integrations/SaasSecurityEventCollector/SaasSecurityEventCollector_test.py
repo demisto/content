@@ -574,16 +574,17 @@ class TestDeduplicateEvents:
         assert new_events == events
         assert new_hashes == [hash_event(e) for e in events]
 
-    def test_empty_events_returns_empty(self):
-        """Empty input gives empty outputs and does not raise."""
+    def test_empty_events_preserves_previous_hashes(self):
+        """Empty input must return previous_hashes unchanged so dedup state is preserved."""
         from SaasSecurityEventCollector import deduplicate_events
 
-        new_events, new_hashes = deduplicate_events([], previous_hashes=["abc"])
+        new_events, all_hashes = deduplicate_events([], previous_hashes=["abc"])
         assert new_events == []
-        assert new_hashes == []
+        assert all_hashes == ["abc"]
 
     def test_filters_out_duplicates(self):
-        """Events whose hash matches a previous hash are removed."""
+        """Events whose hash matches a previous hash are removed; returned hashes
+        include both previous and new (union)."""
         from SaasSecurityEventCollector import deduplicate_events, hash_event
 
         seen = {"id": "1", "user": "alice"}
@@ -591,10 +592,10 @@ class TestDeduplicateEvents:
         events = [seen, new]
         previous_hashes = [hash_event(seen)]
 
-        new_events, new_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
+        new_events, all_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
 
         assert new_events == [new]
-        assert new_hashes == [hash_event(new)]
+        assert all_hashes == previous_hashes + [hash_event(new)]
 
     def test_preserves_event_order(self):
         """Surviving events retain their original order."""
@@ -606,39 +607,43 @@ class TestDeduplicateEvents:
         assert [e["id"] for e in new_events] == ["1", "2", "3", "4"]
 
     def test_no_duplicates_when_hashes_disjoint(self):
-        """If no event matches any previous hash, all events pass through."""
+        """If no event matches any previous hash, all events pass through and
+        returned hashes include both previous + new."""
         from SaasSecurityEventCollector import deduplicate_events
 
         events = [{"id": "x"}, {"id": "y"}]
-        new_events, new_hashes = deduplicate_events(events, previous_hashes=["unrelated_hash"])
+        previous_hashes = ["unrelated_hash"]
+        new_events, all_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
 
         assert new_events == events
-        assert len(new_hashes) == 2
+        assert len(all_hashes) == len(previous_hashes) + 2  # previous + 2 new
 
-    def test_all_events_are_duplicates(self):
-        """If every event matches a previous hash, the result is empty."""
+    def test_all_events_are_duplicates_returns_previous_hashes(self):
+        """If every event matches a previous hash, no new events are returned but
+        previous hashes are still preserved."""
         from SaasSecurityEventCollector import deduplicate_events, hash_event
 
         events = [{"id": "1"}, {"id": "2"}]
         previous_hashes = [hash_event(e) for e in events]
 
-        new_events, new_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
+        new_events, all_hashes = deduplicate_events(events, previous_hashes=previous_hashes)
 
         assert new_events == []
-        assert new_hashes == []
+        assert all_hashes == previous_hashes
 
     def test_dedup_is_key_order_invariant(self):
-        """An event sent with reordered keys is still detected as a duplicate."""
+        """An event sent with reordered keys is still detected as a duplicate;
+        previous hashes are preserved."""
         from SaasSecurityEventCollector import deduplicate_events, hash_event
 
         original = {"a": 1, "b": 2, "c": 3}
         reordered = {"c": 3, "a": 1, "b": 2}
         previous_hashes = [hash_event(original)]
 
-        new_events, new_hashes = deduplicate_events([reordered], previous_hashes=previous_hashes)
+        new_events, all_hashes = deduplicate_events([reordered], previous_hashes=previous_hashes)
 
         assert new_events == []
-        assert new_hashes == []
+        assert all_hashes == previous_hashes
 
 
 # Tests: dedup integration in main() fetch-events flow
@@ -697,7 +702,7 @@ class TestMainFetchEventsDedup:
         Given - last_run already contains hashes for some of the upcoming events.
         When  - main() runs fetch-events.
         Then  - duplicates are removed before pushing; only new events are sent and
-                only their hashes are persisted in last_run.
+                last_run preserves both previous and new hashes (union).
         """
         from SaasSecurityEventCollector import hash_event
 
@@ -722,7 +727,8 @@ class TestMainFetchEventsDedup:
         # Only events 3 and 4 should remain after dedup.
         assert sent_events == [{"id": 3}, {"id": 4}]
         stored_last_run = set_last_run_mock.call_args.args[0]
-        assert stored_last_run["hashed_recent_events"] == [hash_event(e) for e in sent_events]
+        # Previous hashes are preserved AND the new events' hashes are appended.
+        assert stored_last_run["hashed_recent_events"] == previous_hashes + [hash_event(e) for e in sent_events]
 
     def test_hashes_not_stored_when_push_fails(self, mocker):
         """
