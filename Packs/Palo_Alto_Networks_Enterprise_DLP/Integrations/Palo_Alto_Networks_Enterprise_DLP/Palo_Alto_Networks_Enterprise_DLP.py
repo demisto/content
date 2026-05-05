@@ -280,10 +280,48 @@ def parse_data_pattern_rule(report_json, verdict_field, results_field):
                     "LowConfidenceFrequency": dp.get("low_confidence_frequency"),
                     "HighConfidenceFrequency": dp.get("high_confidence_frequency"),
                     "MediumConfidenceFrequency": dp.get("medium_confidence_frequency"),
+                    "MatchedConfidenceLevel": dp.get("matched_confidence_level"),
                     "Detections": dp.get("detections"),
                 }
             )
     return data_patterns
+
+
+def parse_data_profiles(report_json: dict) -> list:
+    """
+    Parses the data_profiles array from the DLP report JSON.
+    Args:
+        report_json: DLP report JSON
+
+    Returns: List of parsed data profile dicts with CamelCase keys
+    """
+    profiles = []
+    data_profiles = report_json.get("data_profiles") or []
+    for profile in data_profiles:
+        parsed_patterns = []
+        data_patterns = profile.get("data_patterns") or []
+        for pattern in data_patterns:
+            parsed_patterns.append(
+                {
+                    "Id": pattern.get("id"),
+                    "IsMatched": pattern.get("is_matched"),
+                    "ConfidenceLevel": pattern.get("confidence_level"),
+                    "OccurrenceCount": pattern.get("occurrence_count"),
+                    "OccurrenceOperatorType": pattern.get("occurrence_operator_type"),
+                    "OccurrenceLow": pattern.get("occurrence_low"),
+                    "OccurrenceHigh": pattern.get("occurrence_high"),
+                }
+            )
+        profiles.append(
+            {
+                "Name": profile.get("name"),
+                "Id": profile.get("id"),
+                "Version": profile.get("version"),
+                "IsTriggered": profile.get("is_triggered"),
+                "DataPatterns": parsed_patterns,
+            }
+        )
+    return profiles
 
 
 def parse_data_patterns(report_json):
@@ -297,7 +335,11 @@ def parse_data_patterns(report_json):
     data_patterns = []
     data_patterns.extend(parse_data_pattern_rule(report_json, "data_pattern_rule_1_verdict", "data_pattern_rule_1_results"))
     data_patterns.extend(parse_data_pattern_rule(report_json, "data_pattern_rule_2_verdict", "data_pattern_rule_2_results"))
-    return {"DataProfile": report_json.get("data_profile_name"), "DataPatternMatches": data_patterns}
+    data_profiles = parse_data_profiles(report_json)
+    result: dict = {"DataProfile": report_json.get("data_profile_name"), "DataPatternMatches": data_patterns}
+    if data_profiles:
+        result["DataProfiles"] = data_profiles
+    return result
 
 
 def convert_to_human_readable(data_patterns):
@@ -311,7 +353,7 @@ def convert_to_human_readable(data_patterns):
     matches: list = []
     if not data_patterns:
         return matches
-    headers = ["DataPatternName", "ConfidenceFrequency"]
+    headers = ["DataPatternName", "ConfidenceFrequency", "MatchedConfidenceLevel"]
     for k in data_patterns.get("DataPatternMatches", []):
         match = {
             "DataPatternName": k.get("DataPatternName"),
@@ -320,6 +362,7 @@ def convert_to_human_readable(data_patterns):
                 "Medium": k.get("MediumConfidenceFrequency"),
                 "High": k.get("HighConfidenceFrequency"),
             },
+            "MatchedConfidenceLevel": k.get("MatchedConfidenceLevel"),
         }
         index = 1
         detections = k.get("Detections", [])
