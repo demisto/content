@@ -438,7 +438,6 @@ script:
       required: false
       secret: false
     description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
-    execution: false
     name: get-modified-remote-data
   - arguments:
     - default: false
@@ -455,9 +454,8 @@ script:
       required: false
       secret: false
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-    execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.8428455
   script: '-'
   type: python
   subtype: python3
