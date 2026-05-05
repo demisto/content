@@ -273,7 +273,6 @@ def fetch_events_from_saas_security(
             response = client.get_events_request()
             if response.status_code == 204:
                 queue_drained = True
-                demisto.info(f"[API Fetch] 204 received on iteration {iteration_num}; queue drained.")
                 break
             fetched_events = response.json().get("events") or []
             demisto.info(f"[API Fetch] Iteration {iteration_num}: fetched {len(fetched_events)} event(s).")
@@ -285,6 +284,14 @@ def fetch_events_from_saas_security(
     except Exception as exc:
         demisto.info(f"[API Fetch] Error on iteration {iteration_num}: {exc}")
         return events, exc, True
+
+    if queue_drained:
+        exit_reason = "204 queue_drained"
+    elif max_fetch and len(events) >= max_fetch:
+        exit_reason = f"max_fetch={max_fetch} reached"
+    else:
+        exit_reason = f"max_iterations={max_iterations} reached"
+    demisto.info(f"[API Fetch] Loop ended: {exit_reason} (iterations={iteration_num - 1}, total_events={len(events)}).")
 
     return events, None, queue_drained
 
@@ -317,7 +324,12 @@ def main() -> None:  # pragma: no cover
             last_run = demisto.getLastRun()
             integration_context = demisto.getIntegrationContext()
             cached_events_count = len(integration_context.get("events") or [])
-            demisto.info(f"[Fetch] Integration context: {cached_events_count} cached event(s) from previous run.")
+            previous_hashes_count = len(last_run.get(LAST_RUN_HASHES_KEY) or [])
+            demisto.info(
+                f"[Fetch] Starting: max_fetch={max_fetch}, max_iterations={max_iterations}, "
+                f"prev_hashes={previous_hashes_count}, cached_events={cached_events_count}, "
+                f"nextTrigger_set={'nextTrigger' in last_run}."
+            )
             queue_drained = True
             if not integration_context.get("events"):
                 events, exception, queue_drained = fetch_events_from_saas_security(
