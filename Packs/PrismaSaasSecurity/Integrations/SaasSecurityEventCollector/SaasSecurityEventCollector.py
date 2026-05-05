@@ -81,7 +81,7 @@ class Client(BaseClient):
             "token_expiration_seconds": token_expiration_seconds,
             "token_initiate_time": time.time(),
         }
-        demisto.debug(f"updating access token - {integration_context}")
+        demisto.debug(f"[Token] Updated access token; expires in {token_expiration_seconds}s.")
         set_integration_context(context=integration_context)
 
         return access_token
@@ -135,12 +135,9 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
 
 
 def hash_event(event: dict) -> str:
-    """Compute a fast MD5 hash of an event using canonical (sorted-key) JSON for dedup.
-
-    MD5 is used as a non-cryptographic fingerprint only.
-    """
+    """Compute a SHA-256 hash of an event using canonical (sorted-key) JSON for dedup."""
     canonical = json.dumps(event, sort_keys=True, separators=(",", ":"), default=str)
-    return hashlib.md5(canonical.encode("utf-8")).hexdigest()  # noqa: S324 - non-security use
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def deduplicate_events(events: list[dict], previous_hashes: list[str]) -> tuple[list[dict], list[str]]:

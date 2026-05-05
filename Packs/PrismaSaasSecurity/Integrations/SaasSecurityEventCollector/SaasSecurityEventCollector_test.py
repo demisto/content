@@ -549,12 +549,12 @@ class TestHashEvent:
         assert hash_event(event) == hash_event(event)
 
     def test_hash_returns_hex_string(self):
-        """The returned hash is a 32-character hex string (MD5)."""
+        """The returned hash is a 64-character hex string (SHA-256)."""
         from SaasSecurityEventCollector import hash_event
 
         h = hash_event({"a": 1})
         assert isinstance(h, str)
-        assert len(h) == 32
+        assert len(h) == 64
         assert all(c in "0123456789abcdef" for c in h)
 
 
