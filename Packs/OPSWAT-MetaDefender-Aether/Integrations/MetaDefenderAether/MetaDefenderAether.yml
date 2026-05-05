@@ -1,45 +1,49 @@
+sectionorder:
+- Connect
+name: MetaDefender Aether
+display: MetaDefender Aether
 commonfields:
-  id: MetaDefender Sandbox
+  id: MetaDefender Aether
   version: -1
-name: MetaDefender Sandbox
-display: MetaDefender Sandbox (Deprecated)
 category: Forensics & Malware Analysis
-provider: OPSWAT
-description: Deprecated. Use MetaDefender Aether instead.
-deprecated: true
+description: Next-generation unified Zero-Day detection solution, combining Threat Reputation, Dynamic Analysis, Threat Scoring, and Threat Hunting into a single adaptive detection pipeline (previously known as MetaDefender Sandbox).
 configuration:
 - name: url
   display: Server URL (e.g. https://www.filescan.io/api)
   defaultvalue: https://www.filescan.io/api
   required: true
   type: 0
+  section: Connect
 - name: api_key
   displaypassword: API Key
   additionalinfo: The API Key to use for connection
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   required: false
+  section: Connect
 script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.8198656
   runonce: false
   commands:
-  - name: metadefender-sandbox-scan-url
+  - name: metadefender-aether-scan-url
     description: Scan URL resource.
     polling: true
     arguments:
     - name: flow_id
-      description: The flow ID what needs to poll.
+      description: The flow ID to poll.
       deprecated: true
     - name: url
       description: The URL to submit.
@@ -82,64 +86,64 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
-    - contextPath: MetaDefender.Sandbox.Submission.flow_id
+    - contextPath: MetaDefender.Aether.Submission.flow_id
       description: The flow ID.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
+    - contextPath: MetaDefender.Aether.Analysis.finalVerdict.verdict
       description: The final verdict.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.allTags
+    - contextPath: MetaDefender.Aether.Analysis.allTags
       description: All tags.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.overallState
+    - contextPath: MetaDefender.Aether.Analysis.overallState
       description: Overall state of the scan.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.name
       description: Name of the main scan task.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
-      description: Additional informations about the main scan task.
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.additionalInfo
+      description: Additional information about the main scan task.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.ID
       description: ID of the main scan task.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.state
       description: State of the main scan task.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.resourceReference
       description: Resource reference of the main scan task.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.opcount
       description: Counter.
       type: Number
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.processTime
       description: processTime.
       type: Number
-    - contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
+    - contextPath: MetaDefender.Aether.Analysis.subtaskReferences
       description: Status of scan subtasks.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
+    - contextPath: MetaDefender.Aether.Analysis.allSignalGroups
       description: All signal groups.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.resources
+    - contextPath: MetaDefender.Aether.Analysis.resources
       description: Resources.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.file.name
+    - contextPath: MetaDefender.Aether.Analysis.file.name
       description: The name of the file.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.hash
+    - contextPath: MetaDefender.Aether.Analysis.file.hash
       description: The SHA256 of the file.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.type
+    - contextPath: MetaDefender.Aether.Analysis.file.type
       description: The type of the submission.
       type: String
 
-  - name: metadefender-sandbox-scan-file
+  - name: metadefender-aether-scan-file
     description: Scan file resource.
     polling: true
     arguments:
     - name: flow_id
-      description: The flow ID what needs to poll.
+      description: The flow ID to poll.
       deprecated: true
     - name: entry_id
       description: The War Room entry ID of the file to submit.
@@ -181,59 +185,59 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
-    - contextPath: MetaDefender.Sandbox.Submission.flow_id
+    - contextPath: MetaDefender.Aether.Submission.flow_id
       description: The flow ID.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
+    - contextPath: MetaDefender.Aether.Analysis.finalVerdict.verdict
       description: The final verdict.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.allTags
+    - contextPath: MetaDefender.Aether.Analysis.allTags
       description: All tags.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.overallState
+    - contextPath: MetaDefender.Aether.Analysis.overallState
       description: Overall state of the scan.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.name
       description: Name of the main scan task.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
-      description: Additional informations about the main scan task.
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.additionalInfo
+      description: Additional information about the main scan task.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.ID
       description: ID of the main scan task.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.state
       description: State of the main scan task.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.resourceReference
       description: Resource reference of the main scan task.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.opcount
       description: Counter.
       type: Number
-    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
+    - contextPath: MetaDefender.Aether.Analysis.taskReference.processTime
       description: processTime.
       type: Number
-    - contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
+    - contextPath: MetaDefender.Aether.Analysis.subtaskReferences
       description: Status of scan subtasks.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
+    - contextPath: MetaDefender.Aether.Analysis.allSignalGroups
       description: All signal groups.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.resources
+    - contextPath: MetaDefender.Aether.Analysis.resources
       description: Resources.
       type: Unknown
-    - contextPath: MetaDefender.Sandbox.Analysis.file.name
+    - contextPath: MetaDefender.Aether.Analysis.file.name
       description: The name of the file.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.hash
+    - contextPath: MetaDefender.Aether.Analysis.file.hash
       description: The SHA256 of the file.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.type
+    - contextPath: MetaDefender.Aether.Analysis.file.type
       description: The type of the submission.
       type: String
 
-  - name: metadefender-sandbox-search-query
+  - name: metadefender-aether-search-query
     description: Search for reports. Finds reports and uploaded files by various tokens.
     arguments:
     - name: query
@@ -252,33 +256,33 @@ script:
     - name: limit
       description: Number of total results. Maximum 50 (if page and page_size was also provided, then it will be ignored).
     outputs:
-    - contextPath: MetaDefender.Sandbox.Analysis.id
+    - contextPath: MetaDefender.Aether.Analysis.id
       description: The analysis id.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.name
+    - contextPath: MetaDefender.Aether.Analysis.file.name
       description: The file name.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.sha256
+    - contextPath: MetaDefender.Aether.Analysis.file.sha256
       description: The file SHA256.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.verdict
+    - contextPath: MetaDefender.Aether.Analysis.verdict
       description: The scan verdict.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.state
+    - contextPath: MetaDefender.Aether.Analysis.state
       description: The scan state. Eg. success, failed.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.date
+    - contextPath: MetaDefender.Aether.Analysis.date
       description: The scan date.
       type: Date
-    - contextPath: MetaDefender.Sandbox.Analysis.file.mime_type
+    - contextPath: MetaDefender.Aether.Analysis.file.mime_type
       description: The file MimeType.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.file.short_type
+    - contextPath: MetaDefender.Aether.Analysis.file.short_type
       description: The type of the submission.
       type: String
-    - contextPath: MetaDefender.Sandbox.Analysis.tags
+    - contextPath: MetaDefender.Aether.Analysis.tags
       description: Tags.
       type: Unknown
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests
