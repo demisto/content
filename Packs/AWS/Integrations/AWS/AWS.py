@@ -8398,7 +8398,7 @@ class CloudWatchLogs:
                     "message": args.get("message"),
                 }
             ],
-            "entity": entity if entity else None,
+            "entity": entity if any(entity.values()) else None,
         }
         remove_nulls_from_dictionary(kwargs)
 
