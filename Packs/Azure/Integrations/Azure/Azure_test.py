@@ -484,9 +484,6 @@ def test_disk_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["dataAccessAuthMode"] == "AzureActiveDirectory"
 
 
-import pytest
-
-
 @pytest.mark.parametrize(
     "command, expected_prefix",
     [

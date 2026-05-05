@@ -129,7 +129,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-appservice-webapp-auth-settings-update-quick-action",
         "azure-appservice-webapp-config-update",
         "azure-appservice-webapp-conf-update-http2-quick-action",
-        "azure-webapp-conf-disable-remote-debugging-quick-action",
+        "azure-appservice-webapp-conf-disable-remote-debugging-quick-action",
         "azure-appservice-webapp-conf-update-min-tls-version-quick-action",
     ],
     "Microsoft.Web/sites/config/write": [

@@ -5585,93 +5585,90 @@ script:
         - '1.3'
       defaultValue: '1.2'
     outputs:
-      - contextPath: Azure.WebAppConfig.id
-        description: Resource ID.
-        type: String
-      - contextPath: Azure.WebAppConfig.name
-        description: Resource name.
-        type: String
-      - contextPath: Azure.WebAppConfig.type
-        description: Resource type.
-        type: String
-      - contextPath: Azure.WebAppConfig.location
-        description: Resource location.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.numberOfWorkers
-        description: Number of workers.
-        type: Number
-      - contextPath: Azure.WebAppConfig.properties.defaultDocuments
-        description: List of default documents.
-        type: Unknown
-      - contextPath: Azure.WebAppConfig.properties.netFrameworkVersion
-        description: .NET Framework version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.phpVersion
-        description: PHP version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.pythonVersion
-        description: Python version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.nodeVersion
-        description: Node.js version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.powerShellVersion
-        description: PowerShell version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.linuxFxVersion
-        description: Linux app framework and version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.windowsFxVersion
-        description: Windows container image name.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.requestTracingEnabled
-        description: Indicates whether request tracing is enabled.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.remoteDebuggingEnabled
-        description: Indicates whether remote debugging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.remoteDebuggingVersion
-        description: Remote debugging version.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.http20Enabled
-        description: Indicates whether HTTP/2 is enabled.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.minTlsVersion
-        description: Minimum TLS version required.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.ftpsState
-        description: State of FTP/ FTPS service.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
-        description: Indicates whether WebSockets are enabled.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.alwaysOn
-        description: Indicates whether Always On is enabled.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.managedPipelineMode
-        description: Managed pipeline mode.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.loadBalancing
-        description: Site load balancing mode.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.autoHealEnabled
-        description: Indicates whether Auto Heal is enabled.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.autoHealRules
-        description: Auto Heal rules configuration.
-        type: Unknown
-      - contextPath: Azure.WebAppConfig.properties.cors.allowedOrigins
-        description: CORS allowed origins.
-        type: Unknown
-      - contextPath: Azure.WebAppConfig.properties.cors.supportCredentials
-        description: Indicates whether CORS supports credentials.
-        type: Boolean
-      - contextPath: Azure.WebAppConfig.properties.apiDefinition.url
-        description: URL of the API definition.
-        type: String
-      - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
-        description: Azure API management integration ID.
-        type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.ftpsState
+      description: State of FTP / FTPS service.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.cors
+      description: Cross-Origin Resource Sharing (CORS) settings.
+      type: Unknown
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
   - arguments:
     - name: subscription_id
       type: string
