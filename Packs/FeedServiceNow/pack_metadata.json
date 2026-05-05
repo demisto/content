@@ -2,8 +2,8 @@
     "name": "ServiceNow Generic Feed",
     "description": "This pack contains an integration that can be used to pull indicators from ServiceNow CMDB and put them inside the TIM with the option to provide tagging.",
     "support": "community",
-    "currentVersion": "1.0.0",
-    "author": "North Dakota Information Technology",
+    "currentVersion": "1.0.1",
+    "author": "Anshumaan Mishra",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
@@ -24,7 +24,7 @@
     ],
     "created": "2026-04-01T11:49:45Z",
     "devEmail": [
-        "anmishra@nd.gov"
+        "amishra8@terpmail.umd.edu"
     ],
     "githubUser": [
         "4nshumaan"
