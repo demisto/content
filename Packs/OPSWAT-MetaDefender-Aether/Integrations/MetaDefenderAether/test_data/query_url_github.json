@@ -1,0 +1,2059 @@
+{
+    "items": [
+        {
+            "id": "641f5c49-e2f7-4b38-a275-cdbaa240cf02",
+            "file": {
+                "name": "https://github.com/",
+                "mime_type": "text/html",
+                "short_type": "html",
+                "sha256": "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57",
+                "link": "https://github.com/"
+            },
+            "scan_init": {
+                "id": "69d648b7799d5bf325f2754a"
+            },
+            "state": "success_partial",
+            "verdict": "no_threat",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ba057dda89a609454438be247037b0b0c7083b05e93d9d307faf22436a1944ea",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "soft-404",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-08T12:23:19.844000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/08/2026, 12:24:46"
+        },
+        {
+            "id": "f9c2c10b-ab24-4ce7-bf17-97c2edc5dfa9",
+            "file": {
+                "name": "clink_dll_arm64.dll",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d615ebd920e19044f3b220"
+            },
+            "state": "success_partial",
+            "verdict": "no_threat",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "txt",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pedll",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "obfuscated",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "bash",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expand",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "DIE_OUTPUT",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "microsoft_visual_cc",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CERTIFICATE",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "signed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "cmd",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-08T08:46:36.573000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/08/2026, 08:48:53"
+        },
+        {
+            "id": "c7d96a2d-c195-4d84-88b0-24385ab6f59f",
+            "file": {
+                "name": "clink_dll_x86.dll",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d615ebd920e19044f3b220"
+            },
+            "state": "success_partial",
+            "verdict": "no_threat",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "txt",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pedll",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "obfuscated",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "bash",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expand",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "DIE_OUTPUT",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "microsoft_visual_cc",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CERTIFICATE",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "signed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "cmd",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "0e2c764ddc3ed062e5f58323d21732deb75e58372b89a5bcd2395e0bfdc617b0",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-08T08:46:36.572000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/08/2026, 08:48:34"
+        },
+        {
+            "id": "77e0fcac-f3d7-4d17-a73a-4233af67cec4",
+            "file": {
+                "name": "clink_dll_x64.dll",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d615ebd920e19044f3b220"
+            },
+            "state": "success_partial",
+            "verdict": "no_threat",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pedll",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "bash",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expand",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "obfuscated",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "DIE_OUTPUT",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "microsoft_visual_cc",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CERTIFICATE",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "signed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "cmd",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "2ffea2a03e3e316d248e5bda99844e4153dd762e456b7d355d3ae25e5b886179",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-08T08:46:36.572000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/08/2026, 08:47:33"
+        },
+        {
+            "id": "bd15c5d5-6ffc-4725-a8d9-28d4c220f85d",
+            "file": {
+                "name": "https://github.com/S8nm/hwid-spoofer/releases/tag/v4.5.4",
+                "mime_type": "text/html",
+                "short_type": "html",
+                "sha256": "d3671be2b096fe32c87507253d25bd12f0a12b73bb94b6224098aba56c8a49a9",
+                "link": "https://github.com/S8nm/hwid-spoofer/releases/tag/v4.5.4"
+            },
+            "scan_init": {
+                "id": "69d54b192346b9da57c5d58c"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "faa86fbeb17d78a9c5f5bab0f5bec8a15127bce6b95671f6a57840997f68512f",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "xml",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "2acfc21bdf262cf518ebf1c1bd4f44d6fb9fec4e8b2e3aec89b7abe9e67ca7db",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "faa86fbeb17d78a9c5f5bab0f5bec8a15127bce6b95671f6a57840997f68512f",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-07T18:21:16.666000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/07/2026, 18:22:52"
+        },
+        {
+            "id": "64c59f21-bfe8-4841-90a8-2f4dcc097f94",
+            "file": {
+                "name": "Hydroxide.lua",
+                "mime_type": "text/x-lua",
+                "short_type": "txt",
+                "sha256": "e9a0001ea23ed9f391c327a94d65709e0e13662d540686335d5576f172100f3f",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d50ebe2346b9da57c4fb5f"
+            },
+            "state": "success",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "txt",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "5bbffabf2ee79b9f4e1385c730dd9288a2a0c198feceb098965bfe03de73d7a0",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-07T14:03:45.348000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/07/2026, 14:06:03"
+        },
+        {
+            "id": "54d94007-bfe8-4a7e-82ee-1246d1a02ed4",
+            "file": {
+                "name": "https://www.unknowncheats.me/forum/downloads.php?do=file&id=43281",
+                "mime_type": "text/html",
+                "short_type": "html",
+                "sha256": "754a294c805c0325d08b7985a3e347f053054c964ea617ea7e8d54bde6446648",
+                "link": "https://www.unknowncheats.me/forum/downloads.php?do=file&id=43281"
+            },
+            "scan_init": {
+                "id": "69d40c2b2346b9da57c24198"
+            },
+            "state": "success",
+            "verdict": "no_threat",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "1df235bf20a79826b5ed2cacfdc5c179cb87b9ae3b44590bf930183bf25eb764",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "1df235bf20a79826b5ed2cacfdc5c179cb87b9ae3b44590bf930183bf25eb764",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "14bbf3a5a61f43cfe65da8bc3f92678a5c4d954f35bd56cbc8066d81c9e4ece6",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "base64",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "14bbf3a5a61f43cfe65da8bc3f92678a5c4d954f35bd56cbc8066d81c9e4ece6",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "obfuscated",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-06T19:40:27.576000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/06/2026, 19:41:18"
+        },
+        {
+            "id": "c0e031fa-5e08-4176-8c70-c792b900182a",
+            "file": {
+                "name": "https://github.com/RAELIE1/MegaCloudFix.git",
+                "mime_type": "text/html",
+                "short_type": "html",
+                "sha256": "57b90aa425615cb91dda4259b0f63bab667183016d042671a74b3ed4f4815b1f",
+                "link": "https://github.com/RAELIE1/MegaCloudFix.git"
+            },
+            "scan_init": {
+                "id": "69d40660e2df9aa488c9d2d7"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "b828e329943cf3e45c6ba21b56d031de8ee7192957b39a611587d22e0a50e028",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "jpg",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "31abb8cf557934778397e78a75d088c80d18217fb7f6635d55b845efa890410b",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "b828e329943cf3e45c6ba21b56d031de8ee7192957b39a611587d22e0a50e028",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "b828e329943cf3e45c6ba21b56d031de8ee7192957b39a611587d22e0a50e028",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "obfuscated",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d728e87459fa3f6e575b7efa07080449cba5a21d73030bc2ebd09ba1ef80d73d",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "base64",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-06T19:15:45.246000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/06/2026, 19:17:22"
+        },
+        {
+            "id": "0ac9aa54-b3b5-4c24-8814-b485c48187f3",
+            "file": {
+                "name": "Hydroxide.lua",
+                "mime_type": "text/x-lua",
+                "short_type": "txt",
+                "sha256": "e9a0001ea23ed9f391c327a94d65709e0e13662d540686335d5576f172100f3f",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d4006d972c219c8d7a760e"
+            },
+            "state": "success",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "txt",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "e6f34b8a32cd7c46b86997bead0125f48c1c443912bf17bcac7987bee74204d0",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-06T18:50:22.958000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/06/2026, 18:52:24"
+        },
+        {
+            "id": "f82b40c3-8f32-4c12-82b5-bc419dd204fd",
+            "file": {
+                "name": "zed-x86_64(1).exe",
+                "mime_type": "application/x-dosexec",
+                "short_type": "peexe",
+                "sha256": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d3bd1e90759d6205c1e4a0"
+            },
+            "state": "success_partial",
+            "verdict": "suspicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "adb81901042f2654154a003d72e83217aed1403ab25978494cae1df247fec716",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "1f5ffd52ff118db975eeb25bac0051f4ceff3e051313fa03a5afffa9e75ee502",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "crypto",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "733bff35349ffc21cff84d79ed121a5b7eeab244b907dab2a8d8e0e5e9468441",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "explorer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "733bff35349ffc21cff84d79ed121a5b7eeab244b907dab2a8d8e0e5e9468441",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "fingerprint",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "installer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "obfuscated",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "expired-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "soft-404",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CONTENT_PARSE",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "inno",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CONTENT_PARSE",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "installer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "DIE_OUTPUT",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "embarcadero_delphi",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CERTIFICATE",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "signed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "1f5ffd52ff118db975eeb25bac0051f4ceff3e051313fa03a5afffa9e75ee502",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "1f5ffd52ff118db975eeb25bac0051f4ceff3e051313fa03a5afffa9e75ee502",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "keylogger",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "large-file",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "51861cfbdb127b096bbf3fae4f59351fe27942eac65103a58aeefb6fe0f19a65",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "short-lived-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5816fde583c13c3d329e4934cac3782e3615b2454fc19d5efce74b0dbd3bdbbb",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5816fde583c13c3d329e4934cac3782e3615b2454fc19d5efce74b0dbd3bdbbb",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "5816fde583c13c3d329e4934cac3782e3615b2454fc19d5efce74b0dbd3bdbbb",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-vm",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "cmd",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "672409669a8214d89e7118bb133d42e34c894d0253c68feda75e56a3616f51e9",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "short-lived-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-vm",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "cmd",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "keylogger",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "6b2915a9a91c0738346a6c6a7b3ee2b74e26582b0c92b1b16066e72570dddd68",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "733bff35349ffc21cff84d79ed121a5b7eeab244b907dab2a8d8e0e5e9468441",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "base64",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "b27b070ca39dc37984fb3dde0187515d36094e72cb881d7a99bd1055befd8da2",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-vm",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "cmd",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "lolbin",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "c4bebdca23b3130f237cf7e6420b3fc54c29ac22107a52a767d5e662bd8b9cf8",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "short-lived-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "adaptive-context",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "short-lived-cert",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "INTERNAL",
+                    "sourceIdentifier": "d3f1be1123b66ada29124f755e8320b522f302281402384b1cbf2832d1627a3c",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "installer-heuristic",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-06T14:03:14.006000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/06/2026, 14:07:35"
+        }
+    ],
+    "count": 193,
+    "count_search_params": null,
+    "earliest_dates_covered": null,
+    "method": "and",
+    "dbs_sync": null
+}
