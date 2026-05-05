@@ -310,7 +310,7 @@ def test_set_webapp_config_command(mocker, client, mock_params):
     result = set_webapp_config_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebAppConfig"
+    assert result.outputs_prefix == "Azure.AppService.WebAppConfiguration"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["properties"]["http20Enabled"] is True
@@ -345,7 +345,7 @@ def test_update_webapp_auth_command(mocker, client, mock_params):
     result = update_webapp_auth_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebAppAuth"
+    assert result.outputs_prefix == "Azure.AppService.WebAppAuthSettings"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "authsettings"
     assert result.outputs["properties"]["enabled"] is True
@@ -481,7 +481,7 @@ def test_webapp_update_command(mocker, client, mock_params):
     result = webapp_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebApp"
+    assert result.outputs_prefix == "Azure.AppService.WebApp"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["identity"]["type"] == "SystemAssigned"

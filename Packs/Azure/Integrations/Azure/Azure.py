@@ -153,14 +153,14 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
         "azure-appservice-webapp-update",
-        "azure-appservice-webapp-update-quick-action"
+        "azure-appservice-webapp-update-quick-action",
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
         "azure-appservice-webapp-update",
-        "azure-appservice-webapp-update-quick-action"
+        "azure-appservice-webapp-update-quick-action",
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
@@ -3282,7 +3282,13 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         ["Name", "Http20 Enabled", "Remote Debugging Enabled", "Min Tls Version", "ID"],
         removeNull=True,
     )
-    old_namings = ["azure-webapp-config-set", "azure-webapp-set-http2-quick-action", "azure-set-function-app-http-version2-0-quick-action", "azure-webapp-disable-remote-debugging-quick-action", "azure-webapp-set-min-tls-version-quick-action"]
+    old_namings = [
+        "azure-webapp-config-set",
+        "azure-webapp-set-http2-quick-action",
+        "azure-set-function-app-http-version2-0-quick-action",
+        "azure-webapp-disable-remote-debugging-quick-action",
+        "azure-webapp-set-min-tls-version-quick-action",
+    ]
     if demisto.command() in old_namings:
         return CommandResults(
             outputs_prefix="Azure.WebAppConfig",
@@ -3502,8 +3508,21 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         ["Name", "ID", "Identity", "Https Only", "Client Cert Enabled"],
         removeNull=True,
     )
+    old_namings = [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+    ]
+    if demisto.command() in old_namings:
+        return CommandResults(
+            outputs_prefix="Azure.WebApp",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=md,
+            raw_response=outputs,
+        )
     return CommandResults(
-        outputs_prefix="Azure.WebApp",
+        outputs_prefix="Azure.AppService.WebApp",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
