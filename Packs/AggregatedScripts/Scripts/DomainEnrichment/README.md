@@ -52,7 +52,7 @@ Note: This script is supported in Cortex XSOAR 8.0 and later, and in Cortex XSIA
 | DomainEnrichment.Results.AdditionalFields.CreationDate | The date when the domain was created. | Date |
 | DomainEnrichment.Results.AdditionalFields.UpdatedDate | The date when the domain was last updated. | String |
 | DomainEnrichment.Results.AdditionalFields.ExpirationDate | The expiration date of the domain. | Date |
-| DomainEnrichment.Results.AdditionalFields.DomainStatus | The status of the domain. | Datte |
+| DomainEnrichment.Results.AdditionalFields.DomainStatus | The status of the domain. | Date |
 | DomainEnrichment.Results.AdditionalFields.NameServers | \(List&lt;String&gt;\) Name servers of the domain. | Unknown |
 | DomainEnrichment.Results.AdditionalFields.Organization | The organization of the domain. | String |
 | DomainEnrichment.Results.AdditionalFields.Subdomains | \(List&lt;String&gt;\) Subdomains of the domain. | Unknown |

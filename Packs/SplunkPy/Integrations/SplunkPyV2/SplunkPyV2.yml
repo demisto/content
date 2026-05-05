@@ -426,6 +426,8 @@ script:
       - Other
       - Undetermined
       description: Disposition of the finding. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list.
+    - description: The time associated with the finding event (e.g., the `_time` field of the finding). Use this argument only when the command fails with error code MC_01202 or MC_0210, which indicate that the finding event time is required to complete the update.
+      name: finding_time
     description: Updates existing finding events in Splunk ES.
     execution: true
     name: splunk-finding-event-edit
