@@ -4,3 +4,5 @@ name: Saviynt Enterprise Identity Cloud Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
