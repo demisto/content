@@ -1135,6 +1135,7 @@ def list_workflow_definitions(filter_query: str = "", offset: str = "0", limit: 
         Response JSON containing workflow definitions.
     """
     params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_definitions: calling API with {params=}")
     return http_request("GET", "/workflows/combined/definitions/v1", params=params)
 
 
@@ -1171,6 +1172,7 @@ def execute_workflow(
         json_body = json.loads(body)
     except json.JSONDecodeError as e:
         raise DemistoException(f"Invalid JSON in 'body' argument: {e}")
+    demisto.debug(f"[Workflow] execute_workflow: calling API with {params=}, body_keys={list(json_body.keys())}")
     return http_request("POST", "/workflows/entities/execute/v1", params=params, json=json_body)
 
 
@@ -1188,6 +1190,7 @@ def list_workflow_executions(filter_query: str = "", offset: str = "0", limit: i
         Response JSON containing workflow executions.
     """
     params = assign_params(filter=filter_query, offset=offset, limit=limit, sort=sort)
+    demisto.debug(f"[Workflow] list_workflow_executions: calling API with {params=}")
     return http_request("GET", "/workflows/combined/executions/v1", params=params)
 
 
@@ -9571,12 +9574,14 @@ def list_workflow_definitions_command(args: dict[str, Any]) -> CommandResults:
         filter_parts.append(f"description:~'{description}'")
 
     filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: built {filter_query=}")
     offset = args.get("offset", "0")
     limit = arg_to_number(args.get("limit", 50)) or 50
     sort = args.get("sort", "")
 
     response = list_workflow_definitions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
     definitions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_definitions_command: found {len(definitions)} definitions")
 
     # Build human-readable table
     hr_data = []
@@ -9634,6 +9639,7 @@ def workflow_execute_command(args: dict[str, Any]) -> CommandResults:
     )
 
     resources = response.get("resources", [])
+    demisto.debug(f"[Workflow] workflow_execute_command: got {len(resources)} resources")
 
     # Build human-readable output
     # The API returns resources as a list of execution ID strings, not dicts.
@@ -9672,12 +9678,14 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
         filter_parts.append(f"execution_id:'{execution_id}'")
 
     filter_query = "+".join(filter_parts)
+    demisto.debug(f"[Workflow] list_workflow_executions_command: built {filter_query=}")
     offset = args.get("offset", "0")
     limit = arg_to_number(args.get("limit", 50)) or 50
     sort = args.get("sort", "")
 
     response = list_workflow_executions(filter_query=filter_query, offset=offset, limit=limit, sort=sort)
     executions = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_executions_command: found {len(executions)} executions")
 
     # Build human-readable table from activities
     hr_data = []
@@ -9727,6 +9735,7 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
 
     response = get_workflow_execution_results(ids=ids)
     results = response.get("resources", [])
+    demisto.debug(f"[Workflow] list_workflow_execution_results_command: got {len(results)} results")
 
     # Build human-readable table from nested activities
     hr_data = []
@@ -9777,6 +9786,7 @@ def workflow_execution_action_command(args: dict[str, Any]) -> CommandResults:
 
     action_past_tense = "cancelled" if action_name == "cancel" else "resumed"
     readable_output = f"Workflow executions {ids} have been {action_past_tense}."
+    demisto.debug(f"[Workflow] workflow_execution_action_command: {action_past_tense} {len(ids)} executions")
 
     return CommandResults(
         readable_output=readable_output,
