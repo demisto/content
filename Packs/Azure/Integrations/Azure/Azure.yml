@@ -1712,14 +1712,14 @@ script:
       - 'true'
       - 'false'
     - name: client_cert_enabled
-      description: Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
-      deprecated: true
+      description: Whether client certificates are enabled.
       type: bool
       predefined:
       - 'true'
       - 'false'
     name: azure-webapp-update
-    description: Updates an Azure Web App.
+    description: Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
+    deprecated: true
     outputs:
     - contextPath: Azure.WebApp.id
       description: Fully qualified resource ID for the web app.
@@ -1926,19 +1926,15 @@ script:
     description: "Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
     arguments:
     - name: resource_group_name
-      type: String
       required: true
       description: The resource group name.
     - name: subscription_id
-      type: String
       required: true
       description: Subscription ID.
     - name: name
-      type: String
       required: true
       description: Name of the Web App.
     - name: identity_type
-      type: String
       required: false
       auto: PREDEFINED
       predefined:
@@ -1947,13 +1943,13 @@ script:
       description: Managed service identity type.
     - name: https_only
       description: Configures the web site to accept only https requests.
-      type: bool
+      auto: PREDEFINED
       predefined:
         - 'true'
         - 'false'
     - name: client_cert_enabled
       description: Whether client certificates are enabled.
-      type: bool
+      auto: PREDEFINED
       predefined:
         - 'true'
         - 'false'
@@ -2097,7 +2093,7 @@ script:
       type: Boolean
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
       description: Request tracing expiration time.
-      type: DateTime
+      type: String
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.defaultDocuments
       description: List of default documents.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.virtualApplications
@@ -3810,7 +3806,7 @@ script:
       type: Boolean
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.requestTracingExpirationTime
       description: Request tracing expiration time.
-      type: DateTime
+      type: String
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.defaultDocuments
       description: List of default documents.
     - contextPath: Azure.AppService.WebApp.properties.siteConfig.virtualApplications
@@ -4072,7 +4068,7 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
-  - name: azure-webapp-conf-update-http2-quick-action
+  - name: azure-appservice-webapp-conf-update-http2-quick-action
     prettyname: Set Web App HTTP Version to 2.0
     quickaction: true
     description: "Enables HTTP 2.0 for the web app. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
@@ -4365,6 +4361,9 @@ script:
       required: false
       description: Whether App Service Authentication/Authorization is enabled.
       defaultValue: 'true'
+      predefined:
+        - 'true'
+        - 'false'
     outputs:
     - contextPath: Azure.AppService.WebAppAuthSettings.id
       description: Resource ID.
@@ -4922,7 +4921,7 @@ script:
       type: String
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
-  - name: azure-webapp-conf-disable-remote-debugging-quick-action
+  - name: azure-appservice-webapp-conf-disable-remote-debugging-quick-action
     description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     prettyname: Disable Remote Debugging on Web App
     hidden: true
@@ -4958,6 +4957,9 @@ script:
       required: false
       description: Whether remote debugging is enabled.
       defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
     outputs:
     - contextPath: Azure.AppService.WebAppConfiguration.id
       description: Resource ID.
@@ -5543,7 +5545,7 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
-  - name: azure-webapp-conf-update-min-tls-version-quick-action
+  - name: azure-appservice-webapp-conf-update-min-tls-version-quick-action
     description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
     prettyname: Set Web App Minimum TLS Version
     hidden: true
@@ -5574,7 +5576,6 @@ script:
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - name: min_tls_version
-      type: str
       auto: PREDEFINED
       description: Minimum TLS version required for SSL requests.
       predefined:
