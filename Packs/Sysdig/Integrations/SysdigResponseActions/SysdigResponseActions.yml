@@ -66,7 +66,32 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Action type to perform.
+      description: |-
+        Action type to perform. Required parameters per action:
+        - KILL_PROCESS: host_id, process_id (startTime defaults to -1)
+        - KILL_CONTAINER: host_id, container_id
+        - STOP_CONTAINER: host_id, container_id
+        - PAUSE_CONTAINER: host_id, container_id
+        - UNPAUSE_CONTAINER: host_id, container_id
+        - START_CONTAINER: host_id, container_id
+        - FILE_QUARANTINE: host_id, path_absolute (optional: container_id)
+        - FILE_ACQUIRE: host_id, path_absolute (optional: container_id)
+        - FILE_UNQUARANTINE: host_id, path_absolute, quarantined_file_path (optional: container_id)
+        - DELETE_POD: k8s_cluster_name, k8s_namespace_name, k8s_pod_name
+        - ROLLOUT_RESTART: k8s_cluster_name, k8s_namespace_name, k8s_workload_type, k8s_workload_name
+        - ISOLATE_NETWORK: k8s_cluster_name, k8s_namespace_name, k8s_workload_type, k8s_workload_name (optional: network_protocol, network_port, network_cidr, network_direction)
+        - DELETE_NETWORK_POLICY: k8s_cluster_name, k8s_namespace_name, network_policy_name
+        - GET_LOGS: k8s_cluster_name, k8s_namespace_name (optional: k8s_workload_type, k8s_workload_name, k8s_pod_name, k8s_container_name, previous, all_containers)
+        - KUBERNETES_VOLUME_SNAPSHOT: k8s_cluster_name, k8s_namespace_name (optional: k8s_pvc_name, k8s_workload_type, k8s_workload_name)
+        - KUBERNETES_DELETE_VOLUME_SNAPSHOT: k8s_cluster_name, k8s_namespace_name, k8s_pvc_name, k8s_volume_snapshot_name
+        - CAPTURE: host_id, capture_storage_config_id, capture_duration_ns, capture_past_duration_ns (optional: capture_filters, capture_max_size, container_id, capture_token)
+        - IAM_QUARANTINE: cloud_provider, cloud_account_id (optional: ct_user_arn, ct_user_identity_type, ct_user)
+        - IAM_UNQUARANTINE: cloud_provider, cloud_account_id, iam_policy_name, ct_user_identity_type, ct_user
+        - MAKE_PRIVATE_CLOUD_RESOURCE: cloud_provider, cloud_account_id, cloud_resource_type, cloud_resource_name (optional: cloud_region)
+        - UNDO_MAKE_PRIVATE_CLOUD_RESOURCE: cloud_provider, cloud_account_id, cloud_resource_type, cloud_resource_name, previous_public_access_settings (optional: cloud_region)
+        - CLOUD_VOLUME_SNAPSHOT: cloud_provider, cloud_account_id, cloud_region, aws_instance_id
+        - UNDO_CLOUD_VOLUME_SNAPSHOT: cloud_provider, cloud_account_id, cloud_region, snapshot_ids, aws_instance_id
+        - FETCH_CLOUD_LOGS: cloud_provider, cloud_account_id, cloud_region, from_timestamp, to_timestamp (optional: ct_original_user, ct_name, ct_src)
       name: actionType
       required: true
       predefined:
@@ -74,28 +99,205 @@ script:
       - KILL_CONTAINER
       - STOP_CONTAINER
       - PAUSE_CONTAINER
+      - UNPAUSE_CONTAINER
+      - START_CONTAINER
       - FILE_QUARANTINE
-    - description: The caller ID, it must be unique every time.
+      - FILE_ACQUIRE
+      - FILE_UNQUARANTINE
+      - DELETE_POD
+      - ROLLOUT_RESTART
+      - ISOLATE_NETWORK
+      - DELETE_NETWORK_POLICY
+      - GET_LOGS
+      - KUBERNETES_VOLUME_SNAPSHOT
+      - KUBERNETES_DELETE_VOLUME_SNAPSHOT
+      - CAPTURE
+      - IAM_QUARANTINE
+      - IAM_UNQUARANTINE
+      - MAKE_PRIVATE_CLOUD_RESOURCE
+      - UNDO_MAKE_PRIVATE_CLOUD_RESOURCE
+      - CLOUD_VOLUME_SNAPSHOT
+      - UNDO_CLOUD_VOLUME_SNAPSHOT
+      - FETCH_CLOUD_LOGS
+    - description: Unique caller identifier for audit trail.
       name: callerId
       required: true
       type: String
-    - description: 'The container ID to apply the action. Example "container.id": "123456789123".'
-      name: container_id
-      type: String
-      required: false
-    - description: 'The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action.'
-      name: path_absolute
-      type: String
-      required: false
-    - description: 'The host ID. Example "gke-host-1234".'
+    - description: 'Host ID where the agent runs. Required for: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, UNPAUSE_CONTAINER, START_CONTAINER, FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE, CAPTURE.'
       name: host_id
       type: String
       required: false
-    - description: 'The process ID. Example "1234". Required for the `KILL_PROCESS` action.'
+    - description: 'Container ID. Required for: KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, UNPAUSE_CONTAINER, START_CONTAINER. Optional for: FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE, CAPTURE.'
+      name: container_id
+      type: String
+      required: false
+    - description: 'Process ID to kill. Required for: KILL_PROCESS.'
       name: process_id
       type: Number
       required: false
-    description: Execute response actions through the Sysdig API.
+    - description: 'Absolute file path. Required for: FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE.'
+      name: path_absolute
+      type: String
+      required: false
+    - description: 'Path of the quarantined file. Required for: FILE_UNQUARANTINE.'
+      name: quarantined_file_path
+      type: String
+      required: false
+    - description: 'Kubernetes cluster name. Required for: DELETE_POD, ROLLOUT_RESTART, ISOLATE_NETWORK, DELETE_NETWORK_POLICY, GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT, KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+      name: k8s_cluster_name
+      type: String
+      required: false
+    - description: 'Kubernetes namespace. Required for: DELETE_POD, ROLLOUT_RESTART, ISOLATE_NETWORK, DELETE_NETWORK_POLICY, GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT, KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+      name: k8s_namespace_name
+      type: String
+      required: false
+    - description: 'Kubernetes pod name. Required for: DELETE_POD. Optional for: GET_LOGS.'
+      name: k8s_pod_name
+      type: String
+      required: false
+    - description: 'Kubernetes workload type (e.g. Deployment, StatefulSet, DaemonSet). Required for: ROLLOUT_RESTART, ISOLATE_NETWORK. Optional for: GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT.'
+      name: k8s_workload_type
+      type: String
+      required: false
+    - description: 'Kubernetes workload name. Required for: ROLLOUT_RESTART, ISOLATE_NETWORK. Optional for: GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT.'
+      name: k8s_workload_name
+      type: String
+      required: false
+    - description: 'PVC name. Optional for: KUBERNETES_VOLUME_SNAPSHOT. Required for: KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+      name: k8s_pvc_name
+      type: String
+      required: false
+    - description: 'Volume snapshot name. Required for: KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+      name: k8s_volume_snapshot_name
+      type: String
+      required: false
+    - description: 'Container name for log retrieval. Optional for: GET_LOGS.'
+      name: k8s_container_name
+      type: String
+      required: false
+    - description: 'Network policy name. Required for: DELETE_NETWORK_POLICY.'
+      name: network_policy_name
+      type: String
+      required: false
+    - description: 'Network protocol (TCP, UDP). Optional for: ISOLATE_NETWORK.'
+      name: network_protocol
+      type: String
+      required: false
+    - description: 'Port number. Optional for: ISOLATE_NETWORK.'
+      name: network_port
+      type: String
+      required: false
+    - description: 'CIDR range. Optional for: ISOLATE_NETWORK.'
+      name: network_cidr
+      type: String
+      required: false
+    - description: 'Traffic direction (ingress, egress). Optional for: ISOLATE_NETWORK.'
+      name: network_direction
+      type: String
+      required: false
+    - description: 'Retrieve logs from previous container instance. Optional for: GET_LOGS.'
+      name: previous
+      type: Boolean
+      required: false
+    - description: 'Retrieve logs from all containers. Optional for: GET_LOGS.'
+      name: all_containers
+      type: Boolean
+      required: false
+    - description: 'Remote storage configuration ID. Required for: CAPTURE.'
+      name: capture_storage_config_id
+      type: String
+      required: false
+    - description: 'Capture duration in nanoseconds. Required for: CAPTURE.'
+      name: capture_duration_ns
+      type: Number
+      required: false
+    - description: 'How far back to capture in nanoseconds. Required for: CAPTURE.'
+      name: capture_past_duration_ns
+      type: Number
+      required: false
+    - description: 'Syscall filter expression. Optional for: CAPTURE.'
+      name: capture_filters
+      type: String
+      required: false
+    - description: 'Max capture file size in bytes (0 = no limit). Optional for: CAPTURE.'
+      name: capture_max_size
+      type: Number
+      required: false
+    - description: 'Base name of capture file. Optional for: CAPTURE.'
+      name: capture_token
+      type: String
+      required: false
+    - description: 'Cloud provider name (e.g. aws). Required for: IAM_QUARANTINE, IAM_UNQUARANTINE, MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE, CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS.'
+      name: cloud_provider
+      type: String
+      required: false
+    - description: 'Cloud account ID. Required for: IAM_QUARANTINE, IAM_UNQUARANTINE, MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE, CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS.'
+      name: cloud_account_id
+      type: String
+      required: false
+    - description: 'Cloud region. Required for: CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS. Optional for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+      name: cloud_region
+      type: String
+      required: false
+    - description: 'AWS identity ARN. Optional for: IAM_QUARANTINE.'
+      name: ct_user_arn
+      type: String
+      required: false
+    - description: 'AWS identity type (IAMUser, Role, AssumedRole). Required for: IAM_UNQUARANTINE. Optional for: IAM_QUARANTINE.'
+      name: ct_user_identity_type
+      type: String
+      required: false
+    - description: 'AWS identity name. Required for: IAM_UNQUARANTINE. Optional for: IAM_QUARANTINE.'
+      name: ct_user
+      type: String
+      required: false
+    - description: 'CloudTrail original user. Optional for: FETCH_CLOUD_LOGS.'
+      name: ct_original_user
+      type: String
+      required: false
+    - description: 'CloudTrail event name. Optional for: FETCH_CLOUD_LOGS.'
+      name: ct_name
+      type: String
+      required: false
+    - description: 'CloudTrail source. Optional for: FETCH_CLOUD_LOGS.'
+      name: ct_src
+      type: String
+      required: false
+    - description: 'IAM policy name to remove. Required for: IAM_UNQUARANTINE.'
+      name: iam_policy_name
+      type: String
+      required: false
+    - description: 'Cloud resource type (rds, s3). Required for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+      name: cloud_resource_type
+      type: String
+      required: false
+    - description: 'Cloud resource name. Required for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+      name: cloud_resource_name
+      type: String
+      required: false
+    - description: 'Previous public access settings. Required for: UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+      name: previous_public_access_settings
+      type: String
+      required: false
+    - description: 'AWS instance ID. Required for: CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT.'
+      name: aws_instance_id
+      type: String
+      required: false
+    - description: 'Comma-separated snapshot IDs. Required for: UNDO_CLOUD_VOLUME_SNAPSHOT.'
+      name: snapshot_ids
+      type: String
+      required: false
+    - description: 'Start timestamp for log search. Required for: FETCH_CLOUD_LOGS.'
+      name: from_timestamp
+      type: String
+      required: false
+    - description: 'End timestamp for log search. Required for: FETCH_CLOUD_LOGS.'
+      name: to_timestamp
+      type: String
+      required: false
+    description: |-
+      Execute response actions through the Sysdig API. Each action type requires a specific set of parameters.
+      Use the actionType description to see which parameters are required for each action.
     name: execute-response-action
     outputs:
     - contextPath: execute_response_action.Output
