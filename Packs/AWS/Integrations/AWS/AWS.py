@@ -8576,22 +8576,20 @@ class SSM:
         name="aws-ssm-automation-execution-cancel",
         interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
         timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
-        requires_polling_arg=True,
-        polling_arg_name="include_polling",
+        requires_polling_arg=False,
     )
     def automation_execution_cancel_command(args: Dict[str, Any], client: BotoClient) -> PollResult:
         """
-        Cancels an SSM automation execution and optionally polls until the cancellation is confirmed.
+        Cancels an SSM automation execution and polls until the cancellation is confirmed.
         Args:
             args (dict): Command arguments including automation_execution_id, optional type (Cancel or CompleteExecution),
-                include_polling, and first_run (hidden, used for polling state).
+                and first_run (hidden, used for polling state).
             client: The AWS SSM boto3 client used to perform the request.
 
         Returns:
             PollResult: An object containing the results of the command and whether to continue polling.
         """
         automation_execution_id = args.get("automation_execution_id", "")
-        include_polling = argToBoolean(args.get("include_polling", False))
 
         cancel_terminal_statuses = {
             "Success": "The cancel command failed. The automation completed successfully before the cancellation.",
@@ -8636,7 +8634,7 @@ class SSM:
             partial_result=CommandResults(
                 readable_output=f"Cancellation request sent for automation execution '{automation_execution_id}'.",
             ),
-            continue_to_poll=include_polling,
+            continue_to_poll=True,
             args_for_next_run=args,
         )
 
@@ -8651,8 +8649,6 @@ class SSM:
         Returns:
             CommandResults: Results containing the list of SSM commands with pagination token.
         """
-        # list_commands uses Filters: [{"key": str, "value": str}] (lowercase, single value per filter)
-        # parse_filter_field returns [{"Name": str, "Values": [str]}] — remap to list_commands format
         raw_filters = parse_filter_field(args.get("filters"))
         command_filters = [{"key": f["Name"], "value": f["Values"][0]} for f in raw_filters] if raw_filters else None
 
@@ -8672,10 +8668,29 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
+        print_debug_logs(client, f"{response=}")
         commands = response.get("Commands", [])
-
+        
         if not commands:
-            return CommandResults(readable_output="No SSM commands found.")
+            # AWS SSM ListCommands has a known pagination quirk: when called without a NextToken,
+            # it may return an empty Commands list alongside a new NextToken. We transparently retry once with the returned token so the caller
+            # always receives actual results when they exist.
+            if retry_token := response.get("NextToken"):
+                demisto.debug(
+                    "[SSM] command_list_command: received empty Commands with a NextToken — retrying with the new token."
+                )
+                kwargs["NextToken"] = retry_token
+                response = client.list_commands(**kwargs)
+
+                if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                    AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+                response = serialize_response_with_datetime_encoding(response)
+                print_debug_logs(client, f"Retry {response=}")
+                commands = response.get("Commands", [])
+
+            if not commands:
+                return CommandResults(readable_output="No SSM commands found.")
 
         outputs = {
             "AWS.SSM.Command(val.CommandId && val.CommandId == obj.CommandId)": commands,

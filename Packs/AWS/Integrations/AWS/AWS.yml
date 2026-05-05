@@ -11431,7 +11431,7 @@ script:
         type: String
 
   - name: aws-ssm-automation-execution-cancel
-    description: "Stop an Automation that is currently running and optionally polls until the cancellation is confirmed. Required IAM Permissions: ssm:StopAutomationExecution, ssm:GetAutomationExecution."
+    description: "Stop an Automation that is currently running and polls until the cancellation is confirmed. Required IAM Permissions: ssm:StopAutomationExecution, ssm:GetAutomationExecution."
     polling: true
     arguments:
       - name: account_id
@@ -11487,14 +11487,6 @@ script:
           - Cancel
           - Complete
         defaultValue: Cancel
-      - name: include_polling
-        description: When set to true, polls the automation execution status until it reaches a terminal state.
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-        defaultValue: 'false'
       - name: interval_in_seconds
         description: The interval in seconds between polling attempts.
         required: false
