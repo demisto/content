@@ -13,6 +13,12 @@ import requests
 
 INTEGRATION_NAME = "SOCFWPackManager"
 
+# Hard cap on the size of a pack ZIP we will download. SOC Framework packs are
+# small (a few MB); 500 MB leaves plenty of headroom while bounding memory and
+# disk use if a wrong/malicious URL is supplied.
+MAX_DOWNLOAD_BYTES = 500 * 1024 * 1024  # 500 MB
+DOWNLOAD_CHUNK_BYTES = 1024 * 1024  # 1 MB streaming chunks
+
 
 def _set_sdk_env(base_url: str, api_key: str, api_id: str):
     """Set env vars required by demisto-sdk upload_content_entity."""
@@ -71,8 +77,53 @@ def unzip_and_flatten(zip_path: str, filename: str) -> str:
     return pack_path
 
 
+def _stream_download(url: str, dest_path: str, verify: bool) -> None:
+    """
+    Stream a ZIP download to ``dest_path`` with an enforced size cap.
+
+    Reads ``Content-Length`` up front when present, then bounds the actual bytes
+    written so a server that lies about (or omits) length cannot blow past the
+    cap. Raises if the response is not 200 or the cap is exceeded.
+    """
+    resp = requests.get(url, timeout=300, verify=verify, stream=True)
+    if resp.status_code != 200:
+        raise Exception(f"Download failed HTTP {resp.status_code}: {url}")
+
+    advertised = resp.headers.get("Content-Length")
+    if advertised is not None:
+        try:
+            if int(advertised) > MAX_DOWNLOAD_BYTES:
+                raise Exception(
+                    f"Pack ZIP exceeds size limit "
+                    f"({int(advertised)} bytes > {MAX_DOWNLOAD_BYTES})"
+                )
+        except ValueError:
+            # Non-integer Content-Length — fall through to streaming guard.
+            pass
+
+    written = 0
+    with open(dest_path, "wb") as fh:
+        for chunk in resp.iter_content(chunk_size=DOWNLOAD_CHUNK_BYTES):
+            if not chunk:
+                continue
+            written += len(chunk)
+            if written > MAX_DOWNLOAD_BYTES:
+                fh.close()
+                if os.path.exists(dest_path):
+                    os.unlink(dest_path)
+                raise Exception(
+                    f"Pack ZIP exceeds size limit during download "
+                    f"(> {MAX_DOWNLOAD_BYTES} bytes)"
+                )
+            fh.write(chunk)
+
+
 def post_system_content_bundle(
-    base_url: str, api_key: str, api_id: str, pack_path: str
+    base_url: str,
+    api_key: str,
+    api_id: str,
+    pack_path: str,
+    insecure: bool = False,
 ) -> dict:
     """
     Upload pack directory via demisto-sdk upload_content_entity(xsiam=True).
@@ -87,7 +138,7 @@ def post_system_content_bundle(
     from demisto_sdk.commands.upload.upload import upload_content_entity
 
     try:
-        upload_content_entity(input=pack_path, zip=True, xsiam=True, insecure=True)
+        upload_content_entity(input=pack_path, zip=True, xsiam=True, insecure=insecure)
         return {"success": True, "message": f"Uploaded {pack_path}"}
     except BaseException as e:
         # demisto-sdk raises either SystemExit or its own Exit class on completion.
@@ -110,6 +161,8 @@ def command_install_pack(params: dict, args: dict) -> None:
     creds = params.get("credentials") or {}
     api_id = str(creds.get("identifier") or "")
     api_key = creds.get("password") or ""
+    insecure = bool(params.get("insecure", False))
+    verify = not insecure
 
     url = (args.get("url") or "").strip()
     filename = (args.get("filename") or "").strip()
@@ -121,15 +174,10 @@ def command_install_pack(params: dict, args: dict) -> None:
     if not filename.endswith(".zip"):
         filename += ".zip"
 
-    dl = requests.get(url, timeout=300, verify=False)
-    if dl.status_code != 200:
-        raise Exception(f"Download failed HTTP {dl.status_code}: {url}")
-
     tmp_dir = tempfile.mkdtemp()
     zip_path = os.path.join(tmp_dir, filename)
     try:
-        with open(zip_path, "wb") as fh:
-            fh.write(dl.content)
+        _stream_download(url, zip_path, verify=verify)
 
         pack_path = unzip_and_flatten(zip_path, filename)
 
@@ -138,6 +186,7 @@ def command_install_pack(params: dict, args: dict) -> None:
             api_key=api_key,
             api_id=api_id,
             pack_path=pack_path,
+            insecure=insecure,
         )
 
         return_results(
@@ -164,12 +213,6 @@ def command_test_module(params: dict) -> None:
     api_key = creds.get("password") or ""
     verify = not params.get("insecure", False)
 
-    if not base_url:
-        raise Exception("Server URL is required.")
-    if not api_key or not api_id:
-        raise Exception("API Key and API Key ID are required.")
-
-    # Light check — hit the tenant API keys endpoint
     # public_api endpoints need the api- prefix URL
     api_base = base_url.rstrip("/")
     if "://api-" not in api_base:

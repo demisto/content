@@ -123,13 +123,23 @@ Version state is stored in the `SOCFWTagsVersion` XSIAM List (visible at Setting
 
 ---
 
+## Architecture
+
+This pack ships two pieces that work together:
+
+- **SOCFWPackManager (script)** — the user-facing entry point. Run `!SOCFWPackManager action=...` from the Playground. The script reads the pack catalog, sequences installs, configures integration instances and jobs, and synchronizes the `value_tags` lookup.
+- **SOC Framework Pack Manager (integration)** — credential storage and a single `socfw-install-pack` command that downloads and uploads a pack ZIP as system content. The integration is internal plumbing; end users do not call it directly.
+
+The split exists because XSIAM integrations cannot call `demisto.executeCommand`, so all multi-step orchestration must live in the script. The integration handles only the work that needs raw HTTP.
+
+---
+
 ## Design Principles
 
-- **No core-api-* dependency** — packs install via the XSIAM content bundle endpoint, which works on all tenants
 - **Idempotent** — all actions are safe to re-run; existing config is detected and preserved
 - **Composable** — install only the packs relevant to your environment
 - **Version-aware** — `sync-tags` tracks content hash across runs; `apply` installs from pinned GitHub Release tags
 
 ---
 
-For a complete argument reference, see [README_COMMANDS.md](README_COMMANDS.md).
+For a complete argument reference, see the [SOCFWPackManager script README](Scripts/SOCFWPackManager/README.md).

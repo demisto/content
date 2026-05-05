@@ -66,6 +66,23 @@ def load_integration(params=None, args=None):
     return module, dm
 
 
+def _streaming_response(content: bytes, status_code: int = 200, headers=None):
+    """Build a minimal mock matching requests.get(stream=True) usage."""
+
+    def iter_content(chunk_size=1):
+        idx = 0
+        while idx < len(content):
+            yield content[idx : idx + chunk_size]
+            idx += chunk_size
+
+    return types.SimpleNamespace(
+        status_code=status_code,
+        content=content,
+        headers=headers or {},
+        iter_content=iter_content,
+    )
+
+
 # ── _set_sdk_env ──────────────────────────────────────────────────────────────
 
 
@@ -170,6 +187,74 @@ def test_unzip_and_flatten_rejects_missing_pack_metadata():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+# ── _stream_download ──────────────────────────────────────────────────────────
+
+
+def test_stream_download_writes_full_payload(tmp_path):
+    mod, _ = load_integration()
+    payload = b"abc" * 100
+    mod.requests = types.SimpleNamespace(
+        get=lambda url, **kw: _streaming_response(payload, headers={"Content-Length": str(len(payload))})
+    )
+    dest = str(tmp_path / "out.zip")
+    mod._stream_download("https://example.com/pack.zip", dest, verify=True)
+    assert open(dest, "rb").read() == payload
+
+
+def test_stream_download_rejects_oversized_content_length(tmp_path):
+    mod, _ = load_integration()
+    too_big = mod.MAX_DOWNLOAD_BYTES + 1
+    mod.requests = types.SimpleNamespace(
+        get=lambda url, **kw: _streaming_response(
+            b"x", headers={"Content-Length": str(too_big)}
+        )
+    )
+    dest = str(tmp_path / "out.zip")
+    with pytest.raises(Exception, match="exceeds size limit"):
+        mod._stream_download("https://example.com/pack.zip", dest, verify=True)
+
+
+def test_stream_download_rejects_oversized_streamed_body(tmp_path):
+    """Server lies (or omits) Content-Length — guard during write must trip."""
+    mod, _ = load_integration()
+    # Lower the cap for this test so we don't have to allocate 500 MB.
+    mod.MAX_DOWNLOAD_BYTES = 1024
+    mod.DOWNLOAD_CHUNK_BYTES = 256
+    mod.requests = types.SimpleNamespace(
+        get=lambda url, **kw: _streaming_response(b"x" * 4096, headers={})
+    )
+    dest = str(tmp_path / "out.zip")
+    with pytest.raises(Exception, match="exceeds size limit during download"):
+        mod._stream_download("https://example.com/pack.zip", dest, verify=True)
+    assert not os.path.exists(dest)
+
+
+def test_stream_download_propagates_http_error(tmp_path):
+    mod, _ = load_integration()
+    mod.requests = types.SimpleNamespace(
+        get=lambda url, **kw: _streaming_response(b"", status_code=404)
+    )
+    dest = str(tmp_path / "out.zip")
+    with pytest.raises(Exception, match="Download failed HTTP 404"):
+        mod._stream_download("https://example.com/missing.zip", dest, verify=True)
+
+
+def test_stream_download_threads_verify_flag(tmp_path):
+    mod, _ = load_integration()
+    seen = {}
+
+    def fake_get(url, **kw):
+        seen["verify"] = kw.get("verify")
+        seen["stream"] = kw.get("stream")
+        return _streaming_response(b"abc")
+
+    mod.requests = types.SimpleNamespace(get=fake_get)
+    dest = str(tmp_path / "out.zip")
+    mod._stream_download("https://example.com/pack.zip", dest, verify=False)
+    assert seen["verify"] is False
+    assert seen["stream"] is True
+
+
 # ── command_install_pack ──────────────────────────────────────────────────────
 
 
@@ -186,13 +271,19 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
     with open(zip_path, "rb") as f:
         zip_bytes = f.read()
 
-    mock_resp = types.SimpleNamespace(status_code=200, content=zip_bytes)
-    mod.requests = types.SimpleNamespace(get=lambda url, **kw: mock_resp)
+    mod.requests = types.SimpleNamespace(
+        get=lambda url, **kw: _streaming_response(
+            zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
+        )
+    )
 
     sdk_calls = []
-    mod.post_system_content_bundle = lambda base_url, api_key, api_id, pack_path: (
-        sdk_calls.append(pack_path) or {"success": True}
-    )
+
+    def fake_sdk(base_url, api_key, api_id, pack_path, insecure=False):
+        sdk_calls.append({"pack_path": pack_path, "insecure": insecure})
+        return {"success": True}
+
+    mod.post_system_content_bundle = fake_sdk
 
     orig = os.getcwd()
     try:
@@ -211,13 +302,63 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
         os.chdir(orig)
 
     assert sdk_calls, "post_system_content_bundle should be called"
+    assert "Pack-v1.0.0" in sdk_calls[0]["pack_path"]
+    assert sdk_calls[0]["insecure"] is False
     assert any("Pack-v1.0.0" in str(r) for r in dm._results)
+
+
+def test_command_install_pack_threads_insecure_param(tmp_path):
+    mod, _ = load_integration()
+
+    # Real zip we can stream and unzip
+    zip_path = str(tmp_path / "Pack-v1.0.0.zip")
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr(
+            "Pack-v1.0.0/pack_metadata.json",
+            json.dumps({"name": "Pack", "currentVersion": "1.0.0"}),
+        )
+    zip_bytes = open(zip_path, "rb").read()
+
+    seen = {}
+
+    def fake_get(url, **kw):
+        seen["verify"] = kw.get("verify")
+        return _streaming_response(
+            zip_bytes, headers={"Content-Length": str(len(zip_bytes))}
+        )
+
+    mod.requests = types.SimpleNamespace(get=fake_get)
+
+    sdk_calls = []
+    mod.post_system_content_bundle = lambda **kw: (
+        sdk_calls.append(kw) or {"success": True}
+    )
+
+    orig = os.getcwd()
+    try:
+        os.chdir(str(tmp_path))
+        mod.command_install_pack(
+            params={
+                "url": "https://tenant.xdr.us.paloaltonetworks.com",
+                "credentials": {"identifier": "3", "password": "my-key"},
+                "insecure": True,
+            },
+            args={
+                "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
+            },
+        )
+    finally:
+        os.chdir(orig)
+
+    # insecure=True means verify=False on the download AND insecure=True passed to SDK
+    assert seen["verify"] is False
+    assert sdk_calls[0]["insecure"] is True
 
 
 def test_command_install_pack_404_raises():
     mod, _ = load_integration()
     mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: types.SimpleNamespace(status_code=404, content=b"")
+        get=lambda url, **kw: _streaming_response(b"", status_code=404)
     )
     with pytest.raises(Exception, match="Download failed HTTP 404"):
         mod.command_install_pack(
@@ -240,7 +381,7 @@ def test_command_install_pack_derives_filename_from_url():
 
     mod.unzip_and_flatten = capture
     mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: types.SimpleNamespace(status_code=200, content=b"fake")
+        get=lambda url, **kw: _streaming_response(b"fake")
     )
 
     with pytest.raises(RuntimeError, match="stop_here"):
@@ -268,7 +409,7 @@ def test_command_install_pack_appends_zip_if_missing():
 
     mod.unzip_and_flatten = capture
     mod.requests = types.SimpleNamespace(
-        get=lambda url, **kw: types.SimpleNamespace(status_code=200, content=b"fake")
+        get=lambda url, **kw: _streaming_response(b"fake")
     )
 
     with pytest.raises(Exception):

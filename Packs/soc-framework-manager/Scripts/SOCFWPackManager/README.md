@@ -1,5 +1,9 @@
 SOC Framework Pack Manager — bootloader script for the SOC Framework on XSIAM. Lists the SOC Framework pack catalog, installs and configures packs (custom ZIP or marketplace), re-runs configuration only, and synchronizes the SOCFWTagsVersion lookup against the catalog version metadata.
 
+## Architecture
+
+This script is the user-facing entry point. It depends on the **SOC Framework Pack Manager** integration, also shipped in this pack, for credential storage and the actual pack-install HTTP. Configure an instance of that integration before running `action=apply`. End users should never call the integration's `socfw-install-pack` command directly — invoke it through this script.
+
 ## Script Data
 
 | **Name** | **Description** |

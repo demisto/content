@@ -12,8 +12,7 @@ import requests
 # - marketplace install: uses XSIAMContentPackInstaller (when available)
 # - custom ZIP install: socfw-install-pack (SOCFWPackManager integration instance)
 #   credentials stored masked in integration params
-#   no core-api-* commands required
-# - configure: integrations/jobs/lookups from xsoar_config.json
+# - configure: integrations/jobs/lookups from xsoar_config.json (via core-api-*)
 #
 # FIXES INCLUDED:
 # - Lookups: reliably CREATE dataset if missing (direct /public_api/v1/xql/add_dataset),
@@ -705,8 +704,8 @@ def install_custom_pack_zip(
     """
     Install a custom pack ZIP via the SOCFWPackManager integration instance.
 
-    The integration holds XSIAM credentials (masked) and calls
-    /xsoar/content/bundle directly — no core-api-* commands required.
+    The integration holds XSIAM credentials (masked) and uploads the pack as
+    system content via demisto-sdk upload_content_entity.
 
     Integration instance name defaults to "SOCFWPackManager".
     The using arg overrides this if multiple instances exist.

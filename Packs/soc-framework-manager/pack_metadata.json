@@ -3,7 +3,7 @@
   "id": "soc-framework-manager",
   "description": "This will install and configure any of the SOC Framework packages.",
   "support": "community",
-  "currentVersion": "1.1.0",
+  "currentVersion": "1.0.0",
   "author": "Palo Alto Networks",
   "url": "https://github.com/Palo-Cortex/secops-framework/tree/main/Packs/soc-framework-manager",
   "email": "",
