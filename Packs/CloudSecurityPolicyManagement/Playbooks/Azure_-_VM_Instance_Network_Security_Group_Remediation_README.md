@@ -2,6 +2,7 @@ This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached
 
 Conditions and limitations:
 - Limited to one resource group.
+- Identifies the NSG rule that is exposing the VM to the public internet based on IPv4/IPv6 addresses. Service tags are not supported.
 - 2 priorities lower than the offending rule priority must be available.
 - Adds rules to NSGs associated to NICs.
 
