@@ -1,24 +1,9 @@
 id: Azure - VM Instance Network Security Group Remediation
-version: 3
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CloudSecurityPolicyManagement
-    packName: Cloud Security Policy Management
-    itemVersion: 1.0.0
-    fromServerVersion: 6.10.0
-    toServerVersion: ''
-    definitionid: ''
-    prevname: ''
-    isoverridable: false
-    supportedModules: []
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ''
-  type: ''
-  name: ''
+  contentitemfields: {}
 name: Azure - VM Instance Network Security Group Remediation
-description: "This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.\n\nConditions and limitations:\n- Limited to one resource group.\n- 2 priorities lower than the offending rule priority must be available.\n- Adds rules to NSGs associated to NICs."
+description: "This playbook adds new Azure Network Security Group (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.\n\nConditions and limitations:\n- Limited to one resource group.\n- Identifies the NSG rule that is exposing the VM to the public internet based on IPv4/IPv6 addresses. Service tags are not supported.\n- 2 priorities lower than the offending rule priority must be available.\n- Adds rules to NSGs associated to NICs."
 starttaskid: '0'
 tasks:
   '0':
@@ -31,8 +16,7 @@ tasks:
       name: ''
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '4'
@@ -59,8 +43,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '56'
@@ -95,8 +77,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - '47'
@@ -151,8 +131,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 4220\n  }\n}"
@@ -174,8 +153,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '31'
@@ -202,8 +180,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '62'
@@ -288,8 +264,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '34'
@@ -352,8 +326,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - '45'
@@ -513,8 +485,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '36'
@@ -541,8 +512,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '64'
@@ -627,8 +596,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '46'
@@ -691,8 +658,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - '39'
@@ -852,8 +817,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '42'
@@ -880,8 +844,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '63'
@@ -967,8 +929,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '65'
@@ -1053,8 +1013,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '44'
@@ -1081,8 +1040,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '61'
@@ -1116,8 +1073,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '5'
@@ -1151,8 +1106,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '52'
@@ -1199,8 +1152,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '60'
@@ -1244,8 +1195,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '50'
@@ -1292,8 +1241,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '73'
@@ -1337,8 +1284,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '38'
@@ -1384,8 +1329,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '58'
@@ -1438,8 +1381,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '1'
@@ -1481,8 +1422,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '53'
@@ -1508,8 +1448,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - '74'
@@ -1546,8 +1484,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '5'
@@ -1577,8 +1513,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '32'
@@ -1612,8 +1546,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '34'
@@ -1647,8 +1579,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '37'
@@ -1682,8 +1612,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '46'
@@ -1717,8 +1645,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - Platform
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '67'
@@ -1750,8 +1676,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '68'
@@ -1802,8 +1726,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '59'
@@ -1846,8 +1768,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '34'
@@ -1881,8 +1801,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '69'
@@ -1967,8 +1885,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '72'
@@ -2053,8 +1969,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '46'
@@ -2087,8 +2001,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - '75'
@@ -2125,8 +2037,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '47'
@@ -2156,8 +2066,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '47'
@@ -2174,7 +2082,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 system: true
 view: "{\n  \"linkLabelsPosition\": {\n    \"34_35_Update\": 0.65,\n    \"38_39_#default#\": 0.58,\n    \"4_47_#default#\": 0.13\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 5120,\n      \"width\": 1510,\n      \"x\": -60,\n      \"y\": -840\n    }\n  }\n}"
 inputs:
@@ -2233,7 +2140,6 @@ outputs:
   description: Textual summary of remediation action(s) that were performed.
   type: string
 adopted: true
-possibleresponses: []
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

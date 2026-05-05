@@ -22,31 +22,24 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "Core": {
-            "mandatory": true,
-            "display_name": "Core - Investigation and Response"
-        },
-        "ServiceNow": {
-            "mandatory": false,
-            "display_name": "ServiceNow"
-        },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "FiltersAndTransformers": {
+        "Core": {
             "mandatory": true,
-            "display_name": "Filters And Transformers"
+            "display_name": "Core"
         },
-        "AWS-Enrichment-Remediation": {
-            "mandatory": false,
-            "display_name": "AWS Enrichment and Remediation"
+        "ServiceNow": {
+            "mandatory": true,
+            "display_name": "ServiceNow"
         }
     },
     "marketplaces": [
         "platform"
     ],
     "displayedImages": [
+        "CommonScripts",
         "Core",
         "ServiceNow"
     ],
