@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Remediate Exposure via EC2 Security Groups
+* AWS - EC2 Instance Security Group Remediation
 
 ### Integrations
 

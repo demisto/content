@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Remediate Exposure via Azure NSG Rules
+* Azure - VM Instance Network Security Group Remediation
 
 ### Integrations
 

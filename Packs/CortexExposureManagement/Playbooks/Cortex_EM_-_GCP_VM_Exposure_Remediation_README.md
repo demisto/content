@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Remediate Exposure via GCP VPC Firewall Rules
+* GCP - VM Instance Firewall Rule Remediation
 
 ### Integrations
 
