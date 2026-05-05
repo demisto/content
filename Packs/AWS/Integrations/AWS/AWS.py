@@ -8544,9 +8544,11 @@ class SSM:
             target_locations = [{loc["Key"]: loc["Value"] for loc in raw_target_locations}] if raw_target_locations else None
 
             # Build TargetMaps from key-values format
-            raw_target_maps = parse_key_values_2_dict(str(args["target_maps"])) if args.get("target_maps") else {}
+            target_maps_str: str = args.get("target_maps") or ""
+            raw_target_maps = parse_key_values_2_dict(target_maps_str) if target_maps_str else {}
             target_maps = [{k: v} for k, v in raw_target_maps.items()] or None
 
+            parameters_str: str = args.get("parameters") or ""
             kwargs = remove_empty_elements(
                 {
                     "DocumentName": args.get("document_name"),
@@ -8556,7 +8558,7 @@ class SSM:
                     "MaxConcurrency": args.get("max_concurrency"),
                     "MaxErrors": args.get("max_errors"),
                     "TargetParameterName": args.get("target_parameter_name"),
-                    "Parameters": parse_key_values_2_dict(str(args["parameters"])) if args.get("parameters") else None,
+                    "Parameters": parse_key_values_2_dict(parameters_str) if parameters_str else None,
                     "Tags": parse_tag_field(args.get("tags")) if args.get("tags") else None,
                     "Targets": targets,
                     "TargetLocations": target_locations,
