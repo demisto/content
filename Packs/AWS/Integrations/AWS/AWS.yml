@@ -10254,7 +10254,7 @@ script:
         required: false
         defaultValue: '50'
       - name: next_token
-        description: The token for the next set of items to return. Use AWS.SSM.AssociationNextToken.
+        description: The token for the next set of items to return. Use AWS.SSM.AssociationsNextToken.
         required: false
     outputs:
       - contextPath: AWS.SSM.Associations.Name
@@ -11017,64 +11017,64 @@ script:
           - JSON
           - TEXT
     outputs:
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Hash
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Hash
         description: The Sha256 or Sha1 hash created by the system when the document was created.
         type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.HashType
+      - contextPath: AWS.SSM.Document.AttachmentsContent.HashType
         description: The hash type of the document. Valid values are Sha256 or Sha1.
         type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Name
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Name
         description: The name of an attachment.
         type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Size
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Size
         description: The size of an attachment in bytes.
         type: String
-      - contextPath: AWS.SSM.Documents.AttachmentsContent.Url
+      - contextPath: AWS.SSM.Document.AttachmentsContent.Url
         description: The URL location of the attachment content.
         type: String
-      - contextPath: AWS.SSM.Documents.Name
+      - contextPath: AWS.SSM.Document.Name
         description: The name of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Documents.DisplayName
+      - contextPath: AWS.SSM.Document.DisplayName
         description: An optional field specifying a user-defined, friendly name for the SSM document.
         type: String
-      - contextPath: AWS.SSM.Documents.VersionName
+      - contextPath: AWS.SSM.Document.VersionName
         description: The version of the artifact associated with the document.
         type: String
-      - contextPath: AWS.SSM.Documents.CreatedDate
+      - contextPath: AWS.SSM.Document.CreatedDate
         description: The date the document was created.
         type: String
-      - contextPath: AWS.SSM.Documents.Status
+      - contextPath: AWS.SSM.Document.Status
         description: The status of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Documents.StatusInformation
+      - contextPath: AWS.SSM.Document.StatusInformation
         description: A message returned by AWS that explains the Status value.
         type: String
-      - contextPath: AWS.SSM.Documents.DocumentVersion
+      - contextPath: AWS.SSM.Document.DocumentVersion
         description: The document version.
         type: String
-      - contextPath: AWS.SSM.Documents.DocumentType
+      - contextPath: AWS.SSM.Document.DocumentType
         description: The type of document.
         type: String
-      - contextPath: AWS.SSM.Documents.DocumentFormat
+      - contextPath: AWS.SSM.Document.DocumentFormat
         description: The document format, either JSON or YAML.
         type: String
-      - contextPath: AWS.SSM.Documents.ReviewStatus
+      - contextPath: AWS.SSM.Document.ReviewStatus
         description: The current status of a document review.
         type: String
-      - contextPath: AWS.SSM.Documents.Content
+      - contextPath: AWS.SSM.Document.Content
         description: The contents of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Documents.Requires.Name
+      - contextPath: AWS.SSM.Document.Requires.Name
         description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
         type: String
-      - contextPath: AWS.SSM.Documents.Requires.RequireType
+      - contextPath: AWS.SSM.Document.Requires.RequireType
         description: The document type of the required SSM document.
         type: String
-      - contextPath: AWS.SSM.Documents.Requires.Version
+      - contextPath: AWS.SSM.Document.Requires.Version
         description: The document version required by the current document.
         type: String
-      - contextPath: AWS.SSM.Documents.Requires.VersionName
+      - contextPath: AWS.SSM.Document.Requires.VersionName
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
 
@@ -11506,7 +11506,7 @@ script:
         auto: PREDEFINED
         predefined:
           - Cancel
-          - Complete
+          - CompleteExecution
         defaultValue: Cancel
       - name: interval_in_seconds
         description: The interval in seconds between polling attempts.
