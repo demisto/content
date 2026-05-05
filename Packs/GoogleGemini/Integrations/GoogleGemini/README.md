@@ -19,7 +19,7 @@ This integration provides access to Google Gemini's large language models for AI
 | Project ID | Google Cloud Project ID. Required when using Vertex AI. | False |
 | Location | Google Cloud location for Vertex AI (e.g., `global`, `us-central1`). Defaults to `global`. | False |
 | Default Model | Select a Gemini model from the dropdown | True |
-| Max Tokens | Maximum number of tokens in the response (default: 1024) | True |
+| Max tokens | Maximum number of tokens in the response (default: 1024) | True |
 | Temperature | Controls randomness in responses (0.0-2.0) | False |
 | Top P | Nucleus sampling parameter (0.0-1.0) | False |
 | Top K | Top-k sampling parameter | False |
@@ -134,12 +134,12 @@ The command returns the AI model's response as human-readable output in the War 
 5. **Set Location**: Enter the location (default: `global`). Use `us-central1`, `europe-west4`, etc. for regional endpoints.
 6. **Test Connection**: Use the Test button to verify connectivity.
 
-## Troubleshooting
+## Troubleshooting and Tips
 
-- **API Key Issues**: Ensure your API key has access to the Generative Language API.
-- **Network Connectivity**: Verify your XSOAR instance can reach the configured endpoint.
-- **Model Availability**: Check that the specified model is available in your region.
-- **Rate Limits**: Review usage quotas and rate limits for your API key or project.
-- **Unsupported Models**: The integration will warn but attempt to use models not in the official list.
-- **Vertex AI Auth Errors**: Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
-- **Server URL**: For AI Studio, use `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` if left at the default.
+- Ensure your API key has access to the Generative Language API.
+- Verify your Cortex XSOAR instance can access the configured endpoint.
+- Check that the specified model is available in your region.
+- Review usage quotas and rate limits for your API key or project.
+- The integration attempts to use models not included in the official list and issues a warning.
+- Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
+- For AI Studio, use the server URL `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` by default.

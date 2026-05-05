@@ -13,7 +13,7 @@ This pack provides the following capabilities:
 - **Flexible Model Selection**: Choose from multiple Gemini models including the latest Gemini 2.0 Flash for optimal performance
 - **Configurable Parameters**: Fine-tune AI responses with temperature, top-p, top-k, and token limit controls
 
-The pack contains the **GoogleGemini** integration that connects to Google's Generative AI API, allowing you to incorporate powerful language model capabilities into your security automation and investigation processes. The integration supports both **Google AI Studio** (API key) and **Google Cloud Vertex AI** (service account) authentication.
+This pack contains the **GoogleGemini** integration that connects to Google's Generative AI API, allowing you to incorporate powerful language model capabilities into your security automation and investigation processes. The integration supports both **Google AI Studio** (API key) and **Google Cloud Vertex AI** (service account) authentication.
 
 ## Before You Start
 
@@ -21,32 +21,32 @@ The pack contains the **GoogleGemini** integration that connects to Google's Gen
 
 - Cortex XSOAR version 6.10.0 or later
 - One of the following authentication methods:
-  - A Google AI Studio API key with access to the Generative Language API
-  - A Google Cloud service account with the **Vertex AI User** role
-- Network connectivity to `https://generativelanguage.googleapis.com` (AI Studio) or `https://aiplatform.googleapis.com` (Vertex AI)
+  - A Google AI Studio API key with access to the Generative Language API.
+  - A Google Cloud service account with the **Vertex AI User** role.
+- Network connectivity to `https://generativelanguage.googleapis.com` (AI Studio) or `https://aiplatform.googleapis.com` (Vertex AI).
 
-### Option A: Getting Your AI Studio API Key
+### Option A: Get Your AI Studio API Key
 
-1. Visit the [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Create a new API key or use an existing one
-3. Ensure the key has access to the Generative Language API
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey).
+2. Create a new API key or use an existing one.
+3. Ensure the key has access to the Generative Language API.
 
-### Option B: Setting Up Vertex AI Service Account
+### Option B: Set up Your Vertex AI Service Account
 
-1. In the Google Cloud Console, go to **IAM & Admin** > **Service Accounts**
-2. Create a service account with the **Vertex AI User** role (`roles/aiplatform.user`)
-3. Generate a JSON key and download it
-4. Ensure the Vertex AI API is enabled in your project
+1. In the Google Cloud console, go to **IAM & Admin** > **Service Accounts**.
+2. Create a service account with the **Vertex AI User** role (`roles/aiplatform.user`).
+3. Generate a JSON key and download it.
+4. Ensure the Vertex AI API is enabled in your project.
 
 ## Configuration
 
-1. In XSOAR, navigate to **Settings** > **Integrations**
-2. Search for "Google Gemini" and add a new instance
-3. Set the **Authentication Type** to either "AI Studio API Key" or "Vertex AI Service Account"
+1. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
+2. Search for Google Gemini and add a new instance.
+3. Set the **Authentication Type** to either AI Studio API Key or Vertex AI Service Account.
 4. Configure the following parameters:
 
 **Common Parameters:**
-   - **Model**: Select a Gemini model or enter a custom model name
+   - **Model**: The Gemini model to use for the integration, or a custom model name.
    - **Max Tokens**: Maximum response length (default: 1024)
    - **Temperature**: Controls randomness (0.0-2.0, optional)
    - **Top P**: Nucleus sampling parameter (optional)
