@@ -10075,103 +10075,103 @@ script:
         description: Specify the association version to retrieve. To view the latest version, either specify $LATEST or omit this parameter.
         required: false
     outputs:
-      - contextPath: AWS.SSM.Association.Name
+      - contextPath: AWS.SSM.Associations.Name
         description: The name of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Association.AssociationId
+      - contextPath: AWS.SSM.Associations.AssociationId
         description: The association ID.
         type: String
-      - contextPath: AWS.SSM.Association.AssociationName
+      - contextPath: AWS.SSM.Associations.AssociationName
         description: The association name.
         type: String
-      - contextPath: AWS.SSM.Association.AssociationVersion
+      - contextPath: AWS.SSM.Associations.AssociationVersion
         description: The association version.
         type: String
-      - contextPath: AWS.SSM.Association.InstanceId
+      - contextPath: AWS.SSM.Associations.InstanceId
         description: The managed node ID.
         type: String
-      - contextPath: AWS.SSM.Association.DocumentVersion
+      - contextPath: AWS.SSM.Associations.DocumentVersion
         description: The document version.
         type: String
-      - contextPath: AWS.SSM.Association.Duration
+      - contextPath: AWS.SSM.Associations.Duration
         description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
         type: Number
-      - contextPath: AWS.SSM.Association.AutomationTargetParameterName
+      - contextPath: AWS.SSM.Associations.AutomationTargetParameterName
         description: The parameter that defines how the automation will branch out. Required for associations that use an Automation runbook with rate controls.
         type: String
-      - contextPath: AWS.SSM.Association.Parameters
+      - contextPath: AWS.SSM.Associations.Parameters
         description: A description of the parameters for a document.
         type: Unknown
-      - contextPath: AWS.SSM.Association.Date
+      - contextPath: AWS.SSM.Associations.Date
         description: The date when the association was made.
         type: Date
-      - contextPath: AWS.SSM.Association.LastUpdateAssociationDate
+      - contextPath: AWS.SSM.Associations.LastUpdateAssociationDate
         description: The date when the association was last updated.
         type: Date
-      - contextPath: AWS.SSM.Association.LastExecutionDate
+      - contextPath: AWS.SSM.Associations.LastExecutionDate
         description: The date on which the association was last run.
         type: Date
-      - contextPath: AWS.SSM.Association.LastSuccessfulExecutionDate
+      - contextPath: AWS.SSM.Associations.LastSuccessfulExecutionDate
         description: The last date on which the association was successfully run.
         type: Date
-      - contextPath: AWS.SSM.Association.Status
+      - contextPath: AWS.SSM.Associations.Status
         description: The status object containing Date, Name, Message, and AdditionalInfo fields.
         type: Unknown
-      - contextPath: AWS.SSM.Association.Overview.Status
+      - contextPath: AWS.SSM.Associations.Overview.Status
         description: "The status of the association. Status can be: Pending, Success, or Failed."
         type: String
-      - contextPath: AWS.SSM.Association.Overview.DetailedStatus
+      - contextPath: AWS.SSM.Associations.Overview.DetailedStatus
         description: A detailed status of the association.
         type: String
-      - contextPath: AWS.SSM.Association.Overview.AssociationStatusAggregatedCount
+      - contextPath: AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount
         description: Returns the number of targets for the association status.
         type: Number
-      - contextPath: AWS.SSM.Association.Targets.Key
+      - contextPath: AWS.SSM.Associations.Targets.Key
         description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
         type: String
-      - contextPath: AWS.SSM.Association.Targets.Values
+      - contextPath: AWS.SSM.Associations.Targets.Values
         description: User-defined criteria that maps to Key.
         type: String
-      - contextPath: AWS.SSM.Association.ScheduleExpression
+      - contextPath: AWS.SSM.Associations.ScheduleExpression
         description: A cron expression that specifies a schedule when the association runs.
         type: String
-      - contextPath: AWS.SSM.Association.ScheduleOffset
+      - contextPath: AWS.SSM.Associations.ScheduleOffset
         description: Number of days to wait after the scheduled day to run an association.
         type: Number
-      - contextPath: AWS.SSM.Association.OutputLocation.S3Location
+      - contextPath: AWS.SSM.Associations.OutputLocation.S3Location
         description: The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix.
         type: Unknown
-      - contextPath: AWS.SSM.Association.MaxErrors
+      - contextPath: AWS.SSM.Associations.MaxErrors
         description: The number of errors allowed before the system stops sending requests to run the association on additional targets.
         type: String
-      - contextPath: AWS.SSM.Association.MaxConcurrency
+      - contextPath: AWS.SSM.Associations.MaxConcurrency
         description: The maximum number of targets allowed to run the association at the same time.
         type: String
-      - contextPath: AWS.SSM.Association.ComplianceSeverity
+      - contextPath: AWS.SSM.Associations.ComplianceSeverity
         description: The severity level that is assigned to the association.
         type: String
-      - contextPath: AWS.SSM.Association.SyncCompliance
+      - contextPath: AWS.SSM.Associations.SyncCompliance
         description: The mode for generating association compliance. AUTO or MANUAL.
         type: String
-      - contextPath: AWS.SSM.Association.ApplyOnlyAtCronInterval
+      - contextPath: AWS.SSM.Associations.ApplyOnlyAtCronInterval
         description: When true, the association runs only according to the schedule and not immediately after creation.
         type: Boolean
-      - contextPath: AWS.SSM.Association.CalendarNames
+      - contextPath: AWS.SSM.Associations.CalendarNames
         description: The names or ARNs of the Change Calendar type documents the associations are gated under.
         type: String
-      - contextPath: AWS.SSM.Association.TargetLocations
+      - contextPath: AWS.SSM.Associations.TargetLocations
         description: The location object containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, ExecutionRoleName, and TargetLocationAlarmConfiguration.
         type: Unknown
-      - contextPath: AWS.SSM.Association.TargetMaps
+      - contextPath: AWS.SSM.Associations.TargetMaps
         description: A key-value mapping of document parameters to target resources.
         type: List
-      - contextPath: AWS.SSM.Association.AlarmConfiguration
+      - contextPath: AWS.SSM.Associations.AlarmConfiguration
         description: The alarm configuration object containing IgnorePollAlarmFailure and Alarms fields.
         type: Unknown
-      - contextPath: AWS.SSM.Association.TriggeredAlarms.Name
+      - contextPath: AWS.SSM.Associations.TriggeredAlarms.Name
         description: The CloudWatch alarm that was invoked during the association.
         type: String
-      - contextPath: AWS.SSM.Association.TriggeredAlarms.State
+      - contextPath: AWS.SSM.Associations.TriggeredAlarms.State
         description: The state of the CloudWatch alarm.
         type: String
 
@@ -10254,55 +10254,55 @@ script:
         description: The token for the next set of items to return. Use AWS.SSM.AssociationNextToken.
         required: false
     outputs:
-      - contextPath: AWS.SSM.Association.Name
+      - contextPath: AWS.SSM.Associations.Name
         description: The name of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Association.AssociationId
+      - contextPath: AWS.SSM.Associations.AssociationId
         description: The ID created by the system when creating an association.
         type: String
-      - contextPath: AWS.SSM.Association.AssociationName
+      - contextPath: AWS.SSM.Associations.AssociationName
         description: The association name.
         type: String
-      - contextPath: AWS.SSM.Association.AssociationVersion
+      - contextPath: AWS.SSM.Associations.AssociationVersion
         description: The association version.
         type: String
-      - contextPath: AWS.SSM.Association.InstanceId
+      - contextPath: AWS.SSM.Associations.InstanceId
         description: The managed node ID.
         type: String
-      - contextPath: AWS.SSM.Association.DocumentVersion
+      - contextPath: AWS.SSM.Associations.DocumentVersion
         description: The version of the document used in the association.
         type: String
-      - contextPath: AWS.SSM.Association.Targets.Key
+      - contextPath: AWS.SSM.Associations.Targets.Key
         description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
         type: String
-      - contextPath: AWS.SSM.Association.Targets.Values
+      - contextPath: AWS.SSM.Associations.Targets.Values
         description: User-defined criteria that maps to Key.
         type: String
-      - contextPath: AWS.SSM.Association.LastExecutionDate
+      - contextPath: AWS.SSM.Associations.LastExecutionDate
         description: The date on which the association was last run.
         type: String
-      - contextPath: AWS.SSM.Association.Overview.Status
+      - contextPath: AWS.SSM.Associations.Overview.Status
         description: "The status of the association. Status can be: Pending, Success, or Failed."
         type: String
-      - contextPath: AWS.SSM.Association.Overview.DetailedStatus
+      - contextPath: AWS.SSM.Associations.Overview.DetailedStatus
         description: A detailed status of the association.
         type: String
-      - contextPath: AWS.SSM.Association.Overview.AssociationStatusAggregatedCount
+      - contextPath: AWS.SSM.Associations.Overview.AssociationStatusAggregatedCount
         description: Returns the number of targets for the association status.
         type: String
-      - contextPath: AWS.SSM.Association.ScheduleExpression
+      - contextPath: AWS.SSM.Associations.ScheduleExpression
         description: A cron expression that specifies a schedule when the association runs.
         type: String
-      - contextPath: AWS.SSM.Association.ScheduleOffset
+      - contextPath: AWS.SSM.Associations.ScheduleOffset
         description: Number of days to wait after the scheduled day to run an association.
         type: Number
-      - contextPath: AWS.SSM.Association.Duration
+      - contextPath: AWS.SSM.Associations.Duration
         description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
         type: Number
-      - contextPath: AWS.SSM.Association.TargetMaps
+      - contextPath: AWS.SSM.Associations.TargetMaps
         description: A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can't be specified together.
         type: Unknown
-      - contextPath: AWS.SSM.AssociationNextToken
+      - contextPath: AWS.SSM.AssociationsNextToken
         description: The token to use when requesting the next set of items.
         type: String
   - name: aws-ssm-inventory-list
@@ -10890,64 +10890,64 @@ script:
       - name: next_token
         description: The token for the next set of items to return. Received from a previous call.
     outputs:
-      - contextPath: AWS.SSM.Document.Name
+      - contextPath: AWS.SSM.Documents.Name
         description: The name of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.CreatedDate
+      - contextPath: AWS.SSM.Documents.CreatedDate
         description: The date the SSM document was created.
         type: String
-      - contextPath: AWS.SSM.Document.DisplayName
+      - contextPath: AWS.SSM.Documents.DisplayName
         description: An optional field specifying a user-defined, friendly name for the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.Owner
+      - contextPath: AWS.SSM.Documents.Owner
         description: The AWS user that created the document.
         type: String
-      - contextPath: AWS.SSM.Document.VersionName
+      - contextPath: AWS.SSM.Documents.VersionName
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
-      - contextPath: AWS.SSM.Document.PlatformTypes
+      - contextPath: AWS.SSM.Documents.PlatformTypes
         description: The operating system platform.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentVersion
+      - contextPath: AWS.SSM.Documents.DocumentVersion
         description: The document version.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentType
+      - contextPath: AWS.SSM.Documents.DocumentType
         description: The document type.
         type: String
-      - contextPath: AWS.SSM.Document.SchemaVersion
+      - contextPath: AWS.SSM.Documents.SchemaVersion
         description: The schema version.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.Name
+      - contextPath: AWS.SSM.Documents.Requires.Name
         description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
         type: String
-      - contextPath: AWS.SSM.Document.Requires.RequireType
+      - contextPath: AWS.SSM.Documents.Requires.RequireType
         description: The document type of the required SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.Version
+      - contextPath: AWS.SSM.Documents.Requires.Version
         description: The document version required by the current document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.VersionName
+      - contextPath: AWS.SSM.Documents.Requires.VersionName
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentFormat
+      - contextPath: AWS.SSM.Documents.DocumentFormat
         description: The document format, either JSON or YAML.
         type: String
-      - contextPath: AWS.SSM.Document.TargetType
+      - contextPath: AWS.SSM.Documents.TargetType
         description: The target type which defines the kinds of resources the document can run on.
         type: String
-      - contextPath: AWS.SSM.Document.Tags.Key
+      - contextPath: AWS.SSM.Documents.Tags.Key
         description: The name of the tag.
         type: String
-      - contextPath: AWS.SSM.Document.Tags.Value
+      - contextPath: AWS.SSM.Documents.Tags.Value
         description: The value of the tag.
         type: String
-      - contextPath: AWS.SSM.Document.ReviewStatus
+      - contextPath: AWS.SSM.Documents.ReviewStatus
         description: The current status of a document review.
         type: String
-      - contextPath: AWS.SSM.Document.Author
+      - contextPath: AWS.SSM.Documents.Author
         description: The user in the organization who created the document.
         type: String
-      - contextPath: AWS.SSM.DocumentNextToken
+      - contextPath: AWS.SSM.DocumentsNextToken
         description: The token to use when requesting the next set of items. Empty string if no additional items exist.
         type: String
 
@@ -11014,64 +11014,64 @@ script:
           - JSON
           - TEXT
     outputs:
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Hash
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Hash
         description: The Sha256 or Sha1 hash created by the system when the document was created.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.HashType
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.HashType
         description: The hash type of the document. Valid values are Sha256 or Sha1.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Name
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Name
         description: The name of an attachment.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Size
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Size
         description: The size of an attachment in bytes.
         type: String
-      - contextPath: AWS.SSM.Document.AttachmentsContent.Url
+      - contextPath: AWS.SSM.Documents.AttachmentsContent.Url
         description: The URL location of the attachment content.
         type: String
-      - contextPath: AWS.SSM.Document.Name
+      - contextPath: AWS.SSM.Documents.Name
         description: The name of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.DisplayName
+      - contextPath: AWS.SSM.Documents.DisplayName
         description: An optional field specifying a user-defined, friendly name for the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.VersionName
+      - contextPath: AWS.SSM.Documents.VersionName
         description: The version of the artifact associated with the document.
         type: String
-      - contextPath: AWS.SSM.Document.CreatedDate
+      - contextPath: AWS.SSM.Documents.CreatedDate
         description: The date the document was created.
         type: String
-      - contextPath: AWS.SSM.Document.Status
+      - contextPath: AWS.SSM.Documents.Status
         description: The status of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.StatusInformation
+      - contextPath: AWS.SSM.Documents.StatusInformation
         description: A message returned by AWS that explains the Status value.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentVersion
+      - contextPath: AWS.SSM.Documents.DocumentVersion
         description: The document version.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentType
+      - contextPath: AWS.SSM.Documents.DocumentType
         description: The type of document.
         type: String
-      - contextPath: AWS.SSM.Document.DocumentFormat
+      - contextPath: AWS.SSM.Documents.DocumentFormat
         description: The document format, either JSON or YAML.
         type: String
-      - contextPath: AWS.SSM.Document.ReviewStatus
+      - contextPath: AWS.SSM.Documents.ReviewStatus
         description: The current status of a document review.
         type: String
-      - contextPath: AWS.SSM.Document.Content
+      - contextPath: AWS.SSM.Documents.Content
         description: The contents of the SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.Name
+      - contextPath: AWS.SSM.Documents.Requires.Name
         description: The name of the required SSM document. The name can be an Amazon Resource Name (ARN).
         type: String
-      - contextPath: AWS.SSM.Document.Requires.RequireType
+      - contextPath: AWS.SSM.Documents.Requires.RequireType
         description: The document type of the required SSM document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.Version
+      - contextPath: AWS.SSM.Documents.Requires.Version
         description: The document version required by the current document.
         type: String
-      - contextPath: AWS.SSM.Document.Requires.VersionName
+      - contextPath: AWS.SSM.Documents.Requires.VersionName
         description: An optional field specifying the version of the artifact associated with the document.
         type: String
 

@@ -7950,14 +7950,12 @@ class SSM:
         Returns:
             CommandResults: A success message indicating the tags were added.
         """
-        resource_type = args.get("resource_type", "")
-        resource_id = args.get("resource_id", "")
-        tags = parse_tag_field(args.get("tags"))
 
+        resource_id = args.get("resource_id")
         kwargs = {
-            "ResourceType": resource_type,
+            "ResourceType": args.get("resource_type"),
             "ResourceId": resource_id,
-            "Tags": tags,
+            "Tags": parse_tag_field(args.get("tags")),
         }
         print_debug_logs(client, f"add_tags_to_resource {kwargs=}")
 
@@ -8054,9 +8052,8 @@ class SSM:
         Returns:
             CommandResults: Results containing inventory entities with their data.
         """
-        result_attributes_raw = argToList(args.get("result_attributes"))
 
-        # Build Filters — GetInventory uses Key/Type/Values (not Name/Values like EC2)
+        # Build Filters — GetInventory uses Key/Type/Values
         raw_filters = parse_filter_field(args.get("filters"))
         filter_type = args.get("filter_type", "Equal")
         inventory_filters = (
@@ -8103,6 +8100,7 @@ class SSM:
 
         aggregators = [aggregator] if aggregator else None
 
+        result_attributes_raw = argToList(args.get("result_attributes"))
         kwargs: Dict[str, Any] = {
             "Filters": inventory_filters,
             "ResultAttributes": [{"TypeName": t.strip()} for t in result_attributes_raw] if result_attributes_raw else None,
@@ -8156,18 +8154,17 @@ class SSM:
             CommandResults: Results containing the list of SSM associations with their
                 status, schedule, and target information.
         """
-        filter_candidates = [
-            ("Name", args.get("name")),
-            ("AssociationId", args.get("association_id")),
-            ("AssociationStatusName", args.get("association_status_name")),
-            ("LastExecutedBefore", args.get("last_executed_before")),
-            ("LastExecutedAfter", args.get("last_executed_after")),
-            ("AssociationName", args.get("association_name")),
-            ("ResourceGroupName", args.get("resource_group_name")),
-        ]
-        association_filters = [{"key": k, "value": v} for k, v in filter_candidates if v is not None]
 
-        kwargs: Dict[str, Any] = {"AssociationFilterList": association_filters or None}
+        kwargs: Dict[str, Any] = {"AssociationFilterList": [
+                {"Name": args.get("name")},
+                {"AssociationId": args.get("association_id")},
+                {"AssociationStatusName": args.get("association_status_name")},
+                {"LastExecutedBefore": args.get("last_executed_before")},
+                {"LastExecutedAfter": args.get("last_executed_after")},
+                {"AssociationName": args.get("association_name")},
+                {"ResourceGroupName": args.get("resource_group_name")},
+            ]
+        }
         remove_nulls_from_dictionary(kwargs)
 
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
@@ -8186,8 +8183,8 @@ class SSM:
             return CommandResults(readable_output="No SSM associations found.")
 
         outputs = {
-            "AWS.SSM.Association(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
-            "AWS.SSM(true)": {"AssociationNextToken": response.get("NextToken")},
+            "AWS.SSM.Associations(val.AssociationId && val.AssociationId == obj.AssociationId)": associations,
+            "AWS.SSM(true)": {"AssociationsNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -8227,9 +8224,7 @@ class SSM:
         document_name = args.get("document_name")
 
         if not (association_id or (instance_id and document_name)):
-            raise DemistoException(
-                "Must provide either association_id, or both instance_id and document_name."
-            )
+            raise DemistoException("Must provide either association_id, or both instance_id and document_name.")
 
         kwargs = {
             "AssociationId": association_id,
@@ -8252,7 +8247,7 @@ class SSM:
             return CommandResults(readable_output="No association found.")
 
         return CommandResults(
-            outputs_prefix="AWS.SSM.Association",
+            outputs_prefix="AWS.SSM.Associations",
             outputs_key_field="AssociationId",
             outputs=association,
             readable_output=tableToMarkdown(
@@ -8344,11 +8339,10 @@ class SSM:
             CommandResults: Results containing the list of SSM documents with pagination token.
         """
         raw_filters = parse_filter_field(args.get("filters"))
-        kwargs = remove_empty_elements(
-            {
-                "Filters": [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None,
-            }
-        )
+        kwargs = remove_empty_elements({
+            "Filters": [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None,
+        })
+        remove_nulls_from_dictionary(kwargs)
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
 
         print_debug_logs(client, f"Listing SSM documents with parameters: {kwargs}")
@@ -8365,8 +8359,8 @@ class SSM:
             return CommandResults(readable_output="No SSM documents found.")
 
         outputs = {
-            "AWS.SSM.Document(val.Name && val.Name == obj.Name)": documents,
-            "AWS.SSM(true)": {"DocumentNextToken": response.get("NextToken")},
+            "AWS.SSM.Documents(val.Name && val.Name == obj.Name)": documents,
+            "AWS.SSM(true)": {"DocumentsNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -8454,8 +8448,7 @@ class SSM:
         Returns:
             CommandResults: Results containing the list of automation executions with pagination token.
         """
-        # describe_automation_executions uses Filters: [{"Key": str, "Values": [str]}]
-        # parse_filter_field returns [{"Name": str, "Values": [str]}] — remap Name→Key
+        # remap Name→Key
         raw_filters = parse_filter_field(args.get("filters"))
         automation_filters = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
 
@@ -8525,30 +8518,22 @@ class SSM:
         if not execution_id:
             # First execution — start the automation
             raw_filters = parse_filter_field(args.get("targets"))
-            targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters] if raw_filters else None
+            targets = [{"Key": f["Name"], "Values": f["Values"]} for f in raw_filters]
 
             # Build AlarmConfiguration from flat args
             alarm_names = argToList(args.get("alarm_names"))
-            alarm_configuration = (
-                {
-                    "Alarms": [{"Name": name} for name in alarm_names],
-                    "IgnorePollAlarmFailure": argToBoolean(args.get("alarm_ignore_poll_failure", False)),
-                }
-                if alarm_names
-                else None
-            )
+            alarm_configuration = {
+                "Alarms": [{"Name": name} for name in alarm_names],
+                "IgnorePollAlarmFailure": argToBoolean(args.get("alarm_ignore_poll_failure")),
+            } if alarm_names else None
 
             # Build TargetLocations from tag-style flat arg
-            raw_target_locations = parse_tag_field(args.get("target_locations")) if args.get("target_locations") else None
-            target_locations = (
-                [{loc["Key"]: loc["Value"] for loc in raw_target_locations}]
-                if raw_target_locations
-                else None
-            )
+            raw_target_locations = parse_tag_field(args.get("target_locations"))
+            target_locations = [{loc["Key"]: loc["Value"] for loc in raw_target_locations}]
 
             # Build TargetMaps from key-values format
-            raw_target_maps = parse_key_values_2_dict(args.get("target_maps")) if args.get("target_maps") else None
-            target_maps = [{k: v} for k, v in raw_target_maps.items()] if raw_target_maps else None
+            raw_target_maps = parse_key_values_2_dict(args.get("target_maps"))
+            target_maps = [{k: v} for k, v in raw_target_maps.items()]
 
             kwargs = {
                     "DocumentName": args.get("document_name"),
@@ -8558,8 +8543,8 @@ class SSM:
                     "MaxConcurrency": args.get("max_concurrency"),
                     "MaxErrors": args.get("max_errors"),
                     "TargetParameterName": args.get("target_parameter_name"),
-                    "Parameters": parse_key_values_2_dict(args.get("parameters")) if args.get("parameters") else None,
-                    "Tags": parse_tag_field(args.get("tags")) or None,
+                    "Parameters": parse_key_values_2_dict(args.get("parameters")),
+                    "Tags": parse_tag_field(args.get("tags")),
                     "Targets": targets,
                     "TargetLocations": target_locations,
                     "TargetLocationsURL": args.get("target_locations_url"),
@@ -8702,9 +8687,7 @@ class SSM:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
-        print_debug_logs(client, f"{response=}")
         commands = response.get("Commands", [])
-        
         if not commands:
             # AWS SSM ListCommands has a known pagination quirk: when called without a NextToken,
             # it may return an empty Commands list alongside a new NextToken.
