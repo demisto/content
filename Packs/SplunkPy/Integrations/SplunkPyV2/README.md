@@ -526,6 +526,7 @@ Update an existing finding event in Splunk ES.
 | urgency | The urgency of the finding events. | Optional |
 | status | The status of the finding events. Can be one of the default options: Unassigned, Assigned, In Progress, Pending, Resolved, Closed Or you can specif another custom status. | Optional |
 | disposition | The disposition of the finding events. Can be one of the default options: Unassigned,  True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. Or you can specify custom dispositions as `disposition:#` where `#` is the number of the custom configured disposition on Splunk. | Optional |
+| finding_time | The time associated with the finding event (e.g., the `_time` field of the finding). Use this argument only when the command fails with error code MC_01202 or MC_0210, which indicate that the finding event time is required to complete the update. | Optional |
 
 ##### Context Output
 
