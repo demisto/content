@@ -9951,67 +9951,70 @@ script:
         description: The token for the next set of items to return. Use AWS.SSM.AssociationVersionNextToken.
         required: false
     outputs:
-      - contextPath: AWS.SSM.AssociationVersion.AssociationId
+      - contextPath: AWS.SSM.Associations.AssociationId
+        description: The ID of the association.
+        type: String
+      - contextPath: AWS.SSM.Associations.Versions.AssociationId
         description: The ID created by the system when the association was created.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.AssociationVersion
+      - contextPath: AWS.SSM.Associations.Versions.AssociationVersion
         description: The association version.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.CreatedDate
+      - contextPath: AWS.SSM.Associations.Versions.CreatedDate
         description: The date the association version was created.
         type: Date
-      - contextPath: AWS.SSM.AssociationVersion.Name
+      - contextPath: AWS.SSM.Associations.Versions.Name
         description: The name specified when the association was created.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.AssociationName
+      - contextPath: AWS.SSM.Associations.Versions.AssociationName
         description: The name specified for the association version when the association version was created.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.DocumentVersion
+      - contextPath: AWS.SSM.Associations.Versions.DocumentVersion
         description: The version of an SSM document used when the association version was created.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.Duration
+      - contextPath: AWS.SSM.Associations.Versions.Duration
         description: The number of hours that an association can run on specified targets. After the resulting cutoff time passes, associations that are currently running are cancelled, and no pending executions are started on remaining targets.
         type: Number
-      - contextPath: AWS.SSM.AssociationVersion.Parameters
+      - contextPath: AWS.SSM.Associations.Versions.Parameters
         description: Parameters specified when the association version was created.
         type: Unknown
-      - contextPath: AWS.SSM.AssociationVersion.Targets.Key
+      - contextPath: AWS.SSM.Associations.Versions.Targets.Key
         description: User-defined criteria for sending commands that target managed nodes that meet the criteria.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.Targets.Values
+      - contextPath: AWS.SSM.Associations.Versions.Targets.Values
         description: User-defined criteria that maps to Key.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.ScheduleExpression
+      - contextPath: AWS.SSM.Associations.Versions.ScheduleExpression
         description: The cron or rate schedule specified for the association when the association version was created.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.ScheduleOffset
+      - contextPath: AWS.SSM.Associations.Versions.ScheduleOffset
         description: Number of days to wait after the scheduled day to run an association.
         type: Number
-      - contextPath: AWS.SSM.AssociationVersion.OutputLocation.S3Location
+      - contextPath: AWS.SSM.Associations.Versions.OutputLocation.S3Location
         description: The S3 location object containing OutputS3Region, OutputS3BucketName, and OutputS3KeyPrefix.
         type: Unknown
-      - contextPath: AWS.SSM.AssociationVersion.MaxErrors
+      - contextPath: AWS.SSM.Associations.Versions.MaxErrors
         description: The number of errors allowed before the system stops sending requests to run the association on additional targets.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.MaxConcurrency
+      - contextPath: AWS.SSM.Associations.Versions.MaxConcurrency
         description: The maximum number of targets allowed to run the association at the same time.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.ComplianceSeverity
+      - contextPath: AWS.SSM.Associations.Versions.ComplianceSeverity
         description: The severity level that is assigned to the association.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.SyncCompliance
+      - contextPath: AWS.SSM.Associations.Versions.SyncCompliance
         description: The mode for generating association compliance. AUTO or MANUAL.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.ApplyOnlyAtCronInterval
+      - contextPath: AWS.SSM.Associations.Versions.ApplyOnlyAtCronInterval
         description: When true, the association runs only according to the schedule and not immediately after creation.
         type: Boolean
-      - contextPath: AWS.SSM.AssociationVersion.CalendarNames
+      - contextPath: AWS.SSM.Associations.Versions.CalendarNames
         description: The names or ARNs of the Change Calendar type documents the associations are gated under.
         type: String
-      - contextPath: AWS.SSM.AssociationVersion.TargetLocations
+      - contextPath: AWS.SSM.Associations.Versions.TargetLocations
         description: The location object containing Accounts, Regions, TargetLocationMaxConcurrency, TargetLocationMaxErrors, ExecutionRoleName, and TargetLocationAlarmConfiguration.
         type: Unknown
-      - contextPath: AWS.SSM.AssociationVersion.TargetMaps
+      - contextPath: AWS.SSM.Associations.Versions.TargetMaps
         description: A key-value mapping of document parameters to target resources.
         type: List
       - contextPath: AWS.SSM.AssociationVersionNextToken
