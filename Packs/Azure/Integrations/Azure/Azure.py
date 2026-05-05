@@ -81,7 +81,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-network-interfaces-list",
         "azure-vm-network-interface-details-get",
         "azure-vn-network-interfaces-list",
-        "azure-vn-network-interfaces-list",
         "azure-vn-network-interface-get",
     ],
     "Microsoft.Network/publicIPAddresses/read": [
@@ -224,7 +223,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": ["azure-storage-blob-property-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": ["azure-storage-container-blob-property-get", "azure-storage-blob-property-get"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": ["azure-storage-blob-tag-get"],
 }
 
@@ -3009,9 +3008,9 @@ def storage_container_blob_tag_get_command(client: AzureClient, params: dict, ar
     outputs["Blob"]["ContainerName"] = outputs.pop("name")
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.Storage",
+        outputs_prefix="Azure.Storage.Blob",
         outputs_key_field="name",
-        outputs=outputs,
+        outputs=outputs.get("Blob", {}),
         raw_response=raw_response,
     )
 
@@ -3113,6 +3112,7 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
         raise DemistoException(f"Failed to get headers from response for blob {blob_name}")
 
     raw_response = response.headers  # type: ignore[attr-defined]
+    demisto.debug(f"{raw_response=}")
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
     outputs = {}
 
@@ -3136,11 +3136,12 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
         )
 
     outputs["Blob"]["ContainerName"] = outputs.pop("name")
+    demisto.debug(f"{outputs=}")
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.Storage",
+        outputs_prefix="Azure.Storage.Blob",
         outputs_key_field="name",
-        outputs=outputs,
+        outputs=outputs.get("Blob"),
         raw_response=raw_response,
     )
 
@@ -3925,7 +3926,7 @@ def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any],
         headerTransform=pascalToSpace,
     )
 
-    if demisto.command() == "azure-nsg-security-rule-list":
+    if demisto.command() == "azure-nsg-security-rules-list":
         return CommandResults(
             outputs=security_rules,
             readable_output=hr,
@@ -4936,14 +4937,14 @@ def get_azure_client(params: dict, args: dict, command: str):
 
 def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
     """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
-    if "storage-container" in command:
+    if "storage-container" in command or "storage-blob" in command:
         return STORAGE_SCOPE, [TokenScope.STORAGE]
     return DEFAULT_SCOPE, [TokenScope.DEFAULT]
 
 
 def get_command_resource(command: str) -> str:
     """Get the resource for the command. Default is management_azure."""
-    if "storage-container" in command:
+    if "storage-container" in command or "storage-blob" in command:
         return STORAGE_RESOURCE
     return DEFAULT_RESOURCE
 

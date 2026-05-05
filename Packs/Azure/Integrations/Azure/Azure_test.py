@@ -3066,12 +3066,12 @@ def test_storage_container_blob_tag_get_command(mocker, client, mock_params):
     # Verify result
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Mocked Table"
-    assert result.outputs_prefix == "Azure.Storage"
+    assert result.outputs_prefix == "Azure.Storage.Blob"
     assert result.outputs_key_field == "name"
-    assert result.outputs["Blob"]["ContainerName"] == "testcontainer"
+    assert result.outputs["ContainerName"] == "testcontainer"
     assert "Blob" in result.outputs
-    assert result.outputs["Blob"]["name"] == "testblob.txt"
-    assert "Tag" in result.outputs["Blob"]
+    assert result.outputs["name"] == "testblob.txt"
+    assert "Tag" in result.outputs
 
 
 def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
@@ -3148,12 +3148,12 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     # Verify result
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Mocked Table"
-    assert result.outputs_prefix == "Azure.Storage"
+    assert result.outputs_prefix == "Azure.Storage.Blob"
     assert result.outputs_key_field == "name"
-    assert result.outputs["Blob"]["ContainerName"] == "testcontainer"
+    assert result.outputs["ContainerName"] == "testcontainer"
     assert "Blob" in result.outputs
-    assert result.outputs["Blob"]["name"] == "testblob.txt"
-    assert "Property" in result.outputs["Blob"]
+    assert result.outputs["name"] == "testblob.txt"
+    assert "Property" in result.outputs
 
 
 def test_storage_container_blob_property_set_command(mocker, client, mock_params):
