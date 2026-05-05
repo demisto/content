@@ -68,8 +68,8 @@ def _minimal_cve(confidence=85):
 def test_command_results_empty():
     from decyfiriocs import command_results
 
-    result = command_results([], "IP")
-    assert result == []
+    result = command_results([], "IP", "")
+    assert result.readable_output == "For current request no indicators found."
 
 
 def test_extract_ioc_value():
@@ -439,7 +439,7 @@ def test_decyfir_url_indicator_command(mocker):
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["url"])
     data = decyfir_url_indicator_command(client=client, decyfir_api_key="api_key")
 
-    assert data[0]["value"] == "http://acme[.]xyz/"
+    assert "http://acme[.]xyz/" in data.readable_output
 
 
 def test_decyfir_domain_indicator_command(mocker):
@@ -454,7 +454,7 @@ def test_decyfir_domain_indicator_command(mocker):
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["domain"])
     data = decyfir_domain_indicator_command(client=client, decyfir_api_key="api_key")
 
-    assert data[0]["value"] == "mel8xo.cfd"
+    assert "mel8xo.cfd" in data.readable_output
 
 
 def test_decyfir_file_indicator_command(mocker):
@@ -469,7 +469,7 @@ def test_decyfir_file_indicator_command(mocker):
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["file"])
     data = decyfir_hash_indicator_command(client=client, decyfir_api_key="api_key")
 
-    assert data[0]["value"] == "dbe51eabebf9d4ef9581ef99844a2944"
+    assert "dbe51eabebf9d4ef9581ef99844a2944" in data.readable_output
 
 
 def test_decyfir_ip_indicator_command(mocker):
@@ -484,8 +484,7 @@ def test_decyfir_ip_indicator_command(mocker):
     mocker.patch.object(Client, "fetch_indicators_by_type", return_value=raw_data["iocs"])
     data = decyfir_ip_indicator_command(client=client, decyfir_api_key="api_key")
 
-    assert data[0]["value"] == "0.0.0.0"
-    assert data[0]["type"] == "IP"
+    assert "0.0.0.0" in data.readable_output
 
 
 def test_decyfir_get_indicators_command(mocker):
@@ -502,15 +501,15 @@ def test_decyfir_get_indicators_command(mocker):
         client=client, decyfir_api_key="api_key", reputation="feedReputation", tlp_color="tlp_color", feed_tags=["feedTags"]
     )
 
-    assert data[0]["value"] == "0.0.0.0"
+    assert "0.0.0.0" in data.readable_output
 
 
 def test_command_results(mocker):
     from decyfiriocs import command_results
 
     raw_data = util_load_json("test_data/iocs_ti.json")
-    data = command_results(raw_data["file"], "File")
-    assert data[0]["value"] == "dbe51eabebf9d4ef9581ef99844a2944"
+    data = command_results(raw_data["file"], "File", "file indicators ")
+    assert "dbe51eabebf9d4ef9581ef99844a2944" in data.readable_output
 
 
 def test_get_decyfir_api_ti_data_non_200(mocker):

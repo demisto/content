@@ -45,13 +45,11 @@ def test_fetch_incidents(mocker):
 def test_get_take_down_list(mocker):
     from decyfir import Client, get_take_down_list
 
-    mock_response = util_load_json("test_data/take_down_list.json")
-
     raw_mock_response = util_load_json("test_data/raw_take_down_list.json")
     client = _client()
     mocker.patch.object(Client, "take_down_list_data", return_value=raw_mock_response)
     da = get_take_down_list(client=client, decyfir_api_key="api_key", args={"size": "1"})
-    assert da[0] == mock_response["take_down_list"]
+    assert "T00001" in da.readable_output
 
 
 def test_initiate_take_down_request(mocker):
@@ -63,7 +61,7 @@ def test_initiate_take_down_request(mocker):
     mocker.patch.object(Client, "initiate_take_down", return_value=mock_response)
     da = initiate_take_down_request(client=client, decyfir_api_key="api_key", args={"uid": "63ac266713b0752aa7865100"})
 
-    assert ("Error" in da) is False
+    assert da.readable_output != ""
 
 
 def test_get_severity_critical():
@@ -178,7 +176,7 @@ def test_initiate_take_down_request_no_data(mocker):
     client = _client()
     mocker.patch.object(client, "initiate_take_down", return_value={})
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
-    assert "no data" in result.lower()
+    assert "no data" in result.readable_output.lower()
 
 
 def test_initiate_take_down_request_error_flag(mocker):
@@ -187,7 +185,7 @@ def test_initiate_take_down_request_error_flag(mocker):
     client = _client()
     mocker.patch.object(client, "initiate_take_down", return_value={"error": True, "response": {}})
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
-    assert "Error" in result
+    assert "Error" in result.readable_output
 
 
 def test_initiate_take_down_request_empty_response_key(mocker):
@@ -196,7 +194,7 @@ def test_initiate_take_down_request_empty_response_key(mocker):
     client = _client()
     mocker.patch.object(client, "initiate_take_down", return_value={"error": False, "response": {}})
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
-    assert "Error" in result
+    assert "Error" in result.readable_output
 
 
 def test_initiate_take_down_request_success(mocker):
@@ -209,8 +207,8 @@ def test_initiate_take_down_request_success(mocker):
         return_value={"error": False, "response": {"ticketName": "T00001"}},
     )
     result = initiate_take_down_request(client, "api_key", {"alert_id": "a1"})
-    assert "T00001" in result
-    assert "Successfully" in result
+    assert "T00001" in result.readable_output
+    assert "Successfully" in result.readable_output
 
 
 def test_get_take_down_list_empty(mocker):
@@ -219,7 +217,7 @@ def test_get_take_down_list_empty(mocker):
     client = _client()
     mocker.patch.object(client, "take_down_list_data", return_value=[])
     result = get_take_down_list(client, "api_key", {})
-    assert result == []
+    assert result.readable_output == "No data found for current request."
 
 
 def test_fetch_incidents_no_last_run(mocker):

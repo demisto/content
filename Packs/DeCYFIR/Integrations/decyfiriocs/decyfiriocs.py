@@ -566,61 +566,125 @@ def extract_value(pattern: str) -> str:
     return match.group(1) if match else ""
 
 
-def command_results(indicators: list[dict], indicator_type: str) -> list:
-    if not indicators:
-        return []
+def get_type(pattern: str) -> str:
+    if "ipv4-addr" in pattern:
+        return "IP"
+    elif "domain-name" in pattern:
+        return "Domain"
+    elif "url" in pattern:
+        return "URL"
+    elif "file:hashes" in pattern:
+        return "File"
+    return "Unknown"
 
+
+def calculate_score(vendors: Dict, confidence: int) -> int:
+    malicious = sum(1 for v in vendors.values() if v in ["malicious", "phishing", "malware"])
+
+    if malicious > 5:
+        return 3
+    elif malicious > 0:
+        return 2
+    elif confidence > 80:
+        return 2
+    return 1
+
+
+def command_results(indicators: List[Dict], indicator_type: str, title: str) -> CommandResults:
+    if not indicators:
+        return CommandResults(readable_output="For current request no indicators found.")
+
+    table_data = []
     outputs = []
 
     for ind in indicators:
         pattern = ind.get("pattern", "")
         value = extract_value(pattern)
         ioc_type = indicator_type
+        if ioc_type == "Indicator":
+            ioc_type = get_type(pattern)
 
         ext: dict[str, Any] = next(iter(ind.get("extensions", cast(dict[str, Any], {})).values()), {})
         vendors = ext.get("security_vendors", {})
+
         confidence = ind.get("confidence", 0)
+        score = calculate_score(vendors, confidence)
+        score = 1
 
+        if confidence >= 80:
+            score = 3
+        elif confidence >= 50:
+            score = 2
+
+        # -------- Human Readable Row --------
         row = {
-            "value": value,
-            "type": ioc_type,
-            "description": ind.get("description"),
-            "country": ext.get("country", ""),
-            "threat_actor": ext.get("threat_actors", ""),
-            "action": ext.get("recommended_actions"),
-            "role": ext.get("roles"),
-            "confidences": confidence,
-            "risk_score": ext.get("exposure_score", 0),
+            "Value": value,
+            "Type": ioc_type,
+            "Score": score,
+            "Country": ext.get("country", ""),
+            "Threat Actor": ext.get("threat_actors", ""),
+            "Action": ext.get("recommended_actions"),
+            "Role": ext.get("roles"),
+            "Confidence": confidence,
+            "Description": ind.get("description"),
             "vendors": vendors,
-            "rawJSON": ind,
         }
-        outputs.append(row)
 
-    return outputs
+        table_data.append(row)
+
+        # -------- Context Output --------
+        outputs.append(
+            {
+                "value": value,
+                "type": ioc_type,
+                "score": score,
+                "country": ext.get("country", ""),
+                "threat_actor": ext.get("threat_actors", ""),
+            }
+        )
+        outputs.append(
+            {
+                "value": value,
+                "type": ioc_type,
+                "score": score,
+                "country": ext.get("country", ""),
+                "threat_actor": ext.get("threat_actors", ""),
+            }
+        )
+
+    human_readable = tableToMarkdown(title, table_data, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="CYFIRMA.Indicators",
+        outputs_key_field="value",
+        outputs=outputs,
+        raw_response=indicators,
+    )
 
 
 # The below function is used to fetch the IP type indicators from DeCYFIR feed.
 def decyfir_ip_indicator_command(client: Client, decyfir_api_key: str):
     ip_indicators = client.fetch_indicators_by_type(decyfir_api_key, "ip")
-    return command_results(ip_indicators, "IP")
+    return command_results(ip_indicators, "IP", "IP Indicators from DeCYFIR Feed:")
 
 
 # The below function is used to fetch the domain type indicators from DeCYFIR feed.
 def decyfir_domain_indicator_command(client: Client, decyfir_api_key: str):
     domain_indicators = client.fetch_indicators_by_type(decyfir_api_key, "domain")
-    return command_results(domain_indicators, "Domain")
+    return command_results(domain_indicators, "Domain", "Domain Indicators from DeCYFIR Feed")
 
 
 # The below function is used to fetch the URL type indicators from DeCYFIR feed.
 def decyfir_url_indicator_command(client: Client, decyfir_api_key: str):
     url_indicators = client.fetch_indicators_by_type(decyfir_api_key, "url")
-    return command_results(url_indicators, "URL")
+    return command_results(url_indicators, "URL", "URL Indicators from DeCYFIR Feed")
 
 
 # The below function is used to fetch the hash type indicators (MD5, SHA-1 and SHA-256) from DeCYFIR feed.
 def decyfir_hash_indicator_command(client: Client, decyfir_api_key: str):
     hashIndicators = client.fetch_indicators_by_type(decyfir_api_key, "hashes")
-    return command_results(hashIndicators, "File")
+    return command_results(hashIndicators, "File", "File Indicators from DeCYFIR Feed")
 
 
 def fetch_indicators_command(
@@ -633,7 +697,7 @@ def decyfir_get_indicators_command(
     client: Client, decyfir_api_key: str, tlp_color: str | None, reputation: str | None, feed_tags: list | None
 ):
     indicators = client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags, False)
-    return command_results(indicators, "Indicator")
+    return command_results(indicators, "Indicator", "DeCYFIR Indicators")
 
 
 def main():  # pragma: no cover
