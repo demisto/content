@@ -47,22 +47,22 @@ This pack contains the **GoogleGemini** integration that connects to Google's Ge
 
 **Common Parameters:**
    - **Model**: The Gemini model to use for the integration, or a custom model name.
-   - **Max Tokens**: Maximum response length (default: 1024)
-   - **Temperature**: Controls randomness (0.0-2.0, optional)
-   - **Top P**: Nucleus sampling parameter (optional)
-   - **Top K**: Top-k sampling parameter (optional)
+   - **Max Tokens**: The maximum response length (default: 1024).
+   - **Temperature**: (Optional) The degree of randomness in the responses (0.0-2.0).
+   - **Top P**: (Optional) The nucleus sampling parameter.
+   - **Top K**: (Optional) The top-k sampling parameter.
 
 **AI Studio Parameters:**
-   - **API Key**: Your Google AI API key
+   - **API Key**: Your Google AI API key.
 
 **Vertex AI Parameters:**
-   - **Service Account Key (JSON)**: The full JSON key contents for your service account
-   - **Project ID**: Your Google Cloud Project ID
-   - **Location**: Google Cloud location (e.g., `global`, `us-central1`; defaults to `global`)
+   - **Service Account Key (JSON)**: The full JSON key contents for your service account.
+   - **Project ID**: Your Google Cloud Project ID.
+   - **Location**: The Google Cloud location (for example, `us-central1`. Default is `global`).
 
-## Using the Integration
+## Integration Usage
 
-### Basic Usage
+### Basic
 
 Use the `google-gemini-send-message` command to send prompts to the AI model:
 
@@ -98,11 +98,11 @@ When `save_conversation` is enabled, the integration automatically:
 
 ## Troubleshooting
 
-- **API Key Issues**: Ensure your API key has access to the Generative Language API
-- **Vertex AI Auth Errors**: Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project
-- **Server URL**: For AI Studio, use `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` if left at the default
-- Check network connectivity to Google's API endpoints  
-- Verify that the selected model is available in your region
-- Review rate limits and usage quotas for your API key or project
+- Ensure your API key has access to the Generative Language API.
+- *Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
+- For AI Studio, use the server URL `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` by default.
+- Check network connectivity to Google's API endpoints. 
+- Verify that the selected model is available in your region.
+- Review rate limits and usage quotas for your API key or project.
 
-For additional support, refer to the [Google AI documentation](https://ai.google.dev/) or contact the pack maintainer.
+For more information, see the [Google AI documentation](https://ai.google.dev/) or contact the pack maintainer.
