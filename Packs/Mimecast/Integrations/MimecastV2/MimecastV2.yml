@@ -2485,7 +2485,7 @@ script:
       description: 'Indicates if the viewed message is a part of an existing discovery case.'
       type: Boolean
   - name: mimecast-create-block-sender-policy
-    description: Create a Blocked Sender Policy, which can be used to manage a combination of sender and recipient restrictions.
+    description: Create a Blocked Sender Policy.
     arguments:
     - description: Policy description.
       name: description
