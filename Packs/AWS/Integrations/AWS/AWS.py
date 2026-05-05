@@ -8047,19 +8047,66 @@ class SSM:
 
         Args:
             client (BotoClient): The boto3 client for SSM service.
-            args (Dict[str, Any]): Command arguments including optional filters, result_attributes,
-                aggregators, limit, and next_token.
+            args (Dict[str, Any]): Command arguments including optional filters, filter_type,
+                result_attributes, aggregator_expression, aggregator_groups (JSON),
+                inventory_aggregator, limit, and next_token.
 
         Returns:
             CommandResults: Results containing inventory entities with their data.
         """
         result_attributes_raw = argToList(args.get("result_attributes"))
-        aggregators_raw = args.get("aggregators")
+
+        # Build Filters — GetInventory uses Key/Type/Values (not Name/Values like EC2)
+        raw_filters = parse_filter_field(args.get("filters"))
+        filter_type = args.get("filter_type", "Equal")
+        inventory_filters = (
+            [{"Key": f["Name"], "Type": filter_type, "Values": f["Values"]} for f in raw_filters]
+            if raw_filters
+            else None
+        )
+
+        # Build Aggregators from flat arguments.
+        # AWS structure for Groups:
+        #   Parent aggregator: { "Expression": <expr>, "Aggregators": [{ "Groups": [...] }] }
+        # Groups must live in a nested sub-aggregator — they cannot coexist with Expression
+        # in the same aggregator object. aggregator_expression is required when using aggregator_groups.
+        aggregator_groups_raw = args.get("aggregator_groups")
+        aggregator_expression = args.get("aggregator_expression")
+        inventory_aggregator = args.get("inventory_aggregator")
+
+        if aggregator_groups_raw and inventory_aggregator:
+            raise ValueError(
+                "aggregator_groups and inventory_aggregator cannot be used together. "
+                "Use aggregator_groups to define groups within the aggregator, "
+                "or inventory_aggregator to define a nested sub-aggregator expression."
+            )
+
+        if aggregator_groups_raw and not aggregator_expression:
+            raise ValueError(
+                "aggregator_expression is required when using aggregator_groups. "
+                "Groups must be nested inside a parent aggregator that has an Expression."
+            )
+
+        if aggregator_groups_raw:
+            # Groups go into a nested sub-aggregator under the parent Expression
+            aggregator: Dict[str, Any] = {
+                "Expression": aggregator_expression,
+                "Aggregators": [{"Groups": json.loads(aggregator_groups_raw)}],
+            }
+        else:
+            # Expression-based aggregator (with optional nested sub-aggregator expression)
+            aggregator = {
+                "Expression": aggregator_expression,
+                "Aggregators": [{"Expression": inventory_aggregator}] if inventory_aggregator else None,
+            }
+            remove_nulls_from_dictionary(aggregator)
+
+        aggregators = [aggregator] if aggregator else None
 
         kwargs: Dict[str, Any] = {
-            "Filters": parse_filter_field(args.get("filters")) or None,
+            "Filters": inventory_filters,
             "ResultAttributes": [{"TypeName": t.strip()} for t in result_attributes_raw] if result_attributes_raw else None,
-            "Aggregators": json.loads(aggregators_raw) if aggregators_raw else None,
+            "Aggregators": aggregators,
         }
         remove_nulls_from_dictionary(kwargs)
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))

@@ -10353,12 +10353,30 @@ script:
       - name: filters
         description: "One or more filters separated by ';' in the format name=<key>,values=<values>. Use a filter to return a more specific list of results. For example: name=AWS:InstanceInformation.InstanceStatus,values=Active."
         required: false
+      - name: filter_type
+        description: "The type of filter to apply to the inventory filters. Possible values: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+        required: false
+        defaultValue: Equal
+        auto: PREDEFINED
+        predefined:
+          - Equal
+          - NotEqual
+          - BeginWith
+          - LessThan
+          - GreaterThan
+          - Exists
       - name: result_attributes
         description: "A comma-separated list of inventory type names to return. For example: AWS:InstanceInformation,AWS:Application. If not specified, all inventory types are returned."
         required: false
         isArray: true
-      - name: aggregators
-        description: "A JSON string specifying aggregators to group inventory data. For example: [{\"Expression\": \"AWS:InstanceInformation.PlatformType\"}]."
+      - name: aggregator_expression
+        description: "The inventory type name to aggregate inventory data by. For example: AWS:InstanceInformation.PlatformType."
+        required: false
+      - name: aggregator_groups
+        description: "A JSON string specifying one or more groups to further refine aggregated inventory data within the aggregator_expression scope. Requires aggregator_expression. Cannot be combined with inventory_aggregator. Each group must have a Name and Filters. For example: [{\"Name\": \"WindowsGroup\", \"Filters\": [{\"Key\": \"AWS:InstanceInformation.PlatformType\", \"Type\": \"Equal\", \"Values\": [\"Windows\"]}]}]."
+        required: false
+      - name: inventory_aggregator
+        description: "A nested aggregator expression to further group inventory data within the primary aggregator. For example: AWS:InstanceInformation.AgentType."
         required: false
       - name: limit
         description: The maximum number of items to return for this call. The minimum is 1 and the maximum is 50.
