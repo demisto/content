@@ -48,10 +48,12 @@ successfully execute a command, a DBot message appears in the War Room with the 
 Query Mimecast emails. This is an archive search command.
 
 #### Prerequisite
+
 In order to successfully use this endpoint to search across a customers entire archive, the role assigned to the app must have at least the following level of application permissions granted Archive | Search | Read.
 To use this endpoint to search for messages for the logged in user or an address that the logged in user has delegate permission to, no administrator permissions are required.
 
-#### application permissions 
+#### application permissions
+
 Archive | Search | Read
 
 #### Base Command
@@ -97,9 +99,6 @@ Archive | Search | Read
 
 ***
 Deprecate - use mimecast-list-policies instead
-
-#### application permissions required
-Gateway | Policies | Read
 
 #### Base Command
 
@@ -370,6 +369,10 @@ Delete a Blocked Sender Policy.
 ***
 Permit or block a specific sender
 
+#### Required Permissions
+
+Gateway | Managed Senders | Edit
+
 #### Base Command
 
 `mimecast-manage-sender`
@@ -399,6 +402,10 @@ Permit or block a specific sender
 ***
 Get a list of all managed URLs
 
+#### Required Permissions
+
+Services | Targeted Threat Protection - URL Protect | Edit
+
 #### Base Command
 
 `mimecast-list-managed-url`
@@ -425,6 +432,10 @@ Get a list of all managed URLs
 
 ***
 Create a managed URL on Mimecast
+
+#### Required Permissions
+
+Services | Targeted Threat Protection - URL Protect | Edit
 
 #### Base Command
 
@@ -462,6 +473,10 @@ are required for this command.
 - Mimecast administrator with at least one of the following permissions: Archive/Search/Read.
 - or Mimecast user with delegate permissions to address or user.
 
+#### Required Permissions
+
+Archive| Search | Read
+
 #### Base Command
 
 `mimecast-list-messages`
@@ -494,6 +509,10 @@ are required for this command.
 
 ***
 Returns Attachment Protect logs for a Mimecast customer account
+
+#### Required Permissions
+
+Monitoring | Attachment Protection | Read
 
 #### Base Command
 
@@ -528,6 +547,10 @@ Returns Attachment Protect logs for a Mimecast customer account
 
 ***
 Returns URL protect logs for a Mimecast customer account. Default value of scanResult as malicious
+
+#### Required Permissions
+
+Monitoring | URL Protection | Read
 
 #### Base Command
 
@@ -564,6 +587,10 @@ Returns URL protect logs for a Mimecast customer account. Default value of scanR
 
 ***
 Returns Impersonation Protect logs for a Mimecast customer account
+
+#### Required Permissions
+
+Monitoring | Impersonation Protection | Read
 
 #### Base Command
 
@@ -607,6 +634,10 @@ Returns Impersonation Protect logs for a Mimecast customer account
 
 ***
 Decodes a given url from mimecast
+
+#### Required Permissions
+
+Account | Dashboard | Read
 
 #### Base Command
 
@@ -692,7 +723,7 @@ Get the contents or metadata of a given message. This is an archive search comma
 
 The following permissions are required for this command.
 
-- Mimecast administrator with at least one of the following permissions: Archive/Search Content View.
+- Mimecast administrator with at least one of the following permissions: Archive | Search Content View.
 - or Mimecast user with delegate permissions to address or user.
 
 #### Base Command
@@ -750,7 +781,7 @@ Download attachments from a specified message. This is an archive search command
 
 The following permissions are required for this command.
 
-- Mimecast administrator with at least one of the following permissions: Archive/Search Content View.
+- Mimecast administrator with at least one of the following permissions: Archive | Search Content View | Read.
 - or Mimecast user with delegate permissions to address or user.
 
 #### Base Command
@@ -784,6 +815,10 @@ The following permissions are required for this command.
 ***
 Returns the list of groups according to the specified query.
 
+#### Required Permissions
+
+Directories | Groups | Edit
+
 #### Base Command
 
 `mimecast-find-groups`
@@ -811,6 +846,10 @@ Returns the list of groups according to the specified query.
 
 ***
 Returns the members list for the specified group.
+
+#### Required Permissions
+
+Services | Directory Sync | Read
 
 #### Base Command
 
@@ -841,6 +880,10 @@ Returns the members list for the specified group.
 ***
 Adds a user to a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
 
+#### Required Permissions
+
+Directories | Groups | Edit
+
 #### Base Command
 
 `mimecast-add-group-member`
@@ -867,6 +910,10 @@ Adds a user to a group. The email_address and domain_address arguments are optio
 Removes a user from a group. The email_address and domain_address arguments are optional, but one of them must be
 supplied.
 
+#### Required Permissions
+
+Services | Directory Sync | Edit
+
 #### Base Command
 
 `mimecast-remove-group-member`
@@ -890,6 +937,10 @@ supplied.
 
 ***
 Creates a new Mimecast group.
+
+#### Required Permissions
+
+Directories | Groups | Edit
 
 #### Base Command
 
@@ -918,6 +969,10 @@ Creates a new Mimecast group.
 ***
 Updates an existing Mimecast group.
 
+#### Required Permissions
+
+Services | Directory Sync | Edit
+
 #### Base Command
 
 `mimecast-update-group`
@@ -942,6 +997,10 @@ Updates an existing Mimecast group.
 
 ***
 Creates a new Mimecast remediation incident.
+
+#### Required Permissions
+
+Services | Threat Remediation | Edit
 
 #### Base Command
 
@@ -982,6 +1041,10 @@ Creates a new Mimecast remediation incident.
 ***
 Returns a Mimecast remediation incident.
 
+#### Required Permissions
+
+Services | Threat Remediation | Read
+
 #### Base Command
 
 `mimecast-get-remediation-incident`
@@ -1016,6 +1079,10 @@ Returns a Mimecast remediation incident.
 
 ***
 Searches for one or more file hashes in the account. Maximum is 100.
+
+#### Required Permissions
+
+Services | Threat Remediation | Read
 
 #### Base Command
 
@@ -1078,6 +1145,10 @@ Updates the specified policy.
 ***
 Searches a message
 
+#### Required Permissions
+
+Gateway | Tracking | Read
+
 #### Base Command
 
 `mimecast-search-message`
@@ -1121,6 +1192,10 @@ Searches a message
 
 ***
 Retrieves detailed information about a specific message.
+
+#### Required Permissions
+
+Gateway | Tracking | Read
 
 #### Base Command
 
@@ -1241,6 +1316,10 @@ Retrieves detailed information about a specific message.
 ***
 Get information about held messages, including the reason, hold level, sender and recipients
 
+#### Required Permissions
+
+Account | Dashboard | Read
+
 #### Base Command
 
 `mimecast-list-held-message`
@@ -1284,6 +1363,10 @@ Get information about held messages, including the reason, hold level, sender an
 ***
 Get counts of currently held messages for each hold reason.
 
+#### Required Permissions
+
+Account | Monitoring | Held Summary | Read
+
 #### Base Command
 
 `mimecast-held-message-summary`
@@ -1304,6 +1387,10 @@ Get counts of currently held messages for each hold reason.
 
 ***
 Reject a currently held message.
+
+#### Required Permissions
+
+Account | Monitoring | Held | Edit
 
 #### Base Command
 
@@ -1335,6 +1422,10 @@ There is no context output for this command.
 ***
 Release a currently held message.
 
+#### Required Permissions
+
+Account | Monitoring | Held | Edit
+
 #### Base Command
 
 `mimecast-release-held-message`
@@ -1361,6 +1452,10 @@ There is no context output for this command.
 
 ***
 Return messages currently being processed by Mimecast. Note that most of the time, no results are returned.
+
+#### Required Permissions
+
+Monitoring | Processing | Read
 
 #### Base Command
 
@@ -1404,6 +1499,10 @@ Return messages currently being processed by Mimecast. Note that most of the tim
 
 ***
 Get the count of the inbound and outbound email queues at specified times.
+
+#### Required Permissions
+
+Account | Dashboard | Read
 
 #### Base Command
 
@@ -1476,6 +1575,10 @@ Get the count of the inbound and outbound email queues at specified times.
 ***
 Retrieves archived search logs.
 
+#### Required Permissions
+
+Archive | Search Logs | Read
+
 #### Base Command
 
 `mimecast-get-archive-search-logs`
@@ -1535,6 +1638,10 @@ Retrieves archived search logs.
 
 ***
 Retrieves the search logs.
+
+#### Required Permissions
+
+Archive | Search Logs | Read
 
 #### Base Command
 
@@ -1603,6 +1710,10 @@ Retrieves the search logs.
 ***
 Retrieves the email view logs.
 
+#### Required Permissions
+
+Archive | View Logs | Read
+
 #### Base Command
 
 `mimecast-get-view-logs`
@@ -1670,6 +1781,10 @@ Retrieves the email view logs.
 
 ***
 This endpoint returns the summary details for an account in Mimecast.
+
+#### Required Permissions
+
+Account | Dashboard | Read
 
 #### Base Command
 
@@ -2006,7 +2121,15 @@ List all existing Mimecast blocked sender policies.
 ### mimecast-create-block-sender-policy
 
 ***
-Create a Blocked Sender Policy.
+Create a Blocked Sender Policy, which can be used to manage a combination of sender and recipient restrictions.
+
+### Prerequisite
+
+In order to successfully use this endpoint the role assigned to the app must have at least the following level of application permissions granted Gateway | Policies | Edit.
+
+### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2095,6 +2218,10 @@ Create a Blocked Sender Policy.
 Updates an existing Blocked Senders policy. This command performs a full policy replacement at the API level. Arguments that are explicitly provided will overwrite the current policy values. Arguments that are left blank will be automatically preserved from the existing policy. To modify only specific fields, provide the `policy_id` and the fields to be changed — all other fields will remain unchanged.
 **Note**: Each policy supports a single sender value (`fromValue`). To block additional senders, separate policies should be created using the `mimecast-create-block-sender-policy` command.
 
+#### Required Permissions
+
+Gateway | Policies | Edit
+
 #### Base Command
 
 `mimecast-update-block-sender-policy`
@@ -2175,6 +2302,10 @@ Updates an existing Blocked Senders policy. This command performs a full policy 
 
 ***
 Create a new Anti-Spoofing SPF based Bypass policy.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2284,6 +2415,10 @@ Create a new Anti-Spoofing SPF based Bypass policy.
 ***
 Update an existing Anti-Spoofing SPF based Bypass policy.
 
+#### Required Permissions
+
+Gateway | Policies | Edit
+
 #### Base Command
 
 `mimecast-update-antispoofing-bypass-policy`
@@ -2378,6 +2513,10 @@ Update an existing Anti-Spoofing SPF based Bypass policy.
 
 ***
 This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2478,6 +2617,10 @@ This API endpoint can be used to create a new Address Alteration policy to apply
 
 ***
 Update an existing Address Alteration policy.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
