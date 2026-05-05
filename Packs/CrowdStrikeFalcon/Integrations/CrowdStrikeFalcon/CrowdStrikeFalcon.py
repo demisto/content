@@ -9688,12 +9688,12 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
             for activity in activities:
                 hr_data.append({
                     "Execution ID": execution_id_val,
-                    "Node ID": activity.get("node_id"),
-                    "Start Timestamp": activity.get("start_timestamp"),
-                    "End Timestamp": activity.get("end_timestamp"),
-                    "Status": activity.get("status"),
-                    "Name": activity.get("name"),
-                    "Type": activity.get("type"),
+                    "Activity Node ID": activity.get("node_id"),
+                    "Activity Start Timestamp": activity.get("start_timestamp"),
+                    "Activity End Timestamp": activity.get("end_timestamp"),
+                    "Activity Status": activity.get("status"),
+                    "Activity Name": activity.get("name"),
+                    "Activity Type": activity.get("type"),
                 })
         else:
             hr_data.append({
@@ -9704,7 +9704,7 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         name="Workflow Executions",
         t=hr_data,
-        headers=["Execution ID", "Node ID", "Start Timestamp", "End Timestamp", "Status", "Name", "Type"],
+        headers=["Execution ID", "Activity Node ID", "Activity Start Timestamp", "Activity End Timestamp", "Activity Status", "Activity Name", "Activity Type"],
         removeNull=True,
     )
 
@@ -9736,19 +9736,19 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
         for activity in activities:
             hr_data.append({
                 "Execution ID": execution_id,
-                "Node ID": activity.get("node_id"),
-                "Start Timestamp": activity.get("start_timestamp"),
-                "End Timestamp": activity.get("end_timestamp"),
-                "Status": activity.get("status"),
-                "ID": activity.get("id"),
-                "Name": activity.get("name"),
-                "Type": activity.get("type"),
+                "Activity Node ID": activity.get("node_id"),
+                "Activity Start Timestamp": activity.get("start_timestamp"),
+                "Activity End Timestamp": activity.get("end_timestamp"),
+                "Activity Status": activity.get("status"),
+                "Activity ID": activity.get("id"),
+                "Activity Name": activity.get("name"),
+                "Activity Type": activity.get("type"),
             })
 
     readable_output = tableToMarkdown(
         name="Workflow Execution Results",
         t=hr_data,
-        headers=["Execution ID", "Node ID", "Start Timestamp", "End Timestamp", "Status", "ID", "Name", "Type"],
+        headers=["Execution ID", "Activity Node ID", "Activity Start Timestamp", "Activity End Timestamp", "Activity Status", "Activity ID", "Activity Name", "Activity Type"],
         removeNull=True,
     )
 

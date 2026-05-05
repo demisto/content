@@ -5178,20 +5178,20 @@ script:
       description: Event timestamp.
       type: String
   - arguments:
-    - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3)'
+    - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html, and for list of available properties see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3'
       name: filter
     - description: The workflow definition ID. When provided, adds id:''<value>'' to the filter.
       name: definition_id
     - description: Filter by activity ID. When provided, adds activity_id:''<value>'' to the filter.
       name: activity_id
-    - description: Filter by workflow name. When provided, adds name:~''<value>'' to the filter (partial match).
+    - description: Filter by workflow name. When provided, adds name:~''<value>'' to the filter.
       name: name
-    - description: Filter by workflow description. When provided, adds description:~''<value>'' to the filter (partial match).
+    - description: Filter by workflow description. When provided, adds description:~''<value>'' to the filter.
       name: description
     - description: The offset to start retrieving records from.
       name: offset
       defaultValue: '0'
-    - description: The maximum number of records to return.
+    - description: The maximum number of records to return. Max is 500.
       name: limit
       defaultValue: '50'
     - description: 'The property to sort by in the format property.direction (e.g., name.desc, time.asc). Comma-separated for multiple sorts.'
@@ -5219,18 +5219,18 @@ script:
     name: cs-falcon-workflow-execute
     outputs: []
   - arguments:
-    - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3)' 
+    - description: 'Filter results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html, and for list of available properties see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3' 
       name: filter
     - description: Filter by workflow definition ID. When provided, adds definition_id:''<value>'' to the filter.
       name: definition_id
-    - description: Filter by workflow definition name. When provided, adds definition_name:~''<value>'' to the filter (partial match).
+    - description: Filter by workflow definition name. When provided, adds definition_name:~''<value>'' to the filter.
       name: definition_name
     - description: Filter by execution ID. When provided, adds execution_id:''<value>'' to the filter.
       name: execution_id
     - description: The offset to start retrieving records from.
       name: offset
       defaultValue: '0'
-    - description: The maximum number of records to return.
+    - description: The maximum number of records to return. Max is 500.
       name: limit
       defaultValue: '50'
     - description: 'The property to sort by in the format property.direction (e.g., created_at.desc). Comma-separated for multiple sorts.'
