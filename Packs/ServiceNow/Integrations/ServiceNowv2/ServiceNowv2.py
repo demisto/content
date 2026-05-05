@@ -1,4 +1,5 @@
 import mimetypes
+import os
 import re
 from collections.abc import Callable, Iterable
 from urllib.parse import quote
@@ -11,7 +12,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -25,12 +26,17 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 DATE_FORMAT_OPTIONS = {
     "MM-dd-yyyy": "%m-%d-%Y %H:%M:%S",
     "MM/dd/yyyy": "%m/%d/%Y %H:%M:%S",
+    "MM/dd/yy": "%m/%d/%y %H:%M:%S",
     "dd/MM/yyyy": "%d/%m/%Y %H:%M:%S",
+    "dd/MM/yy": "%d/%m/%y %H:%M:%S",
     "dd-MM-yyyy": "%d-%m-%Y %H:%M:%S",
     "dd.MM.yyyy": "%d.%m.%Y %H:%M:%S",
     "yyyy-MM-dd": "%Y-%m-%d %H:%M:%S",
+    "yyyy/MM/dd": "%Y/%m/%d %H:%M:%S",
+    "yyyy.MM.dd": "%Y.%m.%d %H:%M:%S",
     "mmm-dd-yyyy": "%b-%d-%Y %H:%M:%S",
     "yyyy-MMM-dd": "%Y-%b-%d %H:%M:%S",
+    "dd-MMM-yyyy": "%d-%b-%Y %H:%M:%S",
 }
 
 TICKET_STATES = {
@@ -737,6 +743,10 @@ class Client(BaseClient):
         if get_attachments:
             url = url.replace("/v2", "/v1")
 
+        # The Service Catalog order_now endpoint does not support v2 api version
+        if sc_api and path.endswith("/order_now"):
+            url = url.replace("/v2", "/v1")
+
         return url
 
     def _send_file_request(self, url: str, method: str, headers: dict, body: dict, params: dict, file: dict) -> requests.Response:
@@ -1218,18 +1228,23 @@ class Client(BaseClient):
         """
         return self.send_request(f"servicecatalog/items/{id_}", "GET", sc_api=True)
 
-    def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
+    def create_item_order(self, id_: str, quantity: str, variables: dict = {}, no_validation: bool = False) -> dict:
         """Create item order in the service catalog by sending a POST request to the Service Catalog API.
 
         Args:
         id_: item id
         quantity: order quantity
         variables: order variables
+        no_validation: if True, sets sysparm_no_validation=true to bypass ServiceNow form validation.
+            Useful when catalog items have required attachments or custom validation that cannot be
+            satisfied at order-creation time. The attachment can be uploaded separately afterwards.
 
         Returns:
             Response from API.
         """
-        body = {"sysparm_quantity": quantity, "variables": variables}
+        body: dict = {"sysparm_quantity": quantity, "variables": variables}
+        if no_validation:
+            body["sysparm_no_validation"] = "true"
         return self.send_request(f"servicecatalog/items/{id_}/order_now", "POST", body=body, sc_api=True)
 
     def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
@@ -1701,7 +1716,7 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     file_name = args.get("file_name")
     if not file_name:
         file_data = demisto.getFilePath(file_id)
-        file_name = file_data.get("name")
+        file_name = os.path.basename(file_data.get("name") or "")
 
     result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
 
@@ -1910,12 +1925,18 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
 
+            human_readable = (
+                f"Type: {note.get('element')}\nCreated By: "
+                f"{note.get('sys_created_by')}\nCreated On: "
+                f"{note.get('sys_created_on')}\n{note.get('value')}"
+            )
             entries.append(
                 {
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
-                    "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    "HumanReadable": human_readable,
+                    "Contents": human_readable,
+                    "created": note.get("sys_created_on", ""),
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -2467,8 +2488,9 @@ def create_order_item_command(client: Client, args: dict) -> tuple[Any, dict[Any
     id_ = str(args.get("id", ""))
     quantity = str(args.get("quantity", "1"))
     variables = split_fields(str(args.get("variables", "")))
+    no_validation = argToBoolean(args.get("no_validation", False))
 
-    result = client.create_item_order(id_, quantity, variables)
+    result = client.create_item_order(id_, quantity, variables, no_validation)
     if not result or "result" not in result:
         return "Order item was not created.", {}, {}, True
     order_item = result.get("result", {})
@@ -3356,7 +3378,7 @@ def update_remote_system_with_entries(client, entries, params, ticket_id, ticket
         # Mirroring files as entries
         if is_entry_type_mirror_supported(entry.get("type")):
             path_res = demisto.getFilePath(entry.get("id"))
-            full_file_name = path_res.get("name")
+            full_file_name = os.path.basename(path_res.get("name") or "")
             file_name, file_extension = os.path.splitext(full_file_name)
             if not file_extension:
                 file_extension = ""
@@ -3489,7 +3511,9 @@ def get_modified_remote_data_command(
 ) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
-    assert parsed_date is not None, f"could not parse {remote_args.last_update}"
+    if parsed_date is None:
+        demisto.debug(f"Could not parse lastUpdate='{remote_args.last_update}', falling back to epoch (1970-01-01 00:00:00)")
+        parsed_date = datetime(1970, 1, 1, tzinfo=UTC)
     last_update = parsed_date.strftime(DATE_FORMAT)
 
     demisto.debug(f"Running get-modified-remote-data command. Last update is: {last_update}")

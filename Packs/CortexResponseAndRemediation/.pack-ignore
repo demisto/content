@@ -559,5 +559,11 @@ SMTP
 [file:silent-playbook-New_Administrative_Behavior.yml]
 ignore=GR109
 
-[file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger_-_Encoded_information_using_windows_certificate_management_tool.json]
-ignore=GR103
+[file:silent-Trigger_-_Uncommon_execution_of_ODBCconf_Test.json]
+ignore=TR101
+
+[file:silent-Trigger_-_Suspicious_process_execution_by_scheduled_task_on_a_sensitive_server_Test.json]
+ignore=TR101
+
+[file:silent-Trigger_-_Remote_WMI_Process_Execution_Test.json]
+ignore=TR101

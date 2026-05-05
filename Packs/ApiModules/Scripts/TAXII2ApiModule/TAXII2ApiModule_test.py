@@ -2157,6 +2157,7 @@ TEST_CREATE_STIX_OBJECT_PARAM = [
             "name": "bad malware",
             "description": "",
             "is_family": False,
+            "labels": ["malware"],
         },
     ),
 ]
@@ -2248,20 +2249,23 @@ def test_get_tlp(indicator_json, expected_result):
 @pytest.mark.parametrize(
     "stix_object,xsoar_indicator, expected_stix_object",
     [
-        ({"type": "malware"}, {"CustomFields": {}}, {"is_family": False, "type": "malware"}),
-        ({"type": "report"}, {"CustomFields": {"published": "some_date"}}, {"published": "some_date", "type": "report"}),
+        ({"type": "malware"}, {"CustomFields": {}}, {"is_family": False, "type": "malware", "labels": ["malware"]}),
+        (
+            {"type": "report"},
+            {"CustomFields": {"published": "some_date"}},
+            {"published": "some_date", "type": "report", "labels": ["report"]},
+        ),
     ],
 )
 def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_object):
     """
     Given
-        - Case 1: A STIX indicator of type 'malware', and an XSOAR indicator.
-        - Case 2: A STIX indicator of type 'report' and an XSOAR indicator.
-        - Case 3: A STIX indicator of type 'report' and an XSOAR indicator.
+        - Case 1: A STIX indicator of type 'malware', and an XSOAR indicator with no tags.
+        - Case 2: A STIX indicator of type 'report' and an XSOAR indicator with a published date but no tags.
     When
-    - call the test_add_sdo_required_field_2_1 method
+    - call the add_sdo_required_field_2_1 method
     Then
-    - Validates that the method properly set the required fields.
+    - Validates that the method properly sets the required fields, including labels falling back to the type name.
     """
     cilent = XSOAR2STIXParser(
         server_version="2.1", fields_to_present={"name", "type"}, types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID
@@ -2299,6 +2303,64 @@ def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_
     )
     stix_object = cilent.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
     assert stix_object == expected_stix_object
+
+
+@pytest.mark.parametrize(
+    "stix_object,xsoar_indicator, expected_stix_object",
+    [
+        (
+            {"type": "indicator"},
+            {"CustomFields": {"tags": []}},
+            {"type": "indicator", "labels": ["indicator"]},
+        ),
+        (
+            {"type": "malware"},
+            {"CustomFields": {"tags": [], "ismalwarefamily": True}},
+            {"type": "malware", "is_family": True, "labels": ["malware"]},
+        ),
+        (
+            {"type": "report"},
+            {"CustomFields": {"tags": ["apt", "critical"]}},
+            {"type": "report", "labels": ["apt", "critical"]},
+        ),
+        (
+            {"type": "threat-actor"},
+            {"CustomFields": {"tags": ["nation-state"]}},
+            {"type": "threat-actor", "labels": ["nation-state"]},
+        ),
+        (
+            {"type": "tool"},
+            {"CustomFields": {"tags": ["Ransomware Tool"]}},
+            {"type": "tool", "labels": ["ransomware-tool"]},
+        ),
+        # Non-label SDO type should not get labels field
+        (
+            {"type": "identity"},
+            {"CustomFields": {"tags": ["some-tag"], "identityclass": "organization"}},
+            {"type": "identity"},
+        ),
+    ],
+)
+def test_add_sdo_required_field_2_1_labels(stix_object, xsoar_indicator, expected_stix_object):
+    """
+    Given
+        - Case 1: A STIX indicator of type 'indicator' with empty tags, using TAXII 2.1.
+        - Case 2: A STIX indicator of type 'malware' with empty tags and ismalwarefamily=True.
+        - Case 3: A STIX indicator of type 'report' with multiple custom tags.
+        - Case 4: A STIX indicator of type 'threat-actor' with a custom tag.
+        - Case 5: A STIX indicator of type 'tool' with a tag containing spaces (should be lowercased and hyphenated).
+        - Case 6: A STIX indicator of type 'identity' (not in the labels-required set) — no labels field added.
+    When
+        - Calling the add_sdo_required_field_2_1 method with server_version="2.1".
+    Then
+        - Validates that the method properly sets the labels field for SDO types that require it,
+          and does not add labels for types that do not require it.
+    """
+    client = XSOAR2STIXParser(
+        server_version="2.1", fields_to_present={"name", "type"}, types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID
+    )
+    result = client.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
+    assert result == expected_stix_object
 
 
 @pytest.mark.parametrize(
@@ -2360,6 +2422,71 @@ def test_get_labels_for_indicator():
     for score in range(4):
         value = cilent.get_labels_for_indicator(score)
         assert value == expected_result[score]
+
+
+@pytest.mark.parametrize(
+    "xsoar_indicator,expected_labels",
+    [
+        # No custom tags — only score-based label
+        (
+            {"value": "1.1.1.1", "score": 3, "CustomFields": {}},
+            {"malicious-activity"},
+        ),
+        # Custom tags only, score=0 (empty score label) — custom tags should appear
+        (
+            {"value": "1.1.1.1", "score": 0, "CustomFields": {"tags": ["apt29", "critical"]}},
+            {"apt29", "critical"},
+        ),
+        # Both score label and custom tags — all should be merged
+        (
+            {"value": "1.1.1.1", "score": 2, "CustomFields": {"tags": ["apt29", "Ransomware"]}},
+            {"anomalous-activity", "apt29", "ransomware"},
+        ),
+        # Custom tags with spaces — should be lowercased and hyphenated
+        (
+            {"value": "1.1.1.1", "score": 1, "CustomFields": {"tags": ["Nation State Actor"]}},
+            {"benign", "nation-state-actor"},
+        ),
+        # No CustomFields key at all — only score label
+        (
+            {"value": "1.1.1.1", "score": 3, "CustomFields": None},
+            {"malicious-activity"},
+        ),
+    ],
+)
+def test_convert_sco_to_indicator_sdo_labels(xsoar_indicator, expected_labels):
+    """
+    Given
+        - Case 1: An XSOAR indicator with score=3 and no custom tags.
+        - Case 2: An XSOAR indicator with score=0 (empty score label) and two custom tags.
+        - Case 3: An XSOAR indicator with score=2 and two custom tags.
+        - Case 4: An XSOAR indicator with score=1 and a multi-word custom tag.
+        - Case 5: An XSOAR indicator with score=3 and CustomFields=None.
+    When
+        - Calling convert_sco_to_indicator_sdo.
+    Then
+        - Validates that the resulting indicator SDO labels field contains both the
+          score-based label and all custom tags (lowercased and hyphenated), with no duplicates.
+    """
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=["ipv4-addr"],
+        namespace_uuid=PAWN_UUID,
+    )
+    stix_object = {
+        "type": "ipv4-addr",
+        "id": "ipv4-addr--test",
+        "spec_version": "2.1",
+        "created": "2021-12-08T07:32:24.104143Z",
+        "modified": "2021-12-08T07:32:24.104143Z",
+        "value": xsoar_indicator["value"],
+    }
+    result = client.convert_sco_to_indicator_sdo(stix_object, xsoar_indicator)
+    result_labels = set(result.get("labels", []))
+    # Filter out the empty-string score label before comparing
+    result_labels.discard("")
+    assert result_labels == expected_labels
 
 
 def test_get_indicator_publication():
@@ -3042,3 +3169,103 @@ def test_get_ioc_value_multiple_fields():
     res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
 
     assert res == "10.0.0.1"
+
+
+class TestTLPInRawJSON:
+    """Tests that TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol']."""
+
+    def test_tlp_from_marking_refs_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator with object_marking_refs containing a GREEN TLP marking.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The resolved TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, tlp_color=None, objects_to_fetch=[])
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--12345",
+            "number": 12345,
+            "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert result[0]["fields"]["trafficlightprotocol"] == "GREEN"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "GREEN"
+
+    def test_tlp_from_default_color_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator without object_marking_refs and a default tlp_color of 'AMBER'.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The default TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="AMBER", objects_to_fetch=[]
+        )
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--67890",
+            "number": 67890,
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert result[0]["fields"]["trafficlightprotocol"] == "AMBER"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "AMBER"
+
+    def test_tlp_from_marking_refs_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator with object_marking_refs containing a RED TLP marking.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - The resolved TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, tlp_color=None, objects_to_fetch=[])
+        indicator_obj = {
+            "id": "indicator--abc123",
+            "pattern": "[domain-name:value = 'evil.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+            "object_marking_refs": ["marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed"],
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert result[0]["fields"]["trafficlightprotocol"] == "RED"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "RED"
+
+    def test_tlp_from_default_color_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator without object_marking_refs and a default tlp_color of 'WHITE'.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - The default TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="WHITE", objects_to_fetch=[]
+        )
+        indicator_obj = {
+            "id": "indicator--def456",
+            "pattern": "[domain-name:value = 'bad.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert result[0]["fields"]["trafficlightprotocol"] == "WHITE"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "WHITE"

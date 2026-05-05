@@ -54,11 +54,30 @@ function sendRequest(method, url, body, token) {
 
 function sendRequestInSession(method, uri, body) {
     if (!SESSION_DATA || !SESSION_DATA.access_token) {
-        throw "Faield to get access token for Salesforce integration.";
+        throw "Failed to get access token for Salesforce integration.";
     }
     var response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
     if (response.StatusCode === 401) {
-        SESSION_DATA = getNewToken();
+        // ── UCP: invalidate cache and get fresh credentials, fall back to legacy ──
+        try {
+            var use_ucp_auth = shouldUseUcpAuth();
+        } catch (e) {
+            var use_ucp_auth = false;
+        }
+        if (use_ucp_auth) {
+            logDebug('[UCP][Salesforce.js] Received 401 — invalidating cached credentials and retrying');
+            invalidateUcpCredentialsCache(getUcpMethodUniqueId());
+            var ucpCreds = getUcpCredentials();
+            if (!ucpCreds || !ucpCreds.access_token) {
+                logError('[UCP][Salesforce.js] Failed to refresh access token after 401');
+                throw '[UCP] Failed to refresh the Salesforce access token after an authentication error. '
+                    + 'Please verify the authentication profile is correctly configured.';
+            }
+            logDebug('[UCP][Salesforce.js] Successfully refreshed access token after 401');
+            SESSION_DATA.access_token = ucpCreds.access_token;
+        } else {
+            SESSION_DATA = getNewToken();
+        }
         response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
     }
     if (response.StatusCode < 200 || response.StatusCode >= 300) {
@@ -827,8 +846,28 @@ function fetchIncident() {
 
     return incidents;
 }
+// ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
 
-SESSION_DATA = getNewToken();
+try {
+    var use_ucp_auth = shouldUseUcpAuth();
+} catch (e) {
+    var use_ucp_auth = false;
+}
+if (use_ucp_auth) {
+    logDebug("[UCP][Salesforce.js] Using UCP-managed token");
+    var ucpCredentials = getUcpCredentials();
+    if (!ucpCredentials || !ucpCredentials.access_token) {
+        logError('[UCP][Salesforce.js] Failed to obtain access token from UCP credentials');
+        throw '[UCP] Failed to obtain a Salesforce access token. '
+            + 'Please verify the authentication profile is correctly configured and the credentials are valid.';
+    }
+    SESSION_DATA = {
+        access_token: ucpCredentials.access_token,
+        instance_url: params.InstanceURL
+    };
+} else {
+    SESSION_DATA = getNewToken();
+}
 // The command input arg holds the command sent from the user.
 var response;
 switch (command) {
