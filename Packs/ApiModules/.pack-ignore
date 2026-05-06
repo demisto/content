@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM106
+ignore=RM106,BA125
 
 [known_words]
 tlp
@@ -32,9 +32,6 @@ ignore=DS108
 ignore=DS108
 
 [file:ContentClientApiModule.yml]
-ignore=BA125
-
-[file:README.md]
 ignore=BA125
 
 [file:BaseContentApiModule.yml]
