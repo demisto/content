@@ -93,6 +93,18 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+- additionalinfo: The maximum number of vulnerability chunks to download in a single fetch. Higher values speed up ingestion but increase per-run memory, runtime, and API usage. Capped at 50.
+  defaultvalue: '8'
+  display: Max vulnerability chunks per fetch
+  name: max_vulns_chunks_per_fetch
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io

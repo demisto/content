@@ -126,7 +126,8 @@ PRODUCT = "io"
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 100
 MAX_CHUNKS_PER_FETCH = 8
-MAX_VULNS_CHUNKS_PER_FETCH = 50
+# Cap the configured value at 50 to bound per-fetch memory/runtime/API usage.
+MAX_VULNS_CHUNKS_PER_FETCH = min(arg_to_number(PARAMS.get("max_vulns_chunks_per_fetch")) or 8, 50)
 ASSETS_FETCH_FROM = "90 days"
 VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
