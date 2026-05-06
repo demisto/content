@@ -59,14 +59,14 @@ def _build_search_query(asset_type: str, values: list[str], operation: str) -> s
             joined = " OR ".join(values)
             query_value = f"({joined})"
         elif operation == "regex":
-            query_value = " ".join(f"/{v}/" for v in values)
+            query_value = " ".join(f"{v}" for v in values)
     else:
         if operation == "is":
             query_value = f'"{values[0]}"'
         elif operation == "contains":
             query_value = values[0]
         elif operation == "regex":
-            query_value = f"/{values[0]}/"
+            query_value = f"{values[0]}"
 
     return query_value if asset_type == "all_fields" else f"{asset_type}:{query_value}"
 
