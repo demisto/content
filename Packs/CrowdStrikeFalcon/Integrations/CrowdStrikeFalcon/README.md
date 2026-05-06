@@ -6782,14 +6782,14 @@ Lists workflow definitions from CrowdStrike Falcon.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
-| definition_id | The workflow definition ID. If 'filter' is provided, this argument is ignored. | Optional |
-| activity_id | Filter by activity ID. If 'filter' is provided, this argument is ignored. | Optional |
-| name | Filter by workflow name. If 'filter' is provided, this argument is ignored. | Optional |
-| description | Filter by workflow description. If 'filter' is provided, this argument is ignored. | Optional |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). For a list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| activity_id | The activity ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| name | The workflow name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| description | The workflow description to filter by. If 'filter' is provided, this argument is ignored. | Optional |
 | offset | The offset to start retrieving records from. Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
-| sort | The property to sort by in the format property.direction (e.g., name.desc, time.asc). String with comma-separated values for multiple sorts. | Optional |
+| sort | A comma-separated list of properties to sort by in the format property.direction (for example name.desc, time.asc, created_at.desc). | Optional |
 
 #### Context Output
 
@@ -6812,11 +6812,11 @@ Executes an on-demand workflow. Use `cs-falcon-list-workflow-definitions` to fin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| definition_id | The workflow definition ID to execute. Supports a comma-separated list. Either definition_id or name must be provided. | Optional |
+| definition_id | A comma-separated list of workflow definition IDs to execute. Either definition_id or name must be provided. | Optional |
 | name | The workflow name to execute. Either definition_id or name must be provided. | Optional |
 | execution_cid | A comma-separated list of CID(s) to execute the workflow on. | Optional |
-| key | A key used for deduplication of workflow executions, if unset a new UUID is used. | Optional |
-| source_event_url | A URL reference to the source that triggered the workflow execution. | Optional |
+| key | The key used for deduplication of workflow executions. If not set, a new UUID is used. | Optional |
+| source_event_url | The URL of the source that triggered the workflow execution. | Optional |
 | body | The JSON body to pass to the workflow execution. Can be an empty object {}. Default is {}. | Optional |
 
 #### Context Output
@@ -6840,13 +6840,13 @@ Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execut
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html), and for list of available properties see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
-| definition_id | Filter by workflow definition ID. If 'filter' is provided, this argument is ignored. | Optional |
-| definition_name | Filter by workflow definition name. If 'filter' is provided, this argument is ignored. | Optional |
-| execution_id | Filter by execution ID. If 'filter' is provided, this argument is ignored. | Optional |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). For a list of available properties, see [Workflow execution FQL filters](https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3). | Optional |
+| definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| definition_name | The workflow definition name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| execution_id | The execution ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
 | offset | The offset to start retrieving records from. Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
-| sort | The property to sort by in the format property.direction (e.g., created_at.desc). String with comma-separated values for multiple sorts. | Optional |
+| sort | A comma-separated list of properties to sort by in the format property.direction (for example name.desc, time.asc, created_at.desc). | Optional |
 
 #### Context Output
 
