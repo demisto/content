@@ -2129,16 +2129,16 @@ script:
       type: String
     - name: enable_purge_protection
       description: Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled.
-      type: bool
       auto: PREDEFINED
       predefined:
         - 'true'
+        - 'false'
     - name: enable_soft_delete
       description: Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled.
-      type: bool
       auto: PREDEFINED
       predefined:
         - 'true'
+        - 'false'
     outputs:
     - contextPath: Azure.KeyVault.Vault.id
       description: Resource ID.
@@ -2535,7 +2535,6 @@ script:
       predefined:
         - 'true'
         - 'false'
-      type: bool
     - description: Subscription ID.
       name: subscription_id
       required: true
@@ -3450,7 +3449,7 @@ script:
       type: Number
     - name: all_results
       description: Whether to retrieve all results by overriding the default limit.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
         - "false"
@@ -3566,7 +3565,7 @@ script:
         type: Number
       - name: all_results
         description: Whether to retrieve all results by overriding the default limit.
-        default: "false"
+        defaultValue: "false"
         auto: PREDEFINED
         predefined:
           - "false"

@@ -2562,7 +2562,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
 
     updated_properties = assign_params(
         protocol="*" if protocol == "Any" else protocol,
-        access=action or access,
+        access=access or action,
         priority=priority,
         direction=direction,
         description=description,
