@@ -242,7 +242,7 @@ There is no context output for this command.
 ### azure-webapp-config-set
 
 ***
-Updates the configuration settings of an existing Azure Web App.
+Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update.
 
 #### Base Command
 
@@ -296,7 +296,7 @@ Updates the configuration settings of an existing Azure Web App.
 ### azure-webapp-auth-update
 
 ***
-Updates the authentication and authorization settings of an existing Azure Web App.
+Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update.
 
 #### Base Command
 
@@ -474,7 +474,7 @@ Updates a disk.
 ### azure-webapp-update
 
 ***
-Updates an Azure Web App.
+Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
 
 #### Base Command
 
@@ -1761,3 +1761,52 @@ Gets all security rules in a network security group.
 | Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-appservice-webapp-update
+
+***
+Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read, Microsoft.Web/sites/write.
+
+#### Base Command
+
+`azure-appservice-webapp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional |
+| https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
+| client_cert_enabled | Whether client certificates are enabled. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.AppService.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.AppService.WebApp.name | String | The name of the web app. |
+| Azure.AppService.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.AppService.WebApp.location | String | Geographic location of the web app. |
+| Azure.AppService.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.AppService.WebApp.tags | Unknown | Resource tags as key-value pairs. |
+| Azure.AppService.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.AppService.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.userAssignedIdentities | Unknown | The list of user-assigned identities associated with the web app. |
+| Azure.AppService.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.AppService.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.AppService.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.AppService.WebApp.properties.hostNames | String | List of host names associated with the web app. |
+| Azure.AppService.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.AppService.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.AppService.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.AppService.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.AppService.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.AppService.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.AppService.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.AppService.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.AppService.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.AppService.WebApp.properties.siteConfig | Unknown | Configuration of the app. |
