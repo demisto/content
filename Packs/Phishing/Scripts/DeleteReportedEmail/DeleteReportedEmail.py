@@ -1,3 +1,4 @@
+import re
 import time
 from collections.abc import Callable
 from urllib.parse import quote, unquote
@@ -15,6 +16,8 @@ EMAIL_INTEGRATIONS = [
     "SecurityAndCompliance",
     "SecurityAndComplianceV2",
 ]
+# RFC 5322 msg-id is <id-left@id-right> with a constrained charset
+MESSAGE_ID_REGEX = re.compile(r"<[^\s<>]+@[^\s<>]+>")
 seconds = time.time()
 
 
@@ -249,6 +252,71 @@ def security_and_compliance_delete_mail(
     return "Success", None
 
 
+def extract_message_id(search_result: list, search_function: str) -> str | None:
+    """Extract the RFC Message-ID from a search result based on the integration's response structure.
+
+    Args:
+        search_result: The list returned by ``execute_command`` for the search.
+        search_function: The command name used for the search (e.g. ``"gmail-search"``).
+
+    Returns:
+        The RFC Message-ID string if available, or ``None`` when the
+        result is empty, malformed, or the header is not present.
+    """
+    demisto.debug(f"extract_message_id: processing search function '{search_function}'")
+
+    if not search_result or not isinstance(search_result, list):
+        demisto.debug("extract_message_id: search_result is empty or not a list, returning None")
+        return None
+
+    first_result = search_result[0]
+    if not isinstance(first_result, dict):
+        demisto.debug("extract_message_id: first result is not a dict, returning None")
+        return None
+
+    match search_function:
+        case "gmail-search":
+            # Gmail stores the RFC Message-ID in payload.headers.
+            headers = first_result.get("payload", {}).get("headers", [])
+            message_id: str | None = None
+            for header in headers:
+                if header.get("name", "").lower() == "message-id":
+                    message_id = header.get("value")
+                    break
+            demisto.debug(
+                f"extract_message_id: Gmail Message-ID header {'found' if message_id else 'not found'} in payload.headers"
+            )
+            demisto.debug(f"extract_message_id: returning '{message_id}'")
+            return message_id
+
+        case "ews-search-mailbox":
+            # EWS (O365 / v2) stores the RFC Message-ID under "messageId".
+            result = first_result.get("messageId") or None
+            demisto.debug(f"extract_message_id: returning '{result}'")
+            return result
+
+        case "msgraph-mail-list-emails":
+            # MSGraph wraps results in a "value" array; RFC Message-ID is "internetMessageId".
+            value_list = first_result.get("value")
+            demisto.debug(
+                f"extract_message_id: MSGraph value array has {len(value_list) if isinstance(value_list, list) else 'N/A'} items"
+            )
+            if not isinstance(value_list, list) or not value_list:
+                demisto.debug("extract_message_id: returning None (empty or missing value array)")
+                return None
+            entry = value_list[0]
+            if not isinstance(entry, dict):
+                demisto.debug("extract_message_id: returning None (first entry is not a dict)")
+                return None
+            result = entry.get("internetMessageId") or None
+            demisto.debug(f"extract_message_id: returning '{result}'")
+            return result
+
+        case _:
+            demisto.debug(f"extract_message_id: unrecognized search function '{search_function}', returning None")
+            return None
+
+
 def delete_email(
     search_args: dict,
     search_function: str,
@@ -269,8 +337,28 @@ def delete_email(
     """
     if search_function:
         search_result = execute_command(search_function, search_args)
+        demisto.debug(
+            f"delete_email: search returned {type(search_result).__name__}"
+            f" with {len(search_result) if isinstance(search_result, list) else 'N/A'} results"
+        )
         if not search_result or isinstance(search_result, str):
             raise MissingEmailException
+
+        will_trigger_guard = isinstance(search_result, list) and len(search_result) > 1
+        demisto.debug(f"delete_email: multi-result guard will trigger: {will_trigger_guard}")
+        if will_trigger_guard:
+            raise DemistoException(
+                f"Search returned {len(search_result)} results; expected exactly 1. Refusing delete to avoid ambiguity."
+            )
+
+        # verify the returned message matches the expected one
+        expected_mid = search_args.get("message-id") or ""
+        returned_mid = extract_message_id(search_result, search_function)
+        demisto.debug(f"delete_email: returned message-id='{returned_mid}', expected message-id='{expected_mid}'")
+        if returned_mid and returned_mid.strip("<>") != expected_mid.strip("<>"):
+            raise DemistoException(f"Search returned message {returned_mid} but expected {expected_mid}; refusing delete")
+        demisto.debug("delete_email: message-id comparison passed")
+
         delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
         delete_args = delete_args_function(search_args)  # type: ignore
@@ -291,7 +379,9 @@ def get_search_args(args: dict):
     """
     incident_info = demisto.incident()
     custom_fields = incident_info.get("CustomFields", {})
-    message_id = custom_fields.get("reportedemailmessageid")
+    message_id = custom_fields.get("reportedemailmessageid") or ""
+    if message_id and not MESSAGE_ID_REGEX.fullmatch(message_id):
+        raise DemistoException(f"Refusing suspicious Message-ID: {message_id!r}")
     user_id = custom_fields.get("reportedemailto")
     email_subject = custom_fields.get("reportedemailsubject")
     from_user_id = custom_fields.get("reportedemailfrom")
@@ -325,12 +415,12 @@ def get_search_args(args: dict):
         "message-id": message_id,
     }
     additional_args = {
-        "Gmail": {"query": f"Rfc822msgid:{message_id}", "user-id": user_id},
+        "Gmail": {"query": f'rfc822msgid:"{message_id}"', "user-id": user_id},
         "EWSO365": {"target-mailbox": user_id},
         "EWS v2": {"target-mailbox": user_id},
         "MicrosoftGraphMail": {
             "user_id": user_id,
-            "odata": f'"$filter=internetMessageId eq ' f"'{quote(unquote(message_id))}'\"",  # noqa: ISC001
+            "odata": "$filter=internetMessageId eq '{}'".format(quote(unquote(message_id).replace("'", "''"), safe="")),
         },
         "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
         "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},
