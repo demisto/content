@@ -1553,7 +1553,7 @@ script:
       description: The identity of the user/process who last updated the IOC.
       type: string
     - contextPath: CrowdStrike.IOC.MobileAction
-      description: Action to take on mobile devices when a host observes the custom IOC.
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
     - contextPath: CrowdStrike.NextPageToken
       description: A pagination token used with the limit parameter to manage pagination of results.
@@ -1612,7 +1612,7 @@ script:
       description: The identity of the user/process who last updated the IOC.
       type: string
     - contextPath: CrowdStrike.IOC.MobileAction
-      description: Action to take on mobile devices when a host observes the custom IOC.
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -1682,7 +1682,12 @@ script:
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     - auto: PREDEFINED
-      description: 'Action to take when an Android or iOS host observes the custom IOC. Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
+      description: |-
+        The action to take on mobile devices when a host observes the custom IOC.
+        - no_action: The indicator is saved for future use, but no action is taken (no severity required).
+        - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
+        - detect: The connection is allowed and a detection is generated.
+        - prevent: The indicator is blocked and shown as a detection.
       name: mobile_action
       predefined:
       - no_action
@@ -1738,7 +1743,7 @@ script:
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
     - contextPath: CrowdStrike.IOC.MobileAction
-      description: Action to take on mobile devices when a host observes the custom IOC.
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
     compliantpolicies:
     - Domain Blockage
@@ -1781,7 +1786,12 @@ script:
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     - auto: PREDEFINED
-      description: 'Action to take when an Android or iOS host observes the custom IOC. Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Allow the indicator and do not detect it. Severity does not apply and should not be provided. detect - The connection is allowed and a detection is generated. prevent - Block the indicator and show it as a detection at the selected severity.'
+      description: |-
+        The action to take on mobile devices when a host observes the custom IOC.
+        - no_action: The indicator is saved for future use, but no action is taken (no severity required).
+        - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
+        - detect: The connection is allowed and a detection is generated.
+        - prevent: The indicator is blocked and shown as a detection.
       name: mobile_action
       predefined:
       - no_action
@@ -1831,7 +1841,7 @@ script:
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
     - contextPath: CrowdStrike.IOC.MobileAction
-      description: Action to take on mobile devices when a host observes the custom IOC.
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
 
   - arguments:
@@ -2651,7 +2661,7 @@ script:
       description: The platforms of the IOC.
       type: Unknown
     - contextPath: CrowdStrike.IOC.MobileAction
-      description: Action to take on mobile devices when a host observes the custom IOC.
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
   - arguments:
     - description: The host ID to kill the given process for.
