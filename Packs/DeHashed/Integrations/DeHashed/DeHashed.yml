@@ -11,19 +11,23 @@ configuration:
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: SUSPICIOUS
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: email_dbot_score
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -38,6 +42,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 description: This integration allows you to check if your personal information such as your email, username, or password is being compromised.
 display: DeHashed
 name: DeHashed
@@ -191,3 +196,6 @@ script:
 tests:
 - No tests
 fromversion: 5.5.0
+sectionorder:
+- Connect
+- Collect
