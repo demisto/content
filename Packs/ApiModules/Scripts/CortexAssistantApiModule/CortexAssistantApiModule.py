@@ -1309,15 +1309,20 @@ class AssistantMessagingHandler:
             backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
 
             if backend_response.success:
-                # Update the original message: replace the actions block with a decision indicator,
-                # keeping it above the feedback buttons (which are the last block).
+                # Update the original message: replace the actions block with a decision indicator.
+                # The decision indicator is placed right where the actions block was removed,
+                # keeping it above the survey link and feedback buttons.
                 decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_DECLINED
                 original_blocks = message.get("blocks", [])
+                # Find the index of the actions block to insert the decision indicator at the same position
+                actions_index = next(
+                    (i for i, block in enumerate(original_blocks) if block.get("type") == "actions"),
+                    len(original_blocks) - 1,
+                )
                 updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
                 decision_block = {"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]}
-                # Insert before the last block (feedback buttons) to maintain visual order
-                feedback_index = len(updated_blocks) - 1 if updated_blocks else 0
-                updated_blocks.insert(feedback_index, decision_block)
+                # Insert at the same position where the actions block was
+                updated_blocks.insert(min(actions_index, len(updated_blocks)), decision_block)
 
                 try:
                     await self.update_message(channel_id, message_id, blocks=updated_blocks)
@@ -1817,23 +1822,21 @@ class AssistantMessagingHandler:
 
     def _create_survey_link_block(self) -> dict | None:
         """
-        Creates a context block with a clickable survey link.
+        Creates a section block with a bold, clickable survey link.
         Only returns a block if both survey_text and survey_link are configured.
 
         Returns:
-            A Slack context block dict with the survey link, or None if not configured.
+            A Slack section block dict with the survey link, or None if not configured.
         """
         if not self.survey_text or not self.survey_link:
             return None
 
         return {
-            "type": "context",
-            "elements": [
-                {
-                    "type": "mrkdwn",
-                    "text": f"<{self.survey_link}|{self.survey_text}>",
-                }
-            ],
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*<{self.survey_link}|{self.survey_text}>*",
+            },
         }
 
     def _send_single_response(
