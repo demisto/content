@@ -5194,7 +5194,7 @@ script:
     - description: The maximum number of records to return. Max is 500.
       name: limit
       defaultValue: '50'
-    - description: 'The property to sort by in the format property.direction (e.g., name.desc, time.asc). Comma-separated for multiple sorts.'
+    - description: 'The property to sort by in the format property.direction (e.g., name.desc, time.asc). String with comma-separated values for multiple sorts.'
       name: sort
     description: Lists workflow definitions from CrowdStrike Falcon.
     name: cs-falcon-list-workflow-definitions
@@ -5233,7 +5233,7 @@ script:
     - description: The maximum number of records to return. Max is 500.
       name: limit
       defaultValue: '50'
-    - description: 'The property to sort by in the format property.direction (e.g., created_at.desc). Comma-separated for multiple sorts.'
+    - description: 'The property to sort by in the format property.direction (e.g., created_at.desc). String with comma-separated values for multiple sorts.'
       name: sort
     description: Lists workflow executions from CrowdStrike Falcon.
     name: cs-falcon-list-workflow-executions

@@ -6813,7 +6813,7 @@ Executes an on-demand workflow. Use `cs-falcon-list-workflow-definitions` to fin
 | execution_cid | A comma-separated list of CID(s) to execute the workflow on. | Optional |
 | key | A key used for deduplication of workflow executions, if unset a new UUID is used. | Optional |
 | source_event_url | A URL reference to the source that triggered the workflow execution. | Optional |
-| body | The JSON body to pass to the workflow execution. Can be an empty object {}. Default is {}. | Required |
+| body | The JSON body to pass to the workflow execution. Can be an empty object {}. Default is {}. | Optional |
 
 #### Context Output
 
@@ -6846,7 +6846,7 @@ Lists workflow executions from CrowdStrike Falcon.
 
 #### Context Output
 
-**`CrowdStrike.Workflows.Executions.*`** - The raw API response containing workflow execution details.
+**`CrowdStrike.Workflows.Execution.*`** - The raw API response containing workflow execution details.
 
 #### Command example
 
@@ -6869,7 +6869,7 @@ Gets detailed results for specific workflow executions.
 
 #### Context Output
 
-**`CrowdStrike.Workflows.ExecutionResults.*`** - The raw API response containing workflow execution results.
+**`CrowdStrike.Workflows.ExecutionResult.*`** - The raw API response containing workflow execution results.
 
 #### Command example
 

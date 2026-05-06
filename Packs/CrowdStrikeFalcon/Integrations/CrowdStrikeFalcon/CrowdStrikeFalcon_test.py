@@ -9403,7 +9403,7 @@ def test_list_workflow_executions_command(mocker):
     args = {"definition_id": "def-123", "limit": "10"}
     result = list_workflow_executions_command(args)
 
-    assert result.outputs_prefix == "CrowdStrike.Workflows.Executions"
+    assert result.outputs_prefix == "CrowdStrike.Workflows.Execution"
     assert len(result.outputs) == 1
     assert result.outputs[0]["execution_id"] == "exec-001"
     assert "Step 1" in result.readable_output
@@ -9441,7 +9441,7 @@ def test_list_workflow_execution_results_command(mocker):
     args = {"ids": "exec-001,exec-002"}
     result = list_workflow_execution_results_command(args)
 
-    assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResults"
+    assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResult"
     assert result.outputs_key_field == "execution_id"
     assert len(result.outputs) == 1
     assert result.outputs[0]["execution_id"] == "ae6b9021abff1dc526093dbcb5e66bd2"
@@ -9484,7 +9484,7 @@ def test_list_workflow_execution_results_command_partial_errors(mocker):
     args = {"ids": "ae6b9021abff1dc526093dbcb5e66bd2,ae6b9021abff1dc526093dbcb5e66bda"}
     result = list_workflow_execution_results_command(args)
 
-    assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResults"
+    assert result.outputs_prefix == "CrowdStrike.Workflows.ExecutionResult"
     assert len(result.outputs) == 1
     assert result.outputs[0]["execution_id"] == "ae6b9021abff1dc526093dbcb5e66bd2"
     assert "GetCaseDetails" in result.readable_output

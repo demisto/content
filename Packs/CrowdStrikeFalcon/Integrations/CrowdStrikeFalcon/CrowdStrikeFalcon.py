@@ -9708,12 +9708,7 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
                     }
                 )
         else:
-            hr_data.append(
-                {
-                    "Execution ID": execution_id_val,
-                    "Status": execution.get("status"),
-                }
-            )
+            hr_data.append({"Execution ID": execution_id_val})
 
     readable_output = tableToMarkdown(
         name="Workflow Executions",
@@ -9731,7 +9726,7 @@ def list_workflow_executions_command(args: dict[str, Any]) -> CommandResults:
     )
 
     return CommandResults(
-        outputs_prefix="CrowdStrike.Workflows.Executions",
+        outputs_prefix="CrowdStrike.Workflows.Execution",
         outputs_key_field="execution_id",
         outputs=executions,
         readable_output=readable_output,
@@ -9797,7 +9792,7 @@ def list_workflow_execution_results_command(args: dict[str, Any]) -> CommandResu
         readable_output += "\n".join(error_lines)
 
     return CommandResults(
-        outputs_prefix="CrowdStrike.Workflows.ExecutionResults",
+        outputs_prefix="CrowdStrike.Workflows.ExecutionResult",
         outputs_key_field="execution_id",
         outputs=results,
         readable_output=readable_output,
